@@ -26,9 +26,7 @@ x3dom.registerNodeType(
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 
-            this._indexBuffers = [];
             this._indexBufferTriangulationParts = [];
-            var indices;
 
             var x = 0, y = 0;
             var xstep = sx / subx / 2;
@@ -57,66 +55,61 @@ x3dom.registerNodeType(
 
             /*************************************************************/
             // regular triangulation
-            indices = [];
             for (y = 0; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
-            this._indexBufferTriangulationParts.push({ 
+            this._indexBufferTriangulationParts.push({
                 offset: 0, 
                 count: subx * suby * 6
             });
 
             /*************************************************************/
             // finer bottom triangulation
-            indices = [];
-
             for (y = 0; y < countY - 2; y += 2) {
                 for (x = 0; x < 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 0; y < countY - 2; y += 2) {
                 for (x = 2; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -125,45 +118,42 @@ x3dom.registerNodeType(
             
             /*************************************************************/
             // finer top triangulation
-            indices = [];
-
             for (y = 0; y < countY - 2; y += 2) {
                 for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
 
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 0; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -172,46 +162,43 @@ x3dom.registerNodeType(
 
             /*************************************************************/
             // finer right triangulation
-            indices = [];
-
             for (y = 2; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
             for (y = 0; y < 2; y += 2) {
                 for (x = 0; x < countX - 2; x += 2) {
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
 
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -220,44 +207,42 @@ x3dom.registerNodeType(
             
             /*************************************************************/
             // finer left triangulation
-            indices = [];
             for (y = countY - 3; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 0; y < countY - 4; y += 2) {
                 for (x = 0; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -266,97 +251,94 @@ x3dom.registerNodeType(
             
             /*************************************************************/
             // finer topLeft triangulation
-            indices = [];
-
             for (y = countY - 3; y < countY - 2; y += 2) {
                 for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
 
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 0; y < countY - 4; y += 2) {
                 for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
             for (y = 0; y < countY - 4; y += 2) {
                 for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
 
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = countY - 3; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -365,99 +347,96 @@ x3dom.registerNodeType(
             
             /*************************************************************/
             // finer bottomLeft triangulation
-            indices = [];
-
             for (y = countY - 3; y < countY - 2; y += 2) {
                 for (x = 0; x < 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 0; y < countY - 4; y += 2) {
                 for (x = 2; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
             // finer left
             for (y = countY - 3; y < countY - 2; y += 2) {
                 for (x = 2; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             // finer bottom
             for (y = 0; y < countY - 4; y += 2) {
                 for (x = 0; x < 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -466,70 +445,68 @@ x3dom.registerNodeType(
             
             /*************************************************************/
             // finer bottomRight triangulation
-            indices = [];
-
             for (y = 0; y < 2; y += 2) {
                 for (x = 0; x < 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
 
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 2; y < countY - 2; y += 2) {
                 for (x = 2; x < countX - 2; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
             // finer bottom
             for (y = 2; y < countY - 2; y += 2) {
                 for (x = 0; x < 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
@@ -537,29 +514,28 @@ x3dom.registerNodeType(
             for (y = 0; y < 2; y += 2) {
                 for (x = 2; x < countX - 2; x += 2) {
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
 
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
@@ -568,71 +544,69 @@ x3dom.registerNodeType(
 
             /*************************************************************/
             // finer topRight triangulation
-            indices = [];
-
             // finer right
             for (y = 0; y < 2; y += 2) {
                 for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
 
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
 
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
             for (y = 2; y < countY - 2; y += 2) {
                 for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
                 }
             }
 
             //  finer top
             for (y = 2; y < countY - 2; y += 2) {
                 for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
 
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
@@ -640,54 +614,43 @@ x3dom.registerNodeType(
             for (y = 0; y < 2; y += 2) {
                 for (x = 0; x < countX - 4; x += 2) {
 
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
 
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + (y + 2) * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
 
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 2) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
 
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + y * countX);
+                    this._mesh._indices[0].push((x + 1) + (y + 1) * countX);
+                    this._mesh._indices[0].push((x) + y * countX);
                 }
             }
 
-            this._indexBuffers.push(indices);
             this._indexBufferTriangulationParts.push({ 
                 offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
                         this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
                 count: subx * suby * 6 + subx * 9 + (suby - 1) * 9 + 3
             });
 
-
-            //Set current indexbuffer
-            this._mesh._indices[0] = this._indexBuffers[0];
-
             this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
         },
         {
-            setTriangulation: function (triangulationIndex) {
-                this._mesh._indices[0] = this._indexBuffers[triangulationIndex];
-                this._mesh._numFaces = this._mesh._indices[0].length / 3;
-
-                Array.forEach(this._parentNodes, function (node) {
-                    node.setGeoDirty();     // also invalidates
-                });
+            hasIndexOffset: function() {
+                return true;
             },
 
-            
             getTriangulationAttributes: function(triangulationIndex){
                 return this._indexBufferTriangulationParts[triangulationIndex];
             }
@@ -1676,7 +1639,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // create shape with geometry and appearance data
         shape.addChild(appearance);
         appearance.nodeChanged();
-        shape.addChild(new x3dom.nodeTypes.Patch(ctx));
+        shape.addChild(geometry);
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -1727,13 +1690,6 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         if (rowNr === 0) { neighbors[3] = -1; }
         if (columnNr === c - 1) { neighbors[1] = -1; }
         if (rowNr === c - 1) { neighbors[2] = -1; }
-        
-        
-        
-        /*console.log("NodeID: " + sid + " ::> (" + neighbors[0] + ", " 
-                                                + neighbors[1] + ", " 
-                                                + neighbors[2] + ", " 
-                                                + neighbors[3] + ")");*/
     }
 
 
@@ -1900,6 +1856,8 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         if (shape._webgl !== undefined && shape._webgl.texture !== undefined) {
                 return ready();
         }
+
+        return false;
     };
     
     
@@ -2095,11 +2053,10 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         }
         
         if (lastIndice !== indiceNumber || triangulationAttributes === null){
-            shape._cf.geometry.node.setTriangulation(indiceNumber);
             triangulationAttributes = shape._cf.geometry.node.getTriangulationAttributes(indiceNumber);
             lastIndice = indiceNumber;
         }
-        drawableCollection.triangulationAttributes = triangulationAttributes;
+        shape.tessellationProperties = triangulationAttributes;
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
 
@@ -2682,9 +2639,6 @@ function BVHNode(ctx, bvhRefiner, level, path, imgNumber, count)
     // initializes this node directly after creating
     initialize();
 }
-
-
-
 
 
 
@@ -3420,7 +3374,6 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
     };
 
 
-
     /* 
      * Returns the volume of this node
      */
@@ -3428,7 +3381,6 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
         // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
-
 
 
     // initializes this node directly after creating

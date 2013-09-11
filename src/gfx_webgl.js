@@ -2079,11 +2079,16 @@ x3dom.gfx_webgl = (function () {
                             offset += s_geo._vf.vertexCount[i];
                         }
                     }
-                    else if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP) {
-                        // TODO; unify and remove 2nd check for primType
-                        var indOff = s_geo._indexOffset;
-                        for (i = 1, i_n = indOff.length; i < i_n; i++) {
-                            gl.drawElements(s_gl.primType, indOff[i] - indOff[i - 1], gl.UNSIGNED_SHORT, 2 * indOff[i - 1]);
+                    else if (s_geo.hasIndexOffset()) {
+                        if (shape.tessellationProperties) { // for Patch geometry from ext. BVHRefiner component
+                            gl.drawElements(s_gl.primType, shape.tessellationProperties.count, gl.UNSIGNED_SHORT,
+                                            shape.tessellationProperties.offset);
+                        }
+                        else {  // IndexedTriangleStripSet with s_gl.primType == gl.TRIANGLE_STRIP
+                            var indOff = s_geo._indexOffset;
+                            for (i = 1, i_n = indOff.length; i < i_n; i++) {
+                                gl.drawElements(s_gl.primType, indOff[i] - indOff[i - 1], gl.UNSIGNED_SHORT, 2 * indOff[i - 1]);
+                            }
                         }
                     }
                     else {

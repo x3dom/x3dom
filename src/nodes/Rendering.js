@@ -52,6 +52,10 @@ x3dom.registerNodeType(
                 return false;
             },
 
+            hasIndexOffset: function() {
+                return false;
+            },
+
             getColorTexture: function() {
                 return null;
             },
@@ -956,8 +960,14 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.IndexedTriangleStripSet.superClass.call(this, ctx);
 			
             this.addField_MFInt32(ctx, 'index', []);
+
+            this._hasIndexOffset = false;
         },
         {
+            hasIndexOffset: function() {
+                return this._hasIndexOffset;
+            },
+
             nodeChanged: function() 
             {
                 this.handleAttribs();   // check if method is still functional
@@ -1036,6 +1046,8 @@ x3dom.registerNodeType(
 				
 				if (hasNormal && positions.length <= 65535)
 				{
+                    this._hasIndexOffset = true;
+
 					this._mesh._primType = 'TRIANGLESTRIP';
 					this._indexOffset = [];
 					this._indexOffset.push(0);
@@ -1093,6 +1105,8 @@ x3dom.registerNodeType(
 				} 
 				else 
 				{
+                    this._hasIndexOffset = false;
+
 				    var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
 				    
 				    var swapOrder = false;
