@@ -5,8 +5,13 @@ The BVHRefiner component - Refining and Loading hierarchical data dynamically
 
 The BVHRefiner is a component that refines and loads hierarchical data dynamically during runtime. Two different dataset structures can be used (WMTS, nonWMTS) that are described later.
 
-Example of a terrain with a WMTS conform dataset
-------------------------------------------------
+3D-Example of Puget Sound rendered with a WMTS conform dataset
+--------------------------------------------------------------
+
+.. image:: /_static/tutorial/bvh_refiner/puget_sound.jpg
+   :align: center
+   :scale: 50%
+
 
 .. code-block:: xml
 
@@ -49,7 +54,7 @@ elevationFormat       png, jpg, gif ...            png            Data format of
 textureFormat         png, jpg, gif ...            png            Data format of surface texture dataset
 normalFormat          png, jpg, gif ...            png            Data format of normal dataset
 mode                  2D, 3D, bin, bvh             3D             2D (planes), 3D (displaced y-coordinate of 2D-Planes), bin (binary files, WMTS), bvh (binary files, nonWMTS)
-submode               WMTS, nonWMTS                WMTS           utilized dataset (WMTS, nonWMTS)
+submode               WMTS, nonWMTS                WMTS           utilized dataset (WMTS, nonWMTS(currently only in 2D mode)
 ==================    =========================    ===========    =================================================
 
 
@@ -78,12 +83,5 @@ The nonWMTS addressing-scheme is as easy as the WMTS addressing scheme. Every le
 * 4.png: bottom right
 
 .. image:: /_static/tutorial/bvh_refiner/non_wmts.png
-   :align: center
-   :scale: 50%
-
-Example of Puget Sound rendered with BVHRefiner node
-----------------------------------------------------
-
-.. image:: /_static/tutorial/bvh_refiner/puget_sound.jpg
    :align: center
    :scale: 50%
