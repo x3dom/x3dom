@@ -187,7 +187,7 @@ def changelog():
     print("Generating changelog this may take a while ...")
     subprocess.call(["python", 'tools/git2cl.py'])
 
-def docs(mode='all'):
+def docs(mode='nojsdoc'):
     
     if not mode == 'nojsdoc':
         # TODO: call this directly with python
@@ -296,7 +296,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--changelog', action='store_true', default=False,  help='regenerate ChangeLog file from git log messages')
 
-    parser.add_argument('--docs', nargs='?', action='store', default=False, const='all', required=False, choices=['all', 'nojsdoc'], help='build documentation')
+    parser.add_argument('--docs', nargs='?', action='store', default=False, const='nojsdoc', required=False, choices=['all', 'nojsdoc'], help='build documentation')
 
     parser.add_argument('--clean', action='store_true', default=False,  
 help='clean up build and remove all generated files')

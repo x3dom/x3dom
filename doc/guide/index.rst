@@ -43,7 +43,7 @@ this part of the documentation is for you.
    
    api
    nodes/index
-   components
+   components/index
 
 
 Notes & How-Tos
