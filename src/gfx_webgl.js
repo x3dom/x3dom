@@ -1337,11 +1337,12 @@ x3dom.gfx_webgl = (function () {
                             off += s_geo._vf.vertexCount[v];
                         }
                     }
-                    else if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP) {
-                        // TODO; remove 2nd check for primType
-                        var indOff = s_geo._indexOffset;
-                        for (v = 1, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v] - indOff[v - 1], gl.UNSIGNED_SHORT, 2 * indOff[v - 1]);
+                    else if (s_geo.hasIndexOffset()) {
+                        // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
+                        // and Patch geometry from external BVHRefiner component
+                        var indOff = shape.tessellationProperties();
+                        for (v = 0, v_n = indOff.length; v < v_n; v++) {
+                            gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
                     }
                     else {
@@ -1597,11 +1598,12 @@ x3dom.gfx_webgl = (function () {
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
-                    else if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP) {
-                        // TODO; remove 2nd check for primType
-                        var indOff = s_geo._indexOffset;
-                        for (v = 1, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v] - indOff[v - 1], gl.UNSIGNED_SHORT, 2 * indOff[v - 1]);
+                    else if (s_geo.hasIndexOffset()) {
+                        // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
+                        // and Patch geometry from external BVHRefiner component
+                        var indOff = shape.tessellationProperties();
+                        for (v = 0, v_n = indOff.length; v < v_n; v++) {
+                            gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
                     }
                     else {
@@ -2080,15 +2082,11 @@ x3dom.gfx_webgl = (function () {
                         }
                     }
                     else if (s_geo.hasIndexOffset()) {
-                        if (shape.tessellationProperties) { // for Patch geometry from ext. BVHRefiner component
-                            gl.drawElements(s_gl.primType, shape.tessellationProperties.count, gl.UNSIGNED_SHORT,
-                                            shape.tessellationProperties.offset);
-                        }
-                        else {  // IndexedTriangleStripSet with s_gl.primType == gl.TRIANGLE_STRIP
-                            var indOff = s_geo._indexOffset;
-                            for (i = 1, i_n = indOff.length; i < i_n; i++) {
-                                gl.drawElements(s_gl.primType, indOff[i] - indOff[i - 1], gl.UNSIGNED_SHORT, 2 * indOff[i - 1]);
-                            }
+                        // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
+                        // and Patch geometry from external BVHRefiner component
+                        var indOff = shape.tessellationProperties();
+                        for (i = 0, i_n = indOff.length; i < i_n; i++) {
+                            gl.drawElements(s_gl.primType, indOff[i].count, gl.UNSIGNED_SHORT, indOff[i].offset);
                         }
                     }
                     else {
@@ -2151,8 +2149,9 @@ x3dom.gfx_webgl = (function () {
         else {
             this.numCoords += s_msh._numCoords;
 
-            if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP) {
-                this.numDrawCalls += s_geo._indexOffset.length;
+            if (s_geo.hasIndexOffset()) {
+                indOff = shape.tessellationProperties();
+                this.numDrawCalls += indOff.length;
             }
             else {
                 this.numDrawCalls += s_gl.positions.length;
@@ -3507,11 +3506,12 @@ x3dom.gfx_webgl = (function () {
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
-                    else if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP) {
-                        // TODO; remove 2nd check for primType
-                        var indOff = s_geo._indexOffset;
-                        for (v = 1, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v] - indOff[v - 1], gl.UNSIGNED_SHORT, 2 * indOff[v - 1]);
+                    else if (s_geo.hasIndexOffset()) {
+                        // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
+                        // and Patch geometry from external BVHRefiner component
+                        var indOff = shape.tessellationProperties();
+                        for (v = 0, v_n = indOff.length; v < v_n; v++) {
+                            gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
                     }
                     else {

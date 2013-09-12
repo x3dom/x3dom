@@ -233,6 +233,8 @@ x3dom.registerNodeType(
             this._normalStrideOffset = [0, 0];
             this._texCoordStrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
+
+            this._tessellationProperties = null;
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
@@ -294,6 +296,16 @@ x3dom.registerNodeType(
             {
                 var geo = this._cf.geometry.node;
                 return (geo ? geo.forceUpdateCoverage() : false);
+            },
+
+            tessellationProperties: function()
+            {
+                // some geometries require offset and count into index array
+                var geo = this._cf.geometry.node;
+                if (geo && geo._indexOffset)
+                    return geo._indexOffset;      // IndexedTriangleStripSet
+                else
+                    return this._tessellationProperties; // BVHRefiner-Patch
             },
 
             isSolid: function() {

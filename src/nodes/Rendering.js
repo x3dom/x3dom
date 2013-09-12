@@ -962,6 +962,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'index', []);
 
             this._hasIndexOffset = false;
+            this._indexOffset = null;
         },
         {
             hasIndexOffset: function() {
@@ -1047,16 +1048,16 @@ x3dom.registerNodeType(
 				if (hasNormal && positions.length <= 65535)
 				{
                     this._hasIndexOffset = true;
-
+                    this._indexOffset = [];
 					this._mesh._primType = 'TRIANGLESTRIP';
-					this._indexOffset = [];
-					this._indexOffset.push(0);
+
+                    var indexOffset = [ 0 ];
 					
 					for (i=0; i<indexes.length; i++)
 					{
 						if (indexes[i] == -1) {
 							faceCnt++;
-							this._indexOffset.push(this._mesh._indices[0].length);
+							indexOffset.push(this._mesh._indices[0].length);
 						}
 						else {
 						    this._mesh._indices[0].push(+indexes[i]);
@@ -1098,8 +1099,14 @@ x3dom.registerNodeType(
 						this._mesh._numColComponents = numColComponents;
                     }
                     
-                    for (i=1; i<this._indexOffset.length; i++) {
-                        this._mesh._numFaces += (this._indexOffset[i] - this._indexOffset[i-1] - 2);
+                    for (i=1; i<indexOffset.length; i++) {
+                        var triCnt = indexOffset[i] - indexOffset[i-1];
+                        this._indexOffset.push( {
+                            count: triCnt,
+                            offset: 2 * indexOffset[i-1]
+                        } );
+
+                        this._mesh._numFaces += (triCnt - 2);
                     }
                     this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				} 

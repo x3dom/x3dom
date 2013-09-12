@@ -2056,7 +2056,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             triangulationAttributes = shape._cf.geometry.node.getTriangulationAttributes(indiceNumber);
             lastIndice = indiceNumber;
         }
-        shape.tessellationProperties = triangulationAttributes;
+        shape._tessellationProperties = [ triangulationAttributes ];
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
 
