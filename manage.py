@@ -262,7 +262,7 @@ def rebuild():
     clean()
     prepare()
     build()
-    docs(mode='all')
+    docs()
 
 
 def _zipdir(basedir, archivename):
