@@ -71,7 +71,7 @@ lowPriorityThreshold           draw only objects within threshold fraction of pr
 Tesselation Detail Culling
 --------------------------
 
-The possibiliy of using this culling technique completely depends on the support of the meshes data formats. Up to now only the POP-Geometry format natively supports it. As long as the resulting error stays within the amount of pixels defined by tesselationErrorThreshold the tesselation of the mesh is lowered to certain degree. It can be enabled using the flag tesselationDetailCulling.
+The possibiliy of using this culling technique completely depends on the support of each drawable. Up to now only the `POP-Geometry <http://www.x3dom.org/pop/>`_ natively supports it. As long as the resulting error stays within the amount of pixels defined by tesselationErrorThreshold the tesselation of the mesh is lowered to certain degree. It can be enabled using the flag tesselationDetailCulling.
 
 ===========================    ===================================================================    ========================    
 Setting                        Usage                                                                  Values                     

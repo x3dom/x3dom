@@ -13,20 +13,21 @@ Documnetation API allows to dynamically generate documentation
 artifacts embedded derived from the source code (e.g. a list of
 loaded nodes).
 
-Class Documentation
--------------------
+.. TODO: experimental
+.. Class Documentation
+.. -------------------
 
-.. toctree::
-   :maxdepth: 1
+.. .. toctree::
+..    :maxdepth: 1
 
-   api/_global_
-   api/Array
-   api/lang/math
-   api/x3dom.Cache
-   api/x3dom.components
-   api/x3dom.docs
-   api/x3dom.Mesh
-   api/x3dom.runtime
+..    api/_global_
+..    api/Array
+..    api/lang/math
+..    api/x3dom.Cache
+..    api/x3dom.components
+..    api/x3dom.docs
+..    api/x3dom.Mesh
+..    api/x3dom.runtime
 
 
 

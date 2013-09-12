@@ -3,6 +3,59 @@
 Release notes
 =============
 
+
+Version 1.5
+-----------
+We are proud to announce the release of X3DOM 1.5. This most recent 
+installment of our popular Declarative3D polyfill shines with lots of 
+new features and a wagon load full of bugfixes.
+
+With version 1.5, X3DOM also overcomes some limits of the scenegraph 
+structure by using new internal structures for culling and fast 
+rendering, decoupled from the frontend graph inside the DOM, which, 
+however, still remains intact as usual.
+
+New Features
+++++++++++++
+* Generally improved traversal and rendering performance with a new 
+  transformation and volume caching infrastructure
+* Culling techniques for large model rendering (some of them still 
+  experimental) - check the `video <http://www.youtube.com/watch?v=2Nd4af3iHdM>`_, or see the `tutorial <http://x3dom.org/docs/dev/tutorial/culling.html>`_
+* Improved experimental binary geometry container and encoding
+    * BinaryGeometry with more compact encoding that only uses 7 Bytes per 
+      triangle (see `example <http://x3dom.org/x3dom/example/x3dom_buddhaBG.html>`_) and works nicely on mobile devices
+    * POPGeometry for progressive streaming and LOD - see the paper and project 
+      page `here <http://x3dom.org/pop/>`_, or directly check some `examples <http://examples.x3dom.org/pop-pg13/happy.html>`_
+* Experimental BVH Refiner node, for rendering of large, regular data sets 
+  with dynamic LOD (see `example <http://examples.x3dom.org/BVHRefiner/BVHRefiner.html>`_)
+* Shadow support for large scenes and all lights types (see `tutorial <http://x3dom.org/docs/dev/tutorial/shadows.html>`_ for more 
+  information or click `here <http://x3dom.org/x3dom/example/x3dom_animatedLights.xhtml>`_ or for a `demo <http://examples.x3dom.org/binaryGeo/oilrig_demo/index.html>`_)
+* CADGeometry component (not part of the HTML profile)
+* Extrusion (and many more geometric 3D primitives in additional 
+  Geometry3DExt component, also not part of the HTML profile)
+* Convenience object 'Moveable' for `object manipulation <http://x3dom.org/x3dom/example/x3dom_uiEvents.html>`_
+* Additional X3D component plugins (not part of the HTML profile and x3dom.js package)
+    * CADGeometry component
+    * Geometry3D component (e.g. Extrusion, missing level 4 nodes)
+
+Fixes and Improvements
+++++++++++++++++++++++
+* Many internal `improvements and bugfixes <https://github.com/x3dom/x3dom/issues?milestone=&page=1&state=closed>`_
+* Route removal implemented
+* Improved picking functionality to enhance trade-off between precision 
+  and number of possible ids
+* Fullscreen convenience method ``x3dom.toggleFullScreen()``
+* RenderedTexture extensions for rendering normal buffer or stereo 
+  (currently only for Oculus Rift)
+
+For a detailed list of changes refer to the `CHANGELOG <http://x3dom.org/download/1.5/CHANGELOG>`_ file.
+
+Grab the frozen 1.5.0 version here:
+
+    `http://x3dom.org/download/1.5/ <http://x3dom.org/download/1.5/>`_
+
+
+
 Version 1.4
 -----------
 
