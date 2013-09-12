@@ -2359,6 +2359,8 @@ x3dom.gfx_webgl = (function () {
 
         var sceneSize = max.subtract(min).length();
 
+        var baseID = x3dom.nodeTypes.Shape.objectID + 2;    // for shadow ids
+
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, mat_view, mat_scene,
             from, sceneSize, pickMode, x, y, 2, 2);
@@ -2440,6 +2442,11 @@ x3dom.gfx_webgl = (function () {
 
                 shapeId  =       scene._webgl.fboPick.pixelData[index + 1];
                 shapeId += 256 * scene._webgl.fboPick.pixelData[index + 0];
+
+                // check if standard shape picked without special shadow id
+                if (objId == 0 && (shapeId > 0 && shapeId < baseID)) {
+                    objId = shapeId;
+                }
             }
             else {
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0];
@@ -2447,8 +2454,6 @@ x3dom.gfx_webgl = (function () {
                 pickPos.z = scene._webgl.fboPick.pixelData[index + 2];
             }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
-
-            var baseID = x3dom.nodeTypes.Shape.objectID + 2;
 
             if (objId >= baseID) {
                 objId -= baseID;
