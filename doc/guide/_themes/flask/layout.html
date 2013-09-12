@@ -1,7 +1,8 @@
 {%- extends "basic/layout.html" %}
 {%- block extrahead %}
   {{ super() }}
-    <script src="http://x3dom.org/download/dev/x3dom-full.js"></script>
+    <script src="{{pathto('_static/x3dom-full.js', 1) }}"></script>
+    {# <script src="http://x3dom.org/download/dev/x3dom-full.js"></script> #}
   {% if theme_touch_icon %}
   <link rel="apple-touch-icon" href="{{ pathto('_static/' ~ theme_touch_icon, 1) }}" />
   {% endif %}
@@ -10,8 +11,8 @@
 {% endblock %}
 {%- block relbar2 %}{% endblock %}
 {% block header %}
-    <div id="beta_notice"><p><strong>Note: </strong>This documentation is for the development version of X3DOM. Released versions: <a href="http://x3dom.readthedocs.org/en/1.4.0/">1.4</a>, <a href="http://x3dom.readthedocs.org/en/1.3.0/">1.3</a>, <a href="http://x3dom.readthedocs.org/en/1.2.0/">1.2</a>.</p></div>
-  {{ super() }}
+{#     <div id="beta_notice"><p><strong>Note: </strong>This documentation is for the development version of X3DOM. Released versions: <a href="http://x3dom.readthedocs.org/en/1.4.0/">1.4</a>, <a href="http://x3dom.readthedocs.org/en/1.3.0/">1.3</a>, <a href="http://x3dom.readthedocs.org/en/1.2.0/">1.2</a>.</p></div>
+ #}  {{ super() }}
   {% if pagename == 'index' %}
   <div class=indexwrapper>
   {% endif %}

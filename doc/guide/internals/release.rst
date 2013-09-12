@@ -15,33 +15,33 @@ Copy release notes to ``doc/guide/releasenotes.rst``
 
 Set version: ``doc/guide/conf.py``
 
-.. code-block::
+.. code-block:: bash
 
     version = 'x.x'
     release = 'x.x.x'
 
 Include new version x3dom in docs: doc/guide/_themes/flask/layout.html
 
-.. code-block::
+.. code-block:: bash
 
     cp dist/x3dom-full.js doc/guide/_static/
     vi doc/guide/_themes/flask/layout.html
 
 replace
 
-.. code-block::
+.. code-block:: bash
 
     <script src="http://x3dom.org/download/x.x/x3dom-full.js"></script>
 
 with
 
-.. code-block::
+.. code-block:: bash
 
        <script src="{{pathto('_static/x3dom-full.js', 1) }}"></script>
 
 Remove dev/beta notice
 
-.. code-block:
+.. code-block:: bash
 
        <div id="beta_notice"...
 
@@ -52,7 +52,7 @@ Add older version links: ``doc/guide/_templates/sidebarintro.html``
 Commit
 ------
 
-.. code-block::
+.. code-block:: bash
 
   ./manage.py --changelog
   git commit -Am "Release x.x.x"
@@ -63,7 +63,7 @@ Commit
 Build
 -----
 
-.. code-block::
+.. code-block:: bash
 
   ./manage.py --release x.x.x
   

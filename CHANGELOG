@@ -1,3 +1,37 @@
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanup of index-offset hack
+
+2013-09-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : hmmm
+
+  * : BVHRefiner now uses only one geometry
+
+2013-09-11  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : docu update
+
+2013-09-11  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Reorg internal docs structure to prepare for fompontent documentation
+  (subdir for component rst files). Made building doc without jsdocs the
+  default with manage.py
+
+2013-09-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : tutorial fixes (???)
+
+2013-09-10  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added crack prevention in BVHRefiner (Terrain)
+
+2013-09-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added fields, yet unfunctional
+
+  * : fixed broken texture scale field
+
 2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
 
   * : removed personal project file
