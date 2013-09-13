@@ -54,6 +54,7 @@ package x3dom {
 			ExternalInterface.addCallback("setSpotLight", setSpotLight);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
 			ExternalInterface.addCallback("setMeshProperties", setMeshProperties);
+			ExternalInterface.addCallback("removeTexture", removeTexture);
 			ExternalInterface.addCallback("setFPS", setFPS);
 		}
 		
@@ -313,6 +314,11 @@ package x3dom {
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CanvasTexture( Number(value.width),
 																							   Number(value.height),
 																							   value.dataURL );
+		}
+		
+		private function removeTexture(value:Object) : void 
+		{	
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = null;
 		}
 
 	}

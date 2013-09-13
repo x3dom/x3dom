@@ -437,10 +437,11 @@ x3dom.registerNodeType(
 			}
 			else {
 			    //IE has no __defineSetter__ !!!
-				Object.defineProperty(xmlNode, name, { 
-					set: function(value) { 
+				Object.defineProperty(xmlNode, name, {
+					set: function(value) {
 						xmlNode.setAttribute(name, value); 
-					} 
+					},
+                    configurable : true
 				});	
       		}
       		

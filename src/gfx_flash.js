@@ -597,7 +597,6 @@ x3dom.gfx_flash = (function () {
             //Set Texture
             if (shape._dirty.texture === true) {
                 if (appearance) {
-
                     var texTrafo = null;
                     if (appearance._cf.textureTransform.node) {
                         texTrafo = appearance.texTransformMatrix().toGL();
@@ -625,7 +624,6 @@ x3dom.gfx_flash = (function () {
                         } else if (x3dom.isa(texture, x3dom.nodeTypes.MovieTexture)) {
                             x3dom.debug.logError("Flash backend doesn't support MovieTextures yet");
                         } else {
-                            console.log(texture._vf.url[0]);
                             this.object.setMeshTexture({ id: shape._objectID,
                                 origChannelCount: texture._vf.origChannelCount,
                                 repeatS: texture._vf.repeatS,
@@ -633,6 +631,8 @@ x3dom.gfx_flash = (function () {
                                 url: texture._vf.url[0],
                                 transform: texTrafo });
                         }
+                    } else {
+                        this.object.removeTexture({ id: shape._objectID });
                     }
                 }
                 shape._dirty.texture = false;
