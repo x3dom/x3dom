@@ -496,7 +496,10 @@ package x3dom
 			//rearrange infofield
 			_infoField.x = _stageWidth - _infoField.width - 10;
 			
-			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 8, true );
+			if (_context3D != null)
+			{
+				_context3D.configureBackBuffer( _stageWidth, _stageHeight, 8, true );
+			}
 		}
 		
 	}
