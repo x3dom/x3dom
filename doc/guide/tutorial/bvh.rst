@@ -53,7 +53,7 @@ elevationFormat       png, jpg, gif ...            png            Data format of
 textureFormat         png, jpg, gif ...            png            Data format of surface texture dataset
 normalFormat          png, jpg, gif ...            png            Data format of normal dataset
 mode                  2D, 3D, bin, bvh             3D             2D (planes), 3D (displaced y-coordinate of 2D-Planes), bin (binary files, WMTS), bvh (binary files, TREE)
-submode               WMTS, TREE                WMTS           utilized dataset (WMTS, TREE (currently only in 2D mode))
+submode               WMTS, TREE                   WMTS           utilized dataset (WMTS, TREE (currently only in 2D mode))
 ==================    =========================    ===========    =================================================
 
 
