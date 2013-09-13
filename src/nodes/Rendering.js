@@ -227,6 +227,7 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'colorPerVertex', true);
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+            this.addField_SFString(ctx, 'normalUpdateMode', 'fast');  // none; fast; nice
 
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 

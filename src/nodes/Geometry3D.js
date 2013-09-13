@@ -3076,7 +3076,8 @@ x3dom.registerNodeType(
                     if (texCoordNode._cf.texCoord.nodes.length)
                         texCoordNode = texCoordNode._cf.texCoord.nodes[0];
                 }
-                
+
+                // TODO; optimize this very slow and brute force code, at least for creaseAngle=0 case!
                 if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
@@ -3168,7 +3169,6 @@ x3dom.registerNodeType(
 						hasColor = false;
 					}
 					this._mesh._numColComponents = numColComponents;
-
 
 					var i, j, t, cnt, faceCnt;
 					var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
@@ -3525,13 +3525,22 @@ x3dom.registerNodeType(
 				else {
 					if (fieldName == "coord")
 					{
+                        var needNormals = !this._cf.normal.node && this._vf.normalUpdateMode.toLowerCase() != 'none';
+
 						this._mesh._positions[0] = pnts.toGL();
-						
+
+                        if (needNormals) {
+                            // position update usually also requires update of vertex normals
+                            this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+                        }
+
 						// tells the mesh that its bbox requires update
                         this.invalidateVolume();
 
 						Array.forEach(this._parentNodes, function (node) {					
 							node._dirty.positions = true;
+                            if (needNormals)
+                                node._dirty.normals = true;
                             node.invalidateVolume();
 						});
 					}
