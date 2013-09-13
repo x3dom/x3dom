@@ -140,21 +140,19 @@ x3dom.Mesh.prototype.doIntersect = function(line)
 x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 {
     if (ccw === undefined)
-      ccw = true;
-      
-    var i = 0, j = 0, num = 0;
-    var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
-    var coords = this._positions[0];
+        ccw = true;
+
+    var multInd = this._multiIndIndices && this._multiIndIndices.length;
     var idxs = multInd ? this._multiIndIndices : this._indices[0];
-    
+    var coords = this._positions[0];
+
     var vertNormals = [];
     var vertFaceNormals = [];
 
+    var i, j, m = coords.length;
     var a, b, n = null;
-    
-    //num = coords.length / 3;
-    num = (this._posSize !== undefined && this._posSize > coords.length) ? 
-           this._posSize / 3 : coords.length / 3;
+
+    var num = (this._posSize !== undefined && this._posSize > m) ? this._posSize / 3 : m / 3;
     num = 3 * ((num - Math.floor(num) > 0) ? Math.floor(num + 1) : num);
     
     for (i = 0; i < num; ++i) {
@@ -164,36 +162,41 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
     num = idxs.length;
         
     for (i = 0; i < num; i += 3) {
+        var ind_i0, ind_i1, ind_i2;
+        var t;
 
-        if (!multInd) {        
-            a = new x3dom.fields.SFVec3f(
-                    coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-                subtract(new x3dom.fields.SFVec3f(
-                    coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
-            b = new x3dom.fields.SFVec3f(
-                    coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-                subtract(new x3dom.fields.SFVec3f(
-                    coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+        if (!multInd) {
+            ind_i0 = idxs[i  ] * 3;
+            ind_i1 = idxs[i+1] * 3;
+            ind_i2 = idxs[i+2] * 3;
+
+            t = new x3dom.fields.SFVec3f(coords[ind_i1], coords[ind_i1+1], coords[ind_i1+2]);
+            a = new x3dom.fields.SFVec3f(coords[ind_i0], coords[ind_i0+1], coords[ind_i0+2]).subtract(t);
+            b = t.subtract(new x3dom.fields.SFVec3f(coords[ind_i2], coords[ind_i2+1], coords[ind_i2+2]));
+
+            // this is needed a few lines below
+            ind_i0 =  i    * 3;
+            ind_i1 = (i+1) * 3;
+            ind_i2 = (i+2) * 3;
         }
         else {
-            a = new x3dom.fields.SFVec3f(
-                        coords[i*3], coords[i*3+1], coords[i*3+2]).
-                    subtract(new x3dom.fields.SFVec3f(
-                        coords[(i+1)*3], coords[(i+1)*3+1], coords[(i+1)*3+2]));
-            b = new x3dom.fields.SFVec3f(
-                        coords[(i+1)*3], coords[(i+1)*3+1], coords[(i+1)*3+2]).
-                    subtract(new x3dom.fields.SFVec3f(
-                        coords[(i+2)*3], coords[(i+2)*3+1], coords[(i+2)*3+2]));
+            ind_i0 =  i    * 3;
+            ind_i1 = (i+1) * 3;
+            ind_i2 = (i+2) * 3;
+
+            t = new x3dom.fields.SFVec3f(coords[ind_i1], coords[ind_i1+1], coords[ind_i1+2]);
+            a = new x3dom.fields.SFVec3f(coords[ind_i0], coords[ind_i0+1], coords[ind_i0+2]).subtract(t);
+            b = t.subtract(new x3dom.fields.SFVec3f(coords[ind_i2], coords[ind_i2+1], coords[ind_i2+2]));
         }
         
         n = a.cross(b).normalize();
         if (!ccw)
-          n = n.negate();
-        
+            n = n.negate();
+
         if (creaseAngle <= x3dom.fields.Eps) {
-            vertNormals[i*3  ] = vertNormals[(i+1)*3  ] = vertNormals[(i+2)*3  ] = n.x;
-            vertNormals[i*3+1] = vertNormals[(i+1)*3+1] = vertNormals[(i+2)*3+1] = n.y;
-            vertNormals[i*3+2] = vertNormals[(i+1)*3+2] = vertNormals[(i+2)*3+2] = n.z;
+            vertNormals[ind_i0  ] = vertNormals[ind_i1  ] = vertNormals[ind_i2  ] = n.x;
+            vertNormals[ind_i0+1] = vertNormals[ind_i1+1] = vertNormals[ind_i2+1] = n.y;
+            vertNormals[ind_i0+2] = vertNormals[ind_i1+2] = vertNormals[ind_i2+2] = n.z;
         }
         else {
             vertFaceNormals[idxs[i  ]].push(n);
@@ -201,27 +204,29 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
             vertFaceNormals[idxs[i+2]].push(n);
         }
     }
-    
+
+    // TODO: allow generic creaseAngle
     if (creaseAngle > x3dom.fields.Eps) 
     {
-        for (i = 0; i < coords.length; i += 3) {
-            //TODO: generic creaseAngle
-            n = new x3dom.fields.SFVec3f(0, 0, 0);
-            
+        for (i = 0; i < m; i += 3) {
+            var iThird = i / 3;
+            var arr;
+
             if (!multInd) {
-                num = vertFaceNormals[i/3].length;
-                for (j = 0; j < num; ++j) {
-                    n = n.add(vertFaceNormals[i/3][j]);
-                }
+                arr = vertFaceNormals[iThird];
             }
             else {
-                num = vertFaceNormals[idxs[i/3]].length;
-                for (j = 0; j < num; ++j) {
-                    n = n.add(vertFaceNormals[idxs[i/3]][j]);
-                }
+                arr = vertFaceNormals[idxs[iThird]];
             }
+            num = arr.length;
 
+            n = new x3dom.fields.SFVec3f(0, 0, 0);
+
+            for (j = 0; j < num; ++j) {
+                n = n.add(arr[j]);
+            }
             n = n.normalize();
+
             vertNormals[i  ] = n.x;
             vertNormals[i+1] = n.y;
             vertNormals[i+2] = n.z;

@@ -2522,12 +2522,12 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
+            this.addField_SFBool(ctx, 'convex', true);
 
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'normalIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
-			this.addField_SFBool(ctx, 'convex', true);
         },
         {
             nodeChanged: function()
@@ -3061,7 +3061,8 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName != "coord" && fieldName != "normal" &&
-    				fieldName != "texCoord" && fieldName != "color")
+    				fieldName != "texCoord" && fieldName != "color" &&
+                    fieldName != "coordIndex")
     			{
     			    x3dom.debug.logWarning("IndexedFaceSet: fieldChanged for " +
     			                           fieldName + " not yet implemented!");
@@ -3579,6 +3580,41 @@ x3dom.registerNodeType(
 							node._dirty.texcoords = true;
 						});
 					}
+                    else if (fieldName == "coordIndex")
+                    {
+                        needNormals = !this._cf.normal.node && this._vf.normalUpdateMode.toLowerCase() != 'none';
+
+                        indexes = this._vf.coordIndex;
+                        t = 0;
+                        n = indexes.length;
+
+                        this._mesh._indices[0] = [];
+
+                        for (i = 0; i < n; ++i) {
+                            if (indexes[i] == -1) {
+                                t = 0;
+                            }
+                            else {
+                                switch (t) {
+                                    case 0: p0 = +indexes[i]; t = 1; break;
+                                    case 1: p1 = +indexes[i]; t = 2; break;
+                                    case 2: p2 = +indexes[i]; t = 3; this._mesh._indices[0].push(p0, p1, p2); break;
+                                    case 3: p1 = p2; p2 = +indexes[i]; this._mesh._indices[0].push(p0, p1, p2); break;
+                                }
+                            }
+                        }
+
+                        if (needNormals) {
+                            // index update usually also requires update of vertex normals
+                            this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+                        }
+
+                        Array.forEach(this._parentNodes, function (node) {
+                            node._dirty.indexes = true;
+                            if (needNormals)
+                                node._dirty.normals = true;
+                        });
+                    }
 				}
             }
         }
