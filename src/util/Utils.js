@@ -529,6 +529,25 @@ x3dom.Utils.boundaryModesDic = function(gl, mode)
 };
 
 /*****************************************************************************
+* Get GL depth function
+*****************************************************************************/
+x3dom.Utils.depthFunc = function(gl, func) 
+{
+	switch(func.toUpperCase())
+	{ 
+		case "NEVER":             return gl.NEVER;
+		case "ALWAYS":            return gl.ALWAYS;
+		case "LESS":              return gl.LESS;       
+		case "EQUAL":             return gl.EQUAL;
+		case "LEQUAL":            return gl.LEQUAL;
+        case "GREATER":           return gl.GREATER;
+        case "GEQUAL":            return gl.GEQUAL;
+        case "NOTEQUAL":          return gl.NOTEQUAL;
+		default:				  return "NONE";
+	}
+};
+
+/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.generateProperties = function (viewarea, shape) 

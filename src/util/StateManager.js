@@ -51,6 +51,7 @@ x3dom.StateManager.prototype.initStates = function ()
 
     //Initialize View and Clip states
     this.states['viewport'] = {x: null, y: null, width: null, height: null};
+    this.states['depthRange'] = {zNear: null, zFar: null};
 
     //TODO more states (e.g. stencil, texture, ...)
 };
@@ -238,10 +239,29 @@ x3dom.StateManager.prototype.blendFuncSeparate = function (srcRGB, dstRGB, srcAl
  */
 x3dom.StateManager.prototype.depthFunc = function (func)
 {
-    if (this.states['depthFunc'] != func)
+    if (this.states['depthFunc'] != func || func != 'none')
     {
         this.gl.depthFunc(func);
         this.states['depthFunc'] = func;
+    }
+};
+
+/*
+ * Specify the value used for depth buffer comparisons
+ */
+x3dom.StateManager.prototype.depthRange = function (zNear, zFar)
+{
+    zNear = (zNear < 0) ? 0 : (zNear > 1) ? 1 : zNear;
+    zFar = (zFar < 0) ? 0 : (zFar > 1) ? 1 : zFar;
+    
+    if (zNear <= zFar)
+    {
+        if (this.states['depthRange'].zNear != zNear || this.states['depthRange'].zFar != zFar)
+        {
+            this.gl.depthRange(zNear, zFar);
+            this.states['depthRange'].zNear = zNear;
+            this.states['depthRange'].zFar = zFar;
+        }
     }
 };
 

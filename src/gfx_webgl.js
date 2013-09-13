@@ -1906,6 +1906,39 @@ x3dom.gfx_webgl = (function () {
             sp['light' + numLights + '_CutOffAngle'] = 0.0;
             sp['light' + numLights + '_ShadowIntensity'] = 0.0;
         }
+        
+        
+        //===========================================================================
+        // Set DepthMode
+        //===========================================================================
+        var depthMode = s_app ? s_app._cf.depthMode.node : null;
+        if (depthMode)
+        {
+            if (depthMode._vf.enableDepthTest)
+            {
+                //Enable Depth Test
+                this.stateManager.enable(gl.DEPTH_TEST);
+                
+                //Set Depth Function
+                this.stateManager.depthFunc( x3dom.Utils.depthFunc(gl, depthMode._vf.depthFunc) );
+                
+                //Set Depth Mask
+                this.stateManager.depthMask(!depthMode._vf.readOnly);
+                
+                this.stateManager.depthRange(depthMode._vf.zNearRange, depthMode._vf.zFarRange);
+            }
+            else
+            {
+                //Disable Depth Test
+                this.stateManager.disable(gl.DEPTH_TEST);
+            }
+        } 
+        else //Set Defaults
+        {
+            this.stateManager.enable(gl.DEPTH_TEST);
+            this.stateManager.depthMask(true);
+            this.stateManager.depthFunc(gl.LEQUAL);
+        }
 
         // transformation matrices
         var model_view = mat_view.mult(transform);
@@ -3037,11 +3070,6 @@ x3dom.gfx_webgl = (function () {
                     needEnableBlending = true;
                     this.stateManager.disable(gl.BLEND);
                 }
-                if (shapeApp && shapeApp._cf.depthMode.node &&
-                    shapeApp._cf.depthMode.node._vf.readOnly === true) {
-                    needEnableDepthMask = true;
-                    this.stateManager.depthMask(false);
-                }
             }
 
             this.renderShape(drawable, viewarea, slights, numLights,
@@ -3052,9 +3080,8 @@ x3dom.gfx_webgl = (function () {
                 if (needEnableBlending) {
                     this.stateManager.enable(gl.BLEND);
                 }
-                if (needEnableDepthMask) {
-                    this.stateManager.depthMask(true);
-                }
+                
+                this.stateManager.depthMask(true);
             }
         }
 
@@ -3235,11 +3262,6 @@ x3dom.gfx_webgl = (function () {
                             needEnableBlending = true;
                             this.stateManager.disable(gl.BLEND);
                         }
-                        if (appearance._cf.depthMode.node &&
-                            appearance._cf.depthMode.node._vf.readOnly === true) {
-                            needEnableDepthMask = true;
-                            this.stateManager.depthMask(false);
-                        }
                     }
 
                     this.renderShape(drawable, viewarea, slights, numLights,
@@ -3248,9 +3270,7 @@ x3dom.gfx_webgl = (function () {
                     if (needEnableBlending) {
                         this.stateManager.enable(gl.BLEND);
                     }
-                    if (needEnableDepthMask) {
-                        this.stateManager.depthMask(true);
-                    }
+                    this.stateManager.depthMask(true);
                 }
             }
         }
@@ -3304,11 +3324,6 @@ x3dom.gfx_webgl = (function () {
                             needEnableBlending = true;
                             this.stateManager.disable(gl.BLEND);
                         }
-                        if (appearance._cf.depthMode.node &&
-                            appearance._cf.depthMode.node._vf.readOnly === true) {
-                            needEnableDepthMask = true;
-                            this.stateManager.depthMask(false);
-                        }
                     }
 
                     this.renderShape(drawable, viewarea, slights, numLights,
@@ -3317,9 +3332,7 @@ x3dom.gfx_webgl = (function () {
                     if (needEnableBlending) {
                         this.stateManager.enable(gl.BLEND);
                     }
-                    if (needEnableDepthMask) {
-                        this.stateManager.depthMask(true);
-                    }
+                    this.stateManager.depthMask(true);
                 }
             }
         }
