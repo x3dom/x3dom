@@ -181,7 +181,7 @@ x3dom.StateManager.prototype.blendColor = function (red, green, blue, alpha)
  */
 x3dom.StateManager.prototype.blendEquation = function (mode)
 {
-    if (this.states['blendEquation'] != mode)
+    if (this.states['blendEquation'] != mode || mode != "none")
     {
         this.gl.blendEquation(mode);
         this.states['blendEquation'] = mode;

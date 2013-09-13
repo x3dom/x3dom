@@ -548,6 +548,49 @@ x3dom.Utils.depthFunc = function(gl, func)
 };
 
 /*****************************************************************************
+ * Get GL blend function
+ *****************************************************************************/
+x3dom.Utils.depthFunc = function(gl, func)
+{
+    switch(func.toLowerCase())
+    {
+        case "zero":                        return gl.ZERO;
+        case "one":                         return gl.ONE;
+        case "dst_color":                   return gl.DST_COLOR;
+        case "dst_alpha":                   return gl.DST_ALPHA;
+        case "src_color":                   return gl.SRC_COLOR;
+        case "src_alpha":                   return gl.SRC_ALPHA;
+        case "one_minus_dst_color":         return gl.ONE_MINUS_DST_COLOR;
+        case "one_minus_dst_alpha":         return gl.ONE_MINUS_DST_ALPHA;
+        case "one_minus_src_color":         return gl.ONE_MINUS_SRC_COLOR;
+        case "one_minus_src_alpha":         return gl.ONE_MINUS_SRC_ALPHA;
+        case "src_alpha_saturate":          return gl.SRC_ALPHA_SATURATE;
+        case "constant_color":              return gl.CONSTANT_COLOR;
+        case "constant_alpha":              return gl.CONSTANT_ALPHA;
+        case "one_minus_constant_color":    return gl.ONE_MINUS_CONSTANT_COLOR;
+        case "one_minus_constant_alpha":    return gl.ONE_MINUS_CONSTANT_ALPHA;
+        default:				            return "none";
+    }
+};
+
+/*****************************************************************************
+ * Get GL blend equations
+ *****************************************************************************/
+x3dom.Utils.depthEquation = function(gl, func)
+{
+    switch(func.toLowerCase())
+    {
+        case "func_add":                return gl.FUNC_ADD;
+        case "func_subtract":           return gl.FUNC_SUBTRACT;
+        case "func_reverse_subtract":   return gl.FUNC_REVERSE_SUBTRACT;
+        case "min":                     return "none";  //Not supported yet
+        case "max":                     return "none";  //Not supported yet
+        case "logic_op":                return "none";  //Not supported yet
+        default:				        return "none";
+    }
+};
+
+/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.generateProperties = function (viewarea, shape) 

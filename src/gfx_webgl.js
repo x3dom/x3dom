@@ -1940,6 +1940,45 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.depthFunc(gl.LEQUAL);
         }
 
+        //===========================================================================
+        // Set BlendMode
+        //===========================================================================
+        var blendMode = s_app ? s_app._cf.blendMode.node : null;
+        if (blendMode)
+        {
+            if(blendMode._vf.srcFactor.toLowerCase() !== "none" && blendMode._vf.destFactor.toLowerCase() !== "none")
+            {
+                //Enable Blending
+                this.stateManager.enable(gl.BLEND);
+
+                //Set Blend Function
+                this.stateManager.blendFuncSeparate(x3dom.Utils.blendFunc(gl, blendMode._vf.srcFactor),
+                                                    x3dom.Utils.blendFunc(gl, blendMode._vf.dstFactor),
+                                                    gl.ONE,
+                                                    gl.ONE);
+
+                //Set Blend Color
+                this.stateManager.blendColor(blendMode._vf.color.r,
+                                             blendMode._vf.color.g,
+                                             blendMode._vf.color.b,
+                                             1.0 - blendMode._vf.colorTransparency);
+
+                //Set Blend Equation
+                this.stateManager.blendEquation(x3dom.Utils.blendEquation(gl, blendMode._vf.equation));
+            }
+            else
+            {
+                this.stateManager.disable(gl.BLEND);
+            }
+        }
+        else //Set Defaults
+        {
+            this.stateManager.enable(gl.BLEND);
+            this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+            this.stateManager.blendColor(1, 1, 1, 1);
+            this.stateManager.blendEquation(gl.FUNC_ADD);
+        }
+
         // transformation matrices
         var model_view = mat_view.mult(transform);
         var model_view_inv = model_view.inverse();
@@ -3058,31 +3097,12 @@ x3dom.gfx_webgl = (function () {
         for (i = 0; i < n; i++) {
             var drawable = scene.drawableCollection.get(i);
 
-            var needEnableBlending = false;
-            var needEnableDepthMask = false;
-            var shapeApp = drawable.shape._cf.appearance.node;
-
-            // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
-            {
-                if (shapeApp && shapeApp._cf.blendMode.node &&
-                    shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                    shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
-                    needEnableBlending = true;
-                    this.stateManager.disable(gl.BLEND);
-                }
-            }
-
             this.renderShape(drawable, viewarea, slights, numLights,
                 mat_view, mat_scene, mat_light, mat_proj, gl);
 
-            // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
-            {
-                if (needEnableBlending) {
-                    this.stateManager.enable(gl.BLEND);
-                }
-                
-                this.stateManager.depthMask(true);
-            }
+
+                //this.stateManager.enable(gl.BLEND);
+                //this.stateManager.depthMask(true);
         }
 
         if (shadowCount > 0)
@@ -3231,8 +3251,6 @@ x3dom.gfx_webgl = (function () {
         var transform, shape, drawable;
         var locScene = rt._cf.scene.node;
 
-        var needEnableBlending, needEnableDepthMask;
-
         if (!locScene || locScene === scene) {
             n = scene.drawableCollection.length;
 
@@ -3249,28 +3267,12 @@ x3dom.gfx_webgl = (function () {
                         continue;
                     }
 
-                    needEnableBlending = false;
-                    needEnableDepthMask = false;
-
-                    // HACK; fully impl. BlendMode and DepthMode
-                    if (shape._cf.appearance.node) {
-                        var appearance = shape._cf.appearance.node;
-
-                        if (appearance._cf.blendMode.node &&
-                            appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                            appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
-                            needEnableBlending = true;
-                            this.stateManager.disable(gl.BLEND);
-                        }
-                    }
-
                     this.renderShape(drawable, viewarea, slights, numLights,
                         mat_view, mat_scene, mat_light, mat_proj, gl);
 
-                    if (needEnableBlending) {
-                        this.stateManager.enable(gl.BLEND);
-                    }
-                    this.stateManager.depthMask(true);
+
+                    //this.stateManager.enable(gl.BLEND);
+                    //this.stateManager.depthMask(true);
                 }
             }
         }
@@ -3311,28 +3313,11 @@ x3dom.gfx_webgl = (function () {
                         continue;
                     }
 
-                    needEnableBlending = false;
-                    needEnableDepthMask = false;
-
-                    // HACK; fully impl. BlendMode and DepthMode
-                    if (shape._cf.appearance.node) {
-                        appearance = shape._cf.appearance.node;
-
-                        if (appearance._cf.blendMode.node &&
-                            appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                            appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
-                            needEnableBlending = true;
-                            this.stateManager.disable(gl.BLEND);
-                        }
-                    }
-
                     this.renderShape(drawable, viewarea, slights, numLights,
                         mat_view, mat_scene, mat_light, mat_proj, gl);
 
-                    if (needEnableBlending) {
-                        this.stateManager.enable(gl.BLEND);
-                    }
-                    this.stateManager.depthMask(true);
+                    //this.stateManager.enable(gl.BLEND);
+                    //this.stateManager.depthMask(true);
                 }
             }
         }
