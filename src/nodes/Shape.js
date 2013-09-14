@@ -31,6 +31,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
             this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
+            this.addField_SFNode('lineProperties', x3dom.nodeTypes.LineProperties);
+            this.addField_SFNode('colorMaskMode', x3dom.nodeTypes.ColorMaskMode);
             this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
             this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
@@ -147,6 +149,40 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### ColorMaskMode ### */
+x3dom.registerNodeType(
+    "ColorMaskMode",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.ColorMaskMode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'maskR', true);
+            this.addField_SFBool(ctx, 'maskG', true);
+            this.addField_SFBool(ctx, 'maskB', true);
+            this.addField_SFBool(ctx, 'maskA', true);
+        }
+    )
+);
+
+/* ### LineProperties ### */
+x3dom.registerNodeType(
+    "LineProperties",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.LineProperties.superClass.call(this, ctx);
+
+            // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/shape.html#LineProperties
+            // THINKABOUTME: to my mind, the only useful, but missing, field is linewidth (scaleFactor is overhead)
+            this.addField_SFBool(ctx, 'applied', true);
+            this.addField_SFInt32(ctx, 'linetype', 1);
+            this.addField_SFFloat(ctx, 'linewidthScaleFactor', 0);
+        }
+    )
+);
+
+
 /* ### X3DMaterialNode ### */
 x3dom.registerNodeType(
     "X3DMaterialNode",
@@ -154,6 +190,13 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'ambientIntensity', 0.2);
+            this.addField_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
+            this.addField_SFColor(ctx, 'emissiveColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'shininess', 0.2);
+            this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'transparency', 0);
         }
     )
 );
@@ -165,13 +208,6 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMaterialNode,
         function (ctx) {
             x3dom.nodeTypes.Material.superClass.call(this, ctx);
-
-            this.addField_SFFloat(ctx, 'ambientIntensity', 0.2);
-            this.addField_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
-            this.addField_SFColor(ctx, 'emissiveColor', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'shininess', 0.2);
-            this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'transparency', 0);
         },
 		{
 			fieldChanged: function(fieldName) {
@@ -197,6 +233,44 @@ x3dom.nodeTypes.Material.defaultNode = function() {
     }
     return x3dom.nodeTypes.Material._defaultNode;
 };
+
+/* ### TwoSidedMaterial ### */
+x3dom.registerNodeType(
+    "TwoSidedMaterial",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DMaterialNode,
+        function (ctx) {
+            x3dom.nodeTypes.TwoSidedMaterial.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'backAmbientIntensity', 0.2);
+            this.addField_SFColor(ctx, 'backDiffuseColor', 0.8, 0.8, 0.8);
+            this.addField_SFColor(ctx, 'backEmissiveColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'backShininess', 0.2);
+            this.addField_SFColor(ctx, 'backSpecularColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'backTransparency', 0);
+            this.addField_SFBool(ctx, 'separateBackColor', false);
+        },
+        {
+            fieldChanged: function(fieldName) {
+                if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
+                    fieldName == "emissiveColor" || fieldName == "shininess" ||
+                    fieldName == "specularColor" || fieldName == "transparency" ||
+                    fieldName == "backAmbientIntensity" || fieldName == "backDiffuseColor" ||
+                    fieldName == "backEmissiveColor" || fieldName == "backShininess" ||
+                    fieldName == "backSpecularColor" || fieldName == "backTransparency" ||
+                    fieldName == "separateBackColor")
+                {
+                    Array.forEach(this._parentNodes, function (app) {
+                        Array.forEach(app._parentNodes, function (shape) {
+                            shape._dirty.material = true;
+                        });
+                    });
+                }
+            }
+        }
+    )
+);
+
 
 /* ### X3DShapeNode ### */
 x3dom.registerNodeType(
