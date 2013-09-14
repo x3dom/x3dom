@@ -2722,8 +2722,8 @@ x3dom.registerNodeType(
 									else if (colPerVert) { c2 = p2; }
 									else { c2 = faceCnt; }
 									t = 3;
-	
-									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+
+									//this._mesh._indices[0].push(cnt++, cnt++, cnt++);
 	
 									this._mesh._positions[0].push(positions[p0].x);
 									this._mesh._positions[0].push(positions[p0].y);
@@ -2746,10 +2746,10 @@ x3dom.registerNodeType(
 										this._mesh._normals[0].push(normals[n2].y);
 										this._mesh._normals[0].push(normals[n2].z);
 									}
-									else {
+									//else {
 										this._mesh._multiIndIndices.push(p0, p1, p2);
 										//this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
-									}
+									//}
 	
 									if (hasColor) {
 										this._mesh._colors[0].push(colors[c0].r);
@@ -2828,8 +2828,8 @@ x3dom.registerNodeType(
 									} else {
 										c2 = faceCnt;
 									}
-	
-									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+
+									//this._mesh._indices[0].push(cnt++, cnt++, cnt++);
 	
 									this._mesh._positions[0].push(positions[p0].x);
 									this._mesh._positions[0].push(positions[p0].y);
@@ -2852,10 +2852,10 @@ x3dom.registerNodeType(
 										this._mesh._normals[0].push(normals[n2].y);
 										this._mesh._normals[0].push(normals[n2].z);
 									}
-									else {
+									//else {
 										this._mesh._multiIndIndices.push(p0, p1, p2);
 										//this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
-									}
+									//}
 	
 									if (hasColor) {
 										this._mesh._colors[0].push(colors[c0].r);
@@ -2913,7 +2913,7 @@ x3dom.registerNodeType(
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
 								for (j = 0; j < multi_index_data.indices.length; j++)
-								{	
+								{
 									this._mesh._indices[0].push(cnt);
 									cnt++;
 									
@@ -2978,7 +2978,9 @@ x3dom.registerNodeType(
 							
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(
 							    positions[indexes[i]], indexes[i], data.normals, data.colors, data.texCoords));						
-						}		
+						}
+
+                        this._mesh.splitMesh();
 					}
 					
 					if (!hasNormal) {
@@ -2987,8 +2989,9 @@ x3dom.registerNodeType(
 					if (!hasTexCoord) {
 						this._mesh.calcTexCoords(texMode);
 					}
-	
-					this._mesh.splitMesh();
+
+                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                    this._mesh._numFaces = this._mesh._numCoords / 3;
                 } // if isMulti
                 else
                 {
@@ -3048,10 +3051,13 @@ x3dom.registerNodeType(
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
+
+                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 }
 
                 this.invalidateVolume();
-                this._mesh._numFaces = 0;
+                /*this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
                 for (i=0; i<this._mesh._indices.length; i++) {
                     this._mesh._numFaces += this._mesh._indices[i].length / 3;
@@ -3060,6 +3066,7 @@ x3dom.registerNodeType(
 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
+                */
             },
 
             fieldChanged: function(fieldName)
@@ -3088,11 +3095,61 @@ x3dom.registerNodeType(
                     (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
-					this._mesh._positions[0] = [];
-					this._mesh._indices[0] =[];
-					this._mesh._normals[0] = [];
-					this._mesh._texCoords[0] =[];
-					this._mesh._colors[0] = [];
+                    var needNormals = !this._cf.normal.node && this._vf.normalUpdateMode.toLowerCase() != 'none';
+
+                    n = this._mesh._multiIndIndices.length;
+
+                    this._mesh._positions[0] = [];
+                    this._mesh._indices[0] =[];
+
+                    // special coordinate interpolator handler
+                    if (fieldName == "coord" && n)
+                    {
+                        if (needNormals) {
+                            this._mesh._normals[0] = [];
+                        }
+
+                        for (i=0; i<n; i+=3) {
+                            var ind0 = this._mesh._multiIndIndices[i  ];
+                            var ind1 = this._mesh._multiIndIndices[i+1];
+                            var ind2 = this._mesh._multiIndIndices[i+2];
+
+                            var pos0 = pnts[ind0];
+                            var pos1 = pnts[ind1];
+                            var pos2 = pnts[ind2];
+
+                            this._mesh._positions[0].push(pos0.x, pos0.y, pos0.z);
+                            this._mesh._positions[0].push(pos1.x, pos1.y, pos1.z);
+                            this._mesh._positions[0].push(pos2.x, pos2.y, pos2.z);
+
+                            if (needNormals) {
+                                var a = pos0.subtract(pos1);
+                                var b = pos1.subtract(pos2);
+
+                                var norm = a.cross(b).normalize();
+                                if (!this._vf.ccw)
+                                    norm = norm.negate();
+
+                                this._mesh._normals[0].push(norm.x, norm.y, norm.z);
+                                this._mesh._normals[0].push(norm.x, norm.y, norm.z);
+                                this._mesh._normals[0].push(norm.x, norm.y, norm.z);
+                            }
+                        }
+
+                        this.invalidateVolume();
+
+                        Array.forEach(this._parentNodes, function (node) {
+                            node._dirty.positions = true;
+                            if (needNormals)
+                                node._dirty.normals = true;
+                        });
+
+                        return;
+                    }
+
+                    this._mesh._normals[0] = [];
+                    this._mesh._texCoords[0] =[];
+                    this._mesh._colors[0] = [];
 					
 					var indexes = this._vf.coordIndex;
 					var normalInd = this._vf.normalIndex;
@@ -3250,7 +3307,7 @@ x3dom.registerNodeType(
 									else { c2 = faceCnt; }
 									t = 3;
 
-									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+									//this._mesh._indices[0].push(cnt++, cnt++, cnt++);
 
 									this._mesh._positions[0].push(positions[p0].x);
 									this._mesh._positions[0].push(positions[p0].y);
@@ -3273,9 +3330,9 @@ x3dom.registerNodeType(
 										this._mesh._normals[0].push(normals[n2].y);
 										this._mesh._normals[0].push(normals[n2].z);
 									}
-									else {
+									//else {
 										this._mesh._multiIndIndices.push(p0, p1, p2);
-									}
+									//}
 
 									if (hasColor) {
 										this._mesh._colors[0].push(colors[c0].r);
@@ -3355,7 +3412,7 @@ x3dom.registerNodeType(
 										c2 = faceCnt;
 									}
 
-									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+									//this._mesh._indices[0].push(cnt++, cnt++, cnt++);
 
 									this._mesh._positions[0].push(positions[p0].x);
 									this._mesh._positions[0].push(positions[p0].y);
@@ -3378,10 +3435,9 @@ x3dom.registerNodeType(
 										this._mesh._normals[0].push(normals[n2].y);
 										this._mesh._normals[0].push(normals[n2].z);
 									}
-									else {
+									//else {
 										this._mesh._multiIndIndices.push(p0, p1, p2);
-										//this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
-									}
+									//}
 
 									if (hasColor) {
 										this._mesh._colors[0].push(colors[c0].r);
@@ -3502,7 +3558,9 @@ x3dom.registerNodeType(
 							
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(
 								positions[indexes[i]], indexes[i], data.normals, data.colors, data.texCoords));						
-						}		
+						}
+
+                        this._mesh.splitMesh();
 					}
 
 					if (!hasNormal) {
@@ -3512,20 +3570,23 @@ x3dom.registerNodeType(
 						this._mesh.calcTexCoords(texMode);
 					}
 
-					this._mesh.splitMesh();
-
                     this.invalidateVolume();
-					this._mesh._numFaces = 0;
+
+                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                    this._mesh._numFaces = this._mesh._numCoords / 3;
+
+					/*this._mesh._numFaces = 0;
 					this._mesh._numCoords = 0;
 					
 					for (i=0; i<this._mesh._indices.length; i++) {
 						this._mesh._numFaces += this._mesh._indices[i].length / 3;
 						this._mesh._numCoords += this._mesh._positions[i].length / 3;
 					}
+					*/
 	
 					Array.forEach(this._parentNodes, function (node) {
 						node.setGeoDirty();
-					});	 
+					});
                 }
 				else {
 					if (fieldName == "coord")

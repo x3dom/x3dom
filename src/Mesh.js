@@ -233,10 +233,6 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
         }
     }
     
-    if (multInd) {
-        this._multiIndIndices = [];
-    }
-    
     this._normals[0] = vertNormals;
 };
 

@@ -1275,8 +1275,9 @@ x3dom.gfx_webgl = (function () {
                     this.stateManager.disable(gl.CULL_FACE);
                 }
 
-                if (s_gl.indexes && s_gl.indexes[q5]) {
-                    if (s_gl.imageGeometry != 0 || s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
+                if (s_gl.indexes && s_gl.indexes[q]) {
+                    if (s_gl.imageGeometry != 0 ||
+                        s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
                         if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false) {
                             var totalVertexCount = 0;
                             for (v = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
@@ -1310,8 +1311,11 @@ x3dom.gfx_webgl = (function () {
                             gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
                     }
+                    else if (s_gl.indexes[q].length == 0) {
+                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
+                    }
                     else {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q5].length, gl.UNSIGNED_SHORT, 0);
+                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                     }
                 }
 
@@ -1532,10 +1536,7 @@ x3dom.gfx_webgl = (function () {
                     this.stateManager.disable(gl.CULL_FACE);
                 }
 
-                if (s_gl.primType == gl.POINTS && (typeof s_gl.primType).toString() != "object") {
-                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q].length / 3);
-                }
-                else if (s_gl.indexes && s_gl.indexes[q]) {
+                if (s_gl.indexes && s_gl.indexes[q]) {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
                         if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false) {
@@ -1570,6 +1571,9 @@ x3dom.gfx_webgl = (function () {
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
                             gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
+                    }
+                    else if (s_gl.indexes[q].length == 0) {
+                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
                         gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
@@ -2088,10 +2092,7 @@ x3dom.gfx_webgl = (function () {
                 }
             }
             else if (sp.position !== undefined && s_gl.buffers[q5 + 1]) {
-                if (s_gl.primType == gl.POINTS && (typeof s_gl.primType).toString() != "object") {
-                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q].length / 3);
-                }
-                else if (s_gl.indexes && s_gl.indexes[q]) {
+                if (s_gl.indexes && s_gl.indexes[q]) {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
                         if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false) {
@@ -2126,6 +2127,9 @@ x3dom.gfx_webgl = (function () {
                         for (i = 0, i_n = indOff.length; i < i_n; i++) {
                             gl.drawElements(s_gl.primType, indOff[i].count, gl.UNSIGNED_SHORT, indOff[i].offset);
                         }
+                    }
+                    else if (s_gl.indexes[q].length == 0) {
+                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
                         gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
@@ -3468,6 +3472,9 @@ x3dom.gfx_webgl = (function () {
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
                             gl.drawElements(s_gl.primType, indOff[v].count, gl.UNSIGNED_SHORT, indOff[v].offset);
                         }
+                    }
+                    else if (s_gl.indexes[q].length == 0) {
+                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
                         gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
