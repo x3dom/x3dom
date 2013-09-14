@@ -100,7 +100,7 @@ x3dom.StateManager.prototype.colorMask = function (red, green, blue, alpha)
     if (this.states['colorMask'].red != red ||
         this.states['colorMask'].green != green ||
         this.states['colorMask'].blue != blue ||
-        this.states['colorMask'].alpha != alphal)
+        this.states['colorMask'].alpha != alpha)
     {
         this.gl.colorMask(red, green, blue, alpha);
         this.states['colorMask'].red = red;
@@ -181,7 +181,7 @@ x3dom.StateManager.prototype.blendColor = function (red, green, blue, alpha)
  */
 x3dom.StateManager.prototype.blendEquation = function (mode)
 {
-    if (this.states['blendEquation'] != mode || mode != "none")
+    if (mode && this.states['blendEquation'] != mode)
     {
         this.gl.blendEquation(mode);
         this.states['blendEquation'] = mode;
@@ -239,7 +239,7 @@ x3dom.StateManager.prototype.blendFuncSeparate = function (srcRGB, dstRGB, srcAl
  */
 x3dom.StateManager.prototype.depthFunc = function (func)
 {
-    if (this.states['depthFunc'] != func || func != 'none')
+    if (this.states['depthFunc'] != func)
     {
         this.gl.depthFunc(func);
         this.states['depthFunc'] = func;
@@ -251,17 +251,19 @@ x3dom.StateManager.prototype.depthFunc = function (func)
  */
 x3dom.StateManager.prototype.depthRange = function (zNear, zFar)
 {
-    zNear = (zNear < 0) ? 0 : (zNear > 1) ? 1 : zNear;
-    zFar = (zFar < 0) ? 0 : (zFar > 1) ? 1 : zFar;
-    
-    if (zNear <= zFar)
+    if (zNear < 0 || zFar < 0 || zNear > zFar)
     {
-        if (this.states['depthRange'].zNear != zNear || this.states['depthRange'].zFar != zFar)
-        {
-            this.gl.depthRange(zNear, zFar);
-            this.states['depthRange'].zNear = zNear;
-            this.states['depthRange'].zFar = zFar;
-        }
+        return;   // do noting and leave default values
+    }
+
+    zNear = (zNear > 1) ? 1 : zNear;
+    zFar  = (zFar  > 1) ? 1 : zFar;
+
+    if (this.states['depthRange'].zNear != zNear || this.states['depthRange'].zFar != zFar)
+    {
+        this.gl.depthRange(zNear, zFar);
+        this.states['depthRange'].zNear = zNear;
+        this.states['depthRange'].zFar = zFar;
     }
 };
 

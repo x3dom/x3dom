@@ -73,7 +73,6 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	image.src = src;
 	
 	image.onload = function() {
-
         if (scale)
 		    image = x3dom.Utils.scaleImage( image );
 		
@@ -113,7 +112,7 @@ x3dom.Utils.generateNonIndexedTriangleData = function(indices, positions, normal
     //@todo: add support for RGBA colors and 3D texture coordinates
     //@todo: if there is any need for that, add multi-index support
 
-    for (i = 0; i < indices.length; i+=3) {
+    for (var i = 0; i < indices.length; i+=3) {
         var i0 = indices[i  ],
             i1 = indices[i+1],
             i2 = indices[i+2];
@@ -209,7 +208,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		
-		image.onload = function(texture, face, image, swap) {
+		image.onload = (function(texture, face, image, swap) {
 			return function() {
 				if (width == 0 && height == 0) {
 					width = image.width;
@@ -234,7 +233,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 					doc.needRender = true;
 				}
 			};
-		}( texture, face, image, bgnd );
+		})( texture, face, image, bgnd );
 
 		image.onerror = function()
 		{
@@ -543,14 +542,14 @@ x3dom.Utils.depthFunc = function(gl, func)
         case "GREATER":           return gl.GREATER;
         case "GEQUAL":            return gl.GEQUAL;
         case "NOTEQUAL":          return gl.NOTEQUAL;
-		default:				  return "NONE";
+		default:				  return gl.LEQUAL;
 	}
 };
 
 /*****************************************************************************
  * Get GL blend function
  *****************************************************************************/
-x3dom.Utils.depthFunc = function(gl, func)
+x3dom.Utils.blendFunc = function(gl, func)
 {
     switch(func.toLowerCase())
     {
@@ -569,24 +568,24 @@ x3dom.Utils.depthFunc = function(gl, func)
         case "constant_alpha":              return gl.CONSTANT_ALPHA;
         case "one_minus_constant_color":    return gl.ONE_MINUS_CONSTANT_COLOR;
         case "one_minus_constant_alpha":    return gl.ONE_MINUS_CONSTANT_ALPHA;
-        default:				            return "none";
+        default:				            return 0;
     }
 };
 
 /*****************************************************************************
  * Get GL blend equations
  *****************************************************************************/
-x3dom.Utils.depthEquation = function(gl, func)
+x3dom.Utils.blendEquation = function(gl, func)
 {
     switch(func.toLowerCase())
     {
         case "func_add":                return gl.FUNC_ADD;
         case "func_subtract":           return gl.FUNC_SUBTRACT;
         case "func_reverse_subtract":   return gl.FUNC_REVERSE_SUBTRACT;
-        case "min":                     return "none";  //Not supported yet
-        case "max":                     return "none";  //Not supported yet
-        case "logic_op":                return "none";  //Not supported yet
-        default:				        return "none";
+        case "min":                     return 0;  //Not supported yet
+        case "max":                     return 0;  //Not supported yet
+        case "logic_op":                return 0;  //Not supported yet
+        default:				        return 0;
     }
 };
 

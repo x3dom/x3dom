@@ -1918,13 +1918,14 @@ x3dom.gfx_webgl = (function () {
             {
                 //Enable Depth Test
                 this.stateManager.enable(gl.DEPTH_TEST);
-                
-                //Set Depth Function
-                this.stateManager.depthFunc( x3dom.Utils.depthFunc(gl, depthMode._vf.depthFunc) );
-                
+
                 //Set Depth Mask
                 this.stateManager.depthMask(!depthMode._vf.readOnly);
                 
+                //Set Depth Function
+                this.stateManager.depthFunc(x3dom.Utils.depthFunc(gl, depthMode._vf.depthFunc));
+
+                //Set Depth Range
                 this.stateManager.depthRange(depthMode._vf.zNearRange, depthMode._vf.zFarRange);
             }
             else
@@ -1946,16 +1947,16 @@ x3dom.gfx_webgl = (function () {
         var blendMode = s_app ? s_app._cf.blendMode.node : null;
         if (blendMode)
         {
-            if(blendMode._vf.srcFactor.toLowerCase() !== "none" && blendMode._vf.destFactor.toLowerCase() !== "none")
+            var srcFactor  = x3dom.Utils.blendFunc(gl, blendMode._vf.srcFactor);
+            var destFactor = x3dom.Utils.blendFunc(gl, blendMode._vf.destFactor);
+
+            if (srcFactor && destFactor)
             {
                 //Enable Blending
                 this.stateManager.enable(gl.BLEND);
 
                 //Set Blend Function
-                this.stateManager.blendFuncSeparate(x3dom.Utils.blendFunc(gl, blendMode._vf.srcFactor),
-                                                    x3dom.Utils.blendFunc(gl, blendMode._vf.dstFactor),
-                                                    gl.ONE,
-                                                    gl.ONE);
+                this.stateManager.blendFuncSeparate(srcFactor, destFactor, gl.ONE, gl.ONE);
 
                 //Set Blend Color
                 this.stateManager.blendColor(blendMode._vf.color.r,
@@ -1975,9 +1976,22 @@ x3dom.gfx_webgl = (function () {
         {
             this.stateManager.enable(gl.BLEND);
             this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
-            this.stateManager.blendColor(1, 1, 1, 1);
-            this.stateManager.blendEquation(gl.FUNC_ADD);
         }
+
+        if (shape.isSolid()) {
+            this.stateManager.enable(gl.CULL_FACE);
+
+            if (shape.isCCW()) {
+                this.stateManager.frontFace(gl.CCW);
+            }
+            else {
+                this.stateManager.frontFace(gl.CW);
+            }
+        }
+        else {
+            this.stateManager.disable(gl.CULL_FACE);
+        }
+
 
         // transformation matrices
         var model_view = mat_view.mult(transform);
@@ -2012,7 +2026,7 @@ x3dom.gfx_webgl = (function () {
                 gl.generateMipmap(tex.type);
             }
 
-            if (!shader || shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
+            if (!shader || !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
                 if (!sp[tex.samplerName])
                     sp[tex.samplerName] = cnt;
             }
@@ -2023,19 +2037,6 @@ x3dom.gfx_webgl = (function () {
             sp.texTrafoMatrix = texTrafo.toGL();
         }
 
-        if (shape.isSolid()) {
-            this.stateManager.enable(gl.CULL_FACE);
-
-            if (shape.isCCW()) {
-                this.stateManager.frontFace(gl.CCW);
-            }
-            else {
-                this.stateManager.frontFace(gl.CW);
-            }
-        }
-        else {
-            this.stateManager.disable(gl.CULL_FACE);
-        }
 
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
         var attrib = null;
@@ -2092,7 +2093,7 @@ x3dom.gfx_webgl = (function () {
                     shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.color);
             }
-            if (s_gl.popGeometry !== 0 && s_gl.buffers[q5 + 5]) {
+            if (s_gl.popGeometry != 0 && s_gl.buffers[q5 + 5]) {
                 //special case: mimic gl_VertexID
                 gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 5]);
 
@@ -2180,7 +2181,7 @@ x3dom.gfx_webgl = (function () {
             if (sp.color !== undefined) {
                 gl.disableVertexAttribArray(sp.color);
             }
-            if (s_gl.popGeometry !== 0 && sp.PG_vertexID !== undefined) {
+            if (s_gl.popGeometry != 0 && sp.PG_vertexID !== undefined) {
                 //special case: mimic gl_VertexID
                 gl.disableVertexAttribArray(sp.PG_vertexID);
             }
@@ -2231,7 +2232,22 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        // cleanup
+        // set back all default values of possibly user defined render states
+        if (depthMode) {
+            this.stateManager.enable(gl.DEPTH_TEST);
+            this.stateManager.depthMask(true);
+            this.stateManager.depthFunc(gl.LEQUAL);
+            this.stateManager.depthRange(0, 1);
+        }
+
+        if (blendMode) {
+            this.stateManager.enable(gl.BLEND);
+            this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+            this.stateManager.blendColor(1, 1, 1, 1);
+            this.stateManager.blendEquation(gl.FUNC_ADD);
+        }
+
+        // cleanup textures
         var s_gl_tex = s_gl.texture;
         cnt_n = s_gl_tex ? s_gl_tex.length : 0;
 
@@ -3071,16 +3087,6 @@ x3dom.gfx_webgl = (function () {
         // calls gl.clear etc. (bgnd stuff)
         bgnd._webgl.render(gl, mat_view, mat_proj);
 
-        // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
-        this.stateManager.depthMask(true);
-        this.stateManager.depthFunc(gl.LEQUAL);
-        this.stateManager.enable(gl.DEPTH_TEST);
-        this.stateManager.enable(gl.CULL_FACE);
-
-        //this.stateManager.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
-        this.stateManager.enable(gl.BLEND);
-
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris = 0;
 
@@ -3097,12 +3103,7 @@ x3dom.gfx_webgl = (function () {
         for (i = 0; i < n; i++) {
             var drawable = scene.drawableCollection.get(i);
 
-            this.renderShape(drawable, viewarea, slights, numLights,
-                mat_view, mat_scene, mat_light, mat_proj, gl);
-
-
-                //this.stateManager.enable(gl.BLEND);
-                //this.stateManager.depthMask(true);
+            this.renderShape(drawable, viewarea, slights, numLights, mat_view, mat_scene, mat_light, mat_proj, gl);
         }
 
         if (shadowCount > 0)
@@ -3260,19 +3261,9 @@ x3dom.gfx_webgl = (function () {
             else {
                 for (i = 0; i < n; i++) {
                     drawable = scene.drawableCollection.get(i);
-                    transform = drawable.transform;
-                    shape = drawable.shape;
-
-                    if (!shape._vf.render) {
-                        continue;
-                    }
 
                     this.renderShape(drawable, viewarea, slights, numLights,
-                        mat_view, mat_scene, mat_light, mat_proj, gl);
-
-
-                    //this.stateManager.enable(gl.BLEND);
-                    //this.stateManager.depthMask(true);
+                                     mat_view, mat_scene, mat_light, mat_proj, gl);
                 }
             }
         }
@@ -3294,7 +3285,8 @@ x3dom.gfx_webgl = (function () {
             locScene.numberOfNodes = 0;
             locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
-            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection, true, false, 0);
+            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(),
+                                            locScene.drawableCollection, true, false, 0);
 
             locScene.drawableCollection.sort();
 
@@ -3306,18 +3298,13 @@ x3dom.gfx_webgl = (function () {
             else {
                 for (i = 0; i < n; i++) {
                     drawable = locScene.drawableCollection.get(i);
-                    transform = drawable.transform;
-                    shape = drawable.shape;
 
-                    if (!shape._vf.render) {
+                    if (!drawable.shape._vf.render) {
                         continue;
                     }
 
                     this.renderShape(drawable, viewarea, slights, numLights,
-                        mat_view, mat_scene, mat_light, mat_proj, gl);
-
-                    //this.stateManager.enable(gl.BLEND);
-                    //this.stateManager.depthMask(true);
+                                     mat_view, mat_scene, mat_light, mat_proj, gl);
                 }
             }
         }
