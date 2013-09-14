@@ -87,11 +87,11 @@ x3dom.Texture.prototype.updateTexture = function()
 	if (tex._cf.textureProperties.node !== null) {
 		var texProp = tex._cf.textureProperties.node;
 		
-		this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS.toUpperCase());
-        this.wrapT = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeT.toUpperCase());
+		this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS);
+        this.wrapT = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeT);
 
-		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter.toUpperCase());
-		this.magFilter = x3dom.Utils.magFilterDic(gl, texProp._vf.magnificationFilter.toUpperCase());
+		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter);
+		this.magFilter = x3dom.Utils.magFilterDic(gl, texProp._vf.magnificationFilter);
 		
 		if (texProp._vf.generateMipMaps === true) {
 			this.genMipMaps = true;

@@ -33,6 +33,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'startAngle', 0);
             this.addField_SFFloat(ctx, 'endAngle', 1.570796);
 			this.addField_SFFloat(ctx, 'subdivision', 32);
+
+            this._mesh._primType = 'LINES';
 			
 			var r = this._vf.radius;
 			var start = this._vf.startAngle;
@@ -393,6 +395,8 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'radius', 1);
 			this.addField_SFFloat(ctx, 'subdivision', 32);
+
+            this._mesh._primType = 'LINES';
 			
 			var r = this._vf.radius;
 			
@@ -638,6 +642,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Polyline2D.superClass.call(this, ctx);
 
             this.addField_MFVec2f(ctx, 'lineSegments', []);
+
+            this._mesh._primType = 'LINES';
 			
 			var x = 0, y = 0;
 			if (this._vf.lineSegments.length) {
@@ -712,7 +718,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Polypoint2D.superClass.call(this, ctx);
 
             this.addField_MFVec2f(ctx, 'point', []);
-			
+
+            this._mesh._primType = 'POINTS';
+
 			var x = 0, y = 0;
 			if (this._vf.point.length) {
     			x = this._vf.point[0].x;

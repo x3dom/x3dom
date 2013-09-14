@@ -34,6 +34,10 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 
+            // this way currently an initialize only field
+            if (this._vf.primType.length)
+                this._mesh._primType = this._vf.primType[0];
+
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 

@@ -488,54 +488,18 @@ x3dom.gfx_webgl = (function () {
         shape._webgl.dynamicFields = [];
 
         //Set Geometry Primitive Type
-        if (x3dom.isa(geoNode, x3dom.nodeTypes.PointSet) ||
-            x3dom.isa(geoNode, x3dom.nodeTypes.Polypoint2D))
-        {
-            shape._webgl.primType = gl.POINTS;
-        }
-        else if (x3dom.isa(geoNode, x3dom.nodeTypes.IndexedLineSet) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.Circle2D) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.Arc2D) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.Polyline2D))
-        {
-            shape._webgl.primType = gl.LINES;
-        }
-        else if (x3dom.isa(geoNode, x3dom.nodeTypes.IndexedTriangleStripSet) &&
-                 geoNode._mesh._primType.toUpperCase() == 'TRIANGLESTRIP')
-        {
-            shape._webgl.primType = gl.TRIANGLE_STRIP;
-        }
-        else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.Plane))
+        if (x3dom.isa(geoNode, x3dom.nodeTypes.X3DBinaryContainerGeometryNode))
         {
             shape._webgl.primType = [];
 
             for (var primCnt = 0; primCnt < geoNode._vf.primType.length; ++primCnt)
             {
-                switch (geoNode._vf.primType[primCnt].toUpperCase())
-                {
-                    case 'POINTS':
-                        shape._webgl.primType.push(gl.POINTS);
-                        break;
-                    case 'LINES':
-                        shape._webgl.primType.push(gl.LINES);
-                        break;
-                    case 'TRIANGLESTRIP':
-                        shape._webgl.primType.push(gl.TRIANGLE_STRIP);
-                        break;
-                    case 'TRIANGLES':
-                    default:
-                        shape._webgl.primType.push(gl.TRIANGLES);
-                        break;
-                }
+                shape._webgl.primType.push(x3dom.Utils.primTypeDic(gl, geoNode._vf.primType[primCnt]));
             }
         }
         else
         {
-            shape._webgl.primType = gl.TRIANGLES;
+            shape._webgl.primType = x3dom.Utils.primTypeDic(gl, geoNode._mesh._primType);
         }
 
         // Binary container geometries need special handling

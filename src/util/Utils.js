@@ -472,8 +472,8 @@ x3dom.Utils.checkDirtyLighting = function (viewarea)
 *****************************************************************************/
 x3dom.Utils.minFilterDic = function(gl, minFilter)
 {
-	switch(minFilter)
-	{ 
+	switch(minFilter.toUpperCase())
+	{
 		case "NEAREST":                      return gl.NEAREST;
 		case "LINEAR":                       return gl.LINEAR;
 		case "NEAREST_MIPMAP_NEAREST":       return gl.NEAREST_MIPMAP_NEAREST;
@@ -498,8 +498,8 @@ x3dom.Utils.minFilterDic = function(gl, minFilter)
 *****************************************************************************/
 x3dom.Utils.magFilterDic = function(gl, magFilter)
 {
-	switch(magFilter)
-	{	
+	switch(magFilter.toUpperCase())
+	{
 		case "NEAREST": 		return gl.NEAREST;
 		case "LINEAR":			return gl.LINEAR;
 		case "AVG_PIXEL":		return gl.LINEAR;
@@ -516,8 +516,8 @@ x3dom.Utils.magFilterDic = function(gl, magFilter)
 *****************************************************************************/
 x3dom.Utils.boundaryModesDic = function(gl, mode) 
 {
-	switch(mode)
-	{ 
+	switch(mode.toUpperCase())
+	{
 		case "CLAMP":             return gl.CLAMP_TO_EDGE;
 		case "CLAMP_TO_EDGE":     return gl.CLAMP_TO_EDGE;
 		case "CLAMP_TO_BOUNDARY": return gl.CLAMP_TO_EDGE;       
@@ -525,6 +525,24 @@ x3dom.Utils.boundaryModesDic = function(gl, mode)
 		case "REPEAT":            return gl.REPEAT;
 		default:				  return gl.REPEAT;
 	}
+};
+
+/*****************************************************************************
+ * Get GL primitive type
+ *****************************************************************************/
+x3dom.Utils.primTypeDic = function(gl, type)
+{
+    switch(type.toUpperCase())
+    {
+        case "POINTS":        return gl.POINTS;
+        case "LINES":         return gl.LINES;
+        case "LINELOOP":      return gl.LINE_LOOP;
+        case "LINESTRIP":     return gl.LINE_STRIP;
+        case "TRIANGLES":     return gl.TRIANGLES;
+        case "TRIANGLESTRIP": return gl.TRIANGLE_STRIP;
+        case "TRIANGLEFAN":   return gl.TRIANGLE_FAN;
+        default:              return gl.TRIANGLES;
+    }
 };
 
 /*****************************************************************************

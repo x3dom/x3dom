@@ -147,6 +147,8 @@ x3dom.registerNodeType(
 
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
+
+            this._mesh._primType = 'POINTS';
         },
         {
             nodeChanged: function()
@@ -295,6 +297,8 @@ x3dom.registerNodeType(
 
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
+
+            this._mesh._primType = 'LINES';
         },
         {
             nodeChanged: function()
