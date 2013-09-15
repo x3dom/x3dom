@@ -56,15 +56,15 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
 					"uniform sampler2D IG_indexTexture;\n" +
 					"uniform sampler2D IG_coordinateTexture;\n" +
 					"uniform vec2 IG_implicitMeshSize;\n" +
-					//pop geometry 
-					"uniform float popGeometry;\n" +
-					"uniform float PG_precisionLevel;\n" +
-					"uniform float PG_powPrecision;\n" +
-					"uniform vec3 PG_bbMin;\n" +
-					"uniform vec3 PG_bbMaxModF;\n" +
-					"uniform vec3 PG_bboxShiftVec;\n" +
-					"uniform float PG_numAnchorVertices;\n" +
-					"attribute float PG_vertexID;\n" +
+                    //pop geometry
+                    "uniform float popGeometry;\n" +
+                    "uniform float PG_precisionLevel;\n" +
+                    "uniform float PG_powPrecision;\n" +
+                    "uniform vec3 PG_maxBBSize;\n" +
+                    "uniform vec3 PG_bbMin;\n" +
+                    "uniform vec3 PG_bbMaxModF;\n" +
+                    "uniform vec3 PG_bboxShiftVec;\n" +
+                    "uniform float PG_numAnchorVertices;\n" +
 					//MAIN
 					"void main(void) {\n" +
 					"	vec3 pos;\n" +
@@ -84,16 +84,16 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
 					"	 	pos = pos * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n" +
 					"	} else if (popGeometry != 0.0){\n" +
 						//PG
-					"		pos = position;\n" +
-					"		vec3 offsetVec = step(pos / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n" +
-					"		if ((PG_precisionLevel <= 2.0) || PG_vertexID >= PG_numAnchorVertices) {\n" +
-					"   		pos = floor(position / PG_powPrecision) * PG_powPrecision;\n" +
-					"   		pos /= (65536.0 - PG_powPrecision);\n" +
-					"		}\n" +
-					"		else {\n" +
-					"   		pos /= bgPrecisionMax;\n" +
-					"		}\n" +
-					"		pos = (pos + offsetVec + PG_bbMin) * bgSize;\n" +
+                    "		pos = position;\n" +
+                    "		vec3 offsetVec = step(pos / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n" +
+                    "		if (PG_precisionLevel <= 2.0) {\n" +
+                    "   		pos = floor(pos / PG_powPrecision) * PG_powPrecision;\n" +
+                    "   		pos /= (65536.0 - PG_powPrecision);\n" +
+                    "		}\n" +
+                    "		else {\n" +
+                    "   		pos /= bgPrecisionMax;\n" +
+                    "		}\n" +
+                    "		pos = (pos + offsetVec + PG_bbMin) * PG_maxBBSize;\n" +
 					"	} else {\n" +
 						//BG
 					"		pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +

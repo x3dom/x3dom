@@ -1270,14 +1270,6 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (s_gl.popGeometry != 0 && s_gl.buffers[q5 + 5]) {
-                    //special case: mimic gl_VertexID
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 5]);
-
-                    gl.vertexAttribPointer(sp.PG_vertexID, 1, gl.FLOAT, false, 4, 0);
-                    gl.enableVertexAttribArray(sp.PG_vertexID);
-                }
-
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], gl.UNSIGNED_SHORT, 2 * offset);
@@ -1319,10 +1311,6 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 gl.disableVertexAttribArray(sp.position);
-
-                if (s_gl.popGeometry != 0 && sp.PG_vertexID !== undefined) {
-                    gl.disableVertexAttribArray(sp.PG_vertexID);
-                }
             }
         }
 
@@ -1410,6 +1398,7 @@ x3dom.gfx_webgl = (function () {
 
             //Set ImageGeometry switch
             sp.imageGeometry = s_gl.imageGeometry;
+            sp.popGeometry = s_gl.popGeometry;
 
             // Set IDs perVertex switch
             sp.writeShadowIDs = (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) ?
