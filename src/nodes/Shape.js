@@ -308,7 +308,7 @@ x3dom.registerNodeType(
             this._texCoordStrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
 
-            this._tessellationProperties = null;
+            this._tessellationProperties = [];
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

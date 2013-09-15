@@ -967,6 +967,20 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, c
 
     var bitLODGeometry = shape._cf.geometry.node;
 
+    if (!bitLODGeometry._vf.normalPerVertex)
+    {
+        shape._webgl.bitLODtotalVertexCount = 0;    // otherwise undefined
+
+        for (i = 0; i < bitLODGeometry._vf.vertexCount.length; i++) {
+            if (shape._webgl.primType[i] == gl.TRIANGLES) {
+                shape._webgl.bitLODtotalVertexCount += bitLODGeometry._vf.vertexCount[i];
+            }
+            else if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP) {
+                shape._webgl.bitLODtotalVertexCount += (bitLODGeometry._vf.vertexCount[i] - 2) * 3;
+            }
+        }
+    }
+
     //Get number of components
     var numComponents = bitLODGeometry.getNumComponents();
 
