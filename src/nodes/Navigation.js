@@ -342,7 +342,7 @@ x3dom.registerNodeType(
             
             getProjectionMatrix: function(aspect)
             {
-                if (this._projMatrix == null)
+                if (this._projMatrix == null || this._lastAspect != aspect)
                 {
                     var near = this.getNear();
                     var far = this.getFar();
