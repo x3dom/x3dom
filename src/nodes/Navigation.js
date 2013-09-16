@@ -150,8 +150,8 @@ x3dom.registerNodeType(
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     var scene = viewarea._scene;
+
                     //scene.updateVolume();
-                    
                     var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
                     var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
                     
@@ -160,6 +160,28 @@ x3dom.registerNodeType(
                     
                     var mat = viewarea.getViewMatrix().inverse();
                     var vp = mat.e3();
+
+                    // account for scales around the viewpoint
+                    var translation = new x3dom.fields.SFVec3f(0,0,0),
+                        scaleFactor = new x3dom.fields.SFVec3f(1,1,1);
+                    var rotation = new x3dom.fields.Quaternion(0,0,1,0),
+                        scaleOrientation = new x3dom.fields.Quaternion(0,0,1,0);
+
+                    // unfortunately, decompose is a rather expensive operation
+                    mat.getTransform(translation, rotation, scaleFactor, scaleOrientation);
+
+                    var minScal = scaleFactor.x, maxScal = scaleFactor.x;
+
+                    if (maxScal < scaleFactor.y) maxScal = scaleFactor.y;
+                    if (minScal > scaleFactor.y) minScal = scaleFactor.y;
+                    if (maxScal < scaleFactor.z) maxScal = scaleFactor.z;
+                    if (minScal > scaleFactor.z) minScal = scaleFactor.z;
+
+                    if (maxScal > 1)
+                        nearScale /= maxScal;
+                    else if (minScal > x3dom.fields.Eps && minScal < 1)
+                        farScale /= minScal;
+                    // near/far scale adaption done
 
                     var sCenter = min.add(dia.multiply(0.5));
                     var vDist = (vp.subtract(sCenter)).length();
