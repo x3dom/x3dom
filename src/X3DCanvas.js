@@ -103,9 +103,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.appendChild(link);
 
         // check if "altImg" is specified on x3d element and if so use it as background
-        altImg = x3dElem.getAttribute("altImg") || null;
+        var altImg = x3dElem.getAttribute("altImg") || null;
         if (altImg) {
-            altImgObj = new Image();
+            var altImgObj = new Image();
             altImgObj.src = altImg;
             div.style.backgroundImage = "url("+altImg+")";
             div.style.backgroundRepeat = "no-repeat";
@@ -337,12 +337,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         }
 
         // Apply the width and height of the X3D element to the canvas
-        var w = 2, h = 2;
+        var w, h;
 
         if ((w = x3dElem.getAttribute("width")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
             if (w.indexOf("%") >= 0) {
-				x3dom.debug.logWarning("The width attribute is to be specified in pixels.");
+				x3dom.debug.logWarning("The width attribute is to be specified in pixels not in percent.");
 			}
             canvas.style.width = w;
             canvas.setAttribute("width", w);
@@ -351,7 +351,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         if ((h = x3dElem.getAttribute("height")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
             if (h.indexOf("%") >= 0) {
-				x3dom.debug.logWarning("The height attribute is to be specified in pixels.");
+				x3dom.debug.logWarning("The height attribute is to be specified in pixels not in percent.");
 			}
             canvas.style.height = h;
             canvas.setAttribute("height", h);
@@ -411,7 +411,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	
 	this.backend = this.x3dElem.getAttribute('backend');
 	if (this.backend)
-	    this.backend = this.backend.toLowerCase()
+	    this.backend = this.backend.toLowerCase();
 	else
 	    this.backend = 'none';
 
@@ -542,7 +542,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         // TODO: handle context lost events properly
         this.canvas.addEventListener("webglcontextlost", function(event) {
-            x3dom.debug.logWarning("WebGL context lost");
+            x3dom.debug.logError("WebGL context lost");
             event.preventDefault();
         }, false);
         
@@ -730,6 +730,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           lastSquareDistance : 0,
           lastAngle : 0,
 		  lastLayer : [],
+
+          examineNavType: true,
           
           calcAngle : function(vector)
           {
@@ -747,7 +749,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           visMarker: this.showTouchpoints,
           visMarkerBag: [],
           
-          visualizeTouches: function(evt, cleanup)
+          visualizeTouches: function(evt)
           {
               if (!this.visMarker)
                   return;
@@ -809,10 +811,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             this.isMulti = true;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
+
+            this.focus();
 			
 			if (doc == null)
 				doc = this.parent.doc;
-			
+
+            var navi = doc._scene.getNavigationInfo();
+            touches.examineNavType = (navi.getType() == "examine");
+
 			touches.lastLayer = [];
 
             var i, pos;
@@ -847,14 +854,21 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			doc._scene.updateVolume();
 			
 			doc._viewarea._hasTouches = true;
-			
-			for(i = 0; i < evt.touches.length; i++) {
-				pos = this.parent.mousePosition(evt.touches[i]);
-				doc.onPick(that.gl, pos.x, pos.y);
-				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
-				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
-				doc.needRender = true;
-			}            
+
+            if (touches.examineNavType) {
+                for(i = 0; i < evt.touches.length; i++) {
+                    pos = this.parent.mousePosition(evt.touches[i]);
+                    doc.onPick(that.gl, pos.x, pos.y);
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
+                    doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
+                }
+            }
+            else if (evt.touches.length) {
+                pos = this.parent.mousePosition(evt.touches[0]);
+                doc.onMousePress(that.gl, pos.x, pos.y, 1);     // 1 means left mouse button
+            }
+
+            doc.needRender = true;
         };
         
         var touchStartHandlerMoz = function(evt)
@@ -884,51 +898,58 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if (doc == null)
 				doc = this.parent.doc;
 
-            var rotMatrix;
-			// one finger: x/y rotation
-			if(evt.touches.length == 1) {
-				var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-								
-				var deltaDrag = currentDrag.subtract(touches.lastDrag);
-				touches.lastDrag = currentDrag;
-				
-				var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
-				var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
-				rotMatrix = mx.mult(my);
-				
-				doc.onMoveView(that.gl, null, rotMatrix);
-				doc.needRender = true;
-			}
-			// two fingers: scale, translation, rotation around view (z) axis
-			else if(evt.touches.length >= 2) {
-				var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-				var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
-            
-				var distance = touch1.subtract(touch0);
-				var middle = distance.multiply(0.5).add(touch0);
-				var squareDistance = distance.dot(distance);
-            
-				var deltaMiddle = middle.subtract(touches.lastMiddle);
-				var deltaZoom = squareDistance - touches.lastSquareDistance;
-            
-				var deltaMove = new x3dom.fields.SFVec3f(
-            		 deltaMiddle.x / screen.width,
-            		-deltaMiddle.y / screen.height,
-              		 deltaZoom / (screen.width * screen.height * 0.2));
-			
-				var rotation = touches.calcAngle(distance);
-				var angleDelta = touches.lastAngle - rotation;
-				touches.lastAngle = rotation;
+            if (touches.examineNavType) {
+                var rotMatrix = null;
 
-				rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
+                // one finger: x/y rotation
+                if(evt.touches.length == 1) {
+                    var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 
-				touches.lastMiddle = middle;
-				touches.lastDistance = distance;
-				touches.lastSquareDistance = squareDistance;
+                    var deltaDrag = currentDrag.subtract(touches.lastDrag);
+                    touches.lastDrag = currentDrag;
 
-				doc.onMoveView(that.gl, deltaMove, rotMatrix);
-				doc.needRender = true;
-			}
+                    var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
+                    var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
+                    rotMatrix = mx.mult(my);
+
+                    doc.onMoveView(that.gl, null, rotMatrix);
+                }
+                // two fingers: scale, translation, rotation around view (z) axis
+                else if(evt.touches.length >= 2) {
+                    var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                    var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+
+                    var distance = touch1.subtract(touch0);
+                    var middle = distance.multiply(0.5).add(touch0);
+                    var squareDistance = distance.dot(distance);
+
+                    var deltaMiddle = middle.subtract(touches.lastMiddle);
+                    var deltaZoom = squareDistance - touches.lastSquareDistance;
+
+                    var deltaMove = new x3dom.fields.SFVec3f(
+                         deltaMiddle.x / screen.width,
+                        -deltaMiddle.y / screen.height,
+                         deltaZoom / (screen.width * screen.height * 0.2));
+
+                    var rotation = touches.calcAngle(distance);
+                    var angleDelta = touches.lastAngle - rotation;
+                    touches.lastAngle = rotation;
+
+                    rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
+
+                    touches.lastMiddle = middle;
+                    touches.lastDistance = distance;
+                    touches.lastSquareDistance = squareDistance;
+
+                    doc.onMoveView(that.gl, deltaMove, rotMatrix);
+                }
+            }
+            else if (evt.touches.length) {
+                var pos = this.parent.mousePosition(evt.touches[0]);
+                doc.onDrag(that.gl, pos.x, pos.y, 1);
+            }
+
+            doc.needRender = true;
         };
         
         var touchMoveHandlerMoz = function(evt)
@@ -965,48 +986,54 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 			
 			doc._viewarea._hasTouches = false;
-			
-			for(var i = 0; i < touches.lastLayer.length; i++) {
-				var pos = touches.lastLayer[i][1];
-				
-				doc.onPick(that.gl, pos.x, pos.y);
-				
-				if (doc._scene._vf.pickMode.toLowerCase() !== "box") {
-                    doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
-                    doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
 
-                    // click means that mousedown _and_ mouseup were detected on same element
-                    if (doc._viewarea._pickingInfo.pickObj &&
-                    	doc._viewarea._pickingInfo.pickObj ===
-                    	doc._viewarea._pickingInfo.lastClickObj) {
-    
-                    	doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");
+            if (touches.examineNavType) {
+                for(var i = 0; i < touches.lastLayer.length; i++) {
+                    var pos = touches.lastLayer[i][1];
+
+                    doc.onPick(that.gl, pos.x, pos.y);
+
+                    if (doc._scene._vf.pickMode.toLowerCase() !== "box") {
+                        doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
+                        doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
+
+                        // click means that mousedown _and_ mouseup were detected on same element
+                        if (doc._viewarea._pickingInfo.pickObj &&
+                            doc._viewarea._pickingInfo.pickObj ===
+                            doc._viewarea._pickingInfo.lastClickObj) {
+
+                            doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");
+                        }
                     }
-			    }
-			    else {
-                    var line = doc._viewarea.calcViewRay(pos.x, pos.y);
-                    var isect = doc._scene.doIntersect(line);
-                    var obj = line.hitObject;
-                    
-                    if (isect && obj) {
-                        doc._viewarea._pick.setValues(line.hitPoint);
-                        doc._viewarea.checkEvents(obj, pos.x, pos.y, 1, "onclick");
-                        
-                        x3dom.debug.logInfo("Hit '" + obj._xmlNode.localName + "/ " +
-                                            obj._DEF + "' at pos " + doc._viewarea._pick);
+                    else {
+                        var line = doc._viewarea.calcViewRay(pos.x, pos.y);
+                        var isect = doc._scene.doIntersect(line);
+                        var obj = line.hitObject;
+
+                        if (isect && obj) {
+                            doc._viewarea._pick.setValues(line.hitPoint);
+                            doc._viewarea.checkEvents(obj, pos.x, pos.y, 1, "onclick");
+
+                            x3dom.debug.logInfo("Hit '" + obj._xmlNode.localName + "/ " +
+                                                obj._DEF + "' at pos " + doc._viewarea._pick);
+                        }
                     }
-			    }
-			}
-			
-            if (dblClick) {
-                var now = new Date().getTime();
-                var dist = touches.firstTouchPoint.subtract(touches.lastDrag).length();
+                }
 
-                if (dist < 18 && now - touches.firstTouchTime < 180)
-                    doc.onDoubleClick(that.gl, 0, 0);
+                if (dblClick) {
+                    var now = new Date().getTime();
+                    var dist = touches.firstTouchPoint.subtract(touches.lastDrag).length();
 
-                touches.firstTouchTime = now;
-                touches.firstTouchPoint = touches.lastDrag;
+                    if (dist < 18 && now - touches.firstTouchTime < 180)
+                        doc.onDoubleClick(that.gl, 0, 0);
+
+                    touches.firstTouchTime = now;
+                    touches.firstTouchPoint = touches.lastDrag;
+                }
+            }
+            else if (touches.lastLayer.length) {
+                pos = touches.lastLayer[0][1];
+                doc.onMouseRelease(that.gl, pos.x, pos.y, 0, 1);
             }
 			
 			doc.needRender = true;
