@@ -664,23 +664,31 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('DOMMouseScroll', function (evt) {
 			if(!this.isMulti) {
+                this.focus();
+
 				this.mouse_drag_y += 2 * evt.detail;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-				
-				evt.returnValue = true;
+
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.returnValue = false;
 			}
         }, false);
 
         this.canvas.addEventListener('mousewheel', function (evt) {
 			if(!this.isMulti) {
+                this.focus();
+
 				this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-				
-				evt.returnValue = true;
+
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.returnValue = false;
 			}
         }, false);
 
