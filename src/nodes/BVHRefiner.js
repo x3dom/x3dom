@@ -920,6 +920,15 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
         // definition of the nameSpace of this shape
         shape._nameSpace = bvhRefiner._nameSpace;
         
+        // create height-data
+        var texProp = new x3dom.nodeTypes.TextureProperties(ctx);
+        texProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
+        texProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
+        texProp._vf.boundaryModeR = "CLAMP_TO_EDGE";
+        texProp._vf.minificationFilter = "LINEAR";
+        texProp._vf.magnificationFilter = "LINEAR";
+        texture.addChild(texProp, "textureProperties");
+        texture.nodeChanged();
         // definition of texture
         texture._nameSpace = bvhRefiner._nameSpace;
         texture._vf.url[0] = url;
@@ -1227,6 +1236,15 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // definition of the nameSpace of this shape
         shape._nameSpace = bvhRefiner._nameSpace;
         
+        // create height-data
+        var texProp = new x3dom.nodeTypes.TextureProperties(ctx);
+        texProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
+        texProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
+        texProp._vf.boundaryModeR = "CLAMP_TO_EDGE";
+        texProp._vf.minificationFilter = "LINEAR";
+        texProp._vf.magnificationFilter = "LINEAR";
+        texture.addChild(texProp, "textureProperties");
+        texture.nodeChanged();
         // definition of texture
         texture._nameSpace = bvhRefiner._nameSpace;
         texture._vf.url[0] = url;
@@ -1569,6 +1587,14 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         composedShader.addChild(vertexShader, 'parts');
         composedShader.addChild(fragmentShader, 'parts');
 
+        var colorTexProp = new x3dom.nodeTypes.TextureProperties(ctx);
+        colorTexProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
+        colorTexProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
+        colorTexProp._vf.boundaryModeR = "CLAMP_TO_EDGE";
+        colorTexProp._vf.minificationFilter = "LINEAR";
+        colorTexProp._vf.magnificationFilter = "LINEAR";
+        colorTexture.addChild(colorTexProp, "textureProperties");
+        colorTexture.nodeChanged();
         // create texture-data of this node with url's of the texture data
         colorTexture._nameSpace = bvhRefiner._nameSpace;
         colorTexture._vf.url[0] = imageAddressColor;
@@ -1607,6 +1633,14 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         heightTextureField.nodeChanged();
 
         if (bvhRefiner._vf.normalUrl !== "") {
+            var normalTexProp = new x3dom.nodeTypes.TextureProperties(ctx);
+            normalTexProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
+            normalTexProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
+            normalTexProp._vf.boundaryModeR = "CLAMP_TO_EDGE";
+            normalTexProp._vf.minificationFilter = "LINEAR";
+            normalTexProp._vf.magnificationFilter = "LINEAR";
+            normalTexture.addChild(normalTexProp, "textureProperties");
+            normalTexture.nodeChanged();
             // create normal-data
             normalTexture._nameSpace = bvhRefiner._nameSpace;
             normalTexture._vf.url[0] = imageAddressNormal;
