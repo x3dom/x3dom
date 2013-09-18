@@ -2511,10 +2511,13 @@ x3dom.gfx_webgl = (function () {
                         (scene._xmlNode["on" + eventType] ||
                             scene._xmlNode.hasAttribute("on" + eventType) ||
                             scene._listeners[eventType]) ) {
+                        var button = Math.max(buttonState >>> 8, buttonState & 255);
+
                         var event = {
                             target: scene._xmlNode,
                             type: eventType,
-                            button: buttonState,
+                            button: button,
+                            mouseup: ((buttonState >>> 8) > 0),
                             layerX: x,
                             layerY: y,
                             shadowObjectId: objId,
