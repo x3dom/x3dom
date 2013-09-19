@@ -1924,6 +1924,36 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         }
 
+        //===========================================================================
+        // Set ColorMaskMode
+        //===========================================================================
+        var colorMaskMode = s_app ? s_app._cf.colorMaskMode.node : null;
+        if (colorMaskMode)
+        {
+            this.stateManager.colorMask(colorMaskMode._vf.maskR,
+                                        colorMaskMode._vf.maskG,
+                                        colorMaskMode._vf.maskB,
+                                        colorMaskMode._vf.maskA)
+        }
+        else //Set Defaults
+        {
+            this.stateManager.colorMask(true, true, true, true);
+        }
+
+        //===========================================================================
+        // Set LineProperties (only linewidthScaleFactor, interpreted as lineWidth)
+        //===========================================================================
+        var lineProperties = s_app ? s_app._cf.lineProperties.node : null;
+        if (lineProperties)
+        {
+            console.log(lineProperties._vf.linewidthScaleFactor);
+            this.stateManager.lineWidth(lineProperties._vf.linewidthScaleFactor);
+        }
+        else //Set Defaults
+        {
+            this.stateManager.lineWidth(1);
+        }
+
         if (shape.isSolid()) {
             this.stateManager.enable(gl.CULL_FACE);
 
@@ -2180,6 +2210,15 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
             this.stateManager.blendColor(1, 1, 1, 1);
             this.stateManager.blendEquation(gl.FUNC_ADD);
+        }
+
+        if (colorMaskMode) {
+            this.stateManager.colorMask(true, true, true, true);
+        }
+
+        if (lineProperties)
+        {
+            this.stateManager.lineWidth(1);
         }
 
         // cleanup textures

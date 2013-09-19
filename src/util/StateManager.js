@@ -40,6 +40,7 @@ x3dom.StateManager.prototype.initStates = function ()
     //Initialize Rasterization states
     this.states['cullFace'] = null;
     this.states['frontFace'] = null;
+    this.states['lineWidth'] = null;
 
     //Initialize Per-Fragment-Operation states
     this.states['blendColor'] = {red: null, green: null, blue: null, alpha: null};
@@ -155,6 +156,20 @@ x3dom.StateManager.prototype.frontFace = function (mode)
     {
         this.gl.frontFace(mode);
         this.states['frontFace'] = mode;
+    }
+};
+
+/*
+ * Specify the width of rasterized lines
+ */
+x3dom.StateManager.prototype.lineWidth = function (width)
+{
+    width = (width <= 1) ? 1 : width;
+
+    if (this.states['lineWidth'] != width)
+    {
+        this.gl.lineWidth(width);
+        this.states['lineWidth'] = width;
     }
 };
 
