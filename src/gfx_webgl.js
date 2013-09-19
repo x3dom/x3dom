@@ -1371,7 +1371,7 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
         var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
 
-        gl.lineWidth(2);    // bigger lines for better picking
+        this.stateManager.lineWidth(2);     // bigger lines for better picking
 
         for (var i = 0, n = scene.drawableCollection.length; i < n; i++)
         {
@@ -1585,7 +1585,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        gl.lineWidth(1);
+        this.stateManager.lineWidth(1);
         gl.flush();
 
         try {
@@ -1933,7 +1933,7 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.colorMask(colorMaskMode._vf.maskR,
                                         colorMaskMode._vf.maskG,
                                         colorMaskMode._vf.maskB,
-                                        colorMaskMode._vf.maskA)
+                                        colorMaskMode._vf.maskA);
         }
         else //Set Defaults
         {
@@ -2215,8 +2215,7 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.colorMask(true, true, true, true);
         }
 
-        if (lineProperties)
-        {
+        if (lineProperties) {
             this.stateManager.lineWidth(1);
         }
 
