@@ -266,7 +266,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             // mozilla touch
             "onMozTouchDown",
             "onMozTouchMove",
-            "onMozTouchUp"
+            "onMozTouchUp",
+
+            // drag and drop, requires 'draggable' source property set true (usually of an img)
+            "ondragstart",
+            "ondrop",
+            "ondragover"
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
@@ -278,6 +283,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
                 canvas.setAttribute(evtName, userEvt);
             }
+        }
+
+        var userProp = x3dElem.getAttribute("draggable");
+        if (userProp) {
+            x3dom.debug.logInfo("draggable=" + userProp);
+            canvas.setAttribute("draggable", userProp);
         }
 
         // workaround since one cannot find out which handlers are registered
