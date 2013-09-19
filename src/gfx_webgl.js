@@ -1946,7 +1946,6 @@ x3dom.gfx_webgl = (function () {
         var lineProperties = s_app ? s_app._cf.lineProperties.node : null;
         if (lineProperties)
         {
-            console.log(lineProperties._vf.linewidthScaleFactor);
             this.stateManager.lineWidth(lineProperties._vf.linewidthScaleFactor);
         }
         else //Set Defaults
