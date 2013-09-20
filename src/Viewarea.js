@@ -22,7 +22,7 @@ x3dom.Viewarea = function (document, scene) {
         pickObj: null,
         lastObj: null,
         lastClickObj: null,
-        shadowObjectId: 0
+        shadowObjectId: -1
     };
 
     this._rotMat = x3dom.fields.SFMatrix4f.identity();

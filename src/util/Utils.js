@@ -18,38 +18,40 @@ x3dom.Utils.measurements = [];
 
 // http://gent.ilcore.com/2012/06/better-timer-for-javascript.html
 window.performance = window.performance || {};
-performance.now = (function() {
-  return performance.now       ||
-         performance.mozNow    ||
-         performance.msNow     ||
-         performance.oNow      ||
-         performance.webkitNow ||
-         function() { return new Date().getTime(); };
+performance.now = (function () {
+    return performance.now ||
+           performance.mozNow ||
+           performance.msNow ||
+           performance.oNow ||
+           performance.webkitNow ||
+           function () {
+               return new Date().getTime();
+           };
 })();
 
-x3dom.Utils.startMeasure = function(name) {
-  var uname = name.toUpperCase();
-  if ( !x3dom.Utils.measurements[uname] ) {
-    if ( performance && performance.now ) {
-      x3dom.Utils.measurements[uname] = performance.now();
-    } else {
-      x3dom.Utils.measurements[uname] = new Date().getTime();
+x3dom.Utils.startMeasure = function (name) {
+    var uname = name.toUpperCase();
+    if (!x3dom.Utils.measurements[uname]) {
+        if (performance && performance.now) {
+            x3dom.Utils.measurements[uname] = performance.now();
+        } else {
+            x3dom.Utils.measurements[uname] = new Date().getTime();
+        }
     }
-  }
 };
 
-x3dom.Utils.stopMeasure = function(name) { 
-  var uname = name.toUpperCase();
-  if ( x3dom.Utils.measurements[uname] ) {
-    var startTime = x3dom.Utils.measurements[uname];
-    delete x3dom.Utils.measurements[uname];
-    if ( performance && performance.now ) {
-      return performance.now() - startTime;
-    } else {
-      return new Date().getTime() - startTime;
+x3dom.Utils.stopMeasure = function (name) {
+    var uname = name.toUpperCase();
+    if (x3dom.Utils.measurements[uname]) {
+        var startTime = x3dom.Utils.measurements[uname];
+        delete x3dom.Utils.measurements[uname];
+        if (performance && performance.now) {
+            return performance.now() - startTime;
+        } else {
+            return new Date().getTime() - startTime;
+        }
     }
-  }
-  return 0;
+    return 0;
 };
 
 /*****************************************************************************
@@ -622,57 +624,57 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	//Check if it's a composed shader
 	if (appearance && appearance._shader &&
         x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
-		property.CSHADER   = shape._objectID;
-        //property.CSHADER_V = appearance._shader._vertex._vf.url[0];
-        //property.CSHADER_F = appearance._shader._fragment._vf.url[0];
+
+		property.CSHADER          = shape._objectID;
 	}
     else if (geometry) {
 
-		property.CSHADER			    = -1;
-		property.SOLID				    = (shape.isSolid()) ? 1 : 0;
-		property.TEXT				    = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
-		property.POPGEOMETRY  	  = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
-		property.BITLODGEOMETRY	  = (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
-		property.IMAGEGEOMETRY	  = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
-		property.IG_PRECISION		  = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
-		property.IG_INDEXED			  = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
-		property.POINTLINE2D		  = x3dom.isa(geometry, x3dom.nodeTypes.PointSet) ||
-                                        x3dom.isa(geometry, x3dom.nodeTypes.IndexedLineSet) ||
-                                        x3dom.isa(geometry, x3dom.nodeTypes.Polypoint2D) ||
-                                        x3dom.isa(geometry, x3dom.nodeTypes.Polyline2D) ||
-                                        x3dom.isa(geometry, x3dom.nodeTypes.Arc2D) ||
-                                        x3dom.isa(geometry, x3dom.nodeTypes.Circle2D) ? 1 : 0;
-		
-		property.APPMAT					= (appearance && (material || property.CSSHADER) ) ? 1 : 0;
-		property.SHADOW				    = (viewarea.getLightsShadow()) ? 1 : 0;
-		property.FOG				    = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
-		property.CSSHADER			    = (appearance && appearance._shader && x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
-		property.LIGHTS				    = (!property.POINTLINE2D && appearance && (material || property.CSSHADER)) ? (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
-		property.TEXTURED			    = (texture || property.TEXT) ? 1 : 0;
-		property.TEXTRAFO			    = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
-		property.DIFFUSEMAP			  = (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0; 
-		property.NORMALMAP			  = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0; 
-		property.SPECMAP			    = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
-        property.DISPLACEMENTMAP	= (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
-        property.DIFFPLACEMENTMAP	= (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
-		property.CUBEMAP			    = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ? 1 : 0;
-		property.BLENDING			    = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
-		property.REQUIREBBOX		  = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
-		property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
-		property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;
-		property.REQUIREBBOXTEX   = (geometry._vf.texCoordType !== undefined && geometry._vf.texCoordType != "Float32") ? 1 : 0;    
-		property.COLCOMPONENTS		= geometry._mesh._numColComponents;
-		property.NORCOMPONENTS		= geometry._mesh._numNormComponents;
-		property.POSCOMPONENTS		= geometry._mesh._numPosComponents;
-		property.SPHEREMAPPING		= (geometry._cf.texCoord !== undefined && 
-                                 geometry._cf.texCoord.node !== null && 
-                                 geometry._cf.texCoord.node._vf.mode &&
-                                 geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0;
-		property.VERTEXCOLOR		  = (geometry._mesh._colors[0].length > 0 || 
-                                (property.IMAGEGEOMETRY && geometry.getColorTexture()) || 
-                                (property.BITLODGEOMETRY && geometry.hasColor()) || 
-                                (property.POPGEOMETRY    && geometry.hasColor()) ||
-                                (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+        property.CSHADER          = -1;
+        property.SOLID            = (shape.isSolid()) ? 1 : 0;
+        property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
+        property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
+        property.BITLODGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
+        property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
+        property.IG_PRECISION     = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
+        property.IG_INDEXED       = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
+        property.POINTLINE2D      = x3dom.isa(geometry, x3dom.nodeTypes.PointSet) ||
+                                    x3dom.isa(geometry, x3dom.nodeTypes.IndexedLineSet) ||
+                                    x3dom.isa(geometry, x3dom.nodeTypes.Polypoint2D) ||
+                                    x3dom.isa(geometry, x3dom.nodeTypes.Polyline2D) ||
+                                    x3dom.isa(geometry, x3dom.nodeTypes.Arc2D) ||
+                                    x3dom.isa(geometry, x3dom.nodeTypes.Circle2D) ? 1 : 0;
+        
+        property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
+        property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
+        property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
+        property.CSSHADER         = (appearance && appearance._shader &&
+                                     x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
+        property.LIGHTS           = (!property.POINTLINE2D && appearance && (material || property.CSSHADER)) ?
+                                     viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
+        property.TEXTURED         = (texture || property.TEXT) ? 1 : 0;
+        property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
+        property.DIFFUSEMAP       = (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0;
+        property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0;
+        property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
+        property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
+        property.DIFFPLACEMENTMAP = (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
+        property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ? 1 : 0;
+        property.BLENDING         = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
+        property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
+        property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
+        property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;
+        property.REQUIREBBOXTEX   = (geometry._vf.texCoordType !== undefined && geometry._vf.texCoordType != "Float32") ? 1 : 0;    
+        property.COLCOMPONENTS    = geometry._mesh._numColComponents;
+        property.NORCOMPONENTS    = geometry._mesh._numNormComponents;
+        property.POSCOMPONENTS    = geometry._mesh._numPosComponents;
+        property.SPHEREMAPPING    = (geometry._cf.texCoord !== undefined && geometry._cf.texCoord.node !== null &&
+                                     geometry._cf.texCoord.node._vf.mode &&
+                                     geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0;
+        property.VERTEXCOLOR      = (geometry._mesh._colors[0].length > 0 ||
+                                     (property.IMAGEGEOMETRY && geometry.getColorTexture()) ||
+                                     (property.BITLODGEOMETRY && geometry.hasColor()) ||
+                                     (property.POPGEOMETRY    && geometry.hasColor()) ||
+                                     (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
 	}
 	
 	property.toIdentifier = function() { 
@@ -707,32 +709,29 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 *****************************************************************************/
 x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 {
-	var shader = {};
-
-    shader.shaderID = shaderID;
+	var shader = {
+        shaderID: shaderID,
+        program: program
+    };
         
 	shader.bind = function () { 
 		gl.useProgram(program); 
 	};
-	
-	var i 	= 0;
+
 	var loc = null;
 	var obj = null;
-	var glErr;
-	
+	var i, glErr;
+
+    // get uniforms
 	var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 	
 	for (i=0; i < numUniforms; ++i) {
 		try {
 			obj = gl.getActiveUniform(program, i);
 		}
-		catch (eu) {}
-
-		glErr = gl.getError();
-		
-		if (glErr !== 0) {
-			x3dom.debug.logError("GL-Error (on searching uniforms): " + glErr);
-		}
+		catch (eu) {
+            if (!obj) continue;
+        }
 
 		loc = gl.getUniformLocation(program, obj.name);	
 		
@@ -750,8 +749,6 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 					(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 				break;
 			case gl.FLOAT:
-				//shader.__defineSetter__(obj.name, 
-				//	(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
                 /*
                  * Passing a MFFloat type into uniform.
                  * by Sofiane Benchaa, 2012.
@@ -804,24 +801,31 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 				x3dom.debug.logWarning('GLSL program variable '+obj.name+' has unknown type '+obj.type);
 		}
 	}
-	
+
+    glErr = gl.getError();
+    if (glErr) {
+        x3dom.debug.logError("GL-Error (on searching uniforms): " + glErr);
+    }
+
+    // get attributes
 	var numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 	
 	for (i=0; i < numAttribs; ++i) {
 		try {
 			obj = gl.getActiveAttrib(program, i);
 		}
-		catch (ea) {}
-		
-		glErr = gl.getError();
-		
-		if (glErr !== 0) {
-			x3dom.debug.logError("GL-Error (on searching attributes): " + glErr);   
-		}
+		catch (ea) {
+            if (!obj) continue;
+        }
 
 		loc = gl.getAttribLocation(program, obj.name);
 		shader[obj.name] = loc;
 	}
-	shader["program"]=program;
+
+    glErr = gl.getError();
+    if (glErr) {
+        x3dom.debug.logError("GL-Error (on searching attributes): " + glErr);
+    }
+
 	return shader;
 };

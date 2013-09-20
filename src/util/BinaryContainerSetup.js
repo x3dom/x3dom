@@ -53,8 +53,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         ((!binGeo._hasStrideOffset && binGeo._vf.color.length > 0) ? 1 : 0);
 
     var createTriangleSoup = (binGeo._vf.normalPerVertex == false) ||
-                              ((binGeo._vf.indexType == "Uint32") &&
-                               (binGeo._vf.index.length > 0));
+                              ((binGeo._vf.indexType == "Uint32") && (binGeo._vf.index.length > 0));
 
     shape._webgl.makeSeparateTris = {
         index: null,
@@ -540,6 +539,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 shape._webgl.makeSeparateTris.pushBuffer("coord", vertices);
                 return;
             }
+
+            gl.bindAttribLocation(sp.program, 0, "position");
 
             var positionBuffer = gl.createBuffer();
             shape._webgl.buffers[1] = positionBuffer;
