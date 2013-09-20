@@ -462,10 +462,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	x3dom.caps.BACKEND = this.backend;
 
     // for FPS measurements
+    this.fps_t0 = new Date().getTime();
+
     this.lastTimeFPSWasTaken = 0;
     this.framesSinceLastTime = 0;
 
-	this.fps_t0 = new Date().getTime();
     this.doc = null;
 
     // allow listening for (size) changes
@@ -1131,61 +1132,62 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 x3dom.X3DCanvas.prototype.tick = function()
 {
-    var d = new Date().getTime();
-    var diff = d - this.lastTimeFPSWasTaken;
-    
-    if (diff >= 1000 && this.doc.needRender)
-    {
-        this.x3dElem.runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
-        this.x3dElem.runtime.addMeasurement('FPS', this.x3dElem.runtime.fps);
-
-        this.framesSinceLastTime = 0;
-        this.lastTimeFPSWasTaken = d;
-    }
-    this.framesSinceLastTime++;
-
-    var fps = 1000.0 / (d - this.fps_t0);
-    this.fps_t0 = d;
-
     try {
+        var runtime = this.x3dElem.runtime;
+
+        var d = new Date().getTime();
+        var diff = d - this.lastTimeFPSWasTaken;
+
+        var fps = 1000.0 / (d - this.fps_t0);
+        this.fps_t0 = d;
+
+        // update routes and stuff
         this.doc.advanceTime(d / 1000.0);
         var animD = new Date().getTime() - d;
 
         if (this.doc.needRender) {
+            // calc average frames per second
+            if (diff >= 1000) {
+                runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
+                runtime.addMeasurement('FPS', runtime.fps);
 
-            if (this.x3dElem.runtime.isReady == false) {
-                this.x3dElem.runtime.ready();
-                this.x3dElem.runtime.isReady = true;
+                this.framesSinceLastTime = 0;
+                this.lastTimeFPSWasTaken = d;
+            }
+            runtime.addMeasurement('ANIM', animD);
+
+            if (runtime.isReady == false) {
+                runtime.ready();
+                runtime.isReady = true;
             }
 
-            this.x3dElem.runtime.enterFrame();
-			
-            this.x3dElem.runtime.addMeasurement('ANIM', animD);
+            runtime.enterFrame();
 
             if (this.backend == 'flash') {
-              if (this.isFlashReady) {
-                this.canvas.setFPS({fps: fps});
+                if (this.isFlashReady) {
+                    this.canvas.setFPS({fps: fps});
+
+                    this.doc.needRender = false;
+                    this.doc.render(this.gl);
+                }
+            }
+            else {
+                // picking might require another pass
                 this.doc.needRender = false;
                 this.doc.render(this.gl);
-              }
-			}
-			else {
-			    // picking might require another pass
-				this.doc.needRender = false;
-				this.doc.render(this.gl);
 
                 if (!this.doc._scene._vf.doPickPass)
-                    this.x3dElem.runtime.removeMeasurement('PICKING');
-			}
+                    runtime.removeMeasurement('PICKING');
+            }
 
-            this.x3dElem.runtime.exitFrame();
-		}
-		
+            runtime.exitFrame();
+        }
+
         if (this.progressDiv) {
             if (this.doc.downloadCount > 0) {
-                this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
+                runtime.addInfo("#LOADS:", this.doc.downloadCount);
             } else {
-                this.x3dElem.runtime.removeInfo("#LOADS:");
+                runtime.removeInfo("#LOADS:");
             }
 
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
@@ -1199,10 +1201,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 
                     /*
                     var myThat = this;
-
-                    window.setTimeout( function() { 
-                           myThat.doc.downloadCount = 0;
-                           myThat.progressDiv.style.display = 'none';
+                    window.setTimeout( function() {
+                        myThat.doc.downloadCount = 0;
+                        myThat.progressDiv.style.display = 'none';
                     }, 10000 );
                     */
                 }
@@ -1210,6 +1211,8 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.progressDiv.style.display = 'none';
             }
         }
+
+        this.framesSinceLastTime++;
 
     } catch (e) {
         x3dom.debug.logException(e);

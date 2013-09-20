@@ -12,16 +12,19 @@
 
 /** used from within gfx_webgl.js */
 x3dom.BinaryContainerLoader = {
-    outOfMemory: false,
+    outOfMemory: false,     // try to prevent browser crashes
 
     checkError: function(gl) {
         var glErr = gl.getError();
         if (glErr) {
             if (glErr == gl.OUT_OF_MEMORY) {
                 this.outOfMemory = true;
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry (out of memory).");
+                console.error("WebGL: OUT_OF_MEMORY");
             }
-            x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry" +
-                (this.outOfMemory ? " (out of memory)." : "."));
+            else {
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry.");
+            }
         }
     }
 };
@@ -868,6 +871,8 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
     shape._webgl.currentNumVertices = 0;
     shape._webgl.numVerticesAtLevel = [];
     shape._webgl.levelsAvailable    = 0;
+
+    this.checkError(gl);
 
     shape._webgl.levelLoaded = [];
     (function() {

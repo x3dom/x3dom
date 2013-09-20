@@ -415,7 +415,7 @@ x3dom.gfx_webgl = (function () {
 
                         if (sp.position !== undefined) {
                             gl.deleteBuffer(this._webgl.buffers[q5 + 1]);
-                            gl.deleteBuffer(this._webgl.buffers[q5  ]);
+                            gl.deleteBuffer(this._webgl.buffers[q5]);
                         }
 
                         if (sp.normal !== undefined) {
@@ -442,8 +442,12 @@ x3dom.gfx_webgl = (function () {
                     if (delGL === undefined)
                         delGL = true;
 
-                    if (delGL)
+                    if (delGL) {
                         delete this._webgl;
+
+                        // be optimistic, one shape removed makes room for another one
+                        x3dom.BinaryContainerLoader.outOfMemory = false;
+                    }
                 }
             };  // shape._cleanupGLObjects()
         }
