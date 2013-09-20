@@ -1154,6 +1154,8 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.framesSinceLastTime = 0;
                 this.lastTimeFPSWasTaken = d;
             }
+            this.framesSinceLastTime++;
+
             runtime.addMeasurement('ANIM', animD);
 
             if (runtime.isReady == false) {
@@ -1211,9 +1213,6 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.progressDiv.style.display = 'none';
             }
         }
-
-        this.framesSinceLastTime++;
-
     } catch (e) {
         x3dom.debug.logException(e);
         throw e;
