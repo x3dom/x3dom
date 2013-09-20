@@ -1225,7 +1225,6 @@ x3dom.gfx_webgl = (function () {
                         sp.IG_indexTexture = texUnit++;
                     }
                 }
-
                 if (s_geo.getCoordinateTexture(0)) {
                     if (!sp.IG_coordinateTexture) {
                         sp.IG_coordinateTexture = texUnit++;
@@ -1304,17 +1303,17 @@ x3dom.gfx_webgl = (function () {
                     gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
 
-                //Clean Texture units for IG
-                if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                    if (s_gl.imageGeometry == 1) {
-                        gl.activeTexture(gl.TEXTURE1);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    }
-                }
-
                 gl.disableVertexAttribArray(sp.position);
+            }
+
+            //Clean Texture units for IG
+            if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                if (s_gl.imageGeometry == 1) {
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
             }
         }
 
@@ -1344,20 +1343,15 @@ x3dom.gfx_webgl = (function () {
         var sp = null;
 
         switch (pickMode) {
-            case 0:
-                sp = scene._webgl.pickShader;
+            case 0: sp = scene._webgl.pickShader;
                 break;
-            case 1:
-                sp = scene._webgl.pickColorShader;
+            case 1: sp = scene._webgl.pickColorShader;
                 break;
-            case 2:
-                sp = scene._webgl.pickTexCoordShader;
+            case 2: sp = scene._webgl.pickTexCoordShader;
                 break;
-            case 3:
-                sp = scene._webgl.pickShader24;
+            case 3: sp = scene._webgl.pickShader24;
                 break;
-            case 4:
-                sp = scene._webgl.pickShaderId;
+            case 4: sp = scene._webgl.pickShaderId;
                 break;
             default:
                 break;
@@ -1377,14 +1371,23 @@ x3dom.gfx_webgl = (function () {
 
         this.stateManager.lineWidth(2);     // bigger lines for better picking
 
-        for (var i = 0, n = scene.drawableCollection.length; i < n; i++)
+        var env = scene.getEnvironment();
+        var n = scene.drawableCollection.length;
+
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._lowPriorityThreshold);
+            if (!n && scene.drawableCollection.length)
+                n = 1;   // render at least one object
+        }
+
+        for (var i = 0; i < n; i++)
         {
             var drawable = scene.drawableCollection.get(i);
             var trafo = drawable.transform;
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (shape._objectID < 1 || !s_gl || !shape._vf.isPickable) {
+            if (!s_gl || shape._objectID < 1 || !shape._vf.isPickable) {
                 continue;
             }
 
@@ -1394,7 +1397,7 @@ x3dom.gfx_webgl = (function () {
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
-            sp.lowBit = (shape._objectID & 255) / 255.0;
+            sp.lowBit  = (shape._objectID & 255) / 255.0;
             sp.highBit = (shape._objectID >>> 8) / 255.0;
 
             sp.from = from.toGL();
@@ -1471,7 +1474,6 @@ x3dom.gfx_webgl = (function () {
                         sp.IG_indexTexture = texUnit++;
                     }
                 }
-
                 if (s_geo.getCoordinateTexture(0)) {
                     if (!sp.IG_coordinateTexture) {
                         sp.IG_coordinateTexture = texUnit++;
@@ -1568,16 +1570,6 @@ x3dom.gfx_webgl = (function () {
                     gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
 
-                //Clean Texture units for IG
-                if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                    if (s_gl.imageGeometry == 1) {
-                        gl.activeTexture(gl.TEXTURE1);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    }
-                }
-
                 gl.disableVertexAttribArray(sp.position);
 
                 if (sp.texcoord !== undefined && s_gl.buffers[q5 + 3]) {
@@ -1585,6 +1577,16 @@ x3dom.gfx_webgl = (function () {
                 }
                 if (sp.color !== undefined && s_gl.buffers[q5 + 4]) {
                     gl.disableVertexAttribArray(sp.color);
+                }
+            }
+
+            //Clean Texture units for IG
+            if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                if (s_gl.imageGeometry == 1) {
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
                 }
             }
         }
@@ -3069,11 +3071,11 @@ x3dom.gfx_webgl = (function () {
         n = scene.drawableCollection.length;
 
         // Very, very experimental priority culling, currently coupled with frustum and small feature culling
-        // TODO; what about shadows, picking etc. (but picking needs all objects, though this is NYI)
+        // TODO; what about shadows?
         if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
             n = Math.floor(n * env._lowPriorityThreshold);
-            if (n == 0 && scene.drawableCollection.length > 0)
-                n = 1;    // render at least one object
+            if (!n && scene.drawableCollection.length)
+                n = 1;   // render at least one object
         }
 
         // render all remaining shapes
