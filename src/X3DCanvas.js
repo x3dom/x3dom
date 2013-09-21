@@ -872,8 +872,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			// update scene bbox
 			doc._scene.updateVolume();
-			
-			doc._viewarea._hasTouches = true;
 
             if (touches.examineNavType) {
                 for(i = 0; i < evt.touches.length; i++) {
@@ -947,9 +945,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                     var deltaZoom = squareDistance - touches.lastSquareDistance;
 
                     var deltaMove = new x3dom.fields.SFVec3f(
-                         deltaMiddle.x / screen.width,
-                        -deltaMiddle.y / screen.height,
-                         deltaZoom / (screen.width * screen.height * 0.2));
+                                                 deltaMiddle.x / screen.width,
+                                                -deltaMiddle.y / screen.height,
+                                                 deltaZoom / (screen.width * screen.height * 0.2));
 
                     var rotation = touches.calcAngle(distance);
                     var angleDelta = touches.lastAngle - rotation;
@@ -1004,8 +1002,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			        dblClick = true;
 			    touches.numTouches = evt.touches.length;
 			}
-			
-			doc._viewarea._hasTouches = false;
 
             if (touches.examineNavType) {
                 for(var i = 0; i < touches.lastLayer.length; i++) {

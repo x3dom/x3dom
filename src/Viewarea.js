@@ -46,7 +46,6 @@ x3dom.Viewarea = function (document, scene) {
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
-    this._hasTouches = false;
 
     this._points = 0;   // old render mode flag (but think of better name!)
     this._numRenderedNodes = 0;
@@ -115,7 +114,7 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
 x3dom.Viewarea.prototype.isMoving = function()
 {
-    return (this._isMoving || this._hasTouches || this._isAnimating);
+    return (this._isMoving || this._isAnimating);
 };
 
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
