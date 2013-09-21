@@ -990,7 +990,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			if (doc == null)
 				doc = this.parent.doc;
-          
+
+			doc._viewarea._isMoving = false;
+
 			// reinit first finger for rotation
 			if (touches.numTouches == 2 && evt.touches.length == 1)
 				touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
