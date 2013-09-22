@@ -91,9 +91,8 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("Url") > 0 ||
-                    fieldName.search("sky") >= 0 || 
-                    fieldName.search("ground") >= 0) {
+                if (fieldName.indexOf("Url") > 0 || fieldName == "transparency" ||
+                    fieldName.search("sky") >= 0 || fieldName.search("ground") >= 0) {
                     this._dirty = true;
                 }
                 else if (fieldName.indexOf("bind") >= 0) {

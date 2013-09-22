@@ -793,22 +793,25 @@ x3dom.gfx_webgl = (function () {
 
                 tmp.reverse();
 
+                var alpha = Math.floor((1.0 - bgnd.getTransparency()) * 255);
+
                 for (i = 0; i < tmp.length; i++) {
-                    arr[3 * i + 0] = Math.floor(tmp[i].r * 255);
-                    arr[3 * i + 1] = Math.floor(tmp[i].g * 255);
-                    arr[3 * i + 2] = Math.floor(tmp[i].b * 255);
+                    arr.push(Math.floor(tmp[i].r * 255),
+                             Math.floor(tmp[i].g * 255),
+                             Math.floor(tmp[i].b * 255),
+                             alpha);
                 }
 
                 var pixels = new Uint8Array(arr);
-                var format = gl.RGB;
+                var format = gl.RGBA;
 
-                N = (pixels.length) / 3;
+                N = pixels.length / 4;
 
                 gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
                 gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
                 gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
@@ -817,7 +820,7 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
             }
             else {
-                // TODO; impl. gradient bg etc., e.g. via canvas 2d?
+                // Impl. gradient bg etc., e.g. via canvas 2d? But can be done via CSS anyway...
                 bgnd._webgl = {};
             }
         }
@@ -867,6 +870,8 @@ x3dom.gfx_webgl = (function () {
         bgnd._webgl.render = function (gl, mat_view, mat_proj)
         {
             var sp = bgnd._webgl.shader;
+            var alpha = 1.0 - bgnd.getTransparency();
+
             var mat_scene = null;
             var projMatrix_22 = mat_proj._22,
                 projMatrix_23 = mat_proj._23;
@@ -875,6 +880,7 @@ x3dom.gfx_webgl = (function () {
             if ((sp !== undefined && sp !== null) &&
                 (sp.texcoord !== undefined && sp.texcoord !== null) &&
                 (bgnd._webgl.texture !== undefined && bgnd._webgl.texture !== null)) {
+                gl.clearColor(0, 0, 0, alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
@@ -888,7 +894,6 @@ x3dom.gfx_webgl = (function () {
                 if (!sp.tex) {
                     sp.tex = 0;
                 }
-                sp.alpha = 1.0;
 
                 // adapt projection matrix to better near/far
                 mat_proj._22 = 100001 / 99999;
@@ -911,8 +916,8 @@ x3dom.gfx_webgl = (function () {
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
 
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
@@ -934,19 +939,19 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp.position);
                 gl.disableVertexAttribArray(sp.texcoord);
 
-                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT);
             }
             else if (!sp || !bgnd._webgl.texture ||
-                (bgnd._webgl.texture.textureCubeReady !== undefined &&
-                    bgnd._webgl.texture.textureCubeReady !== true)) {
+                    (bgnd._webgl.texture.textureCubeReady !== undefined &&
+                     bgnd._webgl.texture.textureCubeReady !== true)) {
                 var bgCol = bgnd.getSkyColor().toGL();
-                bgCol[3] = 1.0 - bgnd.getTransparency();
 
-                gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
+                gl.clearColor(bgCol[0], bgCol[1], bgCol[2], alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
             else {
+                gl.clearColor(0, 0, 0, alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
@@ -983,17 +988,17 @@ x3dom.gfx_webgl = (function () {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.texture);
 
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
                 else {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
 
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
@@ -1007,16 +1012,15 @@ x3dom.gfx_webgl = (function () {
 
                 gl.disableVertexAttribArray(sp.position);
 
+                gl.activeTexture(gl.TEXTURE0);
                 if (bgnd._webgl.texture.textureCubeReady) {
-                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                 }
                 else {
-                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
 
-                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT);
             }
         };
     };
