@@ -121,15 +121,38 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
                     "uniform vec3 from;\n" +
                     "varying vec3 worldCoord;\n" +
                     "varying vec2 idCoord;\n" +
+                    //pop geometry
+                    "uniform float popGeometry;\n" +
+                    "uniform float PG_precisionLevel;\n" +
+                    "uniform float PG_powPrecision;\n" +
+                    "uniform vec3 PG_maxBBSize;\n" +
+                    "uniform vec3 PG_bbMin;\n" +
+                    "uniform vec3 PG_bbMaxModF;\n" +
+                    "uniform vec3 PG_bboxShiftVec;\n" +
+                    "uniform float PG_numAnchorVertices;\n" +
                     
                     "void main(void) {\n" +
                     "    gl_PointSize = 2.0;\n" +
+                    "    vec3 pos;\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
 					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
 					"	 }\n" +
-                    "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
+                    "	 if (popGeometry != 0.0) {\n" +
+                    "		pos = position;\n" +
+                    "		vec3 offsetVec = step(pos / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n" +
+                    "		if (PG_precisionLevel <= 2.0) {\n" +
+                    "   		pos = floor(pos / PG_powPrecision) * PG_powPrecision;\n" +
+                    "   		pos /= (65536.0 - PG_powPrecision);\n" +
+                    "		}\n" +
+                    "		else {\n" +
+                    "   		pos /= bgPrecisionMax;\n" +
+                    "		}\n" +
+                    "		pos = (pos + offsetVec + PG_bbMin) * PG_maxBBSize;\n" +
+                    "	 } else {\n" +
+                    "       pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
+                    "	 }\n" +
                     "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
                     "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
                     "}\n";

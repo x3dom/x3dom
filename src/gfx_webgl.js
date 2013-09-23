@@ -1352,8 +1352,8 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         this.stateManager.viewport(0, 0, scene._webgl.fboPick.width, bufHeight);
 
-        gl.scissor(x, y, width, height);
-        gl.enable(gl.SCISSOR_TEST);
+        //gl.scissor(x, y, width, height);
+        //gl.enable(gl.SCISSOR_TEST);
 
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.clearDepth(1.0);
@@ -1612,7 +1612,7 @@ x3dom.gfx_webgl = (function () {
             x3dom.debug.logException(se + " (cannot pick)");
         }
 
-        gl.disable(gl.SCISSOR_TEST);
+        //gl.disable(gl.SCISSOR_TEST);
 
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
