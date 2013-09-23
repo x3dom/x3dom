@@ -865,7 +865,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'nozzleHeight', 0.1);
             this.addField_SFFloat(ctx, 'nozzleRadius', 0.6);
             this.addField_SFFloat(ctx, 'stemHeight', 0.9);
-            this.addField_SFFloat(ctx, 'stemRadius', 0.5);
+            this.addField_SFFloat(ctx, 'outerRadius', 0.5);
+            this.addField_SFFloat(ctx, 'innerRadius', 0.4);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this.rebuildGeometry();
@@ -882,10 +883,10 @@ x3dom.registerNodeType(
                 var nozzleHeight = this._vf.nozzleHeight;
                 var nozzleRadius = this._vf.nozzleRadius;
                 var stemHeight = this._vf.stemHeight;
-                var stemRadius = this._vf.stemRadius;
+                var outerRadius = this._vf.outerRadius;
                 var sides = this._vf.subdivision;
                 var center = (stemHeight + nozzleHeight) / 2;
-                var innerRadius = 0.8 * stemRadius;
+                var innerRadius = this._vf.innerRadius;
 
                 var beta, delta, x, z, k, j, nx, nz;
                 delta = twoPi / sides;
@@ -897,8 +898,8 @@ x3dom.registerNodeType(
                     nx =  Math.sin(beta);
                     nz = -Math.cos(beta);
 
-                    x = stemRadius * nx;
-                    z = stemRadius * nz;
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
 
                     this._mesh._positions[0].push(x, -center, z);
                     this._mesh._normals[0].push(nx, 0, nz);
@@ -957,8 +958,8 @@ x3dom.registerNodeType(
                     nx =  Math.sin(beta);
                     nz = -Math.cos(beta);
 
-                    x = stemRadius * nx;
-                    z = stemRadius * nz;
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
 
                     this._mesh._positions[0].push(x, -center, z);
                     this._mesh._normals[0].push(0, -1, 0);
@@ -1056,8 +1057,8 @@ x3dom.registerNodeType(
                     this._mesh._positions[0].push(x, stemHeight-center, z);
                     this._mesh._normals[0].push(0, -1, 0);
 
-                    x = stemRadius * nx;
-                    z = stemRadius * nz;
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
 
                     this._mesh._positions[0].push(x, stemHeight-center, z);
                     this._mesh._normals[0].push(0, -1, 0);
@@ -1116,8 +1117,8 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName) 
 			{
-                if (fieldName == "nozzleHeight" || fieldName == "nozzleRadius" ||
-                    fieldName == "stemHeight" || fieldName == "stemRadius" || fieldName == "subdivision")
+                if (fieldName == "nozzleHeight" || fieldName == "nozzleRadius" || fieldName == "stemHeight" ||
+                    fieldName == "outerRadius" || fieldName == "innerRadius" || fieldName == "subdivision")
                 {
                     this.rebuildGeometry();
 
