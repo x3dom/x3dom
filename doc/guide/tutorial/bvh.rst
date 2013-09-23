@@ -117,4 +117,4 @@ Download .NET based BVHRefiner Dataset Converter:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Windows 7 x86:  `BVHRefiner Dataset Converter x86 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_  
 * Windows 7 x64:  `BVHRefiner Dataset Converter x64 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_
-* Source Code:    `BVHRefiner Dataset Converter Source <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_  
+* Source Code:    `BVHRefiner Dataset Converter Source <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_Source.zip>`_  
