@@ -109,12 +109,12 @@ The BVHRefiner Dataset Converter is a tool to produce a WMTS or TREE conform dat
 3. Represents the path where the final dataset should be stored
 4. Opens a folder dialog where the storing path of the final dataset can be chosen
 5. Convertion settings 
-5.1. Convertion Type: Surface-, Displacement- or Normal-Dataset
-5.2. Dataset-Format: Currently supported dataset formats (WMTS, TREE)
+5. a) Convertion Type: Surface-, Displacement- or Normal-Dataset
+5. b) Dataset-Format: Currently supported dataset formats (WMTS, TREE)
 6. Advanced Settings (are calculated automatically, but can be changed if required)
-6.1. Mesh Resolution: Resolution of a tile in the x3dom-application
-6.2. Depth of the Quadtree: The depth of the final dataset (levels of detail)
-6.3. Image Type: The image format of all images in the final dataset (jpg, png, gif)
+6. a) Mesh Resolution: Resolution of a tile in the x3dom-application
+6. b) Depth of the Quadtree: The depth of the final dataset (levels of detail)
+6. c) Image Type: The image format of all images in the final dataset (jpg, png, gif)
 7. Starts the convertion of the original source image into the tiled dataset
 8. Current progress of the convertion
 
