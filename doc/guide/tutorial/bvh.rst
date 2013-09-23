@@ -102,25 +102,25 @@ The BVHRefiner Dataset Converter is a tool to produce a WMTS or TREE conform dat
 
 .. image:: /_static/tutorial/bvh_refiner/dataset_converter.jpg
    :align: center
+   :scale: 100%
 
-    1.	Representation of the original image
-    2.	Opens  a file dialog where the source image can be chosen 
-    3.	Represents the path where the final dataset should be stored
-    4.	Opens a folder dialog where the storing path of the final dataset can be chosen
-    5.	Convertion settings 
-        a.  Convertion Type: Surface-, Displacement- or Normal-Dataset
-        b.  Dataset-Format: Currently supported dataset formats (WMTS, TREE)
-    6.	Advanced Settings (are calculated automatically, but can be changed if required)
-        a.  Mesh Resolution: Resolution of a tile in the x3dom-application
-        b.  Depth of the Quadtree: The depth of the final dataset (levels of detail)
-        c.  Image Type: The image format of all images in the final dataset (jpg, png, gif)
-    7.	Starts the convertion of the original source image into the tiled dataset
-    8.	Current progress of the convertion
+1. Representation of the original image
+2. Opens  a file dialog where the source image can be chosen 
+3. Represents the path where the final dataset should be stored
+4. Opens a folder dialog where the storing path of the final dataset can be chosen
+5. Convertion settings 
+a. Convertion Type: Surface-, Displacement- or Normal-Dataset
+b. Dataset-Format: Currently supported dataset formats (WMTS, TREE)
+6. Advanced Settings (are calculated automatically, but can be changed if required)
+a. Mesh Resolution: Resolution of a tile in the x3dom-application
+b. Depth of the Quadtree: The depth of the final dataset (levels of detail)
+c. Image Type: The image format of all images in the final dataset (jpg, png, gif)
+7. Starts the convertion of the original source image into the tiled dataset
+8. Current progress of the convertion
 
 
 Download .NET based BVHRefiner Dataset Converter:
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Windows 7 x86:  `BVHRefiner Dataset Converter x86 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/bvhrefiner_dataset_converter_x64.zip>`_  
-Windows 7 x64:  `BVHRefiner Dataset Converter x64 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/bvhrefiner_dataset_converter_x64.zip>`_
-Source Code:    `BVHRefiner Dataset Converter Source <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/bvhrefiner_dataset_converter_x64.zip>`_  
+* Windows 7 x86:  `BVHRefiner Dataset Converter x86 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_  
+* Windows 7 x64:  `BVHRefiner Dataset Converter x64 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_
+* Source Code:    `BVHRefiner Dataset Converter Source <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_  
