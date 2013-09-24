@@ -284,9 +284,9 @@ x3dom.registerNodeType(
 
                     //Unfortunately, there is currently an inconsistent behavior between
                     //chrome and firefox, where the first one is "escaping" the "%" character in the
-                    //blob URI and the other one not. This can also not be fixed by first using
-                    //"decodeURI", because, in that case, "%3A" is not resolved to "%".
-                    if (!(xhrURI.substr(0, 5) === "blob:" || xhrURI.substr(0, 7) === "blob%3A"))
+                    //blob URI, which contains a ref to a "file" object. This can also not be fixed by
+                    //first using "decodeURI", because, in that case, "%3A" is not resolved to "%".
+                    if (!(xhrURI.substr(0, 5) === "blob:"))
                     {
                         xhrURI = encodeURI(xhrURI);
                     }
