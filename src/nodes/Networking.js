@@ -166,7 +166,7 @@ x3dom.registerNodeType(
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
 						that.fireEvents("error");
-                        x3dom.debug.logError('XMLHttpRequest requires a web server running!');
+                        x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires a web server running!');
 
                         that._nameSpace.doc.downloadCount -= 1;
 						that.count = 0;
@@ -280,7 +280,19 @@ x3dom.registerNodeType(
 
                 if (this._vf.url.length && this._vf.url[0].length)
                 {
-                    xhr.open('GET', encodeURI(this._nameSpace.getURL(this._vf.url[0])), true);
+                    var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
+
+                    //Unfortunately, there is currently an inconsistent behavior between
+                    //chrome and firefox, where the first one is "escaping" the "%" character in the
+                    //blob URI and the other one not. This can also not be fixed by first using
+                    //"decodeURI", because, in that case, "%3A" is not resolved to "%".
+                    if (!(xhrURI.substr(0, 5) === "blob:" || xhrURI.substr(0, 7) === "blob%3A"))
+                    {
+                        xhrURI = encodeURI(xhrURI);
+                    }
+
+                    xhr.open('GET', xhrURI, true);
+
                     try {
                         xhr.send(null);
                     }
