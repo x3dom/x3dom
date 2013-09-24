@@ -791,10 +791,10 @@ x3dom.Runtime.prototype.helicopter = function() {
  */
  x3dom.Runtime.prototype.resetExamin = function() {
     var viewarea = this.canvas.doc._viewarea;
-    viewarea._relMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    viewarea._needNavigationMatrixUpdate = true;
     this.canvas.doc.needRender = true;
  };
 
