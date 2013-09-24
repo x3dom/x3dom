@@ -1364,7 +1364,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
-            //this.pan(vec);
             this._movement = this._movement.add(vec);
 
             mat = this.getViewpointMatrix().mult(this._transMat);
@@ -1379,7 +1378,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
-            //this.zoom(vec);
             this._movement = this._movement.add(vec);
 
             mat = this.getViewpointMatrix().mult(this._transMat);
