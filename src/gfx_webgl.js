@@ -415,7 +415,7 @@ x3dom.gfx_webgl = (function () {
 
                         if (sp.position !== undefined) {
                             gl.deleteBuffer(this._webgl.buffers[q5 + 1]);
-                            gl.deleteBuffer(this._webgl.buffers[q5  ]);
+                            gl.deleteBuffer(this._webgl.buffers[q5]);
                         }
 
                         if (sp.normal !== undefined) {
@@ -442,8 +442,12 @@ x3dom.gfx_webgl = (function () {
                     if (delGL === undefined)
                         delGL = true;
 
-                    if (delGL)
+                    if (delGL) {
                         delete this._webgl;
+
+                        // be optimistic, one shape removed makes room for another one
+                        x3dom.BinaryContainerLoader.outOfMemory = false;
+                    }
                 }
             };  // shape._cleanupGLObjects()
         }
@@ -789,22 +793,25 @@ x3dom.gfx_webgl = (function () {
 
                 tmp.reverse();
 
+                var alpha = Math.floor((1.0 - bgnd.getTransparency()) * 255);
+
                 for (i = 0; i < tmp.length; i++) {
-                    arr[3 * i + 0] = Math.floor(tmp[i].r * 255);
-                    arr[3 * i + 1] = Math.floor(tmp[i].g * 255);
-                    arr[3 * i + 2] = Math.floor(tmp[i].b * 255);
+                    arr.push(Math.floor(tmp[i].r * 255),
+                             Math.floor(tmp[i].g * 255),
+                             Math.floor(tmp[i].b * 255),
+                             alpha);
                 }
 
                 var pixels = new Uint8Array(arr);
-                var format = gl.RGB;
+                var format = gl.RGBA;
 
-                N = (pixels.length) / 3;
+                N = pixels.length / 4;
 
                 gl.bindTexture(gl.TEXTURE_2D, texture);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
                 gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
                 gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
@@ -813,7 +820,7 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
             }
             else {
-                // TODO; impl. gradient bg etc., e.g. via canvas 2d?
+                // Impl. gradient bg etc., e.g. via canvas 2d? But can be done via CSS anyway...
                 bgnd._webgl = {};
             }
         }
@@ -863,6 +870,8 @@ x3dom.gfx_webgl = (function () {
         bgnd._webgl.render = function (gl, mat_view, mat_proj)
         {
             var sp = bgnd._webgl.shader;
+            var alpha = 1.0 - bgnd.getTransparency();
+
             var mat_scene = null;
             var projMatrix_22 = mat_proj._22,
                 projMatrix_23 = mat_proj._23;
@@ -871,6 +880,7 @@ x3dom.gfx_webgl = (function () {
             if ((sp !== undefined && sp !== null) &&
                 (sp.texcoord !== undefined && sp.texcoord !== null) &&
                 (bgnd._webgl.texture !== undefined && bgnd._webgl.texture !== null)) {
+                gl.clearColor(0, 0, 0, alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
@@ -884,7 +894,6 @@ x3dom.gfx_webgl = (function () {
                 if (!sp.tex) {
                     sp.tex = 0;
                 }
-                sp.alpha = 1.0;
 
                 // adapt projection matrix to better near/far
                 mat_proj._22 = 100001 / 99999;
@@ -907,8 +916,8 @@ x3dom.gfx_webgl = (function () {
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
 
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
@@ -930,19 +939,19 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp.position);
                 gl.disableVertexAttribArray(sp.texcoord);
 
-                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT);
             }
             else if (!sp || !bgnd._webgl.texture ||
-                (bgnd._webgl.texture.textureCubeReady !== undefined &&
-                    bgnd._webgl.texture.textureCubeReady !== true)) {
+                    (bgnd._webgl.texture.textureCubeReady !== undefined &&
+                     bgnd._webgl.texture.textureCubeReady !== true)) {
                 var bgCol = bgnd.getSkyColor().toGL();
-                bgCol[3] = 1.0 - bgnd.getTransparency();
 
-                gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
+                gl.clearColor(bgCol[0], bgCol[1], bgCol[2], alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
             else {
+                gl.clearColor(0, 0, 0, alpha);
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
@@ -979,17 +988,17 @@ x3dom.gfx_webgl = (function () {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.texture);
 
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
                 else {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
 
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
@@ -1003,16 +1012,15 @@ x3dom.gfx_webgl = (function () {
 
                 gl.disableVertexAttribArray(sp.position);
 
+                gl.activeTexture(gl.TEXTURE0);
                 if (bgnd._webgl.texture.textureCubeReady) {
-                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                 }
                 else {
-                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
 
-                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT);
             }
         };
     };
@@ -1084,8 +1092,8 @@ x3dom.gfx_webgl = (function () {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
 
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
@@ -1221,7 +1229,6 @@ x3dom.gfx_webgl = (function () {
                         sp.IG_indexTexture = texUnit++;
                     }
                 }
-
                 if (s_geo.getCoordinateTexture(0)) {
                     if (!sp.IG_coordinateTexture) {
                         sp.IG_coordinateTexture = texUnit++;
@@ -1300,17 +1307,17 @@ x3dom.gfx_webgl = (function () {
                     gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
 
-                //Clean Texture units for IG
-                if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                    if (s_gl.imageGeometry == 1) {
-                        gl.activeTexture(gl.TEXTURE1);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    }
-                }
-
                 gl.disableVertexAttribArray(sp.position);
+            }
+
+            //Clean Texture units for IG
+            if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                if (s_gl.imageGeometry == 1) {
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
             }
         }
 
@@ -1324,63 +1331,64 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.renderPickingPass = function (gl, scene, mat_view, mat_scene, from, sceneSize,
                                                     pickMode, lastX, lastY, width, height)
     {
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
+        var ps = scene._webgl.pickScale;
+        var bufHeight = scene._webgl.fboPick.height;
+        var x = lastX * ps;
+        var y = (bufHeight - 1) - lastY * ps;
+        var sp = null;
 
-        this.stateManager.viewport(0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height);
+        switch (pickMode) {
+            case 0: sp = scene._webgl.pickShader;         break;
+            case 1: sp = scene._webgl.pickColorShader;    break;
+            case 2: sp = scene._webgl.pickTexCoordShader; break;
+            case 3: sp = scene._webgl.pickShader24;       break;
+            case 4: sp = scene._webgl.pickShaderId;       break;
+            default: break;
+        }
+        if (!sp) {   // error
+            return;
+        }
+
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
+        this.stateManager.viewport(0, 0, scene._webgl.fboPick.width, bufHeight);
+
+        //gl.scissor(x, y, width, height);
+        //gl.enable(gl.SCISSOR_TEST);
 
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.clearDepth(1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        var viewarea = scene.drawableCollection.viewarea;
+        var env = scene.getEnvironment();
+        var n = scene.drawableCollection.length;
+
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._lowPriorityThreshold);
+            if (!n && scene.drawableCollection.length)
+                n = 1;   // render at least one object
+        }
+
+        var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
+        var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
 
         this.stateManager.depthFunc(gl.LEQUAL);
         this.stateManager.enable(gl.DEPTH_TEST);
         this.stateManager.enable(gl.CULL_FACE);
         this.stateManager.disable(gl.BLEND);
 
-        var sp = null;
-
-        switch (pickMode) {
-            case 0:
-                sp = scene._webgl.pickShader;
-                break;
-            case 1:
-                sp = scene._webgl.pickColorShader;
-                break;
-            case 2:
-                sp = scene._webgl.pickTexCoordShader;
-                break;
-            case 3:
-                sp = scene._webgl.pickShader24;
-                break;
-            case 4:
-                sp = scene._webgl.pickShaderId;
-                break;
-            default:
-                break;
-        }
-
-        if (!sp) {  // error
-            return;
-        }
-
         this.stateManager.useProgram(sp);
 
-        // the correct viewarea would be one that holds this half-size render buffer
-        var viewarea = scene.drawableCollection.viewarea;
+        this.stateManager.lineWidth(2);     // bigger lines for better picking
 
-        var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
-        var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
-
-        gl.lineWidth(2);    // bigger lines for better picking
-
-        for (var i = 0, n = scene.drawableCollection.length; i < n; i++)
+        for (var i = 0; i < n; i++)
         {
             var drawable = scene.drawableCollection.get(i);
             var trafo = drawable.transform;
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (shape._objectID < 1 || !s_gl || !shape._vf.isPickable) {
+            if (!s_gl || shape._objectID < 1 || !shape._vf.isPickable) {
                 continue;
             }
 
@@ -1390,7 +1398,7 @@ x3dom.gfx_webgl = (function () {
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
-            sp.lowBit = (shape._objectID & 255) / 255.0;
+            sp.lowBit  = (shape._objectID & 255) / 255.0;
             sp.highBit = (shape._objectID >>> 8) / 255.0;
 
             sp.from = from.toGL();
@@ -1467,7 +1475,6 @@ x3dom.gfx_webgl = (function () {
                         sp.IG_indexTexture = texUnit++;
                     }
                 }
-
                 if (s_geo.getCoordinateTexture(0)) {
                     if (!sp.IG_coordinateTexture) {
                         sp.IG_coordinateTexture = texUnit++;
@@ -1493,6 +1500,7 @@ x3dom.gfx_webgl = (function () {
             if (s_gl.popGeometry) {
                 var model_view = mat_view.mult(trafo);
                 // FIXME; viewarea's width/height twice as big as render buffer size, which leads to too high precision
+                // the correct viewarea here would be one that holds this half-sized render buffer
                 this.updatePopState(drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps);
             }
 
@@ -1564,16 +1572,6 @@ x3dom.gfx_webgl = (function () {
                     gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
 
-                //Clean Texture units for IG
-                if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                    if (s_gl.imageGeometry == 1) {
-                        gl.activeTexture(gl.TEXTURE1);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    }
-                }
-
                 gl.disableVertexAttribArray(sp.position);
 
                 if (sp.texcoord !== undefined && s_gl.buffers[q5 + 3]) {
@@ -1583,15 +1581,24 @@ x3dom.gfx_webgl = (function () {
                     gl.disableVertexAttribArray(sp.color);
                 }
             }
+
+            //Clean Texture units for IG
+            if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE) {
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                if (s_gl.imageGeometry == 1) {
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
+            }
         }
 
-        gl.lineWidth(1);
+        this.stateManager.lineWidth(1);
+
         gl.flush();
 
         try {
-            var x = lastX * scene._webgl.pickScale,
-                y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            // 4 = 1 * 1 * 4; then take width x height window
+            // 4 = 1 * 1 * 4; then take width x height window (exception pickRect)
             var data = new Uint8Array(4 * width * height);
 
             gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
@@ -1600,10 +1607,12 @@ x3dom.gfx_webgl = (function () {
         }
         catch (se) {
             scene._webgl.fboPick.pixelData = [];
-            //No Exception on file:// when starting with additional flags:
-            //  chrome.exe --disable-web-security
+            // No Exception on file:// when starting with additional flags:
+            //    chrome.exe --disable-web-security
             x3dom.debug.logException(se + " (cannot pick)");
         }
+
+        //gl.disable(gl.SCISSOR_TEST);
 
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
@@ -1924,6 +1933,35 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         }
 
+        //===========================================================================
+        // Set ColorMaskMode
+        //===========================================================================
+        var colorMaskMode = s_app ? s_app._cf.colorMaskMode.node : null;
+        if (colorMaskMode)
+        {
+            this.stateManager.colorMask(colorMaskMode._vf.maskR,
+                                        colorMaskMode._vf.maskG,
+                                        colorMaskMode._vf.maskB,
+                                        colorMaskMode._vf.maskA);
+        }
+        else //Set Defaults
+        {
+            this.stateManager.colorMask(true, true, true, true);
+        }
+
+        //===========================================================================
+        // Set LineProperties (only linewidthScaleFactor, interpreted as lineWidth)
+        //===========================================================================
+        var lineProperties = s_app ? s_app._cf.lineProperties.node : null;
+        if (lineProperties)
+        {
+            this.stateManager.lineWidth(lineProperties._vf.linewidthScaleFactor);
+        }
+        else //Set Defaults
+        {
+            this.stateManager.lineWidth(1);
+        }
+
         if (shape.isSolid()) {
             this.stateManager.enable(gl.CULL_FACE);
 
@@ -2182,6 +2220,14 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.blendEquation(gl.FUNC_ADD);
         }
 
+        if (colorMaskMode) {
+            this.stateManager.colorMask(true, true, true, true);
+        }
+
+        if (lineProperties) {
+            this.stateManager.lineWidth(1);
+        }
+
         // cleanup textures
         var s_gl_tex = s_gl.texture;
         cnt_n = s_gl_tex ? s_gl_tex.length : 0;
@@ -2316,7 +2362,7 @@ x3dom.gfx_webgl = (function () {
         var scene = viewarea._scene;
 
         // method requires that scene has already been rendered at least once
-        if (gl === null || scene === null || !scene._webgl || !scene.drawableCollection) {
+        if (!gl || !scene || !scene._webgl || !scene.drawableCollection) {
             return false;
         }
 
@@ -2332,11 +2378,9 @@ x3dom.gfx_webgl = (function () {
             case "texcoord": pickMode = 2; break;
         }
 
-        //t0 = new Date().getTime();
-
         x3dom.Utils.startMeasure("picking");
 
-        scene.updateVolume();
+        //scene.updateVolume();
 
         var mat_view, mat_scene;
 
@@ -2357,25 +2401,13 @@ x3dom.gfx_webgl = (function () {
         var _min = x3dom.fields.SFVec3f.copy(from);
         var _max = x3dom.fields.SFVec3f.copy(from);
 
-        if (_min.x > min.x) {
-            _min.x = min.x;
-        }
-        if (_min.y > min.y) {
-            _min.y = min.y;
-        }
-        if (_min.z > min.z) {
-            _min.z = min.z;
-        }
+        if (_min.x > min.x) { _min.x = min.x; }
+        if (_min.y > min.y) { _min.y = min.y; }
+        if (_min.z > min.z) { _min.z = min.z; }
 
-        if (_max.x < max.x) {
-            _max.x = max.x;
-        }
-        if (_max.y < max.y) {
-            _max.y = max.y;
-        }
-        if (_max.z < max.z) {
-            _max.z = max.z;
-        }
+        if (_max.x < max.x) { _max.x = max.x; }
+        if (_max.y < max.y) { _max.y = max.y; }
+        if (_max.z < max.z) { _max.z = max.z; }
 
         min.setValues(_min);
         max.setValues(_max);
@@ -2384,37 +2416,38 @@ x3dom.gfx_webgl = (function () {
 
         var baseID = x3dom.nodeTypes.Shape.objectID + 2;    // for shadow ids
 
-        // render to texture for reading pixel values
-        this.renderPickingPass(gl, scene, mat_view, mat_scene,
-            from, sceneSize, pickMode, x, y, 2, 2);
 
-        //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
-        //               scene._webgl.fboPick.width + scene._lastX ) * 4;
-        var index = 0;
-        if (index >= 0 && scene._webgl.fboPick.pixelData &&
-            index < scene._webgl.fboPick.pixelData.length)
+        // render to texture for reading pixel values
+        this.renderPickingPass(gl, scene, mat_view, mat_scene, from, sceneSize, pickMode, x, y, 2, 2);
+
+
+        var pixelData = scene._webgl.fboPick.pixelData;
+
+        if (pixelData && pixelData.length)
         {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-            var objId = scene._webgl.fboPick.pixelData[index + 3], shapeId;
+
+            var index = 0;
+            var objId = pixelData[index + 3], shapeId;
 
             var pixelOffset = 1.0 / scene._webgl.pickScale;
             var denom = 1.0 / 256.0;
             var dist, line, lineoff, right, up;
 
             if (pickMode == 0) {
-                objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
+                objId += 256 * pixelData[index + 2];
 
-                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
 
                 line = viewarea.calcViewRay(x, y);
 
                 pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
-                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y);
 
@@ -2422,8 +2455,8 @@ x3dom.gfx_webgl = (function () {
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
-                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset);
 
@@ -2433,17 +2466,17 @@ x3dom.gfx_webgl = (function () {
                 pickNorm = right.cross(up).normalize();
             }
             else if (pickMode == 3) {
-                objId +=   256 * scene._webgl.fboPick.pixelData[index + 2] +
-                         65536 * scene._webgl.fboPick.pixelData[index + 1];
+                objId +=   256 * pixelData[index + 2] +
+                         65536 * pixelData[index + 1];
 
-                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+                dist = pixelData[index] / 255.0;
 
                 line = viewarea.calcViewRay(x, y);
 
                 pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
-                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+                dist = pixelData[index] / 255.0;
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y);
 
@@ -2451,7 +2484,7 @@ x3dom.gfx_webgl = (function () {
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
-                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+                dist = pixelData[index] / 255.0;
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset);
 
@@ -2461,10 +2494,10 @@ x3dom.gfx_webgl = (function () {
                 pickNorm = right.cross(up).normalize();
             }
             else if (pickMode == 4) {
-                objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
+                objId += 256 * pixelData[index + 2];
 
-                shapeId  =       scene._webgl.fboPick.pixelData[index + 1];
-                shapeId += 256 * scene._webgl.fboPick.pixelData[index + 0];
+                shapeId  =       pixelData[index + 1];
+                shapeId += 256 * pixelData[index    ];
 
                 // check if standard shape picked without special shadow id
                 if (objId == 0 && (shapeId > 0 && shapeId < baseID)) {
@@ -2472,11 +2505,15 @@ x3dom.gfx_webgl = (function () {
                 }
             }
             else {
-                pickPos.x = scene._webgl.fboPick.pixelData[index + 0];
-                pickPos.y = scene._webgl.fboPick.pixelData[index + 1];
-                pickPos.z = scene._webgl.fboPick.pixelData[index + 2];
+                pickPos.x = pixelData[index    ];
+                pickPos.y = pixelData[index + 1];
+                pickPos.z = pixelData[index + 2];
             }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
+
+            var eventType = "shadowObjectIdChanged";
+            var shadowObjectIdChanged, event;
+            var button = Math.max(buttonState >>> 8, buttonState & 255);
 
             if (objId >= baseID) {
                 objId -= baseID;
@@ -2501,45 +2538,29 @@ x3dom.gfx_webgl = (function () {
                     hitObject = viewarea._pickingInfo.pickObj._xmlNode;
                 }
 
+                shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != objId);
                 viewarea._pickingInfo.shadowObjectId = objId;
-
                 //x3dom.debug.logInfo(baseID + " + " + objId);
-                var eventType = "shadowObjectIdChanged";
 
-                try {
-                    if ( scene._xmlNode &&
-                        (scene._xmlNode["on" + eventType] ||
-                            scene._xmlNode.hasAttribute("on" + eventType) ||
-                            scene._listeners[eventType]) ) {
-                        var event = {
-                            target: scene._xmlNode,
-                            type: eventType,
-                            button: buttonState,
-                            layerX: x,
-                            layerY: y,
-                            shadowObjectId: objId,
-                            worldX: pickPos.x,
-                            worldY: pickPos.y,
-                            worldZ: pickPos.z,
-                            normalX: pickNorm.x,
-                            normalY: pickNorm.y,
-                            normalZ: pickNorm.z,
-                            hitPnt: pickPos.toGL(),
-                            hitObject: hitObject,
-                            cancelBubble: false,
-                            stopPropagation: function () {
-                                this.cancelBubble = true;
-                            },
-                            preventDefault: function () {
-                                this.cancelBubble = true;
-                            }
-                        };
-
-                        scene.callEvtHandler(("on" + eventType), event);
-                    }
-                }
-                catch (e) {
-                    x3dom.debug.logException(e);
+                if ((shadowObjectIdChanged || button) && scene._xmlNode &&
+                    (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
+                     scene._listeners[eventType]))
+                {
+                    event = {
+                        target: scene._xmlNode,
+                        type: eventType,
+                        button: button, mouseup: ((buttonState >>> 8) > 0),
+                        layerX: x, layerY: y,
+                        shadowObjectId: objId,
+                        worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
+                        normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
+                        hitPnt: pickPos.toGL(),
+                        hitObject: hitObject,
+                        cancelBubble: false,
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
+                    };
+                    scene.callEvtHandler(("on" + eventType), event);
                 }
 
                 if (scene._shadowIdMap && scene._shadowIdMap.mapping) {
@@ -2555,25 +2576,44 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-            else if (objId > 0) {
-                //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
-                //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
-                viewarea._pickingInfo.pickPos = pickPos;
-                viewarea._pickingInfo.pickNorm = pickNorm;
-                viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
-            }
             else {
-                viewarea._pickingInfo.pickObj = null;
-                //viewarea._pickingInfo.lastObj = null;
-                viewarea._pickingInfo.lastClickObj = null;
+                shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != -1);
+                viewarea._pickingInfo.shadowObjectId = -1;     // nothing hit
+
+                if ( shadowObjectIdChanged && scene._xmlNode &&
+                    (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
+                     scene._listeners[eventType]) )
+                {
+                    event = {
+                        target: scene._xmlNode,
+                        type: eventType,
+                        button: button, mouseup: ((buttonState >>> 8) > 0),
+                        layerX: x, layerY: y,
+                        shadowObjectId: viewarea._pickingInfo.shadowObjectId,
+                        cancelBubble: false,
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
+                    };
+                    scene.callEvtHandler(("on" + eventType), event);
+                }
+
+                if (objId > 0) {
+                    //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
+                    //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
+                    viewarea._pickingInfo.pickPos = pickPos;
+                    viewarea._pickingInfo.pickNorm = pickNorm;
+                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
+                }
+                else {
+                    viewarea._pickingInfo.pickObj = null;
+                    //viewarea._pickingInfo.lastObj = null;
+                    viewarea._pickingInfo.lastClickObj = null;
+                }
             }
         }
 
         var pickTime = x3dom.Utils.stopMeasure("picking");
         this.x3dElem.runtime.addMeasurement('PICKING', pickTime);
-
-        //t1 = new Date().getTime() - t0;
-        //x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
 
         return true;
     };
@@ -2587,7 +2627,7 @@ x3dom.gfx_webgl = (function () {
         var scene = viewarea ? viewarea._scene : null;
 
         // method requires that scene has already been rendered at least once
-        if (gl === null || scene === null || !scene._webgl || !scene.drawableCollection)
+        if (!gl || !scene || !scene._webgl || !scene.drawableCollection)
             return false;
 
         // values not fully correct but unnecessary anyway, just to feed the shader
@@ -2596,19 +2636,19 @@ x3dom.gfx_webgl = (function () {
 
         var x = (x1 <= x2) ? x1 : x2;
         var y = (y1 >= y2) ? y1 : y2;
-        var width = (1 + Math.abs(x2 - x1)) * scene._webgl.pickScale;
+        var width  = (1 + Math.abs(x2 - x1)) * scene._webgl.pickScale;
         var height = (1 + Math.abs(y2 - y1)) * scene._webgl.pickScale;
 
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, viewarea._last_mat_view, viewarea._last_mat_scene,
-            from, sceneSize, 0, x, y, (width < 1) ? 1 : width, (height < 1) ? 1 : height);
+               from, sceneSize, 0, x, y, (width < 1) ? 1 : width, (height < 1) ? 1 : height);
 
-        var index = 0;
+        var index;
         var pickedObjects = [];
 
         // get objects in rectangle
         for (index = 0; scene._webgl.fboPick.pixelData &&
-            index < scene._webgl.fboPick.pixelData.length; index += 4) {
+                        index < scene._webgl.fboPick.pixelData.length; index += 4) {
             var objId = scene._webgl.fboPick.pixelData[index + 3] +
                 scene._webgl.fboPick.pixelData[index + 2] * 256;
 
@@ -2885,12 +2925,8 @@ x3dom.gfx_webgl = (function () {
                         position: e_translation,
                         orientation: e_rotation.toAxisAngle(),
                         cancelBubble: false,
-                        stopPropagation: function () {
-                            this.cancelBubble = true;
-                        },
-                        preventDefault: function () {
-                            this.cancelBubble = true;
-                        }
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
                     };
 
                     e_viewpoint.callEvtHandler(("on" + e_eventType), e_event);
@@ -3025,11 +3061,11 @@ x3dom.gfx_webgl = (function () {
         n = scene.drawableCollection.length;
 
         // Very, very experimental priority culling, currently coupled with frustum and small feature culling
-        // TODO; what about shadows, picking etc. (but picking needs all objects, though this is NYI)
+        // TODO; what about shadows?
         if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
             n = Math.floor(n * env._lowPriorityThreshold);
-            if (n == 0 && scene.drawableCollection.length > 0)
-                n = 1;    // render at least one object
+            if (!n && scene.drawableCollection.length)
+                n = 1;   // render at least one object
         }
 
         // render all remaining shapes

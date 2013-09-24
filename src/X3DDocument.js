@@ -316,7 +316,8 @@ x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState, p
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y, buttonState);
+    var button = (prevButton << 8) | buttonState;   // for shadowObjectIdChanged
+    ctx.pickValue(this._viewarea, x, y, button);
     this._viewarea.onMouseRelease(x, y, buttonState, prevButton);
 };
 

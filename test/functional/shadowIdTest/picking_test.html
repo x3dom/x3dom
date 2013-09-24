@@ -203,22 +203,27 @@
       function handleShadowIdEvent(event)
       {
           var pinfo = document.getElementById("pinfo");
-          pinfo.innerHTML = "Picked shadow object " + geoData.mapping[event.shadowObjectId].name 
-                                + ": <br><br>" + geoData.mapping[event.shadowObjectId].usage;
-          
-          var min = x3dom.fields.SFVec3f.parse(geoData.mapping[event.shadowObjectId].min);
-          var max = x3dom.fields.SFVec3f.parse(geoData.mapping[event.shadowObjectId].max);
-          
           var box = document.getElementById('cpnt');
           
-          box.setAttribute('point', min.x+' '+min.y+' '+min.z+', '+
-                                    min.x+' '+min.y+' '+max.z+', '+
-                                    max.x+' '+min.y+' '+max.z+', '+
-                                    max.x+' '+min.y+' '+min.z+', '+
-                                    min.x+' '+max.y+' '+min.z+', '+
-                                    min.x+' '+max.y+' '+max.z+', '+
-                                    max.x+' '+max.y+' '+max.z+', '+
-                                    max.x+' '+max.y+' '+min.z );
+          if (event.shadowObjectId >= 0) {
+              pinfo.innerHTML = "Picked shadow object " + geoData.mapping[event.shadowObjectId].name 
+                                         + ": <br><br>" + geoData.mapping[event.shadowObjectId].usage;
+          
+              var min = x3dom.fields.SFVec3f.parse(geoData.mapping[event.shadowObjectId].min);
+              var max = x3dom.fields.SFVec3f.parse(geoData.mapping[event.shadowObjectId].max);
+          
+              box.setAttribute('point', min.x+' '+min.y+' '+min.z+', '+
+                                        min.x+' '+min.y+' '+max.z+', '+
+                                        max.x+' '+min.y+' '+max.z+', '+
+                                        max.x+' '+min.y+' '+min.z+', '+
+                                        min.x+' '+max.y+' '+min.z+', '+
+                                        min.x+' '+max.y+' '+max.z+', '+
+                                        max.x+' '+max.y+' '+max.z+', '+
+                                        max.x+' '+max.y+' '+min.z );
+          }
+          else {
+              box.setAttribute('point', '0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0, 0 0 0');
+          }
           
           return false;
       }

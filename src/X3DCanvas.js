@@ -266,7 +266,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             // mozilla touch
             "onMozTouchDown",
             "onMozTouchMove",
-            "onMozTouchUp"
+            "onMozTouchUp",
+
+            // drag and drop, requires 'draggable' source property set true (usually of an img)
+            "ondragstart",
+            "ondrop",
+            "ondragover"
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
@@ -278,6 +283,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
                 canvas.setAttribute(evtName, userEvt);
             }
+        }
+
+        var userProp = x3dElem.getAttribute("draggable");
+        if (userProp) {
+            x3dom.debug.logInfo("draggable=" + userProp);
+            canvas.setAttribute("draggable", userProp);
         }
 
         // workaround since one cannot find out which handlers are registered
@@ -451,10 +462,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	x3dom.caps.BACKEND = this.backend;
 
     // for FPS measurements
+    this.fps_t0 = new Date().getTime();
+
     this.lastTimeFPSWasTaken = 0;
     this.framesSinceLastTime = 0;
 
-	this.fps_t0 = new Date().getTime();
     this.doc = null;
 
     // allow listening for (size) changes
@@ -664,23 +676,31 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('DOMMouseScroll', function (evt) {
 			if(!this.isMulti) {
+                this.focus();
+
 				this.mouse_drag_y += 2 * evt.detail;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-				
-				evt.returnValue = true;
+
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.returnValue = false;
 			}
         }, false);
 
         this.canvas.addEventListener('mousewheel', function (evt) {
 			if(!this.isMulti) {
+                this.focus();
+
 				this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-				
-				evt.returnValue = true;
+
+                evt.preventDefault();
+                evt.stopPropagation();
+                evt.returnValue = false;
 			}
         }, false);
 
@@ -852,8 +872,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			// update scene bbox
 			doc._scene.updateVolume();
-			
-			doc._viewarea._hasTouches = true;
 
             if (touches.examineNavType) {
                 for(i = 0; i < evt.touches.length; i++) {
@@ -927,9 +945,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                     var deltaZoom = squareDistance - touches.lastSquareDistance;
 
                     var deltaMove = new x3dom.fields.SFVec3f(
-                         deltaMiddle.x / screen.width,
-                        -deltaMiddle.y / screen.height,
-                         deltaZoom / (screen.width * screen.height * 0.2));
+                                                 deltaMiddle.x / screen.width,
+                                                -deltaMiddle.y / screen.height,
+                                                 deltaZoom / (screen.width * screen.height * 0.2));
 
                     var rotation = touches.calcAngle(distance);
                     var angleDelta = touches.lastAngle - rotation;
@@ -972,7 +990,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			if (doc == null)
 				doc = this.parent.doc;
-          
+
+			doc._viewarea._isMoving = false;
+
 			// reinit first finger for rotation
 			if (touches.numTouches == 2 && evt.touches.length == 1)
 				touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
@@ -984,8 +1004,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			        dblClick = true;
 			    touches.numTouches = evt.touches.length;
 			}
-			
-			doc._viewarea._hasTouches = false;
 
             if (touches.examineNavType) {
                 for(var i = 0; i < touches.lastLayer.length; i++) {
@@ -1112,61 +1130,64 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 x3dom.X3DCanvas.prototype.tick = function()
 {
-    var d = new Date().getTime();
-    var diff = d - this.lastTimeFPSWasTaken;
-    
-    if (diff >= 1000 && this.doc.needRender)
-    {
-        this.x3dElem.runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
-        this.x3dElem.runtime.addMeasurement('FPS', this.x3dElem.runtime.fps);
-
-        this.framesSinceLastTime = 0;
-        this.lastTimeFPSWasTaken = d;
-    }
-    this.framesSinceLastTime++;
-
-    var fps = 1000.0 / (d - this.fps_t0);
-    this.fps_t0 = d;
-
     try {
+        var runtime = this.x3dElem.runtime;
+
+        var d = new Date().getTime();
+        var diff = d - this.lastTimeFPSWasTaken;
+
+        var fps = 1000.0 / (d - this.fps_t0);
+        this.fps_t0 = d;
+
+        // update routes and stuff
         this.doc.advanceTime(d / 1000.0);
         var animD = new Date().getTime() - d;
 
         if (this.doc.needRender) {
+            // calc average frames per second
+            if (diff >= 1000) {
+                runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
+                runtime.addMeasurement('FPS', runtime.fps);
 
-            if (this.x3dElem.runtime.isReady == false) {
-                this.x3dElem.runtime.ready();
-                this.x3dElem.runtime.isReady = true;
+                this.framesSinceLastTime = 0;
+                this.lastTimeFPSWasTaken = d;
+            }
+            this.framesSinceLastTime++;
+
+            runtime.addMeasurement('ANIM', animD);
+
+            if (runtime.isReady == false) {
+                runtime.ready();
+                runtime.isReady = true;
             }
 
-            this.x3dElem.runtime.enterFrame();
-			
-            this.x3dElem.runtime.addMeasurement('ANIM', animD);
+            runtime.enterFrame();
 
             if (this.backend == 'flash') {
-              if (this.isFlashReady) {
-                this.canvas.setFPS({fps: fps});
+                if (this.isFlashReady) {
+                    this.canvas.setFPS({fps: fps});
+
+                    this.doc.needRender = false;
+                    this.doc.render(this.gl);
+                }
+            }
+            else {
+                // picking might require another pass
                 this.doc.needRender = false;
                 this.doc.render(this.gl);
-              }
-			}
-			else {
-			    // picking might require another pass
-				this.doc.needRender = false;
-				this.doc.render(this.gl);
 
                 if (!this.doc._scene._vf.doPickPass)
-                    this.x3dElem.runtime.removeMeasurement('PICKING');
-			}
+                    runtime.removeMeasurement('PICKING');
+            }
 
-            this.x3dElem.runtime.exitFrame();
-		}
-		
+            runtime.exitFrame();
+        }
+
         if (this.progressDiv) {
             if (this.doc.downloadCount > 0) {
-                this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
+                runtime.addInfo("#LOADS:", this.doc.downloadCount);
             } else {
-                this.x3dElem.runtime.removeInfo("#LOADS:");
+                runtime.removeInfo("#LOADS:");
             }
 
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
@@ -1180,10 +1201,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 
                     /*
                     var myThat = this;
-
-                    window.setTimeout( function() { 
-                           myThat.doc.downloadCount = 0;
-                           myThat.progressDiv.style.display = 'none';
+                    window.setTimeout( function() {
+                        myThat.doc.downloadCount = 0;
+                        myThat.progressDiv.style.display = 'none';
                     }, 10000 );
                     */
                 }
@@ -1191,7 +1211,6 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.progressDiv.style.display = 'none';
             }
         }
-
     } catch (e) {
         x3dom.debug.logException(e);
         throw e;

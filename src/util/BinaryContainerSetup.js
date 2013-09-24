@@ -11,13 +11,34 @@
 
 
 /** used from within gfx_webgl.js */
-x3dom.BinaryContainerLoader = {};
+x3dom.BinaryContainerLoader = {
+    outOfMemory: false,     // try to prevent browser crashes
+
+    checkError: function(gl) {
+        var glErr = gl.getError();
+        if (glErr) {
+            if (glErr == gl.OUT_OF_MEMORY) {
+                this.outOfMemory = true;
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry (out of memory).");
+                console.error("WebGL: OUT_OF_MEMORY");
+            }
+            else {
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry.");
+            }
+        }
+    }
+};
 
 
 /** setup/download binary geometry */
 x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, currContext)
 {
+    if (this.outOfMemory) {
+        return;
+    }
+
     var t00 = new Date().getTime();
+    var that = this;
 
     var binGeo = shape._cf.geometry.node;
 
@@ -32,8 +53,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         ((!binGeo._hasStrideOffset && binGeo._vf.color.length > 0) ? 1 : 0);
 
     var createTriangleSoup = (binGeo._vf.normalPerVertex == false) ||
-                              ((binGeo._vf.indexType == "Uint32") &&
-                               (binGeo._vf.index.length > 0));
+                              ((binGeo._vf.indexType == "Uint32") && (binGeo._vf.index.length > 0));
 
     shape._webgl.makeSeparateTris = {
         index: null,
@@ -308,6 +328,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             this.texCoord = null;
             this.color = null;
 
+            that.checkError(gl);
+
             // recreate shader
             delete shape._webgl.shader;
             shape._webgl.shader = currContext.cache.getDynamicShader(gl, viewarea, shape);
@@ -371,6 +393,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
+
+            that.checkError(gl);
 
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR0/ index load time: " + t11 + " ms");
@@ -478,6 +502,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
 
+            that.checkError(gl);
+
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR/ interleaved array load time: " + t11 + " ms");
         };
@@ -513,6 +539,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 shape._webgl.makeSeparateTris.pushBuffer("coord", vertices);
                 return;
             }
+
+            gl.bindAttribLocation(sp.program, 0, "position");
 
             var positionBuffer = gl.createBuffer();
             shape._webgl.buffers[1] = positionBuffer;
@@ -570,6 +598,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
 
+            that.checkError(gl);
+
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms");
         };
@@ -624,6 +654,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
+
+            that.checkError(gl);
 
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR2/ normal load time: " + t11 + " ms");
@@ -680,6 +712,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
 
+            that.checkError(gl);
+
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR3/ texCoord load time: " + t11 + " ms");
         };
@@ -735,6 +769,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (shape._webgl.internalDownloadCount == 0)
                 shape._nameSpace.doc.needRender = true;
 
+            that.checkError(gl);
+
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR4/ color load time: " + t11 + " ms");
         };
@@ -746,6 +782,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 /** setup/download pop geometry */
 x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, currContext)
 {
+    if (this.outOfMemory) {
+        return;
+    }
+
     var popGeo = shape._cf.geometry.node;
 
     //reserve space for vertex buffer (and index buffer if any) on the gpu
@@ -832,6 +872,8 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
     shape._webgl.currentNumVertices = 0;
     shape._webgl.numVerticesAtLevel = [];
     shape._webgl.levelsAvailable    = 0;
+
+    this.checkError(gl);
 
     shape._webgl.levelLoaded = [];
     (function() {
@@ -963,6 +1005,10 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
 /** setup/download bit-lod geometry */
 x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, currContext)
 {
+    if (this.outOfMemory) {
+        return;
+    }
+
     shape._webgl.bitLODGeometry = -1;
 
     var bitLODGeometry = shape._cf.geometry.node;
@@ -1528,6 +1574,10 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, c
 /** setup/download image geometry */
 x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, currContext)
 {
+    if (this.outOfMemory) {
+        return;
+    }
+
     var imageGeometry = shape._cf.geometry.node;
 
     if ( imageGeometry.getIndexTexture() ) {
@@ -1556,4 +1606,6 @@ x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, curr
     gl.enableVertexAttribArray(sp.position);
 
     vertices = null;
+
+    this.checkError(gl);
 };

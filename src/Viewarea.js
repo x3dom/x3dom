@@ -22,7 +22,7 @@ x3dom.Viewarea = function (document, scene) {
         pickObj: null,
         lastObj: null,
         lastClickObj: null,
-        shadowObjectId: 0
+        shadowObjectId: -1
     };
 
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
@@ -46,7 +46,6 @@ x3dom.Viewarea = function (document, scene) {
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
-    this._hasTouches = false;
 
     this._points = 0;   // old render mode flag (but think of better name!)
     this._numRenderedNodes = 0;
@@ -55,6 +54,7 @@ x3dom.Viewarea = function (document, scene) {
     this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
     
     this._isAnimating = false;
+    this._isMoving = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
 
@@ -114,7 +114,7 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
 x3dom.Viewarea.prototype.isMoving = function()
 {
-    return (this._lastButton > 0 || this._hasTouches || this._isAnimating);
+    return (this._isMoving || this._isAnimating);
 };
 
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
@@ -1054,6 +1054,7 @@ x3dom.Viewarea.prototype.initMouseState = function()
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
+    this._isMoving = false;
     this._needNavigationMatrixUpdate = true;
 };
 
@@ -1071,6 +1072,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._pressX = x;
     this._pressY = y;
     this._lastButton = buttonState;
+    this._isMoving = false;
 };
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
@@ -1181,6 +1183,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
     this._lastX = x;
     this._lastY = y;
     this._lastButton = buttonState;
+    this._isMoving = false;
 };
 
 x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
@@ -1188,6 +1191,7 @@ x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
     this._dx = 0;
     this._dy = 0;
     this._lastButton = 0;
+    this._isMoving = false;
     this._lastX = x;
     this._lastY = y;
     this._deltaT = 0;
@@ -1198,6 +1202,7 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
     this._dx = 0;
     this._dy = 0;
     this._lastButton = 0;
+    this._isMoving = false;
     this._lastX = x;
     this._lastY = y;
     this._deltaT = 0;
@@ -1312,6 +1317,8 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
                            mult(mat.inverse()).mult(rotation).mult(mat).
                            mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
+
+        this._isMoving = true;
 	}
 };
 
@@ -1381,6 +1388,8 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                              mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                              mult(mat);
         }
+
+        this._isMoving = true;
     }
 
     this._dx = dx;

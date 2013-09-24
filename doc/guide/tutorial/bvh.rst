@@ -17,7 +17,7 @@ The BVHRefiner is a component that refines and loads hierarchical data dynamical
     <BVHRefiner maxDepth='5'
                 minDepth='2'  
                 interactionDepth='4'  
-                subdivision='128 128'
+                subdivision='64 64'
                 size='4096 4096' 
                 factor='10'
                 maxElevation='410' 
@@ -60,7 +60,7 @@ submode               WMTS, TREE                   WMTS           utilized datas
 Currently supported dataset formats
 -----------------------------------
 
-We support two different types of datasets. The first is based on WMTS specification and the second version is a folder based file arrangement. Both, the usage of WMTS and TREE for this BVHRefiner node are specified in the following subsections.
+We support two different types of datasets. The first is based on WMTS specification and the second version is a folder based file arrangement. In the 3D case, only the wmts format is supported. Both, the usage of WMTS and TREE for this BVHRefiner node are specified in the following subsections.
 
 WMTS
 ~~~~
@@ -84,3 +84,37 @@ The TREE addressing-scheme is as easy as the WMTS addressing scheme. Every level
 .. image:: /_static/tutorial/bvh_refiner/tree.png
    :align: center
    :scale: 50%
+
+Hints for a self-made dataset construction
+------------------------------------------
+
+.. image:: /_static/tutorial/bvh_refiner/tile_pyramid.png
+   :align: center
+   :scale: 82%
+
+To reconstruct a 3D-Terrain from a WMTS conform dataset a special arrangement of the pixels in the images of the WMTS dataset is required. Neighboring tiles have to share the pixels on the boundaries. The figure on top of this subsection shows on the left the original image, in the middle the image of level 0 of the final dataset and on the right the four images of level 1. 
+Furthermore the resolution of every image of the final dataset must be of the size *2n + 1*, where *n* is the value of the size attribute of a tile in the *BVHRefiner* node. In the example of Puget Sound on top of this tutorial a value of *'64 64'* is chosen for every tile as size attribute. So on the dataset, every image has to be of the size *'129 129'*. This is a condition for the algorithm to prevent cracks on the mesh representation.   
+
+Using the BVHRefiner Dataset Converter:
+---------------------------------------
+
+The BVHRefiner Dataset Converter is a tool to produce a WMTS or TREE conform dataset from single image. This is only a test application and can not handle arbitrary picture sizes. 
+
+.. image:: /_static/tutorial/bvh_refiner/dataset_converter.jpg
+   :align: center
+   :scale: 100%
+
+1. Representation of the original image
+2. Opens  a file dialog where the source image can be chosen 
+3. Represents the path where the final dataset should be stored
+4. Opens a folder dialog where the storing path of the final dataset can be chosen
+5. Convertion settings: a) Convertion Type: Surface-, Displacement- or Normal-Dataset, b) Dataset-Format: Currently supported dataset formats (WMTS, TREE)
+6. Advanced Settings (are calculated automatically, but can be changed if required): a) Mesh Resolution: Resolution of a tile in the x3dom-application, b) Depth of the Quadtree: The depth of the final dataset (levels of detail), c) Image Type: The image format of all images in the final dataset (jpg, png, gif)
+7. Starts the convertion of the original source image into the tiled dataset
+8. Current progress of the convertion
+
+Download .NET based BVHRefiner Dataset Converter:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Windows 7 x86:  `BVHRefiner Dataset Converter x86 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_  
+* Windows 7 x64:  `BVHRefiner Dataset Converter x64 <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_x64.zip>`_
+* Source Code:    `BVHRefiner Dataset Converter Source <http://x3dom.org/docs/dev/_static/tutorial/bvh_refiner/BVHRefiner_Dataset_Converter_Source.zip>`_  
