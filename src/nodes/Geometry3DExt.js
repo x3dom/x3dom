@@ -165,8 +165,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Dish.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'diameter', 2); 	//Diameter of base
-            this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base
-            this.addField_SFFloat(ctx, 'radius', 0);	//If r is 0, treat as section of sphere, else half of ellipsoid
+            this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base (section if < r)
+            this.addField_SFFloat(ctx, 'radius', this._vf.diameter / 2);  //Third semi-principal axes of ellipsoid
             this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 
@@ -180,36 +180,34 @@ x3dom.registerNodeType(
                 this._mesh._texCoords[0] = [];
                 this._mesh._indices[0]   = [];
 
-                var halfDia = this._vf.diameter / 2, r = this._vf.radius,
-                    h = (r == 0) ? Math.min(this._vf.height, halfDia) : this._vf.height;
-                var offset = (r == 0) ? (halfDia - h) : 0;
                 var twoPi = Math.PI * 2, halfPi = Math.PI / 2;
+                var halfDia = this._vf.diameter / 2;
+
+                // If r is 0 or half of diameter, treat as section of sphere, else half of ellipsoid
+                var r = this._vf.radius;
+                r = (r == 0 || Math.abs(halfDia - r) <= x3dom.fields.Eps) ? halfDia : r;
+
+                // height defines sectional part taken from half of ellipsoid (sphere if r==halfDia)
+                var h = Math.min(this._vf.height, r);
+                var offset = r - h;
+
+                var a = halfDia;    // 1st semi-principal axes along x
+                var b = r;          // 2nd semi-principal axes along y
+                var c = halfDia;    // 3rd semi-principal axes along z
 
                 var latitudeBands = this._vf.subdivision.x, longitudeBands = this._vf.subdivision.y;
                 var latNumber, longNumber;
-                var a, b, c;
+
+                var segTheta = halfPi - Math.asin(1 - h / r);
+                var segL = Math.ceil(latitudeBands / halfPi * segTheta);
 
                 var theta, sinTheta, cosTheta;
                 var phi, sinPhi, cosPhi;
                 var x, y, z, u, v;
                 var tmpPosArr = [], tmpTcArr = [];
 
-                if (r == 0) {
-                    var segTheta = halfPi - Math.asin(1 - h / halfDia);
-                    var segL = Math.ceil(latitudeBands / halfPi * segTheta);
-
-                    a = halfDia;
-                    b = halfDia;
-                    c = halfDia;
-                }
-                else {
-                    a = halfDia;
-                    b = h;
-                    c = r;
-                }
-
                 for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
-                    if (r == 0 && segL == latNumber) {
+                    if (segL == latNumber) {
                         theta = segTheta;
                     }
                     else {
@@ -232,25 +230,20 @@ x3dom.registerNodeType(
 
                         this._mesh._positions[0].push(x, y - offset, z);
                         this._mesh._texCoords[0].push(u, v);
-                        if (r == 0) {
-                            this._mesh._normals[0].push(x/a, y/a, z/a);
-                        }
-                        else {
-                            this._mesh._normals[0].push(x/(a*a), y/(b*b), z/(c*c));
-                        }
+                        this._mesh._normals[0].push(x/(a*a), y/(b*b), z/(c*c));
 
-                        if ((latNumber == latitudeBands) || (r == 0 && segL == latNumber)) {
+                        if ((latNumber == latitudeBands) || (segL == latNumber)) {
                             tmpPosArr.push(x, y - offset, z);
                             tmpTcArr.push(u, v);
                         }
                     }
 
-                    if (r == 0 && segL == latNumber)
+                    if (segL == latNumber)
                         break;
                 }
 
                 for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
-                    if (r == 0 && segL == latNumber)
+                    if (segL == latNumber)
                         break;
 
                     for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
@@ -880,13 +873,31 @@ x3dom.registerNodeType(
                 this._mesh._indices[0]   = [];
 
                 var twoPi = 2.0 * Math.PI;
-                var nozzleHeight = this._vf.nozzleHeight;
-                var nozzleRadius = this._vf.nozzleRadius;
-                var height = this._vf.height;
-                var outerRadius = this._vf.outerRadius;
                 var sides = this._vf.subdivision;
+
+                var height = this._vf.height;
                 var center = height / 2;
+
+                if (this._vf.innerRadius > this._vf.outerRadius)
+                {
+                    var tmp = this._vf.innerRadius;
+                    this._vf.innerRadius = this._vf.outerRadius;
+                    this._vf.outerRadius = tmp;
+                }
                 var innerRadius = this._vf.innerRadius;
+                var outerRadius = this._vf.outerRadius;
+
+                if (this._vf.nozzleRadius < outerRadius)
+                {
+                    this._vf.nozzleRadius = outerRadius;
+                }
+                var nozzleRadius = this._vf.nozzleRadius;
+
+                if (this._vf.nozzleHeight > height)
+                {
+                    this._vf.nozzleHeight = height;
+                }
+                var nozzleHeight = this._vf.nozzleHeight;
 
                 var beta, delta, x, z, k, j, nx, nz;
                 delta = twoPi / sides;

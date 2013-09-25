@@ -136,7 +136,7 @@
           <table>
               <tr>
                   <td>radius</td>
-                  <td><input type="text" id="radius" value="0" onchange="document.getElementById('geod').setAttribute('radius', this.value);"></td>
+                  <td><input type="text" id="radius" value="1" onchange="document.getElementById('geod').setAttribute('radius', this.value);"></td>
               </tr>
               <tr>
                   <td>height</td>
@@ -340,7 +340,7 @@
                     <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
                     <material diffuseColor='0.4 0.5 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
                   </appearance>
-                  <dish id="geod" radius="0" height="1" diameter="2">
+                  <dish id="geod" radius="1" height="1" diameter="2">
                   </dish>
                 </shape>
             </transform>
