@@ -16,7 +16,7 @@
  *
  *  Cleanup backrefs and listeners on delete by explicitly calling detachHandlers()
  */
-x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize) {
+x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize, mode) {
     this._x3domRoot = x3domElem;
     this._runtime = x3domElem.runtime;
 
@@ -37,11 +37,16 @@ x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize) {
     this._pPlane = null;
 
     this._isect = null;
+
     this._translationOffset = null;
+    this._rotationOffset = null;
+    this._scaleOffset = null;
 
     this._lastX = 0;
     this._lastY = 0;
     this._buttonState = 0;
+
+    this._mode = (mode && mode.length) ? mode.toLowerCase() : "translation"; //"all";
 
     this._firstRay = null;
     this._matrixTrafo = null;
@@ -54,6 +59,11 @@ x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize) {
 // grid size setter, for snapping
 x3dom.Moveable.prototype.setGridSize = function(gridSize) {
     this._gridSize = gridSize;
+};
+
+// interaction mode setter, for translation and/or rotation
+x3dom.Moveable.prototype.setMode = function(mode) {
+    this._mode = mode.toLowerCase();
 };
 
 x3dom.Moveable.prototype.attachHandlers = function() {
@@ -209,6 +219,26 @@ x3dom.Moveable.prototype.translateZ = function(l, currY) {
     return this._translationOffset;
 };
 
+x3dom.Moveable.prototype.rotate = function(posX, posY) {
+    var twoPi = 2 * Math.PI;
+    var alpha = ((posY - this._lastY) * twoPi) / this._w;
+    var beta  = ((posX - this._lastX) * twoPi) / this._h;
+
+    var q = x3dom.fields.Quaternion.axisAngle(this._uPlane, alpha);
+    var h = q.toMatrix();
+    this._rotationOffset = h.mult(this._rotationOffset);
+
+    q = x3dom.fields.Quaternion.axisAngle(this._vPlane, beta);
+    h = q.toMatrix();
+    this._rotationOffset = h.mult(this._rotationOffset);
+
+    var mat = this._rotationOffset.mult(x3dom.fields.SFMatrix4f.scale(this._scaleOffset));
+    var rot = new x3dom.fields.Quaternion(0, 0, 1, 0);
+    rot.setValue(mat);
+
+    return rot;
+};
+
 x3dom.Moveable.prototype.over = function(event) {
     var that = this._iMove;
 
@@ -226,7 +256,21 @@ x3dom.Moveable.prototype.out = function(event) {
 x3dom.Moveable.prototype.start = function(event) {
     var that = this._iMove;
 
-    if (!that._drag) {
+    // use mouse button to distinguish between parallel or orthogonal movement or rotation
+    switch (that._mode) {
+        case "translation":
+            that._buttonState = (event.button == 4) ? 1 : (event.button & 3);
+            break;
+        case "rotation":
+            that._buttonState = 4;
+            break;
+        case "all":
+        default:
+            that._buttonState = event.button;
+            break;
+    }
+
+    if (!that._drag && that._buttonState) {
         that._lastX = event.layerX;
         that._lastY = event.layerY;
 
@@ -242,24 +286,42 @@ x3dom.Moveable.prototype.start = function(event) {
 
         that._firstRay = that._runtime.getViewingRay(event.layerX, event.layerY);
 
-        // use mouse button to distinguish between parallel or orthogonal movement
-        that._buttonState = event.button;
-
         var mTrans = that._moveable.getAttribute("translation");
         that._matrixTrafo = null;
 
         if (mTrans) {
             that._translationOffset = x3dom.fields.SFVec3f.parse(mTrans);
+
+            var mRot = that._moveable.getAttribute("rotation");
+            mRot = mRot ? x3dom.fields.Quaternion.parseAxisAngle(mRot) : new x3dom.fields.Quaternion(0,0,1,0);
+            that._rotationOffset = mRot.toMatrix();
+
+            var mScal = that._moveable.getAttribute("scale");
+            that._scaleOffset = mScal ? x3dom.fields.SFVec3f.parse(mScal) : new x3dom.fields.SFVec3f(1, 1, 1);
         }
         else {
             mTrans = that._moveable.getAttribute("matrix");
 
             if (mTrans) {
                 that._matrixTrafo = x3dom.fields.SFMatrix4f.parse(mTrans).transpose();
-                that._translationOffset = that._matrixTrafo.e3();
+
+                var translation = new x3dom.fields.SFVec3f(0,0,0),
+                    scaleFactor = new x3dom.fields.SFVec3f(1,1,1);
+                var rotation = new x3dom.fields.Quaternion(0,0,1,0),
+                    scaleOrientation = new x3dom.fields.Quaternion(0,0,1,0);
+
+                that._matrixTrafo.getTransform(translation, rotation, scaleFactor, scaleOrientation);
+
+                //that._translationOffset = that._matrixTrafo.e3();
+                that._translationOffset = translation;
+                that._rotationOffset = rotation.toMatrix();
+                that._scaleOffset = scaleFactor;
             }
-            else
+            else {
                 that._translationOffset = new x3dom.fields.SFVec3f(0, 0, 0);
+                that._rotationOffset = new x3dom.fields.SFMatrix4f();
+                that._scaleOffset = new x3dom.fields.SFVec3f(1, 1, 1);
+            }
         }
 
         that._runtime.getCanvas().style.cursor = "crosshair";
@@ -276,25 +338,37 @@ x3dom.Moveable.prototype.move = function(event) {
 
             var track = null;
 
-            // zoom with right mouse button (middle: 4, left: 1)
+            // zoom with right mouse button (2), pan with left (1)
             if (that._buttonState == 2)
                 track = that.translateZ(that._firstRay, pos[1]);
-            else
+            else if (that._buttonState == 1)
                 track = that.translateXY(ray);
-            // TODO; what about object rotation like SpaceSensor?
+            else  // middle button: 4
+                track = that.rotate(pos[0], pos[1]);
 
             if (track) {
-                if (that._gridSize > 0) {
+                if (that._gridSize > 0 && that._buttonState != 4) {
                     var x = that._gridSize * Math.round(track.x / that._gridSize);
                     var y = that._gridSize * Math.round(track.y / that._gridSize);
                     var z = that._gridSize * Math.round(track.z / that._gridSize);
                     track = new x3dom.fields.SFVec3f(x, y, z);
                 }
 
-                if (!that._matrixTrafo)
-                    that._moveable.setAttribute("translation", track.toString());
+                if (!that._matrixTrafo) {
+                    if (that._buttonState == 4) {
+                        that._moveable.setAttribute("rotation", track.toAxisAngle().toString());
+                    }
+                    else {
+                        that._moveable.setAttribute("translation", track.toString());
+                    }
+                }
                 else {
-                    that._matrixTrafo.setTranslate(track);
+                    if (that._buttonState == 4) {
+                        that._matrixTrafo.setRotate(track);
+                    }
+                    else {
+                        that._matrixTrafo.setTranslate(track);
+                    }
                     that._moveable.setAttribute("matrix", that._matrixTrafo.toGL().toString());
                 }
 

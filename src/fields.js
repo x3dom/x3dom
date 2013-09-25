@@ -180,6 +180,22 @@ x3dom.fields.SFMatrix4f.prototype.setScale = function (vec) {
     this._22 = vec.z;
 };
 
+x3dom.fields.SFMatrix4f.prototype.setRotate = function (quat) {
+    var xx = quat.x * quat.x;
+    var xy = quat.x * quat.y;
+    var xz = quat.x * quat.z;
+    var yy = quat.y * quat.y;
+    var yz = quat.y * quat.z;
+    var zz = quat.z * quat.z;
+    var wx = quat.w * quat.x;
+    var wy = quat.w * quat.y;
+    var wz = quat.w * quat.z;
+
+    this._00 = 1 - 2 * (yy + zz); this._01 = 2 * (xy - wz); this._02 = 2 * (xz + wy);
+    this._10 = 2 * (xy + wz); this._11 = 1 - 2 * (xx + zz); this._12 = 2 * (yz - wx);
+    this._20 = 2 * (xz - wy); this._21 = 2 * (yz + wx); this._22 = 1 - 2 * (xx + yy);
+};
+
 x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
