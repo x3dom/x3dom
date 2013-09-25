@@ -20,6 +20,7 @@ x3dom.Viewarea = function (document, scene) {
         pickPos: new x3dom.fields.SFVec3f(0, 0, 0),
         pickNorm: new x3dom.fields.SFVec3f(0, 0, 1),
         pickObj: null,
+        firstObj: null,
         lastObj: null,
         lastClickObj: null,
         shadowObjectId: -1
@@ -1064,6 +1065,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
     this.prepareEvents(x, y, buttonState, "onmousedown");
     this._pickingInfo.lastClickObj = this._pickingInfo.pickObj;
+    this._pickingInfo.firstObj = this._pickingInfo.pickObj;
 
     this._dx = 0;
     this._dy = 0;
@@ -1091,7 +1093,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
         {
             this.prepareEvents(x, y, prevButton, "onclick");
         }
-        else if (!this._pickingInfo.pickObj && !this._pickingInfo.lastClickObj)
+        else if (!this._pickingInfo.pickObj && !this._pickingInfo.lastClickObj &&
+                 !this._pickingInfo.firstObj)   // press and release outside object
         {
             var eventType = "backgroundClicked";
             try {
@@ -1139,6 +1142,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
             //x3dom.debug.logInfo("No hit at position " + this._pick);
         }
     }
+    this._pickingInfo.firstObj = null;
 
     if (this._pickingInfo.pickObj && navType === "lookat" &&
         this._pressX === x && this._pressY === y)
