@@ -391,9 +391,9 @@
       }
 
       document.onload = function() {
-        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("thor"), notified);
-        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("totalRevolution"), notified);
-        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("revolution"), notified);
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("thor"), notified, 0, "all");
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("totalRevolution"), notified, 0, "all");
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("revolution"), notified, 0, "all");
       }
   </script>
   </body>
