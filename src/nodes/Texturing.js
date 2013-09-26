@@ -274,7 +274,7 @@ x3dom.registerNodeType(
                                 that._canvas = childDomNode;
                             }
 
-                            if (that._vf.hideChildren) {
+                            if (childDomNode.style && that._vf.hideChildren) {
                                 childDomNode.style.display = "none";
                                 childDomNode.style.visibility = "hidden";
                             }

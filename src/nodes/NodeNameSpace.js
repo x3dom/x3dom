@@ -156,6 +156,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     }
                 }
             }
+            if (n) {
+                domNode._x3domNode = n;
+            }
             return n;
         }
         else {

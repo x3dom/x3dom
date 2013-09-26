@@ -99,11 +99,14 @@
       <Viewpoint position='0 0 50' orientation='0 0 0 1'></Viewpoint>
       <Background skyColor='0.05 0.12 0.23'></Background>
         <Transform DEF="box">
-          <Inline DEF="inline1"  nameSpaceName="test1" url="media/data/box.x3d"></Inline>
+          <Inline DEF="inline1" nameSpaceName="test1" url="media/data/box.x3d"></Inline>
         </Transform>
         <Transform scale=".1 .1 .1" translation="0 0 -10">
-          <Inline DEF="inline1" url="media/data/flipper.x3d"></Inline>
+          <Inline DEF="inline2" url="media/data/flipper.x3d"></Inline>
         </Transform>  
+          <Transform translation="0 10 0">
+            <Inline USE="inline1"></Inline>
+          </Transform>
 	  </Scene>
     </X3D>
 	</div>
