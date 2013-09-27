@@ -103,7 +103,7 @@ x3dom.gfx_webgl = (function () {
                         if (x3dom.caps.RENDERER.indexOf("PowerVR") >= 0 ||
                             navigator.appVersion.indexOf("Mobile") > -1 ||
                             // coarse guess to find out old SM 2.0 hardware (e.g. Intel):
-                            x3dom.caps.MAX_VARYING_VECTORS <= 10 ||
+                            x3dom.caps.MAX_VARYING_VECTORS <= 8 ||
                             x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2) {
                             x3dom.caps.MOBILE = true;
                         }
