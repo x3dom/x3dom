@@ -86,14 +86,16 @@ x3dom.Moveable.prototype.attachHandlers = function() {
         this._x3domRoot.addEventListener('mouseout', this.stop, false);
         this._x3domRoot.addEventListener('mousemove', this.move, true);
 
-        // mozilla touch events
-        this._x3domRoot.addEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
-        this._x3domRoot.addEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
-        this._x3domRoot.addEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
-        // w3c / apple touch events
-        this._x3domRoot.addEventListener('touchstart', this.touchStartHandler, false);
-        this._x3domRoot.addEventListener('touchmove', this.touchMoveHandler, true);
-        this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
+        if (!this._runtime.canvas.disableTouch) {
+            // mozilla touch events
+            this._x3domRoot.addEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+            this._x3domRoot.addEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+            this._x3domRoot.addEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+            // w3c / apple touch events
+            this._x3domRoot.addEventListener('touchstart', this.touchStartHandler, false);
+            this._x3domRoot.addEventListener('touchmove', this.touchMoveHandler, true);
+            this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
+        }
     }
 };
 
@@ -120,14 +122,16 @@ x3dom.Moveable.prototype.detachHandlers = function() {
         this._x3domRoot.removeEventListener('mouseout', this.stop, false);
         this._x3domRoot.removeEventListener('mousemove', this.move, true);
 
-        // touch events
-        this._x3domRoot.removeEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
-        this._x3domRoot.removeEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
-        this._x3domRoot.removeEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
-        // mozilla version
-        this._x3domRoot.removeEventListener('touchstart', this.touchStartHandler, false);
-        this._x3domRoot.removeEventListener('touchmove', this.touchMoveHandler, true);
-        this._x3domRoot.removeEventListener('touchend', this.touchEndHandler, false);
+        if (!this._runtime.canvas.disableTouch) {
+            // touch events
+            this._x3domRoot.removeEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+            this._x3domRoot.removeEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+            this._x3domRoot.removeEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+            // mozilla version
+            this._x3domRoot.removeEventListener('touchstart', this.touchStartHandler, false);
+            this._x3domRoot.removeEventListener('touchmove', this.touchMoveHandler, true);
+            this._x3domRoot.removeEventListener('touchend', this.touchEndHandler, false);
+        }
     }
 
     // finally remove backref to movable object
