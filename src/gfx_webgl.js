@@ -1141,6 +1141,9 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
         var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
 
+        var env = scene.getEnvironment();
+        var excludeTrans = env._vf.shadowExcludeTransparentObjects;
+
         var i, n = scene.drawableCollection.length;
 
         for (i = 0; i < n; i++)
@@ -1151,7 +1154,7 @@ x3dom.gfx_webgl = (function () {
 
             var s_gl = shape._webgl;
 
-            if (!s_gl) {
+            if (!s_gl || (excludeTrans && drawable.sortType == 'transparent')) {
                 continue;
             }
 

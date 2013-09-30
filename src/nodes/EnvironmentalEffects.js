@@ -148,6 +148,9 @@ x3dom.registerNodeType(
             // If TRUE, transparent objects are sorted from back to front (allows explicitly disabling sorting)
             this.addField_SFBool(ctx, 'sortTrans', true);
 
+            // Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
+            this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', false);
+
             // boolean flags for feature (de)activation
             // If TRUE, objects outside the viewing frustum are ignored
             this.addField_SFBool(ctx, 'frustumCulling', true);
