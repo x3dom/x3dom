@@ -216,29 +216,20 @@ x3dom.registerNodeType(
                         this._projMatrix._23 = 2 * znear * zfar / div;
                     }
                 }
-                
-                // needed for being able to ask for near and far
-                this._zNear = znear;
-                this._zFar = zfar;
 
-                if (this._projMatrix == null)
+                if (this._projMatrix == null || this._zNear != znear || this._zFar != zfar)
                 {
-                    var f = 1 / Math.tan(fovy / 2);
-                    
-                    this._projMatrix = new x3dom.fields.SFMatrix4f(
-                        f/aspect, 0, 0, 0,
-                        0, f, 0, 0,
-                        0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
-                        0, 0, -1, 0
-                    );
-                    
-                    this._lastAspect = aspect;
+                    this._projMatrix = x3dom.fields.SFMatrix4f.perspective(fovy, aspect, znear, zfar);
                 }
                 else if (this._lastAspect !== aspect)
                 {
                     this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
-                    this._lastAspect = aspect;
                 }
+
+                // also needed for being able to ask for near and far
+                this._zNear = znear;
+                this._zFar = zfar;
+                this._lastAspect = aspect;
 
                 return this._projMatrix;
             }
@@ -274,8 +265,7 @@ x3dom.registerNodeType(
                     this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
-                         fieldName == "zNear" || 
-                         fieldName == "zFar") {
+                         fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // trigger refresh
                     this.resetView();
                 }
@@ -352,28 +342,7 @@ x3dom.registerNodeType(
                     var right = this._vf.fieldOfView[2];
                     var top = this._vf.fieldOfView[3];
                     
-                    var rl = (right - left) / 2;    // hs
-                    var tb = (top - bottom) / 2;    // vs
-                    var fn = far - near;
-                    
-                    if (aspect < (rl / tb))
-                        tb = rl / aspect;
-                    else
-                        rl = tb * aspect;
-                    
-                    left = -rl;
-                    right = rl;
-                    bottom = -tb;
-                    top = tb;
-                    
-                    rl *= 2;
-                    tb *= 2;
-                    
-                    this._projMatrix = new x3dom.fields.SFMatrix4f(
-                                        2 / rl, 0, 0,  -(right+left) / rl,
-                                        0, 2 / tb, 0,  -(top+bottom) / tb,
-                                        0, 0, -2 / fn, -(far+near) / fn,
-                                        0, 0, 0, 1);
+                    this._projMatrix = x3dom.fields.SFMatrix4f.ortho(left, right, bottom, top, near, far, aspect);
                 }
                 this._lastAspect = aspect;
                 

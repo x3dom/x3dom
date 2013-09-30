@@ -10,6 +10,40 @@
  */
 
 
+/** If used as standalone lib, define some basics first. */
+if (typeof x3dom === "undefined")
+{
+    x3dom = {
+        extend: function(f) {
+            function g() {}
+            g.prototype = f.prototype || f;
+            return new g();
+        },
+
+        debug: {
+            logInfo:    function(msg) { console.log(msg); },
+            logWarning: function(msg) { console.warn(msg); },
+            logError:   function(msg) { console.error(msg); }
+        }
+    };
+
+    if (!Array.map) {
+        Array.map = function(array, fun, thisp) {
+            var len = array.length;
+            var res = [];
+            for (var i = 0; i < len; i++) {
+                if (i in array) {
+                    res[i] = fun.call(thisp, array[i], i, array);
+                }
+            }
+            return res;
+        };
+    }
+
+    console.log("Using x3dom fields.js as standalone math and/or base types library.");
+}
+
+
 /** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
@@ -23,7 +57,7 @@ x3dom.fields.Eps = 0.000001;
 ///////////////////////////////////////////////////////////////////////////////
 /** SFMatrix4f constructor. 
     @class Represents a SFMatrix4f
-    @TODO: use 2-dim array instead of _xx
+    THINKABOUTME: use 2-dim array instead of _xx?
   */
 x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03, 
 									_10, _11, _12, _13, 
@@ -166,6 +200,50 @@ x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
     tmp.setValue(right, newUp, view, from);
 
     return tmp;
+};
+
+//! Calculates perspective projection matrix
+x3dom.fields.SFMatrix4f.perspective = function(fov, aspect, near, far)
+{
+    var f = 1 / Math.tan(fov / 2);
+
+    return new x3dom.fields.SFMatrix4f(
+        f/aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (near+far)/(near-far), 2*near*far/(near-far),
+        0, 0, -1, 0
+    );
+};
+
+//! Calculates orthogonal projection matrix
+x3dom.fields.SFMatrix4f.ortho = function(left, right, bottom, top, near, far, aspect)
+{
+    var rl = (right - left) / 2;    // hs
+    var tb = (top - bottom) / 2;    // vs
+    var fn = far - near;
+
+    if (aspect === undefined)
+        aspect = 1.0;
+
+    if (aspect < (rl / tb))
+        tb = rl / aspect;
+    else
+        rl = tb * aspect;
+
+    left = -rl;
+    right = rl;
+    bottom = -tb;
+    top = tb;
+
+    rl *= 2;
+    tb *= 2;
+
+    return new x3dom.fields.SFMatrix4f(
+        2 / rl, 0, 0,  -(right+left) / rl,
+        0, 2 / tb, 0,  -(top+bottom) / tb,
+        0, 0, -2 / fn, -(far+near) / fn,
+        0, 0, 0, 1
+    );
 };
 
 x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
@@ -860,7 +938,7 @@ x3dom.fields.SFMatrix4f.prototype.det3 = function (a1, a2, a3, b1, b2, b3, c1, c
             (a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1));
 };
 
-//! Returns the determinat of the whole 4x4 matrix
+//! Returns the determinant of the whole 4x4 matrix
 x3dom.fields.SFMatrix4f.prototype.det = function () {
     var a1 = this._00;
     var b1 = this._10;
@@ -888,7 +966,7 @@ x3dom.fields.SFMatrix4f.prototype.det = function () {
             d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
 };
 
-/** Method to inverts the matrix, given that matrix is not singular */
+/** Method to invert the matrix, given that matrix is not singular */
 x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     var a1 = this._00;
     var b1 = this._10;
@@ -1036,7 +1114,8 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.SFVec2f = function(x, y) {
     if (arguments.length === 0) {
-        this.x = this.y = 0;
+        this.x = 0;
+        this.y = 0;
     }
     else {
         this.x = x;
@@ -1087,7 +1166,7 @@ x3dom.fields.SFVec2f.prototype.reflect = function (n) {
     return new x3dom.fields.SFVec2f(this.x-d2*n.x, this.y-d2*n.y);
 };
 
-x3dom.fields.SFVec2f.prototype.normalize = function (that) {
+x3dom.fields.SFVec2f.prototype.normalize = function() {
     var n = this.length();
     if (n) { n = 1.0 / n; }
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
@@ -1137,7 +1216,9 @@ x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.SFVec3f = function(x, y, z) {
     if (arguments.length === 0) {
-        this.x = this.y = this.z = 0;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
     }
     else {
         this.x = x;
@@ -1210,8 +1291,8 @@ x3dom.fields.SFVec3f.prototype.dot = function (that) {
 
 x3dom.fields.SFVec3f.prototype.cross = function (that) {
     return new x3dom.fields.SFVec3f( this.y*that.z - this.z*that.y, 
-                                    this.z*that.x - this.x*that.z, 
-                                    this.x*that.y - this.y*that.x );
+                                     this.z*that.x - this.x*that.z,
+                                     this.x*that.y - this.y*that.x );
 };
 
 x3dom.fields.SFVec3f.prototype.reflect = function (n) {
@@ -1223,7 +1304,7 @@ x3dom.fields.SFVec3f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
 };
 
-x3dom.fields.SFVec3f.prototype.normalize = function (that) {
+x3dom.fields.SFVec3f.prototype.normalize = function() {
     var n = this.length();
     if (n) { n = 1.0 / n; }
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
@@ -1280,7 +1361,10 @@ x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.SFVec4f = function(x, y, z, w) {
     if (arguments.length === 0) {
-        this.x = this.y = this.z = this.w = 0;
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 0;
     }
     else {
         this.x = x;
@@ -1322,10 +1406,18 @@ x3dom.fields.SFVec4f.prototype.toString = function () {
     @class Represents a Quaternion
   */
 x3dom.fields.Quaternion = function(x, y, z, w) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
+    if (arguments.length === 0) {
+        this.x = 0;
+        this.y = 0;
+        this.z = 1;
+        this.w = 0;
+    }
+    else {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    }
 };
 
 x3dom.fields.Quaternion.prototype.multiply = function (that) {
@@ -1644,7 +1736,9 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.SFColor = function(r, g, b) {
     if (arguments.length === 0) {
-        this.r = this.g = this.b = 0;
+        this.r = 0;
+        this.g = 0;
+        this.b = 0;
     }
     else {
         this.r = r;
@@ -1807,7 +1901,10 @@ x3dom.fields.SFColor.colorParse = function(color) {
   */
 x3dom.fields.SFColorRGBA = function(r, g, b, a) {
     if (arguments.length === 0) {
-        this.r = this.g = this.b = this.a = 0;
+        this.r = 0;
+        this.g = 0;
+        this.b = 0;
+        this.a = 1;
     }
     else {
         this.r = r;
@@ -1874,14 +1971,17 @@ x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.SFImage = function(w, h, c, arr) {
     if (arguments.length === 0 || !(arr && arr.map)) {
-        this.width = this.height = this.comp = 0;
+        this.width = 0;
+        this.height = 0;
+        this.comp = 0;
         this.array = [];
     }
     else {
         this.width = w;
         this.height = h;
         this.comp = c;
-        arr.map( function(v) { this.array.push(v); }, this.array );
+        var that = this.array;
+        arr.map( function(v) { that.push(v); }, this.array );
     }
 };
 
@@ -1918,7 +2018,7 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
         }
         
         if (mc[i].substr(1,1).toLowerCase() !== "x") {
-            // TODO; optimize by directly parsing value!
+            // Maybe optimize by directly parsing value!
             var out = "";
             var inp = parseInt(mc[i], 10);
             
@@ -1989,7 +2089,8 @@ x3dom.fields.SFImage.prototype.toGL = function() {
 x3dom.fields.MFColor = function(colorArray) {
 
     if (arguments.length === 0) {
-    } else {
+    }
+    else {
         var that = this;
         colorArray.map( function(c) { that.push(c); }, this );
     }
@@ -2338,7 +2439,7 @@ x3dom.fields.MFString = function(strArray) {
 
 x3dom.fields.MFString.parse = function(str) {
     var arr = [];
-    // TODO: ignore leading whitespace?
+    // ignore leading whitespace?
     if (str.length && str[0] == '"') {
         var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ((m = re.exec(str))) {
@@ -2361,7 +2462,7 @@ x3dom.fields.MFString.prototype.setValueByStr = function(str) {
     while (arr.length) {
         arr.pop();
     }
-    // TODO: ignore leading whitespace?
+    // ignore leading whitespace?
     if (str.length && str[0] == '"') {
         var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ((m = re.exec(str))) {
