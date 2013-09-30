@@ -848,10 +848,14 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y)
 
 x3dom.Viewarea.prototype.showAll = function(axis)
 {
-    this._scene.updateVolume();
+    if (axis === undefined)
+        axis = "negZ";
 
-    var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
-    var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
+    var scene = this._scene;
+    scene.updateVolume();
+
+    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
 
     var x = "x", y = "y", z = "z";
     var sign = 1;
@@ -878,17 +882,19 @@ x3dom.Viewarea.prototype.showAll = function(axis)
         break;
     }
 
-    var viewpoint = this._scene.getViewpoint();
+    var viewpoint = scene.getViewpoint();
     var fov = viewpoint.getFieldOfView();
 
     var dia = max.subtract(min);
+
     var diaz2 = sign * (dia[z] / 2.0);
     var tanfov2 = Math.tan(fov / 2.0);
 
-    var dist1 = (dia[y] / 2.0) / tanfov2 - diaz2;
-    var dist2 = (dia[x] / 2.0) / tanfov2 - diaz2;
+    var dist1 = (dia[y] / 2.0) / tanfov2 + diaz2;
+    var dist2 = (dia[x] / 2.0) / tanfov2 + diaz2;
 
     dia = min.add(dia.multiply(0.5));
+
     dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.01;
 
     var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
