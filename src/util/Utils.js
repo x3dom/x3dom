@@ -71,7 +71,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	var texture = gl.createTexture();
     
     //Create a black 1 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 1]);
+    var data = new Uint8Array([0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -209,7 +209,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 	}
     
     //Create a default black 1 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 1]);
+    var data = new Uint8Array([0, 0, 0, 255]);
     for (var f=0; f<faces.length; f++)
     {
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
@@ -751,7 +751,12 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 			obj = gl.getActiveUniform(program, i);
 		}
 		catch (eu) {
-            if (!obj) continue;
+            //if (!obj) continue;
+        }
+
+        glErr = gl.getError();
+        if (glErr) {
+            x3dom.debug.logError("GL-Error (on searching uniforms): " + glErr);
         }
 
 		loc = gl.getUniformLocation(program, obj.name);	
@@ -823,11 +828,6 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 		}
 	}
 
-    glErr = gl.getError();
-    if (glErr) {
-        x3dom.debug.logError("GL-Error (on searching uniforms): " + glErr);
-    }
-
     // get attributes
 	var numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 	
@@ -836,17 +836,17 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 			obj = gl.getActiveAttrib(program, i);
 		}
 		catch (ea) {
-            if (!obj) continue;
+            //if (!obj) continue;
+        }
+
+        glErr = gl.getError();
+        if (glErr) {
+            x3dom.debug.logError("GL-Error (on searching attributes): " + glErr);
         }
 
 		loc = gl.getAttribLocation(program, obj.name);
 		shader[obj.name] = loc;
 	}
-
-    glErr = gl.getError();
-    if (glErr) {
-        x3dom.debug.logError("GL-Error (on searching attributes): " + glErr);
-    }
 
 	return shader;
 };
