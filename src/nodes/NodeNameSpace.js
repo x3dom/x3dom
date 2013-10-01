@@ -185,7 +185,11 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
-                var ctx = { doc: this.doc, xmlNode: domNode, nameSpace: this };
+                var ctx = {
+                    doc: this.doc,
+                    xmlNode: domNode,
+                    nameSpace: this
+                };
                 n = new nodeType(ctx);
                 
                 //active workaround for missing DOMAttrModified support
@@ -223,23 +227,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     domNode.highlight = function(enable, colorStr) {
                         var color = x3dom.fields.SFColor.parse(colorStr);
                         this._x3domNode.highlight(enable, color);
-                        this._x3domNode._nameSpace.doc.needRender = true;
-                    };
-                }
-
-                // add very experimental visibility-switch functionality
-                // (might be removed again in later versions from x3dom)
-                if (domNode.setVisibility === undefined &&
-                    domNode.resetVisibility === undefined &&
-                    x3dom.isa(n, x3dom.nodeTypes.X3DBoundedNode))
-                {
-                    domNode.setVisibility = function(on) {
-                        this._x3domNode.setVisibility(on);
-                        this._x3domNode._nameSpace.doc.needRender = true;
-                    };
-
-                    domNode.resetVisibility = function() {
-                        this._x3domNode.resetVisibility();
                         this._x3domNode._nameSpace.doc.needRender = true;
                     };
                 }

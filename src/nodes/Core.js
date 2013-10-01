@@ -14,6 +14,8 @@ x3dom.registerNodeType(
     "X3DNode",
     "Core",
     defineClass(null, function (ctx) {
+        // reference to DOM element
+        this._xmlNode = null;
 
         // holds a link to the node name
         this._DEF = null;
@@ -401,7 +403,11 @@ x3dom.registerNodeType(
         
 		callEvtHandler: function(eventType, event) {
 			var node = this;
-			
+
+            if (!node._xmlNode) {
+                return event.cancelBubble;
+            }
+
 			try {
 				var attrib = node._xmlNode[eventType];
 				event.target = node._xmlNode;
@@ -441,7 +447,7 @@ x3dom.registerNodeType(
 					set: function(value) {
 						xmlNode.setAttribute(name, value); 
 					},
-                    configurable : true
+                    configurable: true
 				});	
       		}
       		
@@ -1011,36 +1017,6 @@ x3dom.registerNodeType(
             forceUpdateCoverage: function()
             {
                 return false;
-            },
-
-            setVisibility: function(on)
-            {
-                if (on != this._vf.render) {
-                    this._actRender = this._vf.render;
-                    this._vf.render = on;
-                }
-
-                for (var i=0, n=this._childNodes.length; i<n; i++)
-                {
-                    var child = this._childNodes[i];
-                    if (child && child.setVisibility)
-                        child.setVisibility(on);
-                }
-            },
-
-            resetVisibility: function()
-            {
-                if (this._actRender !== undefined &&
-                    this._actRender != this._vf.render) {
-                    this._vf.render = this._actRender;
-                }
-
-                for (var i=0, n=this._childNodes.length; i<n; i++)
-                {
-                    var child = this._childNodes[i];
-                    if (child && child.resetVisibility)
-                        child.resetVisibility();
-                }
             }
         }
     )

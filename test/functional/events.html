@@ -196,10 +196,10 @@
 
         // Moveable wrapper requires x3dom-full.js, its signature is:
         // x3dom.Moveable(x3domElement, transformNode, callback, snapToGridSize)
-        new x3dom.Moveable(boxes, redBox, moveCallback, 0);
+        new x3dom.Moveable(boxes, redBox, moveCallback, 0, "all");
         new x3dom.Moveable(boxes, document.getElementById("grey_box"), null, 0);
         
-        x3dom.debug.logInfo("Drag the boxes around with your mouse!");
+        x3dom.debug.logInfo("Drag the boxes around with your mouse, and try all buttons...");
     }
   </script>
   
