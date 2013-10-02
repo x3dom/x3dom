@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>CSS Integration Test</title>
-	    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
         <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -81,9 +80,10 @@
 <script type="text/javascript" src="../../src/util/Moveable.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
-    	<script type="text/javascript" src="media/js/tests.js"></script>
+    	 <script type="text/javascript" src="media/js/tests.js"></script>
 		<style>
-		
+		   html {width:100%;height:100%;margin:0;padding:0;}
+    		body {margin:0;padding:0;width:100%;height:100%;}
 		#tools {
 			margin:0;
 			padding:0;
@@ -120,22 +120,22 @@
 		#container {
 			width: 100%;
 			height: 100%;
-			line-height:0px;
+			line-height:0;
 			float:left;
-
+			padding:0 0 3em 0;
+			margin:0;
 		}
 
 		#the-element {
-            display:block;
 			line-height:0px;
+			position:relative;
 			padding:0;
 			margin:0;
-/*			border:1px solid cyan;
-*/			display:block;
+			/*border:1px solid cyan;*/
+			display:block;
 			background-color:#00F;
 			width:50%;
-			height:50%
-			
+			height:50%;
 		}
 
 		.style_1 {
@@ -166,6 +166,10 @@
 
 			var zoomed = false;
 			
+			var container_initial_width = document.getElementById('container').style.width;
+			var container_initial_height =  document.getElementById('container').style.height;
+
+
 			function toggle_size() {
 
 				var b = document.getElementById('main');
@@ -175,18 +179,30 @@
 				var button = document.getElementById('change_size');
 				
 				var new_width_css = "100%";
-				
+
 				if (zoomed) {
 					new_width_css = "50%";
+
+					document.getElementById('x3dom_logdiv').style.display = 'block';
+					document.getElementsByTagName("nav")[0].style.display = 'block';
+					
+					container.style.height = container_initial_height;
+					container.style.width = container_initial_width;
+					element.style.height  = "50%";
+					element.style.width  = "50%";
+
 					button.style.backgroundColor = "#202021";
 					b.style.padding = "1em 3em 0 3em";
 					title.style.display = "block";
-					document.getElementById('x3dom_logdiv').style.display = 'block';
-					document.getElementsByTagName("nav")[0].style.display = 'block';
+
 				} else {
 					b.style.padding = "0px";
 					title.style.display = "none";
 					new_width_css = "100%";
+
+	                element.style.width  = "100%";
+    	            element.style.height = "100%";
+
 					button.style.backgroundColor = "#c23621";
 					document.getElementById('x3dom_logdiv').style.display = 'none';
 					document.getElementsByTagName("nav")[0].style.display = 'none';
@@ -194,10 +210,8 @@
 
 				zoomed = !zoomed;
                 
-                element.style.width  = new_width_css
-                element.style.height = new_width_css
-                // container.style.width = new_width_css;
-                // container.style.height = new_width_css;
+                // container.style.width = container_old_width;
+                // container.style.height = container_old_height;
                 return true;
 			}
 
