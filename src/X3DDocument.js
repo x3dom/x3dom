@@ -427,8 +427,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			}
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
                                 "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | " +
-                                "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | o: lookaround | " +
-                                "l: lookAt mode | g: game mode | u: upright position | v: print viewpoint info | " +
+                                "e: examine mode | f: fly mode | y: freefly mode | w: walk mode | h: helicopter mode | " +
+                                "l: lookAt mode | o: lookaround | g: game mode | u: upright position | v: print viewpoint info | " +
                                 "pageUp: next view | pageDown: prev. view | +: increase speed | -: decrease speed ");
             break;
         case  43: /* + (incr. speed) */
@@ -558,6 +558,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 119: /* w, walk mode */
             nav.setType("walk", this._viewarea);
+            break;
+        case 121: /* y, freefly mode */
+            nav.setType("freefly", this._viewarea);
             break;
         default:
     }

@@ -125,7 +125,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     
     var needNavAnim = ( navType === "game" ||
                         (this._lastButton > 0 &&
-                        (navType === "fly" ||
+                        (navType.indexOf("fly") >= 0 ||
                          navType === "walk" ||
                          navType === "helicopter" ||
                          navType.substr(0, 5) === "looka")) );
@@ -347,25 +347,27 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         {
             var currProjMat = this.getProjectionMatrix();
 
-            if (step < 0) {
-                // backwards: negate viewing direction
-                tmpMat = new x3dom.fields.SFMatrix4f();
-                tmpMat.setValue(this._last_mat_view.e0(), this._last_mat_view.e1(), 
-                                this._last_mat_view.e2().negate(), this._last_mat_view.e3());
-                
-                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                            this._lastButton, tmpMat, currProjMat.mult(tmpMat));
-            }
-            else {
-                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
-            }
+            if (navType !== "freefly") {
+                if (step < 0) {
+                    // backwards: negate viewing direction
+                    tmpMat = new x3dom.fields.SFMatrix4f();
+                    tmpMat.setValue(this._last_mat_view.e0(), this._last_mat_view.e1(),
+                                    this._last_mat_view.e2().negate(), this._last_mat_view.e3());
 
-            if (this._pickingInfo.pickObj)
-            {
-                dist = this._pickingInfo.pickPos.subtract(this._from).length();
+                    this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
+                                this._lastButton, tmpMat, currProjMat.mult(tmpMat));
+                }
+                else {
+                    this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
+                }
 
-                if (dist <= avatarRadius) {
-                    step = 0;
+                if (this._pickingInfo.pickObj)
+                {
+                    dist = this._pickingInfo.pickPos.subtract(this._from).length();
+
+                    if (dist <= avatarRadius) {
+                        step = 0;
+                    }
                 }
             }
 
