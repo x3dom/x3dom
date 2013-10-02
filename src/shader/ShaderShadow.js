@@ -64,7 +64,7 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
                     "uniform vec3 PG_bbMin;\n" +
                     "uniform vec3 PG_bbMaxModF;\n" +
                     "uniform vec3 PG_bboxShiftVec;\n" +
-                    "uniform float PG_numAnchorVertices;\n" +
+
 					//MAIN
 					"void main(void) {\n" +
 					"	vec3 pos;\n" +

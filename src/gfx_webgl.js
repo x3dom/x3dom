@@ -1129,6 +1129,16 @@ x3dom.gfx_webgl = (function () {
         sp.cameraView = isCameraView;
         sp.offset = camOffset;
 
+        // workaround for old graphics cards/ drivers
+        {
+            sp.PG_precisionLevel = 1.0;
+            sp.PG_powPrecision = 1.0;
+            sp.PG_maxBBSize = [0, 0, 0];
+            sp.PG_bbMin = [0, 0, 0];
+            sp.PG_bbMaxModF = [0, 0, 0];
+            sp.PG_bboxShiftVec = [0, 0, 0];
+        }
+
         gl.clearColor(1.0, 1.0, 1.0, 0.0);
         gl.clearDepth(1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -1375,7 +1385,15 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
         var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
 
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
+        this.stateManager.disable(gl.BLEND);
+
+        this.stateManager.useProgram(sp);
+
         // workaround for old graphics cards/ drivers
+        if (pickMode == 0)  //pop geo only here impl.
         {
             sp.PG_precisionLevel = 1.0;
             sp.PG_powPrecision = 1.0;
@@ -1384,13 +1402,6 @@ x3dom.gfx_webgl = (function () {
             sp.PG_bbMaxModF = [0, 0, 0];
             sp.PG_bboxShiftVec = [0, 0, 0];
         }
-
-        this.stateManager.depthFunc(gl.LEQUAL);
-        this.stateManager.enable(gl.DEPTH_TEST);
-        this.stateManager.enable(gl.CULL_FACE);
-        this.stateManager.disable(gl.BLEND);
-
-        this.stateManager.useProgram(sp);
 
         this.stateManager.lineWidth(2);     // bigger lines for better picking
 

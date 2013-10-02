@@ -751,7 +751,7 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 			obj = gl.getActiveUniform(program, i);
 		}
 		catch (eu) {
-            //if (!obj) continue;
+            if (!obj) continue;
         }
 
         glErr = gl.getError();
@@ -836,7 +836,7 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 			obj = gl.getActiveAttrib(program, i);
 		}
 		catch (ea) {
-            //if (!obj) continue;
+            if (!obj) continue;
         }
 
         glErr = gl.getError();

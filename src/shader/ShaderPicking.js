@@ -171,37 +171,37 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.PickingShader.prototype.generateFragmentShader = function(gl)
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
+    var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+    shader +=    " precision highp float;\n";
+    shader +=    "#else\n";
+    shader +=    " precision mediump float;\n";
+    shader +=    "#endif\n\n";
 
-	shader += "uniform float writeShadowIDs;\n" +
-					"uniform float highBit;\n" +
-					"uniform float lowBit;\n" +
-					"uniform float sceneSize;\n" +
-					"varying vec3 worldCoord;\n" +
-					"varying vec2 idCoord;\n" +
-					
-					"void main(void) {\n" +
-					"    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
-					"    if (writeShadowIDs > 0.0) {\n" +
-    				"       col.ba = idCoord;\n" +
-					"	 }\n" +
-					"    float d = length(worldCoord) / sceneSize;\n" +
-					"    vec2 comp = fract(d * vec2(256.0, 1.0));\n" +
-					"    col.rg = comp - (comp.rr * vec2(0.0, 1.0/256.0));\n" +
-					"    gl_FragColor = col;\n" +
-					"}\n";
+    shader +=   "uniform float writeShadowIDs;\n" +
+                "uniform float highBit;\n" +
+                "uniform float lowBit;\n" +
+                "uniform float sceneSize;\n" +
+                "varying vec3 worldCoord;\n" +
+                "varying vec2 idCoord;\n" +
+
+                "void main(void) {\n" +
+                "    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
+                "    if (writeShadowIDs > 0.0) {\n" +
+                "       col.ba = idCoord;\n" +
+                "	 }\n" +
+                "    float d = length(worldCoord) / sceneSize;\n" +
+                "    vec2 comp = fract(d * vec2(256.0, 1.0));\n" +
+                "    col.rg = comp - (comp.rr * vec2(0.0, 1.0/256.0));\n" +
+                "    gl_FragColor = col;\n" +
+                "}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, shader);
+    gl.shaderSource(fragmentShader, shader);
     gl.compileShader(fragmentShader);
-		
-	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("[PickingShader] FragmentShader " + gl.getShaderInfoLog(fragmentShader));		
-	}
-	
-	return fragmentShader;
+
+    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+        x3dom.debug.logError("[PickingShader] FragmentShader " + gl.getShaderInfoLog(fragmentShader));
+    }
+
+    return fragmentShader;
 };
