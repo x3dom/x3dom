@@ -1375,6 +1375,16 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
         var bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
 
+        // workaround for old graphics cards/ drivers
+        {
+            sp.PG_precisionLevel = 1.0;
+            sp.PG_powPrecision = 1.0;
+            sp.PG_maxBBSize = [0, 0, 0];
+            sp.PG_bbMin = [0, 0, 0];
+            sp.PG_bbMaxModF = [0, 0, 0];
+            sp.PG_bboxShiftVec = [0, 0, 0];
+        }
+
         this.stateManager.depthFunc(gl.LEQUAL);
         this.stateManager.enable(gl.DEPTH_TEST);
         this.stateManager.enable(gl.CULL_FACE);
