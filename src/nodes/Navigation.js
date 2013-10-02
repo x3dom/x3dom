@@ -202,19 +202,11 @@ x3dom.registerNodeType(
                     var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
                     //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
-                    
-                    if (this._vf.zFar > 0)
-                        zfar = this._vf.zFar;
-                    if (this._vf.zNear > 0)
+
+                    if (zfar > this._vf.zNear && this._vf.zNear > 0)
                         znear = this._vf.zNear;
-                    
-                    var div = znear - zfar;
-                    
-                    if (this._projMatrix != null && div != 0)
-                    {
-                        this._projMatrix._22 = (znear + zfar) / div;
-                        this._projMatrix._23 = 2 * znear * zfar / div;
-                    }
+                    if (this._vf.zFar > znear)
+                        zfar = this._vf.zFar;
                 }
 
                 if (this._projMatrix == null || this._zNear != znear || this._zFar != zfar)
