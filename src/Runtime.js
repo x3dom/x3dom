@@ -741,6 +741,15 @@ x3dom.Runtime.prototype.fly = function() {
 };
 
 /**
+ * APIFunction: freeFly
+ *
+ * Switches to freeFly mode
+ */
+x3dom.Runtime.prototype.freeFly = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("freefly");
+};
+
+/**
  * APIFunction: lookAt
  *
  * Switches to lookAt mode
