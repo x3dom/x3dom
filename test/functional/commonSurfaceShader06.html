@@ -79,28 +79,56 @@
 <script type="text/javascript" src="../../src/nodes/Geometry3DExt.js"></script>
 <script type="text/javascript" src="../../src/util/Moveable.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
-
+<style>
+    body {
+        margin:0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background-image: linear-gradient(rgb(44, 8, 0) 0%, rgb(0, 0, 0) 100%);
+        overflow: hidden;
+    }
+    
+    canvas {
+        width: 100%;
+        height: 100%;
+    }
+</style>
 </head>
 <body>
 
     <X3D style="width:100%; height:100%;">
         <Scene DEF='scene'>
-            <Background skyColor="0.172549 0.031373 0.000000"></Background>
+            
             <NavigationInfo headlight="false"></NavigationInfo>
-            <Viewpoint position="0.10163 0.06713 0.03981" orientation="0.28197 0.54988 0.78621 2.43158"></Viewpoint>
-            <PointLight intensity='0.500000' color='1 1 1' location='5.613052 0.000000 5.473352'></PointLight>
+            <Viewpoint position="0.18770 0.15048 0.08464" orientation="0.26089 0.54958 0.79366 2.46879"></Viewpoint>
+            <PointLight intensity='0.500000' color='1 1 1' location='5.613052 0.000000 5.473352' shadowIntensity="0.7"></PointLight>
 			<PointLight intensity='1.000000' color='0.572549 0.431373 0.000000' location='-6.986097 4.789673 -3.138233'></PointLight>
 			<PointLight intensity='1.000000' color='0.572549 0.431373 0.000000' location='8.891838 4.789673 -4.029537'></PointLight>
-			
+			<Transform translation="0 0 -0.04">
+                <Shape>
+                    <Appearance DEF='stone_phong' >
+                        <CommonSurfaceShader diffuseFactor='1.000 1.000 1.000' specularFactor='0.204 0.163 0.079' shininessFactor='0.240' alphaFactor='1.000' >
+                            <SurfaceShaderTexture containerField='diffuseTexture' >
+                                <ImageTexture url='media/texture/lizard/rock_diff.jpg'></ImageTexture>
+                            </SurfaceShaderTexture>
+                            <SurfaceShaderTexture containerField='normalTexture' >
+                                <ImageTexture url='media/texture/lizard/rock_norm.jpg'></ImageTexture>
+                            </SurfaceShaderTexture>
+                        </CommonSurfaceShader>
+                    </Appearance>
+                    <Plane size="0.3 0.3"></Plane>
+                </Shape>
+            </Transform>
             <Transform DEF='rock_geo' rotation='-1.000 -0.000 -0.000 -1.571' scale='0.010 0.010 0.010' >
                 <Shape>
                     <Appearance DEF='stone_phong' >
                         <CommonSurfaceShader diffuseFactor='1.000 1.000 1.000' specularFactor='0.204 0.163 0.079' shininessFactor='0.240' alphaFactor='1.000' >
                             <SurfaceShaderTexture containerField='diffuseTexture' >
-                                <ImageTexture url='media/texture/lizard/rock_diff.jpg' />
+                                <ImageTexture url='media/texture/lizard/rock_diff.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                             <SurfaceShaderTexture containerField='normalTexture' >
-                                <ImageTexture url='media/texture/lizard/rock_norm.jpg' />
+                                <ImageTexture url='media/texture/lizard/rock_norm.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                         </CommonSurfaceShader>
                     </Appearance>
@@ -116,10 +144,10 @@
                     <Appearance DEF='lizard_phong' >
                         <CommonSurfaceShader diffuseFactor='1.000000 1.000000 1.000000' specularFactor='0.381000 0.378614 0.263652' shininessFactor='0.405060' alphaFactor='1.000000' >
                             <SurfaceShaderTexture containerField='diffuseTexture' >
-                                <ImageTexture url='media/texture/lizard/lizard_diff.jpg' />
+                                <ImageTexture url='media/texture/lizard/lizard_diff.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                             <SurfaceShaderTexture containerField='normalTexture' >
-                                <ImageTexture url='media/texture/lizard/lizard_norm.jpg' />
+                                <ImageTexture url='media/texture/lizard/lizard_norm.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                         </CommonSurfaceShader>
                     </Appearance>
@@ -135,10 +163,10 @@
                     <Appearance DEF='eye_phong' >
                         <CommonSurfaceShader diffuseFactor='1.000000 1.000000 1.000000' specularFactor='1.000000 1.000000 1.000000' shininessFactor='0.608138' alphaFactor='1.000000' >
                             <SurfaceShaderTexture containerField='diffuseTexture' >
-                                <ImageTexture url='media/texture/lizard/lizardeye_diff.jpg' />
+                                <ImageTexture url='media/texture/lizard/lizardeye_diff.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                             <SurfaceShaderTexture containerField='normalTexture' >
-                                <ImageTexture url='media/texture/lizard/lizardeye_norm.jpg' />
+                                <ImageTexture url='media/texture/lizard/lizardeye_norm.jpg'></ImageTexture>
                             </SurfaceShaderTexture>
                         </CommonSurfaceShader>
                     </Appearance>
