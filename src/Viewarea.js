@@ -1152,8 +1152,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
     }
     this._pickingInfo.firstObj = null;
 
-    if (this._pickingInfo.pickObj && navType === "lookat" &&
-        this._pressX === x && this._pressY === y)
+    if ((this._pickingInfo.pickObj || this._pickingInfo.shadowObjectId >= 0) &&
+        navType === "lookat" && this._pressX === x && this._pressY === y)
     {
         var step = (this._lastButton & 2) ? -1 : 1;
         var dist = this._pickingInfo.pickPos.subtract(this._from).length() / tDist;
