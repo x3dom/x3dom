@@ -116,7 +116,7 @@ x3dom.registerNodeType(
                 /*
                 Note: A separate section setting the _mesh field members
                 and starting with this test:
-                if (!normPerVert || positions.length > 65535)
+                if (!normPerVert || positions.length > x3dom.Utils.maxIndexableCoords)
                 is in the IndexedTriangleSet code. It has been removed
                 here until it's applicability to the QUadSet case can
                 be evaluated
@@ -202,7 +202,7 @@ x3dom.registerNodeType(
             {
                 var pnts = this._cf.coord.node._vf.point;
                 
-                if ( pnts.length > 65535 )  // are there other problematic cases?
+                if ( pnts.length > x3dom.Utils.maxIndexableCoords )  // are there other problematic cases?
                 {
 					// TODO; implement
                     x3dom.debug.logWarning("IndexedQuadSet: fieldChanged with " +
@@ -401,7 +401,7 @@ x3dom.registerNodeType(
                 /*
                 Note: A separate section setting the _mesh field members
                 and starting with this test:
-                if (!normPerVert || positions.length > 65535)
+                if (!normPerVert || positions.length > x3dom.Utils.maxIndexableCoords)
                 is in the IndexedTriangleSet code. It has been removed
                 here until it's applicability to the QUadSet case can
                 be evaluated
@@ -478,7 +478,7 @@ x3dom.registerNodeType(
             {
                 var pnts = this._cf.coord.node._vf.point;
                 
-                if ( pnts.length > 65535 )  // are there other problematic cases?
+                if ( pnts.length > x3dom.Utils.maxIndexableCoords )  // are there other problematic cases?
                 {
 					// TODO; implement
                     x3dom.debug.logWarning("QuadSet: fieldChanged with " + 

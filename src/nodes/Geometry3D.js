@@ -2639,7 +2639,7 @@ x3dom.registerNodeType(
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                 if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                     (positions.length > 65535) ||
+                     (positions.length > x3dom.Utils.maxIndexableCoords) ||
                      (hasNormal && hasNormalInd) ||
                      (hasTexCoord && hasTexCoordInd) ||
                      (hasColor && hasColorInd) )
@@ -2901,7 +2901,7 @@ x3dom.registerNodeType(
 								default:
 							}
 						}
-					} 
+					}
 					else {
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = {};
@@ -2989,14 +2989,11 @@ x3dom.registerNodeType(
 					if (!hasTexCoord) {
 						this._mesh.calcTexCoords(texMode);
 					}
-
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
-                    this._mesh._numFaces = this._mesh._numCoords / 3;
                 } // if isMulti
                 else
                 {
                     t = 0;
-                    if(this._vf.convex) {
+                    if (this._vf.convex) {
 						for (i = 0; i < indexes.length; ++i)
 						{
 							// Convert non-triangular polygons to a triangle fan
@@ -3013,7 +3010,8 @@ x3dom.registerNodeType(
 							}
 
 						}
-					} else {
+					}
+                    else {
 						//  Convert non-triangular convex polygons to a triangle fan					
 						linklist = new x3dom.DoublyLinkedList();
 						for (i = 0; i < indexes.length; ++i)
@@ -3051,22 +3049,25 @@ x3dom.registerNodeType(
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
-
-                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 }
 
                 this.invalidateVolume();
-                /*this._mesh._numFaces = 0;
+
+                this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
-                for (i=0; i<this._mesh._indices.length; i++) {
-                    this._mesh._numFaces += this._mesh._indices[i].length / 3;
-                    this._mesh._numCoords += this._mesh._positions[i].length / 3;
+
+                for (i=0; i<this._mesh._positions.length; i++) {
+                    var indexLength = this._mesh._indices[i].length;
+                    var numCoords = this._mesh._positions[i].length / 3;
+                    this._mesh._numCoords += numCoords;
+                    if (indexLength > 0)
+                        this._mesh._numFaces += indexLength / 3;
+                    else
+                        this._mesh._numFaces += numCoords / 3;
                 }
 
-                var time1 = new Date().getTime() - time0;
+                //var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
-                */
             },
 
             fieldChanged: function(fieldName)
@@ -3090,7 +3091,7 @@ x3dom.registerNodeType(
                 }
 
                 // TODO; optimize this very slow and brute force code, at least for creaseAngle=0 case!
-                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
+                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > x3dom.Utils.maxIndexableCoords) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node))
@@ -3483,7 +3484,7 @@ x3dom.registerNodeType(
 								default:
 							}
 						}
-					} 
+					}
 					else {
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = {};
@@ -3572,17 +3573,18 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
 
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
-                    this._mesh._numFaces = this._mesh._numCoords / 3;
-
-					/*this._mesh._numFaces = 0;
+					this._mesh._numFaces = 0;
 					this._mesh._numCoords = 0;
 					
-					for (i=0; i<this._mesh._indices.length; i++) {
-						this._mesh._numFaces += this._mesh._indices[i].length / 3;
-						this._mesh._numCoords += this._mesh._positions[i].length / 3;
+					for (i=0; i<this._mesh._positions.length; i++) {
+                        var indexLength = this._mesh._indices[i].length;
+                        var numCoords = this._mesh._positions[i].length / 3;
+                        this._mesh._numCoords += numCoords;
+                        if (indexLength > 0)
+						    this._mesh._numFaces += indexLength / 3;
+                        else
+                            this._mesh._numFaces += numCoords / 3;
 					}
-					*/
 	
 					Array.forEach(this._parentNodes, function (node) {
 						node.setGeoDirty();

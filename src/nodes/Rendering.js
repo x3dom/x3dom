@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /* ### X3DGeometryNode ### */
 x3dom.registerNodeType(
     "X3DGeometryNode",
@@ -350,7 +351,7 @@ x3dom.registerNodeType(
                 var p0, p1, c0, c1;
 
                 // Found MultiIndex Mesh OR LineSet with too many vertices for 16 bit
-                if ( (hasColor && hasColorInd) || positions.length > 65535 )
+                if ( (hasColor && hasColorInd) || positions.length > x3dom.Utils.maxIndexableCoords )
                 {
                     t = 0;
                     cnt = 0;
@@ -441,7 +442,7 @@ x3dom.registerNodeType(
                     }
 
                     //if the LineSet is too large for 16 bit indices, split it!
-                    if (positions.length > 65535)
+                    if (positions.length > x3dom.Utils.maxIndexableCoords)
                         this._mesh.splitMesh(2);
                 } // if isMulti
                 else
@@ -632,7 +633,7 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if (!normPerVert || posMax > 65535)
+                if (!normPerVert || posMax > x3dom.Utils.maxIndexableCoords)
                 {
                     t = 0;
                     cnt = 0;
@@ -848,7 +849,7 @@ x3dom.registerNodeType(
             {
                 var pnts = this._cf.coord.node._vf.point;
                 
-                if ( pnts.length > 65535 )  // are there other problematic cases?
+                if ( pnts.length > x3dom.Utils.maxIndexableCoords )  // are there other problematic cases?
                 {
 					// TODO; implement
                     x3dom.debug.logWarning("IndexedTriangleSet: fieldChanged with " + 
@@ -1050,7 +1051,7 @@ x3dom.registerNodeType(
 				
 				var faceCnt = 0, cnt = 0;
 				
-				if (hasNormal && positions.length <= 65535)
+				if (hasNormal && positions.length <= x3dom.Utils.maxIndexableCoords)
 				{
                     this._hasIndexOffset = true;
                     this._indexOffset = [];
@@ -1259,7 +1260,7 @@ x3dom.registerNodeType(
         		
                 var pnts = this._cf.coord.node._vf.point;
                 
-				if ((this._cf.normal.node === null) || (pnts.length > 65535))
+				if ((this._cf.normal.node === null) || (pnts.length > x3dom.Utils.maxIndexableCoords))
                 {
 					if (fieldName == "coord") {
 						this._mesh._positions[0] = [];

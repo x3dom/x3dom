@@ -13,6 +13,8 @@
 * 
 *****************************************************************************/
 x3dom.Utils = {};
+
+x3dom.Utils.maxIndexableCoords = 65535;
 x3dom.Utils.measurements = [];
 
 
@@ -389,6 +391,23 @@ x3dom.Utils.getDataTypeSize = function(type)
 		default:
 			return 8;
 	}
+};
+
+/*****************************************************************************
+ * Return offset multiplier (Uint32 is twice as big as Uint16)
+ *****************************************************************************/
+x3dom.Utils.getOffsetMultiplier = function(indexType, gl)
+{
+    switch(indexType)
+    {
+        case gl.UNSIGNED_BYTE:
+            return 0.5;
+        case gl.UNSIGNED_INT:
+            return 2;
+        case gl.UNSIGNED_SHORT:
+        default:
+            return 1;
+    }
 };
 
 /*****************************************************************************

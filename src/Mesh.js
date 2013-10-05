@@ -247,7 +247,7 @@ x3dom.Mesh.prototype.splitMesh = function(primStride)
     else
         pStride = primStride;
 
-    var MAX = 65535;
+    var MAX = x3dom.Utils.maxIndexableCoords;
 
     //adapt MAX to match the primitive stride
     MAX = Math.floor(MAX / pStride) * pStride;
