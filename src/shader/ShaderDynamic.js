@@ -133,12 +133,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(properties.TEXTRAFO){
 			shader += "uniform mat4 texTrafoMatrix;\n";
 		}
-		if(properties.NORMALMAP){
+
+        //TODO Remove if on the fly TBN works well
+		/*if(properties.NORMALMAP){
 			shader += "attribute vec3 tangent;\n";
 			shader += "attribute vec3 binormal;\n";
 			shader += "varying vec3 fragTangent;\n";
 			shader += "varying vec3 fragBinormal;\n";
-		}
+		}*/
+
 		if(properties.CUBEMAP) {
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "uniform mat4 viewMatrix;\n";
@@ -387,10 +390,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
                 shader += "fragTexcoord = vec2(0.03125 + 0.9375 * (PG_precisionLevel / 16.0), 1.0);";
 			// LOD LUT HACK ###
 		}
-		if(properties.NORMALMAP) {
+
+        //TODO Remove if on the fly TBN works well
+		/*if(properties.NORMALMAP) {
 			shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
 			shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
-		}
+		}*/
 	}
 	
 	//Lights & Fog
@@ -473,11 +478,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "uniform mat4 modelViewMatrixInverse;\n";
 		}
-		if(properties.NORMALMAP){
-			shader += "uniform sampler2D normalMap;\n";
-			shader += "varying vec3 fragTangent;\n";
-			shader += "varying vec3 fragBinormal;\n";
-		}
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
 		}
@@ -490,6 +490,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform sampler2D diffuseDisplacementMap;\n";
             shader += "uniform float displacementWidth;\n";
             shader += "uniform float displacementHeight;\n";
+        }
+        if(properties.NORMALMAP){
+            shader += "uniform sampler2D normalMap;\n";
+            shader += "#extension GL_OES_standard_derivatives:enable\n";
+            shader += x3dom.shader.TBNCalculation();
+            //TODO Remove if on the fly TBN works well
+            //shader += "varying vec3 fragTangent;\n";
+            //shader += "varying vec3 fragBinormal;\n";
         }
 	}
 	
@@ -532,11 +540,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 eye 	  = -fragPosition;\n";
 		
 		//Normalmap
-		if(properties.NORMALMAP){                
-			shader += "vec3 t = normalize( fragTangent );\n";
-			shader += "vec3 b = normalize( fragBinormal );\n";
+		if(properties.NORMALMAP){
 			shader += "vec3 n = normalize( fragNormal );\n";
-		
+            shader += "normal = perturb_normal( n, fragPosition, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
+
+            //TODO Remove if on the fly TBN works well
+            /*shader += "vec3 t = normalize( fragTangent );\n";
+            shader += "vec3 b = normalize( fragBinormal );\n";
 			shader += "mat3 tangentToWorld = mat3(t, b, n);\n";
 		
 			shader += "normal = texture2D( normalMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
@@ -544,7 +554,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "normal = normalize( normal * tangentToWorld );\n";
 			
 			shader += "normal.y = -normal.y;\n";
-			shader += "normal.x = -normal.x;\n";
+			shader += "normal.x = -normal.x;\n";*/
 		}
 		
 		//Solid

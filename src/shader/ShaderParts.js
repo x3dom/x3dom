@@ -233,3 +233,41 @@ x3dom.shader.light = function(numLights) {
 						
 	return shaderPart;
 };
+
+/*******************************************************************************
+ * cotangent_frame
+ ********************************************************************************/
+x3dom.shader.TBNCalculation = function() {
+    var shaderPart = "";
+
+    shaderPart += "mat3 cotangent_frame(vec3 N, vec3 p, vec2 uv)\n" +
+        "{\n" +
+        "    // get edge vectors of the pixel triangle\n" +
+        "    vec3 dp1 = dFdx( p );\n" +
+        "    vec3 dp2 = dFdy( p );\n" +
+        "    vec2 duv1 = dFdx( uv );\n" +
+        "    vec2 duv2 = dFdy( uv );\n" +
+        "\n" +
+        "    // solve the linear system\n" +
+        "    vec3 dp2perp = cross( dp2, N );\n" +
+        "    vec3 dp1perp = cross( N, dp1 );\n" +
+        "    vec3 T = dp2perp * duv1.x + dp1perp * duv2.x;\n" +
+        "    vec3 B = dp2perp * duv1.y + dp1perp * duv2.y;\n" +
+        "\n" +
+        "    // construct a scale-invariant frame\n" +
+        "    float invmax = inversesqrt( max( dot(T,T), dot(B,B) ) );\n" +
+        "    return mat3( T * invmax, B * invmax, N );\n" +
+        "}\n\n";
+
+    shaderPart += "vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )\n" +
+        "{\n" +
+        "    // assume N, the interpolated vertex normal and\n" +
+        "    // V, the view vector (vertex to eye)\n" +
+        "    vec3 map = texture2D(normalMap, texcoord ).xyz;\n" +
+        "    map = map * 255./127. - 128./127.;\n" +
+        "    mat3 TBN = cotangent_frame(N, -V, texcoord);\n" +
+        "    return normalize(TBN * map);\n" +
+        "}\n\n";
+
+    return shaderPart;
+};
