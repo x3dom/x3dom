@@ -51,7 +51,9 @@ x3dom.registerNodeType(
 			
 			fieldChanged: function(fieldName)
             {
-				this._dirty = true;
+                if (this._vf.hasOwnProperty(fieldName)) {
+				    this._dirty = true;
+                }
 			},
 
             parentRemoved: function(parent)

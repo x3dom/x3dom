@@ -485,7 +485,6 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                //@todo: handle field updates for over-sized LineSets
                 var pnts = null;
                 
                 if (fieldName == "coord")
@@ -951,6 +950,7 @@ x3dom.registerNodeType(
                         node._dirty.texcoords = true;
                     });
                 }
+                // TODO: index
             }
         }
     )

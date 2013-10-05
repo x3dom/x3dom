@@ -60,7 +60,7 @@ x3dom.registerNodeType(
                 }
 
                 // When optimizing for speed, the above two if(.) cases can be omitted,
-                // as this funciton will not be called for values outside of 0..duration.
+                // as this function will not be called for values outside of 0..duration.
                 return this.stepResponseCore(t / this._vf.duration);
             },
             
@@ -94,8 +94,6 @@ x3dom.registerNodeType(
             this._currTime = 0;
             this._bufferEndTime = 0;
             this._numSupports = 60;
-        },
-        {
         }
     )
 );
@@ -114,15 +112,6 @@ x3dom.registerNodeType(
             
             this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
             this._lastTick = 0;
-        },
-        {
-            fieldChanged: function(fieldName)
-            {
-                if (fieldName === "tolerance")
-                {
-                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
-                }
-            }
         }
     )
 );
@@ -328,7 +317,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+                else if (fieldName.indexOf("set_destination") >= 0)
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
@@ -697,7 +690,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+                else if (fieldName.indexOf("set_destination") >= 0)
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
@@ -1240,7 +1237,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+                else if (fieldName.indexOf("set_destination") >= 0)
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
@@ -1396,7 +1397,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+                else if (fieldName.indexOf("set_destination") >= 0)
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
@@ -1726,7 +1731,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+                else if (fieldName.indexOf("set_destination") >= 0)
                 {
                     if (Math.abs(this._value0 - this._vf.set_destination) >= this._eps) {
                         this._value0 = this._vf.set_destination;

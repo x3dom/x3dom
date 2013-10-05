@@ -50,9 +50,11 @@ x3dom.registerNodeType(
             },
             
             fieldChanged: function(fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("coord");
-                });
+                if (fieldName == "point" || fieldName == "geoSystem") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("coord");
+                    });
+                }
             },
 
             isLogitudeFirst: function(geoSystem) {

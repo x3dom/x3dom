@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /* ### Uniform ### */
 x3dom.registerNodeType(
     "Uniform",
@@ -33,10 +34,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isSRGB', false);
             this.addField_SFNode('texture', x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -493,11 +490,6 @@ x3dom.registerNodeType(
 
             this.addField_SFInt32(ctx, 'numComponents', 4);
             this.addField_MFFloat(ctx, 'value', []);
-        },
-        {
-            fieldChanged: function (fieldName) {
-                //TODO
-            }
         }
     )
 );

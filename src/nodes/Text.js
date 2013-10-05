@@ -92,11 +92,7 @@ x3dom.registerNodeType(
             },
 
             fieldChanged: function(fieldName) {
-                if (fieldName == 'string' || fieldName == 'family' ||
-                    fieldName == 'horizontal' || fieldName == 'justify' ||
-                    fieldName == 'language' || fieldName == 'leftToRight' ||
-                    fieldName == 'size' || fieldName == 'spacing' ||
-                    fieldName == 'style' || fieldName == 'topToBottom') {
+                if (fieldName == 'string' || fieldName == 'length' || fieldName == 'maxExtent') {
                     this.invalidateVolume();
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();

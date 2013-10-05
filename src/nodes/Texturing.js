@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /* ### X3DTextureTransformNode ### */
 x3dom.registerNodeType(
     "X3DTextureTransformNode",
@@ -47,10 +48,8 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName) {
                 //Tc' = -C * S * R * C * T * Tc
-                if (fieldName == 'center'
-                    || fieldName == 'rotation'
-                    || fieldName == 'scale'
-                    || fieldName == 'translation') {
+                if (fieldName == 'center' || fieldName == 'rotation' ||
+                    fieldName == 'scale' || fieldName == 'translation') {
 
                 var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
                 var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
@@ -94,15 +93,17 @@ x3dom.registerNodeType(
 		{
 			fieldChanged: function(fieldName)
 			{
-				Array.forEach(this._parentNodes, function (texture) {
-					Array.forEach(texture._parentNodes, function (app) {
-						Array.forEach(app._parentNodes, function (shape) {
-							shape._dirty.texture = true;
-						});
-					});
-				});
+                if (this._vf.hasOwnProperty(fieldName)) {
+                    Array.forEach(this._parentNodes, function (texture) {
+                        Array.forEach(texture._parentNodes, function (app) {
+                            Array.forEach(app._parentNodes, function (shape) {
+                                shape._dirty.texture = true;
+                            });
+                        });
+                    });
 
-				this._nameSpace.doc.needRender = true;
+                    this._nameSpace.doc.needRender = true;
+                }
 			}
 		}
     )
@@ -120,9 +121,9 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
-            this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             this.addField_SFBool(ctx, 'scale', true);
             this.addField_SFBool(ctx, 'withCredentials', false);
+            this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
@@ -159,7 +160,8 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url" || fieldName ==  "origChannelCount" ||
-				    fieldName == "repeatS" || fieldName == "repeatT")
+				    fieldName == "repeatS" || fieldName == "repeatT" ||
+                    fieldName == "scale" || fieldName == "withCredentials")
                 {
                     var that = this;
 

@@ -2341,12 +2341,14 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "coord" || fieldName == "normal" ||
-                    fieldName == "texCoord" || fieldName == "color" ||
-                    fieldName == "index") {
+                if (fieldName == "index" ||fieldName == "coord" || fieldName == "normal" ||
+                    fieldName == "texCoord" || fieldName == "color") {
                     this._dirty[fieldName] = true;
+                    this._vol.invalidate();
                 }
-                this._vol.invalidate();
+                else if (fieldName == "implicitMeshSize") {
+                    this._vol.invalidate();
+                }
             },
 
             getMin: function() {
