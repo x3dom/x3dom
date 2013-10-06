@@ -53,7 +53,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         ((!binGeo._hasStrideOffset && binGeo._vf.color.length > 0) ? 1 : 0);
 
     var createTriangleSoup = (binGeo._vf.normalPerVertex == false) ||
-                              ((binGeo._vf.indexType == "Uint32") && (binGeo._vf.index.length > 0));
+                              ((binGeo._vf.index.length > 0) && (binGeo._vf.indexType == "Int32" ||
+                                (binGeo._vf.indexType == "Uint32" && !x3dom.caps.INDEX_UINT)));
 
     shape._webgl.makeSeparateTris = {
         index: null,
@@ -85,7 +86,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             for (var k=0; k<shape._webgl.primType.length; k++) {
                 if (shape._webgl.primType[k] == gl.TRIANGLE_STRIP) {
-                    x3dom.debug.logError("Triangle strips not yet supported for per-face normals.");
+                    x3dom.debug.logError("makeSeparateTris: triangle strips not yet supported for per-face normals.");
                     return;
                 }
             }
@@ -118,7 +119,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(geoNode._vf.coordType);
             dataLen = (dataLen == 0) ? 3 : dataLen;
 
-            x3dom.debug.logInfo("makeSeparateTris.createMesh called with coord length " + dataLen);
+            x3dom.debug.logWarning("makeSeparateTris.createMesh called with coord length " + dataLen);
 
             if (this.color && dataLen != shape._colorStrideOffset[0] / x3dom.Utils.getDataTypeSize(geoNode._vf.colorType))
             {
@@ -366,6 +367,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             var indicesBuffer = gl.createBuffer();
             shape._webgl.buffers[0] = indicesBuffer;
+
+            if (x3dom.caps.INDEX_UINT && attribTypeStr == "Uint32") {
+                //indexArray is Uint32Array
+                shape._webgl.indexType = gl.UNSIGNED_INT;
+            }
+            else {
+                //indexArray is Uint16Array
+                shape._webgl.indexType = gl.UNSIGNED_SHORT;
+            }
 
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);

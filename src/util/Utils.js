@@ -400,13 +400,32 @@ x3dom.Utils.getOffsetMultiplier = function(indexType, gl)
 {
     switch(indexType)
     {
-        case gl.UNSIGNED_BYTE:
-            return 0.5;
+        case gl.UNSIGNED_SHORT:
+            return 1;
         case gl.UNSIGNED_INT:
             return 2;
-        case gl.UNSIGNED_SHORT:
+        case gl.UNSIGNED_BYTE:
+            return 0.5;
         default:
             return 1;
+    }
+};
+
+/*****************************************************************************
+ * Return byte aware offset
+ *****************************************************************************/
+x3dom.Utils.getByteAwareOffset = function(offset, indexType, gl)
+{
+    switch(indexType)
+    {
+        case gl.UNSIGNED_SHORT:
+            return 2 * offset;
+        case gl.UNSIGNED_INT:
+            return 4 * offset;
+        case gl.UNSIGNED_BYTE:
+            return offset;
+        default:
+            return 2 * offset;
     }
 };
 

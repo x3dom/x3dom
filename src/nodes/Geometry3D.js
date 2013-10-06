@@ -1616,7 +1616,7 @@ x3dom.registerNodeType(
                     //x3dom.debug.logInfo("color stride: " + stride);
                 }
                 
-                if (this._vf.indexType != "Uint16")
+                if (this._vf.indexType != "Uint16" && !x3dom.caps.INDEX_UINT)
     		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
 			

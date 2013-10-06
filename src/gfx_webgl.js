@@ -1313,7 +1313,8 @@ x3dom.gfx_webgl = (function () {
 
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType, 2 * offset);
+                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                                        x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
@@ -1590,7 +1591,8 @@ x3dom.gfx_webgl = (function () {
                 // render mesh
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType, 2 * offset);
+                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                                        x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
@@ -2146,7 +2148,8 @@ x3dom.gfx_webgl = (function () {
 
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(polyMode, s_geo._vf.vertexCount[v], s_gl.indexType, 2 * offset);
+                        gl.drawElements(polyMode, s_geo._vf.vertexCount[v], s_gl.indexType,
+                                        x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
@@ -2167,7 +2170,8 @@ x3dom.gfx_webgl = (function () {
             else {
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType, 2 * offset);
+                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                                        x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
@@ -3447,7 +3451,8 @@ x3dom.gfx_webgl = (function () {
                 // draw mesh
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType, 2 * offset);
+                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                                        x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
