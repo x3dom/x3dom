@@ -245,7 +245,8 @@ x3dom.gfx_webgl = (function () {
                             indicesBuffer = gl.createBuffer();
                             shape._webgl.buffers[q5] = indicesBuffer;
 
-                            if (x3dom.caps.INDEX_UINT) {
+                            // explicitly check first positions array for consistency
+                            if (x3dom.caps.INDEX_UINT && (geoNode._mesh._positions[0].length / 3 > 65535)) {
                                 indexArray = new Uint32Array(shape._webgl.indexes[q]);
                                 shape._webgl.indexType = gl.UNSIGNED_INT;
                             }
@@ -548,7 +549,8 @@ x3dom.gfx_webgl = (function () {
                     indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5] = indicesBuffer;
 
-                    if (x3dom.caps.INDEX_UINT) {
+                    // explicitly check first positions array for consistency
+                    if (x3dom.caps.INDEX_UINT && (shape._webgl.positions[0].length / 3 > 65535)) {
                         indexArray = new Uint32Array(shape._webgl.indexes[q]);
                         shape._webgl.indexType = gl.UNSIGNED_INT;
                     }
