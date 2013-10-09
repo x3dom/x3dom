@@ -605,6 +605,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	var appearance 	= shape._cf.appearance.node;
 	var texture 	= appearance ? appearance._cf.texture.node : null;
 	var material    = appearance ? appearance._cf.material.node : null;
+    var environment = viewarea._scene.getEnvironment();
 
 	//Check if it's a composed shader
 	if (appearance && appearance._shader &&
@@ -660,6 +661,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.BITLODGEOMETRY && geometry.hasColor()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+        property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
+        x3dom.debug.logInfo("Gamma shader property is " + property.GAMMACORRECTION );
 	}
 	
 	property.toIdentifier = function() { 

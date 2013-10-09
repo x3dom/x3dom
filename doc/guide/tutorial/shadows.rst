@@ -35,3 +35,8 @@ Further options to influence shadow computations are given by the light node's `
 
 The last two settings -- ``shadowSplitFactor`` and ``shadowSplitOffset`` -- are additional parameters for cascading. As mentioned before, when using shadow cascades the visible area is split along the z-axis. The ``shadowSplitFactor`` setting determines, how these splits are placed. A setting of zero gives an equidistant placement, a setting of one a logarithmic placement. In most cases a logarithmic placement should achieve better results, since it allocates more resolution to the close range where it is needed the most. However, the equidistant split scheme can still be useful in some scenarios, as the transitions between different cascades are less apparent.
 The ``shadowSplitOffset`` option was introduced, because in some cases the cascades close to the near plane can get quite small. While this is good for shadow quality in that specific cascade, the transition to the next cascade will become all the more apparent. By using the ``shadowSplitOffset`` property, the split positions are moved away from the camera while the computation scheme that is defined by ``shadowSplitFactor`` is still respected.
+
+Finally, shadows are affected by gamma correction, as ``shadowIntensity`` is considered a linear intensity whose effect is dependent on whether you
+compensate for gamma. When working gamma-corrected / linear, the setting controls the amount by which a pixel in the umbra is darkened, e.g. ``0.7``
+means 70 % darkness, so 30% of the pixel's intensity remains. Accordingly, ``0.82`` or 82% results in an umbra which is visually half as bright
+as the environment. See the gamma and lighting tutorial for more information.
