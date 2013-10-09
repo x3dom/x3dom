@@ -99,6 +99,8 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 		shader += 	x3dom.shader.rgbaPacking();				
 	
 	shader += x3dom.shader.shadowRendering();
+    
+    shader += x3dom.shader.gammaCorrectionDecl({});  //TODO shader properties?
 	
 	shader += 	"void main(void) {\n" +
 				"	float shadowValue = 1.0;\n" +
@@ -149,8 +151,13 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 		
 	}
 					
-	shader += 	"}\n" +
-				"	gl_FragColor = vec4(shadowValue, shadowValue, shadowValue, 1.0);\n" +
+	shader += 	"}\n" + 
+                // In principle we should fix the place where this is multplied in instead
+                // of overcompensating for the subsequent error from here. This way of doing
+                // gamma correction explots the rule that (a*b)^x = a^x * b^x (x being the
+                // gamma coefficient), i.e. the umbra is corrected for now, the penumbra
+                // is incorrect and full light is zero here so unaffected as well.
+				"	gl_FragColor = " + x3dom.shader.encodeGamma({}, "vec4(shadowValue, shadowValue, shadowValue, 1.0)") + ";\n" +
 				"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
