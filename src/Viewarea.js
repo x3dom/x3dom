@@ -536,7 +536,15 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
 };
 
 x3dom.Viewarea.prototype.getLights = function () {
-    return this._doc._nodeBag.lights;
+    var enabledLights = [];
+    for (var i=0; i<this._doc._nodeBag.lights.length; i++)
+    {
+        if (this._doc._nodeBag.lights[i]._vf.on == true)
+        {
+            enabledLights.push(this._doc._nodeBag.lights[i]);
+        }
+    }
+    return enabledLights;
 };
 
 x3dom.Viewarea.prototype.getLightsShadow = function () {
