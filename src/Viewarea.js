@@ -141,6 +141,27 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                          navType.substr(0, 5) === "looka")) );
     
     this._deltaT = timeStamp - this._lastTS;
+    
+    var removeZeroMargin = function(val, offset) {
+        if (val > 0) {
+            if (val <= offset) {
+                return 0;
+            } else {
+                return val - offset;
+            }
+        } else if (val <= 0) {
+            if (val >= -offset) {
+                return 0;
+            } else {
+                return val + offset;
+            }
+        }
+    };
+    
+    // slightly increasing slope function
+    var humanizeDiff = function(scale, diff) {
+        return ((diff < 0) ? -1 : 1 ) * Math.pow(scale * Math.abs(diff), 1.65 /*lower is easier on the novice*/);
+    };
 
     if (needNavAnim)
     {
@@ -153,6 +174,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             avatarHeight = navi._vf.avatarSize[1];
             avatarKnee = navi._vf.avatarSize[2];
         }
+        
+        
 
         // get current view matrix
         var currViewMat = this.getViewMatrix();
@@ -162,14 +185,23 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         // is less dependent on screen geometry. This makes no sense for very
         // anisotropic cases, so it should probably be configurable.
         var screenSize = Math.min(this._width, this._height);
+        var rdeltaX = removeZeroMargin((this._pressX - this._lastX) / screenSize, 0.01);
+        var rdeltaY = removeZeroMargin((this._pressY - this._lastY) / screenSize, 0.01);
+        
+        var userXdiff = humanizeDiff(1, rdeltaX);
+        var userYdiff = humanizeDiff(1, rdeltaY);
 
         // check if forwards or backwards (on right button)
         var step = (this._lastButton & 2) ? -1 : 1;
         step *= (this._deltaT * navi._vf.speed);
-
-        var phi = Math.PI * this._deltaT * (this._pressX - this._lastX) / screenSize;
-        var theta = Math.PI * this._deltaT * (this._pressY - this._lastY) / screenSize;
-
+        
+        // factor in delta time and the nav speed setting
+        var userXstep = this._deltaT * navi._vf.speed * userXdiff;
+        var userYstep = this._deltaT * navi._vf.speed * userYdiff;
+        
+        var phi = Math.PI * this._deltaT * userXdiff;
+        var theta = Math.PI * this._deltaT * userYdiff;
+        
         if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
@@ -266,29 +298,22 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         else if (navType === "helicopter") {
             var typeParams = navi.getTypeParams();
 
-            var humanAccelerationFunction = function(scale, diff) {
-                return ((diff < 0) ? -1 : 1 ) * Math.pow(scale * Math.abs(diff), 1.65 /*magic*/);
-            };
+            
 
             if (this._lastButton & 2) // up/down levelling
             {
-                var stepUp = this._deltaT * navi._vf.speed;	
-                stepUp *= humanAccelerationFunction(0.05, this._pressY - this._lastY);
+                var stepUp = 200 * userYstep;
                 typeParams[1] += stepUp;
-
                 navi.setTypeParams(typeParams);
             }
 
             if (this._lastButton & 1) {  // forward/backward motion
-                step *= humanAccelerationFunction(0.13, this._pressY - this._lastY);
+                step = 300 * userYstep;
             }
             else {
                 step = 0;
             }
             
-            // humanize phi (rotation)
-            phi = humanAccelerationFunction(2.5, phi);
-
             theta = typeParams[0];
             this._from.y = typeParams[1];
             this._at.y = this._from.y;
