@@ -157,13 +157,18 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         // get current view matrix
         var currViewMat = this.getViewMatrix();
         var dist = 0;
+        
+        // estimate one screen size for motion puposes so navigation behaviour
+        // is less dependent on screen geometry. This makes no sense for very
+        // anisotropic cases, so it should probably be configurable.
+        var screenSize = Math.min(this._width, this._height);
 
         // check if forwards or backwards (on right button)
         var step = (this._lastButton & 2) ? -1 : 1;
         step *= (this._deltaT * navi._vf.speed);
 
-        var phi = Math.PI * this._deltaT * (this._pressX - this._lastX) / this._width;
-        var theta = Math.PI * this._deltaT * (this._pressY - this._lastY) / this._height;
+        var phi = Math.PI * this._deltaT * (this._pressX - this._lastX) / screenSize;
+        var theta = Math.PI * this._deltaT * (this._pressY - this._lastY) / screenSize;
 
         if (this._needNavigationMatrixUpdate === true)
         {
