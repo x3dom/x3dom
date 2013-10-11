@@ -81,7 +81,6 @@
     <style>
         X3D {
             border: 2px solid red; 
-            position:fixed; 
             top:0px; 
             left:0px;
             z-index:1;
@@ -90,20 +89,18 @@
     }
     </style>
   </head>
-  <body style="font-size: 14px;">
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat="false" showLog="false" x='0px' y='0px' width='1000px' height='600px'>
+  <body>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat="false" showLog="false" width='1000px' height='600px'>
       <Scene DEF='scene'>
-    <NavigationInfo type="&quot;EXAMINE&quot; &quot;ANY&quot;"/>
-    <DirectionalLight direction="0 -0.8 -0.2" intensity="0.5" shadowIntensity="0.5"/>
-    <Background skyColor='1.000 1.000 1.000'/>
-    <Viewpoint description="Two mathematical orbitals" position="0 0 50"/>
-
+        <NavigationInfo type="&quot;EXAMINE&quot; &quot;ANY&quot;"/>
+        <Background skyColor='1.000 1.000 1.000'/>
+        <Viewpoint description="Two mathematical orbitals" position="0 0 50"/>
 		<Transform DEF='Rose01' translation='0 -1 1' rotation='0 1 0 3.1415926' scale='1.5 1.5 1.5' >
 			<Shape>
 				<Appearance>
-					<Material diffuseColor='0.9 0.3 0.3' specularColor='0.8 0.8 0.8' shininess='0.145' />    
+					<Material diffuseColor='0.9 0.3 0.3' specularColor='0.5 0.5 0.5' shininess='0.145' />    
 				</Appearance>
-				<IndexedFaceSet  id="ifs" solid='true'>
+				<IndexedFaceSet id="ifs">
 					<Coordinate id="crd" DEF='Rose01-COORD'/>
 				</IndexedFaceSet>
 			</Shape>
@@ -112,7 +109,7 @@
     </X3D>
     
 	 <script type="text/javascript" >
-        <![CDATA[		
+        <![CDATA[
             var e = 5;
             var f = 5;
             var g = 5;
@@ -136,34 +133,35 @@
                      buf += localci[ci]+" "+localci[ci+2]+" "+localci[ci+1]+" "+localci[ci+4]+" ";
                      buf += localci[ci+3]+" "+localci[ci+2]+" "+localci[ci]+" "+localci[ci+4]+" ";
                      ci += 5;
-                }
+                    }
                 }
                 var ifs = document.getElementById("ifs");
                 ifs.setAttribute("coordIndex", buf);
             }
             
             function generateCoordinates(resolution) {
-                 theta = 0.0;
-                 phi = 0.0;
-                 delta = (2 * 3.141592653) / (resolution-1);
+                 var theta = 0.0;
+                 var phi = 0.0;
+                 var delta = (2 * 3.141592653) / (resolution-1);
                  var buf = "";
                  for ( i = 0; i < resolution; i++) {
-                    for ( j = 0; j < resolution; j++) {
+                   for ( j = 0; j < resolution; j++) {
                     rho = e + f * Math.cos(g * theta + t) * Math.cos(h * phi + p);
-                    var x = rho * Math.cos(phi) * Math.cos(theta);
-                    var y = rho * Math.cos(phi) * Math.sin(theta);
+                    var cosphi = Math.cos(phi);
+                    var x = rho * cosphi * Math.cos(theta);
+                    var y = rho * cosphi * Math.sin(theta);
                     var z = rho * Math.sin(phi);
-                        buf += x+" "+y+" "+z+" ";
+                    buf += x+" "+y+" "+z+" ";
                     theta += delta;
-                }
-                phi += delta;
+                   }
+                   phi += delta;
                  }
-                var crd = document.getElementById("crd");
-                crd.setAttribute("point", buf);
+                 var crd = document.getElementById("crd");
+                 crd.setAttribute("point", buf);
             }
             
             function animate() {
-                choice = Math.floor(Math.random() * 4);
+                var choice = Math.floor(Math.random() * 4);
                 if (choice == 0) {
                     e += Math.floor(Math.random() * 2) * 2 - 1;
                 } else if (choice == 1) {
@@ -189,8 +187,7 @@
             }
             
             initialize();
-            setInterval(animate, 1000);
-    
+            setInterval(animate, 100);
         ]]>
     </script>
   </body>
