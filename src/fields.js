@@ -1420,6 +1420,10 @@ x3dom.fields.Quaternion = function(x, y, z, w) {
     }
 };
 
+x3dom.fields.Quaternion.copy = function(v) {
+    return new x3dom.fields.Quaternion(v.x, v.y, v.z, v.w);
+};
+
 x3dom.fields.Quaternion.prototype.multiply = function (that) {
     return new x3dom.fields.Quaternion(
         this.w*that.x + this.x*that.w + this.y*that.z - this.z*that.y,
@@ -1595,10 +1599,7 @@ x3dom.fields.Quaternion.prototype.setValues = function (that) {
 };
 
 x3dom.fields.Quaternion.prototype.equals = function (that, eps) {
-    return Math.abs(this.x - that.x) < eps && 
-           Math.abs(this.y - that.y) < eps &&
-           Math.abs(this.z - that.z) < eps && 
-           Math.abs(this.w - that.w) < eps;
+    return (this.dot(that) >= 1.0 - eps);
 };
 
 x3dom.fields.Quaternion.prototype.multScalar = function (s) {

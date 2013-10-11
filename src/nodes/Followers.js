@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /* ### X3DFollowerNode ### */
 x3dom.registerNodeType(
     "X3DFollowerNode",
@@ -23,13 +24,16 @@ x3dom.registerNodeType(
                 x3dom.debug.logWarning("X3DFollowerNode: No runtime context found!");
             
             this.addField_SFBool(ctx, 'isActive', false);
-            
+
+            // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/followers.html
             // [S|M]F<type> [in]     set_destination
             // [S|M]F<type> [in]     set_value
+            // [S|M]F<type> [out]    value
             // SFBool       [out]    isActive
-            // [S|M]F<type> [out]    value_changed
             // [S|M]F<type> []       initialDestination
             // [S|M]F<type> []       initialValue
+
+            this._eps = 0.001;
         },
         {
             parentRemoved: function(parent)
@@ -87,7 +91,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DChaserNode.superClass.call(this, ctx);
 
-            this.addField_SFTime(ctx, 'duration', 0);
+            this.addField_SFTime(ctx, 'duration', 1);
             
             this._initDone = false;
             this._stepTime = 0;
@@ -106,11 +110,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DDamperNode.superClass.call(this, ctx);
 
-            this.addField_SFTime(ctx, 'tau', 0);
+            this.addField_SFTime(ctx, 'tau', 0.3);
             this.addField_SFFloat(ctx, 'tolerance', -1);
-            this.addField_SFInt32(ctx, 'order', 0);
+            this.addField_SFInt32(ctx, 'order', 3);
             
-            this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+            this._eps = this._vf.tolerance < 0 ? this._eps : this._vf.tolerance;
             this._lastTick = 0;
         }
     )
@@ -126,24 +130,20 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'initialDestination', 0.8, 0.8, 0.8);
             this.addField_SFColor(ctx, 'initialValue', 0.8, 0.8, 0.8);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFColor(ctx, 'set_value', 0, 0, 0);
-            this.addField_SFColor(ctx, 'set_destination', 0, 0, 0);
+
+            this.addField_SFColor(ctx, 'value', 0, 0, 0);
+            this.addField_SFColor(ctx, 'destination', 0, 0, 0);
             
             this._buffer = new x3dom.fields.MFColor();
             this._previousValue = new x3dom.fields.SFColor(0, 0, 0);
             this._value = new x3dom.fields.SFColor(0, 0, 0);
+
+            this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-                this.initialize();
-            },
-            
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName.indexOf("destination") >= 0)
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
@@ -152,16 +152,16 @@ x3dom.registerNodeType(
                         this.postMessage('isActive', true);
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
                     this.initialize();
                     
-                    this._previousValue.setValues(this._vf.set_value);
+                    this._previousValue.setValues(this._vf.value);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C].setValues(this._vf.set_value);
+                        this._buffer[C].setValues(this._vf.value);
                     }
                     
-                    this.postMessage('value_changed', this._vf.set_value);
+                    this.postMessage('value', this._vf.value);
                     
                     if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
@@ -177,7 +177,7 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.set_destination = this._vf.initialDestination;
+                    this._vf.destination = this._vf.initialDestination;
 
                     this._buffer.length = this._numSupports;
 
@@ -190,7 +190,7 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    var active = !this._buffer[0].equals(this._buffer[1], this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -211,7 +211,7 @@ x3dom.registerNodeType(
 
                     this._value = this._vf.initialValue;
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                     
                     return true;
                 }
@@ -235,10 +235,10 @@ x3dom.registerNodeType(
                     Output = Output.add(DeltaOut);
                 }
                 
-                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
+                if ( !Output.equals(this._value, this._eps) ) {
                     this._value.setValues(Output);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                 }
                 else {
                     this.postMessage('isActive', false);
@@ -271,15 +271,15 @@ x3dom.registerNodeType(
                         {
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
                         }
                     }
                     else
                     {
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
 
                         for (C= 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = this._vf.set_destination;
+                            this._buffer[C] = this._vf.destination;
                         }
                     }
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -300,10 +300,9 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'initialDestination', 0.8, 0.8, 0.8);
             this.addField_SFColor(ctx, 'initialValue', 0.8, 0.8, 0.8);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFColor(ctx, 'set_value', 0, 0, 0);
-            this.addField_SFColor(ctx, 'set_destination', 0, 0, 0);
+
+            this.addField_SFColor(ctx, 'value', 0, 0, 0);
+            this.addField_SFColor(ctx, 'destination', 0, 0, 0);
             
             this._value0 = new x3dom.fields.SFColor(0, 0, 0);
             this._value1 = new x3dom.fields.SFColor(0, 0, 0);
@@ -321,10 +320,10 @@ x3dom.registerNodeType(
                 {
                     this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
                 }
-                else if (fieldName.indexOf("set_destination") >= 0)
+                else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
-                        this._value0 = this._vf.set_destination;
+                    if ( !this._value0.equals(this._vf.destination, this._eps) ) {
+                        this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
                             //this._lastTick = 0;
@@ -332,16 +331,16 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
-                    this._value1.setValues(this._vf.set_value);
-                    this._value2.setValues(this._vf.set_value);
-                    this._value3.setValues(this._vf.set_value);
-                    this._value4.setValues(this._vf.set_value);
-                    this._value5.setValues(this._vf.set_value);
+                    this._value1.setValues(this._vf.value);
+                    this._value2.setValues(this._vf.value);
+                    this._value3.setValues(this._vf.value);
+                    this._value4.setValues(this._vf.value);
+                    this._value5.setValues(this._vf.value);
                     this._lastTick = 0;
                     
-                    this.postMessage('value_changed', this._value5);
+                    this.postMessage('value', this._value5);
                     
                     if (!this._vf.isActive) {
                         this._lastTick = 0;
@@ -440,7 +439,7 @@ x3dom.registerNodeType(
                     this._value4.setValues(this._value0);
                     this._value5.setValues(this._value0);
                     
-                    this.postMessage('value_changed', this._value0);
+                    this.postMessage('value', this._value0);
                     this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
@@ -448,7 +447,7 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                this.postMessage('value_changed', this._value5);
+                this.postMessage('value', this._value5);
 
                 this._lastTick = now;
 
@@ -468,25 +467,21 @@ x3dom.registerNodeType(
 
             this.addField_SFRotation(ctx, 'initialDestination', 0, 1, 0, 0);
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFRotation(ctx, 'set_value', 0, 1, 0, 0);
-            this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
+
+            this.addField_SFRotation(ctx, 'value', 0, 1, 0, 0);
+            this.addField_SFRotation(ctx, 'destination', 0, 1, 0, 0);
             
             this._numSupports = 30;
             this._buffer = new x3dom.fields.MFRotation();
             this._previousValue = new x3dom.fields.Quaternion(0, 1, 0, 0);
             this._value = new x3dom.fields.Quaternion(0, 1, 0, 0);
+
+            this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-                this.initialize();
-            },
-            
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName.indexOf("destination") >= 0)
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
@@ -495,16 +490,16 @@ x3dom.registerNodeType(
                         this.postMessage('isActive', true);
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
                     this.initialize();
                     
-                    this._previousValue.setValues(this._vf.set_value);
+                    this._previousValue.setValues(this._vf.value);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C].setValues(this._vf.set_value);
+                        this._buffer[C].setValues(this._vf.value);
                     }
                     
-                    this.postMessage('value_changed', this._vf.set_value);
+                    this.postMessage('value', this._vf.value);
                     
                     if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
@@ -521,20 +516,20 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.set_destination = this._vf.initialDestination;
+                    this._vf.destination = x3dom.fields.Quaternion.copy(this._vf.initialDestination);
 
                     this._buffer.length = this._numSupports;
 
-                    this._buffer[0] = this._vf.initialDestination;
+                    this._buffer[0] = x3dom.fields.Quaternion.copy(this._vf.initialDestination);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C] = this._vf.initialValue;
+                        this._buffer[C] = x3dom.fields.Quaternion.copy(this._vf.initialValue);
                     }
 
-                    this._previousValue = this._vf.initialValue;
+                    this._previousValue = x3dom.fields.Quaternion.copy(this._vf.initialValue);
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    var active = !this._buffer[0].equals(this._buffer[1], this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -553,9 +548,9 @@ x3dom.registerNodeType(
                 {
                     this._bufferEndTime = now; // first event we received, so we are in the initialization phase.
 
-                    this._value = this._vf.initialValue;
+                    this._value = x3dom.fields.Quaternion.copy(this._vf.initialValue);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                     
                     return true;
                 }
@@ -567,14 +562,14 @@ x3dom.registerNodeType(
                 // This means we calculate the delta between each entry in _buffer and its previous
                 // entries, calculate the step response of each such step and add it to form the output.
 
-                // The oldest vaule _buffer[_buffer.length - 1] needs some extra thought, because it has
+                // The oldest value _buffer[_buffer.length - 1] needs some extra thought, because it has
                 // no previous value. More exactly, we haven't stored a previous value anymore.
                 // However, the step response of that missing previous value has already reached its
                 // destination, so we can - would we have that previous value - use this as a start point
                 // for adding the step responses.
                 // Actually updateBuffer(.) maintains this value in
 
-                var Output = this._previousValue;
+                var Output = x3dom.fields.Quaternion.copy(this._previousValue);
 
                 var DeltaIn = this._previousValue.inverse().multiply(this._buffer[this._buffer.length - 1]);
                 
@@ -586,12 +581,12 @@ x3dom.registerNodeType(
                     
                     Output = Output.slerp(Output.multiply(DeltaIn), this.stepResponse((C + Frac) * this._stepTime));
                 }
-                
-                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
+
+                if ( !Output.equals(this._value, this._eps) ) {
                     Output = Output.normalize(Output);
                     this._value.setValues(Output);
-                    
-                    this.postMessage('value_changed', this._value);
+
+                    this.postMessage('value', this._value);
                 }
                 else {
                     this.postMessage('isActive', false);
@@ -608,7 +603,6 @@ x3dom.registerNodeType(
                 var Alpha;
                 // is normally < 1. When it has grown to be larger than 1, we have to shift the array because the step response
                 // of the oldest entry has already reached its destination, and it's time for a newer entry.
-                // has already reached it
                 // In the case of a very low frame rate, or a very short _stepTime we may need to shift by more than one entry.
 
                 if (Frac >= 1)
@@ -619,10 +613,10 @@ x3dom.registerNodeType(
                     if( NumToShift < this._buffer.length)
                     {   
                         // normal case
-                        this._previousValue = this._buffer[this._buffer.length - NumToShift];
+                        this._previousValue = x3dom.fields.Quaternion.copy(this._buffer[this._buffer.length - NumToShift]);
 
                         for (C=this._buffer.length - 1; C>=NumToShift; C--) {
-                            this._buffer[C] = this._buffer[C - NumToShift];
+                            this._buffer[C] = x3dom.fields.Quaternion.copy(this._buffer[C - NumToShift]);
                         }
 
                         for (C=0; C<NumToShift; C++)
@@ -632,7 +626,7 @@ x3dom.registerNodeType(
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._vf.set_destination.slerp(this._buffer[NumToShift], Alpha);
+                            this._buffer[C] = this._vf.destination.slerp(this._buffer[NumToShift], Alpha);
                         }
                     }
                     else
@@ -644,13 +638,14 @@ x3dom.registerNodeType(
                         // Maybe we could write part of a linear interpolation
                         // from this._buffer[0] to destination, that goes from this._bufferEndTime to now
                         // (possibly only the end of the interpolation is to be written),
-                        // but if we rech here we are in a very degenerate case...
+                        // but if we reach here we are in a very degenerate case...
                         // Thus we just write destination to the buffer.
 
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+                        this._previousValue = x3dom.fields.Quaternion.copy((NumToShift == this._buffer.length) ?
+                                                                           this._buffer[0] : this._vf.destination);
 
                         for (C= 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = this._vf.set_destination;
+                            this._buffer[C] = x3dom.fields.Quaternion.copy(this._vf.destination);
                         }
                     }
 
@@ -673,10 +668,9 @@ x3dom.registerNodeType(
 
             this.addField_SFRotation(ctx, 'initialDestination', 0, 1, 0, 0);
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFRotation(ctx, 'set_value', 0, 1, 0, 0);
-            this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
+
+            this.addField_SFRotation(ctx, 'value', 0, 1, 0, 0);
+            this.addField_SFRotation(ctx, 'destination', 0, 1, 0, 0);
             
             this._value0 = new x3dom.fields.Quaternion(0, 1, 0, 0);
             this._value1 = new x3dom.fields.Quaternion(0, 1, 0, 0);
@@ -694,10 +688,10 @@ x3dom.registerNodeType(
                 {
                     this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
                 }
-                else if (fieldName.indexOf("set_destination") >= 0)
+                else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
-                        this._value0 = this._vf.set_destination;
+                    if ( !this._value0.equals(this._vf.destination, this._eps) ) {
+                        this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
                             //this._lastTick = 0;
@@ -705,16 +699,16 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
-                    this._value1.setValues(this._vf.set_value);
-                    this._value2.setValues(this._vf.set_value);
-                    this._value3.setValues(this._vf.set_value);
-                    this._value4.setValues(this._vf.set_value);
-                    this._value5.setValues(this._vf.set_value);
+                    this._value1.setValues(this._vf.value);
+                    this._value2.setValues(this._vf.value);
+                    this._value3.setValues(this._vf.value);
+                    this._value4.setValues(this._vf.value);
+                    this._value5.setValues(this._vf.value);
                     this._lastTick = 0;
                     
-                    this.postMessage('value_changed', this._value5);
+                    this.postMessage('value', this._value5);
                     
                     if (!this._vf.isActive) {
                         this._lastTick = 0;
@@ -805,7 +799,7 @@ x3dom.registerNodeType(
                     this._value4.setValues(this._value0);
                     this._value5.setValues(this._value0);
                     
-                    this.postMessage('value_changed', this._value0);
+                    this.postMessage('value', this._value0);
                     this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
@@ -813,7 +807,7 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                this.postMessage('value_changed', this._value5);
+                this.postMessage('value', this._value5);
 
                 this._lastTick = now;
 
@@ -833,28 +827,20 @@ x3dom.registerNodeType(
             
             this.addField_SFVec3f(ctx, 'initialDestination', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
+
+            this.addField_SFVec3f(ctx, 'value', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'destination', 0, 0, 0);
             
             this._buffer = new x3dom.fields.MFVec3f();
             this._previousValue = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value = new x3dom.fields.SFVec3f(0, 0, 0);
-            
-            //this._fieldWatchers.destination = this._fieldWatchers.set_destination = [ function (msg) {
-            //    this.set_destination(this._currTime);
-            //} ];
+
+            this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-                this.initialize();
-            },
-            
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName.indexOf("destination") >= 0)
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
@@ -863,16 +849,16 @@ x3dom.registerNodeType(
                         this.postMessage('isActive', true);
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
                     this.initialize();
                     
-                    this._previousValue.setValues(this._vf.set_value);
+                    this._previousValue.setValues(this._vf.value);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C].setValues(this._vf.set_value);
+                        this._buffer[C].setValues(this._vf.value);
                     }
                     
-                    this.postMessage('value_changed', this._vf.set_value);
+                    this.postMessage('value', this._vf.value);
                     
                     if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
@@ -889,20 +875,20 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.set_destination = this._vf.initialDestination;
+                    this._vf.destination = x3dom.fields.SFVec3f.copy(this._vf.initialDestination);
 
                     this._buffer.length = this._numSupports;
 
-                    this._buffer[0] = this._vf.initialDestination;
+                    this._buffer[0] = x3dom.fields.SFVec3f.copy(this._vf.initialDestination);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C] = this._vf.initialValue;
+                        this._buffer[C] = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
                     }
 
-                    this._previousValue = this._vf.initialValue;
+                    this._previousValue = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    var active = !this._buffer[0].equals(this._buffer[1], this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -921,9 +907,9 @@ x3dom.registerNodeType(
                 {
                     this._bufferEndTime = now; // first event we received, so we are in the initialization phase.
 
-                    this._value = this._vf.initialValue;
+                    this._value = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                     
                     return true;
                 }
@@ -935,14 +921,14 @@ x3dom.registerNodeType(
                 // This means we calculate the delta between each entry in _buffer and its previous
                 // entries, calculate the step response of each such step and add it to form the output.
 
-                // The oldest vaule _buffer[_buffer.length - 1] needs some extra thought, because it has
+                // The oldest value _buffer[_buffer.length - 1] needs some extra thought, because it has
                 // no previous value. More exactly, we haven't stored a previous value anymore.
                 // However, the step response of that missing previous value has already reached its
                 // destination, so we can - would we have that previous value - use this as a start point
                 // for adding the step responses.
                 // Actually updateBuffer(.) maintains this value in
 
-                var Output = this._previousValue;
+                var Output = x3dom.fields.SFVec3f.copy(this._previousValue);
 
                 var DeltaIn = this._buffer[this._buffer.length - 1].subtract(this._previousValue);
 
@@ -959,10 +945,10 @@ x3dom.registerNodeType(
                     Output = Output.add(DeltaOut);
                 }
                 
-                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
+                if ( !Output.equals(this._value, this._eps) ) {
                     this._value.setValues(Output);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                 }
                 else {
                     this.postMessage('isActive', false);
@@ -979,7 +965,6 @@ x3dom.registerNodeType(
                 var Alpha;
                 // is normally < 1. When it has grown to be larger than 1, we have to shift the array because the step response
                 // of the oldest entry has already reached its destination, and it's time for a newer entry.
-                // has already reached it
                 // In the case of a very low frame rate, or a very short _stepTime we may need to shift by more than one entry.
 
                 if (Frac >= 1)
@@ -990,10 +975,10 @@ x3dom.registerNodeType(
                     if( NumToShift < this._buffer.length)
                     {   
                         // normal case
-                        this._previousValue = this._buffer[this._buffer.length - NumToShift];
+                        this._previousValue = x3dom.fields.SFVec3f.copy(this._buffer[this._buffer.length - NumToShift]);
 
                         for (C=this._buffer.length - 1; C>=NumToShift; C--) {
-                            this._buffer[C] = this._buffer[C - NumToShift];
+                            this._buffer[C] = x3dom.fields.SFVec3f.copy(this._buffer[C - NumToShift]);
                         }
 
                         for (C=0; C<NumToShift; C++)
@@ -1003,7 +988,7 @@ x3dom.registerNodeType(
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
                         }
                     }
                     else
@@ -1015,13 +1000,14 @@ x3dom.registerNodeType(
                         // Maybe we could write part of a linear interpolation
                         // from this._buffer[0] to destination, that goes from this._bufferEndTime to now
                         // (possibly only the end of the interpolation is to be written),
-                        // but if we rech here we are in a very degenerate case...
+                        // but if we reach here we are in a very degenerate case...
                         // Thus we just write destination to the buffer.
 
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+                        this._previousValue = x3dom.fields.SFVec3f.copy((NumToShift == this._buffer.length) ?
+                                                                        this._buffer[0] : this._vf.destination);
 
                         for (C= 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = this._vf.set_destination;
+                            this._buffer[C] = x3dom.fields.SFVec3f.copy(this._vf.destination);
                         }
                     }
 
@@ -1044,24 +1030,20 @@ x3dom.registerNodeType(
 
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec2f(ctx, 'set_value', 0, 0);
-            this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
+
+            this.addField_SFVec2f(ctx, 'value', 0, 0);
+            this.addField_SFVec2f(ctx, 'destination', 0, 0);
             
             this._buffer = new x3dom.fields.MFVec2f();
             this._previousValue = new x3dom.fields.SFVec2f(0, 0);
             this._value = new x3dom.fields.SFVec2f(0, 0);
+
+            this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-                this.initialize();
-            },
-            
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName.indexOf("destination") >= 0)
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
@@ -1070,16 +1052,16 @@ x3dom.registerNodeType(
                         this.postMessage('isActive', true);
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
                     this.initialize();
                     
-                    this._previousValue.setValues(this._vf.set_value);
+                    this._previousValue.setValues(this._vf.value);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C].setValues(this._vf.set_value);
+                        this._buffer[C].setValues(this._vf.value);
                     }
                     
-                    this.postMessage('value_changed', this._vf.set_value);
+                    this.postMessage('value', this._vf.value);
                     
                     if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
@@ -1095,20 +1077,20 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.set_destination = this._vf.initialDestination;
+                    this._vf.destination = x3dom.fields.SFVec2f.copy(this._vf.initialDestination);
 
                     this._buffer.length = this._numSupports;
 
-                    this._buffer[0] = this._vf.initialDestination;
+                    this._buffer[0] = x3dom.fields.SFVec2f.copy(this._vf.initialDestination);
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C] = this._vf.initialValue;
+                        this._buffer[C] = x3dom.fields.SFVec2f.copy(this._vf.initialValue);
                     }
 
-                    this._previousValue = this._vf.initialValue;
+                    this._previousValue = x3dom.fields.SFVec2f.copy(this._vf.initialValue);
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    var active = !this._buffer[0].equals(this._buffer[1], this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -1127,16 +1109,16 @@ x3dom.registerNodeType(
                 {
                     this._bufferEndTime = now;
 
-                    this._value = this._vf.initialValue;
+                    this._value = x3dom.fields.SFVec2f.copy(this._vf.initialValue);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                     
                     return true;
                 }
 
                 var Frac = this.updateBuffer(now);
                 
-                var Output = this._previousValue;
+                var Output = x3dom.fields.SFVec2f.copy(this._previousValue);
 
                 var DeltaIn = this._buffer[this._buffer.length - 1].subtract(this._previousValue);
 
@@ -1153,10 +1135,10 @@ x3dom.registerNodeType(
                     Output = Output.add(DeltaOut);
                 }
                 
-                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
+                if ( !Output.equals(this._value, this._eps) ) {
                     this._value.setValues(Output);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                 }
                 else {
                     this.postMessage('isActive', false);
@@ -1179,25 +1161,26 @@ x3dom.registerNodeType(
 
                     if( NumToShift < this._buffer.length)
                     {
-                        this._previousValue = this._buffer[this._buffer.length - NumToShift];
+                        this._previousValue = x3dom.fields.SFVec2f.copy(this._buffer[this._buffer.length - NumToShift]);
 
                         for (C=this._buffer.length - 1; C>=NumToShift; C--) {
-                            this._buffer[C]= this._buffer[C - NumToShift];
+                            this._buffer[C]= x3dom.fields.SFVec2f.copy(this._buffer[C - NumToShift]);
                         }
 
                         for (C=0; C<NumToShift; C++)
                         {
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
                         }
                     }
                     else
                     {
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+                        this._previousValue = x3dom.fields.SFVec2f.copy((NumToShift == this._buffer.length) ?
+                                                                        this._buffer[0] : this._vf.destination);
 
                         for (C= 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = this._vf.set_destination;
+                            this._buffer[C] = x3dom.fields.SFVec2f.copy(this._vf.destination);
                         }
                     }
 
@@ -1220,10 +1203,9 @@ x3dom.registerNodeType(
 
             this.addField_SFVec3f(ctx, 'initialDestination', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
+
+            this.addField_SFVec3f(ctx, 'value', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'destination', 0, 0, 0);
             
             this._value0 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value1 = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -1241,10 +1223,10 @@ x3dom.registerNodeType(
                 {
                     this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
                 }
-                else if (fieldName.indexOf("set_destination") >= 0)
+                else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
-                        this._value0 = this._vf.set_destination;
+                    if ( !this._value0.equals(this._vf.destination, this._eps) ) {
+                        this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
                             //this._lastTick = 0;
@@ -1252,16 +1234,16 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
-                    this._value1.setValues(this._vf.set_value);
-                    this._value2.setValues(this._vf.set_value);
-                    this._value3.setValues(this._vf.set_value);
-                    this._value4.setValues(this._vf.set_value);
-                    this._value5.setValues(this._vf.set_value);
+                    this._value1.setValues(this._vf.value);
+                    this._value2.setValues(this._vf.value);
+                    this._value3.setValues(this._vf.value);
+                    this._value4.setValues(this._vf.value);
+                    this._value5.setValues(this._vf.value);
                     this._lastTick = 0;
                     
-                    this.postMessage('value_changed', this._value5);
+                    this.postMessage('value', this._value5);
                     
                     if (!this._vf.isActive) {
                         this._lastTick = 0;
@@ -1352,7 +1334,7 @@ x3dom.registerNodeType(
                     this._value4.setValues(this._value0);
                     this._value5.setValues(this._value0);
                     
-                    this.postMessage('value_changed', this._value0);
+                    this.postMessage('value', this._value0);
                     this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
@@ -1360,7 +1342,7 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                this.postMessage('value_changed', this._value5);
+                this.postMessage('value', this._value5);
 
                 this._lastTick = now;
 
@@ -1380,10 +1362,9 @@ x3dom.registerNodeType(
 
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec2f(ctx, 'set_value', 0, 0);
-            this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
+
+            this.addField_SFVec2f(ctx, 'value', 0, 0);
+            this.addField_SFVec2f(ctx, 'destination', 0, 0);
             
             this._value0 = new x3dom.fields.SFVec2f(0, 0);
             this._value1 = new x3dom.fields.SFVec2f(0, 0);
@@ -1401,10 +1382,10 @@ x3dom.registerNodeType(
                 {
                     this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
                 }
-                else if (fieldName.indexOf("set_destination") >= 0)
+                else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
-                        this._value0 = this._vf.set_destination;
+                    if ( !this._value0.equals(this._vf.destination, this._eps) ) {
+                        this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
                             //this._lastTick = 0;
@@ -1412,16 +1393,16 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
-                    this._value1.setValues(this._vf.set_value);
-                    this._value2.setValues(this._vf.set_value);
-                    this._value3.setValues(this._vf.set_value);
-                    this._value4.setValues(this._vf.set_value);
-                    this._value5.setValues(this._vf.set_value);
+                    this._value1.setValues(this._vf.value);
+                    this._value2.setValues(this._vf.value);
+                    this._value3.setValues(this._vf.value);
+                    this._value4.setValues(this._vf.value);
+                    this._value5.setValues(this._vf.value);
                     this._lastTick = 0;
                     
-                    this.postMessage('value_changed', this._value5);
+                    this.postMessage('value', this._value5);
                     
                     if (!this._vf.isActive) {
                         this._lastTick = 0;
@@ -1512,7 +1493,7 @@ x3dom.registerNodeType(
                     this._value4.setValues(this._value0);
                     this._value5.setValues(this._value0);
                     
-                    this.postMessage('value_changed', this._value0);
+                    this.postMessage('value', this._value0);
                     this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
@@ -1520,7 +1501,7 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                this.postMessage('value_changed', this._value5);
+                this.postMessage('value', this._value5);
 
                 this._lastTick = now;
 
@@ -1540,24 +1521,20 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'initialDestination', 0);
             this.addField_SFFloat(ctx, 'initialValue', 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFFloat(ctx, 'set_value', 0);
-            this.addField_SFFloat(ctx, 'set_destination', 0);
+
+            this.addField_SFFloat(ctx, 'value', 0);
+            this.addField_SFFloat(ctx, 'destination', 0);
             
             this._buffer = [];
             this._previousValue = 0;
             this._value = 0;
+
+            this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-                this.initialize();
-            },
-            
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("set_destination") >= 0)
+                if (fieldName.indexOf("destination") >= 0)
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
@@ -1566,16 +1543,16 @@ x3dom.registerNodeType(
                         this.postMessage('isActive', true);
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
                     this.initialize();
                     
-                    this._previousValue = this._vf.set_value;
+                    this._previousValue = this._vf.value;
                     for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C] = this._vf.set_value;
+                        this._buffer[C] = this._vf.value;
                     }
                     
-                    this.postMessage('value_changed', this._vf.set_value);
+                    this.postMessage('value', this._vf.value);
                     
                     if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
@@ -1589,7 +1566,7 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.set_destination = this._vf.initialDestination;
+                    this._vf.destination = this._vf.initialDestination;
 
                     this._buffer.length = this._numSupports;
 
@@ -1602,7 +1579,7 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = (Math.abs(this._buffer[0] - this._buffer[1]) >= x3dom.fields.Eps);
+                    var active = (Math.abs(this._buffer[0] - this._buffer[1]) >= this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -1623,7 +1600,7 @@ x3dom.registerNodeType(
 
                     this._value = this._vf.initialValue;
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                     
                     return true;
                 }
@@ -1647,10 +1624,10 @@ x3dom.registerNodeType(
                     Output = Output + DeltaOut;
                 }
                 
-                if (Math.abs(Output - this._value) >= x3dom.fields.Eps) {
+                if (Math.abs(Output - this._value) >= this._eps) {
                     this._value = Output;
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value', this._value);
                 }
                 else {
                     this.postMessage('isActive', false);
@@ -1683,15 +1660,15 @@ x3dom.registerNodeType(
                         {
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift] * Alpha + this._vf.set_destination * (1 - Alpha);
+                            this._buffer[C] = this._buffer[NumToShift] * Alpha + this._vf.destination * (1 - Alpha);
                         }
                     }
                     else
                     {
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
 
                         for (C = 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = this._vf.set_destination;
+                            this._buffer[C] = this._vf.destination;
                         }
                     }
 
@@ -1714,10 +1691,9 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'initialDestination', 0);
             this.addField_SFFloat(ctx, 'initialValue', 0);
-            
-            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFFloat(ctx, 'set_value', 0);
-            this.addField_SFFloat(ctx, 'set_destination', 0);
+
+            this.addField_SFFloat(ctx, 'value', 0);
+            this.addField_SFFloat(ctx, 'destination', 0);
             
             this._value0 = 0;
             this._value1 = 0;
@@ -1735,10 +1711,10 @@ x3dom.registerNodeType(
                 {
                     this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
                 }
-                else if (fieldName.indexOf("set_destination") >= 0)
+                else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if (Math.abs(this._value0 - this._vf.set_destination) >= this._eps) {
-                        this._value0 = this._vf.set_destination;
+                    if (Math.abs(this._value0 - this._vf.destination) >= this._eps) {
+                        this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
                             //this._lastTick = 0;
@@ -1746,16 +1722,16 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else if (fieldName.indexOf("set_value") >= 0)
+                else if (fieldName.indexOf("value") >= 0)
                 {
-                    this._value1 = this._vf.set_value;
-                    this._value2 = this._vf.set_value;
-                    this._value3 = this._vf.set_value;
-                    this._value4 = this._vf.set_value;
-                    this._value5 = this._vf.set_value;
+                    this._value1 = this._vf.value;
+                    this._value2 = this._vf.value;
+                    this._value3 = this._vf.value;
+                    this._value4 = this._vf.value;
+                    this._value5 = this._vf.value;
                     this._lastTick = 0;
                     
-                    this.postMessage('value_changed', this._value5);
+                    this.postMessage('value', this._value5);
                     
                     if (!this._vf.isActive) {
                         this._lastTick = 0;
@@ -1841,7 +1817,7 @@ x3dom.registerNodeType(
                     this._value4 = this._value0;
                     this._value5 = this._value0;
                     
-                    this.postMessage('value_changed', this._value0);
+                    this.postMessage('value', this._value0);
                     this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
@@ -1849,7 +1825,7 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                this.postMessage('value_changed', this._value5);
+                this.postMessage('value', this._value5);
 
                 this._lastTick = now;
 
@@ -1870,12 +1846,10 @@ x3dom.registerNodeType(
             this.addField_MFVec3f(ctx, 'initialDestination', []);
             this.addField_MFVec3f(ctx, 'initialValue', []);
             
-            this.addField_MFVec3f(ctx, 'set_value', []);
-            this.addField_MFVec3f(ctx, 'set_destination', []);
+            this.addField_MFVec3f(ctx, 'value', []);
+            this.addField_MFVec3f(ctx, 'destination', []);
             
             x3dom.debug.logWarning("CoordinateDamper NYI");
-        },
-        {
         }
     )
 );
@@ -1891,12 +1865,10 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'initialDestination', []);
             this.addField_MFVec2f(ctx, 'initialValue', []);
             
-            this.addField_MFVec2f(ctx, 'set_value', []);
-            this.addField_MFVec2f(ctx, 'set_destination', []);
+            this.addField_MFVec2f(ctx, 'value', []);
+            this.addField_MFVec2f(ctx, 'destination', []);
             
             x3dom.debug.logWarning("TexCoordDamper2D NYI");
-        },
-        {
         }
     )
 );

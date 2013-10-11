@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <!-- BEGIN:X3DOM -->
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"/>
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css"/>
+    <script type="text/javascript" src="../../src/lang/Array.js"></script>
+    <script type="text/javascript" src="../../src/Internals.js"></script>
+    <script type="text/javascript" src="../../src/debug.js"></script>
+    <script type="text/javascript" src="../../src/util/AdaptiveRenderControl.js"></script>
+    <script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+    <script type="text/javascript" src="../../src/util/Properties.js"></script>
+    <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+    <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+    <script type="text/javascript" src="../../src/util/Utils.js"></script>
+    <script type="text/javascript" src="../../src/util/States.js"></script>
+    <script type="text/javascript" src="../../src/util/StateManager.js"></script>
+    <script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+    <script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+    <script type="text/javascript" src="../../src/util/BVH.js"></script>
+    <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+    <script type="text/javascript" src="../../src/Runtime.js"></script>
+    <script type="text/javascript" src="../../src/Main.js"></script>
+    <script type="text/javascript" src="../../src/Cache.js"></script>
+    <script type="text/javascript" src="../../src/Texture.js"></script>
+    <script type="text/javascript" src="../../src/shader/Shader.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingId.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+    <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+    <script type="text/javascript" src="../../src/gfx_flash.js"></script>
+    <script type="text/javascript" src="../../src/X3DDocument.js"></script>
+    <script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+    <script type="text/javascript" src="../../src/Viewarea.js"></script>
+    <script type="text/javascript" src="../../src/Mesh.js"></script>
+    <script type="text/javascript" src="../../src/fields.js"></script>
+    <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Time.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+    <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Text.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+    <script type="text/javascript" src="../../src/nodes/BVHRefiner.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3DExt.js"></script>
+    <script type="text/javascript" src="../../src/util/Moveable.js"></script>
+    <script type="text/javascript" src="../../src/Docs.js"></script>
+    <!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+</head>
+<body>
+<h1>X3D Follower Example</h1>
+
+<p>
+    Simple Follower example. Just move the mouse pointer on the red/ green plane to start the animation.
+</p>
+<x3d id='someUniqueId' showStat='true' showLog='true' width='500px' height='400px'>
+    <scene DEF='scene'>
+        <viewpoint position='0 0 5'></viewpoint>
+
+        <transform DEF='marker' scale='0.2 0.2 0.2' center='0 0 0'>
+            <shape>
+                <appearance>
+                    <material id='mat' diffuseColor='yellow'></material>
+                </appearance>
+                <cone></cone>
+            </shape>
+        </transform>
+
+        <positionChaser id='pc' duration="1.5" initialDestination="0 -1 0" initialValue="0 0 0">
+        </positionChaser>
+        <orientationChaser id='oc' duration="1.5" initialDestination="0 0 1 0" initialValue="0 0 1 0.75">
+        </orientationChaser>
+        <colorChaser id='cc' duration="1.5" initialDestination="1 1 0" initialValue="1 1 0">
+        </colorChaser>
+
+        <route fromNode='pc' fromField='value_changed' toNode='marker' toField='translation'></route>
+        <route fromNode='oc' fromField='value_changed' toNode='marker' toField='rotation'></route>
+        <route fromNode='cc' fromField='value_changed' toNode='mat' toField='diffuseColor'></route>
+
+        <transform onmousemove="document.getElementById('pc').setAttribute('destination', event.hitPnt);
+                   document.getElementById('oc').setAttribute('destination', '0.86 0.36 -0.36 1.71');
+				   document.getElementById('cc').setAttribute('destination', '1 0 0');"
+                   rotation='0 1 0 0.785' translation='-1 0 0'>
+            <shape>
+                <appearance>
+                    <material diffuseColor='red'></material>
+                </appearance>
+                <indexedFaceSet DEF='plane' solid='false' creaseAngle="3" coordIndex='2 0 3 -1 3 0 1 -1'>
+                    <coordinate point='-1 -1 0 1 -1 0 -1 1 0 1 1 0'></coordinate>
+                    <normal vector='0 0 1 0 0 1 0 0 1 0 0 1'></normal>
+                </indexedFaceSet>
+            </shape>
+        </transform>
+
+        <transform onmousemove="document.getElementById('pc').setAttribute('destination', event.hitPnt);
+				   document.getElementById('oc').setAttribute('destination', '0.86 -0.36 0.36 1.71');
+				   document.getElementById('cc').setAttribute('destination', '0 1 0');"
+                   rotation='0 1 0 -0.785' translation='1 0 0'>
+            <shape>
+                <appearance>
+                    <material diffuseColor='green'></material>
+                </appearance>
+                <indexedFaceSet USE='plane'>
+                </indexedFaceSet>
+            </shape>
+        </transform>
+    </scene>
+</x3d>
+</body>
+</html>
