@@ -897,11 +897,7 @@ x3dom.Viewarea.prototype.showAll = function(axis)
 
     var dia = max.subtract(min);
 
-    //Seems that the multiplication with "sign" is wrong here
-    //var diaz2 = sign * (dia[z] / 2.0);
-    
-    var diaz2 = (dia[z] / 2.0);
-    var tanfov2 = Math.tan(fov / 2.0);
+    var diaz2 = dia[z] / 2.0, tanfov2 = Math.tan(fov / 2.0);
 
     var dist1 = (dia[y] / 2.0) / tanfov2 + diaz2;
     var dist2 = (dia[x] / 2.0) / tanfov2 + diaz2;

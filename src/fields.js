@@ -990,7 +990,8 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 
     var rDet = this.det();
 
-    if (Math.abs(rDet) < 1e-30)
+    //if (Math.abs(rDet) < 1e-30)
+    if (rDet == 0)
     {
         x3dom.debug.logWarning("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4f.identity();
