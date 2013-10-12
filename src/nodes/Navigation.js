@@ -22,8 +22,8 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode) {
                 var domNode = ctx.xmlNode;
 
-                if (!domNode.resetView && !domNode.setView &&
-                    !domNode.getNear && !domNode.getFar && !domNode.getFieldOfView)
+                if (!domNode.resetView && !domNode.getFieldOfView &&
+                    !domNode.getNear && !domNode.getFar)
                 {
                     domNode.resetView = function() {
                         var that = this._x3domNode;
@@ -32,11 +32,8 @@ x3dom.registerNodeType(
                         that._nameSpace.doc.needRender = true;
                     };
 
-                    domNode.setView = function(newView) {
-                        var that = this._x3domNode;
-
-                        that.setView(newView.inverse());
-                        that._nameSpace.doc.needRender = true;
+                    domNode.getFieldOfView = function() {
+                        return this._x3domNode.getFieldOfView();
                     };
 
                     domNode.getNear = function() {
@@ -45,10 +42,6 @@ x3dom.registerNodeType(
 
                     domNode.getFar = function() {
                         return this._x3domNode.getFar();
-                    };
-
-                    domNode.getFieldOfView = function() {
-                        return this._x3domNode.getFieldOfView();
                     };
                 }
             }
