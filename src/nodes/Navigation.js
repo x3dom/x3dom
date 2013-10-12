@@ -54,6 +54,22 @@ x3dom.registerNodeType(
             }
         },
         {
+            activate: function (prev) {
+                var viewarea = this._nameSpace.doc._viewarea;
+                if (prev) {
+                    viewarea.animateTo(this, prev._autoGen ? null : prev);
+                }
+                viewarea._needNavigationMatrixUpdate = true;
+
+                x3dom.nodeTypes.X3DBindableNode.prototype.activate.call(this, prev);
+                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
+            },
+
+            deactivate: function (prev) {
+                x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this, prev);
+                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
+            },
+
             getTransformation: function() {
                 return this.getCurrentTransform();
             },
@@ -67,7 +83,8 @@ x3dom.registerNodeType(
             },
 
             setView: function(newView) {
-                // see derived class
+                var mat = this.getCurrentTransform();
+                this._viewMatrix = newView.mult(mat);
             },
 
             resetView: function() {
@@ -119,22 +136,22 @@ x3dom.registerNodeType(
 
             this._projMatrix = null;
             this._lastAspect = 1.0;
+
             // z-ratio: a value around 5000 would be better...
             this._zRatio = 10000;
             this._zNear = this._vf.zNear;
             this._zFar = this._vf.zFar;
+            
             // special stuff...
             this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName == "position" ||
-                    fieldName == "orientation") {
+                if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
-                         fieldName == "zNear" ||
-                         fieldName == "zFar") {
+                         fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
                     this._zNear = this._vf.zNear;
                     this._zFar = this._vf.zFar;
@@ -144,20 +161,6 @@ x3dom.registerNodeType(
                     // FIXME; call parent.fieldChanged();
                     this.bind(this._vf.bind);
                 }
-            },
-
-            activate: function (prev) {
-                if (prev) {
-                    this._nameSpace.doc._viewarea.animateTo(this, prev._autoGen ? null : prev);
-                }
-                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
-                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
-            },
-
-            deactivate: function (prev) {
-                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
-                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             getCenterOfRotation: function() {
@@ -172,14 +175,7 @@ x3dom.registerNodeType(
                 return this._vf.fieldOfView;
             },
 
-            setView: function(newView) {
-                var mat = this.getCurrentTransform();
-                this._viewMatrix = newView.mult(mat);
-            },
-            
             resetView: function() {
-                //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-                //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix()).inverse();
             },
@@ -309,8 +305,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName == "position" || 
-                    fieldName == "orientation") {
+                if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
@@ -323,29 +318,12 @@ x3dom.registerNodeType(
                 }
             },
 
-            activate: function (prev) {
-                if (prev) {
-                    this._nameSpace.doc._viewarea.animateTo(this, prev);
-                }
-                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
-                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-            },
-
-            deactivate: function (prev) {
-                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
-            },
-
             getCenterOfRotation: function() {
                 return this._vf.centerOfRotation;
             },
             
             getViewMatrix: function() {
                 return this._viewMatrix;
-            },
-
-            setView: function(newView) {
-                var mat = this.getCurrentTransform();
-                this._viewMatrix = newView.mult(mat);
             },
             
             resetView: function() {
@@ -422,18 +400,6 @@ x3dom.registerNodeType(
                     this.bind(this._vf.bind);
                 }
             },
-
-            activate: function (prev) {
-                if (prev) {
-                    this._nameSpace.doc._viewarea.animateTo(this, prev);
-                }
-                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
-                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-            },
-
-            deactivate: function (prev) {
-                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
-            },
             
             getViewMatrix: function() {
                 return this._viewMatrix;
@@ -445,11 +411,6 @@ x3dom.registerNodeType(
 
             getImgPlaneHeightAtDistOne: function() {
                 return 2.0 / this._projMatrix._11;
-            },
-
-            setView: function(newView) {
-                var mat = this.getCurrentTransform();
-                this._viewMatrix = newView.mult(mat);
             },
             
             resetView: function() {
