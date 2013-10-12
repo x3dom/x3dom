@@ -496,19 +496,19 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     var navi = this._scene.getNavigationInfo();
 
     if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
-        target = target.getCurrentTransform().mult(target.getViewMatrix());
+        target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
     }
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
-            prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
+            prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).
                          mult(this._transMat).mult(this._rotMat);
 
             this._mixer._beginTime = this._lastTS;
 
             if (arguments.length >= 3) {
-                 // for lookAt to assure travel speed of 1 m/s
+                // for lookAt to assure travel speed of 1 m/s
                 this._mixer._endTime = this._lastTS + dur;
             }
             else {
@@ -920,13 +920,17 @@ x3dom.Viewarea.prototype.resetView = function()
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
-        // EXPERIMENTAL (TODO: parent trafo of vp)
         this._mixer._beginTime = this._lastTS;
         this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
 
         this._mixer.setBeginMatrix(this.getViewMatrix());
-        this._scene.getViewpoint().resetView();
-        this._mixer.setEndMatrix(this._scene.getViewpoint().getViewMatrix());
+
+        var target = this._scene.getViewpoint();
+        target.resetView();
+
+        target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
+
+        this._mixer.setEndMatrix(target);
     }
     else
     {

@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /* ### X3DViewpointNode ### */
 x3dom.registerNodeType(
     "X3DViewpointNode",
@@ -16,21 +17,82 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
-        },
-        {
-        }
-    )
-);
 
-/* ### X3DNavigationInfoNode ### */
-x3dom.registerNodeType(
-    "X3DNavigationInfoNode",
-    "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        function (ctx) {
-            x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
+            // attach some convenience accessor methods to dom/xml node
+            if (ctx && ctx.xmlNode) {
+                var domNode = ctx.xmlNode;
+
+                if (!domNode.resetView && !domNode.setView &&
+                    !domNode.getNear && !domNode.getFar && !domNode.getFieldOfView)
+                {
+                    domNode.resetView = function() {
+                        var that = this._x3domNode;
+
+                        that.resetView();
+                        that._nameSpace.doc.needRender = true;
+                    };
+
+                    domNode.setView = function(newView) {
+                        var that = this._x3domNode;
+
+                        that.setView(newView.inverse());
+                        that._nameSpace.doc.needRender = true;
+                    };
+
+                    domNode.getNear = function() {
+                        return this._x3domNode.getNear();
+                    };
+
+                    domNode.getFar = function() {
+                        return this._x3domNode.getFar();
+                    };
+
+                    domNode.getFieldOfView = function() {
+                        return this._x3domNode.getFieldOfView();
+                    };
+                }
+            }
         },
         {
+            getTransformation: function() {
+                return this.getCurrentTransform();
+            },
+
+            getCenterOfRotation: function() {
+                return new x3dom.fields.SFVec3f(0, 0, 0);
+            },
+
+            getFieldOfView: function() {
+                return 1.57079633;
+            },
+
+            setView: function(newView) {
+                // see derived class
+            },
+
+            resetView: function() {
+                // see derived class
+            },
+
+            getNear: function() {
+                return 0.1;
+            },
+
+            getFar: function() {
+                return 10000;
+            },
+
+            getImgPlaneHeightAtDistOne: function() {
+                return 2.0;
+            },
+
+            getViewMatrix: function() {
+                return null;
+            },
+
+            getProjectionMatrix: function(aspect) {
+                return null;
+            }
         }
     )
 );
@@ -112,8 +174,7 @@ x3dom.registerNodeType(
 
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
-                mat = mat.inverse();
-                this._viewMatrix = mat.mult(newView);
+                this._viewMatrix = newView.mult(mat);
             },
             
             resetView: function() {
@@ -121,10 +182,6 @@ x3dom.registerNodeType(
                 //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix()).inverse();
-            },
-
-            getTransformation: function() {
-                return this.getCurrentTransform();
             },
             
             getNear: function() {
@@ -285,15 +342,10 @@ x3dom.registerNodeType(
             getViewMatrix: function() {
                 return this._viewMatrix;
             },
-            
-            getFieldOfView: function() {
-                return 1.57079633;
-            },
 
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
-                mat = mat.inverse();
-                this._viewMatrix = mat.mult(newView);
+                this._viewMatrix = newView.mult(mat);
             },
             
             resetView: function() {
@@ -305,10 +357,6 @@ x3dom.registerNodeType(
                                                     mult(this._vf.orientation.toMatrix());
                 this._viewMatrix = this._viewMatrix.mult(offset).inverse();
             },
-
-            getTransformation: function() {
-                return this.getCurrentTransform();
-            },
             
             getNear: function() {
                 return this._vf.zNear;
@@ -316,10 +364,6 @@ x3dom.registerNodeType(
             
             getFar: function() {
                 return this._vf.zFar;
-            },
-
-            getImgPlaneHeightAtDistOne: function() {
-                return 2.0;
             },
             
             getProjectionMatrix: function(aspect)
@@ -363,6 +407,8 @@ x3dom.registerNodeType(
             
             this._viewMatrix = this._vf.modelview.inverse();
             this._projMatrix = this._vf.projection;
+
+            // FIXME; derive near/far from current matrix, if requested!
         },
         {
             fieldChanged: function (fieldName) {
@@ -388,10 +434,6 @@ x3dom.registerNodeType(
             deactivate: function (prev) {
                 x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
             },
-
-            getCenterOfRotation: function() {
-                return new x3dom.fields.SFVec3f(0, 0, 0);
-            },
             
             getViewMatrix: function() {
                 return this._viewMatrix;
@@ -401,35 +443,33 @@ x3dom.registerNodeType(
                 return (2.0 * Math.atan(1.0 / this._projMatrix._11));
             },
 
-            getNear: function() {
-                return 0.1;     // FIXME; derive from matrix!
-            },
-
-            getFar: function() {
-                return 10000;   // FIXME; derive from matrix!
-            },
-
             getImgPlaneHeightAtDistOne: function() {
                 return 2.0 / this._projMatrix._11;
             },
 
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
-                mat = mat.inverse();
-                this._viewMatrix = mat.mult(newView);
+                this._viewMatrix = newView.mult(mat);
             },
             
             resetView: function() {
                 this._viewMatrix = this._vf.modelview.inverse();
             },
 
-            getTransformation: function() {
-                return this.getCurrentTransform();
-            },
-
             getProjectionMatrix: function(aspect) {
                 return this._projMatrix;
             }
+        }
+    )
+);
+
+/* ### X3DNavigationInfoNode ### */
+x3dom.registerNodeType(
+    "X3DNavigationInfoNode",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
         }
     )
 );
@@ -525,6 +565,7 @@ x3dom.registerNodeType(
         }
     )
 );
+
 
 /* ### Billboard ### */
 x3dom.registerNodeType(
