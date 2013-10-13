@@ -453,6 +453,13 @@ x3dom.fields.SFMatrix4f.prototype.setValue = function (v1, v2, v3, v4) {
     }
 };
 
+x3dom.fields.SFMatrix4f.prototype.setFromArray = function (a) {
+    this._00 = a[0]; this._01 = a[4]; this._02 = a[ 8]; this._03 = a[12];
+    this._10 = a[1]; this._11 = a[5]; this._12 = a[ 9]; this._13 = a[13];
+    this._20 = a[2]; this._21 = a[6]; this._22 = a[10]; this._23 = a[14];
+    this._30 = a[3]; this._31 = a[7]; this._32 = a[11]; this._33 = a[15];
+};
+
 x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     return [
         this._00, this._10, this._20, this._30,

@@ -41,23 +41,25 @@ x3dom.Runtime = function(doc, canvas) {
     this.states = { measurements: [], infos: [] };
 };
 
-x3dom.Runtime.prototype.addMeasurement = function(title, value) {
-  this.states.measurements[title] = value;
+
+x3dom.Runtime.prototype.addMeasurement = function (title, value) {
+    this.states.measurements[title] = value;
 };
 
-x3dom.Runtime.prototype.removeMeasurement = function(title) {
-  if ( this.states.measurements[title] ) {
-    delete this.states.measurements[title];
-  }
+x3dom.Runtime.prototype.removeMeasurement = function (title) {
+    if (this.states.measurements[title]) {
+        delete this.states.measurements[title];
+    }
 };
 
-x3dom.Runtime.prototype.addInfo = function(title, value) {
-  this.states.infos[title] = value;
+x3dom.Runtime.prototype.addInfo = function (title, value) {
+    this.states.infos[title] = value;
 };
 
-x3dom.Runtime.prototype.removeInfo = function(title) {
-  delete this.states.infos[title];
+x3dom.Runtime.prototype.removeInfo = function (title) {
+    delete this.states.infos[title];
 };
+
 
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     this.doc = doc;
@@ -157,6 +159,16 @@ x3dom.Runtime.prototype.enterFrame = function() {
 x3dom.Runtime.prototype.exitFrame = function() {
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
+};
+
+/**
+ * APIFunction: triggerRedraw
+ *
+ * triggers a redraw of the scene
+ *
+ */
+x3dom.Runtime.prototype.triggerRedraw = function() {
+    this.canvas.doc.needRender = true;
 };
 
 /**
