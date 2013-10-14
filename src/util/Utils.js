@@ -68,8 +68,6 @@ x3dom.Utils.isNumber = function(n) {
 *****************************************************************************/
 x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale)
 {
-	doc.downloadCount++;
-
 	var texture = gl.createTexture();
     
     //Create a black 1 pixel texture to prevent 'texture not complete' warning
@@ -82,9 +80,14 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
     
     texture.ready = false;
 	
+	if (src==null || src=='')
+	  return texture;	
+	
 	var image = new Image();
 	image.crossOrigin = withCredentials ? 'use-credentials' : '';
 	image.src = src;
+	
+	doc.downloadCount++;	
 	
 	image.onload = function() {
         if (scale)
