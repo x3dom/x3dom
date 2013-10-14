@@ -71,7 +71,8 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	doc.downloadCount++;
 
 	var texture = gl.createTexture();
-    
+
+    /*
     //Create a black 1 pixel texture to prevent 'texture not complete' warning
     var data = new Uint8Array([0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -81,6 +82,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
     gl.bindTexture(gl.TEXTURE_2D, null);
     
     texture.ready = false;
+    */
 	
 	var image = new Image();
 	image.crossOrigin = withCredentials ? 'use-credentials' : '';
@@ -209,7 +211,8 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 				 gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
 				 gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
 	}
-    
+
+    /*
     //Create a default black 1 pixel texture to prevent 'texture not complete' warning
     var data = new Uint8Array([0, 0, 0, 255]);
     for (var f=0; f<faces.length; f++)
@@ -220,6 +223,9 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
     }
+
+    texture.ready = false;
+    */
 	
     texture.pendingTextureLoads = -1;
     texture.textureCubeReady = false;
