@@ -90,11 +90,11 @@
     <div class="group">
     	<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="512px" height="512px">
         <Scene>
-            <Viewpoint id='cam01' description='foo' position='0 0 5'/>
+            <Viewpoint id='cam01' description='foo' position='0 0 5' zNear="0.1" zFar="10000"/>
             <Viewpoint id='cam02' description='bar' position='-3 -2 10'/>
-            <Viewfrustum id='cam03' description='frust' 
-                projection='2.414214 0 0 0, 0 2.414214 0 0, 0 0 -1.000002 -0.2, 0 0 -1.0 0'
-                modelview='1 0 0 -1, 0 1 0 2, 0 0 1 10, 0 0 0 1' />
+            <Viewfrustum id='cam03' description='frust'
+                projection='2.41421412,0,0,0,0,2.41421412,0,0,0,0,-1.00002,-1,0,0,-0.200002,0'
+                modelview='1 0 0 0, 0 1 0 0, 0 0 1 0, -1 2 10 1' />
             <Background id='bg01' skyColor='0 0 1'/>
             <Background id='bg02' skyColor='0 1 0'/>
             <NavigationInfo transitionType="LINEAR"/>
@@ -112,19 +112,19 @@
     
     <div class="group">
 		<input type="button" value="01.set_bind true"
-           onclick="document.getElementById('cam01').setAttribute('set_bind','true');"/>
+           onclick="document.getElementById('cam01').setAttribute('bind','true');"/>
 		<input type="button" value="01.set_bind false"
-           onclick="document.getElementById('cam01').setAttribute('set_bind','false');"/>
+           onclick="document.getElementById('cam01').setAttribute('bind','false');"/>
 	
 		<input type="button" value="02.set_bind true"
-           onclick="document.getElementById('cam02').setAttribute('set_bind','true');"/>
+           onclick="document.getElementById('cam02').setAttribute('bind','true');"/>
 		<input type="button" value="02.set_bind false"
-           onclick="document.getElementById('cam02').setAttribute('set_bind','false');"/>
+           onclick="document.getElementById('cam02').setAttribute('bind','false');"/>
 
    		<input type="button" value="03.set_bind true"
-           onclick="document.getElementById('cam03').setAttribute('set_bind','true');"/>
+           onclick="document.getElementById('cam03').setAttribute('bind','true');"/>
    		<input type="button" value="03.set_bind false"
-           onclick="document.getElementById('cam03').setAttribute('set_bind','false');"/>
+           onclick="document.getElementById('cam03').setAttribute('bind','false');"/>
     </div>
     
 </body>

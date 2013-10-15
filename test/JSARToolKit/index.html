@@ -141,6 +141,7 @@
         <X3D id="x3d" showStat='true' showLog='true' width="640px" height="480px">
             <Scene>
                 <MatrixTransform id="cam" matrix="1 0 0 0, 0 1 0 0, 0 0 1 0, 0 0 0 1">
+                    <Viewfrustum id="vf"></Viewfrustum>
                     <Viewpoint id="vp" zNear="0.01" zFar="10000" fieldOfView="0.6" position="0 0 0"></Viewpoint>
                 </MatrixTransform>
                 <Transform id="pTrafo"> <!--scale="0.001 0.001 0.001"-->
@@ -152,7 +153,7 @@
                                 <Material diffuseColor=".7 .5 .2" specularColor=".3 .3 .3"></Material>
                                 <ImageTexture url="../functional/media/texture/snaefari.jpg"></ImageTexture>
                             </Appearance>
-                            <Plane solid="true" size="240 240"></Plane>
+                            <Plane solid="true" size="120 120"></Plane>
                         </Shape>
                         <Shape>
                             <IndexedLineSet DEF="cs" coordIndex="0 1 -1, 2 3 -1, 4 5 -1">
@@ -438,14 +439,23 @@
             // tracks markers across multiple frames.
             detector.setContinueMode(true);
 
+
             // Copy the camera perspective matrix from the FLARParam to the WebGL library camera matrix.
             // The second and third parameters determine the zNear and zFar planes for the perspective matrix.
-            var camera = runtime.getActiveBindable('X3DViewpointNode');
+            //var camera = runtime.getActiveBindable('X3DViewpointNode');
+            var camera = document.getElementById("vf");
             var zNear = camera.getNear();
             var zFar = camera.getFar();
 
             var perspectiveMatrix = runtime.projectionMatrix().toGL();
             param.copyCameraMatrix(perspectiveMatrix, zNear, zFar);
+
+            var proj = new x3dom.fields.SFMatrix4f();
+            proj.setFromArray(perspectiveMatrix);
+            proj._22 *= -1;
+            proj._32 *= -1;
+            //x3dom.debug.logWarning(proj.toGL().toString());
+            camera.setAttribute("projection", proj.toGL().toString());
 
 
             // Detecting markers

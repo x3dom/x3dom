@@ -375,19 +375,19 @@ x3dom.registerNodeType(
                                                         0, 1, 0, 0,
                                                         0, 0, 1, 0,
                                                         0, 0, 0, 1);
-            
-            this._viewMatrix = this._vf.modelview.inverse();
-            this._projMatrix = this._vf.projection;
+
+            this._viewMatrix = this._vf.modelview.transpose().inverse();
+            this._projMatrix = this._vf.projection.transpose();
 
             // FIXME; derive near/far from current matrix, if requested!
         },
         {
             fieldChanged: function (fieldName) {
                 if (fieldName == "modelview") {
-                    this._viewMatrix = this._vf.modelview.inverse();
+                    this.resetView();
                 }
                 else if (fieldName == "projection") {
-                    this._projMatrix = this._vf.projection;
+                    this._projMatrix = this._vf.projection.transpose();
                 }
                 else if (fieldName.indexOf("bind") >= 0) {
                     this.bind(this._vf.bind);
@@ -407,7 +407,7 @@ x3dom.registerNodeType(
             },
             
             resetView: function() {
-                this._viewMatrix = this._vf.modelview.inverse();
+                this._viewMatrix = this._vf.modelview.transpose().inverse();
             },
 
             getProjectionMatrix: function(aspect) {
