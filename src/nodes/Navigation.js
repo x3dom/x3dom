@@ -247,19 +247,28 @@ x3dom.registerNodeType(
                     
                     var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
-                    //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
 
                     if (zfar > this._vf.zNear && this._vf.zNear > 0)
                         znear = this._vf.zNear;
                     if (this._vf.zFar > znear)
                         zfar = this._vf.zFar;
+
+                    if (zfar <= znear)
+                        zfar = znear + 1;
+                    //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
                 }
 
-                if (this._projMatrix == null || this._zNear != znear || this._zFar != zfar)
+                if (this._projMatrix == null)
                 {
                     this._projMatrix = x3dom.fields.SFMatrix4f.perspective(fovy, aspect, znear, zfar);
                 }
-                else if (this._lastAspect !== aspect)
+                else if (this._zNear != znear || this._zFar != zfar)
+                {
+                    var div = znear - zfar;
+                    this._projMatrix._22 = (znear + zfar) / div;
+                    this._projMatrix._23 = 2 * znear * zfar / div;
+                }
+                else if (this._lastAspect != aspect)
                 {
                     this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
                 }
@@ -379,6 +388,7 @@ x3dom.registerNodeType(
             this._viewMatrix = this._vf.modelview.transpose().inverse();
             this._projMatrix = this._vf.projection.transpose();
 
+            this._centerOfRotation = new x3dom.fields.SFVec3f(0, 0, 0);
             // FIXME; derive near/far from current matrix, if requested!
         },
         {
@@ -392,6 +402,10 @@ x3dom.registerNodeType(
                 else if (fieldName.indexOf("bind") >= 0) {
                     this.bind(this._vf.bind);
                 }
+            },
+
+            getCenterOfRotation: function() {
+                return this._centerOfRotation;  // this field is only a little helper for examine mode
             },
             
             getViewMatrix: function() {
@@ -408,6 +422,7 @@ x3dom.registerNodeType(
             
             resetView: function() {
                 this._viewMatrix = this._vf.modelview.transpose().inverse();
+                this._centerOfRotation = new x3dom.fields.SFVec3f(0, 0, 0);       // reset helper, too
             },
 
             getProjectionMatrix: function(aspect) {

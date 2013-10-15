@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html style="width:100%; height:100%; border:0; margin:0; padding:0;">
 <head>
 	<meta http-equiv="X-UA-Compatible" content="chrome=1" />
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <title>Common Surface Shader 05</title>
+    <title>Common Surface Shader 06</title>
     <!-- BEGIN:X3DOM -->
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
@@ -83,9 +83,11 @@
     body {
         margin:0;
         padding: 0;
+        border: 0;
         width: 100%;
         height: 100%;
         background-image: linear-gradient(rgb(44, 8, 0) 0%, rgb(0, 0, 0) 100%);
+        background-image: -webkit-linear-gradient(rgb(44, 8, 0) 0%, rgb(0, 0, 0) 100%);
         overflow: hidden;
     }
     
@@ -93,16 +95,18 @@
         width: 100%;
         height: 100%;
     }
+
+    .x3dom-logContainer { bottom: 0px; position: absolute; }
 </style>
 </head>
-<body>
 
-    <X3D style="width:100%; height:100%;">
+<body style="width:100%; height:100%; border:0; margin:0; padding:0;">
+
+    <X3D style="width:100%; height:100%; border:0; margin:0; padding:0;">
         <Scene DEF='scene'>
-            
             <NavigationInfo headlight="false"></NavigationInfo>
             <Viewpoint position="0.18770 0.15048 0.08464" orientation="0.26089 0.54958 0.79366 2.46879"></Viewpoint>
-            <PointLight intensity='0.500000' color='1 1 1' location='5.613052 0.000000 5.473352' shadowIntensity="0.7"></PointLight>
+            <PointLight intensity='0.500000' color='1 1 1' location='0.6 0.0 0.6' shadowIntensity="0.7" shadowFilterSize="3"></PointLight>
 			<PointLight intensity='1.000000' color='0.572549 0.431373 0.000000' location='-6.986097 4.789673 -3.138233'></PointLight>
 			<PointLight intensity='1.000000' color='0.572549 0.431373 0.000000' location='8.891838 4.789673 -4.029537'></PointLight>
 			<Transform translation="0 0 -0.04">

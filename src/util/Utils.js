@@ -10,7 +10,7 @@
  */
 
 /*****************************************************************************
-* 
+* Utils class holds utility functions for renderer
 *****************************************************************************/
 x3dom.Utils = {};
 
@@ -70,20 +70,16 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 {
 	var texture = gl.createTexture();
 
-    /*
     //Create a black 1 pixel texture to prevent 'texture not complete' warning
     var data = new Uint8Array([0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
     gl.bindTexture(gl.TEXTURE_2D, null);
-    
+
     texture.ready = false;
-    */
 	
-	if (src==null || src=='')
-	  return texture;	
+	if (src == null || src == '')
+	    return texture;
 	
 	var image = new Image();
 	image.crossOrigin = withCredentials ? 'use-credentials' : '';
@@ -99,6 +95,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		}
 		gl.bindTexture(gl.TEXTURE_2D, texture);
+		//gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 		if(bgnd == true) {
@@ -123,78 +120,6 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 };
 
 /*****************************************************************************
- *
- *****************************************************************************/
-x3dom.Utils.generateNonIndexedTriangleData = function(indices, positions, normals, texCoords, colors,
-                                                      newPositions, newNormals, newTexCoords, newColors)
-{
-    //@todo: add support for RGBA colors and 3D texture coordinates
-    //@todo: if there is any need for that, add multi-index support
-
-    for (var i = 0; i < indices.length; i+=3) {
-        var i0 = indices[i  ],
-            i1 = indices[i+1],
-            i2 = indices[i+2];
-
-        if (positions) {
-            var p0 = new x3dom.fields.SFVec3f(),
-                p1 = new x3dom.fields.SFVec3f(),
-                p2 = new x3dom.fields.SFVec3f();
-
-            p0.setValues(positions[i0]);
-            p1.setValues(positions[i1]);
-            p2.setValues(positions[i2]);
-
-            newPositions.push(p0);
-            newPositions.push(p1);
-            newPositions.push(p2);
-        }
-
-        if (normals) {
-            var n0 = new x3dom.fields.SFVec3f(),
-                n1 = new x3dom.fields.SFVec3f(),
-                n2 = new x3dom.fields.SFVec3f();
-
-            n0.setValues(normals[i0]);
-            n1.setValues(normals[i1]);
-            n2.setValues(normals[i2]);
-
-            newNormals.push(n0);
-            newNormals.push(n1);
-            newNormals.push(n2);
-        }
-
-        if (texCoords) {
-            var t0 = new x3dom.fields.SFVec2f(),
-                t1 = new x3dom.fields.SFVec2f(),
-                t2 = new x3dom.fields.SFVec2f();
-
-            t0.setValues(texCoords[i0]);
-            t1.setValues(texCoords[i1]);
-            t1.setValues(texCoords[i2]);
-
-            newTexCoords.push(t0);
-            newTexCoords.push(t1);
-            newTexCoords.push(t2);
-        }
-
-        if (colors) {
-            var c0 = new x3dom.fields.SFVec3f(),
-                c1 = new x3dom.fields.SFVec3f(),
-                c2 = new x3dom.fields.SFVec3f();
-
-            c0.setValues(texCoords[i0]);
-            c1.setValues(texCoords[i1]);
-            c1.setValues(texCoords[i2]);
-
-            newColors.push(c0);
-            newColors.push(c1);
-            newColors.push(c2);
-        }
-    }
-};
-
-/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale)
@@ -215,28 +140,21 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 				 gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
 	}
 
-    /*
-    //Create a default black 1 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 255]);
-    for (var f=0; f<faces.length; f++)
-    {
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-        gl.texImage2D(faces[f], 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-    }
-
     texture.ready = false;
-    */
-	
     texture.pendingTextureLoads = -1;
     texture.textureCubeReady = false;
-        
+
+    var data = new Uint8Array([0, 0, 0, 255]);
     var width = 0, height = 0;
-        
+
 	for (var i=0; i<faces.length; i++) {
 		var face = faces[i];
+
+        //Create a default black 1 pixel texture to prevent 'texture not complete' warning
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texImage2D(face, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+
 		var image = new Image();
 		image.crossOrigin = withCredentials ? 'use-credentials' : '';
 		texture.pendingTextureLoads++;
@@ -375,7 +293,8 @@ x3dom.Utils.nextHighestPowerOfTwo = function(x)
 *****************************************************************************/
 x3dom.Utils.nextBestPowerOfTwo = function(x)
 {
-	var log2x = Math.log(x) / Math.log(2);
+    // use precomputed log(2.0) = 0.693147180559945
+	var log2x = Math.log(x) / 0.693147180559945;
 	return Math.pow(2, Math.round(log2x));
 };
 

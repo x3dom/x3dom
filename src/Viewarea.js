@@ -1251,7 +1251,12 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 
     var viewpoint = this._scene.getViewpoint();
 
-    viewpoint._vf.centerOfRotation.setValues(this._pick);
+    if (viewpoint._vf.centerOfRotation) {
+        viewpoint._vf.centerOfRotation.setValues(this._pick);
+    }
+    else {
+        viewpoint._centerOfRotation.setValues(this._pick);  // Viewfrustum
+    }
     x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
 
     var mat = this.getViewMatrix().inverse();
