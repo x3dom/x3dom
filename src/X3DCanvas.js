@@ -916,8 +916,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if (doc == null)
 				doc = this.parent.doc;
 
+            var pos = null;
+            var rotMatrix = null;
+
             if (touches.examineNavType) {
-                var rotMatrix = null;
+                /*
+                if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
+                    for(var i = 0; i < evt.touches.length; i++) {
+                        pos = this.parent.mousePosition(evt.touches[i]);
+                        doc.onPick(that.gl, pos.x, pos.y);
+
+                        doc._viewarea.handleMoveEvt(pos.x, pos.y, 1);
+                    }
+                }
+                */
 
                 // one finger: x/y rotation
                 if(evt.touches.length == 1) {
@@ -963,7 +975,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 }
             }
             else if (evt.touches.length) {
-                var pos = this.parent.mousePosition(evt.touches[0]);
+                pos = this.parent.mousePosition(evt.touches[0]);
                 doc.onDrag(that.gl, pos.x, pos.y, 1);
             }
 
