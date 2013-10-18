@@ -70,10 +70,10 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 {
 	var texture = gl.createTexture();
 
-    //Create a black 1 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 255]);
+    //Create a black 4 pixel texture to prevent 'texture not complete' warning
+    var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture.ready = false;
@@ -144,7 +144,6 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
     texture.pendingTextureLoads = -1;
     texture.textureCubeReady = false;
 
-    var data = new Uint8Array([0, 0, 0, 255]);
     var width = 0, height = 0;
 
 	for (var i=0; i<faces.length; i++) {
