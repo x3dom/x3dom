@@ -9,6 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 // ### Anchor ###
 x3dom.registerNodeType(
     "Anchor",
@@ -73,6 +74,7 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
             
 			this.count = 0;
+            this.numRetries = 10;
         },
         {
             fieldChanged: function (fieldName)
@@ -154,10 +156,10 @@ x3dom.registerNodeType(
 						return xhr;
 					}
 					
-					if (xhr.status === 202 && that.count < 10) {
+					if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
 						that.count++;
-						x3dom.debug.logInfo('Statuscode 202 and send new Request in 5 sec');
-                        //TODO: check reload header field for better reload timout?
+						x3dom.debug.logInfo('Statuscode 202 and send new request in 5 sec');
+                        //TODO: check reload header field for better reload timeout?
 						window.setTimeout(function(){
                             that._nameSpace.doc.downloadCount -= 1;
                             that.nodeChanged();
@@ -166,7 +168,7 @@ x3dom.registerNodeType(
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
 						that.fireEvents("error");
-                        x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires a web server running!');
+                        x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires web server running!');
 
                         that._nameSpace.doc.downloadCount -= 1;
 						that.count = 0;
@@ -305,6 +307,8 @@ x3dom.registerNodeType(
         }
     )
 );
+
+x3dom.nodeTypes.Inline.AwaitTranscoding = 202;      // Parameterizable retry state for Transcoder
 
 
 function setNamespace(prefix, childDomNode, mapDEFToID)
