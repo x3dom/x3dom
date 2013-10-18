@@ -66,11 +66,13 @@ x3dom.registerNodeType(
             },
 
             parentAdded: function(parent) {
-                if (parent._cleanupGLObjects) {
-                    parent._cleanupGLObjects(true);
+                if (x3dom.isa(parent, x3dom.nodeTypes.X3DShapeNode)) {
+                    if (parent._cleanupGLObjects) {
+                        parent._cleanupGLObjects(true);
+                    }
+                    parent.setAllDirty();
+                    parent.invalidateVolume();
                 }
-                parent.setAllDirty();
-                parent.invalidateVolume();
             }
         }
     )
