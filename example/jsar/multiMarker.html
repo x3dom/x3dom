@@ -282,11 +282,9 @@
 
         function redraw(init)
         {
-            //videoCanvas.getContext('2d').drawImage(video, 0, 0);
-            //canvas.getContext('2d').drawImage(videoCanvas, 0, 0, width, height);
-
             canvas.getContext('2d').drawImage(video, 0, 0, width, height);
 
+            // flip video image
             var ctx = videoCanvas.getContext('2d');
             if (init) {
                 ctx.scale(-1, 1);

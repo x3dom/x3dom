@@ -150,11 +150,6 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 	for (var i=0; i<faces.length; i++) {
 		var face = faces[i];
 
-        //Create a default black 1 pixel texture to prevent 'texture not complete' warning
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-        gl.texImage2D(face, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-
 		var image = new Image();
 		image.crossOrigin = withCredentials ? 'use-credentials' : '';
 		texture.pendingTextureLoads++;
