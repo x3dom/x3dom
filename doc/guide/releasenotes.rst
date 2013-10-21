@@ -3,6 +3,12 @@
 Release notes
 =============
 
+Version 1.5.1
+-------------
+Maintenance release, with lot of bug fixes. Recommended upgrade for 1.5
+users.
+
+
 
 Version 1.5
 -----------
