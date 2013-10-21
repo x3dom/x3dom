@@ -101,7 +101,7 @@ for multiple features (branches).
 
 #### Useful Commands
 
-If a lot of changes has happened upstream you can replay your local changes 
+If a lot of changes have happened upstream you can replay your local changes 
 on top of these, this is done with `rebase`, e.g.:
 
     git fetch upstream

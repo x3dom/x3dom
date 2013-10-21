@@ -1,3 +1,211 @@
+2013-10-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed 1-px intermediate CubeTexture since this leads to computer crash
+  on certain mac systems
+
+2013-10-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added multi-marker example
+
+2013-10-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Internal centerOfRotation for Viewfrustum and reactivated 1-pixel
+  intermediate textures
+
+  * : local texture
+
+  * : added AR example
+
+  * : fixed Viewfrustum (matrices were transposed) and projection matrix of AR
+  demo
+
+2013-10-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : initial check-in of AR with WebRTC
+
+2013-10-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added runtime method to trigger redraw
+
+2013-10-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed buggy navigation when camera under transform
+
+2013-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : yet another minor show all fix
+
+  * : added all tests to index.html list for better testing
+
+2013-10-11  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add showAll test file
+
+2013-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : started follower corrections
+
+2013-10-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : 32-bit indices support now also for BinGeo
+
+2013-10-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix for issue #84
+
+  * : support for 32-bit indices (if extension available)
+
+2013-10-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - modify lizard example
+
+  * : - add on the fly shader-based tangent/binormal calculation for CSS
+
+2013-10-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : shader param fix
+
+  * : freefly mode added
+
+  * : fixed weired shader error
+
+2013-10-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed unused experimental setVisibility method
+
+2013-09-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added IR convenience flag
+
+  * : moved perspective/ortho calculation to matrix class, and cleanup of
+  fields.js so that it can be used standalone
+
+2013-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Create a default 1 pixel texture to prevent 'not texture complete'
+  warning
+
+2013-09-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : changed view to POT size
+
+2013-09-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added x3dom node ref to USE'd element
+
+2013-09-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented setMode method for Moveable so that one can choose between
+  translation, rotation, or all
+
+  * : nozzle fixes and changed Dish behaviour such that base is always circular
+
+2013-09-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small fix
+
+2013-09-23  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added source zip of BVHRefiner Dataset Converter
+
+  * : Update tutorial BVHRefiner
+
+2013-09-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed useless scissor test and impl. mobile popgeo picking
+
+2013-09-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : linear filtering for sky and fix for transparency issue #194
+
+2013-09-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small cleanup
+
+  * : minor picking improvements
+
+2013-09-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : culling check for pick pass
+
+  * : minor shadowObjectID improvements
+
+  * : fix for issue #217
+
+2013-09-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Ext. test for LineProperties
+
+2013-09-19  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : update tutorial BVHRefiner
+
+2013-09-19  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add ColorMaskMode and LineProperties
+
+2013-09-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : pass thru mouseup state
+
+2013-09-17  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added texture properties to all textures in BVHRefiner
+
+  * : BVHRefiner-Tool to produce wmts and tree conform data sets from image
+
+2013-09-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented picking for PopGeo
+
+  * : minor draw code cleanups
+
+2013-09-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : unified non-indexed rendering for standard geos and added fast path in
+  IFS coord update (for ipols)
+
+  * : primType cleanup
+
+  * : fixed broken DepthMode
+
+2013-09-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented IFS coordIndex update and optimized normal generation code
+
+2013-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Some work on BlendMode (TODO: alphaFunc and alphaFuncValue)
+
+  * : [flash] fix backbuffer resize before context3D creation
+
+  * : finish DepthMode implementation
+
+2013-09-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added normalUpdateMode field
+
+2013-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] fix for "Cannot redefine non-configurable property" error [flash]
+  fix remove texture bug
+
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added shadowID tests
+
+2013-09-12  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : back to development version
+
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : moved nodes to Ext
+
+2013-09-12  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Release 1.5.0
+
 2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
 
   * : cleanup of index-offset hack
