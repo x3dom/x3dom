@@ -31,7 +31,6 @@ loaded nodes).
 
 
 
-
 Runtime
 -------
 
@@ -107,6 +106,11 @@ the X3D element they are working on as first parameter::
 
     If you need to execute code before the first frame renders, it is
     therefore best to use the ``ready()`` function instead.
+
+
+..  js:fuction:: triggerRedraw()
+
+    Triggers a redraw of the scene
 
 
 ..  js:function:: getActiveBindable(typeName)
