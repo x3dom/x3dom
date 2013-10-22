@@ -399,6 +399,6 @@ x3dom.userAgentFeature = {
     // Initialize if we were loaded after 'DOMContentLoaded' already fired.
     // This can happen if the script was loaded by other means.
     if (document.readyState === "complete") {
-        onload();
+        window.setTimeout( function() { onload(); }, 20 );
     }
 })();
