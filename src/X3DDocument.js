@@ -9,26 +9,29 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 // ### X3DDocument ###
 x3dom.X3DDocument = function(canvas, ctx, settings) {
-    this.canvas = canvas;
-    this.ctx = ctx;
-    this.properties = settings;
-    this.needRender = true;
-    this._x3dElem = null;   // backref to <X3D> root element (set on parsing)
-    this._scene = null;
-    this._viewarea = null;
-    // bag for pro-active elements
+    this.canvas = canvas;       // The <canvas> elem
+    this.ctx = ctx;             // WebGL context object, AKA gl
+    this.properties = settings; // showStat, showLog, etc.
+    this.needRender = true;     // Trigger redraw if true
+    this._x3dElem = null;       // Backref to <X3D> root element (set on parsing)
+    this._scene = null;         // Scene root element
+    this._viewarea = null;      // Viewport, handles rendering and interaction
+    this.downloadCount = 0;     // Counter for objects to be loaded
+
+    // bag for pro-active (or multi-core-like) elements
     this._nodeBag = {
-        timer: [],
-        lights: [],
-        clipPlanes: [],
-        followers: [],
-        trans: [],
-        renderTextures: [],
-        viewarea: []
+        timer: [],          // TimeSensor (tick)
+        lights: [],         // Light
+        clipPlanes: [],     // ClipPlane
+        followers: [],      // X3DFollowerNode
+        trans: [],          // X3DTransformNode (for listening to CSS changes)
+        renderTextures: [], // RenderedTexture
+        viewarea: []        // Viewport (for updating camera navigation)
     };
-    this.downloadCount = 0;
+
     this.onload = function () {};
     this.onerror = function () {};
 };
@@ -53,7 +56,6 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         }
         var next_uri = queued_uris.shift();
 
-        //x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
         if ( x3dom.isX3DElement(next_uri) &&
             (next_uri.localName.toLowerCase() === 'x3d' || next_uri.localName.toLowerCase() === 'websg') )
         {
@@ -498,6 +500,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 109: /* m, toggle "points" attribute */
             this._viewarea._points = ++this._viewarea._points % 3;
+            break;
+        case 110: /* n, turntable */
+            nav.setType("turntable", this._viewarea);
             break;
         case 111: /* o, look around like in fly, but don't move */
             nav.setType("lookaround", this._viewarea);

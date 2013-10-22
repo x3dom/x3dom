@@ -121,10 +121,17 @@ x3dom.userAgentFeature = {
             'components', 
             'loadpath', 
             'disableDoubleClick',
+            'backend',
+            'altImg',
+            'flashrenderer',
+            'swfpath',
+            'runtimeEnabled',
+            'keysEnabled',
+            'showTouchpoints',
+            'disableTouch',
             'maxActiveDownloads'
         ]);
         var components, prefix;
-		
 		var showLoggingConsole = false;
 
         // for each X3D element
@@ -156,7 +163,7 @@ x3dom.userAgentFeature = {
                 // load components from params or default to x3d attribute
                 components = settings.getProperty('components', x3ds[i].getAttribute("components"));
                 if (components) {
-                    prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
+                    prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"));
                     components = components.trim().split(',');
                     for (j=0; j < components.length; j++) {
                         x3dom.loadJS(components[j] + ".js", prefix);
@@ -183,22 +190,15 @@ x3dom.userAgentFeature = {
 			x3dom.debug.activate(false);
 		}
 
-/*
-        // active hacky DOMAttrModified workaround to webkit
-        if (window.navigator.userAgent.match(/webkit/i)) {
-            x3dom.debug.logInfo ("Activate DOMAttrModifiedEvent workaround for WebKit.");
-            x3dom.userAgentFeature.supportsDOMAttrModified = false;
-        }
-*/
-
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) {
-            //n.runtime = x3dom.runtime;
-            n.runtime = new x3dom.Runtime();
             n.hasRuntime = true;
             return n;
         });
-        w3sg = Array.map(w3sg, function (n) { n.hasRuntime = false; return n; });
+        w3sg = Array.map(w3sg, function (n) {
+            n.hasRuntime = false;
+            return n;
+        });
         
         for (i=0; i<w3sg.length; i++) {
             x3ds.push(w3sg[i]);
@@ -218,8 +218,8 @@ x3dom.userAgentFeature = {
         // an X3D canvas and load the content
         var x3d_element;
         var x3dcanvas;
-        var altDiv, altP, aLnk, altImg, altImgObj;
-        var t0,t1;
+        var altDiv, altP, aLnk, altImg;
+        var t0, t1;
 
         for (i=0; i < x3ds.length; i++)
         {
@@ -238,6 +238,7 @@ x3dom.userAgentFeature = {
                 altDiv = document.createElement("div");
                 altDiv.setAttribute("class", "x3dom-nox3d");
                 altDiv.setAttribute("id", "x3dom-nox3d");
+
                 altP = document.createElement("p");
                 altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
                 aLnk = document.createElement("a");
@@ -259,11 +260,9 @@ x3dom.userAgentFeature = {
             
             t0 = new Date().getTime();
 
-//            if (!x3ds[i].runtime) {
-                 x3ds[i].runtime = new x3dom.Runtime(x3ds[i], x3dcanvas);
-//            }
-
+            x3ds[i].runtime = new x3dom.Runtime(x3ds[i], x3dcanvas);
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
+
             if (x3dom.runtime.ready) {
                 x3ds[i].runtime.ready = x3dom.runtime.ready;
             }
@@ -291,27 +290,10 @@ x3dom.userAgentFeature = {
                 x3ds[i].runtime.processIndicator(false);
             }
 
-//            var showProgress = x3ds[i].getAttribute("showProgress");
-//            if (showProgress == 'true' || showProgress === true || showProgress == 'bar') {
-//                var spinner = document.createElement("div");
-//                spinner.innerHTML = "Loaded " + " elements"
-//                spinner.id = 'x3dom-progress-1';
-//                spinner.className = 'x3dom-progress';
-//                if (showProgress == 'bar') {
-//                    spinner.className = 'x3dom-progress x3dom-progress-bar';
-//                }
-//                 x3ds[i].appendChild(spinner);
-//            }
-
             x3dom.canvases.push(x3dcanvas);
+
 			t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
-			
-            //Start image queue
-
-		    // gets the value of param name="maxActiveDownloads"
-		    // settings.getProperty('maxActiveDownloads', 10);
-            //x3dom.ImageLoadManager.load();
         }
         
         var ready = (function(eventType) {
@@ -354,9 +336,9 @@ x3dom.userAgentFeature = {
 		document.__getElementsByTagName = document.getElementsByTagName;
 		
 		document.getElementsByTagName = function(tag) {
-			var obj = new Array();   
-				
+			var obj = [];
 			var elems = this.__getElementsByTagName("*");
+
 			if(tag =="*"){
 				obj = elems;
 			} else {
@@ -413,9 +395,10 @@ x3dom.userAgentFeature = {
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
     }
-   // Initialize if we were loaded after 'DOMContentLoaded' already fired.
-   // This can happen if the script was loaded by other means.
-   if(document.readyState === "complete"){
-	onload();
-   }
+
+    // Initialize if we were loaded after 'DOMContentLoaded' already fired.
+    // This can happen if the script was loaded by other means.
+    if (document.readyState === "complete") {
+        onload();
+    }
 })();

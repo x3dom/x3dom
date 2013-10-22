@@ -454,16 +454,21 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
             this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // view angle and height for helicopter mode
-            this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
+            this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
             this.addField_SFTime(ctx, 'transitionTime', 1.0);
             this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
 
-            //TODO; use avatarSize + visibilityLimit for projection matrix
-            x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
-
+            this._validTypes = [
+                "none", "examine", "turntable",
+                "fly", "freefly", "lookat", "lookaround",
+                "walk", "game", "helicopter", "any"
+            ];
             this._heliUpdated = false;
+
+            //TODO; use avatarSize + visibilityLimit for projection matrix
+            x3dom.debug.logInfo("NavType: " + this.getType());
         },
         {
             fieldChanged: function(fieldName) {
@@ -471,7 +476,8 @@ x3dom.registerNodeType(
                     this._heliUpdated = false;
                 }
                 else if (fieldName == "type") {
-                    var type = this._vf.type[0].toLowerCase();
+                    var type = this.checkType(this.getType());
+
                     switch (type) {
                         case 'game':
                             this._nameSpace.doc._viewarea.initMouseState();
@@ -482,8 +488,36 @@ x3dom.registerNodeType(
                         default:
                             break;
                     }
+
+                    this._vf.type[0] = type;
                     x3dom.debug.logInfo("Switch to " + type + " mode.");
                 }
+            },
+
+            setType: function(type, viewarea) {
+                var navType = this.checkType(type.toLowerCase());
+                var oldType = this.checkType(this.getType());
+
+                switch (navType) {
+                    case 'game':
+                        if (oldType !== navType) {
+                            if (viewarea)
+                                viewarea.initMouseState();
+                            else
+                                this._nameSpace.doc._viewarea.initMouseState();
+                        }
+                        break;
+                    case 'helicopter':
+                        if (oldType !== navType) {
+                            this._heliUpdated = false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                this._vf.type[0] = navType;
+                x3dom.debug.logInfo("Switch to " + navType + " mode.");
             },
 
             getType: function() {
@@ -509,27 +543,14 @@ x3dom.registerNodeType(
                 }
             },
 
-            setType: function(type, viewarea) {
-                var navType = type.toLowerCase();
-                switch (navType) {
-                    case 'game':
-                        if (this._vf.type[0].toLowerCase() !== navType) {
-                            if (viewarea)
-                                viewarea.initMouseState();
-                            else
-                                this._nameSpace.doc._viewarea.initMouseState();
-                        }
-                        break;
-                    case 'helicopter':
-                        if (this._vf.type[0].toLowerCase() !== navType) {
-                            this._heliUpdated = false;
-                        }
-                        break;
-                    default:
-                        break;
+            checkType: function(type) {
+                if (this._validTypes.indexOf(type) > -1) {
+                    return type;
                 }
-                this._vf.type[0] = navType;
-                x3dom.debug.logInfo("Switch to " + navType + " mode.");
+                else {
+                    x3dom.debug.logWarning(type + " is no valid navigation type");
+                    return "examine";
+                }
             }
         }
     )

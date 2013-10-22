@@ -744,6 +744,15 @@ x3dom.Runtime.prototype.examine = function() {
 };
 
 /**
+ * APIFunction: turnTable
+ *
+ * Switches to turnTable mode
+ */
+x3dom.Runtime.prototype.turnTable = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("turntable");
+};
+
+/**
  * APIFunction: fly
  *
  * Switches to fly mode
