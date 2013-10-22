@@ -1094,6 +1094,29 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._pressY = y;
     this._lastButton = buttonState;
     this._isMoving = false;
+
+    var navi = this._scene.getNavigationInfo();
+    var navType = navi.getType();
+
+    if (navType === "turntable")
+    {
+        var currViewMat = this.getViewMatrix();
+
+        var viewpoint = this._scene.getViewpoint();
+        var center = x3dom.fields.SFVec3f.copy(viewpoint.getCenterOfRotation());
+
+        this._flyMat = currViewMat.inverse();
+
+        this._from = this._flyMat.e3();
+        //this._at = this._from.subtract(this._flyMat.e2());
+        this._at = center;
+        this._up = this._flyMat.e1();
+
+        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+
+        var dur = 0.2 / navi._vf.speed;   // fly to pivot point
+        this.animateTo(this._flyMat.inverse(), viewpoint, dur);
+    }
 };
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
@@ -1314,6 +1337,7 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
     this._lastY = y;
 };
 
+// multi-touch version of examine mode, called from X3DCanvas.js
 x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 {
 	var navi = this._scene.getNavigationInfo();
@@ -1362,22 +1386,24 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         return;
     }
 
+    var viewpoint = this._scene.getViewpoint();
+
     var dx = x - this._lastX;
     var dy = y - this._lastY;
     var d, vec, mat = null;
+    var alpha, beta;
 
     if (navType === "examine")
     {
         if (buttonState & 1) //left
         {
-            var alpha = (dy * 2 * Math.PI) / this._width;
-            var beta = (dx * 2 * Math.PI) / this._height;
+            alpha = (dy * 2 * Math.PI) / this._width;
+            beta = (dx * 2 * Math.PI) / this._height;
             mat = this.getViewMatrix();
 
             var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
             var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 
-            var viewpoint = this._scene.getViewpoint();
             var center = viewpoint.getCenterOfRotation();
             mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
 
@@ -1413,6 +1439,72 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             this._transMat = mat.inverse().
                              mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                              mult(mat);
+        }
+
+        this._isMoving = true;
+    }
+    else if (navType === "turntable")   // requires that y is up vector in world coords
+    {
+        if (buttonState & 1) //left
+        {
+            alpha = (dy * 2 * Math.PI) / this._height;
+            beta = (dx * 2 * Math.PI) / this._width;
+
+            this._up = this._flyMat.e1();
+            this._from = this._flyMat.e3();
+
+            var offset = this._from.subtract(this._at);
+
+            // angle in xz-plane
+            var phi = Math.atan2(offset.x, offset.z);
+
+            // angle from y-axis
+            var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
+
+            phi -= Math.min(beta, 0.1);
+            theta -= Math.min(alpha, 0.1);
+
+            // clamp theta
+            var typeParams = navi.getTypeParams();
+            theta = Math.max(typeParams[2], Math.min(typeParams[3], theta));
+
+            var radius = offset.length();
+
+            // calc new cam position
+            var rSinPhi = radius * Math.sin(theta);
+
+            offset.x = rSinPhi * Math.sin(phi);
+            offset.y = radius  * Math.cos(theta);
+            offset.z = rSinPhi * Math.cos(phi);
+
+            offset = this._at.add(offset);
+
+            // calc new up vector
+            theta -= Math.PI / 2;
+
+            var sinPhi = Math.sin(theta);
+            var cosPhi = Math.cos(theta);
+            var up = new x3dom.fields.SFVec3f(sinPhi * Math.sin(phi), cosPhi, sinPhi * Math.cos(phi));
+
+            if (this._up.dot(up) < 0)
+                up = up.negate();
+
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(offset, this._at, up);
+            viewpoint.setView(this._flyMat.inverse());
+        }
+        else if (buttonState & 2) //right
+        {
+            d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+
+            this._up = this._flyMat.e1();
+            this._from = this._flyMat.e3();
+
+            var dir = this._from.subtract(this._at).normalize();
+            this._from = this._from.addScaled(dir, -d*(dx+dy) / this._height);
+
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+            viewpoint.setView(this._flyMat.inverse());
         }
 
         this._isMoving = true;

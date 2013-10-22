@@ -453,7 +453,8 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
-            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // view angle and height for helicopter mode
+            // view angle and height for helicopter mode and min/max rotation angle for turntable
+            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 3.1]);
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
@@ -531,10 +532,14 @@ x3dom.registerNodeType(
             },
 
             getTypeParams: function() {
-                var theta  = (this._vf.typeParams.length >= 1) ? this._vf.typeParams[0] : 0;
-                var height = (this._vf.typeParams.length >= 2) ? this._vf.typeParams[1] : 0;
+                var length = this._vf.typeParams.length;
 
-                return [theta, height];
+                var theta  = (length >= 1) ? this._vf.typeParams[0] : -0.4;
+                var height = (length >= 2) ? this._vf.typeParams[1] : 60.0;
+                var minAngle = (length >= 3) ? this._vf.typeParams[2] : x3dom.fields.Eps;
+                var maxAngle = (length >= 4) ? this._vf.typeParams[3] : Math.PI - x3dom.fields.Eps;
+
+                return [theta, height, minAngle, maxAngle];
             },
 
             setTypeParams: function(params) {
