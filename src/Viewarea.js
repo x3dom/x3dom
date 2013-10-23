@@ -842,9 +842,9 @@ x3dom.Viewarea.prototype.getCCtoWCMatrix = function()
     return mat.inverse();
 };
 
-x3dom.Viewarea.prototype.calcViewRay = function(x, y)
+x3dom.Viewarea.prototype.calcViewRay = function(x, y, mat)
 {
-    var cctowc = this.getCCtoWCMatrix();
+    var cctowc = (mat === undefined) ? this.getCCtoWCMatrix() : mat;
 
     var rx = x / (this._width - 1.0) * 2.0 - 1.0;
     var ry = (this._height - 1.0 - y) / (this._height - 1.0) * 2.0 - 1.0;

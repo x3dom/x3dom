@@ -385,12 +385,14 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 	
 	var scrollLeft = window.pageXOffset || document.body.scrollLeft;
 	var scrollTop = window.pageYOffset || document.body.scrollTop;
+
+    var compStyle = document.defaultView.getComputedStyle(elem, null);
 	
-	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+	var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
+	var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
 		
-	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+	var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
+	var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
 		
 	var x = canvasPos.left + paddingLeft + borderLeftWidth + scrollLeft + mousePos[0];
     var y = canvasPos.top + paddingTop + borderTopWidth + scrollTop + mousePos[1];
@@ -414,12 +416,14 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 
     var canvasPos = elem.getBoundingClientRect();
     var mousePos = this.calcCanvasPos(wx, wy, wz);
+
+    var compStyle = document.defaultView.getComputedStyle(elem, null);
 	
-	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+	var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
+	var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
 		
-	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+	var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
+	var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
 	
 	var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
     var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
@@ -443,7 +447,8 @@ x3dom.Runtime.prototype.getScreenshot = function() {
 	if(canvas) {
 		if(backend == "flash") {
 			url = canvas.getScreenshot();
-		} else {
+		}
+		else {
 			// first flip along y axis
 			var canvas2d = document.createElement("canvas");
 			canvas2d.width = canvas.width;
@@ -876,36 +881,26 @@ x3dom.Runtime.prototype.pickMode = function(options) {
 /**
  * Function: changePickMode
  *
- * Alter the value of intersect type. Can be one of: idBuf, idBuf24, color, texCoord, box.
+ * Alter the value of intersect type. Can be one of: box, idBuf, idBuf24, idBufId, color, texCoord.
  * Other values are ignored.
  *
  * Parameters:
- *		type - The new intersect type: idBuf, idBuf24, color, texCoord, or box.
+ *		type - The new intersect type: box, idBuf, idBuf24, idBufId, color, texCoord
  *
  * Returns:
  * 		true if the type has been changed, false otherwise
  */
-x3dom.Runtime.prototype.changePickMode = function(type, options) {
-
-    // type one of : idbuf, color, texcoord, box
+x3dom.Runtime.prototype.changePickMode = function(type) {
+    // pick type one of : box, idBuf, idBuf24, idBufId, color, texCoord
     type = type.toLowerCase();
 
     switch(type) {
-        case 'idbuf':
-            type = 'idBuf';
-            break;
-        case 'idbuf24':
-            type = 'idBuf24';
-            break;
-        case 'texcoord':
-            type = 'texCoord';
-            break;
-        case 'color':
-            type = 'color';
-            break;
-        case 'box':
-            type = 'box';
-            break;
+        case 'idbuf':    type = 'idBuf';    break;
+        case 'idbuf24':  type = 'idBuf24';  break;
+        case 'idbufid':  type = 'idBufId';  break;
+        case 'texcoord': type = 'texCoord'; break;
+        case 'color':    type = 'color';    break;
+        case 'box':      type = 'box';      break;
         default:
             x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
             type = undefined;
@@ -914,10 +909,10 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
     if (type !== undefined) {
         this.canvas.doc._scene._vf.pickMode = type;
         x3dom.debug.logInfo("Switched pickMode to '" + type + "'.");
-        return false;
+        return true;
     }
 
-    return true;
+    return false;
 };
 
 /**

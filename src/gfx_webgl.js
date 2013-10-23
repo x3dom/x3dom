@@ -2487,15 +2487,19 @@ x3dom.gfx_webgl = (function () {
 
             var pixelOffset = 1.0 / scene._webgl.pickScale;
             var denom = 1.0 / 256.0;
+
             var dist, line, lineoff, right, up;
+            var cctowc = null;
 
             if (pickMode == 0) {
+                cctowc = viewarea.getCCtoWCMatrix();
+
                 objId += 256 * pixelData[index + 2];
 
                 dist = (pixelData[index    ] / 255.0) * denom +
                        (pixelData[index + 1] / 255.0);
 
-                line = viewarea.calcViewRay(x, y);
+                line = viewarea.calcViewRay(x, y, cctowc);
 
                 pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
 
@@ -2503,7 +2507,7 @@ x3dom.gfx_webgl = (function () {
                 dist = (pixelData[index    ] / 255.0) * denom +
                        (pixelData[index + 1] / 255.0);
 
-                lineoff = viewarea.calcViewRay(x + pixelOffset, y);
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
                 right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
@@ -2512,7 +2516,7 @@ x3dom.gfx_webgl = (function () {
                 dist = (pixelData[index    ] / 255.0) * denom +
                        (pixelData[index + 1] / 255.0);
 
-                lineoff = viewarea.calcViewRay(x, y - pixelOffset);
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
                 up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
@@ -2520,19 +2524,21 @@ x3dom.gfx_webgl = (function () {
                 pickNorm = right.cross(up).normalize();
             }
             else if (pickMode == 3) {
+                cctowc = viewarea.getCCtoWCMatrix();
+
                 objId +=   256 * pixelData[index + 2] +
                          65536 * pixelData[index + 1];
 
                 dist = pixelData[index] / 255.0;
 
-                line = viewarea.calcViewRay(x, y);
+                line = viewarea.calcViewRay(x, y, cctowc);
 
                 pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
                 dist = pixelData[index] / 255.0;
 
-                lineoff = viewarea.calcViewRay(x + pixelOffset, y);
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
                 right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
@@ -2540,7 +2546,7 @@ x3dom.gfx_webgl = (function () {
                 index = 8;      // get top pixel
                 dist = pixelData[index] / 255.0;
 
-                lineoff = viewarea.calcViewRay(x, y - pixelOffset);
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
                 up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();

@@ -1114,17 +1114,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             var elem = evt.target.offsetParent;    // should be x3dElem
     		var box = elem.getBoundingClientRect();
     		
-    		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-    		var scrolltop =  window.pageYOffset || document.body.scrollTop;
+    		var scrollLeft =  window.pageXOffset || document.body.scrollLeft;
+    		var scrollTop =  window.pageYOffset || document.body.scrollTop;
             
-    		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-    		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+            var compStyle = document.defaultView.getComputedStyle(elem, null);
             
-    		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-    		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+    		var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
+    		var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
+            
+    		var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
+    		var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
     		
-    		x = Math.round(evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft));
-    		y = Math.round(evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop));
+    		x = Math.round(evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrollLeft));
+    		y = Math.round(evt.pageY - (box.top + paddingTop + borderTopWidth + scrollTop));
         }
         else if (convertPoint) {
             var point = convertPoint(evt.target, new WebKitPoint(0, 0));
