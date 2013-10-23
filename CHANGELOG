@@ -1,3 +1,17 @@
+2013-10-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor improvements
+
+2013-10-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : first experimental turntable nav-type (requires y up)
+
+  * : cleanups, comments, and nav type check
+
+2013-10-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regenerate changelog
+
 2013-10-18  Yvonne Jung <yjung@igd.fhg.de>
 
   * : removed 1-px intermediate CubeTexture since this leads to computer crash
