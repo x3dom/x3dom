@@ -1486,7 +1486,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             var cosPhi = Math.cos(theta);
             var up = new x3dom.fields.SFVec3f(sinPhi * Math.sin(phi), cosPhi, sinPhi * Math.cos(phi));
 
-            if (this._up.dot(up) < 0)
+            if (up.y < 0)
                 up = up.negate();
 
             this._flyMat = x3dom.fields.SFMatrix4f.lookAt(offset, this._at, up);
@@ -1500,6 +1500,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             this._up = this._flyMat.e1();
             this._from = this._flyMat.e3();
 
+            // zoom in/out
             var dir = this._from.subtract(this._at).normalize();
             this._from = this._from.addScaled(dir, -d*(dx+dy) / this._height);
 

@@ -453,11 +453,14 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
-            // view angle and height for helicopter mode and min/max rotation angle for turntable
-            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 3.1]);
+            // view angle and height for helicopter mode and
+            // min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
+            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 2.8]);
+            // TODO; use avatarSize + visibilityLimit for projection matrix (near/far)
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
-            this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
+            this.addField_SFFloat(ctx, 'speed', 1.0);
+            // for 'jumping' between viewpoints (bind transition time)
             this.addField_SFTime(ctx, 'transitionTime', 1.0);
             this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
 
@@ -468,8 +471,8 @@ x3dom.registerNodeType(
             ];
             this._heliUpdated = false;
 
-            //TODO; use avatarSize + visibilityLimit for projection matrix
-            x3dom.debug.logInfo("NavType: " + this.getType());
+            var type = this.checkType(this.getType());
+            x3dom.debug.logInfo("NavType: " + type);
         },
         {
             fieldChanged: function(fieldName) {
@@ -553,7 +556,8 @@ x3dom.registerNodeType(
                     return type;
                 }
                 else {
-                    x3dom.debug.logWarning(type + " is no valid navigation type");
+                    x3dom.debug.logWarning(type + " is no valid navigation type, use one of " +
+                                           this._validTypes.toString());
                     return "examine";
                 }
             }
