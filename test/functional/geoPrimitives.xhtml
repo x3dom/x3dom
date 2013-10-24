@@ -349,9 +349,15 @@
         //
         function move(event) 
         {
+            var pos = runtime.mousePosition(event);
+            var info = runtime.shootRay(pos[0], pos[1]);
+            
+            if (info.pickObject) {
+                x3dom.debug.logInfo("pos: " + info.pickPosition + ", norm: " + info.pickNormal + 
+                                    ", object: " + info.pickObject.getAttribute("DEF"));
+            }
+            
             if (drag) {
-                var pos = runtime.mousePosition(event);
-                
                 rb.style.left = startPosX + "px";
                 rb.style.top = startPosY + "px";
                 rb.style.width = Math.abs(event.pageX-startPosX) + "px";

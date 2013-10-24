@@ -317,6 +317,27 @@ x3dom.Runtime.prototype.getViewingRay = function(x, y) {
 };
 
 /**
+ * Function: shootRay
+ *
+ * Returns pickPosition, pickNormal, and pickObject for a given (x, y) position.
+ *
+ * Returns:
+ * 		{pickPosition, pickNormal, pickObject}
+ */
+x3dom.Runtime.prototype.shootRay = function(x, y) {
+    var doc = this.canvas.doc;
+    var info = doc._viewarea._pickingInfo;
+
+    doc.onPick(this.canvas.gl, x, y);
+
+    return {
+        pickPosition: info.pickObj ? info.pickPos  : null,
+        pickNormal:   info.pickObj ? info.pickNorm : null,
+        pickObject:   info.pickObj ? info.pickObj._xmlNode : null
+    };
+};
+
+/**
  * Function: getWidth
  *
  * Returns the width of the canvas element.
