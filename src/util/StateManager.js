@@ -58,7 +58,7 @@ x3dom.StateManager.prototype.initStates = function ()
 };
 
 /*
- * Enable GL capabilities
+ * Only bind program if different (returns true if changed)
  */
 x3dom.StateManager.prototype.useProgram = function (shader)
 {
@@ -66,7 +66,17 @@ x3dom.StateManager.prototype.useProgram = function (shader)
     {
         this.gl.useProgram(shader.program);
         this.states['shaderID'] = shader.shaderID;
+        return true;
     }
+    return false;
+};
+
+/*
+ * Unset active program for clean init state
+ */
+x3dom.StateManager.prototype.unsetProgram = function ()
+{
+    this.states['shaderID'] = null;
 };
 
 /*

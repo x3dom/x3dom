@@ -1690,7 +1690,7 @@ x3dom.gfx_webgl = (function () {
             return;
         }
 
-        this.stateManager.useProgram(sp);
+        var changed = this.stateManager.useProgram(sp);
 
         //===========================================================================
         // Set special Geometry variables
@@ -1713,8 +1713,8 @@ x3dom.gfx_webgl = (function () {
             sp.bgPrecisionMax = s_geo.getPrecisionMax('coordType');
         }
         else {
-            sp.bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
-            sp.bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
+            sp.bgCenter = [0, 0, 0];
+            sp.bgSize = [1, 1, 1];
             sp.bgPrecisionMax = 1;
         }
         if (s_gl.colorType != gl.FLOAT) {
@@ -1763,7 +1763,8 @@ x3dom.gfx_webgl = (function () {
         // TODO: when no state/shader switch happens, all light/fog/... uniforms don't need to be set again
         var fog = scene.getFog();
 
-        if (fog) {
+        // THINKABOUTME: changed flag only works as long as lights and fog are global
+        if (fog && changed) {
             sp.fogColor = fog._vf.color.toGL();
             sp.fogRange = fog._vf.visibilityRange;
             sp.fogType = (fog._vf.fogType == "LINEAR") ? 0.0 : 1.0;
@@ -1844,7 +1845,7 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Set Lights
         //===========================================================================
-        for (var p = 0; p < numLights; p++) {
+        for (var p = 0; p < numLights && changed; p++) {
             // FIXME; getCurrentTransform() doesn't work for shared lights/objects!
             var light_transform = mat_view.mult(slights[p].getCurrentTransform());
 
@@ -1897,7 +1898,7 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         var nav = scene.getNavigationInfo();
 
-        if (nav._vf.headlight) {
+        if (nav._vf.headlight && changed) {
             numLights = (numLights) ? numLights : 0;
             sp['light' + numLights + '_Type'] = 0.0;
             sp['light' + numLights + '_On'] = 1.0;
@@ -2058,7 +2059,7 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
             gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
 
-            // THINKABOUTME: this is expensive and probably only required on change, track e.g. via stateManager
+            // TODO: this is expensive and probably only required on change, track e.g. via stateManager
             if (tex.genMipMaps) {
                 gl.generateMipmap(tex.type);
             }
@@ -3131,6 +3132,8 @@ x3dom.gfx_webgl = (function () {
                 n = 1;   // render at least one object
         }
 
+        this.stateManager.unsetProgram();
+
         // render all remaining shapes
         for (i = 0; i < n; i++) {
             var drawable = scene.drawableCollection.get(i);
@@ -3291,6 +3294,8 @@ x3dom.gfx_webgl = (function () {
                 this.renderNormals(gl, scene, scene._webgl.normalShader, mat_view, mat_scene);
             }
             else {
+                this.stateManager.unsetProgram();
+
                 for (i = 0; i < n; i++) {
                     drawable = scene.drawableCollection.get(i);
 
@@ -3328,6 +3333,8 @@ x3dom.gfx_webgl = (function () {
                 this.renderNormals(gl, locScene, scene._webgl.normalShader, mat_view, mat_scene);
             }
             else {
+                this.stateManager.unsetProgram();
+
                 for (i = 0; i < n; i++) {
                     drawable = locScene.drawableCollection.get(i);
 

@@ -15,7 +15,8 @@
 	<Scene>
 		<Background skyColor='0.273438 0.367188 0.472656 '/>
 		<Viewpoint position='0 0 14.753095' zNear="1" zFar="3000"/>
-        <DirectionalLight direction='-0.7 -0.9 0.3' shadowIntensity='0.5' /> 
+        <DirectionalLight direction='-0.7 -0.9 0.3' shadowIntensity='0.3' /> 
+        <Environment shadowExcludeTransparentObjects="true" />
         
         <Transform translation='-0.392361 -5.058005 0.006138'>
             <Shape>
@@ -26,7 +27,7 @@
 		<Transform rotation='0 1 0 -1.570796'>
 			<Transform translation='-0.950447 -4.460888 0.269898'>
 				<Shape>
-					<Appearance>
+					<Appearance sortType="opaque">
 						<Material diffuseColor='1.000000 1.000000 1.000000' />
 		<ImageTexture DEF='ancientoflore' url='texture/wow/ancientoflore.png' />
 					</Appearance>
@@ -1104,7 +1105,7 @@
 				</Shape>
 
 				<Shape>
-					<Appearance>
+					<Appearance sortType="opaque">
 						<Material diffuseColor='1.000000 1.000000 1.000000' />
 						<ImageTexture USE='ancientoflore'/>
 					</Appearance>
@@ -9571,7 +9572,7 @@
 				</Shape>
 
 				<Shape>
-					<Appearance>
+					<Appearance sortType="opaque">
 						<Material diffuseColor='1.000000 1.000000 1.000000' />
 						<ImageTexture USE='ancientoflore'/>
 					</Appearance>
@@ -12807,7 +12808,7 @@
 				</Shape>
 
 				<Shape>
-					<Appearance>
+					<Appearance sortType="opaque">
 						<Material diffuseColor='1.000000 1.000000 1.000000' />
 						<ImageTexture USE='ancientoflore'/>
 					</Appearance>
