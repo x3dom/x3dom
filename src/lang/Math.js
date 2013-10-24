@@ -153,7 +153,7 @@ math.vec3 =
   {
     var xl = left[0],
         yl = left[1],
-        zl = left[2]
+        zl = left[2],
         xr = right[0],
         yr = right[1],
         zr = right[2];
