@@ -844,7 +844,7 @@ x3dom.Viewarea.prototype.getCCtoWCMatrix = function()
 
 x3dom.Viewarea.prototype.calcViewRay = function(x, y, mat)
 {
-    var cctowc = (mat === undefined) ? this.getCCtoWCMatrix() : mat;
+    var cctowc = mat ? mat : this.getCCtoWCMatrix();
 
     var rx = x / (this._width - 1.0) * 2.0 - 1.0;
     var ry = (this._height - 1.0 - y) / (this._height - 1.0) * 2.0 - 1.0;

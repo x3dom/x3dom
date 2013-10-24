@@ -2434,8 +2434,7 @@ x3dom.gfx_webgl = (function () {
 
         x3dom.Utils.startMeasure("picking");
 
-        //scene.updateVolume();
-
+        // ViewMatrix and ViewProjectionMatrix
         var mat_view, mat_scene;
 
         if (arguments.length > 4) {
@@ -2447,8 +2446,10 @@ x3dom.gfx_webgl = (function () {
             mat_scene = viewarea._last_mat_scene;
         }
 
-        var min = scene._lastMin;
-        var max = scene._lastMax;
+        // remember correct scene bbox
+        var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+        var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
+        // get current camera position
         var from = mat_view.inverse().e3();
 
         // get bbox of scene bbox and camera position
@@ -2463,18 +2464,26 @@ x3dom.gfx_webgl = (function () {
         if (_max.y < max.y) { _max.y = max.y; }
         if (_max.z < max.z) { _max.z = max.z; }
 
-        min.setValues(_min);
-        max.setValues(_max);
+        // temporarily set scene size to include camera
+        scene._lastMin.setValues(_min);
+        scene._lastMax.setValues(_max);
 
-        var sceneSize = max.subtract(min).length();
+        // get scalar scene size and adapted projection matrix
+        var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
+        var cctowc = viewarea.getCCtoWCMatrix();
 
-        var baseID = x3dom.nodeTypes.Shape.objectID + 2;    // for shadow ids
+        // restore correct scene bbox
+        scene._lastMin.setValues(min);
+        scene._lastMax.setValues(max);
+
+        // for deriving shadow ids together with shape ids
+        var baseID = x3dom.nodeTypes.Shape.objectID + 2;
 
 
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, mat_view, mat_scene, from, sceneSize, pickMode, x, y, 2, 2);
 
-
+        // the pixel values under mouse cursor
         var pixelData = scene._webgl.fboPick.pixelData;
 
         if (pixelData && pixelData.length)
@@ -2487,13 +2496,9 @@ x3dom.gfx_webgl = (function () {
 
             var pixelOffset = 1.0 / scene._webgl.pickScale;
             var denom = 1.0 / 256.0;
-
             var dist, line, lineoff, right, up;
-            var cctowc = null;
 
             if (pickMode == 0) {
-                cctowc = viewarea.getCCtoWCMatrix();
-
                 objId += 256 * pixelData[index + 2];
 
                 dist = (pixelData[index    ] / 255.0) * denom +
@@ -2524,8 +2529,6 @@ x3dom.gfx_webgl = (function () {
                 pickNorm = right.cross(up).normalize();
             }
             else if (pickMode == 3) {
-                cctowc = viewarea.getCCtoWCMatrix();
-
                 objId +=   256 * pixelData[index + 2] +
                          65536 * pixelData[index + 1];
 

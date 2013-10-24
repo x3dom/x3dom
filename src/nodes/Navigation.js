@@ -197,7 +197,7 @@ x3dom.registerNodeType(
                     var viewarea = this._nameSpace.doc._viewarea;
                     var scene = viewarea._scene;
 
-                    //scene.updateVolume();
+                    // Doesn't work if called e.g. from RenderedTexture with different sub-scene
                     var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
                     var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
                     
