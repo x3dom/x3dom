@@ -17,7 +17,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     var that = this;
 	this.canvasIdx = canvasIdx;
 
-    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2)
+    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, tryIE11)
     {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, x3dElem);
@@ -26,6 +26,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             x3dom.debug.logError("No 3D context found...");
             this.x3dElem.removeChild(canvas);
             return null;
+        } else {
+            var webglVersion = parseFloat(x3dom.caps.VERSION.match(/\d+\.\d+/)[0]);
+            if (webglVersion < 1.0 && !tryIE11) {
+                x3dom.debug.logError("No valid 3D context found...");
+                this.x3dElem.removeChild(canvas);
+                return null;
+            }
         }
         
         return gl;
@@ -442,7 +449,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		this.gl = this.initContext( this.canvas, 
 		            (this.backend.search("desktop") >= 0), 
 		            (this.backend.search("mobile") >= 0),
-                    (this.backend.search("webgl2") >= 0));
+                    (this.backend.search("webgl2") >= 0),
+                    (this.backend.search("ie11") >= 0));
 		this.backend = 'webgl';
 		if (this.gl == null)
 		{
