@@ -94,6 +94,15 @@ x3dom.findScene = function(x3dElem) {
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
     var doc = this;
 
+    function cleanNodeBag(bag, node) {
+        for (var i=0, n=bag.length; i<n; i++) {
+            if (bag[i] === node) {
+                bag.splice(i, 1);
+                break;
+            }
+        }
+    }
+
     function removeX3DOMBackendGraph(domNode) {
         var children = domNode.childNodes;
 
@@ -103,12 +112,29 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
         if (domNode._x3domNode !== undefined) {
             var node = domNode._x3domNode;
+
             if (x3dom.isa(node, x3dom.nodeTypes.X3DShapeNode)) {
                 if (node._cleanupGLObjects) {
                     node._cleanupGLObjects(true);
                 }
                 // TODO: more cleanups, e.g. texture/shader cache?
             }
+            else if (x3dom.isa(node, x3dom.nodeTypes.TimeSensor)) {
+                cleanNodeBag(doc._nodeBag.timer, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DLightNode)) {
+                cleanNodeBag(doc._nodeBag.lights, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DFollowerNode)) {
+                cleanNodeBag(doc._nodeBag.followers, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DTransformNode)) {
+                cleanNodeBag(doc._nodeBag.trans, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture)) {
+                cleanNodeBag(doc._nodeBag.renderTextures, node);
+            }
+
             delete domNode._x3domNode;
         }
     }
