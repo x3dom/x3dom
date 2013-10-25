@@ -1380,9 +1380,11 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this.handleMoveEvt(x, y, buttonState);
 
     var navi = this._scene.getNavigationInfo();
+
     var navType = navi.getType();
+    var navRestrict = navi.getExplorationMode();
     
-    if (navType === "none") {
+    if (navType === "none" || navRestrict == 0) {
         return;
     }
 
@@ -1392,6 +1394,8 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     var dy = y - this._lastY;
     var d, vec, mat = null;
     var alpha, beta;
+
+    buttonState = ((navRestrict & buttonState) != buttonState) ? navRestrict : buttonState;
 
     if (navType === "examine")
     {

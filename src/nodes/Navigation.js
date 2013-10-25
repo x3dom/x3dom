@@ -456,6 +456,9 @@ x3dom.registerNodeType(
             // view angle and height for helicopter mode and
             // min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
             this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 2.8]);
+            // allows restricting examine and turntable navigation, overrides mouse buttons
+            // can be one of [all, pan, zoom, rotate, none] (useful for special viewers)
+            this.addField_SFString(ctx, 'explorationMode', 'all');
             // TODO; use avatarSize + visibilityLimit for projection matrix (near/far)
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
@@ -559,6 +562,17 @@ x3dom.registerNodeType(
                     x3dom.debug.logWarning(type + " is no valid navigation type, use one of " +
                                            this._validTypes.toString());
                     return "examine";
+                }
+            },
+
+            getExplorationMode: function() {
+                switch (this._vf.explorationMode.toLowerCase()) {
+                    case "all":    return 7;
+                    case "rotate": return 1; //left btn
+                    case "zoom":   return 2; //right btn
+                    case "pan":    return 4; //middle btn
+                    case "none":   return 0; //type 'none'
+                    default:       return 7;
                 }
             }
         }
