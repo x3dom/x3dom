@@ -40,6 +40,16 @@ x3dom.registerNodeType(
             var start = this._vf.startAngle;
             var end = this._vf.endAngle;
 
+            // The following code ensures that:
+            // 1. 0 <= startAngle < 2*Pi
+            // 2. startAngle < endAngle
+            // 3. endAngle - startAngle <= 2*Pi
+            var Pi2 = Math.PI * 2.0;
+            start -= Math.floor(start / Pi2) * Pi2;
+            end -= Math.floor(end / Pi2) * Pi2;
+            if (end <= start)
+                end += Pi2;
+
             var geoCacheID = 'Arc2D_' + r + start + end;
 
             if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
@@ -84,6 +94,12 @@ x3dom.registerNodeType(
                     var start = this._vf.startAngle;
                     var end = this._vf.endAngle;
                     var anzahl = this._vf.subdivision;
+
+                    var Pi2 = Math.PI * 2.0;
+                    start -= Math.floor(start / Pi2) * Pi2;
+                    end -= Math.floor(end / Pi2) * Pi2;
+                    if (end <= start)
+                        end += Pi2;
 
                     var t = (end - start) / anzahl;
                     var theta = start;
@@ -135,6 +151,17 @@ x3dom.registerNodeType(
             var r = this._vf.radius;
             var start = this._vf.startAngle;
             var end = this._vf.endAngle;
+            var anzahl = this._vf.subdivision;
+
+            // The following code ensures that:
+            // 1. 0 <= startAngle < 2*Pi
+            // 2. startAngle < endAngle
+            // 3. endAngle - startAngle <= 2*Pi
+            var Pi2 = Math.PI * 2.0;
+            start -= Math.floor(start / Pi2) * Pi2;
+            end -= Math.floor(end / Pi2) * Pi2;
+            if (end <= start)
+                end += Pi2;
 
             var geoCacheID = 'ArcClose2D_' + r + start + end + this._vf.closureType;
 
@@ -142,7 +169,6 @@ x3dom.registerNodeType(
                 //x3dom.debug.logInfo("Using ArcClose2D from Cache");
                 this._mesh = x3dom.geoCache[geoCacheID];
             } else {
-                var anzahl = this._vf.subdivision;
                 var t = (end - start) / anzahl;
                 var theta = start;
 
@@ -183,7 +209,7 @@ x3dom.registerNodeType(
                         this._mesh._indices[0].push(j);
                     }
 
-                } else {
+                } else {    // "CHORD"
                     for (var i = 0; i <= anzahl; i++) {
                         var x = Math.cos(theta) * r;
                         var y = Math.sin(theta) * r;
@@ -198,6 +224,7 @@ x3dom.registerNodeType(
 
                         this._mesh._texCoords[0].push((x + r) / (2 * r));
                         this._mesh._texCoords[0].push((y + r) / (2 * r));
+
                         theta += t;
                     }
 
@@ -232,15 +259,22 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
+                var r = this._vf.radius;
+                var start = this._vf.startAngle;
+                var end = this._vf.endAngle;
+                var anzahl = this._vf.subdivision;
+
+                var Pi2 = Math.PI * 2.0;
+                start -= Math.floor(start / Pi2) * Pi2;
+                end -= Math.floor(end / Pi2) * Pi2;
+                if (end <= start)
+                    end += Pi2;
+
+                var t = (end - start) / anzahl;
+                var theta = start;
+
                 if (fieldName === "radius") {
                     this._mesh._positions[0] = [];
-
-                    var r = this._vf.radius;
-                    var start = this._vf.startAngle;
-                    var end = this._vf.endAngle;
-                    var anzahl = this._vf.subdivision;
-                    var t = (end - start) / anzahl;
-                    var theta = start;
 
                     if (this._vf.closureType == 'PIE') {
 
@@ -287,18 +321,11 @@ x3dom.registerNodeType(
                     });
 
                 } else if (fieldName == "closureType" || fieldName == "subdivision" ||
-                    fieldName == "startAngle" || fieldName == "endAngle") {
+                           fieldName == "startAngle" || fieldName == "endAngle") {
                     this._mesh._positions[0] = [];
                     this._mesh._indices[0] = [];
                     this._mesh._normals[0] = [];
                     this._mesh._texCoords[0] = [];
-
-                    var r = this._vf.radius;
-                    var start = this._vf.startAngle;
-                    var end = this._vf.endAngle;
-                    var anzahl = this._vf.subdivision;
-                    var t = (end - start) / anzahl;
-                    var theta = start;
 
                     if (this._vf.closureType == 'PIE') {
 
@@ -352,6 +379,7 @@ x3dom.registerNodeType(
 
                             this._mesh._texCoords[0].push((x + r) / (2 * r));
                             this._mesh._texCoords[0].push((y + r) / (2 * r));
+
                             theta += t;
                         }
 
