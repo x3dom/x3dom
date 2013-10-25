@@ -214,18 +214,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
             this.appendParam(obj, 'menu', 'false');
             this.appendParam(obj, 'quality', 'high');
-            this.appendParam(obj, 'wmode', 'gpu');
+            this.appendParam(obj, 'wmode', 'direct');
             this.appendParam(obj, 'allowScriptAccess', 'always');
             this.appendParam(obj, 'flashvars', 'canvasIdx=' + this.canvasIdx + '&renderType=' + this.flash_renderType);
             this.appendParam(obj, 'movie', swf_path);
 
-            x3dElem.appendChild(obj);
-
-            if (navigator.appName == "Microsoft Internet Explorer")
+            if (navigator.appName == "Microsoft Internet Explorer") {
+                x3dElem.appendChild(obj);
                 obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
-            else {
+            } else {
                 obj.setAttribute('type', 'application/x-shockwave-flash');
                 obj.setAttribute('data', swf_path);
+                x3dElem.appendChild(obj);
             }
 
             return obj;
