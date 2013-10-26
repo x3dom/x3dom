@@ -680,12 +680,8 @@ x3dom.gfx_webgl = (function () {
             if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture) {
                 gl.deleteTexture(bgnd._webgl.texture);
             }
-            if (bgnd._webgl.shader && bgnd._webgl.shader.position !== undefined) {
-                gl.deleteBuffer(bgnd._webgl.buffers[1]);
-                gl.deleteBuffer(bgnd._webgl.buffers[0]);
-            }
-            if (bgnd._webgl.shader && bgnd._webgl.shader.texcoord !== undefined) {
-                gl.deleteBuffer(bgnd._webgl.buffers[2]);
+            if (bgnd._cleanupGLObjects) {
+                bgnd._cleanupGLObjects();
             }
             bgnd._webgl = {};
         }
@@ -888,6 +884,18 @@ x3dom.gfx_webgl = (function () {
 
                 texcoords = null;
             }
+
+            bgnd._cleanupGLObjects = function () {
+                var sp = this._webgl.shader;
+
+                if (sp.position !== undefined) {
+                    gl.deleteBuffer(this._webgl.buffers[0]);
+                    gl.deleteBuffer(this._webgl.buffers[1]);
+                }
+                if (sp.texcoord !== undefined) {
+                    gl.deleteBuffer(this._webgl.buffers[2]);
+                }
+            };
         }
 
         bgnd._webgl.render = function (gl, mat_view, mat_proj)

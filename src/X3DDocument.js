@@ -110,8 +110,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             removeX3DOMBackendGraph(children[i]);
         }
 
-        if (domNode._x3domNode !== undefined) {
+        if (domNode._x3domNode) {
             var node = domNode._x3domNode;
+            var nameSpace = node._nameSpace;
 
             if (x3dom.isa(node, x3dom.nodeTypes.X3DShapeNode)) {
                 if (node._cleanupGLObjects) {
@@ -133,6 +134,27 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture)) {
                 cleanNodeBag(doc._nodeBag.renderTextures, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DBindableNode)) {
+                var stack = node._stack;
+                if (stack) {
+                    node.bind(false);
+
+                    for (var j=0, m=stack._bindBag.length; j<m; j++) {
+                        if (stack._bindBag[j] === node) {
+                            stack._bindBag.splice(j, 1);
+                            break;
+                        }
+                    }
+                }
+                // Background may have geometry
+                if (node._cleanupGLObjects) {
+                    node._cleanupGLObjects();
+                }
+            }
+
+            if (nameSpace && node._DEF) {
+                delete nameSpace.defMap[node._DEF];
             }
 
             delete domNode._x3domNode;
