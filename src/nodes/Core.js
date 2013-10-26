@@ -436,37 +436,44 @@ x3dom.registerNodeType(
 		},
         
         initSetter: function (xmlNode, name) {
-			if (xmlNode.__defineSetter__ !== undefined) {
-				xmlNode.__defineSetter__(name, function(value) {
-					xmlNode.setAttribute(name, value);
-				});
-			}
-			else {
-			    //IE has no __defineSetter__ !!!
-				Object.defineProperty(xmlNode, name, {
-					set: function(value) {
-						xmlNode.setAttribute(name, value); 
-					},
-                    configurable: true
-				});	
-      		}
-      		
-			if (!xmlNode.attributes[name]) {
-			    if (this._vf[name]) {
-    			    var str = "";
-    			    try {
-    			        if (this._vf[name].toGL)
-    			            str = this._vf[name].toGL().toString();
-    			        else
-    			            str = this._vf[name].toString();
-    		        }
-    		        catch(e) {
-    		            str = this._vf[name].toString();
-    		        }    
-    		        if (!str) { str = ""; }
-    		        xmlNode.setAttribute(name, str);
-    	        }
-		    }
+            if (xmlNode.__defineSetter__ && xmlNode.__defineGetter__) {
+                xmlNode.__defineSetter__(name, function(value) {
+                    xmlNode.setAttribute(name, value);
+                });
+                xmlNode.__defineGetter__(name, function() {
+                    return xmlNode.getAttribute(name);
+                });
+            }
+            else {
+                // IE has no __define[G|S]etter__ !!!
+                Object.defineProperty(xmlNode, name, {
+                    set: function(value) {
+                        xmlNode.setAttribute(name, value);
+                    },
+                    get: function() {
+                        return xmlNode.getAttribute(name);
+                    },
+                    configurable: true,
+                    enumerable: true
+                });
+            }
+
+            if (!xmlNode.attributes[name] && this._vf[name]) {
+                var str = "";
+                try {
+                    if (this._vf[name].toGL)
+                        str = this._vf[name].toGL().toString();
+                    else
+                        str = this._vf[name].toString();
+                }
+                catch (e) {
+                    str = this._vf[name].toString();
+                }
+                if (!str) {
+                    str = "";
+                }
+                xmlNode.setAttribute(name, str);
+            }
         },
 
         // single fields
