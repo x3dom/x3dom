@@ -139,13 +139,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 var stack = node._stack;
                 if (stack) {
                     node.bind(false);
-
-                    for (var j=0, m=stack._bindBag.length; j<m; j++) {
-                        if (stack._bindBag[j] === node) {
-                            stack._bindBag.splice(j, 1);
-                            break;
-                        }
-                    }
+                    cleanNodeBag(stack._bindBag, node);
                 }
                 // Background may have geometry
                 if (node._cleanupGLObjects) {
@@ -153,9 +147,10 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 }
             }
 
-            if (nameSpace && node._DEF) {
-                delete nameSpace.defMap[node._DEF];
+            if (nameSpace) {
+                nameSpace.removeNode(node._DEF);
             }
+            node._xmlNode = null;
 
             delete domNode._x3domNode;
         }

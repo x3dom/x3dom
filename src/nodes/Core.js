@@ -85,15 +85,15 @@ x3dom.registerNodeType(
                     if (this._cf.hasOwnProperty(fieldName)) {
                         var field = this._cf[fieldName];
                         if (field.rmLink(node)) {
-                            for (var i = 0, n = node._parentNodes.length; i < n; i++) {
+                            for (var i = node._parentNodes.length - 1; i >= 0; i--) {
                                 if (node._parentNodes[i] === this) {
-                                    node._parentNodes.splice(i,1);
+                                    node._parentNodes.splice(i, 1);
                                     node.parentRemoved(this);
                                 }
                             }
-                            for (var j = 0, m = this._childNodes.length; j < m; j++) {
+                            for (var j = this._childNodes.length - 1; j >= 0; j--) {
                                 if (this._childNodes[j] === node) {
-                                    this._childNodes.splice(j,1);
+                                    this._childNodes.splice(j, 1);
                                     return true;
                                 }
                             }

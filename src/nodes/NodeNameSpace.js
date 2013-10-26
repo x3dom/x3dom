@@ -25,9 +25,9 @@ x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 };
 
 x3dom.NodeNameSpace.prototype.removeNode = function (name) {
-    var node = this.defMap.name;
-    delete this.defMap.name;
+    var node = name ? this.defMap[name] : null;
     if (node) {
+        delete this.defMap[name];
         node._nameSpace = null;
     }
 };
