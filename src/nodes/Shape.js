@@ -54,10 +54,14 @@ x3dom.registerNodeType(
                     this._shader = this._cf.shaders.nodes[0];
                 }
 				
-				if(this._vf.sortType == 'auto') {
-					if(this._cf.material.node && this._cf.material.node._vf.transparency > 0) {
-						this._vf.sortType = 'transparent';
-					}
+				this.checkSortType();
+            },
+
+            checkSortType: function() {
+                if (this._vf.sortType == 'auto') {
+                    if (this._cf.material.node && this._cf.material.node._vf.transparency > 0) {
+                        this._vf.sortType = 'transparent';
+                    }
                     else if (this._cf.texture.node && this._cf.texture.node._vf.url.length) {
                         // uhh, this is a rather coarse guess...
                         if (this._cf.texture.node._vf.url[0].toLowerCase().indexOf('.'+'png') >= 0) {
@@ -68,9 +72,9 @@ x3dom.registerNodeType(
                         }
                     }
                     else {
-						this._vf.sortType = 'opaque';
-					}
-				}
+                        this._vf.sortType = 'opaque';
+                    }
+                }
             },
 
             texTransformMatrix: function() {
@@ -219,6 +223,7 @@ x3dom.registerNodeType(
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.material = true;
                         });
+                        app.checkSortType();
                     });
                 }
 			}
@@ -264,6 +269,7 @@ x3dom.registerNodeType(
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.material = true;
                         });
+                        app.checkSortType();
                     });
                 }
             }

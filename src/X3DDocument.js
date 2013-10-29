@@ -117,8 +117,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             if (x3dom.isa(node, x3dom.nodeTypes.X3DShapeNode)) {
                 if (node._cleanupGLObjects) {
                     node._cleanupGLObjects(true);
+                    // TODO: more cleanups, e.g. texture/shader cache?
                 }
-                // TODO: more cleanups, e.g. texture/shader cache?
+                if (x3dom.nodeTypes.Shape.idMap.nodeID[node._objectID]) {
+                    delete x3dom.nodeTypes.Shape.idMap.nodeID[node._objectID];
+                }
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.TimeSensor)) {
                 cleanNodeBag(doc._nodeBag.timer, node);
