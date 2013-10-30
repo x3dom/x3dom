@@ -683,12 +683,34 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
 };
 
 /**
+ * APIMethod getBBox
+ *
+ * Returns the bounding box of a node.
+ *
+ * Parameters:
+ *    domNode: the node for which its volume shall be returned
+ *
+ *  Returns:
+ *    The min and max positions of the node's bounding box.
+ */
+x3dom.Runtime.prototype.getBBox = function(domNode) {
+    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedNode"))
+    {
+        var vol = domNode._x3domNode.getVolume();
+
+        return {
+            min: x3dom.fields.SFVec3f.copy(vol.min),
+            max: x3dom.fields.SFVec3f.copy(vol.max)
+        }
+    }
+
+    return null;
+};
+
+/**
  * APIMethod getSceneBBox
  *
  * Returns the bounding box of the scene.
- *
- * Parameters:
- *    domNode: the node for which its transformation shall be returned
  *
  *  Returns:
  *    The min and max positions of the scene's bounding box.
