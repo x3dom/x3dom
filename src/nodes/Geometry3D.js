@@ -3092,11 +3092,10 @@ x3dom.registerNodeType(
                         texCoordNode = texCoordNode._cf.texCoord.nodes[0];
                 }
 
-                // TODO; optimize this very slow and brute force code, at least for creaseAngle=0 case!
-                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > x3dom.Utils.maxIndexableCoords) ||
-                    (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
-                    (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
-                    (this._vf.colorIndex.length > 0 && this._cf.color.node))
+                if (((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > x3dom.Utils.maxIndexableCoords) ||
+                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
+                     (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
+                     (this._vf.colorIndex.length > 0 && this._cf.color.node)) && this._mesh._multiIndIndices)
                 {
                     var needNormals = !this._cf.normal.node && this._vf.normalUpdateMode.toLowerCase() != 'none';
 
@@ -3150,6 +3149,7 @@ x3dom.registerNodeType(
                         return;
                     }
 
+                    // TODO; optimize this very slow and brute force code, at least for creaseAngle=0 case!
                     this._mesh._normals[0] = [];
                     this._mesh._texCoords[0] =[];
                     this._mesh._colors[0] = [];
