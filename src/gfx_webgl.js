@@ -90,6 +90,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FP_TEXTURES = ctx.getExtension("OES_texture_float");
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.STD_DERIVATIVES = ctx.getExtension("OES_standard_derivatives");
+                        x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
                         x3dom.debug.logInfo("\nVendor: " + x3dom.caps.VENDOR + ", " +

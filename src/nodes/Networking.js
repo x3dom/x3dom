@@ -74,15 +74,15 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
             
 			this.count = 0;
-            this.numRetries = 10;
+            this.numRetries = x3dom.nodeTypes.Inline.MaximumRetries;
         },
         {
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "url") {
-					if(this._vf.nameSpaceName.length != 0) {
+					if (this._vf.nameSpaceName.length != 0) {
 						var node = this._xmlNode;
-						if ( node.hasChildNodes() )
+						if (node && node.hasChildNodes())
 						{
 							while ( node.childNodes.length >= 1 )
 							{
@@ -145,9 +145,7 @@ x3dom.registerNodeType(
                 var xhr = new window.XMLHttpRequest();
                 if (xhr.overrideMimeType)
                     xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-					
-				this._nameSpace.doc.downloadCount += 1;
-				
+
                 xhr.onreadystatechange = function () 
                 {
 					if (xhr.readyState != 4) {
@@ -158,12 +156,13 @@ x3dom.registerNodeType(
 					
 					if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
 						that.count++;
-						x3dom.debug.logInfo('Statuscode 202 and send new request in 5 sec');
-                        //TODO: check reload header field for better reload timeout?
-						window.setTimeout(function(){
+                        var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+						x3dom.debug.logInfo('Statuscode ' + xhr.status + ' and send new request in ' + refreshTime + ' sec.');
+
+						window.setTimeout(function() {
                             that._nameSpace.doc.downloadCount -= 1;
                             that.nodeChanged();
-							}, 5000);
+							}, refreshTime * 1000);
                         return xhr;
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
@@ -295,6 +294,8 @@ x3dom.registerNodeType(
 
                     xhr.open('GET', xhrURI, true);
 
+                    this._nameSpace.doc.downloadCount += 1;
+
                     try {
                         xhr.send(null);
                     }
@@ -309,6 +310,7 @@ x3dom.registerNodeType(
 );
 
 x3dom.nodeTypes.Inline.AwaitTranscoding = 202;      // Parameterizable retry state for Transcoder
+x3dom.nodeTypes.Inline.MaximumRetries = 15;         // Parameterizable maximum number of retries
 
 
 function setNamespace(prefix, childDomNode, mapDEFToID)
