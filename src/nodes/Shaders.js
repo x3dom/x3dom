@@ -291,21 +291,22 @@ x3dom.registerNodeType(
                     var fieldName = this._cf.fields.nodes[i]._vf.name;
                     ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
 
-                    var funcName, func;
+                    var needNode = false;
 
-                    if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) {
-                        ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
-
-                        funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
-                        func = new Function('ctx', 'name', funcName);
-
-                        func.call(this, ctx, fieldName);
+                    if (ctx.xmlNode === undefined || ctx.xmlNode === null) {
+                        ctx.xmlNode = document.createElement("field");
+                        needNode = true;
                     }
-                    else {
-                        funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name, n);";
-                        func = new Function('ctx', 'name', 'n', funcName);
 
-                        func.call(this, null, fieldName, this._cf.fields.nodes[i]._vf.value);
+                    ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
+
+                    var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
+                    var func = new Function('ctx', 'name', funcName);
+
+                    func.call(this, ctx, fieldName);
+
+                    if (needNode) {
+                        ctx.xmlNode = null;    // cleanup
                     }
                 }
 				

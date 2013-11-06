@@ -186,17 +186,17 @@ x3dom.registerNodeType(
 
             uniforms: function() {
                 var unis = [];
-/*
+
                 this.uniformVec3fOriginLine._vf.name = 'originLine';
                 this.uniformVec3fOriginLine._vf.type = 'SFVec3f';
-                this.uniformVec3fOriginLine._vf.value = this._vf.originLine;
+                this.uniformVec3fOriginLine._vf.value = this._vf.originLine.toString();
                 unis.push(this.uniformVec3fOriginLine);
 
                 this.uniformVec3fFinalLine._vf.name = 'finalLine';
                 this.uniformVec3fFinalLine._vf.type = 'SFVec3f';
-                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine;
+                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine.toString();
                 unis.push(this.uniformVec3fFinalLine);
-*/
+
                 this.uniformFloatPosition._vf.name = 'positionLine';
                 this.uniformFloatPosition._vf.type = 'SFFloat';
                 this.uniformFloatPosition._vf.value = this._vf.positionLine;
@@ -230,8 +230,8 @@ x3dom.registerNodeType(
                 "\n" +
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
-                "const vec3 originLine=vec3(1.0,0.0,0.0);\n"+
-                "const vec3 finalLine=vec3(0.0,0.0,0.0);\n"+
+                "uniform vec3 originLine;\n"+
+                "uniform vec3 finalLine;\n"+
                 "uniform float positionLine;\n"+
                 "varying vec3 vertexColor;\n"+
                 "varying vec4 vertexPosition;\n"+
@@ -663,6 +663,8 @@ x3dom.registerNodeType(
                 // therefore, try to mimic depth-first parsing scheme
                 if (!this._cf.appearance.node) 
                 {
+                    var i;
+
                     this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                     
                     // second texture, ray direction and length
@@ -738,7 +740,7 @@ x3dom.registerNodeType(
                     // textures from styles
                     if (this._cf.renderStyle.node.textures != undefined){
                         var styleTextures = this._cf.renderStyle.node.textures();
-                        for (var i = 0; i< styleTextures.length; i++)
+                        for (i = 0; i<styleTextures.length; i++)
                         {
                             this.vrcMultiTexture.addChild(styleTextures[i], 'texture');
                             this.vrcVolumeTexture.nodeChanged();
@@ -754,7 +756,8 @@ x3dom.registerNodeType(
 
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
                     this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(
-                        this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
+                            this.vrcVolumeTexture._vf.numberOfSlices,
+                            this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
                     this.vrcFrontCubeShaderVertex.nodeChanged();
@@ -776,12 +779,12 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
                     this.vrcFrontCubeShaderFieldVolData.nodeChanged();
                     
-                    var ShaderUniforms = this._cf.renderStyle.node.uniforms()
-                    for (var i = 0; i<ShaderUniforms.length; i++)
+                    var ShaderUniforms = this._cf.renderStyle.node.uniforms();
+                    for (i = 0; i<ShaderUniforms.length; i++)
                     {
                         this.vrcFrontCubeShader.addChild(ShaderUniforms[i], 'fields');
+                        //ShaderUniforms[i].nodeChanged();
                     }
-                    this.vrcFrontCubeShaderFieldVolData.nodeChanged();
                 
                     this._cf.appearance.node.addChild(this.vrcFrontCubeShader);
                     this.vrcFrontCubeShader.nodeChanged();
