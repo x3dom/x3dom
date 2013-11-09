@@ -74,11 +74,17 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
 // helper to get an element's attribute
 x3dom.getElementAttribute = function(attrName)
 {
-  var attrib = this.__getAttribute(attrName);
-  if((attrib !== undefined) || !this._x3domNode)
-    return attrib;
-  else
-    return this._x3domNode._vf[attrName];
+    var attrib = this.__getAttribute(attrName);
+    if (!attrib && attrName) {
+        attrib = this.__getAttribute(attrName.toLowerCase());
+    }
+
+    if (attrib || !this._x3domNode) {
+        return attrib;
+    }
+    else {
+        return this._x3domNode._vf[attrName];
+    }
 };
 
 // helper to set an element's attribute
@@ -88,8 +94,11 @@ x3dom.setElementAttribute = function(attrName, newVal)
     this.__setAttribute(attrName, newVal);
     //newVal = this.getAttribute(attrName);
 
-    this._x3domNode.updateField(attrName, newVal);
-    this._x3domNode._nameSpace.doc.needRender = true;
+    var x3dNode = this._x3domNode;
+    if (x3dNode) {
+        x3dNode.updateField(attrName, newVal);
+        x3dNode._nameSpace.doc.needRender = true;
+    }
 };
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
@@ -135,6 +144,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             };
         }
 
+        // TODO (?): dynamic update of USE attribute during runtime
         if (domNode.hasAttribute('USE')) {
             n = this.defMap[domNode.getAttribute('USE')];
             if (!n) {
@@ -185,40 +195,38 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
+                //active workaround for missing DOMAttrModified support
+                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
+                      && (domNode instanceof Element) ) {
+                    if (domNode.setAttribute && !domNode.__setAttribute) {
+                        domNode.__setAttribute = domNode.setAttribute;
+                        domNode.setAttribute = x3dom.setElementAttribute;
+                    }
+
+                    if (domNode.getAttribute && !domNode.__getAttribute) {
+                        domNode.__getAttribute = domNode.getAttribute;
+                        domNode.getAttribute = x3dom.getElementAttribute;
+                    }
+                }
+
+                // create x3domNode
                 var ctx = {
                     doc: this.doc,
                     xmlNode: domNode,
                     nameSpace: this
                 };
                 n = new nodeType(ctx);
-                
-                //active workaround for missing DOMAttrModified support
-                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
-						&& (domNode instanceof Element) )
-                {
-                  if(domNode.setAttribute && !domNode.__setAttribute)
-                  {
-                    domNode.__setAttribute = domNode.setAttribute;
-                    domNode.setAttribute = x3dom.setElementAttribute;
-                  }
-                  
-                  if(domNode.getAttribute && !domNode.__getAttribute)
-                  {
-                    domNode.__getAttribute = domNode.getAttribute;
-                    domNode.getAttribute = x3dom.getElementAttribute;
-                  }
-                }
 
                 // find and store/link _DEF name
                 if (domNode.hasAttribute('DEF')) {
-                   n._DEF = domNode.getAttribute('DEF');
-                   this.defMap[n._DEF] = n;
+                    n._DEF = domNode.getAttribute('DEF');
+                    this.defMap[n._DEF] = n;
                 }
                 else {
-                  if (domNode.hasAttribute('id')) {
-                    n._DEF = domNode.getAttribute('id');
-                    this.defMap[n._DEF] = n;
-                  }
+                    if (domNode.hasAttribute('id')) {
+                        n._DEF = domNode.getAttribute('id');
+                        this.defMap[n._DEF] = n;
+                    }
                 }
                 
                 // add experimental highlighting functionality
