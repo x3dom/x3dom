@@ -406,14 +406,15 @@
 	<div class="group">
 
     <div style="float:left; width:600px">
-    <x3d id="aScene" showStat="true" showLog="false" x="0px" y="0px" width="256" height="256">
+    <x3d id="aScene" showStat="false" showLog="false" width="256" height="256">
       <scene>
         <background skyColor='.5 .4 .2'></background>
         <viewpoint position='0 0 5'></viewpoint>
           <shape>
             <appearance>
                 <texture hideChildren="false">
-                    <canvas width='256' height='256' id='myCanvas' style="border: solid 1px black; position:absolute; top:00px;left:256px;">
+                    <canvas width='256' height='256' id='myCanvas' 
+                        style="border: solid 1px black; position: absolute; top: -1px; left:256px;">
                 </texture>
                 <material diffuseColor='0.6 0.9 0.5'></material>	
             </appearance>

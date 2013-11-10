@@ -458,7 +458,8 @@ x3dom.registerNodeType(
                 });
             }
 
-            if (!xmlNode.attributes[name] && this._vf[name]) {
+            if (this._vf[name] &&
+                !xmlNode.attributes[name] && !xmlNode.attributes[name.toLowerCase()]) {
                 var str = "";
                 try {
                     if (this._vf[name].toGL)

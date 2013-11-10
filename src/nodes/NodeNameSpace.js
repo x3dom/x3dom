@@ -71,6 +71,16 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
+// helper to check an element's attribute
+x3dom.hasElementAttribute = function(attrName)
+{
+    var ok = this.__hasAttribute(attrName);
+    if (!ok && attrName) {
+        ok = this.__hasAttribute(attrName.toLowerCase());
+    }
+    return ok;
+};
+
 // helper to get an element's attribute
 x3dom.getElementAttribute = function(attrName)
 {
@@ -206,6 +216,11 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     if (domNode.getAttribute && !domNode.__getAttribute) {
                         domNode.__getAttribute = domNode.getAttribute;
                         domNode.getAttribute = x3dom.getElementAttribute;
+                    }
+
+                    if (domNode.hasAttribute && !domNode.__hasAttribute) {
+                        domNode.__hasAttribute = domNode.hasAttribute;
+                        domNode.hasAttribute = x3dom.hasElementAttribute;
                     }
                 }
 
