@@ -1615,6 +1615,7 @@ x3dom.registerNodeType(
             this.addField_MFVec3f(ctx, 'spine', [ new x3dom.fields.SFVec3f(0, 0, 0), 
                                                   new x3dom.fields.SFVec3f(0, 1, 0)
                                                 ]);
+            this.addField_SFFloat(ctx, 'height', 0); // convenience field for setting default spine
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
@@ -1638,17 +1639,23 @@ x3dom.registerNodeType(
                 m = spine.length;
                 n = crossSection.length;
 
-                var x, y, z; 
-                
+                if (/*m == 0 &&*/ this._vf.height > 0) {
+                    spine[0] = new x3dom.fields.SFVec3f(0, 0, 0);
+                    spine[1] = new x3dom.fields.SFVec3f(0, this._vf.height, 0);
+                    m = 2;
+                }
+
+                var x, y, z;
                 var last_z = new x3dom.fields.SFVec3f(0, 0, 1);
+
                 if (m > 2) {
-                  for (i=1; i<m-1; i++) {
-                    var last_z_candidate = spine[i+1].subtract(spine[i]).cross(spine[i-1].subtract(spine[i]));
-                    if (last_z_candidate.length() > x3dom.fields.Eps) {
-                      last_z = x3dom.fields.SFVec3f.copy(last_z_candidate.normalize());
-                      break;
+                    for (i = 1; i < m - 1; i++) {
+                        var last_z_candidate = spine[i + 1].subtract(spine[i]).cross(spine[i - 1].subtract(spine[i]));
+                        if (last_z_candidate.length() > x3dom.fields.Eps) {
+                            last_z = x3dom.fields.SFVec3f.copy(last_z_candidate.normalize());
+                            break;
+                        }
                     }
-                  }
                 }
 
                 var spineClosed = (m > 2) ? spine[0].equals(spine[spine.length-1], x3dom.fields.Eps) : false;
@@ -1845,4 +1852,3 @@ x3dom.registerNodeType(
         }
     )
 );
-
