@@ -1604,11 +1604,17 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'endCap', true);
             this.addField_SFBool(ctx, 'convex', true);
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
-            this.addField_MFVec2f(ctx, 'crossSection', []);   //1, 1, 1, -1, -1, -1, -1, 1, 1, 1
-            this.addField_MFRotation(ctx, 'orientation', []); //0, 0, 1, 0
-            this.addField_MFVec2f(ctx, 'scale', []); //1, 1
-            this.addField_MFVec3f(ctx, 'spine', []); //0, 0, 0, 0, 1, 0
-            this.addField_SFFloat(ctx, 'height', 0); // convenience field for setting default spine
+            this.addField_MFVec2f(ctx, 'crossSection', [ new x3dom.fields.SFVec2f(1, 1), 
+                                                         new x3dom.fields.SFVec2f(1, -1), 
+                                                         new x3dom.fields.SFVec2f(-1, -1), 
+                                                         new x3dom.fields.SFVec2f(-1, 1), 
+                                                         new x3dom.fields.SFVec2f(1, 1) 
+                                                        ]);
+            this.addField_MFRotation(ctx, 'orientation', [ x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(0, 0, 1), 0) ]);
+            this.addField_MFVec2f(ctx, 'scale', [ new x3dom.fields.SFVec2f(1, 1) ]);
+            this.addField_MFVec3f(ctx, 'spine', [ new x3dom.fields.SFVec3f(0, 0, 0), 
+                                                  new x3dom.fields.SFVec3f(0, 1, 0)
+                                                ]);
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
@@ -1628,19 +1634,23 @@ x3dom.registerNodeType(
                     orientation = this._vf.orientation,
                     crossSection = this._vf.crossSection;
                 var positions = [], index = 0;
-                var cleanSpine = false;
 
                 m = spine.length;
                 n = crossSection.length;
 
-                if (m == 0 && this._vf.height > 0) {
-                    spine[0] = new x3dom.fields.SFVec3f(0, 0, 0);
-                    spine[1] = new x3dom.fields.SFVec3f(0, this._vf.height, 0);
-                    m = 2;
-                    cleanSpine = true;
+                var x, y, z; 
+                
+                var last_z = new x3dom.fields.SFVec3f(0, 0, 1);
+                if (m > 2) {
+                  for (i=1; i<m-1; i++) {
+                    var last_z_candidate = spine[i+1].subtract(spine[i]).cross(spine[i-1].subtract(spine[i]));
+                    if (last_z_candidate.length() > x3dom.fields.Eps) {
+                      last_z = x3dom.fields.SFVec3f.copy(last_z_candidate.normalize());
+                      break;
+                    }
+                  }
                 }
 
-                var x, y, z, last_z;
                 var spineClosed = (m > 2) ? spine[0].equals(spine[spine.length-1], x3dom.fields.Eps) : false;
 
                 for (i=0; i<m; i++) {
@@ -1661,43 +1671,53 @@ x3dom.registerNodeType(
                             spine[i].y,
                             crossSection[j].y * sy + spine[i].z);
 
-                        if (m > 2 && orientation.length == m) {
+                        if (m > 2) {
                             if (i == 0) {
                                 if (spineClosed) {
-                                    y = spine[1].subtract(spine[m-2]).normalize();
-                                    z = spine[1].subtract(spine[0]).normalize().cross(spine[m-2].subtract(spine[0]).normalize());
+                                    y = spine[1].subtract(spine[m-2]);
+                                    z = spine[1].subtract(spine[0]).cross(spine[m-2].subtract(spine[0]));
                                 }
                                 else {
-                                    y = spine[1].subtract(spine[0]).normalize();
-                                    z = spine[2].subtract(spine[1]).normalize().cross(spine[0].subtract(spine[1]).normalize());
+                                    y = spine[1].subtract(spine[0]);
+                                    z = spine[2].subtract(spine[1]).cross(spine[0].subtract(spine[1]));
                                 }
-                                last_z = x3dom.fields.SFVec3f.copy(z);
+                                if (z.length() > x3dom.fields.Eps) {
+                                  last_z = x3dom.fields.SFVec3f.copy(z);
+                                }
                             }
                             else if (i == m-1) {
                                 if (spineClosed) {
-                                    y = spine[1].subtract(spine[m-2]).normalize();
-                                    z = spine[1].subtract(spine[0]).normalize().cross(spine[m-2].subtract(spine[0]).normalize());
+                                    y = spine[1].subtract(spine[m-2]);
+                                    z = spine[1].subtract(spine[0]).cross(spine[m-2].subtract(spine[0]));
                                 }
                                 else {
-                                    y = spine[m-1].subtract(spine[m-2]).normalize();
+                                    y = spine[m-1].subtract(spine[m-2]);
                                     z = x3dom.fields.SFVec3f.copy(last_z);
                                 }
                             }
                             else {
-                                y = spine[i+1].subtract(spine[i]).normalize();
-                                z = y.cross(spine[i-1].subtract(spine[i]).normalize());
+                                y = spine[i+1].subtract(spine[i-1]);
+                                z = y.cross(spine[i-1].subtract(spine[i]));
                             }
                             if (z.dot(last_z) < 0) {
                                 z = z.negate();
                             }
+
+                            y = y.normalize();
+                            z = z.normalize();
+                            
+                            if (z.length() <= x3dom.fields.Eps)	{
+                                z = x3dom.fields.SFVec3f.copy(last_z);
+                            }
+
                             if (i != 0) {
                                 last_z = x3dom.fields.SFVec3f.copy(z);
                             }
-                            x = y.cross(z);
+                            x = y.cross(z).normalize();
 
                             var baseMat = x3dom.fields.SFMatrix4f.identity();
                             baseMat.setValue(x, y, z);
-                            var rotMat = orientation[i].toMatrix();
+                            var rotMat = (i < orientation.length) ? orientation[i].toMatrix() : ( (orientation.length > 0) ? orientation[orientation.length-1].toMatrix() :  x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(0, 0, 1), 0).toMatrix() );                       
 
                             pos = pos.subtract(spine[i]);
                             pos = baseMat.multMatrixPnt(rotMat.multMatrixPnt(pos));
@@ -1797,10 +1817,6 @@ x3dom.registerNodeType(
                             }
                         }
                     }
-                }
-
-                if (cleanSpine) {
-                    this._vf.spine = new x3dom.fields.MFVec3f();
                 }
 
                 this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
