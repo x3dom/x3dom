@@ -1410,7 +1410,7 @@ x3dom.gfx_webgl = (function () {
         var env = scene.getEnvironment();
         var n = scene.drawableCollection.length;
 
-        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMovingOrAnimating()) {
             n = Math.floor(n * env._lowPriorityThreshold);
             if (!n && scene.drawableCollection.length)
                 n = 1;   // render at least one object
@@ -2321,7 +2321,7 @@ x3dom.gfx_webgl = (function () {
     {
         var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
 
-        if (currFps <= 1 || viewarea.isMoving()) {
+        if (currFps <= 1 || viewarea.isMovingOrAnimating()) {
             tol *= x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove;
         }
 
@@ -3135,7 +3135,7 @@ x3dom.gfx_webgl = (function () {
 
         // Very, very experimental priority culling, currently coupled with frustum and small feature culling
         // TODO; what about shadows?
-        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMovingOrAnimating()) {
             n = Math.floor(n * env._lowPriorityThreshold);
             if (!n && scene.drawableCollection.length)
                 n = 1;   // render at least one object

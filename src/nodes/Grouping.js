@@ -793,7 +793,7 @@ x3dom.registerNodeType(
                 }
 
                 var viewarea = this._nameSpace.doc._viewarea;
-                var isMoving = viewarea.isMoving();
+                var isMoving = viewarea.isMovingOrAnimating();
                 
                 var ts = new Date().getTime();
                 var maxLiveTime = 10000;

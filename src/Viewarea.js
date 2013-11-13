@@ -107,13 +107,23 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
     if (this.arc != null )
     {
-        this.arc.update(this.isMoving() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
+        this.arc.update(this.isMovingOrAnimating() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
     }
 
     return (this._isAnimating || lastIsAnimating);
 };
 
 x3dom.Viewarea.prototype.isMoving = function()
+{
+    return this._isMoving;
+};
+
+x3dom.Viewarea.prototype.isAnimating = function()
+{
+    return this._isAnimating;
+};
+
+x3dom.Viewarea.prototype.isMovingOrAnimating = function()
 {
     return (this._isMoving || this._isAnimating);
 };
