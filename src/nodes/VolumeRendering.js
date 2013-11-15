@@ -565,14 +565,16 @@ x3dom.registerNodeType(
                 "    accum.a += sample.a;\n";
                 switch (this._vf.type.toLowerCase()) {
                     case "max":
-                        shader += "if(previous_value.x > uIntensityThreshold)"+
+                        shader += "if(value.r > uIntensityThreshold && value.r <= previous_value.x){\n"+
                         "   break;\n"+
+                        "}\n"+
                         "color.rgb = vec3(max(value.r, previous_value.x));\n"+
                         "color.a = (value.r > previous_value.x) ? accum.a : previous_value.y;\n";
                         break;
                     case "min":
-                        shader += "if(previous_value.x < uIntensityThreshold)\n"+
+                        shader += "if(value.r < uIntensityThreshold && value.r >= previous_value.x){\n"+
                         "   break;\n"+
+                        "}\n"+
                         "color.rgb = vec3(min(value.r, previous_value.x));\n"+
                         "color.a = (value.r < previous_value.x) ? accum.a : previous_value.y;\n";
                         break;
