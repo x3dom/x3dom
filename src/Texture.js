@@ -12,6 +12,27 @@
 /**
  * Texture
  */
+x3dom.Texture = function(gl, doc, cache, node)
+{
+	this.gl 			= gl;
+	this.doc			= doc;
+	this.cache			= cache;
+	this.node 			= node;
+	
+	this.samplerName 	= "diffuseMap";
+	this.type 			= gl.TEXTURE_2D;
+	this.format			= gl.RGBA;
+	this.magFilter		= gl.LINEAR;
+	this.minFilter		= gl.LINEAR;
+	this.wrapS			= gl.REPEAT;
+	this.wrapT			= gl.REPEAT;
+	this.genMipMaps		= false;
+	this.texture		= null;
+	this.ready			= false;
+	
+	this.update();
+};
+
 // we need to initially place the script for the dash player in the document
  var textNum=0; //count dash players and add this number to the class name for future reference (append in id too, for play pause etc)
  var js=document.createElement("script");
