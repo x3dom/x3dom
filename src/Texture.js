@@ -12,39 +12,22 @@
 /**
  * Texture
  */
-x3dom.Texture = function(gl, doc, cache, node)
-{
-	this.gl 			= gl;
-	this.doc			= doc;
-	this.cache			= cache;
-	this.node 			= node;
-	
-	this.samplerName 	= "diffuseMap";
-	this.type 			= gl.TEXTURE_2D;
-	this.format			= gl.RGBA;
-	this.magFilter		= gl.LINEAR;
-	this.minFilter		= gl.LINEAR;
-	this.wrapS			= gl.REPEAT;
-	this.wrapT			= gl.REPEAT;
-	this.genMipMaps		= false;
-	this.texture		= null;
-	this.ready			= false;
-	
-	this.update();
-};
-
-/**
- * 
- */
- var textNum=0;
+// we need to initially place the script for the dash player in the document
+ var textNum=0; //count dash players and add this number to the class name for future reference (append in id too, for play pause etc)
  var js=document.createElement("script");
 
  js.type="text/javascript";
  js.src="dash.all.js";
  document.getElementsByTagName('head')[0].appendChild(js);
   
- function startVideo(recurl,texturediv) {
-            var vars = getUrlVars(),
+ function startDashVideo(recurl,texturediv) {
+            var vars =  function () {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                vars[key] = value;
+            });
+            return vars;
+        },
                 url = recurl,//"http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd",
                 video,
                 context,
@@ -66,16 +49,7 @@ x3dom.Texture = function(gl, doc, cache, node)
             player.attachSource(url);
 			textNum++;
 }
-function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
-}
- function getUrlVars() {
-            var vars = {};
-            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-                vars[key] = value;
-            });
-            return vars;
-        }
+
 
 x3dom.Texture.prototype.update = function()
 {
@@ -213,12 +187,10 @@ x3dom.Texture.prototype.updateTexture = function()
 		
 		
 		var dashtexture=false;
-				
-			if(endsWith(tex._vf.url[0],".mpd")){ //for dash we need only one url
+				var suffix="mpd";
+			if(tex._vf.url[0].indexOf(suffix,tex._vf.url[0].length-suffix.length) !==-1){ //for dash we need only one url
 				dashtexture=true;
-			}else {
-				dashtexture=false;
-				}
+			}
 	
 		if (dashtexture){
 			if (!this.childTex)
@@ -229,10 +201,8 @@ x3dom.Texture.prototype.updateTexture = function()
 				tex._video.setAttribute('autobuffer', 'true');
 				var scriptToRun=document.createElement('script');
 				scriptToRun.setAttribute('type','text/javascript');
-				scriptToRun.innerHTML='startVideo("'+tex._vf.url[0]+'",".dash-video-player'+textNum+' video")';
+				scriptToRun.innerHTML='startDashVideo("'+tex._vf.url[0]+'",".dash-video-player'+textNum+' video")';
 				element_vid.appendChild(scriptToRun);
-				//var p = document.getElementsByTagName('body')[0];
-				//p.appendChild(tex._video);
 				element_vid.appendChild(tex._video);
 				var p = document.getElementsByTagName('body')[0];
 				p.appendChild(element_vid);
