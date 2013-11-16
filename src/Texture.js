@@ -33,9 +33,45 @@ x3dom.Texture = function(gl, doc, cache, node)
 	this.update();
 };
 
-/**
- * 
- */
+// we need to initially place the script for the dash player in the document
+ var textNum=0; //count dash players and add this number to the class name for future reference (append in id too, for play pause etc)
+ var js=document.createElement("script");
+
+ js.type="text/javascript";
+ js.src="dash.all.js";
+ document.getElementsByTagName('head')[0].appendChild(js);
+  
+ function startDashVideo(recurl,texturediv) {
+            var vars =  function () {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+                vars[key] = value;
+            });
+            return vars;
+        },
+                url = recurl,//"http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd",
+                video,
+                context,
+                player;
+
+            if (vars && vars.hasOwnProperty("url")) {
+                url = vars.url;
+            }
+
+            video = document.querySelector(texturediv);//".dash-video-player video");
+            context = new Dash.di.DashContext();
+            player = new MediaPlayer(context);
+
+            player.startup();
+
+            player.attachView(video);
+            player.setAutoPlay(false);
+
+            player.attachSource(url);
+			textNum++;
+}
+
+
 x3dom.Texture.prototype.update = function()
 {
 	if ( x3dom.isa(this.node, x3dom.nodeTypes.Text) )
@@ -165,11 +201,35 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
     {
-		var that = this;
+			var that = this;
 		if(this.texture == null) {
 			this.texture = gl.createTexture();
 		}
 		
+		
+		var dashtexture=false;
+				var suffix="mpd";
+			if(tex._vf.url[0].indexOf(suffix,tex._vf.url[0].length-suffix.length) !==-1){ //for dash we need only one url
+				dashtexture=true;
+			}
+	
+		if (dashtexture){
+			if (!this.childTex)
+			{	
+				var element_vid=document.createElement('div');
+				element_vid.setAttribute('class','dash-video-player'+textNum);
+				tex._video = document.createElement('video');
+				tex._video.setAttribute('autobuffer', 'true');
+				var scriptToRun=document.createElement('script');
+				scriptToRun.setAttribute('type','text/javascript');
+				scriptToRun.innerHTML='startDashVideo("'+tex._vf.url[0]+'",".dash-video-player'+textNum+' video")';
+				element_vid.appendChild(scriptToRun);
+				element_vid.appendChild(tex._video);
+				var p = document.getElementsByTagName('body')[0];
+				p.appendChild(element_vid);
+				tex._video.style.visibility = "hidden";
+			}
+		}else{
 		if (!this.childTex)
 		{
 			tex._video = document.createElement('video');
@@ -178,16 +238,16 @@ x3dom.Texture.prototype.updateTexture = function()
 			p.appendChild(tex._video);
 			tex._video.style.visibility = "hidden";
 		}
-		
 		for (var i=0; i<tex._vf.url.length; i++)
-		{
-			var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
-			x3dom.debug.logInfo('Adding video file: ' + videoUrl);
-			var src = document.createElement('source');
-			src.setAttribute('src', videoUrl);
-			tex._video.appendChild(src);
+			{
+				var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
+				x3dom.debug.logInfo('Adding video file: ' + videoUrl);
+				var src = document.createElement('source');
+				src.setAttribute('src', videoUrl);
+				tex._video.appendChild(src);
+			
 		}
-
+	}
 		var updateMovie = function()
 		{	
 			gl.bindTexture(that.type, that.texture);
