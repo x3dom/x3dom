@@ -20,7 +20,7 @@
     </style>
 	</head>
        
-<body style="background-color:#E0E0E0;" > <!-- onload="startVideo()" -->
+<body style="background-color:#E0E0E0;" >
 
     <h1>X3Dom Dash Test</h1>
 	
@@ -38,14 +38,14 @@
 		          <Text string='"x3dom test dash"'/>
 		        </Shape>
 		      </Transform>
-		      <Shape>
+		      <Shape> 
 		        <Appearance>
 		          <MovieTexture repeatS="false" repeatT="false" loop='true' url='http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd'/>
 		        </Appearance>
 		        <Box DEF='box' size='3 1.65 1.01' />
 		      </Shape>
 		    </Transform>
-			<!-- <Transform translation='-0.5 0 0'>
+			 <Transform translation='-0.5 0 0'>
 		      <Transform scale='0.3 0.3 0.3' translation='0 0 2'>
 		        <Shape>
 		          <Appearance DEF='textApp'>
@@ -56,18 +56,29 @@
 		      </Transform>
 		      <Shape>
 		        <Appearance>
-		          <MovieTexture repeatS="false" repeatT="false" loop='true' url='http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd'/>
+		              <MovieTexture repeatS="false" repeatT="false" loop='true' url='http://opencourses-stream.teicrete.gr:1935/vod/mp4:course_1.mp4/manifest.mpd'/>
 		        </Appearance>
 		        <Box DEF='box' size='3 1.65 1.01' />
 		      </Shape>
-		    </Transform> -->
-		    
+		    </Transform> 
+		     <Transform translation='0 -2 0'>
+		      <Transform scale='0.3 0.3 0.3' translation='0 0 2'>
+		        <Shape>
+		          <Appearance DEF='textApp'>
+		            <Material diffuseColor='0.8 1.8 1'/>
+		          </Appearance>
+		          <Text string='"x3dom test mp4"'/>
+		        </Shape>
+		      </Transform>
+		      <Shape>
+		        <Appearance>
+		        <MovieTexture repeatS="false" repeatT="false" loop='true' url='video/big_buck_bunny.mp4'/> 
+		          </Appearance>
+		        <Box DEF='box' size='3 1.65 1.01' />
+		      </Shape>
+		    </Transform> 
 		    	<Viewpoint position='-1.2 0 10' />
 		  </Scene>
         </X3D>
-		<!--	<div class="dash-video-player">
-				<video controls="true"></video>
-			</div>
--->
-			</body>
+</body>
 </html>
