@@ -40,9 +40,8 @@ function startDashVideo(recurl, texturediv) {
     player.attachSource(url);
   
 }
-// count dash players and add this number to the class name for future reference (append in id too, for play, pause etc)
 startDashVideo.textNum = 0;
-
+  //we need to initially place the script for the dash player once in the document
 var js = document.createElement("script");
 js.setAttribute("type", "text/javascript");
 js.setAttribute("src", "dash.all.js");
@@ -83,8 +82,9 @@ x3dom.Texture = function(gl, doc, cache, node)
 	var suffix = "mpd";
         if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) { //for dash we check only one url
             this.dashtexture = true;
-	    startDashVideo.textNum++;
-            //we need to initially place the script for the dash player once in the document
+	    startDashVideo.textNum++;// count dash players and add this number to the class name for future reference (append in id too, for play, pause etc)
+
+          
         }
     }
         this.update();
