@@ -11,8 +11,7 @@
 
 
 function startDashVideo(recurl, texturediv) {
-     
-            var vars = function () {
+    var vars = function () {
             var vars = {};
             var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
                 vars[key] = value;
@@ -38,58 +37,79 @@ function startDashVideo(recurl, texturediv) {
     player.setAutoPlay(false);
 
     player.attachSource(url);
-  
 }
-startDashVideo.textNum = 0;
-  //we need to initially place the script for the dash player once in the document
-var js = document.createElement("script");
-js.setAttribute("type", "text/javascript");
-js.setAttribute("src", "dash.all.js");
-js.setAttribute("id", "AdditionalDashVideoScript");
-//js.onload = function() { console.log("LOADING"); that.update(); };
-document.getElementsByTagName('head')[0].appendChild(js);
+
 
 /**
  * Texture
  */
-x3dom.Texture = function(gl, doc, cache, node)
-{
+x3dom.Texture = function (gl, doc, cache, node) {
+    this.gl = gl;
+    this.doc = doc;
+    this.cache = cache;
+    this.node = node;
 
+    this.samplerName = "diffuseMap";
+    this.type = gl.TEXTURE_2D;
+    this.format = gl.RGBA;
+    this.magFilter = gl.LINEAR;
+    this.minFilter = gl.LINEAR;
+    this.wrapS = gl.REPEAT;
+    this.wrapT = gl.REPEAT;
+    this.genMipMaps = false;
+    this.texture = null;
+    this.ready = false;
 
-    this.gl 			= gl;
-    this.doc			= doc;
-    this.cache			= cache;
-    this.node 			= node;
+    this.dashtexture = false;
 
-    this.samplerName 	= "diffuseMap";
-    this.type 			= gl.TEXTURE_2D;
-    this.format			= gl.RGBA;
-    this.magFilter		= gl.LINEAR;
-    this.minFilter		= gl.LINEAR;
-    this.wrapS			= gl.REPEAT;
-    this.wrapT			= gl.REPEAT;
-    this.genMipMaps		= false;
-    this.texture		= null;
-    this.ready			= false;
-
-    this.dashtexture    = false;
-
-    var that = this;
     var tex = this.node;
-    if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
-       
-	this.dashtexture = false;
-	var suffix = "mpd";
-        if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) { //for dash we check only one url
-            this.dashtexture = true;
-	    startDashVideo.textNum++;// count dash players and add this number to the class name for future reference (append in id too, for play, pause etc)
+    var suffix = "mpd";
 
-          
+    if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
+        // for dash we are lazy and check only the first url
+        if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) {
+            this.dashtexture = true;
+            // we need to initially place the script for the dash player once in the document,
+            // but insert this additional script only, if really needed and Dash is requested!
+            var js = document.getElementById("AdditionalDashVideoScript");
+            if (!js) {
+                js = document.createElement("script");
+                js.setAttribute("type", "text/javascript");
+                js.setAttribute("src", x3dom.Texture.dashVideoScriptFile);
+                js.setAttribute("id", "AdditionalDashVideoScript");
+                js.onload = function() {
+                    var texObj;
+                    while ( (texObj = x3dom.Texture.loadDashVideos.pop()) ) {
+                        x3dom.Texture.textNum++;
+                        texObj.update();
+                    }
+                    js.ready = true;
+                };
+                document.getElementsByTagName('head')[0].appendChild(js);
+            }
+            if (js.ready === true) {
+                // count dash players and add this number to the class name for future reference
+                // (append in id too, for play, pause etc)
+                x3dom.Texture.textNum++;
+                // update can be directly called as script is already loaded
+                this.update();
+            }
+            else {
+                // push to stack and process later when script has loaded
+                x3dom.Texture.loadDashVideos.push(this);
+            }
         }
     }
+
+    if (!this.dashtexture) {
         this.update();
-   
+    }
 };
+
+x3dom.Texture.dashVideoScriptFile = "dash.all.js";
+x3dom.Texture.loadDashVideos = [];
+x3dom.Texture.textNum = 0;
+
 
 x3dom.Texture.prototype.update = function()
 {
@@ -229,14 +249,14 @@ x3dom.Texture.prototype.updateTexture = function()
 
         if (this.dashtexture) {
             var element_vid = document.createElement('div');
-            element_vid.setAttribute('class', 'dash-video-player' + startDashVideo.textNum);
+            element_vid.setAttribute('class', 'dash-video-player' + x3dom.Texture.textNum);
             tex._video = document.createElement('video');
             tex._video.setAttribute('autobuffer', 'true');
 
             var scriptToRun = document.createElement('script');
             scriptToRun.setAttribute('type', 'text/javascript');
             scriptToRun.innerHTML = 'startDashVideo("' + tex._vf.url[0] +
-                                    '",".dash-video-player' + startDashVideo.textNum + ' video")';
+                                    '",".dash-video-player' + x3dom.Texture.textNum + ' video")';
             element_vid.appendChild(scriptToRun);
             element_vid.appendChild(tex._video);
             p.appendChild(element_vid);
