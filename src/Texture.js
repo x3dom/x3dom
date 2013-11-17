@@ -11,14 +11,15 @@
 
 
 function startDashVideo(recurl, texturediv) {
-    var vars = function () {
+     
+            var vars = function () {
             var vars = {};
             var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
                 vars[key] = value;
             });
             return vars;
         },
-        url = recurl,//"http://dash.edgesuite.net/envivio/dashpr/clear/Manifest.mpd",
+        url = recurl,
         video,
         context,
         player;
@@ -27,7 +28,7 @@ function startDashVideo(recurl, texturediv) {
         url = vars.url;
     }
 
-    video = document.querySelector(texturediv);//".dash-video-player video");
+    video = document.querySelector(texturediv);
     context = new Dash.di.DashContext();
     player = new MediaPlayer(context);
 
@@ -37,17 +38,24 @@ function startDashVideo(recurl, texturediv) {
     player.setAutoPlay(false);
 
     player.attachSource(url);
-    startDashVideo.textNum++;
+  
 }
-// count dash players and add this number to the class name for future reference (append in id too, for play, pause etc)
 startDashVideo.textNum = 0;
-
+  //we need to initially place the script for the dash player once in the document
+var js = document.createElement("script");
+js.setAttribute("type", "text/javascript");
+js.setAttribute("src", "dash.all.js");
+js.setAttribute("id", "AdditionalDashVideoScript");
+//js.onload = function() { console.log("LOADING"); that.update(); };
+document.getElementsByTagName('head')[0].appendChild(js);
 
 /**
  * Texture
  */
 x3dom.Texture = function(gl, doc, cache, node)
 {
+
+
     this.gl 			= gl;
     this.doc			= doc;
     this.cache			= cache;
@@ -69,25 +77,18 @@ x3dom.Texture = function(gl, doc, cache, node)
     var that = this;
     var tex = this.node;
     if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
-        //for dash we check only one url
-        var suffix = "mpd";
-        if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) {
+       
+	this.dashtexture = false;
+	var suffix = "mpd";
+        if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) { //for dash we check only one url
             this.dashtexture = true;
-            //we need to initially place the script for the dash player once in the document
-            if (!document.getElementById("AdditionalDashVideoScript")) {
-                var js = document.createElement("script");
-                js.setAttribute("type", "text/javascript");
-                js.setAttribute("src", "dash.all.js");
-                js.setAttribute("id", "AdditionalDashVideoScript");
-                js.onload = function() { console.log("LOADING"); that.update(); };
-                document.getElementsByTagName('head')[0].appendChild(js);
-            }
+	    startDashVideo.textNum++;// count dash players and add this number to the class name for future reference (append in id too, for play, pause etc)
+
+          
         }
     }
-
-    if (!this.dashtexture) {
         this.update();
-    }
+   
 };
 
 x3dom.Texture.prototype.update = function()
@@ -432,7 +433,7 @@ x3dom.Texture.prototype.updateText = function()
 	document.body.removeChild(text_canvas);
 	
 	var w = txtW / 100.0;
-    var h = txtH / 100.0;
+    	var h = txtH / 100.0;
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
@@ -441,4 +442,3 @@ x3dom.Texture.prototype.updateText = function()
         node.setAllDirty();
     });
 };
-
