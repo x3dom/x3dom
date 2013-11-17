@@ -102,7 +102,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 		}
 		
-		//Save image Size
+		//Save image size
 		texture.width  = image.width;
 		texture.height = image.height;
 		texture.ready = true;
@@ -173,7 +173,11 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 				
 				texture.pendingTextureLoads--;
 				doc.downloadCount--;
+
 				if (texture.pendingTextureLoads < 0) {
+                    //Save image size also for cube tex
+                    texture.width  = width;
+                    texture.height = height;
 					texture.textureCubeReady = true;
 					x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
 					doc.needRender = true;

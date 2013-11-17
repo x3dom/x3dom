@@ -199,9 +199,12 @@ x3dom.Texture.prototype.updateTexture = function()
 	//Set texture
 	if (tex._isCanvas && tex._canvas)
 	{
-		if(this.texture == null) {
+		if (this.texture == null) {
 			this.texture = gl.createTexture()
 		}
+        this.texture.width  = tex._canvas.width;
+        this.texture.height = tex._canvas.height;
+
 		gl.bindTexture(this.type, this.texture);
         gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, tex._canvas);
 		gl.bindTexture(this.type, null);
@@ -221,6 +224,8 @@ x3dom.Texture.prototype.updateTexture = function()
 		if (this.texture == null) {
 			this.texture = gl.createTexture()
 		}
+        this.texture.width  = tex._vf.image.width;
+        this.texture.height = tex._vf.image.height;
 		
 		var pixelArr = tex._vf.image.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
