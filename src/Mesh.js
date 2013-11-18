@@ -238,14 +238,20 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 
 /** @param primStride Number of index entries per primitive, for example 3 for TRIANGLES
  */
-x3dom.Mesh.prototype.splitMesh = function(primStride)
+x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
 {
     var pStride;
+    var isMultiInd;
 
-    if (typeof primStride == 'undefined')
+    if (typeof primStride === undefined) {
         pStride = 3;
-    else
+    } else {
         pStride = primStride;
+    }
+
+    if (typeof useMultiIndIndices === undefined) {
+        checkMultiIndIndices = false;
+    }
 
     var MAX = x3dom.Utils.maxIndexableCoords;
 
@@ -255,12 +261,19 @@ x3dom.Mesh.prototype.splitMesh = function(primStride)
     if (this._positions[0].length / 3 <= MAX) {
         return;
     }
+
+    if (checkMultiIndIndices) {
+        isMultiInd = this._multiIndIndices && this._multiIndIndices.length;
+    } else {
+        isMultiInd = false;
+    }
     
     var positions = this._positions[0];
     var normals = this._normals[0];
     var texCoords = this._texCoords[0];
     var colors = this._colors[0];
-    var indices = this._indices[0];
+    var indices = isMultiInd ? this._multiIndIndices : this._indices[0];
+
     var i = 0;
     
     do
@@ -278,14 +291,20 @@ x3dom.Mesh.prototype.splitMesh = function(primStride)
         } else { 
             this._indices[i] = indices.slice(i * MAX);
         }
-        
-        if (i) {
-            var m = i * MAX;
+
+        if(!isMultiInd) {
+            if (i) {
+                var m = i * MAX;
+                for (var j=0, l=this._indices[i].length; j<l; j++) {
+                    this._indices[i][j] -= m;
+                }
+            }
+        } else {
             for (var j=0, l=this._indices[i].length; j<l; j++) {
-                this._indices[i][j] -= m;
+                this._indices[i][j] = j;
             }
         }
-        
+
         if (k) { 
             this._positions[i] = positions.slice(i * MAX * 3, 3 * (i + 1) * MAX);
         } else { 

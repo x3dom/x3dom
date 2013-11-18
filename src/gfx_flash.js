@@ -104,6 +104,11 @@ x3dom.gfx_flash = (function () {
      *
      */
     function setupContext(object, renderType) {
+
+        //Set max indexable coords
+        x3dom.Utils.maxIndexableCoords = 65535;
+
+        //Return new Context
         return new Context(object, 'flash', renderType);
     }
 
@@ -445,6 +450,13 @@ x3dom.gfx_flash = (function () {
                         idx: 0,
                         indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) });
                 } else {
+
+                    //If Mesh is multi indexed we have to split it in Flash
+                    if (shape._cf.geometry.node._mesh._multiIndIndices && shape._cf.geometry.node._mesh._multiIndIndices.length)
+                    {
+                        shape._cf.geometry.node._mesh.splitMesh(3, true);
+                    }
+
                     for (var i = 0; i < shape._cf.geometry.node._mesh._indices.length; i++) {
                         this.object.setMeshIndices({ id: shape._objectID,
                             idx: i,
