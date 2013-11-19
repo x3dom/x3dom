@@ -1164,6 +1164,91 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'coolColor', 0, 0, 1);
             this.addField_SFColor(ctx, 'warmColor', 1, 1, 0);
+
+            this.uniformCoolColor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformWarmColor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID++;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    }
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
+                }
+
+                this.uniformCoolColor._vf.name = 'uCoolColor';
+                this.uniformCoolColor._vf.type = 'SFColor';
+                this.uniformCoolColor._vf.value = this._vf.coolColor;
+                unis.push(this.uniformCoolColor);
+
+                this.uniformWarmColor._vf.name = 'uWarmColor';
+                this.uniformWarmColor._vf.type = 'SFColor';
+                this.uniformWarmColor._vf.value = this._vf.warmColor;
+                unis.push(this.uniformWarmColor);
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var tex = this._cf.surfaceNormals.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function(){
+                return "uniform vec3 uCoolColor;\nuniform vec3 uWarmColor;\n";
+            },
+
+            styleShaderText: function(){
+                var styleText = "void toneMapped(inout vec4 original_color, inout vec3 accum_color, vec3 surfNormal, vec3 lightDir)\n"+
+                "{\n"+
+                "   float color_factor = (1.0 + dot(lightDir, surfNormal))*0.5;\n"+
+                "   accum_color += mix(uCoolColor, uWarmColor, color_factor);\n"+
+                "   original_color.rgb = accum_color;\n"+
+                "}\n";
+                return styleText;
+            },
+
+            inlineStyleShaderText: function(){
+                var shaderText = "    vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
+                "    vec3 L = vec3(0.0, 0.0, 0.0);\n";
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    shaderText += "    L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
+                    "    toneMapped(value, toneColor, grad.xyz, L);\n";
+                }
+                return shaderText;
+            },
+
+            lightAssigment: function(){
+                return "value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+                var shader =
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
         }
     )
 );
