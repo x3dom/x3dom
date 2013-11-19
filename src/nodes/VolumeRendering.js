@@ -28,6 +28,9 @@ x3dom.registerNodeType(
             //this.addField_SFBool(ctx, 'swapped', false);
             //this.addField_SFVec3f(ctx, 'sliceThickness', 1, 1, 1);
 
+            //Neccesary for counting the textures which are added on each style, number of textures can be variable
+            this._textureID = 0;
+
             x3dom.debug.logWarning('VolumeRendering component NYI!!!');
         },
         {
@@ -911,10 +914,16 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
                     this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
 
+                    //calcalate the offset for the volume texture
+                    //TODO: Obtain the offset from the texture size
+                    this.textureOffset = new x3dom.fields.SFVec3f(1.0/1024,
+                        1.0/1024, 1.0/this.vrcVolumeTexture._vf.numberOfSlices);
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
                     this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(
                             this.vrcVolumeTexture._vf.numberOfSlices,
-                            this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
+                            this.vrcVolumeTexture._vf.slicesOverX, 
+                            this.vrcVolumeTexture._vf.slicesOverY,
+                            this.textureOffset);
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
                     this.vrcFrontCubeShaderVertex.nodeChanged();
@@ -925,10 +934,12 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShaderFieldBackCoord._vf.name = 'uBackCoord';
                     this.vrcFrontCubeShaderFieldBackCoord._vf.type = 'SFInt32';
                     this.vrcFrontCubeShaderFieldBackCoord._vf.value = 0;
+                    this._textureID++;
 
                     this.vrcFrontCubeShaderFieldVolData._vf.name = 'uVolData';
                     this.vrcFrontCubeShaderFieldVolData._vf.type = 'SFInt32';
                     this.vrcFrontCubeShaderFieldVolData._vf.value = 1;
+                    this._textureID++;
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldBackCoord, 'fields');
                     this.vrcFrontCubeShaderFieldBackCoord.nodeChanged();
