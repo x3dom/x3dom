@@ -285,8 +285,12 @@ x3dom.registerNodeType(
                 "const float Steps = 60.0;\n"+
                 "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
                 "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
-                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n"+
-                "const vec3 offset = vec3(0.5/512.0, 0.5/512.0, 0.5/96.0);\n";
+                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
+                if(offset != undefined){
+                    uniformsText += "const vec3 offset = vec3(" + offset.x + "," + offset.y + "," + offset.z + ");\n";
+                }else{
+                    uniformsText += "const vec3 offset = vec3(0.0);\n";
+                }
                 //LIGHTS
                 var n_lights = x3dom.nodeTypes.X3DLightNode.lightID;
                 for(var l=0; l<n_lights; l++) {
@@ -734,6 +738,91 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
             this.addField_SFFloat(ctx, 'silhouetteRetainedOpacity', 1);
             this.addField_SFFloat(ctx, 'silhouetteSharpness', 0.5);
+
+            this.uniformFloatBoundaryOpacity = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatRetainedOpacity = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatSilhouetteSharpness = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID++;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    }
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
+                }
+
+                this.uniformFloatBoundaryOpacity._vf.name = 'uSilhouetteBoundaryOpacity';
+                this.uniformFloatBoundaryOpacity._vf.type = 'SFFloat';
+                this.uniformFloatBoundaryOpacity._vf.value = this._vf.silhouetteBoundaryOpacity;
+                unis.push(this.uniformFloatBoundaryOpacity);
+
+                this.uniformFloatRetainedOpacity._vf.name = 'uSilhouetteRetainedOpacity';
+                this.uniformFloatRetainedOpacity._vf.type = 'SFFloat';
+                this.uniformFloatRetainedOpacity._vf.value = this._vf.silhouetteRetainedOpacity;
+                unis.push(this.uniformFloatRetainedOpacity);
+
+                this.uniformFloatSilhouetteSharpness._vf.name = 'uSilhouetteSharpness';
+                this.uniformFloatSilhouetteSharpness._vf.type = 'SFFloat';
+                this.uniformFloatSilhouetteSharpness._vf.value = this._vf.silhouetteSharpness;
+                unis.push(this.uniformFloatSilhouetteSharpness);
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var tex = this._cf.surfaceNormals.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function(){
+                return "uniform float uSilhouetteBoundaryOpacity;\n"+
+                    "uniform float uSilhouetteRetainedOpacity;\n"+
+                    "uniform float uSilhouetteSharpness;\n";
+            },
+
+            styleShaderText: function(){
+                return "void silhouetteEnhancement(inout vec4 orig_color, vec4 normal, vec3 V)\n"+
+                "{\n"+
+                "   orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
+                "}\n"+
+                "\n";
+            },
+
+            inlineStyleShaderText: function(){
+                return "    silhouetteEnhancement(value, grad, normalize(dir));\n";
+            },
+
+            lightAssigment: function(){
+                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+                var shader =
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
         }
     )
 );
