@@ -545,7 +545,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	}
 	
 	if(properties.LIGHTS) {
-		shader += "vec3 ambient   = vec3(0.07, 0.07, 0.07);\n";
+		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
