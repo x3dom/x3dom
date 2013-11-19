@@ -1027,6 +1027,191 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lighting', false);
             this.addField_SFBool(ctx, 'shadows', false);
             this.addField_SFString(ctx, 'phaseFunction', "Henyey-Greenstein");
+
+            this.uniformBoolLigthning = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolShadows = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            //Material uniforms
+            this.uniformColorSpecular = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatAmbientIntensity = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatShininess = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatTransparency = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformColorEmissive = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformColorDiffuse = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID++;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    }
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
+                }
+
+                this.uniformBoolLigthning._vf.name = 'uLightning';
+                this.uniformBoolLigthning._vf.type = 'SFBool';
+                this.uniformBoolLigthning._vf.value = this._vf.lighting;
+                unis.push(this.uniformBoolLigthning);
+
+                this.uniformBoolShadows._vf.name = 'uShadows';
+                this.uniformBoolShadows._vf.type = 'SFBool';
+                this.uniformBoolShadows._vf.value = this._vf.shadows;
+                unis.push(this.uniformBoolShadows);
+
+                //Material uniform parameters
+                if(this._cf.material.node != null){
+                    this.uniformColorSpecular._vf.name = 'specularColor';
+                    this.uniformColorSpecular._vf.type = 'SFColor';
+                    this.uniformColorSpecular._vf.value = this._cf.material.node._vf.specularColor;
+                    unis.push(this.uniformColorSpecular);
+
+                    this.uniformColorDiffuse._vf.name = 'diffuseColor';
+                    this.uniformColorDiffuse._vf.type = 'SFColor';
+                    this.uniformColorDiffuse._vf.value = this._cf.material.node._vf.diffuseColor;
+                    unis.push(this.uniformColorDiffuse);
+
+                    this.uniformColorEmissive._vf.name = 'emissiveColor';
+                    this.uniformColorEmissive._vf.type = 'SFColor';
+                    this.uniformColorEmissive._vf.value = this._cf.material.node._vf.emissiveColor;
+                    unis.push(this.uniformColorEmissive);
+
+                    this.uniformFloatAmbientIntensity._vf.name = 'ambientIntensity';
+                    this.uniformFloatAmbientIntensity._vf.type = 'SFFloat';
+                    this.uniformFloatAmbientIntensity._vf.value = this._cf.material.node._vf.ambientIntensity;
+                    unis.push(this.uniformFloatAmbientIntensity);
+
+                    this.uniformFloatShininess._vf.name = 'shininess';
+                    this.uniformFloatShininess._vf.type = 'SFFloat';
+                    this.uniformFloatShininess._vf.value = this._cf.material.node._vf.shininess;
+                    unis.push(this.uniformFloatShininess);
+
+                    this.uniformFloatTransparency._vf.name = 'transparency';
+                    this.uniformFloatTransparency._vf.type = 'SFFloat';
+                    this.uniformFloatTransparency._vf.value = this._cf.material.node._vf.transperency;
+                    unis.push(this.uniformFloatTransparency);
+                }
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var tex = this._cf.surfaceNormals.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function(){
+                var uniformText = "uniform bool uLightning;\n"+
+                "uniform bool uShadows;\n"+
+                //Fog uniforms
+                "uniform float fogVisibility;\n"+
+                "uniform vec3 fogColor;\n"+
+                "uniform float fogType;\n";
+                //Material uniforms
+                if(this._cf.material.node != null){
+                    uniformText += "uniform vec3  diffuseColor;\n" +
+                    "uniform vec3  specularColor;\n" +
+                    "uniform vec3  emissiveColor;\n" +
+                    "uniform float shininess;\n" +
+                    "uniform float transparency;\n" +
+                    "uniform float ambientIntensity;\n";
+                }
+                return uniformText;
+            },
+
+            styleShaderText: function(){
+                var styleText = "float computeFogInterpolant(float distanceFromPoint)\n"+
+                "{\n"+
+                "  if (distanceFromPoint > fogVisibility)\n"+
+                "    return 0.0;\n"+
+                "  else if (fogType == 0.0)\n"+
+                "    return clamp((fogVisibility-distanceFromPoint) / fogVisibility, 0.0, 1.0);\n"+
+                "  else\n"+
+                "    return clamp(exp(-distanceFromPoint / (fogVisibility-distanceFromPoint)), 0.0, 1.0);\n"+
+                "}\n";
+                return styleText;
+            },
+
+            lightEquation: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+                    "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+                    "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
+                    "inout vec3 specular)\n" +
+                    "{\n" +
+                    "   vec3 L;\n" +
+                    "   float spot = 1.0, attentuation = 0.0;\n" +
+                    "   if(lType == 0.0) {\n" +
+                    "       L = -normalize(lDirection);\n" +
+                    "       V = normalize(V);\n" +
+                    "       attentuation = 1.0;\n" +
+                    "   } else{\n" +
+                    "       L = (lLocation - (-V));\n" +
+                    "       float d = length(L);\n" +
+                    "       L = normalize(L);\n" +
+                    "       V = normalize(V);\n" +
+                    "       if(lRadius == 0.0 || d <= lRadius) {\n" +
+                    "           attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+                    "       }\n" +
+                    "       if(lType == 2.0) {\n" +
+                    "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+                    "           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
+                    "           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+                    "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+                    "       }\n" +
+                    "   }\n" +
+                    
+                    "   vec3 H = normalize( L + V );\n" +
+                    "   float NdotL = max(0.0, dot(L, N));\n" +
+                    "   float NdotH = max(0.0, dot(H, N));\n" +
+                    
+                    "   float ambientFactor = lAmbientIntensity * ambientIntensity;\n" +
+                    "   float diffuseFactor = lIntensity * NdotL;\n" +
+                    "   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
+                    "   ambient += lColor * ambientFactor * attentuation * spot;\n" +
+                    "   diffuse += lColor * diffuseFactor * attentuation * spot;\n" +
+                    "   specular += lColor * specularFactor * attentuation * spot;\n" +  
+                    "}\n",
+
+            inlineStyleShaderText: function(){
+                return "    float fogFactor = computeFogInterpolant(length(vec3(0.0,0.0,0.0)-pos));\n";
+            },
+
+            lightAssigment: function(){
+                var shaderText = "";
+                if(this._vf.lighting == true){
+                    if(this._cf.material.node == null){
+                        shaderText += "    value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
+                    }else{
+                        shaderText += "    value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*value.rgb + specular*specularColor);\n"+
+                        "    value.a = value.a*(1.0-transparency);\n";
+                    }
+                }
+                return shaderText;
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+                var shader =
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText;
+                shader += this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(),this.lightAssigment());
+                return shader;
+            }
         }
     )
 );
