@@ -610,6 +610,87 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'edgeColor', 0, 0, 0);
             this.addField_SFFloat(ctx, 'gradientThreshold', 0.4);
+
+            this.uniformColorEdgeColor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformIntGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID++;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    }
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
+                }
+
+                this.uniformColorEdgeColor._vf.name = 'uEdgeColor';
+                this.uniformColorEdgeColor._vf.type = 'SFColor';
+                this.uniformColorEdgeColor._vf.value = this._vf.edgeColor;
+                unis.push(this.uniformColorEdgeColor);
+
+                this.uniformIntGradientThreshold._vf.name = 'uGradientThreshold';
+                this.uniformIntGradientThreshold._vf.type = 'SFFloat';
+                this.uniformIntGradientThreshold._vf.value = this._vf.gradientThreshold;
+                unis.push(this.uniformIntGradientThreshold);
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var tex = this._cf.surfaceNormals.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function(){
+                return "uniform vec3 uEdgeColor;\nuniform float uGradientThreshold;\n";
+            },
+
+            styleShaderText: function(){
+                return "void edgeEnhancement(inout vec4 originalColor, vec4 gradient, vec3 V)\n"+
+                "{\n"+
+                "   if(gradient.w > 0.001){\n"+
+                "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
+                "       if (angle_dif<=cos(uGradientThreshold)){\n"+
+                "           originalColor.rgb = mix(uEdgeColor, originalColor.rgb, angle_dif);\n"+
+                "       }\n"+
+                "   }\n"+
+                "}\n";
+            },
+
+            inlineStyleShaderText: function(){
+                return "    edgeEnhancement(value, grad, normalize(dir));\n";
+            },
+
+            lightAssigment: function(){
+                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+                var shader =
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
         }
     )
 );
