@@ -240,7 +240,7 @@ x3dom.registerNodeType(
                 shaderLoop +=
                 "    //Process the volume sample\n"+
                 "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                "    sample.rgb = value.rgb * sample.a * 1.0 ;\n"+
+                "    sample.rgb = value.rgb * sample.a * lightFactor ;\n"+
                 "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
                 "    accum.a += (1.0 - accum.a) * sample.a;\n"+
                 "    //advance the current position\n"+
