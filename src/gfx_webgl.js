@@ -39,10 +39,11 @@ x3dom.gfx_webgl = (function () {
      * Setup the 3D context and init some things
      *****************************************************************************/
     function setupContext(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, x3dElem) {
-        var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
+        var validContextNames = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
-        if (tryWebGL2)
+        if (tryWebGL2) {
             validContextNames = ['experimental-webgl2'].concat(validContextNames);
+        }
 
         var ctx = null;
         // Context creation params
@@ -93,10 +94,11 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
-                        x3dom.debug.logInfo("\nVendor: " + x3dom.caps.VENDOR + ", " +
-                            "Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
+                        var extString = x3dom.caps.EXTENSIONS.toString().replace(/,/g, ", ");
+                        x3dom.debug.logInfo(validContextNames[i] + " context found\nVendor: " + x3dom.caps.VENDOR +
+                            ", Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
                             "ShadingLangV.: " + x3dom.caps.SHADING_LANGUAGE_VERSION
-                            + ", MSAA samples: " + x3dom.caps.SAMPLES + "\nExtensions: " + x3dom.caps.EXTENSIONS);
+                            + ", MSAA samples: " + x3dom.caps.SAMPLES + "\nExtensions: " + extString);
 
                         if (x3dom.caps.INDEX_UINT) {
                             x3dom.Utils.maxIndexableCoords = 4294967295;
@@ -137,15 +139,15 @@ x3dom.gfx_webgl = (function () {
                     catch (ex) {
                         x3dom.debug.logWarning(
                             "Your browser probably supports an older WebGL version. " +
-                                "Please try the old mobile runtime instead:\n" +
-                                "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
+                            "Please try the old mobile runtime instead:\n" +
+                            "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
                         newCtx = null;
                     }
 
                     return newCtx;
                 }
             }
-            catch (e) {}
+            catch (e) { x3dom.debug.logWarning(e); }
         }
         return null;
     }
@@ -1410,7 +1412,7 @@ x3dom.gfx_webgl = (function () {
         var env = scene.getEnvironment();
         var n = scene.drawableCollection.length;
 
-        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMovingOrAnimating()) {
             n = Math.floor(n * env._lowPriorityThreshold);
             if (!n && scene.drawableCollection.length)
                 n = 1;   // render at least one object
@@ -2321,7 +2323,7 @@ x3dom.gfx_webgl = (function () {
     {
         var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
 
-        if (currFps <= 1 || viewarea.isMoving()) {
+        if (currFps <= 1 || viewarea.isMovingOrAnimating()) {
             tol *= x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove;
         }
 
@@ -3135,7 +3137,7 @@ x3dom.gfx_webgl = (function () {
 
         // Very, very experimental priority culling, currently coupled with frustum and small feature culling
         // TODO; what about shadows?
-        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMovingOrAnimating()) {
             n = Math.floor(n * env._lowPriorityThreshold);
             if (!n && scene.drawableCollection.length)
                 n = 1;   // render at least one object

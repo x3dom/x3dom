@@ -9,33 +9,108 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
+function startDashVideo(recurl, texturediv) {
+    var vars = function () {
+            var vars = {};
+            var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+                vars[key] = value;
+            });
+            return vars;
+        },
+        url = recurl,
+        video,
+        context,
+        player;
+
+    if (vars && vars.hasOwnProperty("url")) {
+        url = vars.url;
+    }
+
+    video = document.querySelector(texturediv);
+    context = new Dash.di.DashContext();
+    player = new MediaPlayer(context);
+
+    player.startup();
+
+    player.attachView(video);
+    player.setAutoPlay(false);
+
+    player.attachSource(url);
+}
+
+
 /**
  * Texture
  */
-x3dom.Texture = function(gl, doc, cache, node)
-{
-	this.gl 			= gl;
-	this.doc			= doc;
-	this.cache			= cache;
-	this.node 			= node;
-	
-	this.samplerName 	= "diffuseMap";
-	this.type 			= gl.TEXTURE_2D;
-	this.format			= gl.RGBA;
-	this.magFilter		= gl.LINEAR;
-	this.minFilter		= gl.LINEAR;
-	this.wrapS			= gl.REPEAT;
-	this.wrapT			= gl.REPEAT;
-	this.genMipMaps		= false;
-	this.texture		= null;
-	this.ready			= false;
-	
-	this.update();
+x3dom.Texture = function (gl, doc, cache, node) {
+    this.gl = gl;
+    this.doc = doc;
+    this.cache = cache;
+    this.node = node;
+
+    this.samplerName = "diffuseMap";
+    this.type = gl.TEXTURE_2D;
+    this.format = gl.RGBA;
+    this.magFilter = gl.LINEAR;
+    this.minFilter = gl.LINEAR;
+    this.wrapS = gl.REPEAT;
+    this.wrapT = gl.REPEAT;
+    this.genMipMaps = false;
+    this.texture = null;
+    this.ready = false;
+
+    this.dashtexture = false;
+
+    var tex = this.node;
+    var suffix = "mpd";
+
+    if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
+        // for dash we are lazy and check only the first url
+        if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) {
+            this.dashtexture = true;
+            // we need to initially place the script for the dash player once in the document,
+            // but insert this additional script only, if really needed and Dash is requested!
+            var js = document.getElementById("AdditionalDashVideoScript");
+            if (!js) {
+                js = document.createElement("script");
+                js.setAttribute("type", "text/javascript");
+                js.setAttribute("src", x3dom.Texture.dashVideoScriptFile);
+                js.setAttribute("id", "AdditionalDashVideoScript");
+                js.onload = function() {
+                    var texObj;
+                    while ( (texObj = x3dom.Texture.loadDashVideos.pop()) ) {
+                        x3dom.Texture.textNum++;
+                        texObj.update();
+                    }
+                    js.ready = true;
+                };
+                document.getElementsByTagName('head')[0].appendChild(js);
+            }
+            if (js.ready === true) {
+                // count dash players and add this number to the class name for future reference
+                // (append in id too, for play, pause etc)
+                x3dom.Texture.textNum++;
+                // update can be directly called as script is already loaded
+                this.update();
+            }
+            else {
+                // push to stack and process later when script has loaded
+                x3dom.Texture.loadDashVideos.push(this);
+            }
+        }
+    }
+
+    if (!this.dashtexture) {
+        this.update();
+    }
 };
 
-/**
- * 
- */
+x3dom.Texture.dashVideoScriptFile = "dash.all.js";
+x3dom.Texture.loadDashVideos = [];
+x3dom.Texture.textNum = 0;
+
+
 x3dom.Texture.prototype.update = function()
 {
 	if ( x3dom.isa(this.node, x3dom.nodeTypes.Text) )
@@ -124,9 +199,12 @@ x3dom.Texture.prototype.updateTexture = function()
 	//Set texture
 	if (tex._isCanvas && tex._canvas)
 	{
-		if(this.texture == null) {
+		if (this.texture == null) {
 			this.texture = gl.createTexture()
 		}
+        this.texture.width  = tex._canvas.width;
+        this.texture.height = tex._canvas.height;
+
 		gl.bindTexture(this.type, this.texture);
         gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, tex._canvas);
 		gl.bindTexture(this.type, null);
@@ -143,9 +221,11 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
 	{
-		if(this.texture == null) {
+		if (this.texture == null) {
 			this.texture = gl.createTexture()
 		}
+        this.texture.width  = tex._vf.image.width;
+        this.texture.height = tex._vf.image.height;
 		
 		var pixelArr = tex._vf.image.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
@@ -165,28 +245,43 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
     {
-		var that = this;
-		if(this.texture == null) {
-			this.texture = gl.createTexture();
-		}
-		
-		if (!this.childTex)
-		{
-			tex._video = document.createElement('video');
-			tex._video.setAttribute('autobuffer', 'true');
-			var p = document.getElementsByTagName('body')[0];
-			p.appendChild(tex._video);
-			tex._video.style.visibility = "hidden";
-		}
-		
-		for (var i=0; i<tex._vf.url.length; i++)
-		{
-			var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
-			x3dom.debug.logInfo('Adding video file: ' + videoUrl);
-			var src = document.createElement('source');
-			src.setAttribute('src', videoUrl);
-			tex._video.appendChild(src);
-		}
+        var that = this;
+        var p = document.getElementsByTagName('body')[0];
+
+        if (this.texture == null) {
+            this.texture = gl.createTexture();
+        }
+
+        if (this.dashtexture) {
+            var element_vid = document.createElement('div');
+            element_vid.setAttribute('class', 'dash-video-player' + x3dom.Texture.textNum);
+            tex._video = document.createElement('video');
+            tex._video.setAttribute('autobuffer', 'true');
+
+            var scriptToRun = document.createElement('script');
+            scriptToRun.setAttribute('type', 'text/javascript');
+            scriptToRun.innerHTML = 'startDashVideo("' + tex._vf.url[0] +
+                                    '",".dash-video-player' + x3dom.Texture.textNum + ' video")';
+            element_vid.appendChild(scriptToRun);
+            element_vid.appendChild(tex._video);
+            p.appendChild(element_vid);
+            tex._video.style.visibility = "hidden";
+        }
+        else {
+            if (!childTex) {
+                tex._video = document.createElement('video');
+                tex._video.setAttribute('autobuffer', 'true');
+                p.appendChild(tex._video);
+                tex._video.style.visibility = "hidden";
+            }
+            for (var i = 0; i < tex._vf.url.length; i++) {
+                var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
+                x3dom.debug.logInfo('Adding video file: ' + videoUrl);
+                var src = document.createElement('source');
+                src.setAttribute('src', videoUrl);
+                tex._video.appendChild(src);
+            }
+        }
 
 		var updateMovie = function()
 		{	
@@ -363,7 +458,7 @@ x3dom.Texture.prototype.updateText = function()
 	document.body.removeChild(text_canvas);
 	
 	var w = txtW / 100.0;
-    var h = txtH / 100.0;
+    	var h = txtH / 100.0;
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
@@ -372,4 +467,3 @@ x3dom.Texture.prototype.updateText = function()
         node.setAllDirty();
     });
 };
-

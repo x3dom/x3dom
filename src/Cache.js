@@ -191,9 +191,10 @@ x3dom.Cache.prototype.Release = function (gl) {
         var shader = this.shaders[shaderId];
         var glShaders = gl.getAttachedShaders(shader.program);
         for (var i=0; i<glShaders.length; ++i) {
+            gl.detachShader(shader.program, glShaders[i]);
             gl.deleteShader(glShaders[i]);
         }
-         gl.deleteProgram(shader.program)
+        gl.deleteProgram(shader.program)
     }
     this.shaders = [];
 };

@@ -10,7 +10,7 @@ With all X3DOM source files the following file format
 and encoding conventions have to be used:
 
 - File encoding: **UTF-8**, without Byte-Order-Mark (BOM)
-- Lineendings: **LF** (Unix Line Feed)
+- Line endings: **LF** (Unix Line Feed)
 - Indentation: **4 spaces** (unless otherwise noted)
 
 A note about indentation: Essentially this is a 
@@ -103,7 +103,7 @@ Some pointers:
 - `Git Manual`_
 
 
-**The versioning system is not a replacement for communication. **
+**The versioning system is not a replacement for communication.**
 
 
 
@@ -125,7 +125,7 @@ frequently to forget the semicolon.
 
 if/else shortcuts
 +++++++++++++++++
-Aviod the use of ``if/else`` constructs without curly braces. It impaires
+Avoid the use of ``if/else`` constructs without curly braces. It impaires
 readability and is a potential source for errors:
 
 Good:
@@ -151,38 +151,27 @@ Bad:
 
 
 
-- zwischen Funktionen je eine Leerzeile zur Übersichtlichkeit
-- möglichst wenig anonyme funktionen verwenden
-- immer mit ; abschliessen
-- that = this
-- variablen nicht inline deklarieren/initialisieren sondern direkt
-  nach funktionsbeginn var x,j,k = 0, var test = true, etc. Auch die
-  Zähler (js kennt nur zwei contexte: global und funktionslokal), blocklocal
-  gibts bei js nicht.
-- sprechende Namen verwenden
-- hier mehr zur Inspiration:
+Other conventions
++++++++++++++++++
+- Empty line between functions
+- Anonymous functions only if really necessary
+- Don't forget ``that = this`` when adding internal functions
+- JS only has global and function-local scope, but **no** block-local scope
+  (variables declared in ``for`` loops are accessible in whole function).
+  Variables thus should be declared/initialized at beginning of function
+- Use speaking names (verbNoun)
+- For inspiration:
   http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
 
 
 
 Documentation and Tests
 -----------------------
-
-- Prose
-- JSDoc
-
-
-- Jeder Entwickler ist für die Dokumentation seines codes verantworlich.
-  Wer code eincheckt sollte ihn auch Dokumentieren, denn keiner versteht
-  besser was er gemacht hat. JSDoc ist da ausreichend, im Idealfall auch
-  in der Prosa-Doku.
-- Wenn sich was ändert, Doku anpassen. Oft sind das nur Kleinigkeiten
-  die schnell gemacht sind.
-- Im Idealfall wird auch ein Test geschrieben, vom Implementator des
-  Features.
-- Wenn ein bug gefunden wird, sollte möglichst ein Test gebaut werden, der den Bug
-  verifiziert und nach dem Fix sollte der test dann laufen.
-- Konfiguration der IDE oder generierte Files gehören nicht ins repo
+- Document your code yourself. JSDoc is ok, ideally also in prose documentation
+- Update documentation after code modifications
+- Write/add test for new feature
+- When bug was found, build test for verifying bug. After fix, test should work
+- Don't commit configuration files of IDE or other generated files
 
 
 

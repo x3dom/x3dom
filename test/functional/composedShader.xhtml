@@ -82,23 +82,26 @@
 <!-- END:X3DOM -->
     <script type="text/javascript" src="media/js/tests.js"></script>
 </head>
+
 <body>
 	<h1>Composed Shader</h1>
-    <p>You should see a grey dounut.</p>
-	<div class="group">
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='500px' height='500px'>
+    <p>You should see a colorful donut and a sketch.</p>
+
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId'
+         showStat='true' showLog='true' width='500px' height='500px'>
       <Scene DEF='scene'>
-        <Background skyColor='0.1 0.3 0.6'/>
-        <Viewpoint position='0 0 5'/>
+        <Background skyColor='0.1 0.3 0.6'></Background>
+        <Viewpoint position='0 0 5'></Viewpoint>
         <Transform translation="-1 0 0">
             <Shape>
               <Appearance>
                 <ComposedShader DEF='ComposedShader'>
-                  <field name='DiffuseColor' type='SFVec3f' value='0.3 0.3 0.3'/>
-                  <field name='PhongColor' type='SFVec3f' value='0.5 0.5 0.5'/>
-                  <field name='Edge' type='SFFloat' value='0.5'/>
-                  <field name='Phong' type='SFFloat' value='0.8'/>
+                  <field name='DiffuseColor' type='SFVec3f' value='0.7 0.4 0.3'></field>
+                  <field name='PhongColor'   type='SFVec3f' value='0.1 0.9 0.7'></field>
+                  <field name='Edge'  type='SFFloat' value='0.5'></field>
+                  <field name='Phong' type='SFFloat' value='0.8'></field>
 
+                  <!-- do not use CDATA stuff in html docs -->
                   <ShaderPart type='VERTEX'>
                   <![CDATA[
                         attribute vec3 position;
@@ -115,10 +118,13 @@
                   ]]>
                   </ShaderPart>
 
+                  <!-- do not use CDATA stuff in html docs -->
                   <ShaderPart type='FRAGMENT'>
                   <![CDATA[
-                        #ifdef GL_ES
+                        #ifdef GL_FRAGMENT_PRECISION_HIGH
                           precision highp float;
+                        #else
+                          precision mediump float;
                         #endif
 
                         uniform vec3 DiffuseColor;
@@ -139,19 +145,21 @@
                   </ShaderPart>
                 </ComposedShader>
               </Appearance>
-              <Torus innerRadius="0.3" outerRadius="0.7" />
+              <Torus innerRadius="0.3" outerRadius="0.7"></Torus>
             </Shape>
         </Transform>
+
         <Transform translation="1 0 0">
             <Shape>
                 <Appearance>
                     <ImageTexture repeatS='false' repeatT='false' url='"media/texture/snaefari.jpg"'>
                         <TextureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
                                            magnificationFilter='LINEAR' minificationFilter='LINEAR'
-                                           generateMipMaps='false' id='texProps' />
+                                           generateMipMaps='false' id='texProps'>
+                        </TextureProperties>
                     </ImageTexture>
                     <ComposedShader>
-                          <field name='tex' type='SFInt32' value='0'/>
+                          <field name='tex' type='SFInt32' value='0'></field>
 
                           <ShaderPart type='VERTEX'>
                           <![CDATA[
@@ -170,8 +178,10 @@
 
                           <ShaderPart type='FRAGMENT'>
                           <![CDATA[
-                                #ifdef GL_ES
+                                #ifdef GL_FRAGMENT_PRECISION_HIGH
                                   precision highp float;
+                                #else
+                                  precision mediump float;
                                 #endif
 
                                 uniform sampler2D tex;
@@ -220,12 +230,11 @@
                           </ShaderPart>
                         </ComposedShader>
                   </Appearance>
-                  <Plane size="2 1.5" solid="false" />
+                  <Plane size="2 1.5" solid="false"></Plane>
             </Shape>
         </Transform>
       </Scene>
     </X3D>
-    </div>
     
 </body>
 </html>

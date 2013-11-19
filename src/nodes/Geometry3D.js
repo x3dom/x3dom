@@ -182,6 +182,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
             this.addField_SFVec3f(ctx, 'size', 2, 2, 2);
+            this.addField_SFBool(ctx, 'hasHelperColors', false);
 
             var sx = this._vf.size.x,
                 sy = this._vf.size.y,
@@ -222,6 +223,16 @@ x3dom.registerNodeType(
 					0,1, 0,0, 1,0, 1,1,
 					0,0, 0,1, 1,1, 1,0
 				];
+                if (this._vf.hasHelperColors) {
+                    this._mesh._colors[0] = [
+                        0, 0, 0,  0, 1, 0,  1, 1, 0,  1, 0, 0,
+                        0, 0, 1,  0, 1, 1,  1, 1, 1,  1, 0, 1,
+                        0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 1, 0,
+                        1, 0, 0,  1, 0, 1,  1, 1, 1,  1, 1, 0,
+                        0, 1, 0,  0, 1, 1,  1, 1, 1,  1, 1, 0,
+                        0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0
+                    ];
+                }
 				this._mesh._indices[0] = [
 					0,1,2, 2,3,0,
 					4,7,5, 5,7,6,
@@ -258,6 +269,25 @@ x3dom.registerNodeType(
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
                         node.invalidateVolume();
+                    });
+                }
+                else if (fieldName === "hasHelperColors") {
+                    if (this._vf.hasHelperColors) {
+                        this._mesh._colors[0] = [
+                            0, 0, 0,  0, 1, 0,  1, 1, 0,  1, 0, 0,
+                            0, 0, 1,  0, 1, 1,  1, 1, 1,  1, 0, 1,
+                            0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 1, 0,
+                            1, 0, 0,  1, 0, 1,  1, 1, 1,  1, 1, 0,
+                            0, 1, 0,  0, 1, 1,  1, 1, 1,  1, 1, 0,
+                            0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0
+                        ];
+                    }
+                    else {
+                        this._mesh._colors[0] = [];
+                    }
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
                     });
                 }
             }

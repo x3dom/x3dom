@@ -71,4 +71,4 @@ Copy ``dist/`` output to ``download/x.x.x/`` folder.
 
 Revert documentation changes.
 
-Finally the webpage nees to be updated, espeically the "status" section.
+Finally the webpage needs to be updated, especially the "status" section.

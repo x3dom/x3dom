@@ -29,6 +29,26 @@ x3dom.registerNodeType(
             //this.addField_SFVec3f(ctx, 'sliceThickness', 1, 1, 1);
 
             x3dom.debug.logWarning('VolumeRendering component NYI!!!');
+        },
+        {
+            getTextureSize: function(texture) {
+                var size = { w: 0, h: 0, valid: false };
+                var texBag = this._webgl ? this._webgl.texture : null;
+                var t, n = (texture && texBag) ? texBag.length : 0;
+
+                for (t=0; t<n; t++) {
+                    if (texture == texBag[t].node && texBag[t].texture) {
+                        size.w = texBag[t].texture.width;
+                        size.h = texBag[t].texture.height;
+                        if (size.w && size.h) {
+                            size.valid = true;
+                        }
+                        break;
+                    }
+                }
+
+                return size;
+            }
         }
     )
 );
@@ -42,6 +62,197 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DVolumeRenderStyleNode.superClass.call(this, ctx);
 
             this.addField_SFBool(ctx, 'enabled', true);
+
+            this.preamble = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
+                            "  precision highp float;\n" +
+                            "#else\n" +
+                            "  precision mediump float;\n" +
+                            "#endif\n\n";
+        },
+        {
+            vertexShaderText: function(){
+                var shader = 
+                "attribute vec3 position;\n"+
+                "attribute vec3 color;\n"+
+                "uniform mat4 modelViewProjectionMatrix;\n"+
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "\n" +
+                "void main()\n"+
+                "{\n"+
+                "  vertexColor = color;\n"+
+                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
+                "  gl_Position = vertexPosition;\n"+
+                "}";
+                return shader;
+            },
+
+            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+                var uniformsText = 
+                "uniform sampler2D uBackCoord;\n"+
+                "uniform sampler2D uVolData;\n"+
+                "uniform mat4 normalMatrix;\n"+
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "const float Steps = 60.0;\n"+
+                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
+                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
+                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
+                return uniformsText;
+            },
+
+            texture3DFunctionShaderText: "vec4 cTexture3D(sampler2D vol, vec3 volpos, float nS, float nX, float nY)\n"+
+                "{\n"+
+                "  float s1,s2;\n"+
+                "  float dx1,dy1;\n"+
+                "  float dx2,dy2;\n"+
+                "  vec2 texpos1,texpos2;\n"+
+                "  s1 = floor(volpos.z*nS);\n"+
+                "  s2 = s1+1.0;\n"+
+                "  dx1 = fract(s1/nX);\n"+
+                "  dy1 = floor(s1/nY)/nY;\n"+
+                "  dx2 = fract(s2/nX);\n"+
+                "  dy2 = floor(s2/nY)/nY;\n"+
+                "  texpos1.x = dx1+(volpos.x/nX);\n"+
+                "  texpos1.y = dy1+(volpos.y/nY);\n"+
+                "  texpos2.x = dx2+(volpos.x/nX);\n"+
+                "  texpos2.y = dy2+(volpos.y/nY);\n"+
+                "  return mix( texture2D(vol,texpos1), texture2D(vol,texpos2), (volpos.z*nS)-s1);\n"+
+                "}\n"+
+                "\n",
+
+            lightEquationShaderText: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+                "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+                "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
+                "inout vec3 specular)\n" +
+                "{\n" +
+                "   vec3 L;\n" +
+                "   float spot = 1.0, attentuation = 0.0;\n" +
+                "   if(lType == 0.0) {\n" +
+                "       L = -normalize(lDirection);\n" +
+                "       V = normalize(V);\n" +
+                "       attentuation = 1.0;\n" +
+                "   } else{\n" +
+                "       L = (lLocation - (-V));\n" +
+                "       float d = length(L);\n" +
+                "       L = normalize(L);\n" +
+                "       V = normalize(V);\n" +
+                "       if(lRadius == 0.0 || d <= lRadius) {\n" +
+                "           attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+                "       }\n" +
+                "       if(lType == 2.0) {\n" +
+                "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+                "           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
+                "           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+                "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+                "       }\n" +
+                "   }\n" +   
+                "   vec3  H = normalize( L + V );\n" +
+                "   float NdotL = max(0.0, dot(L, N));\n" +
+                "   float NdotH = max(0.0, dot(H, N));\n" +   
+                "   float ambientFactor  = lAmbientIntensity;\n" +
+                "   float diffuseFactor  = lIntensity * NdotL;\n" +
+                "   float specularFactor = lIntensity * pow(NdotH,128.0);\n" +
+                "   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+                "   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+                "   specular += lColor * specularFactor * attentuation * spot;\n" +  
+                "}\n",
+
+            normalFunctionShaderText: function(){
+                if (this._cf.surfaceNormals.node) {
+                    // The surface normals, are taken from the given texture, must be of the same size of the Volume Data
+                    return "vec4 getNormal(vec3 pos, float nS, float nX, float nY) {\n"+
+                    "   vec4 n = cTexture3D(uSurfaceNormals, pos, nS, nX, nY);\n"+
+                    "   n.xyz = (2.0*n.xyz)-1.0;\n"+
+                    "   n.xyz = (normalMatrix * vec4(n.xyz, 0.0)).xyz;\n"+
+                    "   n.a = length(n.xyz);\n"+
+                    "   n.xyz = normalize(n.xyz);\n"+
+                    "   return n;\n"+
+                    "}\n"+
+                    "\n";
+                }else{
+                    // No extra texture provided, the surface normals are obtained by calculating the gradient with the Central differences method on each sampled voxel
+                    return "vec4 getNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
+                    "   float v0 = cTexture3D(uVolData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v1 = cTexture3D(uVolData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v2 = cTexture3D(uVolData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   vec3 grad = (normalMatrix * vec4((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0, 0.0)).xyz;\n"+
+                    "   return vec4(normalize(grad), length(grad));\n"+
+                    "}\n"+
+                    "\n";
+                }
+            },    
+
+            //Takes an array as an argument which contains the calls that will be made inside the main loop
+            defaultLoopFragmentShaderText: function(inlineShaderText, inlineLightAssigment){
+                var shaderLoop = "void main()\n"+
+                "{\n"+
+                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
+                "  texC = 0.5*texC + 0.5;\n"+
+                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
+                "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
+                "  vec3 pos = vertexColor;\n"+
+                "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
+                //Light init values
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shaderLoop +=
+                    "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
+                }
+                shaderLoop +=
+                "  float cont = 0.0;\n"+
+                "  vec3 step = dir/Steps;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shaderLoop += "  float lightFactor = 1.0;\n";
+                }else{
+                    shaderLoop += "  float lightFactor = 1.2;\n";
+                }
+                shaderLoop +=
+                "  float opacityFactor = 6.0;\n"+
+                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
+                "  {\n"+
+                "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
+                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n"+
+                "    vec4 grad = getNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    shaderLoop += "    lighting(light"+l+"_Type, " +
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    "light"+l+"_Color, " + 
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " + 
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "grad.xyz, dir, ambient, diffuse, specular);\n";
+                }
+                shaderLoop += inlineShaderText;
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shaderLoop += inlineLightAssigment;
+                }
+                shaderLoop +=
+                "    //Process the volume sample\n"+
+                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
+                "    sample.rgb = value.rgb * sample.a * 1.0 ;\n"+
+                "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
+                "    accum.a += (1.0 - accum.a) * sample.a;\n"+
+                "    //advance the current position\n"+
+                "    pos.xyz += step;\n"+
+                "    //break if the position is greater than <1, 1, 1>\n"+
+                "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
+                "      break;\n"+
+                "  }\n"+
+                "  gl_FragColor = accum;\n"+
+                "}";
+                return shaderLoop;
+            }
         }
     )
 );
@@ -55,6 +266,42 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode.superClass.call(this, ctx);
 
             this.addField_SFNode('surfaceNormals', x3dom.nodeTypes.X3DTexture3DNode);
+        },
+        {
+            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+               var uniformsText = 
+                "uniform sampler2D uBackCoord;\n"+
+                "uniform sampler2D uVolData;\n"+
+                "uniform mat4 normalMatrix;\n";
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    uniformsText += "uniform sampler2D uSurfaceNormals;\n";
+                }
+                uniformsText +=
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "const float Steps = 60.0;\n"+
+                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
+                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
+                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n"+
+                "const vec3 offset = vec3(0.5/512.0, 0.5/512.0, 0.5/96.0);\n";
+                //LIGHTS
+                var n_lights = x3dom.nodeTypes.X3DLightNode.lightID;
+                for(var l=0; l<n_lights; l++) {
+                    uniformsText +=   "uniform float light"+l+"_On;\n" +
+                    "uniform float light"+l+"_Type;\n" +
+                    "uniform vec3  light"+l+"_Location;\n" +
+                    "uniform vec3  light"+l+"_Direction;\n" +
+                    "uniform vec3  light"+l+"_Color;\n" +
+                    "uniform vec3  light"+l+"_Attenuation;\n" +
+                    "uniform float light"+l+"_Radius;\n" +
+                    "uniform float light"+l+"_Intensity;\n" +
+                    "uniform float light"+l+"_AmbientIntensity;\n" +
+                    "uniform float light"+l+"_BeamWidth;\n" +
+                    "uniform float light"+l+"_CutOffAngle;\n" +
+                    "uniform float light"+l+"_ShadowIntensity;\n";
+                }
+                return uniformsText;
+            }
         }
     )
 );
@@ -166,14 +413,13 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'finalLine', 0.0, 1.0, 0.0);
             this.addField_SFFloat(ctx, 'positionLine', 0.2);
             
-            this.uniformVec3fOriginLine = new x3dom.nodeTypes.Field(ctx);
-            this.uniformVec3fFinalLine = new x3dom.nodeTypes.Field(ctx);
-            this.uniformFloatPosition = new x3dom.nodeTypes.Field(ctx);
+            this.uniformVec3fOriginLine = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformVec3fFinalLine = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatPosition = new x3dom.nodeTypes.Uniform(ctx);
          },
          {
             fieldChanged: function(fieldName) {
-                 if (fieldName == "originLine" ||
-                     fieldName == "finalLine" ||
+                 if (fieldName == "originLine" || fieldName == "finalLine" ||
                      fieldName == "positionLine") {
                       //var that = this;
                       //Array.forEach(this._parentNodes, function (vol) {
@@ -186,17 +432,17 @@ x3dom.registerNodeType(
 
             uniforms: function() {
                 var unis = [];
-/*
+
                 this.uniformVec3fOriginLine._vf.name = 'originLine';
                 this.uniformVec3fOriginLine._vf.type = 'SFVec3f';
-                this.uniformVec3fOriginLine._vf.value = this._vf.originLine;
+                this.uniformVec3fOriginLine._vf.value = this._vf.originLine.toString();
                 unis.push(this.uniformVec3fOriginLine);
 
                 this.uniformVec3fFinalLine._vf.name = 'finalLine';
                 this.uniformVec3fFinalLine._vf.type = 'SFVec3f';
-                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine;
+                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine.toString();
                 unis.push(this.uniformVec3fFinalLine);
-*/
+
                 this.uniformFloatPosition._vf.name = 'positionLine';
                 this.uniformFloatPosition._vf.type = 'SFFloat';
                 this.uniformFloatPosition._vf.value = this._vf.positionLine;
@@ -205,63 +451,16 @@ x3dom.registerNodeType(
                 return unis;
             },
 
-            vertexShaderText : function() {
-                 var shader = 
-                "attribute vec3 position;\n"+
-                "attribute vec3 color;\n"+
-                "uniform mat4 modelViewProjectionMatrix;\n"+
-                "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "\n" +
-                "void main()\n"+
-                "{\n"+
-                "  vertexColor = color;\n"+
-                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
-                "  gl_Position = vertexPosition;\n"+
-                "}";
-                return shader;
+            styleUniformsShaderText: function(){
+                return "uniform vec3 originLine;\nuniform vec3 finalLine;\nuniform float positionLine;\n";
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
-                 var shader = 
-                "#ifdef GL_ES\n" +
-                "  precision highp float;\n" +
-                "#endif\n" +
-                "\n" +
-                "uniform sampler2D uBackCoord;\n"+
-                "uniform sampler2D uVolData;\n"+
-                "const vec3 originLine=vec3(1.0,0.0,0.0);\n"+
-                "const vec3 finalLine=vec3(0.0,0.0,0.0);\n"+
-                "uniform float positionLine;\n"+
-                "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "const float Steps = 60.0;\n"+
-                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
-                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
-                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n"+
-                "\n" +
-                "vec4 cTexture3D(sampler2D vol, vec3 volpos, float nS, float nX, float nY)\n"+
-                "{\n"+
-                "  clamp(volpos.x,0.0,1.0);\n"+
-                "  clamp(volpos.y,0.0,1.0);\n"+
-                "  clamp(volpos.z,0.0,1.0);\n"+
-                "  float s1,s2;\n"+
-                "  float dx1,dy1;\n"+
-                "  float dx2,dy2;\n"+
-                "  vec2 texpos1,texpos2;\n"+
-                "  s1 = floor(volpos.z*nS);\n"+
-                "  s2 = s1+1.0;\n"+
-                "  dx1 = fract(s1/nX);\n"+
-                "  dy1 = floor(s1/nY)/nY;\n"+
-                "  dx2 = fract(s2/nX);\n"+
-                "  dy2 = floor(s2/nY)/nY;\n"+
-                "  texpos1.x = dx1+(volpos.x/nX);\n"+
-                "  texpos1.y = dy1+(volpos.y/nY);\n"+
-                "  texpos2.x = dx2+(volpos.x/nX);\n"+
-                "  texpos2.y = dy2+(volpos.y/nY);\n"+
-                "  return mix( texture2D(vol,texpos1), texture2D(vol,texpos2), volpos.z-floor(volpos.z));\n"+
-                "}"+
-                "\n"+
+                var shader = 
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this.texture3DFunctionShaderText+
                 "void main()\n"+
                 "{\n"+
                 "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
@@ -294,30 +493,30 @@ x3dom.registerNodeType(
 
             this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
             this.addField_SFString(ctx, 'type', "simple");
-            this.addField_SFFloat(ctx, 'opacityFactor', 0.01);
-            this.addField_SFFloat(ctx, 'lightFactor', 0.3);
+            this.addField_SFFloat(ctx, 'opacityFactor', 6.0);
+            this.addField_SFFloat(ctx, 'lightFactor', 1.2);
 
-            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Field(ctx);
-            this.uniformFloatLightFactor = new x3dom.nodeTypes.Field(ctx);
-            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Field(ctx);
+            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function() {
                 var unis = [];
                 
-                if (!(this._cf.transferFunction.node==null)) {
+                if (this._cf.transferFunction.node) {
                     this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
                     this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
                     this.uniformSampler2DTransferFunction._vf.value = 2; //FIXME: Number of textures could be variable
                     unis.push(this.uniformSampler2DTransferFunction);
                 }
 
-                this.uniformFloatOpacityFactor._vf.name = 'opacityFactor';
+                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor';
                 this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
                 this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
                 unis.push(this.uniformFloatOpacityFactor);
 
-                this.uniformFloatLightFactor._vf.name = 'lightFactor';
+                this.uniformFloatLightFactor._vf.name = 'uLightFactor';
                 this.uniformFloatLightFactor._vf.type = 'SFFloat';
                 this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
                 unis.push(this.uniformFloatLightFactor);
@@ -327,8 +526,8 @@ x3dom.registerNodeType(
 
             textures: function() {
                 var texs = [];
-                if (!(this._cf.transferFunction.node==null)) {
-                    var tex = this._cf.transferFunction.node;
+                var tex = this._cf.transferFunction.node;
+                if (tex) {
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
                     texs.push(tex)
@@ -336,99 +535,38 @@ x3dom.registerNodeType(
                 return texs;
             },
 
-            vertexShaderText : function() {
-                 var shader = 
-                "attribute vec3 position;\n"+
-                "attribute vec3 color;\n"+
-                "uniform mat4 modelViewProjectionMatrix;\n"+
-                "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "\n" +
-                "void main()\n"+
-                "{\n"+
-                "  vertexColor = color;\n"+
-                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
-                "  gl_Position = vertexPosition;\n"+
-                "}";
-                return shader;
+            styleUniformsShaderText: function() {
+                var uniformsText = "uniform float uOpacityFactor;\n"+
+                "uniform float uLightFactor;\n";
+                if (this._cf.transferFunction.node) {
+                        uniformsText += "uniform sampler2D uTransferFunction;\n";
+                }
+                return uniformsText;
+            },
+
+            inlineStyleShaderText: function(){
+                var shaderText =
+                "    opacityFactor = uOpacityFactor;\n"+
+                "    lightFactor = uLightFactor;\n";
+                if (this._cf.transferFunction.node){
+                        shaderText += "    value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
+                }
+                return shaderText;
+            },
+
+            lightAssigment: function(){
+                return "value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
-                 var shader = 
-                "#ifdef GL_ES\n" +
-                "  precision highp float;\n" +
-                "#endif\n" +
-                "\n" +
-                "uniform sampler2D uBackCoord;\n"+
-                "uniform sampler2D uVolData;\n";
-                if (!(this._cf.transferFunction.node==null)) {
-                        shader += "uniform sampler2D uTransferFunction;\n";
-                }
-                shader +=
-                "uniform float opacityFactor;\n"+
-                "uniform float lightFactor;\n"+
-                "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "const float Steps = 60.0;\n"+
-                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
-                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
-                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n"+
-                "\n" +
-                "vec4 cTexture3D(sampler2D vol, vec3 volpos, float nS, float nX, float nY)\n"+
-                "{\n"+
-                "  float s1,s2;\n"+
-                "  float dx1,dy1;\n"+
-                "  float dx2,dy2;\n"+
-                "  vec2 texpos1,texpos2;\n"+
-                "  s1 = floor(volpos.z*nS);\n"+
-                "  s2 = s1+1.0;\n"+
-                "  dx1 = fract(s1/nX);\n"+
-                "  dy1 = floor(s1/nY)/nY;\n"+
-                "  dx2 = fract(s2/nX);\n"+
-                "  dy2 = floor(s2/nY)/nY;\n"+
-                "  texpos1.x = dx1+(volpos.x/nX);\n"+
-                "  texpos1.y = dy1+(volpos.y/nY);\n"+
-                "  texpos2.x = dx2+(volpos.x/nX);\n"+
-                "  texpos2.y = dy2+(volpos.y/nY);\n"+
-                "  return mix( texture2D(vol,texpos1), texture2D(vol,texpos2), (volpos.z*nS)-s1);\n"+
-                "}"+
-                "\n"+
-                "void main()\n"+
-                "{\n"+
-                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
-                "  texC = 0.5*texC + 0.5;\n"+
-                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
-                "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
-                "  vec3 pos = vertexColor;\n"+
-                "  vec4 accum  = vec4(1.0, 1.0, 1.0, 1.0);\n"+
-                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 color  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  float cont = 0.0;\n"+
-                "  vec3 step = dir/Steps;\n"+
-                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
-                "  {\n"+
-                "    color = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n";
-                if (this._cf.transferFunction.node==null)
-                {
-                        shader += "    value = color;\n";
-                } else {
-                        shader += "    value = texture2D(uTransferFunction,vec2(color.r,0.5));\n";
-                }
-                shader+=
-                "    //Process the volume sample\n"+
-                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                "    sample.rgb = value.rgb * lightFactor;\n"+
-                "    accum.rgb -= accum.a * sample.rgb;\n"+
-                "    accum.a -= sample.a;\n"+
-                "    //advance the current position\n"+
-                "    pos.xyz += step;\n"+
-                "    //break if the position is greater than <1, 1, 1>\n"+
-                "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a<=0.0)\n"+
-                "      break;\n"+
-                "}\n"+
-                "gl_FragColor = vec4(1.0-accum.rgb,accum.a);\n"+
-                "}";
+                var shader = 
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
         }
@@ -445,6 +583,108 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'intensityThreshold', 0);
             this.addField_SFString(ctx, 'type', "MAX");
+
+            this.uniformIntensityThreshold = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformType = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                var type_map = {'max':0,'min':1,'average':2};
+
+                this.uniformIntensityThreshold._vf.name = 'uIntensityThreshold';
+                this.uniformIntensityThreshold._vf.type = 'SFFloat';
+                this.uniformIntensityThreshold._vf.value = this._vf.intensityThreshold;
+                unis.push(this.uniformIntensityThreshold);
+
+                this.uniformType._vf.name = 'uType';
+                this.uniformType._vf.type = 'SFInt32';
+                this.uniformType._vf.value = type_map[this._vf.type.toLowerCase()];
+                unis.push(this.uniformType);
+
+                return unis;
+            },
+
+            styleUniformsShaderText: function(){
+                return "uniform int uType;\nuniform float uIntensityThreshold;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+                var shader = 
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this.texture3DFunctionShaderText+
+                "void main()\n"+
+                "{\n"+
+                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
+                "  texC = 0.5*texC + 0.5;\n"+
+                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
+                "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
+                "  vec3 pos = vertexColor;\n"+
+                "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 color  = vec4(0.0);\n";
+                if (this._vf.type.toLowerCase() === "max") {
+                    shader += "vec2 previous_value = vec2(0.0);\n";
+                }else {
+                    shader += "vec2 previous_value = vec2(1.0);\n";
+                }
+                shader +=
+                "  float cont = 0.0;\n"+
+                "  vec3 step = dir/Steps;\n"+
+                "  const float lightFactor = 1.3;\n"+
+                "  const float opacityFactor = 3.0;\n"+
+                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
+                "  {\n"+
+                "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
+                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n"+
+                "    //Process the volume sample\n"+
+                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
+                "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
+                "    accum.a += (1.0-accum.a)*sample.a;\n";
+                switch (this._vf.type.toLowerCase()) {
+                    case "max":
+                        shader += "if(value.r > uIntensityThreshold && value.r <= previous_value.x){\n"+
+                        "   break;\n"+
+                        "}\n"+
+                        "color.rgb = vec3(max(value.r, previous_value.x));\n"+
+                        "color.a = (value.r > previous_value.x) ? accum.a : previous_value.y;\n";
+                        break;
+                    case "min":
+                        shader += "if(value.r < uIntensityThreshold && value.r >= previous_value.x){\n"+
+                        "   break;\n"+
+                        "}\n"+
+                        "color.rgb = vec3(min(value.r, previous_value.x));\n"+
+                        "color.a = (value.r < previous_value.x) ? accum.a : previous_value.y;\n";
+                        break;
+                    case "average":
+                        shader+= "color.rgb += (1.0 - accum.a) * sample.rgb;\n"+
+                        "color.a = accum.a;\n";
+                        break;
+                }
+                shader += 
+                "    //update the previous value and keeping the accumulated alpha\n"+
+                "    previous_value.x = color.r;\n"+
+                "    previous_value.y = accum.a;\n"+
+                "    //advance the current position\n"+
+                "    pos.xyz += step;\n"+
+                "    //break if the position is greater than <1, 1, 1>\n"+
+                "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0){\n";
+                if(this._vf.type.toLowerCase() == "average"){
+                    shader += "     if((i > 0.0) && (i < Steps-1.0)){\n"+
+                    "color.rgb = color.rgb/i;\n"+
+                    "}\n";
+                }
+                shader+=
+                "      break;\n"+
+                "    }\n"+
+                " }\n"+
+                " gl_FragColor = color;\n"+
+                "}";
+                return shader;
+            }
         }
     )
 );
@@ -532,102 +772,6 @@ x3dom.registerNodeType(
     )
 );
 
-//FIXME: Not a real X3D Node but auxiliary geometry
-/* ### ColorBox ### */
-x3dom.registerNodeType(
-    "ColorBox",
-    "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        function (ctx) {
-            x3dom.nodeTypes.ColorBox.superClass.call(this, ctx);
-
-            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
-
-            var sx = this._vf.size.x,
-                sy = this._vf.size.y,
-                sz = this._vf.size.z;
-
-            var geoCacheID = 'ColorBox_'+sx+'-'+sy+'-'+sz;
-
-            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-            {
-                  this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else
-            {
-                  sx /= 2; sy /= 2; sz /= 2;
-
-                  this._mesh._positions[0] = [
-                        -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //back   0,0,-1
-                        -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //front  0,0,1
-                        -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //left   -1,0,0
-                         sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //right  1,0,0
-                        -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //top    0,1,0
-                        -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
-                  ];
-
-                  this._mesh._colors[0] = [
-                        0, 0, 0,  0, 1, 0,  1, 1, 0,  1, 0, 0,
-                        0, 0, 1,  0, 1, 1,  1, 1, 1,  1, 0, 1,
-                        0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 1, 0,
-                        1, 0, 0,  1, 0, 1,  1, 1, 1,  1, 1, 0,
-                        0, 1, 0,  0, 1, 1,  1, 1, 1,  1, 1, 0,
-                        0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0
-                  ];
-
-                  this._mesh._normals[0] = [
-                         0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1,
-                         0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1,
-                        -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0,
-                         1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0,
-                         0,  1,  0,   0,  1,  0,   0,  1,  0,   0,  1,  0,
-                         0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0
-                  ];
-
-                  this._mesh._indices[0] = [
-                         0,  1,  2,   2,  3,  0,
-                         4,  7,  5,   5,  7,  6,
-                         8,  9, 10,  10, 11,  8,
-                        12, 14, 13,  14, 12, 15,
-                        16, 17, 18,  18, 19, 16,
-                        20, 22, 21,  22, 20, 23
-                  ];
-
-                  this._mesh._invalidate = true;
-                  this._mesh._numFaces = 12;
-                  this._mesh._numCoords = 24;
-
-                  x3dom.geoCache[geoCacheID] = this._mesh;
-            }
-        },
-        {
-            fieldChanged: function(fieldName) {
-                if (fieldName === "size") {
-                    var sx = this._vf.size.x / 2,
-                        sy = this._vf.size.y / 2,
-                        sz = this._vf.size.z / 2;
-
-                    this._mesh._positions[0] = [
-                           -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //back   0,0,-1
-                           -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //front  0,0,1
-                           -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //left   -1,0,0
-                            sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //right  1,0,0
-                           -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //top    0,1,0
-                           -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
-                    ];
-
-                    this.invalidateVolume();
-
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
-                        node.invalidateVolume();
-                    });
-                }
-            }
-        }
-    )
-);
-
 /* ### VolumeData ### */
 x3dom.registerNodeType(
     "VolumeData",
@@ -644,7 +788,7 @@ x3dom.registerNodeType(
 
             this.vrcBackCubeShape = new x3dom.nodeTypes.Shape(ctx);
             this.vrcBackCubeAppearance = new x3dom.nodeTypes.Appearance();
-            this.vrcBackCubeGeometry = new x3dom.nodeTypes.ColorBox(ctx);
+            this.vrcBackCubeGeometry = new x3dom.nodeTypes.Box(ctx);
             this.vrcBackCubeShader = new x3dom.nodeTypes.ComposedShader(ctx);
             this.vrcBackCubeShaderVertex = new x3dom.nodeTypes.ShaderPart(ctx);
             this.vrcBackCubeShaderFragment = new x3dom.nodeTypes.ShaderPart(ctx);
@@ -663,6 +807,9 @@ x3dom.registerNodeType(
                 // therefore, try to mimic depth-first parsing scheme
                 if (!this._cf.appearance.node) 
                 {
+                    var that = this;
+                    var i;
+
                     this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                     
                     // second texture, ray direction and length
@@ -680,8 +827,10 @@ x3dom.registerNodeType(
 
                     this.vrcBackCubeShaderFragment._vf.type = 'fragment';
                     this.vrcBackCubeShaderFragment._vf.url[0] =
-                        "#ifdef GL_ES\n" +
+                        "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                         "  precision highp float;\n" +
+                        "#else\n" +
+                        "  precision mediump float;\n" +
                         "#endif\n" +
                         "\n" +
                         "varying vec3 fragColor;\n" +
@@ -736,12 +885,22 @@ x3dom.registerNodeType(
                     this.vrcVolumeTexture.nodeChanged();
                     
                     // textures from styles
-                    if (this._cf.renderStyle.node.textures != undefined){
+                    if (this._cf.renderStyle.node.textures) {
                         var styleTextures = this._cf.renderStyle.node.textures();
-                        for (var i = 0; i< styleTextures.length; i++)
+                        for (i = 0; i<styleTextures.length; i++)
                         {
                             this.vrcMultiTexture.addChild(styleTextures[i], 'texture');
                             this.vrcVolumeTexture.nodeChanged();
+
+                            /* TODO: Take texture size for the ComposableRenderStyles offset parameter
+                            // check for texture size (test)
+                            window.setInterval((function(aTex) {
+                                return function() {
+                                    var s = that.getTextureSize(aTex);
+                                    console.log(s);
+                                }
+                            })(styleTextures[i]), 100);
+                            */
                         }
                     }
                     
@@ -754,7 +913,8 @@ x3dom.registerNodeType(
 
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
                     this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(
-                        this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
+                            this.vrcVolumeTexture._vf.numberOfSlices,
+                            this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
                     this.vrcFrontCubeShaderVertex.nodeChanged();
@@ -776,12 +936,11 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
                     this.vrcFrontCubeShaderFieldVolData.nodeChanged();
                     
-                    var ShaderUniforms = this._cf.renderStyle.node.uniforms()
-                    for (var i = 0; i<ShaderUniforms.length; i++)
+                    var ShaderUniforms = this._cf.renderStyle.node.uniforms();
+                    for (i = 0; i<ShaderUniforms.length; i++)
                     {
                         this.vrcFrontCubeShader.addChild(ShaderUniforms[i], 'fields');
                     }
-                    this.vrcFrontCubeShaderFieldVolData.nodeChanged();
                 
                     this._cf.appearance.node.addChild(this.vrcFrontCubeShader);
                     this.vrcFrontCubeShader.nodeChanged();
@@ -790,14 +949,14 @@ x3dom.registerNodeType(
                 }
 
                 if (!this._cf.geometry.node) {
-                    this.addChild(new x3dom.nodeTypes.ColorBox());
+                    this.addChild(new x3dom.nodeTypes.Box());
 
+                    this._cf.geometry.node._vf.hasHelperColors = true;
                     this._cf.geometry.node._vf.size = new x3dom.fields.SFVec3f(
                         this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
-                    this._cf.geometry.node._vf.ccw = true;
-                    this._cf.geometry.node._vf.solid = true;
 
                     // workaround to trigger field change...
+                    this._cf.geometry.node.fieldChanged("hasHelperColors");
                     this._cf.geometry.node.fieldChanged("size");
                 }
             }

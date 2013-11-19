@@ -33,7 +33,7 @@ x3dom.registerNodeType(
             // [S|M]F<type> []       initialDestination
             // [S|M]F<type> []       initialValue
 
-            this._eps = 0.001;
+            this._eps = x3dom.fields.Eps; //0.001;
         },
         {
             parentRemoved: function(parent)
@@ -431,7 +431,7 @@ x3dom.registerNodeType(
                     if (dist5 > dist) { dist = dist5; }
                 }
                 
-                if (dist < this._eps)
+                if (dist <= this._eps)
                 {
                     this._value1.setValues(this._value0);
                     this._value2.setValues(this._value0);
@@ -791,7 +791,7 @@ x3dom.registerNodeType(
                     if (dist5 > dist)  { dist = dist5; }
                 }
 
-                if (dist < this._eps)
+                if (dist <= this._eps)
                 {
                     this._value1.setValues(this._value0);
                     this._value2.setValues(this._value0);
@@ -1326,7 +1326,7 @@ x3dom.registerNodeType(
                     if (dist5 > dist) {dist = dist5;}
                 }
 
-                if (dist < this._eps)
+                if (dist <= this._eps)
                 {
                     this._value1.setValues(this._value0);
                     this._value2.setValues(this._value0);
@@ -1485,7 +1485,7 @@ x3dom.registerNodeType(
                     if (dist5 > dist) {dist = dist5;}
                 }
 
-                if (dist < this._eps)
+                if (dist <= this._eps)
                 {
                     this._value1.setValues(this._value0);
                     this._value2.setValues(this._value0);
@@ -1579,7 +1579,7 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
-                    var active = (Math.abs(this._buffer[0] - this._buffer[1]) >= this._eps);
+                    var active = (Math.abs(this._buffer[0] - this._buffer[1]) > this._eps);
                     if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
                     }
@@ -1624,7 +1624,7 @@ x3dom.registerNodeType(
                     Output = Output + DeltaOut;
                 }
                 
-                if (Math.abs(Output - this._value) >= this._eps) {
+                if (Math.abs(Output - this._value) > this._eps) {
                     this._value = Output;
                     
                     this.postMessage('value', this._value);
@@ -1713,7 +1713,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName.indexOf("destination") >= 0)
                 {
-                    if (Math.abs(this._value0 - this._vf.destination) >= this._eps) {
+                    if (Math.abs(this._value0 - this._vf.destination) > this._eps) {
                         this._value0 = this._vf.destination;
                         
                         if (!this._vf.isActive) {
@@ -1750,7 +1750,7 @@ x3dom.registerNodeType(
                 this._value5 = this._vf.initialValue;
                 this._lastTick = 0;
                 
-                var active = (Math.abs(this._value0 - this._value1) >= this._eps);
+                var active = (Math.abs(this._value0 - this._value1) > this._eps);
                 if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
                 }
@@ -1809,7 +1809,7 @@ x3dom.registerNodeType(
                     if (dist5 > dist) {dist = dist5;}
                 }
 
-                if (dist < this._eps)
+                if (dist <= this._eps)
                 {
                     this._value1 = this._value0;
                     this._value2 = this._value0;

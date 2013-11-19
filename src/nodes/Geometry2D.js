@@ -172,7 +172,7 @@ x3dom.registerNodeType(
                 var t = (end - start) / anzahl;
                 var theta = start;
 
-                if (this._vf.closureType == 'PIE') {
+                if (this._vf.closureType.toUpperCase() == 'PIE') {
 
                     this._mesh._positions[0].push(0.0);
                     this._mesh._positions[0].push(0.0);
@@ -276,7 +276,7 @@ x3dom.registerNodeType(
                 if (fieldName === "radius") {
                     this._mesh._positions[0] = [];
 
-                    if (this._vf.closureType == 'PIE') {
+                    if (this._vf.closureType.toUpperCase() == 'PIE') {
 
                         this._mesh._positions[0].push(0.0);
                         this._mesh._positions[0].push(0.0);
@@ -327,7 +327,7 @@ x3dom.registerNodeType(
                     this._mesh._normals[0] = [];
                     this._mesh._texCoords[0] = [];
 
-                    if (this._vf.closureType == 'PIE') {
+                    if (this._vf.closureType.toUpperCase() == 'PIE') {
 
                         this._mesh._positions[0].push(0.0);
                         this._mesh._positions[0].push(0.0);

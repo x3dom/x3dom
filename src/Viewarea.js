@@ -107,13 +107,23 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
     if (this.arc != null )
     {
-        this.arc.update(this.isMoving() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
+        this.arc.update(this.isMovingOrAnimating() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
     }
 
     return (this._isAnimating || lastIsAnimating);
 };
 
 x3dom.Viewarea.prototype.isMoving = function()
+{
+    return this._isMoving;
+};
+
+x3dom.Viewarea.prototype.isAnimating = function()
+{
+    return this._isAnimating;
+};
+
+x3dom.Viewarea.prototype.isMovingOrAnimating = function()
 {
     return (this._isMoving || this._isAnimating);
 };
@@ -1454,7 +1464,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             alpha = (dy * 2 * Math.PI) / this._height;
             beta = (dx * 2 * Math.PI) / this._width;
 
-            this._up = this._flyMat.e1();
+            this._up   = this._flyMat.e1();
             this._from = this._flyMat.e3();
 
             var offset = this._from.subtract(this._at);
@@ -1501,12 +1511,19 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
             d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            this._up = this._flyMat.e1();
+            this._up   = this._flyMat.e1();
             this._from = this._flyMat.e3();
 
             // zoom in/out
-            var dir = this._from.subtract(this._at).normalize();
-            this._from = this._from.addScaled(dir, -d*(dx+dy) / this._height);
+            var lastDir  = this._from.subtract(this._at);
+            var lastDirL = lastDir.length();
+
+            var zoomAmount = -d*(dx+dy) / this._height;
+
+            //maintain minimum distance to prevent orientation flips
+            var newDist = Math.max(lastDirL + zoomAmount, 1.0);
+
+            this._from = this._at.addScaled(lastDir.normalize(), newDist);
 
             this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
             viewpoint.setView(this._flyMat.inverse());

@@ -767,7 +767,7 @@ x3dom.registerNodeType(
                     invalidateCache = true;     // TODO (reuse world transform and volume cache)
                     this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
 
-                    if (!this.view.isMoving() && ((this.creationSmooth % this._vf.smoothLoading) === 0)) {
+                    if (!this.view.isMovingOrAnimating() && ((this.creationSmooth % this._vf.smoothLoading) === 0)) {
                         this.nodeProducer.CreateNewNode();
                     }
                 }
@@ -781,7 +781,7 @@ x3dom.registerNodeType(
                     singlePath = false;         // TODO (specify if unique node path or multi-parent)
                     invalidateCache = true;     // TODO (reuse world transform and volume cache)
                     this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
-                    if (!this.view.isMoving() && ((this.creationSmooth % this._vf.smoothLoading) === 0)) {
+                    if (!this.view.isMovingOrAnimating() && ((this.creationSmooth % this._vf.smoothLoading) === 0)) {
                         this.nodeProducer.CreateNewNode();
                     }
                 }
@@ -1116,8 +1116,8 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
 
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) || level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && children.length === 0 ||
-                    bvhRefiner.view.isMoving() && level >= bvhRefiner._vf.interactionDepth) {
+                if (bvhRefiner.view.isMovingOrAnimating() && children.length === 0 ||
+                    bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
@@ -1429,8 +1429,8 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
 
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) || level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && children.length === 0 ||
-                    bvhRefiner.view.isMoving() && level >= bvhRefiner._vf.interactionDepth) {
+                if (bvhRefiner.view.isMovingOrAnimating() && children.length === 0 ||
+                    bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
@@ -1976,7 +1976,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         if (readyState && vPos.z - (cullObject.volume.diameter / 2) < 0) {
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) ||
                     level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && (children.length == 0 || level >= bvhRefiner._vf.interactionDepth)){
+                if (bvhRefiner.view.isMovingOrAnimating() && (children.length == 0 || level >= bvhRefiner._vf.interactionDepth)){
                     render(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
@@ -2332,7 +2332,7 @@ function QuadtreeNodeBin(ctx, bvhRefiner, level, columnNr, rowNr, resizeFac)
             distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
 
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) / fac * 1000) || level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && level >= bvhRefiner._vf.interactionDepth) {
+                if (bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
@@ -2611,7 +2611,7 @@ function BVHNode(ctx, bvhRefiner, level, path, imgNumber, count)
             distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
                         
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) / fac) || level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && level >= bvhRefiner._vf.interactionDepth) {
+                if (bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
