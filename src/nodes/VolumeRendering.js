@@ -271,10 +271,11 @@ x3dom.registerNodeType(
             this.addField_SFNode('surfaceNormals', x3dom.nodeTypes.X3DTexture3DNode);
         },
         {
-            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                var uniformsText = 
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
+                "uniform vec3 offset;\n"+
                 "uniform mat4 normalMatrix;\n";
                 if (!(this._cf.surfaceNormals.node==null)) {
                     uniformsText += "uniform sampler2D uSurfaceNormals;\n";
@@ -286,11 +287,6 @@ x3dom.registerNodeType(
                 "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
                 "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
                 "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
-                if(offset != undefined){
-                    uniformsText += "const vec3 offset = vec3(" + offset.x + "," + offset.y + "," + offset.z + ");\n";
-                }else{
-                    uniformsText += "const vec3 offset = vec3(0.0);\n";
-                }
                 //LIGHTS
                 var n_lights = x3dom.nodeTypes.X3DLightNode.lightID;
                 for(var l=0; l<n_lights; l++) {
@@ -413,10 +409,10 @@ x3dom.registerNodeType(
                 return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -570,10 +566,10 @@ x3dom.registerNodeType(
                 return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -679,10 +675,10 @@ x3dom.registerNodeType(
                 return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -1200,10 +1196,10 @@ x3dom.registerNodeType(
                 return shaderText;
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -1300,10 +1296,10 @@ x3dom.registerNodeType(
                 return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -1422,10 +1418,10 @@ x3dom.registerNodeType(
                 return "value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
                 var shader =
                 this.preamble+
-                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY, offset)+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
@@ -1464,6 +1460,7 @@ x3dom.registerNodeType(
             this.vrcFrontCubeShaderFragment = new x3dom.nodeTypes.ShaderPart(ctx);
             this.vrcFrontCubeShaderFieldBackCoord = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldVolData = new x3dom.nodeTypes.Field(ctx);
+            this.vrcFrontCubeShaderFieldOffset = new x3dom.nodeTypes.Field(ctx);
         },
         {
             // nodeChanged is called after subtree is parsed and attached in DOM
@@ -1557,16 +1554,6 @@ x3dom.registerNodeType(
                         {
                             this.vrcMultiTexture.addChild(styleTextures[i], 'texture');
                             this.vrcVolumeTexture.nodeChanged();
-
-                            /* TODO: Take texture size for the ComposableRenderStyles offset parameter
-                            // check for texture size (test)
-                            window.setInterval((function(aTex) {
-                                return function() {
-                                    var s = that.getTextureSize(aTex);
-                                    console.log(s);
-                                }
-                            })(styleTextures[i]), 100);
-                            */
                         }
                     }
                     
@@ -1577,16 +1564,11 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
                     this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
 
-                    //calcalate the offset for the volume texture
-                    //TODO: Obtain the offset from the texture size
-                    this.textureOffset = new x3dom.fields.SFVec3f(1.0/1024,
-                        1.0/1024, 1.0/this.vrcVolumeTexture._vf.numberOfSlices);
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
                     this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(
                             this.vrcVolumeTexture._vf.numberOfSlices,
                             this.vrcVolumeTexture._vf.slicesOverX, 
-                            this.vrcVolumeTexture._vf.slicesOverY,
-                            this.textureOffset);
+                            this.vrcVolumeTexture._vf.slicesOverY);
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
                     this.vrcFrontCubeShaderVertex.nodeChanged();
@@ -1604,11 +1586,31 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShaderFieldVolData._vf.value = 1;
                     this._textureID++;
 
+                    this.vrcFrontCubeShaderFieldOffset._vf.name = 'offset';
+                    this.vrcFrontCubeShaderFieldOffset._vf.type = 'SFVec3f';
+                    this.vrcFrontCubeShaderFieldOffset._vf.value = "0.01 0.01 0.01"; //Default initial value
+
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldBackCoord, 'fields');
                     this.vrcFrontCubeShaderFieldBackCoord.nodeChanged();
                     
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
                     this.vrcFrontCubeShaderFieldVolData.nodeChanged();
+
+                    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldOffset, 'fields');
+ 
+                    //Take volume texture size for the ComposableRenderStyles offset parameter
+                    this.offsetInterval = window.setInterval((function(aTex) {
+                        return function() {
+                            x3dom.debug.logInfo('[VolumeRendering][VolumeData] Looking for Volume Texture size...');
+                            var s = that.getTextureSize(aTex);
+                            if(s.valid){
+                                clearInterval(that.offsetInterval);
+                                that.vrcFrontCubeShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/s.w, 1.0/s.h, 1.0/aTex._vf.numberOfSlices);
+                                that.vrcFrontCubeShader.nodeChanged();
+                                x3dom.debug.logInfo('[VolumeRendering][VolumeData] Volume Texture size obtained');
+                            }
+                        }
+                    })(this.vrcVolumeTexture), 1000);
                     
                     var ShaderUniforms = this._cf.renderStyle.node.uniforms();
                     for (i = 0; i<ShaderUniforms.length; i++)
