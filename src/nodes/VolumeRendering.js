@@ -1175,7 +1175,7 @@ x3dom.registerNodeType(
                 var uniformText = "uniform bool uLightning;\n"+
                 "uniform bool uShadows;\n"+
                 //Fog uniforms
-                "uniform float fogVisibility;\n"+
+                "uniform float fogRange;\n"+
                 "uniform vec3 fogColor;\n"+
                 "uniform float fogType;\n"+
                 "uniform bool uEnableShaded;\n";
@@ -1194,12 +1194,13 @@ x3dom.registerNodeType(
             styleShaderText: function(){
                 var styleText = "float computeFogInterpolant(float distanceFromPoint)\n"+
                 "{\n"+
-                "  if (distanceFromPoint > fogVisibility)\n"+
+                "  if (distanceFromPoint > fogRange){\n"+
                 "    return 0.0;\n"+
-                "  else if (fogType == 0.0)\n"+
-                "    return clamp((fogVisibility-distanceFromPoint) / fogVisibility, 0.0, 1.0);\n"+
-                "  else\n"+
-                "    return clamp(exp(-distanceFromPoint / (fogVisibility-distanceFromPoint)), 0.0, 1.0);\n"+
+                "  }else if (fogType == 0.0){\n"+
+                "    return clamp((fogRange-distanceFromPoint) / fogRange, 0.0, 1.0);\n"+
+                "  }else{\n"+
+                "    return clamp(exp(-distanceFromPoint / (fogRange-distanceFromPoint)), 0.0, 1.0);\n"+
+                "  }\n"+
                 "}\n";
                 return styleText;
             },
