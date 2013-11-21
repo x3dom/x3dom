@@ -616,6 +616,197 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'ordered', false);
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
+            //Using only one normal texture
+            this.normalTextureProvided = false;
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                var i, n = this._cf.renderStyle.nodes.length;
+                var textureID = 0;
+                for (i=0; i<n; i++){
+                    //Not repeat common uniforms
+                    var that = this;
+                    Array.forEach(this._cf.renderStyle.nodes[i].uniforms(), function(uniform){
+                        var contains_uniform = false;
+                        Array.forEach(unis, function(accum){
+                            if(accum._vf.name == uniform._vf.name){
+                                contains_uniform = true;
+                            }
+                        });
+                        if (contains_uniform == false){
+                            unis = unis.concat(uniform);
+                        }
+                    });
+                }
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                var i, n = this._cf.renderStyle.nodes.length;
+                for (i=0; i<n; i++){
+                    //Not repeat same uniforms
+                    Array.forEach(this._cf.renderStyle.nodes[i].textures(), function(texture){
+                        var contains_texture = false;
+                        Array.forEach(texs, function(accum){
+                            if(accum._vf.url[0] == texture._vf.url[0]){
+                                contains_texture = true;
+                            }
+                        });
+                        if (contains_texture == false){
+                            texs = texs.concat(texture);
+                        }
+                    });
+                   
+                }
+                return texs;
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
+                var shader =
+                this.preamble+
+                "uniform sampler2D uBackCoord;\n"+
+                "uniform sampler2D uVolData;\n"+
+                "uniform vec3 offset;\n"+
+                "uniform mat4 normalMatrix;\n"+
+                "uniform mat4 modelViewMatrixInverse;\n"+
+                "uniform sampler2D uSurfaceNormals;\n";
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    shader +=   "uniform float light"+l+"_On;\n" +
+                    "uniform float light"+l+"_Type;\n" +
+                    "uniform vec3  light"+l+"_Location;\n" +
+                    "uniform vec3  light"+l+"_Direction;\n" +
+                    "uniform vec3  light"+l+"_Color;\n" +
+                    "uniform vec3  light"+l+"_Attenuation;\n" +
+                    "uniform float light"+l+"_Radius;\n" +
+                    "uniform float light"+l+"_Intensity;\n" +
+                    "uniform float light"+l+"_AmbientIntensity;\n" +
+                    "uniform float light"+l+"_BeamWidth;\n" +
+                    "uniform float light"+l+"_CutOffAngle;\n" +
+                    "uniform float light"+l+"_ShadowIntensity;\n";
+                }
+                shader +=
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "const float Steps = 60.0;\n"+
+                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
+                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
+                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
+                var i, n = this._cf.renderStyle.nodes.length;
+                for (i=0; i<n; i++){
+                    shader += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
+                    if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){
+                        this.normalTextureProvided = true;
+                    }
+                }
+                for (i=0; i<n; i++){
+                    if(this._cf.renderStyle.nodes[i].styleShaderText != undefined){
+                        shader += this._cf.renderStyle.nodes[i].styleShaderText() + "\n";
+                    }
+                }
+                shader +=
+                this.texture3DFunctionShaderText+
+                "vec4 getTextureNormal(vec3 pos, float nS, float nX, float nY) {\n"+
+                "   vec4 n = cTexture3D(uSurfaceNormals, pos, nS, nX, nY);\n"+
+                "   n.xyz = (2.0*n.xyz)-1.0;\n"+
+                "   n.xyz = (normalMatrix * vec4(n.xyz, 0.0)).xyz;\n"+
+                "   n.a = length(n.xyz);\n"+
+                "   n.xyz = normalize(n.xyz);\n"+
+                "   return n;\n"+
+                "}\n"+
+                "\n"+
+                "vec4 getCalculatedNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
+                "   float v0 = cTexture3D(uVolData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                "   float v1 = cTexture3D(uVolData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                "   float v2 = cTexture3D(uVolData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                "   vec3 grad = (normalMatrix * vec4((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0, 0.0)).xyz;\n"+
+                "   return vec4(normalize(grad), length(grad));\n"+
+                "}\n"+
+                "\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID){
+                    //Only from the first render style
+                    shader += this._cf.renderStyle.nodes[0].lightEquationShaderText;
+                }
+                shader +=
+                "\n"+
+                "void main()\n"+
+                "{\n"+
+                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
+                "  texC = 0.5*texC + 0.5;\n"+
+                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
+                "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
+                "  vec3 pos = vertexColor;\n"+
+                "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
+                "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
+                //Light values
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shader +=
+                    "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
+                }
+                shader +=
+                "  float cont = 0.0;\n"+
+                "  vec3 step = dir/Steps;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shader += "  float lightFactor = 1.0;\n";
+                }else{
+                    shader += "  float lightFactor = 1.2;\n";
+                }
+                shader +=
+                "  float opacityFactor = 6.0;\n"+
+                "  vec4 grad1 = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 grad2 = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
+                "  {\n"+
+                "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
+                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
+                if(this.normalTextureProvided){
+                    shader += "    vec4 grad = getTextureNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                }else{
+                    shader += "    vec4 grad = getCalculatedNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                }
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    shader += "    lighting(light"+l+"_Type, " +
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    "light"+l+"_Color, " + 
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " + 
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "grad.xyz, dir, ambient, diffuse, specular);\n";
+                }
+                for (i=0; i<n; i++){
+                    shader += this._cf.renderStyle.nodes[i].inlineStyleShaderText();
+                }
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shader += this._cf.renderStyle.nodes[0].lightAssigment();
+                }
+                shader +=
+                "    //Process the volume sample\n"+
+                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
+                "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
+                "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
+                "    accum.a += (1.0 - accum.a) * sample.a;\n"+
+                "    //advance the current position\n"+
+                "    pos.xyz += step;\n"+
+                "    //break if the position is greater than <1, 1, 1>\n"+
+                "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
+                "      break;\n"+
+                "  }\n"+
+                "  gl_FragColor = accum;\n"+
+                "}";
+                return shader;
+            }
         }
     )
 );
