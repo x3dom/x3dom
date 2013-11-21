@@ -848,9 +848,16 @@ x3dom.registerNodeType(
                 var unis = [];
                 
                 if (this._cf.transferFunction.node) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID++;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    }
                     this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
                     this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
-                    this.uniformSampler2DTransferFunction._vf.value = 2; //FIXME: Number of textures could be variable
+                    this.uniformSampler2DTransferFunction._vf.value = textureID;
                     unis.push(this.uniformSampler2DTransferFunction);
                 }
 
@@ -906,8 +913,9 @@ x3dom.registerNodeType(
 
             lightAssigment: function(){
                 var inlineText = "  if(uEnableOpacityMap){\n"+
-                    "       value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"+
+                    "         value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"+
                     "   }\n";
+                return inlineText;
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
