@@ -24,25 +24,47 @@
                   
                   <ShaderPart type='VERTEX'>
                         attribute vec3 position;
+                        uniform mat4 modelViewMatrix;
+                        uniform mat4 modelViewMatrixInverse;
                         uniform mat4 modelViewProjectionMatrix;
+                        varying vec2 fPosition;
                         
                         void main()
                         {
+                            vec4 eye = vec4(modelViewMatrixInverse * vec4(0.0, 0.0, 0.0, 1.0));                                                      
+                            
                             gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
-                            gl_PointSize = 4.0;
+                            
+                            fPosition = gl_Position.xy / gl_Position.w;
+                            
+                            gl_PointSize = 10.0;
                         }
                   </ShaderPart>
+                  
                   <ShaderPart type='FRAGMENT'>
-                        #ifdef GL_FRAGMENT_PRECISION_HIGH
+                        #ifdef GL_ES
                           precision highp float;
-                        #else
-                          precision mediump float;
                         #endif
                         
+                        uniform vec3 lightDir;
                         uniform vec3 matCol;
+                        varying vec2 fPosition;
                         
                         void main()
                         {
+                            vec2 ssVPos = vec2(fPosition.x + 1.0, fPosition.y + 1.0);  
+                            ssVPos = 0.5 * ssVPos;
+                            
+                            ssVPos.x *= 1000.0;
+                            ssVPos.y *= 600.0;
+                            
+                            vec2 ssFPos = vec2(gl_FragCoord.x, gl_FragCoord.y);
+                            
+                            float dist = length(ssFPos - ssVPos);
+  
+                            if (dist > 5.0)
+                                discard;
+                            
                             gl_FragColor = vec4(matCol, 1.0);
                         }
                   </ShaderPart>
