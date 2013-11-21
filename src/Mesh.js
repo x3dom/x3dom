@@ -249,7 +249,7 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
         pStride = primStride;
     }
 
-    if (typeof useMultiIndIndices === undefined) {
+    if (typeof checkMultiIndIndices === undefined) {
         checkMultiIndIndices = false;
     }
 
@@ -258,7 +258,7 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
     //adapt MAX to match the primitive stride
     MAX = Math.floor(MAX / pStride) * pStride;
 
-    if (this._positions[0].length / 3 <= MAX) {
+    if (this._positions[0].length / 3 <= MAX && !checkMultiIndIndices) {
         return;
     }
 

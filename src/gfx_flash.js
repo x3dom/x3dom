@@ -450,7 +450,6 @@ x3dom.gfx_flash = (function () {
                         idx: 0,
                         indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) });
                 } else {
-
                     //If Mesh is multi indexed we have to split it in Flash
                     if (shape._cf.geometry.node._mesh._multiIndIndices && shape._cf.geometry.node._mesh._multiIndIndices.length)
                     {
