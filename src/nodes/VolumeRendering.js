@@ -198,6 +198,7 @@ x3dom.registerNodeType(
                 "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
                 "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
                 "  vec3 pos = vertexColor;\n"+
+                "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
                 "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
@@ -276,7 +277,8 @@ x3dom.registerNodeType(
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 offset;\n"+
-                "uniform mat4 normalMatrix;\n";
+                "uniform mat4 normalMatrix;\n"+
+                "uniform mat4 modelViewMatrixInverse;\n";
                 if (!(this._cf.surfaceNormals.node==null)) {
                     uniformsText += "uniform sampler2D uSurfaceNormals;\n";
                 }
@@ -936,7 +938,6 @@ x3dom.registerNodeType(
 
             this.uniformIntensityThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformType = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformBoolEnableProjection = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -952,11 +953,6 @@ x3dom.registerNodeType(
                 this.uniformType._vf.type = 'SFInt32';
                 this.uniformType._vf.value = type_map[this._vf.type.toLowerCase()];
                 unis.push(this.uniformType);
-
-                this.uniformBoolEnableProjection._vf.name = 'uEnableProjection';
-                this.uniformBoolEnableProjection._vf.type = 'SFBool';
-                this.uniformBoolEnableProjection._vf.value = this._vf.enabled;
-                unis.push(this.uniformBoolEnableProjection);
 
                 return unis;
             },
@@ -1243,7 +1239,7 @@ x3dom.registerNodeType(
             inlineStyleShaderText: function(){
                 var inlineText = "    float fogFactor = 1.0;\n"+
                     "    if(uEnableShaded){\n"+
-                    "       fogFactor = computeFogInterpolant(length(vec3(0.0,0.0,0.0)-pos));\n"+
+                    "       fogFactor = computeFogInterpolant(length(cam_pos-pos));\n"+
                     "    }\n";
                 return inlineText;
             },
