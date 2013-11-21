@@ -345,6 +345,7 @@ x3dom.registerNodeType(
             this.uniformFloatBoundaryOpacity = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2SurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableBoundary = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -377,6 +378,11 @@ x3dom.registerNodeType(
                 this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
                 this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
                 unis.push(this.uniformFloatOpacityFactor);
+
+                this.uniformBoolEnableBoundary._vf.name = 'uEnableBoundary';
+                this.uniformBoolEnableBoundary._vf.type = 'SFBool';
+                this.uniformBoolEnableBoundary._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableBoundary);
                 return unis;
             },
 
@@ -392,17 +398,23 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform float uRetainedOpacity;\nuniform float uBoundaryOpacity;\nuniform float uOpacityFactor;\n";
+                return "uniform float uRetainedOpacity;\n"+
+                    "uniform float uBoundaryOpacity;\n"+
+                    "uniform float uOpacityFactor;\n"+
+                    "uniform bool uEnableBoundary;\n";
             },
 
             styleShaderText: function(){
                 return "void boundaryEnhancement(inout vec4 original_color, float gradientMagnitude){\n"+
-                "original_color.a = original_color.a * (uRetainedOpacity + (uBoundaryOpacity*pow(gradientMagnitude, uOpacityFactor)));\n"+
+                "   original_color.a = original_color.a * (uRetainedOpacity + (uBoundaryOpacity*pow(gradientMagnitude, uOpacityFactor)));\n"+
                 "}\n";
             },
 
             inlineStyleShaderText: function(){
-                return "    boundaryEnhancement(value, grad.w);\n";
+                var inlineText = "    if(uEnableBoundary){\n"+
+                "    boundaryEnhancement(value, grad.w);\n"+
+                "}\n";
+                return inlineText;
             },
 
             lightAssigment: function(){
@@ -441,6 +453,7 @@ x3dom.registerNodeType(
             this.uniformOrthogonalColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformIntColorSteps = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableCartoon = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -467,6 +480,11 @@ x3dom.registerNodeType(
                 this.uniformIntColorSteps._vf.type = 'SFInt32';
                 this.uniformIntColorSteps._vf.value = this._vf.colorSteps;
                 unis.push(this.uniformIntColorSteps);
+
+                this.uniformBoolEnableCartoon._vf.name = 'uEnableCartoon';
+                this.uniformBoolEnableCartoon._vf.type = 'SFBool';
+                this.uniformBoolEnableCartoon._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableCartoon);
 
                 return unis;
             },
@@ -555,11 +573,15 @@ x3dom.registerNodeType(
                 return "uniform vec3 uParallelColor;\n"+
                 "uniform vec3 uOrthogonalColor;\n"+
                 "uniform int uColorSteps;\n"+
+                "uniform bool uEnableCartoon;\n"+
                 "const float pi_half = "+ (Math.PI/2.0).toPrecision(5) +";\n";
             },
 
             inlineStyleShaderText: function(){
-                return "    getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad.xyz, normalize(dir));\n";
+                var inlineText = "  if(uEnableCartoon){\n"+
+                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad.xyz, normalize(dir));\n"+
+                "  }\n";   
+                return inlineText;
             },
 
             lightAssigment: function(){
@@ -610,6 +632,7 @@ x3dom.registerNodeType(
             this.uniformColorEdgeColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformIntGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEdgeEnable = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -637,6 +660,11 @@ x3dom.registerNodeType(
                 this.uniformIntGradientThreshold._vf.type = 'SFFloat';
                 this.uniformIntGradientThreshold._vf.value = this._vf.gradientThreshold;
                 unis.push(this.uniformIntGradientThreshold);
+
+                this.uniformBoolEdgeEnable._vf.name = 'uEnableEdge';
+                this.uniformBoolEdgeEnable._vf.type = 'SFBool';
+                this.uniformBoolEdgeEnable._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEdgeEnable);
                 return unis;
             },
 
@@ -652,7 +680,9 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform vec3 uEdgeColor;\nuniform float uGradientThreshold;\n";
+                return "uniform vec3 uEdgeColor;\n"+
+                    "uniform float uGradientThreshold;\n"+
+                    "uniform bool uEnableEdge;\n";
             },
 
             styleShaderText: function(){
@@ -668,7 +698,10 @@ x3dom.registerNodeType(
             },
 
             inlineStyleShaderText: function(){
-                return "    edgeEnhancement(value, grad, normalize(dir));\n";
+                var inlineText = "   if(uEnableEdge){\n"+
+                "       edgeEnhancement(value, grad, normalize(dir));\n"+
+                "   }\n";
+                return inlineText;
             },
 
             lightAssigment: function(){
@@ -806,6 +839,7 @@ x3dom.registerNodeType(
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableOpacityMap = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function() {
@@ -828,6 +862,11 @@ x3dom.registerNodeType(
                 this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
                 unis.push(this.uniformFloatLightFactor);
 
+                this.uniformBoolEnableOpacityMap._vf.name = 'uEnableOpacityMap';
+                this.uniformBoolEnableOpacityMap._vf.type = 'SFBool';
+                this.uniformBoolEnableOpacityMap._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableOpacityMap);
+
                 return unis;
             },
 
@@ -844,7 +883,8 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function() {
                 var uniformsText = "uniform float uOpacityFactor;\n"+
-                "uniform float uLightFactor;\n";
+                "uniform float uLightFactor;\n"+
+                "uniform bool uEnableOpacityMap;\n";
                 if (this._cf.transferFunction.node) {
                         uniformsText += "uniform sampler2D uTransferFunction;\n";
                 }
@@ -852,17 +892,20 @@ x3dom.registerNodeType(
             },
 
             inlineStyleShaderText: function(){
-                var shaderText =
-                "    opacityFactor = uOpacityFactor;\n"+
-                "    lightFactor = uLightFactor;\n";
+                var shaderText = "    if(uEnableOpacityMap){\n"+
+                "       opacityFactor = uOpacityFactor;\n"+
+                "       lightFactor = uLightFactor;\n";
                 if (this._cf.transferFunction.node){
-                        shaderText += "    value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
+                        shaderText += "     value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
                 }
+                shaderText += "    }\n";
                 return shaderText;
             },
 
             lightAssigment: function(){
-                return "value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                var inlineText = "  if(uEnableOpacityMap){\n"+
+                    "       value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"+
+                    "   }\n";
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
@@ -893,6 +936,7 @@ x3dom.registerNodeType(
 
             this.uniformIntensityThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformType = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableProjection = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -908,6 +952,11 @@ x3dom.registerNodeType(
                 this.uniformType._vf.type = 'SFInt32';
                 this.uniformType._vf.value = type_map[this._vf.type.toLowerCase()];
                 unis.push(this.uniformType);
+
+                this.uniformBoolEnableProjection._vf.name = 'uEnableProjection';
+                this.uniformBoolEnableProjection._vf.type = 'SFBool';
+                this.uniformBoolEnableProjection._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableProjection);
 
                 return unis;
             },
@@ -951,7 +1000,8 @@ x3dom.registerNodeType(
                 "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
                 "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
                 "    accum.a += (1.0-accum.a)*sample.a;\n";
-                switch (this._vf.type.toLowerCase()) {
+                if(this._vf.enabled){
+                    switch (this._vf.type.toLowerCase()) {
                     case "max":
                         shader += "if(value.r > uIntensityThreshold && value.r <= previous_value.x){\n"+
                         "   break;\n"+
@@ -970,6 +1020,7 @@ x3dom.registerNodeType(
                         shader+= "color.rgb += (1.0 - accum.a) * sample.rgb;\n"+
                         "color.a = accum.a;\n";
                         break;
+                    }
                 }
                 shader += 
                 "    //update the previous value and keeping the accumulated alpha\n"+
@@ -979,7 +1030,7 @@ x3dom.registerNodeType(
                 "    pos.xyz += step;\n"+
                 "    //break if the position is greater than <1, 1, 1>\n"+
                 "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0){\n";
-                if(this._vf.type.toLowerCase() == "average"){
+                if(this._vf.type.toLowerCase() == "average" && this._vf.enabled){
                     shader += "     if((i > 0.0) && (i < Steps-1.0)){\n"+
                     "color.rgb = color.rgb/i;\n"+
                     "}\n";
@@ -1034,6 +1085,8 @@ x3dom.registerNodeType(
             this.uniformFloatTransparency = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformColorEmissive = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformColorDiffuse = new x3dom.nodeTypes.Uniform(ctx);
+            //Enable/Disable style
+            this.uniformBoolEnableShaded = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -1094,6 +1147,12 @@ x3dom.registerNodeType(
                     this.uniformFloatTransparency._vf.value = this._cf.material.node._vf.transperency;
                     unis.push(this.uniformFloatTransparency);
                 }
+
+                this.uniformBoolEnableShaded._vf.name = 'uEnableShaded';
+                this.uniformBoolEnableShaded._vf.type = 'SFBool';
+                this.uniformBoolEnableShaded._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableShaded);
+
                 return unis;
             },
 
@@ -1114,7 +1173,8 @@ x3dom.registerNodeType(
                 //Fog uniforms
                 "uniform float fogVisibility;\n"+
                 "uniform vec3 fogColor;\n"+
-                "uniform float fogType;\n";
+                "uniform float fogType;\n"+
+                "uniform bool uEnableShaded;\n";
                 //Material uniforms
                 if(this._cf.material.node != null){
                     uniformText += "uniform vec3  diffuseColor;\n" +
@@ -1140,59 +1200,65 @@ x3dom.registerNodeType(
                 return styleText;
             },
 
-            lightEquation: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+            lightEquationShaderText: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
                     "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
                     "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
                     "inout vec3 specular)\n" +
                     "{\n" +
-                    "   vec3 L;\n" +
-                    "   float spot = 1.0, attentuation = 0.0;\n" +
-                    "   if(lType == 0.0) {\n" +
-                    "       L = -normalize(lDirection);\n" +
-                    "       V = normalize(V);\n" +
-                    "       attentuation = 1.0;\n" +
-                    "   } else{\n" +
-                    "       L = (lLocation - (-V));\n" +
-                    "       float d = length(L);\n" +
-                    "       L = normalize(L);\n" +
-                    "       V = normalize(V);\n" +
-                    "       if(lRadius == 0.0 || d <= lRadius) {\n" +
-                    "           attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+                    "   if(uEnableShaded){\n"+
+                    "      vec3 L;\n" +
+                    "      float spot = 1.0, attentuation = 0.0;\n" +
+                    "       if(lType == 0.0) {\n" +
+                    "           L = -normalize(lDirection);\n" +
+                    "           V = normalize(V);\n" +
+                    "           attentuation = 1.0;\n" +
+                    "       } else{\n" +
+                    "           L = (lLocation - (-V));\n" +
+                    "           float d = length(L);\n" +
+                    "           L = normalize(L);\n" +
+                    "           V = normalize(V);\n" +
+                    "           if(lRadius == 0.0 || d <= lRadius) {\n" +
+                    "               attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+                    "           }\n" +
+                    "           if(lType == 2.0) {\n" +
+                    "               float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+                    "               if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
+                    "               else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+                    "               else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+                    "           }\n" +
                     "       }\n" +
-                    "       if(lType == 2.0) {\n" +
-                    "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
-                    "           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
-                    "           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
-                    "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
-                    "       }\n" +
-                    "   }\n" +
                     
-                    "   vec3 H = normalize( L + V );\n" +
-                    "   float NdotL = max(0.0, dot(L, N));\n" +
-                    "   float NdotH = max(0.0, dot(H, N));\n" +
-                    
-                    "   float ambientFactor = lAmbientIntensity * ambientIntensity;\n" +
-                    "   float diffuseFactor = lIntensity * NdotL;\n" +
-                    "   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
-                    "   ambient += lColor * ambientFactor * attentuation * spot;\n" +
-                    "   diffuse += lColor * diffuseFactor * attentuation * spot;\n" +
-                    "   specular += lColor * specularFactor * attentuation * spot;\n" +  
+                    "       vec3 H = normalize( L + V );\n" +
+                    "       float NdotL = max(0.0, dot(L, N));\n" +
+                    "       float NdotH = max(0.0, dot(H, N));\n" +
+                    "       float ambientFactor = lAmbientIntensity * ambientIntensity;\n" +
+                    "       float diffuseFactor = lIntensity * NdotL;\n" +
+                    "       float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
+                    "       ambient += lColor * ambientFactor * attentuation * spot;\n" +
+                    "       diffuse += lColor * diffuseFactor * attentuation * spot;\n" +
+                    "       specular += lColor * specularFactor * attentuation * spot;\n" +
+                    "   }\n"+  
                     "}\n",
 
             inlineStyleShaderText: function(){
-                return "    float fogFactor = computeFogInterpolant(length(vec3(0.0,0.0,0.0)-pos));\n";
+                var inlineText = "    float fogFactor = 1.0;\n"+
+                    "    if(uEnableShaded){\n"+
+                    "       fogFactor = computeFogInterpolant(length(vec3(0.0,0.0,0.0)-pos));\n"+
+                    "    }\n";
+                return inlineText;
             },
 
             lightAssigment: function(){
-                var shaderText = "";
+                var shaderText = "    if(uEnableShaded){\n";
                 if(this._vf.lighting == true){
                     if(this._cf.material.node == null){
-                        shaderText += "    value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
+                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
                     }else{
-                        shaderText += "    value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*value.rgb + specular*specularColor);\n"+
-                        "    value.a = value.a*(1.0-transparency);\n";
+                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*value.rgb + specular*specularColor);\n"+
+                        "      value.a = value.a*(1.0-transparency);\n";
                     }
                 }
+                shaderText += "    }\n";
                 return shaderText;
             },
 
@@ -1204,8 +1270,8 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText;
-                shader += this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(),this.lightAssigment());
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
         }
@@ -1228,6 +1294,7 @@ x3dom.registerNodeType(
             this.uniformFloatRetainedOpacity = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatSilhouetteSharpness = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableSilhouette = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -1260,6 +1327,12 @@ x3dom.registerNodeType(
                 this.uniformFloatSilhouetteSharpness._vf.type = 'SFFloat';
                 this.uniformFloatSilhouetteSharpness._vf.value = this._vf.silhouetteSharpness;
                 unis.push(this.uniformFloatSilhouetteSharpness);
+
+                this.uniformBoolEnableSilhouette._vf.name = 'uEnableSilhouette';
+                this.uniformBoolEnableSilhouette._vf.type = 'SFBool';
+                this.uniformBoolEnableSilhouette._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableSilhouette);
+
                 return unis;
             },
 
@@ -1277,7 +1350,8 @@ x3dom.registerNodeType(
             styleUniformsShaderText: function(){
                 return "uniform float uSilhouetteBoundaryOpacity;\n"+
                     "uniform float uSilhouetteRetainedOpacity;\n"+
-                    "uniform float uSilhouetteSharpness;\n";
+                    "uniform float uSilhouetteSharpness;\n"+
+                    "uniform bool uEnableSilhouette;\n";
             },
 
             styleShaderText: function(){
@@ -1289,7 +1363,10 @@ x3dom.registerNodeType(
             },
 
             inlineStyleShaderText: function(){
-                return "    silhouetteEnhancement(value, grad, normalize(dir));\n";
+                var inlineText = "  if(uEnableSilhouette){\n"+
+                "       silhouetteEnhancement(value, grad, normalize(dir));\n"+
+                "   }\n";
+                return inlineText;
             },
 
             lightAssigment: function(){
@@ -1349,6 +1426,7 @@ x3dom.registerNodeType(
             this.uniformCoolColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformWarmColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableToneMapped = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
             uniforms: function(){
@@ -1376,6 +1454,12 @@ x3dom.registerNodeType(
                 this.uniformWarmColor._vf.type = 'SFColor';
                 this.uniformWarmColor._vf.value = this._vf.warmColor;
                 unis.push(this.uniformWarmColor);
+
+                this.uniformBoolEnableToneMapped._vf.name = 'uEnableToneMapped';
+                this.uniformBoolEnableToneMapped._vf.type = 'SFBool';
+                this.uniformBoolEnableToneMapped._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableToneMapped);
+
                 return unis;
             },
 
@@ -1391,7 +1475,9 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform vec3 uCoolColor;\nuniform vec3 uWarmColor;\n";
+                return "uniform vec3 uCoolColor;\n"+
+                "uniform vec3 uWarmColor;\n"+
+                "uniform bool uEnableToneMapped;\n";
             },
 
             styleShaderText: function(){
@@ -1405,12 +1491,14 @@ x3dom.registerNodeType(
             },
 
             inlineStyleShaderText: function(){
-                var shaderText = "    vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
-                "    vec3 L = vec3(0.0, 0.0, 0.0);\n";
+                var shaderText = "    if(uEnableToneMapped){\n"+
+                "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
+                "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shaderText += "    L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
-                    "    toneMapped(value, toneColor, grad.xyz, L);\n";
+                    shaderText += "     L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
+                    "       toneMapped(value, toneColor, grad.xyz, L);\n";
                 }
+                shaderText += "    }\n";
                 return shaderText;
             },
 
