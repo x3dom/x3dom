@@ -924,6 +924,44 @@ x3dom.Viewarea.prototype.showAll = function(axis)
     this.animateTo(viewmat, viewpoint);
 };
 
+x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
+{
+    if (updateCenterOfRotation === undefined) {
+        updateCenterOfRotation = true;
+    }
+
+    var scene = this._scene;
+
+    var dia2 = max.subtract(min).multiply(0.5);    // half diameter
+    var center = min.add(dia2);                    // center in wc
+    var bsr = min.subtract(center).length();       // bounding sphere radius
+
+    var viewpoint = scene.getViewpoint();
+    var fov = viewpoint.getFieldOfView();
+
+    var tanfov2 = Math.tan(fov / 2.0);
+
+    var viewmat = x3dom.fields.SFMatrix4f.copy(this.getViewMatrix());
+
+    var rightDir = new x3dom.fields.SFVec3f(viewmat._00, viewmat._01, viewmat._02);
+    var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
+    var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
+
+    var dist = (bsr / tanfov2);
+    var lookAt = center;
+    var eyePos = lookAt.add(viewDir.multiply(dist));
+
+    viewmat._03 = -rightDir.dot(eyePos);
+    viewmat._13 = -upDir.dot(eyePos);
+    viewmat._23 = -viewDir.dot(eyePos);
+
+    if (updateCenterOfRotation) {
+        viewpoint._vf.centerOfRotation = center;
+    }
+
+    this.animateTo(viewmat, viewpoint);
+};
+
 x3dom.Viewarea.prototype.resetView = function()
 {
     var navi = this._scene.getNavigationInfo();

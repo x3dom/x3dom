@@ -551,6 +551,57 @@ x3dom.Runtime.prototype.uprightView = function() {
 };
 
 /**
+ * APIFunction: fitAll
+ *
+ * Zooms so that all objects are fully visible. Without change the actual Viewpoint orientation
+ *
+ * Parameter:
+ *     updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
+ *
+ */
+x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
+{
+    if (updateCenterOfRotation === undefined) {
+        updateCenterOfRotation = true;
+    }
+
+    var scene = this.canvas.doc._scene;
+    scene.updateVolume();
+
+    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
+
+    this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
+};
+
+/**
+ * APIFunction: fitObject
+ *
+ * Zooms so that a given object are fully visible. Without change the actual Viewpoint orientation
+ *
+ * Parameter:
+ *     updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
+ *
+ */
+x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
+{
+    if (obj && obj._x3domNode)
+    {
+        if (updateCenterOfRotation === undefined) {
+            updateCenterOfRotation = true;
+        }
+
+        var min = x3dom.fields.SFVec3f.MAX();
+        var max = x3dom.fields.SFVec3f.MIN();
+
+        var vol = obj._x3domNode.getVolume();
+        vol.getBounds(min, max);
+
+        this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
+    }
+};
+
+/**
  * APIFunction: showAll
  *
  * Zooms so that all objects are fully visible.
