@@ -597,6 +597,14 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
         var vol = obj._x3domNode.getVolume();
         vol.getBounds(min, max);
 
+        if (!x3dom.isa(obj._x3domNode, x3dom.nodeTypes.Transform))
+        {
+            var mat = obj._x3domNode.getCurrentTransform();
+
+            min = mat.multMatrixPnt(min);
+            max = mat.multMatrixPnt(max);
+        }
+
         this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
     }
 };
