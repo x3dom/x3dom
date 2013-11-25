@@ -94,7 +94,6 @@ x3dom.registerNodeType(
                 var uniformsText = 
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
-                "uniform mat4 normalMatrix;\n"+
                 "varying vec3 vertexColor;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "const float Steps = 60.0;\n"+
@@ -165,10 +164,9 @@ x3dom.registerNodeType(
                 if (this._cf.surfaceNormals.node) {
                     // The surface normals, are taken from the given texture, must be of the same size of the Volume Data
                     return "vec4 getNormal(vec3 pos, float nS, float nX, float nY) {\n"+
-                    "   vec4 n = cTexture3D(uSurfaceNormals, pos, nS, nX, nY);\n"+
-                    "   n.xyz = (2.0*n.xyz)-1.0;\n"+
-                    "   n.xyz = (normalMatrix * vec4(n.xyz, 0.0)).xyz;\n"+
+                    "   vec4 n = (2.0*cTexture3D(uSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
                     "   n.a = length(n.xyz);\n"+
+                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
                     "   n.xyz = normalize(n.xyz);\n"+
                     "   return n;\n"+
                     "}\n"+
@@ -182,8 +180,9 @@ x3dom.registerNodeType(
                     "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
                     "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                     "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                    "   vec3 grad = (normalMatrix * vec4((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0, 0.0)).xyz;\n"+
-                    "   return vec4(normalize(grad), length(grad));\n"+
+                    "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
+                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
+                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
                     "}\n"+
                     "\n";
                 }
@@ -669,7 +668,6 @@ x3dom.registerNodeType(
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 offset;\n"+
-                "uniform mat4 normalMatrix;\n"+
                 "uniform mat4 modelViewMatrixInverse;\n"+
                 "uniform sampler2D uSurfaceNormals;\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
@@ -708,10 +706,9 @@ x3dom.registerNodeType(
                 shader +=
                 this.texture3DFunctionShaderText+
                 "vec4 getTextureNormal(vec3 pos, float nS, float nX, float nY) {\n"+
-                "   vec4 n = cTexture3D(uSurfaceNormals, pos, nS, nX, nY);\n"+
-                "   n.xyz = (2.0*n.xyz)-1.0;\n"+
-                "   n.xyz = (normalMatrix * vec4(n.xyz, 0.0)).xyz;\n"+
+                "   vec4 n = (2.0*cTexture3D(uSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
                 "   n.a = length(n.xyz);\n"+
+                "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
                 "   n.xyz = normalize(n.xyz);\n"+
                 "   return n;\n"+
                 "}\n"+
@@ -723,8 +720,9 @@ x3dom.registerNodeType(
                 "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
                 "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                 "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   vec3 grad = (normalMatrix * vec4((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0, 0.0)).xyz;\n"+
-                "   return vec4(normalize(grad), length(grad));\n"+
+                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
+                "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
+                "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
                 "}\n"+
                 "\n";
                 if(x3dom.nodeTypes.X3DLightNode.lightID){
