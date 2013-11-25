@@ -150,6 +150,9 @@ x3dom.registerNodeType(
 
             // Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
             this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', false);
+            
+            // The gamma correction to apply by default, see lighting and gamma tutorial.
+            this.addField_SFString(ctx, 'gammaCorrectionDefault', "linear");
 
             // boolean flags for feature (de)activation
             // If TRUE, objects outside the viewing frustum are ignored
@@ -200,7 +203,7 @@ x3dom.registerNodeType(
                         return defaultOff;
                     return value;
                 };
-
+                
                 this._smallFeatureThreshold = checkParam(this._vf.smallFeatureCulling,
                                                          this._vf.smallFeatureThreshold, 10, 0); // cull objects < 10 px
                 this._lowPriorityThreshold = checkParam(this._vf.lowPriorityCulling,
@@ -209,6 +212,22 @@ x3dom.registerNodeType(
                                                                 this._vf.occlusionVisibilityThreshold, 1, 0);
                 this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,
                                                               this._vf.tessellationErrorThreshold, 1, 0);
+                
+                var checkGamma = function(field) {
+                    if (field === "linear") {
+                        return "linear";
+                    }
+                    if (field === "fast-linear") {
+                        return "fast-linear";
+                    }
+                    if (field === "none") {
+                        return "none";
+                    }
+                    x3dom.debug.logWarning("GammaCorrectionDefault may only be linear, fast-linear, or none (linear is assumed now)");
+                    return "linear";
+                };
+                
+                this._vf.gammaCorrectionDefault = checkGamma(this._vf.gammaCorrectionDefault);
             }
         }
     )

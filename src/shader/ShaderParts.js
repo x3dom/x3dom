@@ -50,7 +50,95 @@ x3dom.shader.fog = function() {
 					 
 	return shaderPart;
 };
-					
+
+/*******************************************************************************
+* Gamma correction support: initial declaration
+********************************************************************************/
+x3dom.shader.gammaCorrectionDecl = function(properties) {
+	var shaderPart = "";
+    if (properties.GAMMACORRECTION === "none") {
+        // do not emit any declaration. 1.0 shall behave 'as without gamma'.
+    } else if (properties.GAMMACORRECTION === "fast-linear") {
+        // This is a slightly optimized gamma correction
+        // which uses a gamma of 2.0 instead of 2.2. Gamma 2.0 is less costly
+        // to encode in terms of cycles as sqrt() is usually optimized
+        // in hardware.
+        shaderPart += "vec4 gammaEncode(vec4 color){\n" +
+                      "  vec4 tmp = sqrt(color);\n" +
+                      "  tmp.a = color.a;\n" +
+                      "  return tmp;\n" +
+                      "}\n";
+
+        shaderPart += "vec4 gammaDecode(vec4 color){\n" +
+                      "  vec4 tmp = inversesqrt(color);\n" +
+                      "  tmp.a = color.a;\n" +
+                      "  return tmp;\n" +
+                      "}\n";
+
+        shaderPart += "vec3 gammaEncode(vec3 color){\n" +
+                      "  return sqrt(color);\n" +
+                      "}\n";
+
+        shaderPart += "vec3 gammaDecode(vec3 color){\n" +
+                      "  return inversesqrt(color);\n" +
+                      "}\n";
+    } else {
+        // The preferred implementation compensating for a gamma of 2.2, which closely
+        // follows sRGB.
+        shaderPart += "const vec4 gammaEncode4Vector = vec4(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2, 1.0 /* alpha remains linear*/);\n";
+        shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0 /* alpha remains linear*/);\n";
+
+        shaderPart += "vec4 gammaEncode(vec4 color){\n" +
+                      "    return pow(color, gammaEncode4Vector);\n" +
+                      "}\n";
+
+        shaderPart += "vec4 gammaDecode(vec4 color){\n" +
+                      "    return pow(color, gammaDecode4Vector);\n" +
+                      "}\n";
+
+        // RGB
+        shaderPart += "const vec3 gammaEncode3Vector = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);\n";
+        shaderPart += "const vec3 gammaDecode3Vector = vec3(2.2, 2.2, 2.2);\n";
+
+        shaderPart += "vec3 gammaEncode(vec3 color){\n" +
+                      "    return pow(color, gammaEncode3Vector);\n" +
+                      "}\n";
+
+        shaderPart += "vec3 gammaDecode(vec3 color){\n" +
+                      "    return pow(color, gammaDecode3Vector);\n" +
+                      "}\n";
+    }
+	return shaderPart;
+};
+
+/*******************************************************************************
+* Gamma correction support: encoding and decoding of given expressions
+* 
+* Unlike other shaderparts these javascript functions wrap the same-named gamma
+* correction shader functions (if applicable). When gamma correction is  not used,
+* the expression will be returned verbatim. Consequently, any terminating semicolon
+* is to be issued by the caller.
+********************************************************************************/
+x3dom.shader.encodeGamma = function(properties, expr) {
+    if (properties.GAMMACORRECTION === "none") {
+        // Naive implementation: no-op, return verbatim
+        return expr;
+    } else {
+        // The 2.0 and 2.2 cases are transparent at the call site
+        return "gammaEncode (" + expr + ")";
+    }
+};
+
+x3dom.shader.decodeGamma = function(properties, expr) {
+    if (properties.GAMMACORRECTION === "none") {
+        // Naive implementation: no-op, return verbatim
+        return expr;
+    } else {
+        // The 2.0 and 2.2 cases are transparent at the call site
+        return "gammaDecode (" + expr + ")";
+    }
+};
+
 /*******************************************************************************
 * Shadow
 ********************************************************************************/

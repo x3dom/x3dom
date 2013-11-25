@@ -100,7 +100,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 	}
 		
-	//Colors
+	//Init Colors. In the vertex shader we do not compute any color so
+    //is is safe to ignore gamma here.
 	if(properties.VERTEXCOLOR) {	
 		if(properties.IMAGEGEOMETRY) {
 			shader += "uniform sampler2D IG_colors;\n";
@@ -518,6 +519,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     shader += "varying vec3 fragPosition;\n";
 		shader += x3dom.shader.light(properties.LIGHTS);
 	}
+
+    // Declare gamma correction for color computation (see property "GAMMACORRECTION")
+    shader += x3dom.shader.gammaCorrectionDecl(properties);
  
  
 	/*******************************************************************************
@@ -525,21 +529,23 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	********************************************************************************/
 	shader += "void main(void) {\n";
 	
-	//Init color
-	shader += "vec4 color;\n";
-	shader += "color.rgb = diffuseColor;\n";
+	//Init color. In the fragment shader we are treating color linear by
+    //gamma-adjusting actively before doing lighting computations. At the end
+    //the color value is encoded again. See shader propery GAMMACORRECTION.
+    shader += "vec4 color;\n";
+	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
 			
 	if(properties.VERTEXCOLOR) {
-		if(properties.COLCOMPONENTS == 3){
-			shader += "color.rgb = fragColor;\n";
-		}else if(properties.COLCOMPONENTS == 4){
-			shader += "color = fragColor;\n";
+		if(properties.COLCOMPONENTS === 3){
+			shader += "color.rgb = " + x3dom.shader.decodeGamma(properties,"fragColor") + ";\n";
+		}else if(properties.COLCOMPONENTS === 4){
+			shader += "color = " + x3dom.shader.decodeGamma(properties, "fragColor") + ";\n";
 		}
 	}
 	
 	if(properties.LIGHTS) {
-		shader += "vec3 ambient   = vec3(0.07, 0.07, 0.07);\n";
+		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
@@ -589,7 +595,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		
 		//Specularmap
 		if(properties.SPECMAP) {
-			shader += "specular *= texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
+			shader += "specular *= " + x3dom.shader.decodeGamma(properties, "texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb") + ";\n";
 		}
 		
 		//Textures
@@ -598,7 +604,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec3 viewDir = normalize(fragViewDir);\n";
 				shader += "vec3 reflected = reflect(viewDir, normal);\n";
 				shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n";
-				shader += "vec4 texColor = textureCube(cubeMap, reflected);\n";
+				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "textureCube(cubeMap, reflected)") + ";\n";
 				shader += "color.a *= texColor.a;\n";
 			}
             else if (properties.DIFFPLACEMENTMAP)
@@ -609,7 +615,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             else
             {
 				shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
-				shader += "vec4 texColor = texture2D(diffuseMap, texCoord);\n";
+				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 				shader += "color.a *= texColor.a;\n";
 			}
 			if(properties.BLENDING){
@@ -633,7 +639,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		
 		if(properties.TEXTURED || properties.DIFFUSEMAP){
 			shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
-			shader += "vec4 texColor = texture2D(diffuseMap, texCoord);\n";
+			shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 			shader += "color.a = texColor.a;\n";
 			if(properties.BLENDING){
 				shader += "color.rgb += emissiveColor.rgb;\n";
@@ -660,9 +666,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	} else {
 		shader += "if (color.a <= 0.1) discard;\n";
 	}
-    
-	//Output
-    shader += "gl_FragColor = color;\n";
+
+    //Output the gamma encoded result.
+    shader += "gl_FragColor = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
 	
 	//End Of Shader
 	shader += "}\n";
