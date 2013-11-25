@@ -1658,6 +1658,55 @@ x3dom.registerNodeType(
                     }
                 }
 
+                var texCoodsV = new Array();
+                var texCoodV = 0;
+                texCoodsV.push(texCoodV);
+                for (i=1; i<m; i++) {
+                    var v = spine[i].subtract(spine[i-1]).length();
+                    texCoodV = texCoodV + v;
+                    texCoodsV[i] = texCoodV;
+                }
+
+                var texCoodsU = new Array();
+                var texCoodU = 0;
+                texCoodsU.push(texCoodU);
+                var maxTexU_x, minTexU_x, maxTexU_z, minTexU_z;
+                maxTexU_x = minTexU_x = 0;
+                maxTexU_z = minTexU_z = 0;
+                for (j=1; j<n; j++) {
+                    var u = crossSection[j].subtract(crossSection[j-1]).length();
+                    texCoodU = texCoodU + u;
+                    texCoodsU[j] = texCoodU;
+
+                    if (j==1) {
+                        maxTexU_x = minTexU_x = crossSection[j-1].x;
+                        maxTexU_z = minTexU_z = crossSection[j-1].y;
+                    }
+
+                    if (maxTexU_x < crossSection[j].x) {
+                        maxTexU_x = crossSection[j].x;
+                    }
+                    if (minTexU_x > crossSection[j].x) {
+                        minTexU_x = crossSection[j].x;
+                    }
+                    if (maxTexU_z < crossSection[j].y) {
+                        maxTexU_z = crossSection[j].y;
+                    }
+                    if (minTexU_z > crossSection[j].y) {
+                        minTexU_z = crossSection[j].y;
+                    }
+                }
+                if (Math.abs(maxTexU_x - minTexU_x) < Math.abs(maxTexU_z - minTexU_z)) {
+                    var helpMax = maxTexU_x;
+                    var helpMin = minTexU_x;
+                    maxTexU_x = maxTexU_z;
+                    minTexU_x = minTexU_z;
+                    maxTexU_z = helpMax;
+                    minTexU_z = helpMin;
+                }
+                var diffTexU_x = Math.abs(maxTexU_x - minTexU_x);
+                var diffTexU_z = Math.abs(maxTexU_z - minTexU_z);
+
                 var spineClosed = (m > 2) ? spine[0].equals(spine[spine.length-1], x3dom.fields.Eps) : false;
 
                 for (i=0; i<m; i++) {
@@ -1730,31 +1779,38 @@ x3dom.registerNodeType(
                             pos = baseMat.multMatrixPnt(rotMat.multMatrixPnt(pos));
                             pos = pos.add(spine[i]);
                         }
-
+                        pos.crossSection = crossSection[j];
                         positions.push(pos);
 
                         if (this._vf.creaseAngle <= x3dom.fields.Eps) {
                             if (i > 0 && j > 0) {
                                 var iPos = (i-1)*n+(j-1);
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j-1]/texCoodU, texCoodsV[i-1]/texCoodV);
                                 iPos = (i-1)*n+j;
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j]/texCoodU, texCoodsV[i-1]/texCoodV);
                                 iPos = i*n+j;
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j]/texCoodU, texCoodsV[i]/texCoodV);
 
                                 this._mesh._indices[0].push(index++, index++, index++);
 
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j]/texCoodU, texCoodsV[i]/texCoodV);
                                 iPos = i*n+(j-1);
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j-1]/texCoodU, texCoodsV[i]/texCoodV);
                                 iPos = (i-1)*n+(j-1);
                                 this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                this._mesh._texCoords[0].push(texCoodsU[j-1]/texCoodU, texCoodsV[i-1]/texCoodV);
 
                                 this._mesh._indices[0].push(index++, index++, index++);
                             }
                         }
                         else {
                             this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                            this._mesh._texCoords[0].push(texCoodsU[j]/texCoodU, texCoodsV[i]/texCoodV);
 
                             if (i > 0 && j > 0) {
                                 this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
@@ -1778,6 +1834,8 @@ x3dom.registerNodeType(
                                 if (this._vf.creaseAngle > x3dom.fields.Eps) {
                                     p0 = positions[j];
                                     this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                    this._mesh._texCoords[0].push((p0.crossSection.x - minTexU_x)/diffTexU_x, (p0.crossSection.y - minTexU_z)/diffTexU_z);
+
                                 }
                             }
 
@@ -1790,6 +1848,7 @@ x3dom.registerNodeType(
                                 else {
                                     p0 = positions[linklist_indices[j]];
                                     this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                    this._mesh._texCoords[0].push((p0.crossSection.x - minTexU_x)/diffTexU_x, (p0.crossSection.y - minTexU_z)/diffTexU_z);
                                     this._mesh._indices[0].push(index++);
                                 }
                             }
@@ -1807,6 +1866,7 @@ x3dom.registerNodeType(
                                 if (this._vf.creaseAngle > x3dom.fields.Eps) {
                                     p0 = positions[startPos+j];
                                     this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                    this._mesh._texCoords[0].push((p0.crossSection.x - minTexU_x)/diffTexU_x, (p0.crossSection.y - minTexU_z)/diffTexU_z);
                                 }
                             }
 
@@ -1819,6 +1879,7 @@ x3dom.registerNodeType(
                                 else {
                                     p0 = positions[linklist_indices[j]];
                                     this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                    this._mesh._texCoords[0].push((p0.crossSection.x - minTexU_x)/diffTexU_x, (p0.crossSection.y - minTexU_z)/diffTexU_z);
                                     this._mesh._indices[0].push(index++);
                                 }
                             }
@@ -1827,7 +1888,6 @@ x3dom.registerNodeType(
                 }
 
                 this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
-                this._mesh.calcTexCoords("");
 
                 this.invalidateVolume();
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
