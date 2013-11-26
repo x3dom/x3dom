@@ -662,7 +662,6 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
-        x3dom.debug.logInfo("Gamma shader property is " + property.GAMMACORRECTION );
 	}
 	
 	property.toIdentifier = function() { 

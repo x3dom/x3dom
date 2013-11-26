@@ -10,7 +10,7 @@
 	<div>
     <h3>A half moon in X3DOM</h3>
     This example is intended to show how gamma affects shading. Try setting gammaCorrectionDefault
-    to none, fast-linear or linear in the html source. Compare e.g. to
+    to none, fastLinear or linear in the html source. Compare e.g. to
     <a href='https://www.google.com/search?hl=en&site=imghp&tbm=isch&q=half+moon'>this search</a>
     or simply use your eyes.
     <p>
@@ -21,19 +21,20 @@
     </p>
     <x3d id='x3dElement' showStat='false' showLog='false' style='width:95%;'>
       <scene DEF='scene'>
-        <navigationInfo headlight='false' ></navigationInfo>
-        <environment gammaCorrectionDefault="2.2"></environment>
-        <background def='space' groundcolor='0 0 0'></background>
+        <navigationInfo headlight='false'></navigationInfo>
+        <environment gammaCorrectionDefault="linear"></environment>
+        <background DEF='space' skyColor='0 0 0'></background>
         <group>
-          <directionalLight def='sun' direction="-1 0 0" color='1 1 1' intensity='1' ambientIntensity='0'></directionalLight>
+          <directionalLight DEF='sun' direction="-1 0 0" color='1 1 1' intensity='1' ambientIntensity='0'></directionalLight>
           <shape>
-          	<appearance><material diffuseColor='0.9 0.9 0.9' ambientIntensity='1' specularColor='0 0 0' shininess='0'></material></appearance>
-          	<sphere def='moon'></sphere>
+          	<appearance>
+          	    <material diffuseColor='0.9 0.9 0.9' ambientIntensity='1' specularColor='0 0 0' shininess='0'></material>
+          	</appearance>
+          	<sphere DEF='moon'></sphere>
           </shape>
         </group>
       </scene>
     </x3d>
 	</div>
-  
   </body>
 </html>

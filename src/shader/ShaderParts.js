@@ -58,21 +58,19 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
 	var shaderPart = "";
     if (properties.GAMMACORRECTION === "none") {
         // do not emit any declaration. 1.0 shall behave 'as without gamma'.
-    } else if (properties.GAMMACORRECTION === "fast-linear") {
+    } else if (properties.GAMMACORRECTION === "fastlinear") {
         // This is a slightly optimized gamma correction
         // which uses a gamma of 2.0 instead of 2.2. Gamma 2.0 is less costly
         // to encode in terms of cycles as sqrt() is usually optimized
         // in hardware.
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
                       "  vec4 tmp = sqrt(color);\n" +
-                      "  tmp.a = color.a;\n" +
-                      "  return tmp;\n" +
+                      "  return vec4(tmp.rgb, color.a);\n" +
                       "}\n";
 
         shaderPart += "vec4 gammaDecode(vec4 color){\n" +
-                      "  vec4 tmp = inversesqrt(color);\n" +
-                      "  tmp.a = color.a;\n" +
-                      "  return tmp;\n" +
+                      "  vec4 tmp = color * color;\n" +
+                      "  return vec4(tmp.rgb, color.a);\n" +
                       "}\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
@@ -80,13 +78,14 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
                       "}\n";
 
         shaderPart += "vec3 gammaDecode(vec3 color){\n" +
-                      "  return inversesqrt(color);\n" +
+                      "  return (color * color);\n" +
                       "}\n";
     } else {
         // The preferred implementation compensating for a gamma of 2.2, which closely
-        // follows sRGB.
-        shaderPart += "const vec4 gammaEncode4Vector = vec4(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2, 1.0 /* alpha remains linear*/);\n";
-        shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0 /* alpha remains linear*/);\n";
+        // follows sRGB; alpha remains linear
+        // minor opt: 1.0 / 2.2 = 0.4545454545454545
+        shaderPart += "const vec4 gammaEncode4Vector = vec4(0.4545454545454545, 0.4545454545454545, 0.4545454545454545, 1.0);\n";
+        shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0);\n";
 
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
                       "    return pow(color, gammaEncode4Vector);\n" +
@@ -96,8 +95,8 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
                       "    return pow(color, gammaDecode4Vector);\n" +
                       "}\n";
 
-        // RGB
-        shaderPart += "const vec3 gammaEncode3Vector = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);\n";
+        // RGB; minor opt: 1.0 / 2.2 = 0.4545454545454545
+        shaderPart += "const vec3 gammaEncode3Vector = vec3(0.4545454545454545, 0.4545454545454545, 0.4545454545454545);\n";
         shaderPart += "const vec3 gammaDecode3Vector = vec3(2.2, 2.2, 2.2);\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
@@ -114,7 +113,7 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
 /*******************************************************************************
 * Gamma correction support: encoding and decoding of given expressions
 * 
-* Unlike other shaderparts these javascript functions wrap the same-named gamma
+* Unlike other shader parts these javascript functions wrap the same-named gamma
 * correction shader functions (if applicable). When gamma correction is  not used,
 * the expression will be returned verbatim. Consequently, any terminating semicolon
 * is to be issued by the caller.

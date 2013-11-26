@@ -188,6 +188,10 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'lowPriorityFactor', -1);
             this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
 
+            this._validGammaCorrectionTypes = [
+                "none", "fastlinear", "linear"
+            ];
+
             // init internal stuff (but should be called each frame)
             this.checkSanity();
         },
@@ -213,21 +217,19 @@ x3dom.registerNodeType(
                 this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,
                                                               this._vf.tessellationErrorThreshold, 1, 0);
                 
-                var checkGamma = function(field) {
-                    if (field === "linear") {
+                var checkGamma = function(field, that) {
+                    field = field.toLowerCase();
+
+                    if (that._validGammaCorrectionTypes.indexOf(field) > -1) {
+                        return field;
+                    }
+                    else {
+                        x3dom.debug.logWarning(field + " gammaCorrectionDefault may only be linear (default), fastLinear, or none");
                         return "linear";
                     }
-                    if (field === "fast-linear") {
-                        return "fast-linear";
-                    }
-                    if (field === "none") {
-                        return "none";
-                    }
-                    x3dom.debug.logWarning("GammaCorrectionDefault may only be linear, fast-linear, or none (linear is assumed now)");
-                    return "linear";
                 };
                 
-                this._vf.gammaCorrectionDefault = checkGamma(this._vf.gammaCorrectionDefault);
+                this._vf.gammaCorrectionDefault = checkGamma(this._vf.gammaCorrectionDefault, this);
             }
         }
     )
