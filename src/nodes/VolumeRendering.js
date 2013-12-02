@@ -345,7 +345,7 @@ x3dom.registerNodeType(
             this.uniformFloatRetainedOpacity = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatBoundaryOpacity = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformSampler2SurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableBoundary = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
@@ -359,10 +359,10 @@ x3dom.registerNodeType(
                     }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
                          textureID = parents[0]._parentNodes[0]._textureID++;
                     }
-                    this.uniformSampler2SurfaceNormals._vf.name = 'uSurfaceNormals';
-                    this.uniformSampler2SurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2SurfaceNormals._vf.value = textureID;
-                    unis.push(this.uniformSampler2SurfaceNormals);
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
                 this.uniformFloatRetainedOpacity._vf.name = 'uRetainedOpacity';
