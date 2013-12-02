@@ -609,7 +609,16 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
             this._vfFieldTypes[name] = "MFString";
         },
-        
+
+        addField_MFBoolean: function (ctx, name, def) {
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
+                x3dom.fields.MFBoolean.parse(ctx.xmlNode.getAttribute(name)) :
+                new x3dom.fields.MFBoolean(def);
+
+            if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFBoolean";
+        },
+
         addField_MFInt32: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) :
@@ -709,6 +718,20 @@ x3dom.registerNodeType(
 
             this.addField_SFString(ctx, 'name', "");
             this.addField_SFString(ctx, 'reference', "");
+        }
+    )
+);
+
+/* ### MetadataBoolean ### */
+x3dom.registerNodeType(
+    "MetadataBoolean",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataBoolean.superClass.call(this, ctx);
+
+            // TODO: implement parsing of MFBoolean in fields.js!
+            this.addField_MFBoolean(ctx, 'value', []);
         }
     )
 );

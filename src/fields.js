@@ -2434,6 +2434,46 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
 
 
 ///////////////////////////////////////////////////////////////////////////////
+/** MFBoolean constructor.
+ @class Represents a MFBoolean
+ */
+x3dom.fields.MFBoolean = function(array) {
+    if (arguments.length === 0) {
+    }
+    else if (array && array.map) {
+        var that = this;
+        array.map( function(v) { that.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFBoolean.prototype = x3dom.extend([]);
+
+x3dom.fields.MFBoolean.parse = function(str) {
+    var vals = [];
+    // TODO; parse!!!
+
+    return new x3dom.fields.MFBoolean( vals );
+};
+
+x3dom.fields.MFBoolean.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    // TODO; parse!!!
+};
+
+x3dom.fields.MFBoolean.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(v) {
+        a.push(v);
+    });
+
+    return a;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
 /** MFString constructor.
     @class Represents a MFString
   */

@@ -698,8 +698,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.SegmentedVolumeData.superClass.call(this, ctx);
 
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeDataNode);
-            //this.addField_MFBool(ctx, 'segmentEnabled', []);  // MFBool NYI!!!
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
+            this.addField_MFBoolean(ctx, 'segmentEnabled', []); // TODO: impl. parsing of MFBoolean in fields.js
         }
     )
 );

@@ -87,6 +87,7 @@ COMPONENTS = [
   'nodes/CADGeometry.js',
   'nodes/BVHRefiner.js',
   'nodes/Geometry3DExt.js',
+  'nodes/HAnim.js',
   'util/Moveable.js',          # SpaceSensor-like helper
   'Docs.js'                    # interactive documentation
 ]
