@@ -319,13 +319,231 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.BlendedVolumeStyle.superClass.call(this, ctx);
 
             this.addField_SFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
-            this.addField_SFNode('voxels', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
+            this.addField_SFNode('voxels', x3dom.nodeTypes.X3DVolumeDataNode);
             this.addField_SFFloat(ctx, 'weightConstant1', 0.5);
             this.addField_SFFloat(ctx, 'weightConstant2', 0.5);
             this.addField_SFString(ctx, 'weightFunction1', "CONSTANT");
             this.addField_SFString(ctx, 'weightFunction2', "CONSTANT");
-            this.addField_SFNode('weightTransferFunction1', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
-            this.addField_SFNode('weightTransferFunction2', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
+            this.addField_SFNode('weightTransferFunction1', x3dom.nodeTypes.X3DTexture2DNode);
+            this.addField_SFNode('weightTransferFunction2', x3dom.nodeTypes.X3DTexture2DNode);
+
+            this.uniformFloatWeightConstant1 = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatWeightConstant2 = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DVoxels = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DWeightTransferFunction1 = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DWeightTransferFunction2 = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            uniforms: function(){
+                var unis = [];
+                if (this._cf.voxels.node!=null || this._cf.weightTransferFunction1.node!=null || this.uniformSampler2DWeighttransferFunction2!=null) {
+                    var textureID = 0;
+                    var parents = this._parentNodes;
+                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                        textureID = parents[0]._textureID;
+                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
+                         textureID = parents[0]._parentNodes[0]._textureID;
+                    }
+
+                    this.uniformSampler2DVoxels._vf.name = 'uVolBlendData';
+                    this.uniformSampler2DVoxels._vf.type = 'SFInt32';
+                    this.uniformSampler2DVoxels._vf.value = textureID++;
+                    unis.push(this.uniformSampler2DVoxels);
+
+                    this.uniformSampler2DWeightTransferFunction1._vf.name = 'uWeightTransferFunctionA';
+                    this.uniformSampler2DWeightTransferFunction1._vf.type = 'SFInt32';
+                    this.uniformSampler2DWeightTransferFunction1._vf.value = textureID++;
+                    unis.push(this.uniformSampler2DWeightTransferFunction1);
+
+                    this.uniformSampler2DWeightTransferFunction2._vf.name = 'uWeightTransferFunctionB';
+                    this.uniformSampler2DWeightTransferFunction2._vf.type = 'SFInt32';
+                    this.uniformSampler2DWeightTransferFunction2._vf.value = textureID++;
+                    unis.push(this.uniformSampler2DWeightTransferFunction2);
+                }
+
+                this.uniformFloatWeightConstant1._vf.name = 'uWeightConstantA';
+                this.uniformFloatWeightConstant1._vf.type = 'SFFloat';
+                this.uniformFloatWeightConstant1._vf.value = this._vf.weightConstant1;
+                unis.push(this.uniformFloatWeightConstant1);
+
+                this.uniformFloatWeightConstant2._vf.name = 'uWeightConstantB';
+                this.uniformFloatWeightConstant2._vf.type = 'SFFloat';
+                this.uniformFloatWeightConstant2._vf.value = this._vf.weightConstant2;
+                unis.push(this.uniformFloatWeightConstant2);
+
+                //Also add the render style uniforms
+                if (this._cf.renderStyle.node) {
+                    var renderStyleUniforms = this._cf.renderStyle.node.uniforms();
+                    unis = unis.concat(renderStyleUniforms);       
+                }
+                return unis;
+            },
+
+            textures: function(){
+                var texs = [];
+                if (!(this._cf.voxels.node==null)) {
+                    var tex = this._cf.voxels.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                if (!(this._cf.weightTransferFunction1.node==null)) {
+                    var tex = this._cf.weightTransferFunction1.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                if (!(this._cf.weightTransferFunction2.node==null)) {
+                    var tex = this._cf.weightTransferFunction2.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                //Also add the render style textures
+                if (this._cf.renderStyle.node) {
+                    var renderStyleTextures = this._cf.renderStyle.node.textures();
+                    texs = texs.concat(renderStyleTextures);       
+                }
+                return texs;
+            },
+
+            normalFunctionShaderText: function(){
+                if (this._cf.surfaceNormals.node) {
+                    // The surface normals, are taken from the given texture, must be of the same size of the Volume Data
+                    return "vec4 getNormal(vec3 pos, float nS, float nX, float nY) {\n"+
+                    "   vec4 n = (2.0*cTexture3D(uBlendSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
+                    "   n.a = length(n.xyz);\n"+
+                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
+                    "   n.xyz = normalize(n.xyz);\n"+
+                    "   return n;\n"+
+                    "}\n"+
+                    "\n";
+                }else{
+                    // No extra texture provided, the surface normals are obtained by calculating the gradient with the Central differences method on each sampled voxel
+                    return "vec4 getNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
+                    "   float v0 = cTexture3D(uVolBlendData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v1 = cTexture3D(uVolBlendData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v2 = cTexture3D(uVolBlendData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v3 = cTexture3D(uVolBlendData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v4 = cTexture3D(uVolBlendData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   float v5 = cTexture3D(uVolBlendData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
+                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
+                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
+                    "}\n"+
+                    "\n";
+                }
+            },
+
+            styleUniformsShaderText: function(){
+                var uniformsText = "uniform float uWeightConstantA;\n"+
+                    "uniform float uWeightConstantB;\n";
+                    if(this._cf.voxels.node){
+                        uniformsText += "uniform sampler2D uVolBlendData;\n";
+                    }
+                    if(this._cf.weightTransferFunction1.node){
+                        uniformsText += "uniform sampler2D uWeightTransferFunctionA;\n";
+                    }
+                    if(this._cf.weightTransferFunction2.node){
+                        uniformsText += "uniform sampler2D uWeightTransferFunctionB;\n";
+                    }
+                    //Also add the render style uniforms
+                    if(this._cf.renderStyle.node) {
+                        uniformsText += this._cf.renderStyle.node.styleUniformsShaderText();
+                    }
+                return uniformsText;
+            },
+
+            styleShaderText: function(){
+                var styleText = "";
+                if(this._cf.renderStyle.node) {
+                    styleText += this._cf.renderStyle.node.styleShaderText();
+                }
+                return styleText;
+            },
+
+            inlineStyleShaderText: function(){
+                var nSlices = this._cf.voxels.node._vf.numberOfSlices.toPrecision(5);
+                var xSlices = this._cf.voxels.node._vf.slicesOverX.toPrecision(5);
+                var ySlices = this._cf.voxels.node._vf.slicesOverY.toPrecision(5);
+                var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData,pos,"+ nSlices +","+ xSlices +","+ ySlices +");\n"+
+                "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n"+
+                "    vec4 blendGrad = getNormal(pos,"+ nSlices +","+ xSlices +","+ ySlices +");\n"+
+                this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/m, "blendValue").replace(/grad/m, "blendGrad");
+                //obtain the first weight
+                switch(this._vf.weightFunction1.toUpperCase()){
+                    case "CONSTANT":
+                        inlineText += "    float wA = uWeightConstantA;\n";
+                        break;
+                    case "ALPHA0":
+                        inlineText += "    float wA = value.a;\n";
+                        break;
+                    case "ALPHA1":
+                        inlineText += "    float wA = blendValue.a;\n";
+                        break;
+                    case "ONE_MINUS_ALPHA0":
+                        inlineText += "    float wA = 1.0 - value.a;\n";
+                        break;
+                    case "ONE_MINUS_ALPHA1":
+                        inlineText += "    float wA = 1.0 - blendValue.a;\n";
+                        break;
+                    case "TABLE":
+                        if(this._cf.weightTransferFunction1){
+                            inlineText += "    float wA = texture2D(uWeightTransferFunctionA, vec2(value.a, blendValue.a));\n";
+                        }else{
+                            inlineText += "    float wA = value.a;\n";
+                            x3dom.debug.logWarning('[VolumeRendering][BlendedVolumeStyle] TABLE specified on weightFunction1 but not weightTrnafer function provided, using ALPHA0.');
+                        }
+                        break;
+                }
+                //obtain the second weight
+                switch(this._vf.weightFunction2.toUpperCase()){
+                    case "CONSTANT":
+                        inlineText += "    float wB = uWeightConstantB;\n";
+                        break;
+                    case "ALPHA0":
+                        inlineText += "    float wB = value.a;\n";
+                        break;
+                    case "ALPHA1":
+                        inlineText += "    float wB = blendValue.a;\n";
+                        break;
+                    case "ONE_MINUS_ALPHA0":
+                        inlineText += "    float wB = 1.0 - value.a;\n";
+                        break;
+                    case "ONE_MINUS_ALPHA1":
+                        inlineText += "    float wB = 1.0 - blendValue.a;\n";
+                        break;
+                    case "TABLE":
+                        if(this._cf.weightTransferFunction2){
+                            inlineText += "    float wB = texture2D(uWeightTransferFunctionB, vec2(value.a, blendValue.a));\n";
+                        }else{
+                            inlineText += "    float wB = value.a;\n";
+                            x3dom.debug.logWarning('[VolumeRendering][BlendedVolumeStyle] TABLE specified on weightFunction2 but not weightTrasnferFunction provided, using ALPHA0.');
+                        }
+                        break;
+                }
+                //apply the blending
+                inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
+                "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
+                return inlineText;
+            },
+
+            lightAssigment: function(){
+                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+                var shader =
+                this.preamble+
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
+                this.texture3DFunctionShaderText+
+                this.normalFunctionShaderText()+
+                this.lightEquationShaderText+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
         }
     )
 );
@@ -1689,7 +1907,7 @@ x3dom.registerNodeType(
                 "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
                 "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shaderText += "     L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
+                    shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
                     "       toneMapped(value, toneColor, grad.xyz, L);\n";
                 }
                 shaderText += "    }\n";
@@ -1697,7 +1915,7 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                return "value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
             },
 
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
