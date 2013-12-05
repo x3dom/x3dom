@@ -158,34 +158,30 @@ x3dom.registerNodeType(
                 "   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
                 "   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
                 "   specular += lColor * specularFactor * attentuation * spot;\n" +  
-                "}\n",
+                "}\n"+
+                "\n",
 
             normalFunctionShaderText: function(){
-                if (this._cf.surfaceNormals.node) {
-                    // The surface normals, are taken from the given texture, must be of the same size of the Volume Data
-                    return "vec4 getNormal(vec3 pos, float nS, float nX, float nY) {\n"+
-                    "   vec4 n = (2.0*cTexture3D(uSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
-                    "   n.a = length(n.xyz);\n"+
-                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
-                    "   n.xyz = normalize(n.xyz);\n"+
-                    "   return n;\n"+
-                    "}\n"+
-                    "\n";
-                }else{
-                    // No extra texture provided, the surface normals are obtained by calculating the gradient with the Central differences method on each sampled voxel
-                    return "vec4 getNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
-                    "   float v0 = cTexture3D(uVolData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                    "   float v1 = cTexture3D(uVolData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                    "   float v2 = cTexture3D(uVolData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                    "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                    "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                    "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                    "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
-                    "}\n"+
-                    "\n";
-                }
+                return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
+                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
+                "   n.a = length(n.xyz);\n"+
+                "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
+                "   n.xyz = normalize(n.xyz);\n"+
+                "   return n;\n"+
+                "}\n"+
+                "\n"+
+                "vec4 getNormalOnTheFly(sampler2D sampler, vec3 voxPos, float nS, float nX, float nY){\n"+
+                "   float v0 = cTexture3D(sampler, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                "   float v1 = cTexture3D(sampler, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                "   float v2 = cTexture3D(sampler, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                "   float v3 = cTexture3D(sampler, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
+                "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
+                "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
+                "}\n"+
+                "\n";
             },    
 
             //Takes an array as an argument which contains the calls that will be made inside the main loop
@@ -220,9 +216,13 @@ x3dom.registerNodeType(
                 "  float opacityFactor = 6.0;\n"+
                 "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                 "  {\n"+
-                "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
-                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n"+
-                "    vec4 grad = getNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                "    value = cTexture3D(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
+                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
+                if(this._cf.surfaceNormals.node){
+                    shaderLoop += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                }else{
+                    shaderLoop += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                }
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shaderLoop += "    lighting(light"+l+"_Type, " +
                     "light"+l+"_Location, " +
@@ -374,6 +374,9 @@ x3dom.registerNodeType(
                 //Also add the render style uniforms
                 if (this._cf.renderStyle.node) {
                     var renderStyleUniforms = this._cf.renderStyle.node.uniforms();
+                    Array.forEach(renderStyleUniforms, function(uni){
+                        uni._vf.name = uni._vf.name.replace(/uSurfaceNormals/, "uBlendSurfaceNormals")
+                    });
                     unis = unis.concat(renderStyleUniforms);       
                 }
                 return unis;
@@ -402,42 +405,16 @@ x3dom.registerNodeType(
                 //Also add the render style textures
                 if (this._cf.renderStyle.node) {
                     var renderStyleTextures = this._cf.renderStyle.node.textures();
+
                     texs = texs.concat(renderStyleTextures);       
                 }
                 return texs;
             },
 
-            normalFunctionShaderText: function(){
-                if (this._cf.surfaceNormals.node) {
-                    // The surface normals, are taken from the given texture, must be of the same size of the Volume Data
-                    return "vec4 getNormal(vec3 pos, float nS, float nX, float nY) {\n"+
-                    "   vec4 n = (2.0*cTexture3D(uBlendSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
-                    "   n.a = length(n.xyz);\n"+
-                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
-                    "   n.xyz = normalize(n.xyz);\n"+
-                    "   return n;\n"+
-                    "}\n"+
-                    "\n";
-                }else{
-                    // No extra texture provided, the surface normals are obtained by calculating the gradient with the Central differences method on each sampled voxel
-                    return "vec4 getNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
-                    "   float v0 = cTexture3D(uVolBlendData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                    "   float v1 = cTexture3D(uVolBlendData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                    "   float v2 = cTexture3D(uVolBlendData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                    "   float v3 = cTexture3D(uVolBlendData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                    "   float v4 = cTexture3D(uVolBlendData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                    "   float v5 = cTexture3D(uVolBlendData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                    "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
-                    "}\n"+
-                    "\n";
-                }
-            },
-
             styleUniformsShaderText: function(){
                 var uniformsText = "uniform float uWeightConstantA;\n"+
-                    "uniform float uWeightConstantB;\n";
+                    "uniform float uWeightConstantB;\n"+
+                    "uniform sampler2D uBlendSurfaceNormals;\n";
                     if(this._cf.voxels.node){
                         uniformsText += "uniform sampler2D uVolBlendData;\n";
                     }
@@ -466,10 +443,16 @@ x3dom.registerNodeType(
                 var nSlices = this._cf.voxels.node._vf.numberOfSlices.toPrecision(5);
                 var xSlices = this._cf.voxels.node._vf.slicesOverX.toPrecision(5);
                 var ySlices = this._cf.voxels.node._vf.slicesOverY.toPrecision(5);
-                var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData,pos,"+ nSlices +","+ xSlices +","+ ySlices +");\n"+
-                "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n"+
-                "    vec4 blendGrad = getNormal(pos,"+ nSlices +","+ xSlices +","+ ySlices +");\n"+
-                this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/m, "blendValue").replace(/grad/m, "blendGrad");
+                var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData,pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n"+
+                "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n";
+                if(this._cf.renderStyle.node && this._cf.renderStyle.node._cf.surfaceNormals.node){
+                    inlineText += "    vec4 blendGrad = getNormalFromTexture(uBlendSurfaceNormals, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                }else{
+                    inlineText += "    vec4 blendGrad = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                }
+                if(this._cf.renderStyle.node){
+                    inlineText += this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/m, "blendValue").replace(/grad/m, "blendGrad");
+                }
                 //obtain the first weight
                 switch(this._vf.weightFunction1.toUpperCase()){
                     case "CONSTANT":
@@ -842,7 +825,7 @@ x3dom.registerNodeType(
                 var i, n = this._cf.renderStyle.nodes.length;
                 var textureID = 0;
                 for (i=0; i<n; i++){
-                    //Not repeat common uniforms
+                    //Not repeat common uniforms, TODO: Allow multiple surface normals
                     var that = this;
                     Array.forEach(this._cf.renderStyle.nodes[i].uniforms(), function(uniform){
                         var contains_uniform = false;
@@ -863,7 +846,7 @@ x3dom.registerNodeType(
                 var texs = [];
                 var i, n = this._cf.renderStyle.nodes.length;
                 for (i=0; i<n; i++){
-                    //Not repeat same uniforms
+                    //Not repeat same textures, TODO: Allow multiply surface normals textures
                     Array.forEach(this._cf.renderStyle.nodes[i].textures(), function(texture){
                         var contains_texture = false;
                         Array.forEach(texs, function(accum){
