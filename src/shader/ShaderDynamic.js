@@ -634,7 +634,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR) {
-			shader += "color = vec4(0.0, 0.0, 0.0, 1.0);\n";
+			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - transparency);\n";
 		}
 		
 		if(properties.TEXTURED || properties.DIFFUSEMAP){

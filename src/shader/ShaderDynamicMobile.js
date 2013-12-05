@@ -362,7 +362,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	
 	//calc lighting
 	if(properties.LIGHTS) {
-		shader += "vec3 ambient   = vec3(0.07, 0.07, 0.07);\n";
+		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		
@@ -403,7 +403,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "rgb = vec3(0.0, 0.0, 0.0);\n";
 		}
 		if(properties.TEXTURED && !properties.BLENDING) {
-			shader += "fragAmbient = vec3(1.0);\n";
+			shader += "fragAmbient = vec3(0.0);\n";
 			shader += "fragDiffuse = vec3(1.0);\n";
 			shader += "fragColor.rgb = vec3(0.0);\n";
 			shader += "fragColor.a = alpha;\n";
@@ -411,7 +411,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragColor.rgb = emissiveColor;\n";
 			shader += "fragColor.a = alpha;\n";
 		} else {
-			shader += "fragColor.rgb = rgb + emissiveColor;\n;\n";
+			shader += "fragColor.rgb = rgb + emissiveColor;\n";
 			shader += "fragColor.a = alpha;\n";
 		}
 	}
