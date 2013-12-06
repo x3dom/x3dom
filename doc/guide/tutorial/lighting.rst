@@ -25,9 +25,9 @@ defined in the X3D standard document:
 
 However, there is some debate on how such equations might be
 implemented. Some say they must be implemented by interpreting the word
-"intensity" in the X3D spec to mean exactly
+"intensity" in the X3D spec to mean precisely
 
-    http://www.poynton.com/notes/colour_and_gamma/GammaFAQ.html#intensity
+    http://www.poynton.com/notes/colour_and_gamma/GammaFAQ.html#luminous_intensity
 
 whereas others say it's not worth the fuss to deal with such
 peculiarities, so a straigt-forward implementation will suffice. X3D
@@ -66,11 +66,13 @@ compensated) or not (retaining gamma in all calculations).
 
 The field may have one of three states:
 
- * "linear" The preferred gamma coefficient (2.2, close to the sRGB standard's
+ * "linear" (default) The preferred gamma coefficient (2.2, close to the sRGB standard's
     and Rec. 709 transfer function) is applied. Sometimes called "gamma correct[ed]".
  * "fastLinear" A faster (in terms of GPU cycles), albeit slightly off transfer
     function based on sqrt. Equivalent to a gamma of 2.0.
  * "none" Do not correct for gamma coding, assume a gamma of 1.0.
+    Confusingly, this results in a linear (identity) degenerate gamma correction
+    which causes results to be processes as (non-linear as) they are stored.
 
 .. code-block:: xml
 
