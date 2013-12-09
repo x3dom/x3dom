@@ -87,9 +87,7 @@
     <h1>DEF/USE test</h1>
 	
 	<div class="group">
-	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
-             Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" showLog="true" x="0px" y="10px" width="512px" height="512px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" showLog="true" width="512px" height="512px">
  <Scene DEF='scene'>
  	<Viewpoint DEF='view0' position='0 0 10' orientation="0 0 0 1"/>
     <Background skyColor='0.05 0.12 0.23'/>
@@ -97,7 +95,6 @@
       <Shape DEF='obj'>
         <Appearance>
 		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
-          <!--<ImageTexture url='"texture/generic/x3d_256.jpg"'/>-->
           <Texture><img src="media/texture/generic/x3d_256.jpg" /></Texture>
         </Appearance>
         <Box/>
@@ -118,6 +115,5 @@
   </Scene>
         </X3D>
 	</div>
-    <!--<video src='../example/video/big_buck_bunny.ogv'  autobuffer='true' />-->
 </body>
 </html>

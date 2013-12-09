@@ -21,7 +21,8 @@ x3dom.Mesh = function(parent)
     this._invalidate = true;
     this._numFaces = 0;
     this._numCoords = 0;
-	
+
+    // cp. x3dom.Utils.primTypeDic for type list
 	this._primType = 'TRIANGLES';
     
     this._positions = [];

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <!-- BEGIN:X3DOM -->
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+    <script type="text/javascript" src="../../src/lang/Array.js"></script>
+    <script type="text/javascript" src="../../src/Internals.js"></script>
+    <script type="text/javascript" src="../../src/debug.js"></script>
+    <script type="text/javascript" src="../../src/util/AdaptiveRenderControl.js"></script>
+    <script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+    <script type="text/javascript" src="../../src/util/Properties.js"></script>
+    <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+    <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+    <script type="text/javascript" src="../../src/util/Utils.js"></script>
+    <script type="text/javascript" src="../../src/util/States.js"></script>
+    <script type="text/javascript" src="../../src/util/StateManager.js"></script>
+    <script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+    <script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+    <script type="text/javascript" src="../../src/util/BVH.js"></script>
+    <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+    <script type="text/javascript" src="../../src/Runtime.js"></script>
+    <script type="text/javascript" src="../../src/Main.js"></script>
+    <script type="text/javascript" src="../../src/Cache.js"></script>
+    <script type="text/javascript" src="../../src/Texture.js"></script>
+    <script type="text/javascript" src="../../src/shader/Shader.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingId.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+    <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+    <script type="text/javascript" src="../../src/gfx_flash.js"></script>
+    <script type="text/javascript" src="../../src/X3DDocument.js"></script>
+    <script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+    <script type="text/javascript" src="../../src/Viewarea.js"></script>
+    <script type="text/javascript" src="../../src/Mesh.js"></script>
+    <script type="text/javascript" src="../../src/fields.js"></script>
+    <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Time.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+    <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Text.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+    <script type="text/javascript" src="../../src/nodes/BVHRefiner.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3DExt.js"></script>
+    <script type="text/javascript" src="../../src/util/Moveable.js"></script>
+    <script type="text/javascript" src="../../src/Docs.js"></script>
+    <!-- END:X3DOM -->
+  </head>
+  <body>
+    <x3d id='x3dElement' showStat='false' showLog='true' width="720px" height="480px">
+      <scene>
+        <viewpoint description='8m away - note linewidth is unchanged and perspective is ambiguous' position='0 0 8'></viewpoint>
+        <viewpoint description='15m away - note linewidth is unchanged and perspective is ambiguous' position='0 0 15'></viewpoint>
+        <transform translation='-3 0 0'>
+          <viewpoint description='IndexedLineSet cube close up' position='0 0 5'></viewpoint>
+          <shape>
+            <indexedLineSet colorPerVertex='false' coordIndex='0 1 2 3 0 -1 4 5 6 7 4 -1 0 4 -1 1 5 -1 2 6 -1 3 7'>
+              <coordinate point='-1 1 1 1 1 1 1 1 -1 -1 1 -1 -1 -1 1 1 -1 1 1 -1 -1 -1 -1 -1'></coordinate>
+              <color color='1 0.058824 0.117647 0.878431 0.447059 0 1 0.992157 0.141176 0.101961 0.721569 0 0.12549 0 0.901961 0.878431 0 0.843137 0.294118 0 0.341176 1 0.980392 0.992157 1 1 1'></color>
+            </indexedLineSet>
+          </shape>
+        </transform>
+        <transform translation='3 0 0'>
+          <viewpoint description='LineSet cube close up' position='0 0 5'></viewpoint>
+          <shape>
+            <lineSet vertexCount='5 5 2 2 2 2'>
+              <coordinate point='-1 1 1 1 1 1 1 1 -1 -1 1 -1 -1 1 1 -1 -1 1 1 -1 1 1 -1 -1 -1 -1 -1 -1 -1 1 -1 1 1 -1 -1 1 1 1 1 1 -1 1 1 1 -1 1 -1 -1 -1 1 -1 -1 -1 -1'></coordinate>
+              <color color='1 0 0 1 0.5 0 1 1 0 0 1 0 1 0 0 0 0 1 0.8 0 0.8 0.3 0 0.3 1 1 1 0 0 1 1 0 0 0 0 1 1 0.5 0 0.8 0 0.8 1 1 0 0.3 0 0.3 0 1 0 1 1 1'></color>
+            </lineSet>
+          </shape>
+        </transform>
+        <transform translation='-3 2 0'>
+          <shape>
+            <appearance DEF='TextAppearance'>
+              <material ambientIntensity='0' diffuseColor='0 0 0' emissiveColor='0 0.398733 1' shininess='0.05' specularColor='0.622449 0.622449 0.622449'></material>
+            </appearance>
+            <text string='"IndexedLineSet"'>
+              <fontStyle justify='"MIDDLE" "MIDDLE"' size='0.5'></fontStyle>
+            </text>
+          </shape>
+        </transform>
+        <transform translation='3 2 0'>
+          <shape>
+            <appearance USE='TextAppearance'></appearance>
+            <text string='"LineSet"'>
+              <fontStyle justify='"MIDDLE" "MIDDLE"' size='0.5'></fontStyle>
+            </text>
+          </shape>
+        </transform>
+      </scene>
+    </x3d>
+  </body>
+</html>
