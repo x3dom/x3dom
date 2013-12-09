@@ -336,29 +336,35 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (this._cf.voxels.node!=null || this._cf.weightTransferFunction1.node!=null || this.uniformSampler2DWeighttransferFunction2!=null) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID;
+                if (this._cf.voxels.node || this._cf.weightTransferFunction1.node || this._cf.weightTransferFunction2.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][OpacityMapVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
 
                     this.uniformSampler2DVoxels._vf.name = 'uVolBlendData';
                     this.uniformSampler2DVoxels._vf.type = 'SFInt32';
-                    this.uniformSampler2DVoxels._vf.value = textureID++;
+                    this.uniformSampler2DVoxels._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DVoxels);
 
-                    this.uniformSampler2DWeightTransferFunction1._vf.name = 'uWeightTransferFunctionA';
-                    this.uniformSampler2DWeightTransferFunction1._vf.type = 'SFInt32';
-                    this.uniformSampler2DWeightTransferFunction1._vf.value = textureID++;
-                    unis.push(this.uniformSampler2DWeightTransferFunction1);
+                    if(this._cf.weightTransferFunction1.node){
+                        this.uniformSampler2DWeightTransferFunction1._vf.name = 'uWeightTransferFunctionA';
+                        this.uniformSampler2DWeightTransferFunction1._vf.type = 'SFInt32';
+                        this.uniformSampler2DWeightTransferFunction1._vf.value = volumeDataParent._textureID++;
+                        unis.push(this.uniformSampler2DWeightTransferFunction1);
+                    }
 
-                    this.uniformSampler2DWeightTransferFunction2._vf.name = 'uWeightTransferFunctionB';
-                    this.uniformSampler2DWeightTransferFunction2._vf.type = 'SFInt32';
-                    this.uniformSampler2DWeightTransferFunction2._vf.value = textureID++;
-                    unis.push(this.uniformSampler2DWeightTransferFunction2);
+                    if(this._cf.weightTransferFunction2.node){
+                        this.uniformSampler2DWeightTransferFunction2._vf.name = 'uWeightTransferFunctionB';
+                        this.uniformSampler2DWeightTransferFunction2._vf.type = 'SFInt32';
+                        this.uniformSampler2DWeightTransferFunction2._vf.value = volumeDataParent._textureID++;
+                        unis.push(this.uniformSampler2DWeightTransferFunction2);
+                    }
                 }
 
                 this.uniformFloatWeightConstant1._vf.name = 'uWeightConstantA';
@@ -384,19 +390,19 @@ x3dom.registerNodeType(
 
             textures: function(){
                 var texs = [];
-                if (!(this._cf.voxels.node==null)) {
+                if (this._cf.voxels.node) {
                     var tex = this._cf.voxels.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
                     texs.push(tex)
                 }
-                if (!(this._cf.weightTransferFunction1.node==null)) {
+                if (this._cf.weightTransferFunction1.node) {
                     var tex = this._cf.weightTransferFunction1.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
                     texs.push(tex)
                 }
-                if (!(this._cf.weightTransferFunction2.node==null)) {
+                if (this._cf.weightTransferFunction2.node) {
                     var tex = this._cf.weightTransferFunction2.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
@@ -405,7 +411,6 @@ x3dom.registerNodeType(
                 //Also add the render style textures
                 if (this._cf.renderStyle.node) {
                     var renderStyleTextures = this._cf.renderStyle.node.textures();
-
                     texs = texs.concat(renderStyleTextures);       
                 }
                 return texs;
@@ -433,7 +438,7 @@ x3dom.registerNodeType(
 
             styleShaderText: function(){
                 var styleText = "";
-                if(this._cf.renderStyle.node) {
+                if(this._cf.renderStyle.node && this._cf.renderStyle.node.styleShaderText!=undefined) {
                     styleText += this._cf.renderStyle.node.styleShaderText();
                 }
                 return styleText;
@@ -451,7 +456,7 @@ x3dom.registerNodeType(
                     inlineText += "    vec4 blendGrad = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }
                 if(this._cf.renderStyle.node){
-                    inlineText += this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/m, "blendValue").replace(/grad/m, "blendGrad");
+                    inlineText += this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
                 }
                 //obtain the first weight
                 switch(this._vf.weightFunction1.toUpperCase()){
@@ -552,17 +557,19 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][BoundaryEnhancementVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -661,10 +668,20 @@ x3dom.registerNodeType(
             uniforms: function(){
                 var unis = [];
 
-                if (!(this._cf.surfaceNormals.node==null)) {
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][CartoonVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
+                    }
+
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = 2; //FIXME: Number of textures could be variable
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++; //FIXME: Number of textures could be variable
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -693,7 +710,7 @@ x3dom.registerNodeType(
 
             textures: function() {
                 var texs = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
+                if (this._cf.surfaceNormals.node) {
                     var tex = this._cf.surfaceNormals.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
@@ -823,7 +840,6 @@ x3dom.registerNodeType(
             uniforms: function(){
                 var unis = [];
                 var i, n = this._cf.renderStyle.nodes.length;
-                var textureID = 0;
                 for (i=0; i<n; i++){
                     //Not repeat common uniforms, TODO: Allow multiple surface normals
                     var that = this;
@@ -906,26 +922,7 @@ x3dom.registerNodeType(
                 }
                 shader +=
                 this.texture3DFunctionShaderText+
-                "vec4 getTextureNormal(vec3 pos, float nS, float nX, float nY) {\n"+
-                "   vec4 n = (2.0*cTexture3D(uSurfaceNormals, pos, nS, nX, nY)-1.0);\n"+
-                "   n.a = length(n.xyz);\n"+
-                "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
-                "   n.xyz = normalize(n.xyz);\n"+
-                "   return n;\n"+
-                "}\n"+
-                "\n"+
-                "vec4 getCalculatedNormal(vec3 voxPos, float nS, float nX, float nY){\n"+
-                "   float v0 = cTexture3D(uVolData, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                "   float v1 = cTexture3D(uVolData, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                "   float v2 = cTexture3D(uVolData, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                "   float v3 = cTexture3D(uVolData, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                "   float v4 = cTexture3D(uVolData, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   float v5 = cTexture3D(uVolData, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
-                "}\n"+
-                "\n";
+                this.normalFunctionShaderText();
                 if(x3dom.nodeTypes.X3DLightNode.lightID){
                     //Only from the first render style
                     shader += this._cf.renderStyle.nodes[0].lightEquationShaderText;
@@ -967,9 +964,9 @@ x3dom.registerNodeType(
                 "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
                 "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
                 if(this.normalTextureProvided){
-                    shader += "    vec4 grad = getTextureNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                    shader += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }else{
-                    shader += "    vec4 grad = getCalculatedNormal(pos,numberOfSlices,slicesOverX,slicesOverY);\n";
+                    shader += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shader += "    lighting(light"+l+"_Type, " +
@@ -1029,17 +1026,19 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][EdgeEnhancementVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -1062,7 +1061,7 @@ x3dom.registerNodeType(
 
             textures: function() {
                 var texs = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
+                if (this._cf.surfaceNormals.node) {
                     var tex = this._cf.surfaceNormals.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
@@ -1238,16 +1237,18 @@ x3dom.registerNodeType(
                 var unis = [];
                 
                 if (this._cf.transferFunction.node) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][OpacityMapVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
                     this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
-                    this.uniformSampler2DTransferFunction._vf.value = textureID;
+                    this.uniformSampler2DTransferFunction._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DTransferFunction);
                 }
 
@@ -1485,17 +1486,19 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][ShadedVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -1552,7 +1555,7 @@ x3dom.registerNodeType(
 
             textures: function() {
                 var texs = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
+                if (this._cf.surfaceNormals.node) {
                     var tex = this._cf.surfaceNormals.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
@@ -1570,7 +1573,7 @@ x3dom.registerNodeType(
                 "uniform float fogType;\n"+
                 "uniform bool uEnableShaded;\n";
                 //Material uniforms
-                if(this._cf.material.node != null){
+                if(this._cf.material.node){
                     uniformText += "uniform vec3  diffuseColor;\n" +
                     "uniform vec3  specularColor;\n" +
                     "uniform vec3  emissiveColor;\n" +
@@ -1646,7 +1649,7 @@ x3dom.registerNodeType(
             lightAssigment: function(){
                 var shaderText = "    if(uEnableShaded){\n";
                 if(this._vf.lighting == true){
-                    if(this._cf.material.node == null){
+                    if(this._cf.material.node){
                         shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
                     }else{
                         shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*value.rgb + specular*specularColor);\n"+
@@ -1694,17 +1697,19 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][SilhouetteEnhancementVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -1826,17 +1831,19 @@ x3dom.registerNodeType(
         {
             uniforms: function(){
                 var unis = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    var textureID = 0;
-                    var parents = this._parentNodes;
-                    if(parents && x3dom.isa(parents[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                        textureID = parents[0]._textureID++;
-                    }else if(parents[0]._parentNodes && x3dom.isa(parents[0]._parentNodes[0], x3dom.nodeTypes.X3DVolumeDataNode)){
-                         textureID = parents[0]._parentNodes[0]._textureID++;
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][ToneMappedVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
                     }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = textureID;
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
@@ -1860,7 +1867,7 @@ x3dom.registerNodeType(
 
             textures: function() {
                 var texs = [];
-                if (!(this._cf.surfaceNormals.node==null)) {
+                if (this._cf.surfaceNormals.node) {
                     var tex = this._cf.surfaceNormals.node;
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
