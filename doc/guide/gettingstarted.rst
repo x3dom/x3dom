@@ -30,9 +30,12 @@ libraries.
 
 Please be aware that hot-linking the X3DOM library as outlined
 above will give you the cutting-edge build of the library with all pros
-and cons. You will recieve the latestest fixes and features, but also
+and cons. The development build is automatically created every night.
+You will recieve the latestest fixes and features, but also
 a potentially unstable or temporarliy broken version. We try to maintain
-a unbroken dev build, but that can't be guaranteed all the time.
+a unbroken dev build, but that can't be guaranteed all the time. If you want
+to use a stable version, you should directly download it from the respective 
+version's directory (see below).
 
 Once you finished developing your application, you should download
 the necessary snapshot build and deploy the files with your application
@@ -72,7 +75,7 @@ side might be one sensible approach:
   * Freeze the dev build (or use a release in a controlled environment) and
     deploy that freezed version anlongside your application on your server or CDN
   * If browser issues occur, use the latest X3DOM dev build and test your
-    application thourougly.
+    application thoroughly.
   * Monitor your environment regulary and perform your own tests with all
     browser versions and OS combinations your application is targed for as
     soon as a X3DOM or browser changes occur
@@ -80,19 +83,6 @@ side might be one sensible approach:
 It should be stressed that X3DOM as well as browser development is a moving
 target. It is only sensible to adjust your development and library management
 processes to this environment.
-
-
-Development builds
-------------------
-If you want to work with the latest development build of X3DOM (which in fact 
-is recommended), then `download the latest builds from the X3DOM server here
-<http://x3dom.org/download/dev/>`_.
-
-The development build is automatically created every night and will contain
-many fixes and features not available to the released versions. We try to
-keep the development build at a working stage and not break compatibility
-with released versions. However, a working dev build can not be guaranteed
-all the time.
 
 
 Build your own
@@ -115,7 +105,7 @@ You can also check out a specific release from GitHub::
 
     git clone https://github.com/x3dom/x3dom.git
     git checkout <version>
-    e.g. git checkout 1.3.0
+    (e.g., "git checkout 1.3.0" for version 1.3.0)
 
 If you want to build your own copy of X3DOM from the Git repository, you
 need to build it from the sources.

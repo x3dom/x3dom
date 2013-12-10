@@ -282,13 +282,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
+        //TODO: test if this still works on all platforms - if yes, we can remove this code
         for (var i=0; i < evtArr.length; i++)
         {
             var evtName = evtArr[i];
             var userEvt = x3dElem.getAttribute(evtName);
             if (userEvt) {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
-                canvas.setAttribute(evtName, userEvt);
+
+                //if this doesn't work without the following line ...
+                //canvas.setAttribute(evtName, userEvt);
+
+                //... also remove the event attribute from the X3D element, to prevent duplicate callback invocation
+                //[...]
             }
         }
 
