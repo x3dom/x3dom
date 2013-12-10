@@ -282,7 +282,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
-        //TODO: test if this still works on all platforms - if yes, we can remove this code
+        //this step is necessary because of some weird behavior in some browsers:
+        //we need a canvas element on startup to make every callback (e.g., 'onmousemove') work,
+        //which was previously set for the canvas' outer elements
         for (var i=0; i < evtArr.length; i++)
         {
             var evtName = evtArr[i];
@@ -290,11 +292,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             if (userEvt) {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
 
-                //if this doesn't work without the following line ...
-                //canvas.setAttribute(evtName, userEvt);
+                canvas.setAttribute(evtName, userEvt);
 
-                //... also remove the event attribute from the X3D element, to prevent duplicate callback invocation
-                //[...]
+                //remove the event attribute from the X3D element to prevent duplicate callback invocation
+                x3dElem.removeAttribute(evtName);
             }
         }
 
