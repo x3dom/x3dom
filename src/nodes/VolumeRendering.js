@@ -123,7 +123,8 @@ x3dom.registerNodeType(
                 "}\n"+
                 "\n",
 
-            lightEquationShaderText: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+            lightEquationShaderText: function(){
+                return "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
                 "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
                 "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
                 "inout vec3 specular)\n" +
@@ -159,7 +160,8 @@ x3dom.registerNodeType(
                 "   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
                 "   specular += lColor * specularFactor * attentuation * spot;\n" +  
                 "}\n"+
-                "\n",
+                "\n"
+            },
 
             normalFunctionShaderText: function(){
                 return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
@@ -185,7 +187,8 @@ x3dom.registerNodeType(
             },    
 
             //Takes an array as an argument which contains the calls that will be made inside the main loop
-            defaultLoopFragmentShaderText: function(inlineShaderText, inlineLightAssigment){
+            defaultLoopFragmentShaderText: function(inlineShaderText, inlineLightAssigment, initializeValues){
+                initializeValues = typeof initializeValues !== 'undefined' ? initializeValues : ""; //default value, empty string
                 var shaderLoop = "void main()\n"+
                 "{\n"+
                 "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
@@ -212,7 +215,7 @@ x3dom.registerNodeType(
                 }else{
                     shaderLoop += "  float lightFactor = 1.2;\n";
                 }
-                shaderLoop +=
+                shaderLoop += initializeValues+
                 "  float opacityFactor = 6.0;\n"+
                 "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                 "  {\n"+
@@ -277,11 +280,8 @@ x3dom.registerNodeType(
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 offset;\n"+
                 "uniform mat4 normalMatrix;\n"+
-                "uniform mat4 modelViewMatrixInverse;\n";
-                if (!(this._cf.surfaceNormals.node==null)) {
-                    uniformsText += "uniform sampler2D uSurfaceNormals;\n";
-                }
-                uniformsText +=
+                "uniform mat4 modelViewMatrixInverse;\n"+
+                "uniform sampler2D uSurfaceNormals;\n"+ //Necessary for composed style, even it is not used in others
                 "varying vec3 vertexColor;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "const float Steps = 60.0;\n"+
@@ -416,6 +416,16 @@ x3dom.registerNodeType(
                 return texs;
             },
 
+            initializeValues: function(){
+                var initialValues = "";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    initialValues += "  vec3 ambientBlend = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 diffuseBlend = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 specularBlend = vec3(0.0, 0.0, 0.0);\n";
+                }
+                return initialValues;
+            },
+
             styleUniformsShaderText: function(){
                 var uniformsText = "uniform float uWeightConstantA;\n"+
                     "uniform float uWeightConstantB;\n"+
@@ -455,8 +465,22 @@ x3dom.registerNodeType(
                 }else{
                     inlineText += "    vec4 blendGrad = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    inlineText += "    lighting(light"+l+"_Type, " +
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    "light"+l+"_Color, " + 
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " + 
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "blendGrad.xyz, dir, ambientBlend, diffuseBlend, specularBlend);\n";
+                }
                 if(this._cf.renderStyle.node){
-                    inlineText += this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
+                    var tempText = this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
+                    inlineText += tempText.replace(/ambient/gm, "ambientBlend").replace(/diffuse/gm, "diffuseBlend").replace(/specular/gm, "specularBlend");
                 }
                 //obtain the first weight
                 switch(this._vf.weightFunction1.toUpperCase()){
@@ -510,14 +534,16 @@ x3dom.registerNodeType(
                         }
                         break;
                 }
-                //apply the blending
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    inlineText += "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                }
                 inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
                 "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
                 return inlineText;
             },
 
             lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                return ""; //previously computed, empty string
             },
 
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
@@ -528,8 +554,8 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
-                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                this.lightEquationShaderText()+
+                this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
                 return shader;
             }
         }
@@ -638,7 +664,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -815,7 +841,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -879,128 +905,85 @@ x3dom.registerNodeType(
                 return texs;
             },
 
+            initializeValues: function() {
+                var initialValues ="";
+                var n = this._cf.renderStyle.nodes.length;
+                for (var i=0; i<n; i++){
+                    if(this._cf.renderStyle.nodes[i].initializeValues != undefined){
+                        initialValues += this._cf.renderStyle.nodes[i].initializeValues() + "\n";
+                    }
+                }
+                return initialValues;
+            },
+
+            styleUniformsShaderText: function(){
+                var styleText = "";
+                var n = this._cf.renderStyle.nodes.length;
+                for (var i=0; i<n; i++){
+                    styleText += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
+                    if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){
+                        this.normalTextureProvided = true;
+                        this._cf.surfaceNormals.node = this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node;
+                    }
+                }
+                return styleText;
+            },
+
+            styleShaderText: function(){
+                var styleText = "";
+                var n = this._cf.renderStyle.nodes.length;
+                for (var i=0; i<n; i++){
+                    if(this._cf.renderStyle.nodes[i].styleShaderText != undefined){
+                        styleText += this._cf.renderStyle.nodes[i].styleShaderText() + "\n";
+                    }
+                }
+                return styleText;
+            },
+
+            inlineStyleShaderText: function(){
+                var inlineText = "";
+                var n = this._cf.renderStyle.nodes.length;
+                for (var i=0; i<n; i++){
+                    inlineText += this._cf.renderStyle.nodes[i].inlineStyleShaderText();
+                }
+                /*if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    inlineText += this._cf.renderStyle.nodes[0].lightAssigment();
+                }*/
+                return inlineText;
+            },
+
+            lightAssigment: function(){
+                var isBlendedStyle = false;
+                //Check if there is a blendedStyle, not to use lightAssigment
+                Array.forEach(this._cf.renderStyle.nodes, function(style){
+                    if(x3dom.isa(style, x3dom.nodeTypes.BlendedVolumeStyle)){
+                        isBlendedStyle = true;
+                    }
+                });
+                if(!isBlendedStyle){
+                    return this._cf.renderStyle.nodes[0].lightAssigment();
+                }else{
+                    return "";
+                }
+            },
+
+            lightEquationShaderText: function(){
+                return this._cf.renderStyle.nodes[0].lightEquationShaderText();
+            },
+
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
                 var shader =
                 this.preamble+
-                "uniform sampler2D uBackCoord;\n"+
-                "uniform sampler2D uVolData;\n"+
-                "uniform vec3 offset;\n"+
-                "uniform mat4 modelViewMatrixInverse;\n"+
-                "uniform sampler2D uSurfaceNormals;\n";
-                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shader +=   "uniform float light"+l+"_On;\n" +
-                    "uniform float light"+l+"_Type;\n" +
-                    "uniform vec3  light"+l+"_Location;\n" +
-                    "uniform vec3  light"+l+"_Direction;\n" +
-                    "uniform vec3  light"+l+"_Color;\n" +
-                    "uniform vec3  light"+l+"_Attenuation;\n" +
-                    "uniform float light"+l+"_Radius;\n" +
-                    "uniform float light"+l+"_Intensity;\n" +
-                    "uniform float light"+l+"_AmbientIntensity;\n" +
-                    "uniform float light"+l+"_BeamWidth;\n" +
-                    "uniform float light"+l+"_CutOffAngle;\n" +
-                    "uniform float light"+l+"_ShadowIntensity;\n";
-                }
-                shader +=
-                "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "const float Steps = 60.0;\n"+
-                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
-                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
-                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
-                var i, n = this._cf.renderStyle.nodes.length;
-                for (i=0; i<n; i++){
-                    shader += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
-                    if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){
-                        this.normalTextureProvided = true;
-                    }
-                }
-                for (i=0; i<n; i++){
-                    if(this._cf.renderStyle.nodes[i].styleShaderText != undefined){
-                        shader += this._cf.renderStyle.nodes[i].styleShaderText() + "\n";
-                    }
-                }
-                shader +=
+                this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText();
-                if(x3dom.nodeTypes.X3DLightNode.lightID){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     //Only from the first render style
-                    shader += this._cf.renderStyle.nodes[0].lightEquationShaderText;
+                    shader += this.lightEquationShaderText();
                 }
-                shader +=
-                "\n"+
-                "void main()\n"+
-                "{\n"+
-                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
-                "  texC = 0.5*texC + 0.5;\n"+
-                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
-                "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
-                "  vec3 pos = vertexColor;\n"+
-                "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
-                //Light values
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    shader +=
-                    "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
-                    "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
-                    "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
-                }
-                shader +=
-                "  float cont = 0.0;\n"+
-                "  vec3 step = dir/Steps;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    shader += "  float lightFactor = 1.0;\n";
-                }else{
-                    shader += "  float lightFactor = 1.2;\n";
-                }
-                shader +=
-                "  float opacityFactor = 6.0;\n"+
-                "  vec4 grad1 = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 grad2 = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
-                "  {\n"+
-                "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
-                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
-                if(this.normalTextureProvided){
-                    shader += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
-                }else{
-                    shader += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
-                }
-                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shader += "    lighting(light"+l+"_Type, " +
-                    "light"+l+"_Location, " +
-                    "light"+l+"_Direction, " +
-                    "light"+l+"_Color, " + 
-                    "light"+l+"_Attenuation, " +
-                    "light"+l+"_Radius, " +
-                    "light"+l+"_Intensity, " + 
-                    "light"+l+"_AmbientIntensity, " +
-                    "light"+l+"_BeamWidth, " +
-                    "light"+l+"_CutOffAngle, " +
-                    "grad.xyz, dir, ambient, diffuse, specular);\n";
-                }
-                for (i=0; i<n; i++){
-                    shader += this._cf.renderStyle.nodes[i].inlineStyleShaderText();
-                }
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    shader += this._cf.renderStyle.nodes[0].lightAssigment();
-                }
-                shader +=
-                "    //Process the volume sample\n"+
-                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
-                "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
-                "    accum.a += (1.0 - accum.a) * sample.a;\n"+
-                "    //advance the current position\n"+
-                "    pos.xyz += step;\n"+
-                "    //break if the position is greater than <1, 1, 1>\n"+
-                "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
-                "      break;\n"+
-                "  }\n"+
-                "  gl_FragColor = accum;\n"+
-                "}";
+                shader += this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
                 return shader;
             }
         }
@@ -1107,7 +1090,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -1316,7 +1299,7 @@ x3dom.registerNodeType(
                 this.styleUniformsShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -1598,7 +1581,8 @@ x3dom.registerNodeType(
                 return styleText;
             },
 
-            lightEquationShaderText: "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+            lightEquationShaderText: function(){
+                return "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
                     "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
                     "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
                     "inout vec3 specular)\n" +
@@ -1636,7 +1620,8 @@ x3dom.registerNodeType(
                     "       diffuse += lColor * diffuseFactor * attentuation * spot;\n" +
                     "       specular += lColor * specularFactor * attentuation * spot;\n" +
                     "   }\n"+  
-                    "}\n",
+                    "}\n"
+            },
 
             inlineStyleShaderText: function(){
                 var inlineText = "    float fogFactor = 1.0;\n"+
@@ -1668,7 +1653,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -1781,7 +1766,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
@@ -1916,7 +1901,7 @@ x3dom.registerNodeType(
                 this.styleShaderText()+
                 this.texture3DFunctionShaderText+
                 this.normalFunctionShaderText()+
-                this.lightEquationShaderText+
+                this.lightEquationShaderText()+
                 this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
                 return shader;
             }
