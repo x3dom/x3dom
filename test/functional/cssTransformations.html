@@ -85,53 +85,85 @@
 	
 <body>
 
-	<style type="text/css">
-	  #trans {
-	    -webkit-animation: spin 8s infinite linear;
-	    -moz-animation: spin 8s infinite linear;
+	<style type="text/css">    
+	  #outerTrans1 {
+	    -webkit-animation: spinPos 4s infinite linear;
+        width:23px;
+	    -moz-animation:    spinPos 4s infinite linear;
 	  }
 
-	  @-webkit-keyframes spin {
-	    from { -webkit-transform: rotateY(0); }
-	    to   { -webkit-transform: rotateY(-360deg); }
+      #outerTrans2 {
+	    -webkit-animation: spinNeg 4s infinite linear;
+        width:23px;
+	    -moz-animation:    spinNeg 4s infinite linear;
 	  }
-	  @-moz-keyframes spin {
-  	    from { -moz-transform: rotateY(0); }
-  	    to   { -moz-transform: rotateY(-360deg); }
+      
+      @-webkit-keyframes spinNeg {
+	    from { -webkit-transform: rotateZ(0); }
+	    to   { -webkit-transform: rotateZ(-360deg); }
+	  }
+	  @-moz-keyframes spinNeg {
+  	    from { -moz-transform: rotateZ(0); }
+  	    to   { -moz-transform: rotateZ(-360deg); }
+  	  }
+      
+	  @-webkit-keyframes spinPos {
+	    from { -webkit-transform: rotateZ(0); }
+	    to   { -webkit-transform: rotateZ(360deg); }
+	  }
+	  @-moz-keyframes spinPos {
+  	    from { -moz-transform: rotateZ(0); }
+  	    to   { -moz-transform: rotateZ(360deg); }
   	  }
   	  
-  	  #t1 {
-  	      -webkit-transform: translate3d(1em,0em,1em); 
-  	      -moz-transform: translate3d(1em,0em,1em);
+  	  #innerTrans1 {
+  	      -webkit-transform: translate3d(1em,0em,1em);
+  	      -moz-transform:    translate3d(0.2em,0em,0.0em);
   	  }
   	  
-  	  #t2 {
-	      -webkit-transform: rotateY(45deg); 
-	      -moz-transform: rotateY(45deg);
-	  }
-	  
-	  #bgnd {
-	      var-color: red;
+  	  #innerTrans2 {
+	      -webkit-transform: rotateZ(45deg);
+	      -moz-transform:    rotateZ(45deg);	  
+	  }	  
+      
+      #ExDiv
+      {
+       -webkit-animation: spinNeg 4s infinite linear;
       }
 	</style>
 	
     <h1>CSS Transforms on X3D-Transform nodes</h1>
-	<p>Simple example which shows how to use css-transforms on X3D-nodes. Only works in webkit based player right now. You should see two cubes one center spinning and the other spinning and circling about.</p>
-	
+	<p>
+    Simple example which shows how to use css-transforms on X3D-nodes. <br/>
+    Only works in Mozilla Firefox right now.<br/>
+    You should see a spinning long green box, and a red cube rotating around it.
+    </p>   
+    
 		<x3d id="boxes" showLog='true' showStat="true" width="600px" height="400px">
 			<scene>
+                <viewpoint position="0.48657 -8.56239 9.29259" orientation="0.99756 0.04318 0.05494 0.78553">
+                </viewpoint>
 				<background id='bgnd' transparency='0' skyColor='1 1 1' ></background>
-				<transform id="trans" >
-					<transform id='t1'>
-						<shape id="shape">
+				<transform id="outerTrans1">
+					<transform id='innerTrans1'>
+						<shape>
 							<appearance>
-								<material diffuseColor='0.8 0.8 0.8'></material>
+								<material diffuseColor='1.0 0.0 0.0'></material>
 							</appearance>
 							<box></box>
 						</shape>
 					</transform>
-					<transform id='t2'>
-						<shape USE="shape"></shape>
+                </transform> 
+                <transform id="outerTrans2" >
+					<transform id='innerTrans2'>
+						<transform scale="0.6 0.6 1.5">
+                            <shape>
+                                <appearance>
+                                    <material diffuseColor='0.0 1.0 0.0'></material>
+                                </appearance>
+                                <box></box>
+                            </shape>
+                        </transform>
 					</transform>
 				</transform> 
 			</scene>

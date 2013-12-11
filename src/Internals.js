@@ -109,10 +109,10 @@ x3dom.extend = function(f) {
  */
 x3dom.getStyle = function(oElm, strCssRule) {
     var strValue = "";
-    if (document.defaultView.getComputedStyle && document.defaultView.getComputedStyle(oElm, null)) {
-        //strValue = window.getComputedStyle(oElm).webkitTransform;
+    if (document.defaultView.getComputedStyle && document.defaultView.getComputedStyle(oElm, null))
+    {
+        //this seems not to work in webkit, if unknown HTML elements are used
         strValue = document.defaultView.getComputedStyle(oElm, null).getPropertyValue(strCssRule);
-        //strValue = window.getComputedStyle(oElm, "")[strCssRule];
     }
     else if(oElm.currentStyle){
         strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
