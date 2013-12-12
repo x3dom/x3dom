@@ -128,6 +128,20 @@ x3dom.registerNodeType(
 		return 'N';
             },
 
+            getProj4JsDef: function(geoSystem)
+            {
+              //parse UTM projection parameters             
+              var utmzone = this.getUTMZone(geoSystem);
+              if(utmzone < 1 || utmzone > 60 || utmzone === undefined) 
+                return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
+              var hemisphere = this.getUTMHemisphere(geoSystem);
+              var elipsoide = this.getElipsoide(geoSystem);
+              var radius = elipsoide[1];
+              var rflattening = elipsoide[2];
+              var southoption = (hemisphere == "S" ? "+south" : "");
+              var projDef = "+proj=utm +zone=" + utmzone + " +a=" + radius + " +rf=" + rflattening + " " + southoption;
+              return projDef;
+            },
 
             UTMtoGC: function(geoSystem, coords) {
               x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
