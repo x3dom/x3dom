@@ -143,8 +143,35 @@ x3dom.registerNodeType(
               return projDef;
             },
 
-            UTMtoGC: function(geoSystem, coords) {
-              x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
+            UTMtoGC: function(geoSystem, coords)
+            {
+              var sourceProjDef = this.getProj4JsDef(geoSystem);
+              x3dom.debug.logInfo(sourceProjDef);
+              if (sourceProjDef === undefined)
+                return x3dom.debug.logError('undefined geoSystem');
+                            
+              // Proj4js version 1.1.0 wants the EPSG: in the def
+              // Proj4Js > 2.0 may be able to use the proj string directly in .transform
+              Proj4js.defs["EPSG:0"] = sourceProjDef;
+              Proj4js.reportError = function(msg) {x3dom.debug.logError(msg);};
+              var sourceProj = new Proj4js.Proj("EPSG:0");
+              //WGS84 is longlat WGS84 builtin shortcut for Proj4js
+              var destProj = new Proj4js.Proj("WGS84");
+              //x3dom.debug.logError("ready: " + sourceProj.readyToUse);
+              
+              for(var i=0; i<coords.length; ++i)
+              {
+                Proj4js.transform(sourceProj, destProj, coords[i]); // transforms coords in place 
+              }
+              x3dom.debug.logInfo('transformed coords ' + coords);
+              
+              //GD to GC and return
+              var GDgeoSystem = new x3dom.fields.MFString();
+              // there is probably a better way to construct
+              GDgeoSystem.push("GD");
+              GDgeoSystem.push("WE");
+              GDgeoSystem.push("longitude_first");
+              return this.GDtoGC(GDgeoSystem, coords);
             },
             
             GDtoGC: function(geoSystem, coords) {
