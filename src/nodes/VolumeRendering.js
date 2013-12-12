@@ -237,7 +237,7 @@ x3dom.registerNodeType(
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "grad.xyz, dir, ambient, diffuse, specular);\n";
+                    "grad.xyz, vertexPosition.xyz+pos.xyz, ambient, diffuse, specular);\n";
                 }
                 shaderLoop += inlineShaderText;
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
@@ -476,7 +476,7 @@ x3dom.registerNodeType(
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "blendGrad.xyz, dir, ambientBlend, diffuseBlend, specularBlend);\n";
+                    "blendGrad.xyz, vertexPosition.xyz+pos.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
                 }
                 if(this._cf.renderStyle.node){
                     var tempText = this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
@@ -1882,7 +1882,7 @@ x3dom.registerNodeType(
                 "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
                 "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-dir)) : normalize(light"+l+"_Direction);\n"+
+                    shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-(vertexPosition.xyz+pos.xyz))) : normalize(light"+l+"_Direction);\n"+
                     "       toneMapped(value, toneColor, grad.xyz, L);\n";
                 }
                 shaderText += "    }\n";
