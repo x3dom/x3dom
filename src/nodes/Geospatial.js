@@ -102,7 +102,7 @@ x3dom.registerNodeType(
 
 	    getUTMZone: function(geoSystem)
             {
-            for(var i=0; i<geoSystem.length; ++i)
+              for(var i=0; i<geoSystem.length; ++i)
               {
                 var code = geoSystem[i];
 
@@ -113,6 +113,21 @@ x3dom.registerNodeType(
 		// no zone found
             x3dom.debug.logError('no UTM zone but is required:' + geoSystem);
             },
+
+
+	    getUTMHemisphere: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+              {
+                var code = geoSystem[i];
+
+                if(code == 'S')
+                  return code;
+              }
+		// North by default according to spec
+		return 'N';
+            },
+
 
             UTMtoGC: function(geoSystem, coords) {
               x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
