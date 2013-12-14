@@ -60,10 +60,9 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 /** Test if node is registered X3D element */
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
-    return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
-        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] ||
-         node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "websg" ||
-         node.localName.toLowerCase() === "scene" || node.localName.toLowerCase() === "route" ));
+    var name = (node.nodeType === Node.ELEMENT_NODE && node.localName) ? node.localName.toLowerCase() : null;
+    return (name && (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[name] ||
+            name == "x3d" || name == "websg" || name == "scene" || name == "route"));
 };
 
 /*
@@ -76,21 +75,18 @@ x3dom.isX3DElement = function(node) {
  *	generated internally that shares the same prototype:
  *
  *	Parameters:
- *
  *   	f - Method f a constructor
  *
  *	Returns:
- *
  * 		A suitable prototype object
  *
  *	See Also:
- *
  *		Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
  */
 x3dom.extend = function(f) {
-  function g() {}
-  g.prototype = f.prototype || f;
-  return new g();
+  function G() {}
+  G.prototype = f.prototype || f;
+  return new G();
 };
 
 /**
@@ -109,10 +105,9 @@ x3dom.extend = function(f) {
  */
 x3dom.getStyle = function(oElm, strCssRule) {
     var strValue = "";
-    if (document.defaultView.getComputedStyle && document.defaultView.getComputedStyle(oElm, null))
-    {
-        //this seems not to work in webkit, if unknown HTML elements are used
-        strValue = document.defaultView.getComputedStyle(oElm, null).getPropertyValue(strCssRule);
+    var style = document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(oElm, null) : null;
+    if (style) {
+        strValue = style.getPropertyValue(strCssRule);
     }
     else if(oElm.currentStyle){
         strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
@@ -130,11 +125,11 @@ x3dom.getStyle = function(oElm, strCssRule) {
     @return the constructor function of the new class
   */
 function defineClass(parent, ctor, methods) {
-    function inheritance() {}
-
     if (parent) {
-        inheritance.prototype = parent.prototype;
-        ctor.prototype = new inheritance();
+        function Inheritance() {}
+        Inheritance.prototype = parent.prototype;
+
+        ctor.prototype = new Inheritance();
         ctor.prototype.constructor = ctor;
         ctor.superClass = parent;
     }
@@ -153,14 +148,11 @@ function defineClass(parent, ctor, methods) {
     @return true or false
   */
 x3dom.isa = function(object, clazz) {
-	if (!object) {
+	if (!object || !object.constructor || object.constructor.superClass === undefined) {
 		return false;
 	}
     if (object.constructor === clazz) {
         return true;
-    }
-    if (object.constructor.superClass === undefined) {
-        return false;
     }
 
     function f(c) {
@@ -177,7 +169,11 @@ x3dom.isa = function(object, clazz) {
 
 
 /// helper
-x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
+x3dom.getGlobal = function () {
+    return (function () {
+        return this;
+    }).call(null);
+};
 
 
 /**
@@ -193,17 +189,16 @@ x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
  *              is used instead.
  * @param  path_prefix A prefix URI to add to the resource to be loaded.
  *                     The URI must be given in normalized path form ending in a
- *                     path seperator (i.e. src/nodes/). It can be in absolute
+ *                     path separator (i.e. src/nodes/). It can be in absolute
  *                     URI form (http://somedomain.tld/src/nodes/)
  * @param  blocking    By default the lookup is done via blocking jax request.
  *                     set to false to use the script i
  */
 x3dom.loadJS = function(src, path_prefix, blocking) {
-    var blocking = (blocking === false) ? blocking : true;   // default to true
+    blocking = (blocking === false) ? blocking : true;   // default to true
 
     if (blocking) {
         var url = (path_prefix) ? path_prefix.trim() + src : src;
-
         var req = new XMLHttpRequest();
 
         if (req) {
@@ -216,7 +211,6 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
             // http://perfectionkills.com/global-eval-what-are-the-options/#indirect_eval_call_examples
             eval(req.responseText);
         }
-
     } else {
         var head = document.getElementsByTagName('HEAD').item(0);
         var script = document.createElement("script");
@@ -226,8 +220,7 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
             //alert("Trying to load external JS file: " + loadpath);
             script.type = "text/javascript";
             script.src = loadpath;
-//        head.appendChild(script);
-            head.appendChild(script, head.firstChild);
+            head.appendChild(script);
         } else {
             alert("No document object found. Can't load components!");
             //x3dom.debug.logError("No document object found. Can't load components");
