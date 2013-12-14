@@ -2446,20 +2446,32 @@ x3dom.fields.MFBoolean = function(array) {
     }
 };
 
-x3dom.fields.MFBoolean.prototype = x3dom.extend([]);
-
 x3dom.fields.MFBoolean.parse = function(str) {
+    var mc = str.match(/(true|false|1|0)/ig);
     var vals = [];
-    // TODO; parse!!!
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
+        if (mc[i] == '1' || mc[i].toLowerCase() == 'true')
+            vals.push(true);
+        else
+            vals.push(false);
+    }
 
     return new x3dom.fields.MFBoolean( vals );
 };
+
+x3dom.fields.MFBoolean.prototype = x3dom.extend([]);
 
 x3dom.fields.MFBoolean.prototype.setValueByStr = function(str) {
     while (this.length) {
         this.pop();
     }
-    // TODO; parse!!!
+    var mc = str.match(/(true|false|1|0)/ig);
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
+        if (mc[i] == '1' || mc[i].toLowerCase() == 'true')
+            this.push(true);
+        else
+            this.push(false);
+    }
 };
 
 x3dom.fields.MFBoolean.prototype.toGL = function() {
