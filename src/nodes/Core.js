@@ -730,7 +730,6 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.MetadataBoolean.superClass.call(this, ctx);
 
-            // TODO: implement parsing of MFBoolean in fields.js!
             this.addField_MFBoolean(ctx, 'value', []);
         }
     )

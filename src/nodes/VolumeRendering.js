@@ -699,7 +699,7 @@ x3dom.registerNodeType(
 
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeDataNode);
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
-            this.addField_MFBoolean(ctx, 'segmentEnabled', []); // TODO: impl. parsing of MFBoolean in fields.js
+            this.addField_MFBoolean(ctx, 'segmentEnabled', []);
         }
     )
 );

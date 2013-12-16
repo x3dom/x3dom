@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta charset="utf-8">
-	<title>CSS3 Transformations</title>
+	<title>CSS3 3D Transformations</title>
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -90,12 +90,14 @@
 	    -webkit-animation: spinPos 4s infinite linear;
         width:23px;
 	    -moz-animation:    spinPos 4s infinite linear;
+      display:block;
 	  }
 
       #outerTrans2 {
 	    -webkit-animation: spinNeg 4s infinite linear;
         width:23px;
 	    -moz-animation:    spinNeg 4s infinite linear;
+      display:block;
 	  }
       
       @-webkit-keyframes spinNeg {
@@ -117,13 +119,15 @@
   	  }
   	  
   	  #innerTrans1 {
-  	      -webkit-transform: translate3d(1em,0em,1em);
+  	      -webkit-transform: translate3d(0.2em,0em,0.0em);
   	      -moz-transform:    translate3d(0.2em,0em,0.0em);
+          display:block;
   	  }
   	  
   	  #innerTrans2 {
 	      -webkit-transform: rotateZ(45deg);
-	      -moz-transform:    rotateZ(45deg);	  
+	      -moz-transform:    rotateZ(45deg);	          
+        display:block;
 	  }	  
       
       #ExDiv
@@ -135,7 +139,7 @@
     <h1>CSS Transforms on X3D-Transform nodes</h1>
 	<p>
     Simple example which shows how to use css-transforms on X3D-nodes. <br/>
-    Only works in Mozilla Firefox right now.<br/>
+    Only works in Browsers that support CSS 3D transforms.<br/>
     You should see a spinning long green box, and a red cube rotating around it.
     </p>   
     

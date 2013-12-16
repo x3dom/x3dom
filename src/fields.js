@@ -2097,9 +2097,7 @@ x3dom.fields.SFImage.prototype.toGL = function() {
   */
 x3dom.fields.MFColor = function(colorArray) {
 
-    if (arguments.length === 0) {
-    }
-    else {
+    if (colorArray) {
         var that = this;
         colorArray.map( function(c) { that.push(c); }, this );
     }
@@ -2118,9 +2116,7 @@ x3dom.fields.MFColor.parse = function(str) {
 };
 
 x3dom.fields.MFColor.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2]) );
@@ -2145,9 +2141,7 @@ x3dom.fields.MFColor.prototype.toGL = function() {
     @class Represents a MFColorRGBA
   */
 x3dom.fields.MFColorRGBA = function(colorArray) {
-    if (arguments.length === 0) {
-    }
-    else {
+    if (colorArray) {
         var that = this;
         colorArray.map( function(c) { that.push(c); }, this );
     }
@@ -2166,9 +2160,7 @@ x3dom.fields.MFColorRGBA.parse = function(str) {
 };
 
 x3dom.fields.MFColorRGBA.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
@@ -2194,9 +2186,7 @@ x3dom.fields.MFColorRGBA.prototype.toGL = function() {
     @class Represents a MFRotation
   */
 x3dom.fields.MFRotation = function(rotArray) {
-    if (arguments.length === 0) {        
-    }
-    else {
+    if (rotArray) {
         var that = this;
         rotArray.map( function(v) { that.push(v); }, this );
     }
@@ -2216,9 +2206,7 @@ x3dom.fields.MFRotation.parse = function(str) {
 };
 
 x3dom.fields.MFRotation.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         this.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]), +mc[i+3]) );
@@ -2245,21 +2233,19 @@ x3dom.fields.MFRotation.prototype.toGL = function() {
     @class Represents a MFVec3f
   */
 x3dom.fields.MFVec3f = function(vec3Array) {
-    if (arguments.length === 0) {        
-    }
-    else {
+    if (vec3Array) {
         var that = this;
         vec3Array.map( function(v) { that.push(v); }, this );
     }
 };
+
+x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
 
 x3dom.fields.MFVec3f.copy = function(vec3Array) {
     var destination = new x3dom.fields.MFVec3f();
     vec3Array.map( function(v) { destination.push(x3dom.fields.SFVec3f.copy(v)); }, this );
     return destination;
 };
-
-x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
 
 x3dom.fields.MFVec3f.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
@@ -2272,9 +2258,7 @@ x3dom.fields.MFVec3f.parse = function(str) {
 };
 
 x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         this.push( new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]) );
@@ -2299,9 +2283,7 @@ x3dom.fields.MFVec3f.prototype.toGL = function() {
     @class Represents a MFVec2f
   */
 x3dom.fields.MFVec2f = function(vec2Array) {
-    if (arguments.length === 0) {        
-    }
-    else {
+    if (vec2Array) {
         var that = this;
         vec2Array.map( function(v) { that.push(v); }, this );
     }
@@ -2320,9 +2302,7 @@ x3dom.fields.MFVec2f.parse = function(str) {
 };
 
 x3dom.fields.MFVec2f.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=2) {
         this.push( new x3dom.fields.SFVec2f(+mc[i+0], +mc[i+1]) );
@@ -2346,9 +2326,7 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
     @class Represents a MFInt32
   */
 x3dom.fields.MFInt32 = function(array) {
-    if (arguments.length === 0) {
-    }
-    else if (array && array.map) {
+    if (array) {
         var that = this;
         array.map( function(v) { that.push(v); }, this );
     }
@@ -2367,9 +2345,7 @@ x3dom.fields.MFInt32.parse = function(str) {
 };
 
 x3dom.fields.MFInt32.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-]?\d+\s*){1},?\s*/g);
     for (var i=0, n=mc?mc.length:0; i<n; ++i) {
         this.push( parseInt(mc[i], 10) );
@@ -2392,9 +2368,7 @@ x3dom.fields.MFInt32.prototype.toGL = function() {
     @class Represents a MFFloat
   */
 x3dom.fields.MFFloat = function(array) {
-    if (arguments.length === 0) {
-    }
-    else if (array && array.map) {
+    if (array) {
         var that = this;
         array.map( function(v) { that.push(v); }, this );
     }
@@ -2413,9 +2387,7 @@ x3dom.fields.MFFloat.parse = function(str) {
 };
 
 x3dom.fields.MFFloat.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
-    }
+    this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i++) {
         this.push( +mc[i] );
@@ -2438,9 +2410,7 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
  @class Represents a MFBoolean
  */
 x3dom.fields.MFBoolean = function(array) {
-    if (arguments.length === 0) {
-    }
-    else if (array && array.map) {
+    if (array) {
         var that = this;
         array.map( function(v) { that.push(v); }, this );
     }
@@ -2449,24 +2419,28 @@ x3dom.fields.MFBoolean = function(array) {
 x3dom.fields.MFBoolean.prototype = x3dom.extend([]);
 
 x3dom.fields.MFBoolean.parse = function(str) {
+    var mc = str.match(/(true|false|1|0)/ig);
     var vals = [];
-    // TODO; parse!!!
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
+        vals.push( (mc[i] == '1' || mc[i].toLowerCase() == 'true') );
+    }
 
     return new x3dom.fields.MFBoolean( vals );
 };
 
 x3dom.fields.MFBoolean.prototype.setValueByStr = function(str) {
-    while (this.length) {
-        this.pop();
+    this.length = 0;
+    var mc = str.match(/(true|false|1|0)/ig);
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
+        this.push( (mc[i] == '1' || mc[i].toLowerCase() == 'true') );
     }
-    // TODO; parse!!!
 };
 
 x3dom.fields.MFBoolean.prototype.toGL = function() {
     var a = [];
 
     Array.map( this, function(v) {
-        a.push(v);
+        a.push(v ? 1 : 0);
     });
 
     return a;
@@ -2478,13 +2452,13 @@ x3dom.fields.MFBoolean.prototype.toGL = function() {
     @class Represents a MFString
   */
 x3dom.fields.MFString = function(strArray) {
-    if (arguments.length === 0) {
-    }
-    else if (strArray && strArray.map) {
+    if (strArray && strArray.map) {
         var that = this;
         strArray.map( function(v) { that.push(v); }, this );
     }
 };
+
+x3dom.fields.MFString.prototype = x3dom.extend([]);
 
 x3dom.fields.MFString.parse = function(str) {
     var arr = [];
@@ -2504,32 +2478,27 @@ x3dom.fields.MFString.parse = function(str) {
     return new x3dom.fields.MFString( arr );
 };
 
-x3dom.fields.MFString.prototype = x3dom.extend([]);
-
 x3dom.fields.MFString.prototype.setValueByStr = function(str) {
-    var arr = this;
-    while (arr.length) {
-        arr.pop();
-    }
+    this.length = 0;
     // ignore leading whitespace?
     if (str.length && str[0] == '"') {
         var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ((m = re.exec(str))) {
             var s = m[1].replace(/\\([\\"])/, "$1");
             if (s !== undefined) {
-                arr.push(s);
+                this.push(s);
             }
         }
     }
     else {
-        arr.push(str);
+        this.push(str);
     }
     return this;
 };
 
 x3dom.fields.MFString.prototype.toString = function () {
     var str = "";
-    for (var i=0; i<this.length; i++) {
+    for (var i=0, n=this.length; i<n; i++) {
 		 str = str + this[i] + " ";
     }
     return str;
