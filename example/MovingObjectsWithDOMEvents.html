@@ -65,8 +65,7 @@
 
             //get the viewer's 3D local frame
             var x3dElem  = document.getElementById("x3dElement");
-            var vMatInv  = x3dElem.runtime.viewMatrix().inverse();
-            var viewPos  = vMatInv.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0,  0.0));
+            var vMatInv  = x3dElem.runtime.viewMatrix().inverse();            
             var viewDir  = vMatInv.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, -1.0));
             
             //use the viewer's up-vector and right-vector
