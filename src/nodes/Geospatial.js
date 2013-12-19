@@ -66,17 +66,21 @@ x3dom.registerNodeType(
               return false;
             },
 
-            getElipsoide: function(geoSystem)
+            getElipsoideCode: function(geoSystem)
             {
               for(var i=0; i<geoSystem.length; ++i)
               {
                 var code = geoSystem[i];
                 if(this.elipsoideParameters[code])
-                  return this.elipsoideParameters[code];
+                  return code;
               }
+              //default elipsoide code
+              return 'WE';
+            },
 
-              // default elipsoide
-              return this.elipsoideParameters['WE'];
+            getElipsoide: function(geoSystem)
+            {
+              return this.elipsoideParameters[this.getElipsoideCode(geoSystem)];
             },
 
             getReferenceFrame: function(geoSystem)
