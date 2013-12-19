@@ -104,6 +104,19 @@ x3dom.registerNodeType(
               return this.elipsoideParameters['WE'];
             },
 
+            getUTMZone: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+                {
+                  var code = geoSystem[i];
+
+                  if(code[0] == 'Z')
+                    return code.substring(1);
+                }
+              // no zone found
+              x3dom.debug.logError('no UTM zone but is required:' + geoSystem);
+            },
+
             UTMtoGC: function(geoSystem, coords) {
               x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
             },
