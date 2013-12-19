@@ -245,8 +245,13 @@ x3dom.registerNodeType(
                 var clat = Math.cos(source_lat);
 
                 /* square root approximation for Rn */
+                /* replaced by real sqrt
                 var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + 
-                         (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                        (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                */
+
+                // with real sqrt; really slower ?
+                var Rn = A / Math.sqrt(1.0 - Eps2 * slat2);
 
                 var RnPh = Rn + coords[i].z;
                 
