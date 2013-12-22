@@ -100,8 +100,78 @@ x3dom.registerNodeType(
               return this.elipsoideParameters['WE'];
             },
 
-            UTMtoGC: function(geoSystem, coords) {
-              x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
+	    getUTMZone: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+              {
+                var code = geoSystem[i];
+
+                if(code[0] == 'Z')
+                  return code.substring(1);
+
+              }
+		// no zone found
+            x3dom.debug.logError('no UTM zone but is required:' + geoSystem);
+            },
+
+
+	    getUTMHemisphere: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+              {
+                var code = geoSystem[i];
+
+                if(code == 'S')
+                  return code;
+              }
+		// North by default according to spec
+		return 'N';
+            },
+
+            getProj4JsDef: function(geoSystem)
+            {
+              //parse UTM projection parameters             
+              var utmzone = this.getUTMZone(geoSystem);
+              if(utmzone < 1 || utmzone > 60 || utmzone === undefined) 
+                return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
+              var hemisphere = this.getUTMHemisphere(geoSystem);
+              var elipsoide = this.getElipsoide(geoSystem);
+              var radius = elipsoide[1];
+              var rflattening = elipsoide[2];
+              var southoption = (hemisphere == "S" ? "+south" : "");
+              var projDef = "+proj=utm +zone=" + utmzone + " +a=" + radius + " +rf=" + rflattening + " " + southoption;
+              return projDef;
+            },
+
+            UTMtoGC: function(geoSystem, coords)
+            {
+              var sourceProjDef = this.getProj4JsDef(geoSystem);
+              x3dom.debug.logInfo(sourceProjDef);
+              if (sourceProjDef === undefined)
+                return x3dom.debug.logError('undefined geoSystem');
+                            
+              // Proj4js version 1.1.0 wants the EPSG: in the def
+              // Proj4Js > 2.0 may be able to use the proj string directly in .transform
+              Proj4js.defs["EPSG:0"] = sourceProjDef;
+              Proj4js.reportError = function(msg) {x3dom.debug.logError(msg);};
+              var sourceProj = new Proj4js.Proj("EPSG:0");
+              //WGS84 is longlat WGS84 builtin shortcut for Proj4js
+              var destProj = new Proj4js.Proj("WGS84");
+              //x3dom.debug.logError("ready: " + sourceProj.readyToUse);
+              
+              for(var i=0; i<coords.length; ++i)
+              {
+                Proj4js.transform(sourceProj, destProj, coords[i]); // transforms coords in place 
+              }
+              x3dom.debug.logInfo('transformed coords ' + coords);
+              
+              //GD to GC and return
+              var GDgeoSystem = new x3dom.fields.MFString();
+              // there is probably a better way to construct
+              GDgeoSystem.push("GD");
+              GDgeoSystem.push("WE");
+              GDgeoSystem.push("longitude_first");
+              return this.GDtoGC(GDgeoSystem, coords);
             },
             
             GDtoGC: function(geoSystem, coords) {
@@ -138,8 +208,11 @@ x3dom.registerNodeType(
                 var clat = Math.cos(source_lat);
 
                 /* square root approximation for Rn */
-                var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + 
-                         (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                /* var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + 
+                         (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0)); */
+
+                // Rn with sqrt; really much slower ? http://www.epsg.org/guides/docs/g7-2.pdf p.94
+                var Rn = A / Math.sqrt(1.0 - Eps2 * slat2);
 
                 var RnPh = Rn + coords[i].z;
                 
