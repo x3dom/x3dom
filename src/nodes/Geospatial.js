@@ -66,17 +66,21 @@ x3dom.registerNodeType(
               return false;
             },
 
-            getElipsoide: function(geoSystem)
+            getElipsoideCode: function(geoSystem)
             {
               for(var i=0; i<geoSystem.length; ++i)
               {
                 var code = geoSystem[i];
                 if(this.elipsoideParameters[code])
-                  return this.elipsoideParameters[code];
+                  return code;
               }
+              //default elipsoide code
+              return 'WE';
+            },
 
-              // default elipsoide
-              return this.elipsoideParameters['WE'];
+            getElipsoide: function(geoSystem)
+            {
+              return this.elipsoideParameters[this.getElipsoideCode(geoSystem)];
             },
 
             getReferenceFrame: function(geoSystem)
@@ -100,8 +104,111 @@ x3dom.registerNodeType(
               return this.elipsoideParameters['WE'];
             },
 
-            UTMtoGC: function(geoSystem, coords) {
-              x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
+            getUTMZone: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+                {
+                  var code = geoSystem[i];
+
+                  if(code[0] == 'Z')
+                    return code.substring(1);
+                }
+              // no zone found
+              x3dom.debug.logError('no UTM zone but is required:' + geoSystem);
+            },
+
+            getUTMHemisphere: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+                {
+                  var code = geoSystem[i];
+
+                  if(code == 'S')
+                    return code;
+                }
+              // North by default according to spec
+              return 'N';
+            },
+
+            UTMtoGC: function(geoSystem, coords)
+            {
+              //parse UTM projection parameters             
+              var utmzone = this.getUTMZone(geoSystem);
+              if(utmzone < 1 || utmzone > 60 || utmzone === undefined) 
+                return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
+              var hemisphere = this.getUTMHemisphere(geoSystem);
+              var elipsoide = this.getElipsoide(geoSystem);
+              //below from U.W. Green Bay Prof. Dutch; returns coordinates in the input ell., not WGS84
+              var a = elipsoide[1];
+              var f = 1/elipsoide[2];
+              var k0 = 0.9996; //scale on central meridian
+              var b = a * (1 - f); //polar axis.
+              var esq = (1 - (b/a)*(b/a)); //e squared for use in expansions
+              var e = Math.sqrt(esq); //eccentricity
+              var e0 = e/Math.sqrt(1 - esq); //Called e prime in reference
+              var e0sq = esq/(1 - esq); // e0 squared - always even powers
+              var zcm = 3 + 6 * (utmzone - 1) - 180; //Central meridian of zone
+              var e1 = (1 - Math.sqrt(1 - esq))/(1 + Math.sqrt(1 - esq)); //Called e1 in USGS PP 1395 also
+              var e1sq = e1*e1;
+              //var M0 = 0; //In case origin other than zero lat - not needed for standard UTM
+              var output = new x3dom.fields.MFVec3f();
+              var rad2deg = 180/Math.PI;
+
+              var f3o64 = 3/64;
+              var f5o256 = 5/256;
+              var f27o32 = 27/32;
+              var f21o16 = 21/16;
+              var f55o32 = 55/32;
+              var f151o96 = 151/96;
+              var f1097o512 = 1097/512;
+              
+              
+              for(var i=0; i<coords.length; ++i)
+              {
+                var x = coords[i].x;
+                var y = coords[i].y;
+                var z = coords[i].z;
+                
+                var current = new x3dom.fields.SFVec3f();
+                //var M = M0 + y/k0; //Arc length along standard meridian. 
+                // var M = y/k0;
+                //if (hemisphere == "S"){ M = M0 + (y - 10000000)/k; }
+                var M = (hemisphere == "S" ? (y - 10000000) : y )/k0 ;
+                //TODO: compute constant factors outside
+                var mu = M/(a * (1 - esq*(0.25 + esq*(f3o64 + f5o256*esq))));
+                var phi1 = mu + e1*(1.5 - f27o32*e1sq)*Math.sin(2*mu) + e1sq*(f21o16 - f55o32*e1sq)*Math.sin(4*mu); //Footprint Latitude
+                phi1 = phi1 + e1*(e1sq*(Math.sin(6*mu)*f151o96 + Math.sin(8*mu)*f1097o512));
+                //
+                var cosphi1 = Math.cos(phi1);
+                var C1 = e0sq*cosphi1*cosphi1;
+                var tanphi1 = Math.tan(phi1);
+                var T1 = tanphi1*tanphi1;
+                var T1sq = T1*T1;
+                var esinphi1 = e*Math.sin(phi1);
+                var oneesinphi1 = 1 - esinphi1*esinphi1;
+                var N1 = a/Math.sqrt(oneesinphi1);
+                var R1 = N1*(1-e*e)/oneesinphi1;
+                var D = (x-500000)/(N1*k0);
+                var Dsq = D*D;
+                var C1sq = C1*C1;
+                var phi = Dsq*(0.5 - Dsq*(5 + 3*T1 + 10*C1 - 4*C1sq - 9*e0sq)/24);
+                phi = phi + Math.pow(D,6)*(61 + 90*T1 + 298*C1 + 45*T1sq -252*e0sq - 3*C1sq)/720;
+                phi = phi1 - (N1*tanphi1/R1)*phi;
+                var lng = D*(1 + Dsq*((-1 -2*T1 -C1)/6 + Dsq*(5 - 2*C1 + 28*T1 - 3*C1sq +8*e0sq + 24*T1sq)/120))/cosphi1;
+                current.x = zcm + rad2deg*lng;
+                current.y = rad2deg*phi;
+                current.z = coords[i].z;
+                output.push(current);
+              }
+              //x3dom.debug.logInfo('transformed coords ' + output);
+              
+              //GD to GC and return
+              var GDgeoSystem = new x3dom.fields.MFString();
+              // there may be a better way to construct this geoSystem
+              GDgeoSystem.push("GD");
+              GDgeoSystem.push(this.getElipsoideCode(geoSystem));
+              GDgeoSystem.push("longitude_first");
+              return this.GDtoGC(GDgeoSystem, output);             
             },
             
             GDtoGC: function(geoSystem, coords) {
@@ -138,8 +245,13 @@ x3dom.registerNodeType(
                 var clat = Math.cos(source_lat);
 
                 /* square root approximation for Rn */
+                /* replaced by real sqrt
                 var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + 
-                         (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                        (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                */
+
+                // with real sqrt; really slower ?
+                var Rn = A / Math.sqrt(1.0 - Eps2 * slat2);
 
                 var RnPh = Rn + coords[i].z;
                 
