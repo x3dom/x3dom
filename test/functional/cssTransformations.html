@@ -88,16 +88,20 @@
 	<style type="text/css">    
 	  #outerTrans1 {
 	    -webkit-animation: spinPos 4s infinite linear;
-        width:23px;
 	    -moz-animation:    spinPos 4s infinite linear;
-      display:block;
+		-ms-animation:     spinPos 4s infinite linear;
+		animation:         spinPos 4s infinite linear;
+        width:23px;
+		display:block;
 	  }
 
       #outerTrans2 {
 	    -webkit-animation: spinNeg 4s infinite linear;
-        width:23px;
 	    -moz-animation:    spinNeg 4s infinite linear;
-      display:block;
+		-ms-animation:     spinNeg 4s infinite linear;
+		animation:         spinNeg 4s infinite linear;
+        width:23px;
+		display:block;
 	  }
       
       @-webkit-keyframes spinNeg {
@@ -108,6 +112,14 @@
   	    from { -moz-transform: rotateZ(0); }
   	    to   { -moz-transform: rotateZ(-360deg); }
   	  }
+	  @-ms-keyframes spinNeg {
+  	    from { -ms-transform: rotateZ(0); }
+  	    to   { -ms-transform: rotateZ(-360deg); }
+  	  }
+	  @keyframes spinNeg {
+  	    from { transform: rotateZ(0); }
+  	    to   { transform: rotateZ(-360deg); }
+  	  }
       
 	  @-webkit-keyframes spinPos {
 	    from { -webkit-transform: rotateZ(0); }
@@ -117,22 +129,34 @@
   	    from { -moz-transform: rotateZ(0); }
   	    to   { -moz-transform: rotateZ(360deg); }
   	  }
+	  @-ms-keyframes spinPos {
+  	    from { -ms-transform: rotateZ(0); }
+  	    to   { -ms-transform: rotateZ(360deg); }
+  	  }
+	  @keyframes spinPos {
+  	    from { transform: rotateZ(0); }
+  	    to   { transform: rotateZ(360deg); }
+  	  }
   	  
   	  #innerTrans1 {
   	      -webkit-transform: translate3d(0.2em,0em,0.0em);
   	      -moz-transform:    translate3d(0.2em,0em,0.0em);
+  	      -ms-transform:     translate3d(0.2em,0em,0.0em);
+  	      transform:         translate3d(0.2em,0em,0.0em);
           display:block;
   	  }
   	  
   	  #innerTrans2 {
 	      -webkit-transform: rotateZ(45deg);
-	      -moz-transform:    rotateZ(45deg);	          
-        display:block;
+	      -moz-transform:    rotateZ(45deg);
+	      -ms-transform:     rotateZ(45deg);
+	      transform:         rotateZ(45deg);     
+		  display:block;
 	  }	  
       
       #ExDiv
       {
-       -webkit-animation: spinNeg 4s infinite linear;
+		  -webkit-animation: spinNeg 4s infinite linear;
       }
 	</style>
 	

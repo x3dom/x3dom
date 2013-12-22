@@ -72,7 +72,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'load', true);
 			this.addField_MFString(ctx, 'nameSpaceName', []);
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
-            
+
+            this.initDone = false;
 			this.count = 0;
             this.numRetries = x3dom.nodeTypes.Inline.MaximumRetries;
         },
@@ -90,11 +91,19 @@ x3dom.registerNodeType(
 							} 
 						}
 					}
-                    this.nodeChanged();
+                    this.loadInline();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
                     //this.invalidateCache();
+                }
+            },
+
+            nodeChanged: function ()
+            {
+                if (!this.initDone) {
+                    this.initDone = true;
+                    this.loadInline();
                 }
             },
 
@@ -138,7 +147,7 @@ x3dom.registerNodeType(
                 }
             },
 
-            nodeChanged: function ()
+            loadInline: function ()
             {
 				var that = this;
 
@@ -161,7 +170,7 @@ x3dom.registerNodeType(
 
 						window.setTimeout(function() {
                             that._nameSpace.doc.downloadCount -= 1;
-                            that.nodeChanged();
+                            that.loadInline();
 							}, refreshTime * 1000);
                         return xhr;
 					}

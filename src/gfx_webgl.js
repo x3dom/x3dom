@@ -1439,7 +1439,9 @@ x3dom.gfx_webgl = (function () {
             sp.PG_bboxShiftVec = [0, 0, 0];
         }
 
-        this.stateManager.lineWidth(2);     // bigger lines for better picking
+        if (x3dom.Utils.needLineWidth) {
+            this.stateManager.lineWidth(2);     // bigger lines for better picking
+        }
 
         for (var i = 0; i < n; i++)
         {
@@ -1655,7 +1657,9 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        this.stateManager.lineWidth(1);
+        if (x3dom.Utils.needLineWidth) {
+            this.stateManager.lineWidth(1);
+        }
 
         gl.flush();
 
@@ -2020,7 +2024,7 @@ x3dom.gfx_webgl = (function () {
         {
             this.stateManager.lineWidth(lineProperties._vf.linewidthScaleFactor);
         }
-        else //Set Defaults
+        else if (x3dom.Utils.needLineWidth) //Set Defaults
         {
             this.stateManager.lineWidth(1);
         }

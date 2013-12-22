@@ -165,9 +165,13 @@
 
 
 			var zoomed = false;
+			var container_initial_width, container_initial_height;
 			
-			var container_initial_width = document.getElementById('container').style.width;
-			var container_initial_height =  document.getElementById('container').style.height;
+			function initStuff() {
+				var style = document.getElementById('container').style;
+				container_initial_width = style.width;
+				container_initial_height = style.height;
+			}
 
 
 			function toggle_size() {
@@ -242,7 +246,7 @@
 					removeClass(x3delement, class_two)
 					addClass(x3delement, class_one)
 				}
-				alert(x3delement.className)
+				//alert(x3delement.className)
 				return true;
 			}
             
@@ -258,7 +262,7 @@
 		</script>
 	</head>
     
-<body id="main" >
+<body id="main" onload="initStuff();">
 	<h1 id="title">CSS Integration test</h1>
     
     <div id="container" class="group">

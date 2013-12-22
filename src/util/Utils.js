@@ -15,6 +15,7 @@
 x3dom.Utils = {};
 
 x3dom.Utils.maxIndexableCoords = 65535;
+x3dom.Utils.needLineWidth = false;  // lineWidth not impl. in IE11
 x3dom.Utils.measurements = [];
 
 

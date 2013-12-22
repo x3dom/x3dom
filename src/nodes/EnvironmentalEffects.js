@@ -151,8 +151,8 @@ x3dom.registerNodeType(
             // Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
             this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', false);
             
-            // The gamma correction to apply by default, see lighting and gamma tutorial.
-            this.addField_SFString(ctx, 'gammaCorrectionDefault', "linear");
+            // The gamma correction to apply by default, see lighting and gamma tutorial
+            this.addField_SFString(ctx, 'gammaCorrectionDefault', "none"); //"linear");
 
             // boolean flags for feature (de)activation
             // If TRUE, objects outside the viewing frustum are ignored
@@ -224,8 +224,8 @@ x3dom.registerNodeType(
                         return field;
                     }
                     else {
-                        x3dom.debug.logWarning(field + " gammaCorrectionDefault may only be linear (default), fastLinear, or none");
-                        return "linear";
+                        x3dom.debug.logWarning(field + " gammaCorrectionDefault may only be linear, fastLinear, or none (default)");
+                        return that._validGammaCorrectionTypes[0];
                     }
                 };
                 

@@ -374,19 +374,27 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		}
 		
 		//Calculate lighting
-		for(var i=0; i<properties.LIGHTS; i++) {		
-			shader += " lighting(light"+i+"_Type," +
-								"light"+i+"_Location," +
-								"light"+i+"_Direction," +
-								"light"+i+"_Color," + 
-								"light"+i+"_Attenuation," +
-								"light"+i+"_Radius," +
-								"light"+i+"_Intensity," + 
-								"light"+i+"_AmbientIntensity," +
-								"light"+i+"_BeamWidth," +
-								"light"+i+"_CutOffAngle," +
-								"normalMV, eye, ambient, diffuse, specular);\n";
-		}
+        if (properties.LIGHTS) {
+            shader += "vec3 ads;\n";
+
+            for(var l=0; l<properties.LIGHTS; l++) {
+                var lightCol = "light"+l+"_Color";
+                shader += "ads = lighting(light"+l+"_Type, " +
+                          "light"+l+"_Location, " +
+                          "light"+l+"_Direction, " +
+                          lightCol + ", " +
+                          "light"+l+"_Attenuation, " +
+                          "light"+l+"_Radius, " +
+                          "light"+l+"_Intensity, " +
+                          "light"+l+"_AmbientIntensity, " +
+                          "light"+l+"_BeamWidth, " +
+                          "light"+l+"_CutOffAngle, " +
+                          "normal, eye);\n";
+                shader += "   ambient  += " + lightCol + " * ads.r;\n" +
+                          "   diffuse  += " + lightCol + " * ads.g;\n" +
+                          "   specular += " + lightCol + " * ads.b;\n";
+            }
+        }
 		
 		//Textures & blending
 		if(properties.TEXTURED  && !properties.BLENDING) {

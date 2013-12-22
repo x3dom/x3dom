@@ -169,13 +169,15 @@ x3dom.registerNodeType(
         {
             tick: function (t)
             {
-                if (this._xmlNode && (this._xmlNode['ontransform'] ||
-                         this._xmlNode.hasAttribute('ontransform') ||
+                var dom = this._xmlNode;
+
+                if (dom && (dom['ontransform'] ||
+                         dom.hasAttribute('ontransform') ||
                          this._listeners['transform'])) {
                     var transMatrix = this.getCurrentTransform();
 
                     var event = {
-                        target: this._xmlNode,
+                        target: dom,
                         type: 'transform',
                         worldX: transMatrix._03,
                         worldY: transMatrix._13,
@@ -190,9 +192,11 @@ x3dom.registerNodeType(
                 }
 
                 // temporary per frame update method for CSS-Transform
-                if (this._needCssStyleUpdates) {
-                    var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
-                                x3dom.getStyle(this._xmlNode, "-moz-transform");
+                if (this._needCssStyleUpdates && dom) {
+                    var trans = x3dom.getStyle(dom, "-webkit-transform") ||
+                                x3dom.getStyle(dom, "-moz-transform") ||
+                                x3dom.getStyle(dom, "-ms-transform") ||
+                                x3dom.getStyle(dom, "transform");
 
                     if (trans && (trans != 'none')) {
                         this._trafo.setValueByStr(trans);

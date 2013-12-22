@@ -430,9 +430,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     gl.compileShader(vertexShader);
 		
 	if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
+        x3dom.debug.logInfo("VERTEX:\n" + shader);
 		x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(vertexShader));		
 	}
-	//x3dom.debug.logInfo("VERTEX:\n" + shader);
 	
 	return vertexShader;
 };
@@ -447,7 +447,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     			 "#endif\n\n";*/
     
   var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
+  shader += " precision highp float;\n";
   shader += "#else\n";
   shader += " precision mediump float;\n";
   shader += "#endif\n\n";
@@ -579,19 +579,27 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		
 		//Calculate lights
-		for(var l=0; l<properties.LIGHTS; l++) {
-			shader += " lighting(light"+l+"_Type, " +
-								"light"+l+"_Location, " +
-								"light"+l+"_Direction, " +
-								"light"+l+"_Color, " + 
-								"light"+l+"_Attenuation, " +
-								"light"+l+"_Radius, " +
-								"light"+l+"_Intensity, " + 
-								"light"+l+"_AmbientIntensity, " +
-								"light"+l+"_BeamWidth, " +
-								"light"+l+"_CutOffAngle, " +
-								"normal, eye, ambient, diffuse, specular);\n";
-		}
+        if (properties.LIGHTS) {
+            shader += "vec3 ads;\n";
+
+            for(var l=0; l<properties.LIGHTS; l++) {
+                var lightCol = "light"+l+"_Color";
+                shader += "ads = lighting(light"+l+"_Type, " +
+                                    "light"+l+"_Location, " +
+                                    "light"+l+"_Direction, " +
+                                    lightCol + ", " +
+                                    "light"+l+"_Attenuation, " +
+                                    "light"+l+"_Radius, " +
+                                    "light"+l+"_Intensity, " +
+                                    "light"+l+"_AmbientIntensity, " +
+                                    "light"+l+"_BeamWidth, " +
+                                    "light"+l+"_CutOffAngle, " +
+                                    "normal, eye);\n";
+                shader += "   ambient  += " + lightCol + " * ads.r;\n" +
+                          "   diffuse  += " + lightCol + " * ads.g;\n" +
+                          "   specular += " + lightCol + " * ads.b;\n";
+            }
+        }
 		
 		//Specularmap
 		if(properties.SPECMAP) {
@@ -678,9 +686,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     gl.compileShader(fragmentShader);
 		
 	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fragmentShader));		
+        x3dom.debug.logInfo("FRAGMENT:\n" + shader);
+		x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fragmentShader));
 	}
-    //x3dom.debug.logInfo("FRAGMENT:\n" + shader);
-	
+
 	return fragmentShader;
 };

@@ -148,7 +148,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
 
-            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             this._mesh._primType = 'POINTS';
@@ -160,7 +160,7 @@ x3dom.registerNodeType(
 
                 var coordNode = this._cf.coord.node;
                 x3dom.debug.assert(coordNode);
-                var positions = coordNode._vf.point;
+                var positions = coordNode.getPoints();
 
                 var numColComponents = 3;
                 var colorNode = this._cf.color.node;
@@ -196,7 +196,7 @@ x3dom.registerNodeType(
                 
                 if (fieldName == "coord")
                 {
-                    pnts = this._cf.coord.node._vf.point;
+                    pnts = this._cf.coord.node.getPoints();
                     
                     this._mesh._positions[0] = pnts.toGL();
 
@@ -299,6 +299,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             this._mesh._primType = "LINES";
+            x3dom.Utils.needLineWidth = true;
         },
         {
             nodeChanged: function() {
@@ -379,6 +380,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'colorIndex', []);
 
             this._mesh._primType = 'LINES';
+            x3dom.Utils.needLineWidth = true;
         },
         {
             nodeChanged: function()
