@@ -94,13 +94,48 @@
 	<h1>Audio example</h1>
 	<p class="warning">Note: this test only plays audio file. No visuals.</p>
 
-	<x3d showStat="true" showLog="true" width="100px" height="100px">
-    <Scene>
-		<sound>
-			<audioClip url="../example/sound/spita.wav" loop="true"></audioClip>
+	<x3d showStat="false" showLog="true" width="100px" height="100px">
+      <Scene id="root">
+		<sound id="mySnd">
+			<audioClip id="myClip" url="../../example/sound/spita.wav" loop="true"></audioClip>
 		</sound>
-    </Scene>
+      </Scene>
     </x3d>
-
+	<script type="text/javascript">
+	    
+    function addNode() {
+        var a = document.createElement('audioClip');
+        a.setAttribute("id", "myClip");
+		a.setAttribute("loop", "true");
+		a.setAttribute("url", "../../example/sound/spita.wav");
+		
+		var s = document.createElement('sound');
+		s.setAttribute("id", "mySnd");
+		s.appendChild(a);
+        
+        var ot = document.getElementById('root');
+        ot.appendChild(s);
+    }
+    
+    function removeInnerNode() {
+        var a = document.getElementById('myClip');
+        if (a)
+            a.parentNode.removeChild(a);
+    }
+    
+    function removeOuterNode() {
+        var s = document.getElementById('mySnd');
+        if (s)
+            s.parentNode.removeChild(s);
+    }
+    
+	</script>
+	
+	<div class="group">
+	    <label>Dynamic sound update:</label> 
+        <input type="button" value="Add Sound" 		  onclick="addNode();" />
+		<input type="button" value="Remove AudioClip" onclick="removeInnerNode();" />
+		<input type="button" value="Remove Sound" 	  onclick="removeOuterNode();" />
+	</div>
 </body>
 </html>

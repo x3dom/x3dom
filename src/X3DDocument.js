@@ -149,6 +149,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     node._cleanupGLObjects();
                 }
             }
+            else if (x3dom.isa(node, x3dom.nodeTypes.AudioClip)) {
+                node.shutdown();
+            }
 
             if (nameSpace) {
                 nameSpace.removeNode(node._DEF);

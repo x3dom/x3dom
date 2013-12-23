@@ -43,7 +43,6 @@ x3dom.registerNodeType(
                         <audio src='sound/spita.wav' loop='loop'></audio>
                     </sound>
                 */
-                var that = this;
                 try {
                     Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
                         if (childDomNode.nodeType === 1)
@@ -56,6 +55,7 @@ x3dom.registerNodeType(
                                 var loop = childDomNode.getAttribute("loop");
                                 loop = loop ? (loop.toLowerCase() === "loop") : false;
 
+                                // TODO; check if crash still exists and clean-up code
                                 // work around strange crash in Chrome
                                 // by creating new audio element here
 
@@ -198,6 +198,17 @@ x3dom.registerNodeType(
                         src.setAttribute('src', audioUrl);
                         this._audio.appendChild(src);
                     }
+                }
+            },
+
+            shutdown: function() {
+                if (this._audio) {
+                    this._audio.pause();
+                    while (this._audio.hasChildNodes()) {
+                        this._audio.removeChild(this._audio.firstChild);
+                    }
+                    document.body.removeChild(this._audio);
+                    this._audio = null;
                 }
             }
         }
