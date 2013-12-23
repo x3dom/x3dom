@@ -32,6 +32,7 @@
         <X3D id="x3dElement">
             <Scene id="scene" onbackgroundClicked="handleBackgroundClick(event);">
                 <Environment id="env"></Environment>
+                <NavigationInfo id="navi"></NavigationInfo>
                 <Viewpoint id="vp0" position='0 0 10'  orientation='0 0 0 1'></Viewpoint>
                 <Transform id="sceneMaster" translation='0 0 0'></Transform>
                 <Transform id="sceneMaster2"></Transform>
@@ -82,7 +83,7 @@
         <li id="cm_frustum" class="contextMenuItem_check">Frustum Culling</li>
         <li id="cm_smallFeature" class="contextMenuItem">Small Feature Culling <input id="smallFeatureThreshold" type="text" value="(1px)"></li>
         <li id="cm_lowPriority" class="contextMenuItem">Low Priority Culling <input id="lowPriorityThreshold" type="text" value="(50%)"></li>
-        <li id="cm_states" class="contextMenuItem">Show States</li>
+        <li id="cm_states" class="contextMenuItem">Show Statistics</li>
         <li id="cm_debug" class="contextMenuItem">Show Debug</li>
         <div id="transcoderSettings" style="display: none;">
             <li class="contextMenuSeparator">Transcoder Settings</li>

@@ -28,6 +28,7 @@ var minFrameRate = 1.0;
 var maxFameRate = 62.5;
 var showStates = false;
 var showDebug = false;
+var x3dElem = null;
 
 var config = {};
 config.token="";
@@ -55,100 +56,15 @@ config.transcoding.updateString=function(){
 config.transcoding.optimizationTypes = [null,"collapse","restructure","collapse_restructure"];
 config.transcoding.conversionTypes = ["toBinGeo","toPopGeo","toImageGeo"];
 
-/**
- * Overwrites X3DOM's default onDrag behaviour
- * @param ctx actual context
- * @param x mouse x-position
- * @param y mouse y-position
- * @param buttonState pressed Button
- */
-x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea) {
-        return;
-    }
-
-    navigate = true;
-
-    if (buttonState == 1) {
-        buttonState = navMode;
-    }
-
-    if (this._viewarea._scene._vf.doPickPass)
-        ctx.pickValue(this._viewarea, x, y, buttonState);
-    this._viewarea.onDrag(x, y, buttonState);
-};
-
-/**
- * Overwrites X3DOM's default onMouseRelease behaviour
- * @param ctx actual context
- * @param x mouse x-position
- * @param y mouse y-position
- * @param buttonState pressed Button
- */
-x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState, prevButton) {
-    if (!ctx || !this._viewarea) {
-        return;
-    }
-
-    navigate = false;
-
-    var button = (prevButton << 8) | buttonState;   // for shadowObjectIdChanged
-    ctx.pickValue(this._viewarea, x, y, button);
-    this._viewarea.onMouseRelease(x, y, buttonState, prevButton);
-};
-
-/**
- * Extends X3DOM's Viewarea with a FitAll function
- */
-x3dom.Viewarea.prototype.fitAll = function()
-{
-    var scene = this._scene;
-    scene.updateVolume();
-
-    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
-    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
-
-    var dia2 = max.subtract(min).multiply(0.5);    // half diameter
-    var center = min.add(dia2);                    // center in wc
-    var bsr = min.subtract(center).length();       // bounding sphere radius
-
-    var viewpoint = scene.getViewpoint();
-    var fov = viewpoint.getFieldOfView();
-
-    var tanfov2 = Math.tan(fov / 2.0);
-
-    var viewmat = x3dom.fields.SFMatrix4f.copy(this.getViewMatrix());
-
-    var rightDir = new x3dom.fields.SFVec3f(viewmat._00, viewmat._01, viewmat._02);
-    var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
-    var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
-
-    var dist = (bsr / tanfov2);
-    var lookAt = center;
-    var eyePos = lookAt.add(viewDir.multiply(dist));
-
-    viewmat._03 = -rightDir.dot(eyePos);
-    viewmat._13 = -upDir.dot(eyePos);
-    viewmat._23 = -viewDir.dot(eyePos);
-
-    viewpoint._vf.centerOfRotation = center;
-
-    this.animateTo(viewmat, viewpoint);
-};
-
-/**
- * Extends X3DOM's Runtime with a FitAll function
- */
-x3dom.Runtime.prototype.fitAll = function() {
-    this.canvas.doc._viewarea.fitAll();
-};
 
 function initViewer()
 {
     x3dElem = document.getElementById('x3dElement');
 
-    viewarea = x3dom.canvases[0].doc._viewarea;
-
+    viewarea = x3dElem.runtime.canvas.doc._viewarea;
+    
+    var navi = x3dElem.runtime.getActiveBindable("NavigationInfo");
+    navi.setAttribute("explorationMode", "rotate");
 
     var vpchanged = function(event){
         if(event) {
@@ -545,7 +461,7 @@ function changeDisplayMode(mode)
             break;
     }
 
-    x3dom.canvases[0].doc.needRender = true;
+    x3dElem.runtime.triggerRedraw();
 }
 
 /**
@@ -554,22 +470,26 @@ function changeDisplayMode(mode)
  */
 function changeNavMode(mode)
 {
+    var navi = x3dElem.runtime.getActiveBindable("NavigationInfo");
     navMode = mode;
 
     $("#navModeRotate").removeClass("toolbarRotate_active").addClass("toolbarRotate");
     $("#navModeMove").removeClass("toolbarMove_active").addClass("toolbarMove");
     $("#navModeZoom").removeClass("toolbarZoom_active").addClass("toolbarZoom");
-
+    
     switch (navMode)
     {
         case NAVMODES.ROTATE:
             $("#navModeRotate").removeClass("toolbarRotate").addClass("toolbarRotate_active");
+            navi.setAttribute("explorationMode", "rotate");
             break;
         case NAVMODES.MOVE:
             $("#navModeMove").removeClass("toolbarMove").addClass("toolbarMove_active");
+            navi.setAttribute("explorationMode", "pan");
             break;
         case NAVMODES.ZOOM:
             $("#navModeZoom").removeClass("toolbarZoom").addClass("toolbarZoom_active");
+            navi.setAttribute("explorationMode", "zoom");
             break;
     }
 }
