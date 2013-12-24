@@ -149,6 +149,7 @@ x3dom.registerNodeType(
               if(utmzone < 1 || utmzone > 60 || utmzone === undefined) 
                 return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
               var hemisphere = this.getUTMHemisphere(geoSystem);
+              var eastingFirst = this.isUTMEastingFirst(geoSystem);
               var elipsoide = this.getElipsoide(geoSystem);
               //below from U.W. Green Bay Prof. Dutch; returns coordinates in the input ell., not WGS84
               var a = elipsoide[1];
