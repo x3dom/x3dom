@@ -130,6 +130,18 @@ x3dom.registerNodeType(
               return 'N';
             },
 
+            isUTMEastingFirst: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+                {
+                  var code = geoSystem[i];
+                  if(code == 'easting_first')
+                    return true;
+                }
+              // Northing first by default according to spec
+              return false;
+            },
+
             UTMtoGC: function(geoSystem, coords)
             {
               //parse UTM projection parameters             
@@ -137,6 +149,7 @@ x3dom.registerNodeType(
               if(utmzone < 1 || utmzone > 60 || utmzone === undefined) 
                 return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
               var hemisphere = this.getUTMHemisphere(geoSystem);
+              var eastingFirst = this.isUTMEastingFirst(geoSystem);
               var elipsoide = this.getElipsoide(geoSystem);
               //below from U.W. Green Bay Prof. Dutch; returns coordinates in the input ell., not WGS84
               var a = elipsoide[1];
@@ -165,13 +178,13 @@ x3dom.registerNodeType(
               
               for(var i=0; i<coords.length; ++i)
               {
-                var x = coords[i].x;
-                var y = coords[i].y;
+                var x = (eastingFirst ? coords[i].x : coords[i].y);
+                var y = (eastingFirst ? coords[i].y : coords[i].x);
                 var z = coords[i].z;
                 
                 var current = new x3dom.fields.SFVec3f();
                 //var M = M0 + y/k0; //Arc length along standard meridian. 
-                // var M = y/k0;
+                //var M = y/k0;
                 //if (hemisphere == "S"){ M = M0 + (y - 10000000)/k; }
                 var M = (hemisphere == "S" ? (y - 10000000) : y )/k0 ;
                 //TODO: compute constant factors outside
