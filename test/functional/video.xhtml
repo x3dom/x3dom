@@ -93,17 +93,47 @@
 
     <h1>MovieTexture example</h1>
 	
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" x="0px" y="0px" width="350px" height="300px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+		     showStat="false" showLog="true" width="400px" height="300px">
           <Scene>
              <Shape>
-                <Appearance>
+                <Appearance id="app">
                     <Material diffuseColor='.5 .5 .5' specularColor='.1 .1 .1' />
-                    <MovieTexture repeatS="false" repeatT="false" url='"../../example/video/big_buck_bunny.ogv" "../../example/video/big_buck_bunny.mp4" "http://tinyvid.tv/vfe/big_buck_bunny.ogv"' loop="true" scale="false" />
+                    <MovieTexture id="myClip" repeatS="false" repeatT="false" loop="true" scale="false" 
+                        url='"../../example/video/big_buck_bunny.ogv" "../../example/video/big_buck_bunny.mp4" "http://tinyvid.tv/vfe/big_buck_bunny.ogv"' />
                 </Appearance>
                 <Box DEF='box'/>
              </Shape>
           </Scene>
         </X3D>
 	
+		<script type="text/javascript">
+
+        function addNode() {
+            var a = document.createElement('MovieTexture');
+            a.setAttribute("id", "myClip");
+    		a.setAttribute("loop", "true");
+    		a.setAttribute("scale", "false");
+    		a.setAttribute("repeatS", "false");
+    		a.setAttribute("repeatT", "false");
+    		a.setAttribute("url", '"../../example/video/big_buck_bunny.ogv" "../../example/video/big_buck_bunny.mp4"');
+
+            var ot = document.getElementById('app');
+            ot.appendChild(a);
+        }
+
+        function removeNode() {
+            var a = document.getElementById('myClip');
+            if (a)
+                a.parentNode.removeChild(a);
+        }
+
+    	</script>
+
+    	<div class="group">
+    	    <label>Dynamic video update:</label> 
+            <input type="button" value="Add Video" 	  onclick="addNode();" />
+    		<input type="button" value="Remove Video" onclick="removeNode();" />
+    	</div>
 </body>
 </html>

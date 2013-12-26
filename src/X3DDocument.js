@@ -138,6 +138,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture)) {
                 cleanNodeBag(doc._nodeBag.renderTextures, node);
             }
+            else if (x3dom.isa(node, x3dom.nodeTypes.Texture)) {
+                node.shutdown();    // general texture might have video
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.AudioClip)) {
+                node.shutdown();
+            }
             else if (x3dom.isa(node, x3dom.nodeTypes.X3DBindableNode)) {
                 var stack = node._stack;
                 if (stack) {
@@ -148,9 +154,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 if (node._cleanupGLObjects) {
                     node._cleanupGLObjects();
                 }
-            }
-            else if (x3dom.isa(node, x3dom.nodeTypes.AudioClip)) {
-                node.shutdown();
             }
 
             if (nameSpace) {

@@ -287,6 +287,17 @@ x3dom.registerNodeType(
                 catch(e) {
                     x3dom.debug.logException(e);
                 }
+            },
+
+            shutdown: function() {
+                if (this._video) {
+                    this._video.pause();
+                    while (this._video.hasChildNodes()) {
+                        this._video.removeChild(this._video.firstChild);
+                    }
+                    document.body.removeChild(this._video);
+                    this._video = null;
+                }
             }
         }
     )
