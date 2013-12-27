@@ -185,17 +185,21 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             // check and create ROUTEs
             if (domNode.localName.toLowerCase() === 'route') {
                 var route = domNode;
-                var fromNode = this.defMap[route.getAttribute('fromNode')];
-                var toNode = this.defMap[route.getAttribute('toNode')];
-                //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
+                var fnAtt = route.getAttribute('fromNode') || route.getAttribute('fromnode');
+                var tnAtt = route.getAttribute('toNode') || route.getAttribute('tonode');
+                var fromNode = this.defMap[fnAtt];
+                var toNode = this.defMap[tnAtt];
                 if (! (fromNode && toNode)) {
-                    x3dom.debug.logWarning("Broken route - can't find all DEFs for " +
-                                route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
-                    return null;
+                    x3dom.debug.logWarning("Broken route - can't find all DEFs for " + fnAtt + " -> " + tnAtt);
                 }
-                fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-                // Store reference to namespace for being able to remove route later on
-                route._nodeNameSpace = this;
+                else {
+                    //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
+                    fnAtt = route.getAttribute('fromField') || route.getAttribute('fromfield');
+                    tnAtt = route.getAttribute('toField') || route.getAttribute('tofield');
+                    fromNode.setupRoute(fnAtt, toNode, tnAtt);
+                    // Store reference to namespace for being able to remove route later on
+                    route._nodeNameSpace = this;
+                }
                 return null;
             }
 

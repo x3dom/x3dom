@@ -15,9 +15,9 @@ if (typeof x3dom === "undefined")
 {
     x3dom = {
         extend: function(f) {
-            function g() {}
-            g.prototype = f.prototype || f;
-            return new g();
+            function G() {}
+            G.prototype = f.prototype || f;
+            return new G();
         },
 
         debug: {
@@ -47,6 +47,10 @@ if (typeof x3dom === "undefined")
 /** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
+/// shortcut for convenience
+var VecMath = x3dom.fields;
+
+// Epsilon
 x3dom.fields.Eps = 0.000001;
 
 
@@ -57,7 +61,7 @@ x3dom.fields.Eps = 0.000001;
 ///////////////////////////////////////////////////////////////////////////////
 /** SFMatrix4f constructor. 
     @class Represents a SFMatrix4f
-    THINKABOUTME: use 2-dim array instead of _xx?
+    THINKABOUTME: use array instead of _xx?
   */
 x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03, 
 									_10, _11, _12, _13, 
@@ -1585,6 +1589,20 @@ x3dom.fields.Quaternion.prototype.setValue = function(matrix)
             this.w = -1.0;
         }
     }
+};
+
+x3dom.fields.Quaternion.prototype.setFromEuler = function (alpha, beta, gamma) {
+    var sx = Math.sin(alpha * 0.5);
+    var cx = Math.cos(alpha * 0.5);
+    var sy = Math.sin(beta  * 0.5);
+    var cy = Math.cos(beta  * 0.5);
+    var sz = Math.sin(gamma * 0.5);
+    var cz = Math.cos(gamma * 0.5);
+
+    this.x = (sx * cy * cz) - (cx * sy * sz);
+    this.y = (cx * sy * cz) + (sx * cy * sz);
+    this.z = (cx * cy * sz) - (sx * sy * cz);
+    this.w = (cx * cy * cz) + (sx * sy * sz);
 };
 
 x3dom.fields.Quaternion.prototype.dot = function (that) {
