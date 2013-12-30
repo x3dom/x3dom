@@ -66,11 +66,11 @@ compensated) or not (retaining gamma in all calculations).
 
 The field may have one of three states:
 
- * "linear" (default) The preferred gamma coefficient (2.2, close to the sRGB standard's
+ * "linear" The preferred gamma coefficient (2.2, close to the sRGB standard's
     and Rec. 709 transfer function) is applied. Sometimes called "gamma correct[ed]".
  * "fastLinear" A faster (in terms of GPU cycles), albeit slightly off transfer
     function based on sqrt. Equivalent to a gamma of 2.0.
- * "none" Do not correct for gamma coding, assume a gamma of 1.0.
+ * "none" (default) Do not correct for gamma coding, assume a gamma of 1.0.
     Confusingly, this results in a linear (identity) degenerate gamma correction
     which causes results to be processes as (non-linear as) they are stored.
 
