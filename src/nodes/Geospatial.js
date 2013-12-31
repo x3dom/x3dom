@@ -100,8 +100,8 @@ x3dom.registerNodeType(
                   x3dom.debug.logError('Unknown GEO system: [' + geoSystem + ']');
               }
 
-              // default elipsoide
-              return this.elipsoideParameters['WE'];
+              // default reference frame is GD WE
+              return 'GD';
             },
 
             getUTMZone: function(geoSystem)
