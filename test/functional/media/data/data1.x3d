@@ -3,12 +3,12 @@
 <Scene>
 	<Shape>
 		<Appearance>
-			<Material diffuseColor="1 1 0"></Material>
+			<Material DEF="yellowMat" diffuseColor="1 1 0"></Material>
 		</Appearance>
 		<Sphere></Sphere>
 	</Shape>
 	<Transform translation="2 0 0">
-		<Inline nameSpaceName="test2" url="data2.x3d"></Inline>
+		<Inline nameSpaceName="test2" mapDEFToID="true" url="data2.x3d"></Inline>
 	</Transform>
 </Scene>
 </X3D>
