@@ -547,6 +547,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 104: /* h, helicopter mode */
             nav.setType("helicopter", this._viewarea);
             break;
+        case 105: /* i, fit all */
+            this._viewarea.fit(this._scene._lastMin, this._scene._lastMax);
+            break;
         case 108: /* l, lookAt mode */
             nav.setType("lookat", this._viewarea);
             break;

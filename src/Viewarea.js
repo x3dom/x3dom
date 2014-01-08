@@ -930,13 +930,11 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
         updateCenterOfRotation = true;
     }
 
-    var scene = this._scene;
-
     var dia2 = max.subtract(min).multiply(0.5);    // half diameter
     var center = min.add(dia2);                    // center in wc
-    var bsr = min.subtract(center).length();       // bounding sphere radius
+    var bsr = dia2.length();                       // bounding sphere radius
 
-    var viewpoint = scene.getViewpoint();
+    var viewpoint = this._scene.getViewpoint();
     var fov = viewpoint.getFieldOfView();
 
     var tanfov2 = Math.tan(fov / 2.0);
@@ -947,7 +945,7 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
     var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
     var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
 
-    var dist = (bsr / tanfov2);
+    var dist = bsr / tanfov2;
     var lookAt = center;
     var eyePos = lookAt.add(viewDir.multiply(dist));
 

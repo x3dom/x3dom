@@ -568,10 +568,7 @@ x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
-    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
-    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
-
-    this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
+    this.canvas.doc._viewarea.fit(scene._lastMin, scene._lastMax, updateCenterOfRotation);
 };
 
 /**
