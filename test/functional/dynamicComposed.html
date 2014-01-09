@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<!-- HTML5 -->
+<html>
+<head>
+	<meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+
+    <!-- BEGIN:X3DOM -->
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+    <script type="text/javascript" src="../../src/lang/Array.js"></script>
+    <script type="text/javascript" src="../../src/Internals.js"></script>
+    <script type="text/javascript" src="../../src/debug.js"></script>
+    <script type="text/javascript" src="../../src/util/AdaptiveRenderControl.js"></script>
+    <script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+    <script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+    <script type="text/javascript" src="../../src/util/Properties.js"></script>
+    <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+    <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+    <script type="text/javascript" src="../../src/util/Utils.js"></script>
+    <script type="text/javascript" src="../../src/util/States.js"></script>
+    <script type="text/javascript" src="../../src/util/StateManager.js"></script>
+    <script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+    <script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+    <script type="text/javascript" src="../../src/util/BVH.js"></script>
+    <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+    <script type="text/javascript" src="../../src/Runtime.js"></script>
+    <script type="text/javascript" src="../../src/Main.js"></script>
+    <script type="text/javascript" src="../../src/Cache.js"></script>
+    <script type="text/javascript" src="../../src/Texture.js"></script>
+    <script type="text/javascript" src="../../src/shader/Shader.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingId.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+    <script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+    <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+    <script type="text/javascript" src="../../src/gfx_flash.js"></script>
+    <script type="text/javascript" src="../../src/X3DDocument.js"></script>
+    <script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+    <script type="text/javascript" src="../../src/Viewarea.js"></script>
+    <script type="text/javascript" src="../../src/Mesh.js"></script>
+    <script type="text/javascript" src="../../src/fields.js"></script>
+    <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Time.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+    <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Text.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+    <script type="text/javascript" src="../../src/nodes/BVHRefiner.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3DExt.js"></script>
+    <script type="text/javascript" src="../../src/util/Moveable.js"></script>
+    <script type="text/javascript" src="../../src/Docs.js"></script>
+    <!-- END:X3DOM -->
+    <script>
+        function Init()
+        {
+            var shape = document.createElement('shape');
+            
+            var appearance = document.createElement('appearance');
+            appearance.setAttribute("id", "app");
+            
+            var composedShader = document.createElement('composedShader');
+            composedShader.setAttribute("id", "compShader");
+            
+            var shaderPartV = document.createElement('shaderPart');
+            //shaderPartV.setAttribute('id', 'partV1');
+            shaderPartV.setAttribute('type', 'VERTEX');
+            
+            var shaderV = "attribute vec3 position;\n" +
+                          "uniform mat4 modelViewProjectionMatrix;\n" +
+                          "\n" +
+                          "void main()\n" +
+                          "{\n" +
+                          "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+                          "}\n";
+            
+            shaderPartV.innerHTML = shaderV;
+            
+            var shaderPartF = document.createElement('shaderPart');
+            //shaderPartF.setAttribute('id', 'partF1');
+            shaderPartF.setAttribute('type', 'FRAGMENT');
+            
+            var shaderF = "#ifdef GL_ES\n" +
+                          "    precision highp float;\n" +
+                          "#endif\n" +
+                          "\n" +
+                          "void main()\n" +
+                          "{\n" +
+                          "    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
+                          "}\n";
+                          
+            shaderPartF.innerHTML = shaderF;
+            
+            composedShader.appendChild(shaderPartV);
+            composedShader.appendChild(shaderPartF);
+            
+            appearance.appendChild(composedShader);
+            
+            var box = document.createElement('box');
+            
+            shape.appendChild(appearance);
+            shape.appendChild(box);
+            
+            document.getElementById('theScene').appendChild(shape);
+        }
+        
+        function changeShader()
+        {
+            var appearance = document.getElementById('app'); 
+                    
+            var composedShaderOld = document.getElementById('compShader');
+                    
+            var composedShaderNew = document.createElement('composedShader');
+            composedShaderNew.setAttribute("id", "compShader");
+                            
+            var shaderPartV = document.createElement('shaderPart');
+            //shaderPartV.setAttribute('id', 'partV2');
+            shaderPartV.setAttribute('type', 'VERTEX');
+            
+            var shaderV = "attribute vec3 position;\n" +
+                          "uniform mat4 modelViewProjectionMatrix;\n" +
+                          "\n" +
+                          "void main()\n" +
+                          "{\n" +
+                          "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+                          "}\n";
+            
+            shaderPartV.innerHTML = shaderV;
+            
+            var shaderPartF = document.createElement('shaderPart');
+            //shaderPartF.setAttribute('id', 'partF2');
+            shaderPartF.setAttribute('type', 'FRAGMENT');
+            
+            var shaderF = "#ifdef GL_ES\n" +
+                          "    precision highp float;\n" +
+                          "#endif\n" +
+                          "\n" +
+                          "void main()\n" +
+                          "{\n" +
+                          "    gl_FragColor = vec4(" + Math.random() + ", " + Math.random() + ", " + Math.random() + ", 1.0);\n" +
+                          "}\n";
+                          
+            shaderPartF.innerHTML = shaderF;
+            
+            composedShaderNew.appendChild(shaderPartV);
+            composedShaderNew.appendChild(shaderPartF);
+            
+            appearance.replaceChild(composedShaderNew, composedShaderOld);
+        }
+    </script>
+</head>
+       
+<body onload='Init();'>
+	<x3d width="400px" height="400px">
+	  <scene id='theScene'>
+	  </scene>
+	</x3d>
+    <input type='button' value='Change Shader' onclick='changeShader();'>
+</body>
+</html>

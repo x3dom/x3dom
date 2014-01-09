@@ -381,6 +381,8 @@ x3dom.registerNodeType(
 
 x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown = false;
 
+/** Static class ID counter (needed for caching) */
+x3dom.nodeTypes.Shape.shaderPartID = 0;
 
 /* ### ShaderPart ### */
 x3dom.registerNodeType(
@@ -392,6 +394,8 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFString(ctx, 'type', "VERTEX");
+            
+            this.id = (ctx.xmlNode.id != "") ? ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');

@@ -53,6 +53,10 @@ x3dom.registerNodeType(
                 if (this._cf.shaders.nodes.length) {
                     this._shader = this._cf.shaders.nodes[0];
                 }
+                
+                Array.forEach(this._parentNodes, function (shape) {
+                    shape.setAppDirty();
+                });
 				
 				this.checkSortType();
             },
