@@ -17,7 +17,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     var that = this;
 	this.canvasIdx = canvasIdx;
 
-    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2)
+    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders, forceFlashForIE, tryWebGL2)
     {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, x3dElem);
@@ -29,8 +29,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         } else {
             var webglVersion = parseFloat(x3dom.caps.VERSION.match(/\d+\.\d+/)[0]);
             if (webglVersion < 1.0) {
-                x3dom.debug.logError("WebGL version " + x3dom.caps.VERSION +
-                    " lacks important WebGL/GLSL features needed for shadows, special vertex attribute types, etc.!");
+                console.log(forceFlashForIE);
+                if (forceFlashForIE) {
+                    x3dom.debug.logError("No valid 3D context found...");
+                    this.x3dElem.removeChild(canvas);
+                    return null;
+                } else {
+                    x3dom.debug.logError("WebGL version " + x3dom.caps.VERSION +
+                        " lacks important WebGL/GLSL features needed for shadows, special vertex attribute types, etc.!");
+                }
             }
         }
         
@@ -453,8 +460,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		this.canvas = this.createHTMLCanvas(x3dElem);
 		this.canvas.parent = this;
 		this.gl = this.initContext( this.canvas, 
-		            (this.backend.search("desktop") >= 0), 
+		            (this.backend.search("desktop") >= 0),
 		            (this.backend.search("mobile") >= 0),
+                    (this.backend.search("flashie") >= 0),
                     (this.backend.search("webgl2") >= 0));
 		this.backend = 'webgl';
 		if (this.gl == null)
@@ -706,7 +714,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if(!this.isMulti) {
                 this.focus();
 
-				this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
+				this.mouse_drag_y -= 0.1 * evt.wheelDelta;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
