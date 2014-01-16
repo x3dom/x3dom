@@ -944,7 +944,8 @@ x3dom.registerNodeType(
                 volume:       new x3dom.fields.BoxVolume(),     // local bbox
                 worldVolume:  new x3dom.fields.BoxVolume(),     // global bbox
                 center:       new x3dom.fields.SFVec3f(0,0,0),  // center in eye coords
-                coverage:     -1       // currently approx. number of pixels on screen
+                coverage:     -1,       // currently approx. number of pixels on screen
+                needCulling:  true      // to be able to disable culling per node
             };
         },
         {

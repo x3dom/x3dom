@@ -74,7 +74,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
     var volume = node.getVolume();      // create on request
     var MASK_SET = 63;  // 2^6-1, i.e. all sides of the volume
 
-    if (this.frustumCulling) {
+    if (this.frustumCulling && graphState.needCulling) {
         var wvol;
 
         if (singlePath && !graphState.worldVolume.isValid()) {
@@ -112,14 +112,15 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         graphState.coverage = (r * 2.0) / projPixelLength;
 
-        if (this.smallFeatureThreshold > 0 && graphState.coverage < this.smallFeatureThreshold) {
+        if (this.smallFeatureThreshold > 0 && graphState.coverage < this.smallFeatureThreshold && 
+            graphState.needCulling) {
             return 0;   // differentiate between outside and this case
         }
     }
 
     // not culled, incr node cnt
     this.numberOfNodes++;
-
+    
     return planeMask;   // >0, inside
 };
 
