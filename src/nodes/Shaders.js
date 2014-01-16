@@ -395,7 +395,8 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFString(ctx, 'type', "VERTEX");
             
-            this.id = (ctx.xmlNode.id != "") ? ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
+            this.id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ? 
+                       ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
