@@ -249,6 +249,7 @@ x3dom.registerNodeType(
             // shortcut to shader parts
             this._vertex = null;
             this._fragment = null;
+            this._id = null;
 
             if (!x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown) {
                 x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
@@ -277,9 +278,11 @@ x3dom.registerNodeType(
                 {
                     if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {
                         this._vertex = this._cf.parts.nodes[i];
+                        this._id = this._cf.parts.nodes[i]._id;
                     }
                     else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
                         this._fragment = this._cf.parts.nodes[i];
+                        this._id += " - " + this._cf.parts.nodes[i]._id;
                     }
                 }
 
@@ -395,8 +398,8 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFString(ctx, 'type', "VERTEX");
             
-            this.id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ? 
-                       ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
+            this._id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ?
+                        ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
