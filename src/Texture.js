@@ -125,7 +125,7 @@ x3dom.Texture.prototype.update = function()
 
 x3dom.Texture.prototype.updateTexture = function()
 {
-	var gl  = this.gl;
+    var gl  = this.gl;
 	var doc = this.doc;
 	var tex = this.node;
 	
@@ -159,10 +159,10 @@ x3dom.Texture.prototype.updateTexture = function()
 					tex._needPerFrameUpdate === true);
 	
 	//Set texture min, mag, wrapS and wrapT
-	if (tex._cf.textureProperties.node !== null) {
+    if (tex._cf.textureProperties.node !== null) {
 		var texProp = tex._cf.textureProperties.node;
-		
-		this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS);
+
+        this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS);
         this.wrapT = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeT);
 
 		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter);
@@ -191,9 +191,17 @@ x3dom.Texture.prototype.updateTexture = function()
 		if (tex._vf.repeatS == false || this.samplerName == "displacementMap") {
 			this.wrapS = gl.CLAMP_TO_EDGE;
 		}
+        else
+        {
+            this.wrapS = gl.REPEAT;
+        }
 		if (tex._vf.repeatT == false || this.samplerName == "displacementMap") {
 			this.wrapT = gl.CLAMP_TO_EDGE;
 		}
+        else
+        {
+            this.wrapT = gl.REPEAT;
+        }
 	}
 	
 	//Set texture
