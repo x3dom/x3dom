@@ -2785,6 +2785,13 @@ x3dom.fields.BoxVolume = function(min, max)
     this.updateInternals();
 };
 
+x3dom.fields.BoxVolume.prototype.getScalarValue = function()
+{
+    var extent = this.max.subtract(this.min);
+
+    return (extent.x*extent.y*extent.z);
+};
+
 x3dom.fields.BoxVolume.copy = function(other)
 {
     return new x3dom.fields.BoxVolume(other.min, other.max);
