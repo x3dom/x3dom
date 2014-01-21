@@ -215,8 +215,16 @@ x3dom.registerNodeType(
             var f = this._vf[field];
 
             if (f === undefined) {
+                for (var key in this._vf) {
+                    if (key.toLowerCase() == field) {
+                        field = key;
+                        f = this._vf[field];
+                        break;
+                    }
+                }
+
                 var pre = "set_";
-                if (field.indexOf(pre) == 0) {
+                if (f === undefined && field.indexOf(pre) == 0) {
                     var fieldName = field.substr(pre.length, field.length - 1);
                     if (this._vf[fieldName] !== undefined) {
                         field = fieldName;
@@ -436,6 +444,10 @@ x3dom.registerNodeType(
 		},
         
         initSetter: function (xmlNode, name) {
+            if (!xmlNode || !name)
+                return;
+
+            var nameLC = name.toLowerCase();
             if (xmlNode.__defineSetter__ && xmlNode.__defineGetter__) {
                 xmlNode.__defineSetter__(name, function(value) {
                     xmlNode.setAttribute(name, value);
@@ -443,6 +455,14 @@ x3dom.registerNodeType(
                 xmlNode.__defineGetter__(name, function() {
                     return xmlNode.getAttribute(name);
                 });
+                if (nameLC != name) {
+                    xmlNode.__defineSetter__(nameLC, function(value) {
+                        xmlNode.setAttribute(name, value);
+                    });
+                    xmlNode.__defineGetter__(nameLC, function() {
+                        return xmlNode.getAttribute(name);
+                    });
+                }
             }
             else {
                 // IE has no __define[G|S]etter__ !!!
