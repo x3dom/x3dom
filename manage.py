@@ -8,7 +8,7 @@ from __future__ import with_statement
 # -------------------------------------------------------------------
 # 
 # This buildfile creates the distributable package of X3DOM
-# and zips it up as tarball and zip variants. It also provides additiona
+# and zips it up as tarball and zip variants. It also provides additional
 # management tasks for development and debugging.
 #
 #

@@ -1,0 +1,80 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>Inline test</title>
+
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+</head>
+     
+<body onload="preload();">
+	<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+	  <Scene>
+		<Viewpoint position='0 0 10'></Viewpoint>
+		<Background skyColor='0 0 0'></Background>
+	    <Transform>
+			<Inline id="deleteTest" nameSpaceName="test1" mapDEFToID="true" url="media/data/reflection_box1.x3d" ></Inline>
+		</Transform>
+	  </Scene>
+    </X3D>
+    
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+	  <Scene>
+		<Viewpoint position='0 0 10'></Viewpoint>
+		<Background skyColor='0 0 0'></Background>
+	    <Transform>
+			<Inline nameSpaceName="test3" url="media/data/reflection_box3.x3d" ></Inline>
+		</Transform>
+	  </Scene>
+    </X3D>
+	
+	<input onclick="changeURL();" type="button" value="Change URL" ></input>
+    
+    
+    
+    <script type="text/javascript" >
+
+		var preload = function (event) {	
+			var xmlHttp = new XMLHttpRequest();
+			if (xmlHttp) {
+				xmlHttp.open('GET', 'media/data/reflection_box4.x3d', true);
+				xmlHttp.send(null);
+			}
+        };
+		
+		var changeURL = function (event) {	
+			document.getElementById('deleteTest').setAttribute('url', 'media/data/reflection_box4.x3d');
+        };
+		
+		
+	    var test1 = function (event) {	
+			document.getElementById('test1__color1').setAttribute('diffuseColor', '0 1 0');
+        };	
+		var test2 = function (event) {		
+			document.getElementById('test1__color1').setAttribute('diffuseColor', '1 1 0');
+        };	
+		
+		
+		var test3 = function (event) {		
+			document.getElementById('test2__color2').setAttribute('diffuseColor', '0 0 1');
+        };
+		var test4 = function (event) {		
+			document.getElementById('test2__color2').setAttribute('diffuseColor', '1 0 0');
+        };
+		
+		var test5 = function (event) {		
+			document.getElementById('test3__color1').setAttribute('diffuseColor', '0 1 1');
+        };	
+		var test6 = function (event) {		
+			document.getElementById('test3__color1').setAttribute('diffuseColor', '1 1 0');
+        };	
+		var test7 = function (event) {		
+			document.getElementById('test3__color2').setAttribute('diffuseColor', '1 0 1');
+        };
+		var test8 = function (event) {		
+			document.getElementById('test3__color2').setAttribute('diffuseColor', '1 0 0');
+        };
+
+</script>
+</body>
+</html>

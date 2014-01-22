@@ -1,0 +1,98 @@
+{
+"grouplist":[
+   {"group": "BASICS",
+    "data": [
+        {"path": "lang/Array.js"},
+        {"path": "Internals.js"},
+        {"path": "debug.js"},
+        {"path": "util/AdaptiveRenderControl.js"},
+        {"path": "util/DownloadManager.js"},
+        {"path": "util/RefinementJobManager.js"},
+        {"path": "util/RefinementJobWorker.js"},
+        {"path": "util/Properties.js"},
+        {"path": "util/DoublyLinkedList.js"},
+        {"path": "util/EarClipping.js"},
+        {"path": "util/Utils.js"},
+        {"path": "util/States.js"},
+        {"path": "util/StateManager.js"},
+        {"path": "util/BinaryContainerSetup.js"},
+        {"path": "util/DrawableCollection.js"},
+        {"path": "util/BVH.js"},
+        {"path": "X3DCanvas.js"},
+        {"path": "Runtime.js"},
+        {"path": "Main.js"},
+        {"path": "Cache.js"},
+        {"path": "Texture.js"}
+    ]},
+
+    {"group": "SHADER",
+     "data": [
+        {"path": "shader/Shader.js"},
+        {"path": "shader/ShaderParts.js"},
+        {"path": "shader/ShaderDynamic.js"},
+        {"path": "shader/ShaderDynamicMobile.js"},
+        {"path": "shader/ShaderComposed.js"},
+        {"path": "shader/ShaderNormal.js"},
+        {"path": "shader/ShaderPicking.js"},
+        {"path": "shader/ShaderPicking24.js"},
+        {"path": "shader/ShaderPickingId.js"},
+        {"path": "shader/ShaderPickingColor.js"},
+        {"path": "shader/ShaderPickingTexcoord.js"},
+        {"path": "shader/ShaderFrontgroundTexture.js"},
+        {"path": "shader/ShaderBackgroundTexture.js"},
+        {"path": "shader/ShaderBackgroundSkyTexture.js"},
+        {"path": "shader/ShaderBackgroundCubeTexture.js"},
+        {"path": "shader/ShaderShadow.js"},
+        {"path": "shader/ShaderShadowRendering.js"},
+        {"path": "shader/ShaderBlur.js"}
+    ]},
+
+    {"group": "GFX",
+     "data": [
+        {"path": "gfx_webgl.js"},
+        {"path": "gfx_flash.js"}
+    ]},
+
+
+    {"group": "NODES",
+     "data": [
+        {"path": "X3DDocument.js"},
+        {"path": "MatrixMixer.js"},
+        {"path": "Viewarea.js"},
+        {"path": "Mesh.js"},
+        {"path": "fields.js"},
+        {"path": "nodes/NodeNameSpace.js"},
+        {"path": "nodes/Core.js"},
+        {"path": "nodes/Grouping.js"},
+        {"path": "nodes/Bindable.js"},
+        {"path": "nodes/Rendering.js"},
+        {"path": "nodes/Shape.js"},
+        {"path": "nodes/Lighting.js"},
+        {"path": "nodes/Followers.js"},
+        {"path": "nodes/Interpolation.js"},
+        {"path": "nodes/Time.js"},
+        {"path": "nodes/Networking.js"},
+        {"path": "nodes/EnvironmentalEffects.js"},
+        {"path": "nodes/Navigation.js"},
+        {"path": "nodes/Text.js"},
+        {"path": "nodes/Sound.js"},
+        {"path": "nodes/Texturing.js"},
+        {"path": "nodes/Shaders.js"},
+        {"path": "nodes/Geometry3D.js"},
+        {"path": "nodes/Texturing3D.js"}
+    ]},
+
+    {"group": "COMPONENTS",
+     "data": [
+        {"path": "nodes/Geospatial.js"},
+        {"path": "nodes/Geometry2D.js"},
+        {"path": "nodes/VolumeRendering.js"},
+        {"path": "nodes/CADGeometry.js"},
+        {"path": "nodes/BVHRefiner.js"},
+        {"path": "nodes/Geometry3DExt.js"},
+        {"path": "nodes/HAnim.js"},
+        {"path": "util/Moveable.js"},
+        {"path": "Docs.js"}
+    ]}
+]
+}
