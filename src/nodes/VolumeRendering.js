@@ -1107,8 +1107,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.ISOSurfaceVolumeData.superClass.call(this, ctx);
 
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeRenderStyleNode);
-            this.addField_SFNode('gradients', x3dom.nodeTypes.X3DTexture3DNode);
-            this.addField_MFFloat(ctx, 'surfaceValues', []);
+            this.addField_SFNode('gradients', x3dom.nodeTypes.Texture);
+            //this.addField_SFNode('gradients', x3dom.nodeTypes.X3DTexture3DNode);
+            this.addField_MFFloat(ctx, 'surfaceValues', [0.0]);
             this.addField_SFFloat(ctx, 'contourStepSize', 0);
             this.addField_SFFloat(ctx, 'surfaceTolerance', 0);
 
@@ -1141,32 +1142,31 @@ x3dom.registerNodeType(
                 var unis = [];
 
                 if (this._cf.gradients.node){
-                    this.uniformSampler2DGradients._vf.name = 'uGradients';
+                    this.uniformSampler2DGradients._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DGradients._vf.type = 'SFInt32';
-                    this.uniformSampler2DGradients._vf.value = this._cf.gradients;
+                    this.uniformSampler2DGradients._vf.value = this._textureID++;
                     unis.push(this.uniformSampler2DGradients);
                 }
 
                 this.uniformFloatArraySurfaceValues._vf.name = 'uSurfaceValues';
                 this.uniformFloatArraySurfaceValues._vf.type = 'MFFloat';
-                this.uniformFloatArraySurfaceValues._vf.value = this._cf.surfaceValues;
+                this.uniformFloatArraySurfaceValues._vf.value = this._vf.surfaceValues;
                 unis.push(this.uniformFloatArraySurfaceValues);
 
                 this.uniformFloatContourStepSize._vf.name = 'uContourStepSize';
                 this.uniformFloatContourStepSize._vf.type = 'SFFloat';
-                this.uniformFloatContourStepSize._vf.value = this._cf.contourStepSize;
+                this.uniformFloatContourStepSize._vf.value = this._vf.contourStepSize;
                 unis.push(this.uniformFloatContourStepSize);
 
                 this.uniformFloatSurfaceTolerance._vf.name = 'uSurfaceTolerance';
                 this.uniformFloatSurfaceTolerance._vf.type = 'MFFloat';
-                this.uniformFloatSurfaceTolerance._vf.value = this._cf.surfaceTolerance;
-                unis.push(this.uniformSurfaceTolerance);
+                this.uniformFloatSurfaceTolerance._vf.value = this._vf.surfaceTolerance;
+                unis.push(this.uniformFloatSurfaceTolerance);
 
                 if (this._cf.renderStyle.nodes) {
                     var n = this._cf.renderStyle.nodes.length;
                     for (var i=0; i<n; i++){
                         //Not repeat common uniforms, TODO: Allow multiple surface normals
-                        var that = this;
                         Array.forEach(this._cf.renderStyle.nodes[i].uniforms(), function(uniform){
                             var contains_uniform = false;
                             Array.forEach(unis, function(accum){
@@ -1211,7 +1211,7 @@ x3dom.registerNodeType(
             },
 
             initializeValues: function() {
-                var initialValues ="";
+                var initialValues ="  float previous_value = 0.0;\n";
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){
                     if(this._cf.renderStyle.nodes[i].initializeValues != undefined){
@@ -1224,9 +1224,9 @@ x3dom.registerNodeType(
             styleUniformsShaderText: function(){
                 var styleText = "uniform float uSurfaceTolerance;\n"+
                 "uniform float uContourStepSize;\n"+
-                "uniform float uSurfaceValues["+this._cf.surfaceValues.length+"];\n";
+                "uniform float uSurfaceValues["+this._vf.surfaceValues.length+"];\n";
                 if(this._cf.gradients.node){
-                    styleText += "uniform sampler2D uGradients;\n";
+                    styleText += "uniform sampler2D uSurfaceNormals;\n";
                 }
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){
@@ -1240,11 +1240,38 @@ x3dom.registerNodeType(
             },
 
             inlineStyleShaderText: function(){
-                var inlineText = "";
-                var n = this._cf.renderStyle.nodes.length;
-                for (var i=0; i<n; i++){ 
-                    this._cf.renderStyle.nodes[i].inlineStyleShaderText();
+                var inlineText = "    sample = value.r;\n";
+                if(this._vf.surfaceValues.length == 1) { //Only one surface value
+                    inlineText += "if(uContourStepSize == 0.0){\n"+
+                    "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n";
+                    if(this._cf.renderStyle.nodes){
+                        inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
+                    }
+                    inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
+                    "       accum.a += value.a;\n"+
+                    "   }\n"+    
+                    "}else{\n"+ //multiple iso values with the contour step
+                    ""+
+                    "}\n";
+                }else{ //Multiple surface values has been specified
+                    var n_styles = this._cf.renderStyle.nodes.length-1;
+                    var s_values = this._vf.surfaceValues.length;
+                    for(var i=0; i<s_values; i++){
+                        var index = Math.min(i, n_styles);
+                        inlineText += "   if((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"]) && (grad.a>=uSurfaceTolerance)){\n";
+                        if(this._cf.renderStyle.nodes){
+                            inlineText += this._cf.renderStyle.nodes[index].inlineStyleShaderText();
+                        }
+                        inlineText += "   accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
+                        "   accum.a += value.a;\n"+
+                        "   }\n"; 
+                    }
                 }
+                //var n = this._cf.renderStyle.nodes.length;
+                //for (var i=0; i<n; i++){ 
+                //    this._cf.renderStyle.nodes[i].inlineStyleShaderText();
+                //}
+                inlineText += "    previous_value = sample;\n";
                 return inlineText;
             },
 
@@ -1400,14 +1427,13 @@ x3dom.registerNodeType(
                     "uniform vec3 offset;\n"+
                     "uniform mat4 normalMatrix;\n"+
                     "uniform mat4 modelViewMatrixInverse;\n"+
-                    "uniform sampler2D uSurfaceNormals;\n"+
+                    //"uniform sampler2D uSurfaceNormals;\n"+
                     "varying vec3 vertexColor;\n"+
                     "varying vec4 vertexPosition;\n"+
                     "const float Steps = 60.0;\n"+
                     "const float numberOfSlices = "+ this.vrcVolumeTexture._vf.numberOfSlices.toPrecision(5)+";\n"+
                     "const float slicesOverX = " + this.vrcVolumeTexture._vf.slicesOverX.toPrecision(5) +";\n"+
-                    "const float slicesOverY = " + this.vrcVolumeTexture._vf.slicesOverY.toPrecision(5) +";\n"+
-                    "const float maxSegments = 2.0;\n";
+                    "const float slicesOverY = " + this.vrcVolumeTexture._vf.slicesOverY.toPrecision(5) +";\n";
                     //LIGHTS
                     var n_lights = x3dom.nodeTypes.X3DLightNode.lightID;
                     for(var l=0; l<n_lights; l++) {
@@ -1474,7 +1500,7 @@ x3dom.registerNodeType(
                     "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
                     "  vec3 pos = vertexColor;\n"+
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                    "  float sample = 0.0;\n"+
                     "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
                     //Light init values
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
@@ -1497,7 +1523,7 @@ x3dom.registerNodeType(
                     "  {\n"+
                     "    value = cTexture3D(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
                     "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
-                    if(this.normalTextureProvided){
+                    if(this._cf.gradients.node){
                         shaderText += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }else{
                         shaderText += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
@@ -1521,10 +1547,10 @@ x3dom.registerNodeType(
                     }
                     shaderText +=
                     "    //Process the volume sample\n"+
-                    "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                    "    sample.rgb = value.rgb * sample.a * lightFactor ;\n"+
-                    "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
-                    "    accum.a += (1.0 - accum.a) * sample.a;\n"+
+                    //"    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
+                    //"    sample.rgb = value.rgb * sample.a * lightFactor ;\n"+
+                    //"    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
+                    //"    accum.a += (1.0 - accum.a) * sample.a;\n"+
                     "    //advance the current position\n"+
                     "    pos.xyz += step;\n"+
                     "    //break if the position is greater than <1, 1, 1>\n"+
