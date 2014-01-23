@@ -325,11 +325,14 @@ x3dom.nodeTypes.Inline.MaximumRetries = 15;         // Parameterizable maximum n
 function setNamespace(prefix, childDomNode, mapDEFToID)
 {
 	if(childDomNode instanceof Element && childDomNode.__setAttribute !== undefined) {
-	
+
 		if(childDomNode.hasAttribute('id') )	{
 			childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));	
 		} else if (childDomNode.hasAttribute('DEF') && mapDEFToID){
 			childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('DEF'));
+            // workaround for Safari
+            if (!childDomNode.id)
+                childDomNode.id = childDomNode.__getAttribute('id');
 		}
 	}
 	
