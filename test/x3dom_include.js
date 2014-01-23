@@ -2,7 +2,7 @@ var xhr = new XMLHttpRequest();
 xhr.open('GET', '../../tools/packages.json', false);
 xhr.onreadystatechange = function(){
     if(xhr.readyState == 4){
-        if(xhr.status == 200){
+        if(xhr.status == 200 || xhr.status == 0){
             var group, p;
             var data = JSON.parse(xhr.response);
             for(group in data.grouplist){
