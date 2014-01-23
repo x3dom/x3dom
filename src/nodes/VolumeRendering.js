@@ -1926,6 +1926,7 @@ x3dom.registerNodeType(
             //this.addField_MFBool(ctx, 'segmentEnabled', []);  // MFBool NYI!!!
             //this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.Texture);
+            this.addField_SFFloat(ctx, 'numberOfMaxSegments', 10.0);
 
             this.uniformSampler2DSegmentIdentifiers = new x3dom.nodeTypes.Uniform(ctx);
             this.normalTextureProvided = false;
@@ -2210,7 +2211,7 @@ x3dom.registerNodeType(
                     "const float numberOfSlices = "+ this.vrcVolumeTexture._vf.numberOfSlices.toPrecision(5)+";\n"+
                     "const float slicesOverX = " + this.vrcVolumeTexture._vf.slicesOverX.toPrecision(5) +";\n"+
                     "const float slicesOverY = " + this.vrcVolumeTexture._vf.slicesOverY.toPrecision(5) +";\n"+
-                    "const float maxSegments = 2.0;\n";
+                    "const float maxSegments = " + this._vf.numberOfMaxSegments.toPrecision(3) + ";\n";
                     //LIGHTS
                     var n_lights = x3dom.nodeTypes.X3DLightNode.lightID;
                     for(var l=0; l<n_lights; l++) {
