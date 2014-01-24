@@ -249,7 +249,8 @@ x3dom.registerNodeType(
 			}
         },
         {
-            fieldChanged: function(fieldName) {
+            fieldChanged: function (fieldName)
+            {
                 if (fieldName === "size") {
                     var sx = this._vf.size.x / 2,
                         sy = this._vf.size.y / 2,

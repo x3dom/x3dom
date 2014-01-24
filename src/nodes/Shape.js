@@ -392,6 +392,10 @@ x3dom.registerNodeType(
                     return this._tessellationProperties; // BVHRefiner-Patch
             },
 
+            isLit: function() {
+                return this._cf.geometry.node._vf.lit;
+            },
+
             isSolid: function() {
                 return this._cf.geometry.node._vf.solid;
             },
@@ -477,9 +481,11 @@ x3dom.registerNodeType(
                 this.invalidateVolume();
             },
 
-            getShaderProperties: function(viewarea) {
-                if (this._shaderProperties == null || this._dirty.shader == true ||
-                    (this._webgl !== undefined && this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea)))
+            getShaderProperties: function(viewarea)
+            {
+                if (this._shaderProperties == null ||
+                    this._dirty.shader == true     ||
+                    (this._webgl !== undefined && this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea)) )
                 {
                     this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
                     this._dirty.shader = false;

@@ -24,6 +24,11 @@ x3dom.registerNodeType(
             // but one should be able to disable cache per geometry node.
             this.addField_SFBool(ctx, 'useGeoCache', true);
 
+            /**
+             * Specifies whether this geometry should be rendered with or without lighting.
+             */
+            this.addField_SFBool(ctx, 'lit', true);
+
             // mesh object also holds volume (_vol)
             this._mesh = new x3dom.Mesh(this);
         },
