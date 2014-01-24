@@ -1153,10 +1153,10 @@ x3dom.registerNodeType(
                 this.uniformFloatArraySurfaceValues._vf.value = this._vf.surfaceValues;
                 unis.push(this.uniformFloatArraySurfaceValues);
 
-                this.uniformFloatContourStepSize._vf.name = 'uContourStepSize';
+                /*this.uniformFloatContourStepSize._vf.name = 'uContourStepSize';
                 this.uniformFloatContourStepSize._vf.type = 'SFFloat';
                 this.uniformFloatContourStepSize._vf.value = this._vf.contourStepSize;
-                unis.push(this.uniformFloatContourStepSize);
+                unis.push(this.uniformFloatContourStepSize);*/
 
                 this.uniformFloatSurfaceTolerance._vf.name = 'uSurfaceTolerance';
                 this.uniformFloatSurfaceTolerance._vf.type = 'MFFloat';
@@ -1223,7 +1223,7 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function(){
                 var styleText = "uniform float uSurfaceTolerance;\n"+
-                "uniform float uContourStepSize;\n"+
+                //"uniform float uContourStepSize;\n"+
                 "uniform float uSurfaceValues["+this._vf.surfaceValues.length+"];\n";
                 if(this._cf.gradients.node){
                     styleText += "uniform sampler2D uSurfaceNormals;\n";
@@ -1242,18 +1242,40 @@ x3dom.registerNodeType(
             inlineStyleShaderText: function(){
                 var inlineText = "    sample = value.r;\n";
                 if(this._vf.surfaceValues.length == 1) { //Only one surface value
-                    inlineText += "if(uContourStepSize == 0.0){\n"+
-                    "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n";
-                    if(this._cf.renderStyle.nodes){
-                        inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
+                    if(this._vf.contourStepSize == 0.0){
+                        inlineText += "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n";
+                        if(this._cf.renderStyle.nodes){
+                            inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
+                        }
+                        inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
+                        "       accum.a += value.a;\n"+
+                        "   }\n"; 
+                    }else{ //multiple iso values with the contour step size
+                        var tmp = this._vf.surfaceValues[0];
+                        var positive_range = [];
+                        var negative_range = [];
+                        while(tmp+this._vf.contourStepSize <= 1.0){
+                            tmp+=this._vf.contourStepSize;
+                            positive_range.push(tmp);
+                        }
+                        tmp = this._vf.surfaceValues[0];
+                        while(tmp-this._vf.contourStepSize >= 0.0){
+                            tmp-=this._vf.contourStepSize;
+                            positive_range.push(tmp);
+                        }
+                        var range = Array.concat(negative_range.reverse(), positive_range);
+                        for (var i = 0; i <= range.length - 1; i++) {
+                            var s_value = range[i].toPrecision(3);
+                            inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n";
+                            if(this._cf.renderStyle.nodes){
+                                inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
+                            }
+                            inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
+                            "       accum.a += value.a;\n"+
+                            "   }\n"; 
+                        };
                     }
-                    inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                    "       accum.a += value.a;\n"+
-                    "   }\n"+    
-                    "}else{\n"+ //multiple iso values with the contour step
-                    ""+
-                    "}\n";
-                }else{ //Multiple surface values has been specified
+                }else{ //Multiple surface values has been specified by the user
                     var n_styles = this._cf.renderStyle.nodes.length-1;
                     var s_values = this._vf.surfaceValues.length;
                     for(var i=0; i<s_values; i++){
@@ -1267,10 +1289,6 @@ x3dom.registerNodeType(
                         "   }\n"; 
                     }
                 }
-                //var n = this._cf.renderStyle.nodes.length;
-                //for (var i=0; i<n; i++){ 
-                //    this._cf.renderStyle.nodes[i].inlineStyleShaderText();
-                //}
                 inlineText += "    previous_value = sample;\n";
                 return inlineText;
             },
@@ -1546,11 +1564,6 @@ x3dom.registerNodeType(
                         shaderText += this.inlineLightAssigment();
                     }
                     shaderText +=
-                    "    //Process the volume sample\n"+
-                    //"    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                    //"    sample.rgb = value.rgb * sample.a * lightFactor ;\n"+
-                    //"    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
-                    //"    accum.a += (1.0 - accum.a) * sample.a;\n"+
                     "    //advance the current position\n"+
                     "    pos.xyz += step;\n"+
                     "    //break if the position is greater than <1, 1, 1>\n"+
