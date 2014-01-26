@@ -625,12 +625,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
         property.IG_PRECISION     = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
         property.IG_INDEXED       = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
-        property.POINTLINE2D      = x3dom.isa(geometry, x3dom.nodeTypes.PointSet) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.IndexedLineSet) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Polypoint2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Polyline2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Arc2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Circle2D) ? 1 : 0;
+        property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
         
         property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
         property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
@@ -663,6 +658,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.BITLODGEOMETRY && geometry.hasColor()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+        
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 	}
 	

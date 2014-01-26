@@ -1528,6 +1528,11 @@ x3dom.registerNodeType(
 
             getDiameter: function() {
                 return this._diameter;
+            },
+
+            needLighting: function() {
+                var hasTris = (this._vf.primType.length && this._vf.primType[0].indexOf("TRIANGLE") == 0);
+                return (this._vf.lit && hasTris);
             }
         }
     )
