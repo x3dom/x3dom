@@ -1243,7 +1243,8 @@ x3dom.registerNodeType(
                 var inlineText = "    sample = value.r;\n";
                 if(this._vf.surfaceValues.length == 1) { //Only one surface value
                     if(this._vf.contourStepSize == 0.0){
-                        inlineText += "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n";
+                        inlineText += "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n"+
+                        "       value = vec4(uSurfaceValues[0]);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                         }
@@ -1266,7 +1267,8 @@ x3dom.registerNodeType(
                         var range = Array.concat(negative_range.reverse(), positive_range);
                         for (var i = 0; i <= range.length - 1; i++) {
                             var s_value = range[i].toPrecision(3);
-                            inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n";
+                            inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n"+
+                            "       value = vec4("+s_value+");\n";
                             if(this._cf.renderStyle.nodes){
                                 inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                             }
@@ -1275,12 +1277,13 @@ x3dom.registerNodeType(
                             "   }\n"; 
                         };
                     }
-                }else{ //Multiple surface values has been specified by the user
+                }else{ //Multiple isosurface values had been specified by the user
                     var n_styles = this._cf.renderStyle.nodes.length-1;
                     var s_values = this._vf.surfaceValues.length;
                     for(var i=0; i<s_values; i++){
                         var index = Math.min(i, n_styles);
-                        inlineText += "   if((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"]) && (grad.a>=uSurfaceTolerance)){\n";
+                        inlineText += "   if((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"]) && (grad.a>=uSurfaceTolerance)){\n"+
+                        "       value.rgb = vec3(uSurfaceValues["+i+"]);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[index].inlineStyleShaderText();
                         }
@@ -2088,7 +2091,7 @@ x3dom.registerNodeType(
                 var inlineText = "";
                 if(this._cf.segmentIdentifiers.node){
                     inlineText += "float t_id = cTexture3D(uSegmentIdentifiers, pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
-                    "int s_id = int(floor(t_id*maxSegments));\n";
+                    "int s_id = int(floor((t_id-offset_s)*maxSegments));\n";
                 }else{
                     inlineText += "int s_id = 0;\n";
                 }
@@ -2318,7 +2321,8 @@ x3dom.registerNodeType(
                     "  vec3 pos = vertexColor;\n"+
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
+                    "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                    "  float offset_s = 1.0/(2.0*maxSegments);\n";
                     //Light init values
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                         shaderText +=
