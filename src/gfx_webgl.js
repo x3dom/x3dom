@@ -2642,8 +2642,12 @@ x3dom.gfx_webgl = (function () {
                     scene.callEvtHandler(("on" + eventType), event);
                 }
 
-                if (scene._shadowIdMap && scene._shadowIdMap.mapping) {
+                if (scene._shadowIdMap && scene._shadowIdMap.mapping &&
+                    objId < scene._shadowIdMap.mapping.length) {
                     var shIds = scene._shadowIdMap.mapping[objId].usage;
+                    if (!line) {
+                        line = viewarea.calcViewRay(x, y, cctowc);
+                    }
                     // find corresponding dom tree object
                     for (var c = 0; c < shIds.length; c++) {
                         var shObj = scene._nameSpace.defMap[shIds[c]];
