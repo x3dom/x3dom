@@ -929,6 +929,16 @@ x3dom.registerNodeType(
                 xhr.onload = function()
                 {
                     that._shadowIdMap = eval("(" + xhr.response + ")");
+
+                    if (!that._shadowIdMap || !that._shadowIdMap.mapping) {
+                        x3dom.debug.logWarning("Invalid ID map: " + that._vf.shadowObjectIdMapping);
+                    }
+                    else {
+                        x3dom.debug.assert(that._shadowIdMap.maxID <= that._shadowIdMap.mapping.length,
+                            "Too few ID map entries in " + that._vf.shadowObjectIdMapping + ", " +
+                            "length of mapping array is only " + that._shadowIdMap.mapping.length +
+                            " instead of " + that._shadowIdMap.ids.length + "!");
+                    }
                 };
             }
         }
