@@ -185,6 +185,7 @@ exports.publish = function(taffyData, opts, tutorials) {
         }
     }
 
+    view.api = "full";
     generateIndex("Classes", typeLists.classes, false, "full/classes.html",true);
     generateIndex("Namespaces", typeLists.namespaces, true, "full/namespaces.html",true);
 

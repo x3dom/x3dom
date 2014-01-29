@@ -1,0 +1,235 @@
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
+
+// ### X3DNode ###
+x3dom.registerNodeType(
+    "X3DNode",
+    "Core",
+    defineClass(null, 
+    /**
+     * Constructor for X3DNode
+     * @constructs x3dom.nodeTypes.X3DNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DMetadataObject",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        
+    /**
+     * Constructor for X3DMetadataObject
+     * @constructs x3dom.nodeTypes.X3DMetadataObject
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataBoolean",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataBoolean
+     * @constructs x3dom.nodeTypes.MetadataBoolean
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataDouble",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataDouble
+     * @constructs x3dom.nodeTypes.MetadataDouble
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataFloat",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataFloat
+     * @constructs x3dom.nodeTypes.MetadataFloat
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataInteger",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataInteger
+     * @constructs x3dom.nodeTypes.MetadataInteger
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataSet",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataSet
+     * @constructs x3dom.nodeTypes.MetadataSet
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "MetadataString",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+    /**
+     * Constructor for MetadataString
+     * @constructs x3dom.nodeTypes.MetadataString
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DMetadataObject
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "Field",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        
+    /**
+     * Constructor for Field
+     * @constructs x3dom.nodeTypes.Field
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DChildNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        
+    /**
+     * Constructor for X3DChildNode
+     * @constructs x3dom.nodeTypes.X3DChildNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DBindableNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+    /**
+     * Constructor for X3DBindableNode
+     * @constructs x3dom.nodeTypes.X3DBindableNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DChildNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DInfoNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+    /**
+     * Constructor for X3DInfoNode
+     * @constructs x3dom.nodeTypes.X3DInfoNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DChildNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "WorldInfo",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DInfoNode,
+        
+    /**
+     * Constructor for WorldInfo
+     * @constructs x3dom.nodeTypes.WorldInfo
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DInfoNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DBoundedNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+    /**
+     * Constructor for X3DBoundedNode
+     * @constructs x3dom.nodeTypes.X3DBoundedNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DChildNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "X3DSensorNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+    /**
+     * Constructor for X3DSensorNode
+     * @constructs x3dom.nodeTypes.X3DSensorNode
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DChildNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    x3dom.registerNodeType(
+    "Param",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        
+    /**
+     * Constructor for Param
+     * @constructs x3dom.nodeTypes.Param
+     * @x3d x.x
+     * @component Core
+     * @status experimental
+     * @extends x3dom.nodeTypes.X3DNode
+     * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+     */
+    
