@@ -2048,6 +2048,11 @@ x3dom.gfx_webgl = (function () {
         var model_view = mat_view.mult(transform);
         var model_view_inv = model_view.inverse();
 
+        // TODO; half of those matrices are only of interest for user defined shaders, don't calculate for all
+        sp.worldMatrix = transform.toGL();
+        sp.worldInverseTranspose = transform.inverse().transpose().toGL();
+        sp.viewMatrixInverse = mat_view.inverse().toGL();
+
         sp.modelViewMatrix = model_view.toGL();
         sp.viewMatrix = mat_view.toGL();
 
@@ -2074,7 +2079,8 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
             gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
 
-            // TODO: this is expensive and probably only required on change, track e.g. via stateManager
+            // TODO: this is expensive and only required on change,
+            // only do on create and track change via stateManager!
             if (tex.genMipMaps) {
                 gl.generateMipmap(tex.type);
             }
