@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <?js  if ( this.api == 'full'){ ?>
+
+        <title>X3DOM Full API Documentation: <?js= title ?></title>
+
+    <?js } else if (this.api == 'node') { ?>
+
+        <title>X3DOM Node API Documentation: <?js= title ?></title>
+
+    <?js } ?>
+
+    <?js
+        var depth = filename.split("/").length;
+
+        var backPath = "";
+        for( var i = 0; i < depth -1; ++i)
+            backPath+="../"
+    ?>
+
+    <script src="<?js= backPath ?>../static/scripts/prettify/prettify.js"> </script>
+    <script src="<?js= backPath ?>../static/scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/jsdoc-x3dom.css">
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/x3dom-docs.css">
+</head>
+
+<body>
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="<?js= backPath ?>index.html">documentation</a>
+    >
+
+    <?js if(this.api == "full"){ ?>
+    <a href="<?js= backPath ?>full/index.html">Full API</a>
+    <?js }else{ ?>
+    <a href="<?js= backPath ?>node/index.html">Node API</a>
+    <?js } ?>
+
+</div>
+
+<div id="docu-navbar">
+
+    <a href="<?js= backPath+ (this.api == 'node' ? '/node/' : '/full/' )  ?>index.html">
+        <div class="docu-navitem <?js= (title == 'Overview'? 'docu-navitem-active' : '') ?>">Overview</div>
+    </a>
+
+    <?js if( this.api == "node"){ ?>
+
+    <a href="<?js= backPath ?>node/nodes.html">
+        <div class="docu-navitem <?js= (title == 'Nodes'? 'docu-navitem-active' : '') ?>">Nodes</div>
+    </a>
+
+    <a href="<?js= backPath ?>node/components.html">
+        <div class="docu-navitem <?js= (title == 'Components'? 'docu-navitem-active' : '') ?>">Components</div>
+    </a>
+
+    <?js }else{ ?>
+
+    <a href="<?js= backPath ?>full/classes.html">
+        <div class="docu-navitem <?js= (title == 'Classes' ? 'docu-navitem-active' : '') ?>">Classes</div>
+    </a>
+
+    <a href="<?js= backPath ?>full/namespaces.html">
+        <div class="docu-navitem <?js= (title == 'Namespaces'? 'docu-navitem-active' : '') ?>">Namespaces</div>
+    </a>
+    <?js } ?>
+</div>
+
+<div id="main">
+
+    <?js if (title != "Overview" && title != "Components" && title != "Classes" && title != "Namespaces" && title != "Nodes") { ?>
+        <h1 class="page-title"><?js= title ?></h1>
+    <?js } ?>
+
+    <?js= content ?>
+
+</div>
+
+
+
+<footer>
+    This X3DOM documentation was generated with the help of <a href="https://github.com/jsdoc3/jsdoc">JSDoc <?js= env.version.number ?></a> on <?js= (new Date()) ?>
+</footer>
+
+<script> prettyPrint();</script>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<?js
+    var self = this;
+    var doc = obj.doc;
+    var props = obj.properties;
+?>
+
+<div class="dataMemberOverviewContainer">
+    <?js
+         if (props && props.length )
+         {
+    ?>
+    <div class="head-row">
+        <span class="head-cell">Access</span>
+        <span class="head-cell">Name</span>
+        <span class="head-cell">Type</span>
+        <span class="head-cell">Inheritance</span>
+        <span class="head-cell">Description</span>
+    </div>
+
+    <?js props.forEach(function(p){ ?>
+    <div class="row">
+        <span class="cell"><?js= p.access ?></span>
+        <span class="cell"><?js= p.name ?></span>
+        <span class="cell">
+           <?js
+            var type = ( p.type && p.type.names && p.type.names.length )
+                        ? p.type.names[0] : null;
+
+            type = (type != null ? self.linkFromContextTo(type, false, type) : "" );
+            ?>
+
+            <?js= type ?>
+        </span>
+        <span class="cell">
+            <?js if(p.inherits)
+                 {
+                        var inherit = p.inherits.split('#');
+                        parent = inherit[inherit.length-2].split('.');
+
+                        var link = self.linkFromTo(doc.longname, false, inherit[inherit.length-2], false, parent[parent.length-1]);
+
+                        if(parent.length)
+                        {
+                ?>
+            <?js= link ?>
+            <?js }} ?>
+        </span>
+        <span class="cell"><?js= p.description ?></span>
+    </div>
+    <?js }) ?>
+    <?js }   ?>
+</div>

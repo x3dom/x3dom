@@ -1,0 +1,46 @@
+<?js
+    var self = this;
+    docs.forEach(function(doc, i) {
+    self.context = doc;
+?>
+
+<section>
+
+    <header>
+        <h2>
+            <?js if (doc.ancestors && doc.ancestors.length) { ?>
+                <span class="ancestors">
+                    <?js= doc.ancestors.join('') ?>
+                </span>
+            <?js } ?>
+
+            <?js= doc.name ?>
+
+        </h2>
+    </header>
+    <div class="overviewContainer">
+        <ul>
+            <?js
+                var currentChar = '@';
+
+                for(var c in classes)
+                {
+                    var val = classes[c];
+
+                    if (val.name[0].toUpperCase() > currentChar)
+                    {
+                        currentChar = val.name[0].toUpperCase();
+            ?>
+                <h4><?js= currentChar ?></h4>
+            <?js } ?>
+            <li>
+                <?js= self.linkFromContextTo(val.url, false, val.name) ?>
+            </li>
+            <?js
+                }
+            ?>
+        </ul>
+    </div>
+</section>
+
+<?js });?>

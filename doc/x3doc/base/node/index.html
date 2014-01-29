@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+        <title>X3DOM Node API Documentation: Overview</title>
+
+    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs.css">    
+    <link type="text/css" rel="stylesheet" href="../static/styles/jsdoc-x3dom.css">
+    <script src="../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="../index.html">documentation</a>
+    >
+    <a href="#">Node API</a>
+</div>
+
+<div id="docu-navbar">
+    <a href="index.html">        
+        <div class="docu-navitem docu-navitem-active">Overview</div>        
+    </a>
+    <a href="nodes.html">
+        <div class="docu-navitem">Nodes</div>
+    </a>
+    <a href="components.html">
+        <div class="docu-navitem">Components</div>
+    </a>
+</div>
+
+<div id="main">
+
+    <section>
+        <article>
+        
+            <h2>Introduction</h2>
+            <p>            
+            Welcome to the <strong>X3DOM Node API Documentation</strong>!
+            Within this documentation package, you will find detailed information about all <strong>X3DOM Nodes</strong> and their <strong>Fields</strong>.
+            Within a typical X3DOM application, nodes are a regular part of the HTML DOM and can therefore also be dynamically manipulated via standard DOM scripting.            
+            You may, for instance, have this HTML representation of a <code>material</code> node:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-html">
+    &lt;material id='myMaterial' diffuseColor='1 0 0'&gt;&lt;/material&gt;
+            </code></pre>
+            
+            <p>
+            You can then access and manipulate the fields of the X3DOM node like regular HTML attributes, for example:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-js">
+    var oldMaterial = document.getElementById('myMaterial').getAttribute('diffuseColor');
+    console.log('The old value was ' + oldMaterial);    
+    var newMaterial = document.getElementById('myMaterial').setAttribute('diffuseColor', '0 1 0');
+    console.log('The new value is ' + newMaterial);
+            </code></pre>
+            <p>
+            Since HTML attributes are not case sensitive, X3DOM attributes behave in the same way.
+            You may therefore write <code>'diffuseColor'</code> as well as <code>'DiffuseColor'</code> or <code>'diffusecolor'</code>, for example.
+            </p>
+            
+            <p>
+            Please note that this part of X3DOM's documentation is intended for HTML authors and people that want to use X3DOM's standard, DOM-based interaction features.
+            JavaScript properties of nodes that are not represented as fields, as well as special X3DOM-related JavaScript methods, are not part of the Node API, but listed in the 
+            <a href="../full/index.html">Full API documentation</a>.
+            </p>
+            
+
+            <h2>Scope</h2>
+            <p>
+            This API documentation is automatically generated during a nightly build process, using the latest available code from
+            the </strong>X3DOM development branch</strong>. It is therefore intended for use with this branch of X3DOM.
+            <br>
+            Please note that the X3DOM API documentation project started during the development of version 1.6, therefore there is
+            unfortunately no such documentation available for older versions of X3DOM.
+            However, the X3DOM team will provide a proper snapshot of this documentation for each upcoming release.
+            </p>
+            
+
+            <h2>Resources</h2>
+            <p>
+            Like in the X3D standard, X3DOM nodes are grouped into <strong>Components</strong>.
+            There are several ways to find what you are looking for:
+
+            <ul>
+                <li><a href="nodes.html">Node Index</a></li>
+                <li><a href="components.html">Component Index</a></li>
+            </ul>
+
+            The Node Index allows you to directly browse nodes by their name, while the Component Index
+            lists all Components and provides a list of nodes for each of them.
+
+            </p>
+            
+            <br>
+            
+        </article>
+    
+        <br>
+      
+    </section>
+
+    <footer>
+        This X3DOM documentation was generated with the help of <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.1.1</a> on Mon Jan 13 2014 10:50:16 GMT+0100 (MEZ)
+    </footer>  
+</div>
+
+</div>
+
+</body>
+</html>
