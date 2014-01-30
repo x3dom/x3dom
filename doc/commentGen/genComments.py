@@ -1,6 +1,8 @@
 import sys
 import re
 
+import genXDF
+
 
 ## utility definitions
 class NodeAnnotation:
@@ -28,7 +30,7 @@ def annotateNodeType(na):
     str += indentation + " * @x3d x.x\n"
     str += indentation + " * @component " + na.componentName + "\n"
     str += indentation + " * @status experimental\n"    
-    str += indentation + (" * @extends " + na.parentName + "\n") if na.parentName != "null" else ""
+    str += indentation + " * @extends " + na.parentName + "\n" if na.parentName != "null" else ""
     str += indentation + " * @param {Object} [ctx=null] - context object, containing initial settings like namespace\n"
     str += indentation + " */\n" + indentation
     na.result += str
@@ -49,22 +51,27 @@ def annotateNode(str):
     annotateNodeType(na)
     
     
-    openingBrackets = len(re.split("{",str[constructorPos:]))
-    closingBrackets = len(re.split("}",str[constructorPos:]))
+    #openingBrackets = len(re.split("{",str[constructorPos:]))
+    #closingBrackets = len(re.split("}",str[constructorPos:]))
     
-    print "op"
-    print openingBrackets
+    #print "op"
+    #print openingBrackets
         
-    print "cl"
-    print closingBrackets
+    #print "cl"
+    #print closingBrackets
+    
+    
+    if (len(sys.argv) == 4 and sys.argv[3] == '--x'):
+        genXDF.writeXDF(na)
     
     
     return "".join(na.result)
     
-
+    
 ## main script
 if len(sys.argv) <= 2:
-    print "Usage: python " + sys.argv[0] + " [ORIGINAL_FILE] [ANNOTATED_FILE]"
+    print "Usage: python " + sys.argv[0] + " <ORIGINAL_FILE> <ANNOTATED_FILE> [--x]"
+    print "       --x: generate .xdf files"
     quit()
     
 # read JS file
@@ -80,12 +87,11 @@ try:
     nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
     
     for n in nodeTypesArray:
-        result += (annotateNode(n) if n[0] == '(' else n)
+        result += (annotateNode(n) if n[0] == '(' else n)        
 
     f = open(sys.argv[2], 'w')
     f.write(result)    
-    f.close()
-    
+    f.close()    
         
 except:
     print "Error while reading JS file."
