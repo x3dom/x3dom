@@ -15,19 +15,8 @@ x3dom.registerNodeType(
     "X3DSpatialGeometryNode",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
-        /**
-         * Constructor for X3DSpatialGeometryNode
-         * @constructs x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.X3DSpatialGeometryNode.superClass.call(this, ctx);   
-        
         }
     )
 );
@@ -37,54 +26,12 @@ x3dom.registerNodeType(
     "Plane",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Plane
-         * @constructs x3dom.nodeTypes.Plane
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Plane.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFVec2f} size
-             * @memberof x3dom.nodeTypes.Plane
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec2f(ctx, 'size', 2, 2);
-
-            /**
-             *
-             * @var {SFVec2f} subdivision
-             * @memberof x3dom.nodeTypes.Plane
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
-
-            /**
-             *
-             * @var {SFVec3f} center
-             * @memberof x3dom.nodeTypes.Plane
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
-
-            /**
-             *
-             * @var {MFString} primType
-             * @memberof x3dom.nodeTypes.Plane
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 
             // this way currently an initialize only field
@@ -142,7 +89,6 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
-        
         },
         {
              fieldChanged: function (fieldName) {
@@ -232,36 +178,10 @@ x3dom.registerNodeType(
     "Box",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Box
-         * @constructs x3dom.nodeTypes.Box
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFVec3f} size
-             * @memberof x3dom.nodeTypes.Box
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f(ctx, 'size', 2, 2, 2);
-
-            /**
-             *
-             * @var {SFBool} hasHelperColors
-             * @memberof x3dom.nodeTypes.Box
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'hasHelperColors', false);
 
             var sx = this._vf.size.x,
@@ -327,7 +247,6 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-        
         },
         {
             fieldChanged: function (fieldName)
@@ -382,16 +301,6 @@ x3dom.registerNodeType(
     "Sphere",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Sphere
-         * @constructs x3dom.nodeTypes.Sphere
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
 
@@ -490,7 +399,6 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-        
         },
         {
             fieldChanged: function(fieldName) {
@@ -618,16 +526,6 @@ x3dom.registerNodeType(
     "Torus",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Torus
-         * @constructs x3dom.nodeTypes.Torus
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
 
@@ -635,33 +533,9 @@ x3dom.registerNodeType(
 
 			this.addField_SFFloat(ctx, 'innerRadius', 0.5);
 			this.addField_SFFloat(ctx, 'outerRadius', 1.0);
-
-            /**
-             *
-             * @var {SFFloat} angle
-             * @memberof x3dom.nodeTypes.Torus
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'angle', twoPi);
-
-            /**
-             *
-             * @var {SFBool} caps
-             * @memberof x3dom.nodeTypes.Torus
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'caps', true);
 			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
-
-            /**
-             *
-             * @var {SFBool} insideOutsideRadius
-             * @memberof x3dom.nodeTypes.Torus
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'insideOutsideRadius', false);    // use other radius/orientation behavior
 
             // assure that angle in [0, 2 * PI]
@@ -843,7 +717,6 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-        
         },
         {
             fieldChanged: function(fieldName)
@@ -1040,81 +913,15 @@ x3dom.registerNodeType(
     "Cone",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Cone
-         * @constructs x3dom.nodeTypes.Cone
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFFloat} bottomRadius
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'bottomRadius', 1.0);
-
-            /**
-             *
-             * @var {SFFloat} topRadius
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'topRadius', 0);
-
-            /**
-             *
-             * @var {SFFloat} height
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'height', 2.0);
-
-            /**
-             *
-             * @var {SFBool} bottom
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'bottom', true);
-
-            /**
-             *
-             * @var {SFBool} side
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'side', true);
-
-            /**
-             *
-             * @var {SFBool} top
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'top', true);
-
-            /**
-             *
-             * @var {SFFloat} subdivision
-             * @memberof x3dom.nodeTypes.Cone
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var geoCacheID = 'Cone_' + this._vf.bottomRadius + '_' + this._vf.height + '_' + this._vf.top + '_' +
@@ -1226,7 +1033,6 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
-        
         },
         {
             fieldChanged: function (fieldName)
@@ -1357,72 +1163,14 @@ x3dom.registerNodeType(
     "Cylinder",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for Cylinder
-         * @constructs x3dom.nodeTypes.Cylinder
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFFloat} radius
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'radius', 1.0);
-
-            /**
-             *
-             * @var {SFFloat} height
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'height', 2.0);
-
-            /**
-             *
-             * @var {SFBool} bottom
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'bottom', true);
-
-            /**
-             *
-             * @var {SFBool} top
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'top', true);
-
-            /**
-             *
-             * @var {SFFloat} subdivision
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
-
-            /**
-             *
-             * @var {SFBool} side
-             * @memberof x3dom.nodeTypes.Cylinder
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'side', true);
 			
 			var sides = this._vf.subdivision;
@@ -1538,7 +1286,6 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-        
         },
         {
             fieldChanged: function(fieldName) {
@@ -1725,54 +1472,12 @@ x3dom.registerNodeType(
     "X3DBinaryContainerGeometryNode",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
-        /**
-         * Constructor for X3DBinaryContainerGeometryNode
-         * @constructs x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFVec3f} position
-             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
-
-            /**
-             *
-             * @var {SFVec3f} size
-             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
-
-            /**
-             *
-             * @var {MFInt32} vertexCount
-             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'vertexCount', [0]);
-
-            /**
-             *
-             * @var {MFString} primType
-             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 
             // correct min/max of bounding volume set in BinaryContainerGeometry
@@ -1781,7 +1486,6 @@ x3dom.registerNodeType(
             this._mesh._numFaces = 0;
 
             this._diameter = this._vf.size.length();
-        
         },
         {
             getMin: function() {
@@ -1839,193 +1543,31 @@ x3dom.registerNodeType(
     "BinaryGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
-        /**
-         * Constructor for BinaryGeometry
-         * @constructs x3dom.nodeTypes.BinaryGeometry
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFString} index
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'index', "");   // Uint16
-
-            /**
-             *
-             * @var {SFString} coord
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'coord', "");   // Float32
-
-            /**
-             *
-             * @var {SFString} normal
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'normal', "");
-
-            /**
-             *
-             * @var {SFString} texCoord
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'texCoord', "");    // THINKABOUTME: add texCoord1, texCoord2, ...?
-
-            /**
-             *
-             * @var {SFString} color
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'color', "");
-
-            /**
-             *
-             * @var {SFString} tangent
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'tangent', "");     // TODO
-
-            /**
-             *
-             * @var {SFString} binormal
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'binormal', "");    // TODO
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
-
-            /**
-             *
-             * @var {SFString} indexType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'indexType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} coordType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'coordType', "Float32");
-
-            /**
-             *
-             * @var {SFString} normalType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'normalType', "Float32");
-
-            /**
-             *
-             * @var {SFString} texCoordType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'texCoordType', "Float32");
-
-            /**
-             *
-             * @var {SFString} colorType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'colorType', "Float32");
-
-            /**
-             *
-             * @var {SFString} tangentType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'tangentType', "Float32");
-
-            /**
-             *
-             * @var {SFString} binormalType
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'binormalType', "Float32");
             
-
-            /**
-             *
-             * @var {SFBool} normalAsSphericalCoordinates
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
-
-            /**
-             *
-             * @var {SFBool} rgbaColors
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'rgbaColors', false);
-
-            /**
-             *
-             * @var {SFInt32} numTexCoordComponents
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
-
-            /**
-             *
-             * @var {SFBool} normalPerVertex
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
-
-            /**
-             *
-             * @var {SFBool} idsPerVertex
-             * @memberof x3dom.nodeTypes.BinaryGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'idsPerVertex', false);    /// Experimental flag to decide if IDs are in texCoords
             
             // workaround
@@ -2040,7 +1582,6 @@ x3dom.registerNodeType(
 		    for (var i=0; i<this._vf.vertexCount.length; ++i) {
                 this._vertexCountSum += this._vf.vertexCount[i];
             }
-        
         },
         {
             parentAdded: function(parent)
@@ -2163,47 +1704,12 @@ x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
-        /**
-         * Constructor for PopGeometryLevel
-         * @constructs x3dom.nodeTypes.PopGeometryLevel
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFString} src
-             * @memberof x3dom.nodeTypes.PopGeometryLevel
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'src', "");
-
-            /**
-             *
-             * @var {SFInt32} numIndices
-             * @memberof x3dom.nodeTypes.PopGeometryLevel
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'numIndices', 0);
-
-            /**
-             *
-             * @var {SFInt32} vertexDataBufferOffset
-             * @memberof x3dom.nodeTypes.PopGeometryLevel
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
-        
         },
         {
             getSrc: function () {
@@ -2226,74 +1732,16 @@ x3dom.registerNodeType(
     "PopGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
-        /**
-         * Constructor for PopGeometry
-         * @constructs x3dom.nodeTypes.PopGeometry
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {        
             x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
 
             //@todo: remove this
-
-            /**
-             *
-             * @var {SFVec3f} tightSize
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'tightSize',  1, 1, 1);
             //@todo: add this on export
-
-            /**
-             *
-             * @var {SFVec3f} maxBBSize
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'maxBBSize',  1, 1, 1);
-
-            /**
-             *
-             * @var {SFVec3f} bbMinModF
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
-
-            /**
-             *
-             * @var {SFVec3f} bbMaxModF
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
-
-            /**
-             *
-             * @var {SFVec3f} bbMin
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
-
-            /**
-             *
-             * @var {SFVec3f} bbShiftVec
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFVec3f (ctx, 'bbShiftVec', 0, 0, 0);
 
             if (this._vf.bbMinModF.x > this._vf.bbMaxModF.x)
@@ -2303,216 +1751,40 @@ x3dom.registerNodeType(
             if (this._vf.bbMinModF.z > this._vf.bbMaxModF.z)
                 this._vf.bbShiftVec.z = 1.0;
       
-
-            /**
-             *
-             * @var {MFNode} levels
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
             
-
-            /**
-             *
-             * @var {SFInt32} attributeStride
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'attributeStride',   0);
-
-            /**
-             *
-             * @var {SFInt32} positionOffset
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'positionOffset',    0);
-
-            /**
-             *
-             * @var {SFInt32} normalOffset
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'normalOffset',      0);
-
-            /**
-             *
-             * @var {SFInt32} texcoordOffset
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'texcoordOffset',    0);
-
-            /**
-             *
-             * @var {SFInt32} colorOffset
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'colorOffset',       0);
-
-            /**
-             *
-             * @var {SFInt32} numAnchorVertices
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'numAnchorVertices', 0);
             
-
-            /**
-             *
-             * @var {SFInt32} positionPrecision
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
-
-            /**
-             *
-             * @var {SFInt32} normalPrecision
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
-
-            /**
-             *
-             * @var {SFInt32} texcoordPrecision
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
-
-            /**
-             *
-             * @var {SFInt32} colorPrecision
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'colorPrecision',    1); 
 
-
-            /**
-             *
-             * @var {SFInt32} minPrecisionLevel
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'minPrecisionLevel', -1);
-
-            /**
-             *
-             * @var {SFInt32} maxPrecisionLevel
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'maxPrecisionLevel', -1);
-
-            /**
-             *
-             * @var {SFFloat} precisionFactor
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'precisionFactor',  1.0);
 
             //those four fields are read by the x3dom renderer            
-
-            /**
-             *
-             * @var {SFString} coordType
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'coordType',    "Uint16");
-
-            /**
-             *
-             * @var {SFString} normalType
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'normalType',   "Uint8");
-
-            /**
-             *
-             * @var {SFString} texCoordType
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} colorType
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'colorType',    "Uint8");            
            
-
-            /**
-             *
-             * @var {SFInt32} vertexBufferSize
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
             
-
-            /**
-             *
-             * @var {SFBool} indexedRendering
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'indexedRendering', false);
             //ATTENTION: Although it might be supported by aopt,
             //           X3DOM does not accept 16 bit spherical normals yet,
             //           spherical normals are assumed to be 8 bit and get
             //           encoded as the 4th 16 bit position component
-
-            /**
-             *
-             * @var {SFBool} sphericalNormals
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'sphericalNormals', false);
             
             //needed as we manipulate vertexCount during loading
-
-            /**
-             *
-             * @var {MFInt32} originalVertexCount
-             * @memberof x3dom.nodeTypes.PopGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'originalVertexCount', [0]);
             
             for (var i = 0; i < this._vf.vertexCount.length; ++i) {
@@ -2539,7 +1811,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
             x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
                          this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
-        
         },
         {
             forceUpdateCoverage: function() {
@@ -2723,16 +1994,6 @@ x3dom.registerNodeType(
     "BitLODGeoComponent",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
-        /**
-         * Constructor for BitLODGeoComponent
-         * @constructs x3dom.nodeTypes.BitLODGeoComponent
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
@@ -2745,8 +2006,7 @@ x3dom.registerNodeType(
 			this._mask = [];
 			
 			this._bitsPerComponent = 0;
-		
-        },
+		},
 		{
 			nodeChanged: function()
             {		
@@ -2784,96 +2044,22 @@ x3dom.registerNodeType(
     "BitLODGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
-        /**
-         * Constructor for BitLODGeometry
-         * @constructs x3dom.nodeTypes.BitLODGeometry
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {	
             x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
 
 			this.addField_SFString(ctx, 'index', "");   // Uint16
-
-            /**
-             *
-             * @var {SFBool} usesVLCIndices
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
-
-            /**
-             *
-             * @var {SFBool} clientSideNormals
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'clientSideNormals', false);  // variable-length coding            
-
-            /**
-             *
-             * @var {SFBool} normalAsSphericalCoordinates
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
-
-            /**
-             *
-             * @var {SFBool} normalPerVertex
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 
 			// Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
             //this.addField_SFString(ctx, 'indexType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} coordType
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'coordType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} normalType
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'normalType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} texCoordType
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
-
-            /**
-             *
-             * @var {SFString} colorType
-             * @memberof x3dom.nodeTypes.BitLODGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFString(ctx, 'colorType', "Uint16");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
@@ -2887,8 +2073,7 @@ x3dom.registerNodeType(
             this._vf.normalPerVertex              = !this._vf.clientSideNormals;
             this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
-		
-        },
+		},
 		{
 		    parentAdded: function(parent)
 		    {
@@ -3102,29 +2287,11 @@ x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
-        /**
-         * Constructor for ImageGeometry
-         * @constructs x3dom.nodeTypes.ImageGeometry
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {	
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
 
 			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
 			this.addField_SFInt32(ctx, 'numColorComponents', 3);
-
-            /**
-             *
-             * @var {SFInt32} numTexCoordComponents
-             * @memberof x3dom.nodeTypes.ImageGeometry
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
 
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
@@ -3179,8 +2346,7 @@ x3dom.registerNodeType(
                 color: true,
                 index: true
             };
-		
-        },
+		},
 		{
             setGeoDirty: function () {
                 this._dirty.coord = true;
@@ -3394,75 +2560,16 @@ x3dom.registerNodeType(
     "IndexedFaceSet",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
-        
-        /**
-         * Constructor for IndexedFaceSet
-         * @constructs x3dom.nodeTypes.IndexedFaceSet
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DComposedGeometryNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFFloat} creaseAngle
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
-
-            /**
-             *
-             * @var {SFBool} convex
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_SFBool(ctx, 'convex', true);
 
-
-            /**
-             *
-             * @var {MFInt32} coordIndex
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'coordIndex', []);
-
-            /**
-             *
-             * @var {MFInt32} normalIndex
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'normalIndex', []);
-
-            /**
-             *
-             * @var {MFInt32} colorIndex
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'colorIndex', []);
-
-            /**
-             *
-             * @var {MFInt32} texCoordIndex
-             * @memberof x3dom.nodeTypes.IndexedFaceSet
-             * @field x3dom
-             * @instance
-             */
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
-        
         },
         {
             nodeChanged: function()

@@ -108,7 +108,8 @@ def annotateProperty(pa, na):
     str += indentation + " * @instance\n"
     str += indentation + " * @protected\n"
     str += indentation + " */\n"
-    na.result += str    
+    #unused for now
+    #na.result += str    
 
     
 def annotateField(fa, na):
@@ -121,7 +122,7 @@ def annotateField(fa, na):
     str += indentation + " * @memberof x3dom.nodeTypes." + na.nodeName + "\n"    
     str += indentation + " * @field x3dom\n"
     str += indentation + " * @instance\n"
-    str += indentation + " */\n"
+    str += indentation + " */\n"    
     na.result += str    
     
     
@@ -159,10 +160,6 @@ def annotateNode(str):
     na.result.append(str[constructorPos:fbodyPos]);
     
     fbodyLength = findFunctionBodyLength(str[fbodyPos:])  
-
-    #print "###################"
-    #print str[fbodyPos:fbodyLength+fbodyPos]    
-   # print "###################"
     
     annotatePropertiesAndFields(str[fbodyPos:fbodyPos+fbodyLength], na)
     
