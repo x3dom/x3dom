@@ -13,6 +13,7 @@ var template = require('jsdoc/template'),
     hasOwnProp = Object.prototype.hasOwnProperty,
     data,
     view,
+    xndf = env.opts.query.xndf,
     outdir = env.opts.destination;
 
 
@@ -171,6 +172,11 @@ exports.publish = function(taffyData, opts, tutorials) {
                 //console.log(x3dNodes[0].name+ " " +x3dNodes[0].x3d + " " + x3dNodes[0].component);
                 view.api = "node";
                 generateX3DNode('Node: ' + x3dNodes[0].name, x3dNodes, createNodeApiPathWithFolders( x3dNodes[0],helper.longnameToUrl[longname]));
+
+                if(xndf)
+                {
+                    generateXNDF(x3dNodes[0].name, x3dNodes[0]);
+                }
             }
 
             //generate namespace overviews
@@ -722,3 +728,57 @@ function linkFromContextTo( longnameTo, toNameSpace, linktext, cssClass)
     }
     return link;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+function generateXNDF(name, node)
+{
+    var folder = path.join(outdir , "xndf/");
+    fs.mkPath(folder);
+
+    var outpath = folder+name+".xndf";
+    var delim = "    ";
+
+
+    var html = '<?xml version="1.0" encoding=UTF-8"?>\n';
+
+    html += '<node \n';
+    html += delim + 'name="'+name+'"\n';
+    html += delim + 'parent="'+(node.parentNode ? node.parentNode.name : "null")+'"\n';
+    html += delim + 'component="'+node.component+'"\n';
+    html += delim + 'status="'+node.status+'"\n';
+    html += delim + 'standard="X3D'+node.x3d+'"\n';
+    html += '>\n';
+
+    html += delim + node.description + '>\n';
+
+
+    var members = find({kind: 'member',  memberof: node.longname});
+    if (members && members.length && members.forEach)
+    {
+        members.forEach(function(m)
+        {
+            if(m.field)
+            {
+
+                html += delim + '<field \n';
+                html += delim + delim + 'name="'+ m.name +'"\n';
+                html += delim + delim + 'data="'+ m.type.names[0] +'"\n';
+                html += delim + delim + 'visibility="public"\n';
+                html += delim + delim + 'conformance="'+(node.field == "x3d"? "standard" : "x3dom" )+'"\n';
+                html += delim + delim + 'defaultValue=""\n';
+                html += delim + '>\n';
+
+                html += delim + delim + (m.description ? m.description : "" ) + '\n';
+
+                html += delim + '</field>\n';
+            }
+        });
+    }
+
+
+    html += '</node>';
+
+    fs.writeFileSync(outpath, html, 'utf8');
+
+}
