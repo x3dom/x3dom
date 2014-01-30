@@ -1,16 +1,25 @@
 import sys
 import re
 
-import genXDF
+
+class PropertyAnnotation:
+    def __init__(self):
+        self.name = ""
+        
+    
+class FieldAnnotation:
+    def __init__(self):
+        self.name         = ""
+        self.type         = ""
+        self.defaultvalue = ""
 
 
-## utility definitions
 class NodeAnnotation:
     def __init__(self):
         self.nodeName      = ""
         self.componentName = ""
         self.parentName    = ""
-        self.result        = []
+        self.result        = []        
 
         
 def extractNameAndComponent(str, na):        
@@ -19,9 +28,105 @@ def extractNameAndComponent(str, na):
     na.componentName = splitStr[3]    
     na.parentName    = splitStr[4][splitStr[4].find('(')+1:splitStr[4].find(',',1)]
         
+      
+def findFunctionBodyLength(str):
+    numOpenBraces = 1
+    i = 1
+    
+    while (i != len(str)):
+        if (str[i] == '{'):
+            numOpenBraces += 1
+        else:
+            if (str[i] == '}'):
+                numOpenBraces -= 1                            
+         
+        if (numOpenBraces == 0):
+            break
+            
+        i += 1 
         
+    return i
+    
+  
+def extractField(str):
+    fa = FieldAnnotation()
+    
+    bracketIdx = str.find('(')
+    fa.type = str[:bracketIdx]
+    
+    addFieldParams = str[bracketIdx+1:]
+    
+    if fa.type != "MFNode" and fa.type != "SFNode":
+        #ignore first 'ctx' param
+        addFieldParams = addFieldParams[addFieldParams.find(',')+2:]
+    else:
+        addFieldParams = addFieldParams[1:]
+  
+    
+    fieldNameEnd = addFieldParams.find('\'')
+    
+    fa.name         = addFieldParams[:fieldNameEnd]
+    fa.defaultvalue = addFieldParams[fieldNameEnd+2:addFieldParams.find(')')]
+    
+    return fa
+    
+  
+def annotatePropertiesAndFields(fbodyStr, na):
+    definitions = []
+    
+    definitions = re.split("\n", fbodyStr)
+    
+    for d in definitions:
+        defStr = d.replace(" ", "")
+        
+        if defStr.startswith('this.'):
+            #skip "this."
+            defStr = defStr[defStr.find('.') + 1:];
+            if defStr.startswith('addField_'):
+                fieldStr = defStr[defStr.find('_')+1:]
+                fa = extractField(fieldStr)
+                annotateField(fa, na)
+            else:
+                propStr = defStr[:defStr.find('=')]
+                pa = PropertyAnnotation()
+                pa.name = propStr                
+                annotateProperty(pa, na)
+                
+        na.result += d + "\n";
+        
+    na.result += "        "
+        
+        
+def annotateProperty(pa, na):
+    indentation = "            "
+
+    str = "\n"
+    str += indentation + "/**\n"
+    str += indentation + " *\n"
+    str += indentation + " *@var {} " + pa.name + "\n"
+    str += indentation + " *@memberof x3dom.nodeTypes." + na.nodeName + "\n"
+    str += indentation + " *@instance\n"
+    str += indentation + " *@protected\n"
+    str += indentation + " */\n"
+    na.result += str    
+
+    
+def annotateField(fa, na):
+    indentation = "            "
+
+    str = "\n"
+    str += indentation + "/**\n"
+    str += indentation + " *\n"
+    str += indentation + " * @var {" + fa.type + "} " + fa.name + "\n"
+    str += indentation + " * @memberof x3dom.nodeTypes." + na.nodeName + "\n"    
+    str += indentation + " * @field x3dom\n"
+    str += indentation + " * @instance\n"
+    str += indentation + " */\n"
+    na.result += str    
+    
+    
 def annotateNodeType(na):
-    indentation = "    "
+    indentation = "        "
 
     str = "\n"
     str += indentation + "/**\n"
@@ -35,7 +140,7 @@ def annotateNodeType(na):
     str += indentation + " */\n" + indentation
     na.result += str
     
-        
+       
 def annotateNode(str):
     na = NodeAnnotation()
     
@@ -50,7 +155,18 @@ def annotateNode(str):
     
     annotateNodeType(na)
     
+    fbodyPos = str.find('{')
+    na.result.append(str[constructorPos:fbodyPos]);
     
+    fbodyLength = findFunctionBodyLength(str[fbodyPos:])  
+
+    #print "###################"
+    #print str[fbodyPos:fbodyLength+fbodyPos]    
+   # print "###################"
+    
+    annotatePropertiesAndFields(str[fbodyPos:fbodyPos+fbodyLength], na)
+    
+    na.result.append(str[fbodyPos+fbodyLength:])
     
     return "".join(na.result)
     
@@ -68,20 +184,20 @@ try:
     f = open(sys.argv[1], 'r')
     jsStr = f.read()    
     f.close()
-    
-    result = "";
-    
-    nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
-    
-    for n in nodeTypesArray:
-        result += (annotateNode(n) if n[0] == '(' else n)        
-
-    f = open(sys.argv[2], 'w')
-    f.write(result)    
-    f.close()    
-        
+                
 except:
     print "Error while reading JS file."
     raise
+    
+result = "";
+    
+nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
+
+for n in nodeTypesArray:
+    result += (annotateNode(n) if n[0] == '(' else n)        
+
+f = open(sys.argv[2], 'w')
+f.write(result)    
+f.close() 
 
 print "Success."
