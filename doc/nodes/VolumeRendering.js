@@ -38,6 +38,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} dimensions
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -47,6 +48,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} voxels
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -104,6 +106,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DVolumeRenderStyleNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -327,6 +330,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} surfaceNormals
              * @memberof x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+             * @initvalue x3dom.nodeTypes.X3DTexture3DNode
              * @field x3dom
              * @instance
              */
@@ -395,6 +399,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} renderStyle
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -404,6 +409,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} voxels
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -413,6 +419,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} weightConstant1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue 0.5
              * @field x3dom
              * @instance
              */
@@ -422,6 +429,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} weightConstant2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue 0.5
              * @field x3dom
              * @instance
              */
@@ -431,6 +439,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} weightFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue "CONSTANT"
              * @field x3dom
              * @instance
              */
@@ -440,6 +449,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} weightFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue "CONSTANT"
              * @field x3dom
              * @instance
              */
@@ -449,6 +459,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} weightTransferFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -458,6 +469,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} weightTransferFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -490,6 +502,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} retainedOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -499,6 +512,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} boundaryOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -508,6 +522,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -540,6 +555,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} parallelColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -549,6 +565,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} orthogonalColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -558,6 +575,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} colorSteps
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 4
              * @field x3dom
              * @instance
              */
@@ -590,6 +608,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} ordered
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -599,6 +618,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -631,6 +651,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} edgeColor
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -640,6 +661,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
+             * @initvalue 0.4
              * @field x3dom
              * @instance
              */
@@ -672,6 +694,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */
@@ -681,6 +704,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} gradients
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue x3dom.nodeTypes.X3DTexture3DNode
              * @field x3dom
              * @instance
              */
@@ -690,6 +714,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} surfaceValues
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -699,6 +724,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} contourStepSize
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -708,6 +734,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} surfaceTolerance
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -740,6 +767,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 1.0,1.0,0.0
              * @field x3dom
              * @instance
              */
@@ -749,6 +777,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} finalLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 0.0,1.0,0.0
              * @field x3dom
              * @instance
              */
@@ -758,6 +787,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} positionLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -857,6 +887,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} transferFunction
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -866,6 +897,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} type
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue "simple"
              * @field x3dom
              * @instance
              */
@@ -875,6 +907,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue 6.0
              * @field x3dom
              * @instance
              */
@@ -884,6 +917,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} lightFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue 1.2
              * @field x3dom
              * @instance
              */
@@ -990,6 +1024,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} intensityThreshold
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -999,6 +1034,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} type
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
+             * @initvalue "MAX"
              * @field x3dom
              * @instance
              */
@@ -1133,6 +1169,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} renderStyle
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeDataNode
              * @field x3dom
              * @instance
              */
@@ -1142,6 +1179,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} segmentIdentifiers
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeDataNode
              * @field x3dom
              * @instance
              */
@@ -1151,6 +1189,7 @@ x3dom.registerNodeType(
              *
              * @var {MFBoolean} segmentEnabled
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1183,6 +1222,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} material
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DMaterialNode
              * @field x3dom
              * @instance
              */
@@ -1192,6 +1232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} lighting
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1201,6 +1242,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} shadows
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1210,6 +1252,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} phaseFunction
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue "Henyey-Greenstein"
              * @field x3dom
              * @instance
              */
@@ -1242,6 +1285,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteBoundaryOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1251,6 +1295,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteRetainedOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1260,6 +1305,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteSharpness
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 0.5
              * @field x3dom
              * @instance
              */
@@ -1292,6 +1338,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} distanceFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1301,6 +1348,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} interiorFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1310,6 +1358,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} lightingFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1319,6 +1368,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 0.4
              * @field x3dom
              * @instance
              */
@@ -1328,6 +1378,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} gradientRetainedOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1337,6 +1388,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} gradientBoundaryOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1346,6 +1398,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} gradientOpacityFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1355,6 +1408,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteRetainedOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1364,6 +1418,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteBoundaryOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1373,6 +1428,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} silhouetteOpacityFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1382,6 +1438,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} resolutionFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -1414,6 +1471,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} coolColor
              * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
+             * @initvalue 0,0,1
              * @field x3dom
              * @instance
              */
@@ -1423,6 +1481,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} warmColor
              * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
+             * @initvalue 1,1,0
              * @field x3dom
              * @instance
              */
@@ -1455,6 +1514,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} renderStyle
              * @memberof x3dom.nodeTypes.VolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @field x3dom
              * @instance
              */

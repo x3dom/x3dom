@@ -34,6 +34,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -43,6 +44,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} parameter
              * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -111,6 +113,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.Inline
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -120,6 +123,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} load
              * @memberof x3dom.nodeTypes.Inline
+             * @initvalue true
              * @field x3dom
              * @instance
              */

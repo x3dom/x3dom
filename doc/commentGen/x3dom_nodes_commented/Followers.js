@@ -39,6 +39,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isActive
              * @memberof x3dom.nodeTypes.X3DFollowerNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -126,6 +127,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} duration
              * @memberof x3dom.nodeTypes.X3DChaserNode
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -164,6 +166,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} tau
              * @memberof x3dom.nodeTypes.X3DDamperNode
+             * @initvalue 0.3
              * @field x3dom
              * @instance
              */
@@ -173,6 +176,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} tolerance
              * @memberof x3dom.nodeTypes.X3DDamperNode
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -182,6 +186,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} order
              * @memberof x3dom.nodeTypes.X3DDamperNode
+             * @initvalue 3
              * @field x3dom
              * @instance
              */
@@ -217,6 +222,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} initialDestination
              * @memberof x3dom.nodeTypes.ColorChaser
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -226,6 +232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} initialValue
              * @memberof x3dom.nodeTypes.ColorChaser
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -236,6 +243,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} value
              * @memberof x3dom.nodeTypes.ColorChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -245,6 +253,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} destination
              * @memberof x3dom.nodeTypes.ColorChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -430,6 +439,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} initialDestination
              * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -439,6 +449,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} initialValue
              * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -449,6 +460,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} value
              * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -458,6 +470,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} destination
              * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -640,6 +653,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} initialDestination
              * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -649,6 +663,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} initialValue
              * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -659,6 +674,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} value
              * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -668,6 +684,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} destination
              * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -884,6 +901,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} initialDestination
              * @memberof x3dom.nodeTypes.OrientationDamper
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -893,6 +911,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} initialValue
              * @memberof x3dom.nodeTypes.OrientationDamper
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -903,6 +922,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} value
              * @memberof x3dom.nodeTypes.OrientationDamper
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -912,6 +932,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} destination
              * @memberof x3dom.nodeTypes.OrientationDamper
+             * @initvalue 0,1,0,0
              * @field x3dom
              * @instance
              */
@@ -1086,6 +1107,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.PositionChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1095,6 +1117,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} initialValue
              * @memberof x3dom.nodeTypes.PositionChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1105,6 +1128,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} value
              * @memberof x3dom.nodeTypes.PositionChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1114,6 +1138,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} destination
              * @memberof x3dom.nodeTypes.PositionChaser
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1332,6 +1357,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1341,6 +1367,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} initialValue
              * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1351,6 +1378,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} value
              * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1360,6 +1388,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} destination
              * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1548,6 +1577,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.PositionDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1557,6 +1587,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} initialValue
              * @memberof x3dom.nodeTypes.PositionDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1567,6 +1598,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} value
              * @memberof x3dom.nodeTypes.PositionDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1576,6 +1608,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} destination
              * @memberof x3dom.nodeTypes.PositionDamper
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1750,6 +1783,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.PositionDamper2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1759,6 +1793,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} initialValue
              * @memberof x3dom.nodeTypes.PositionDamper2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1769,6 +1804,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} value
              * @memberof x3dom.nodeTypes.PositionDamper2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1778,6 +1814,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} destination
              * @memberof x3dom.nodeTypes.PositionDamper2D
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -1952,6 +1989,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} initialDestination
              * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1961,6 +1999,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} initialValue
              * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1971,6 +2010,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} value
              * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1980,6 +2020,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} destination
              * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -2165,6 +2206,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} initialDestination
              * @memberof x3dom.nodeTypes.ScalarDamper
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -2174,6 +2216,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} initialValue
              * @memberof x3dom.nodeTypes.ScalarDamper
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -2184,6 +2227,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} value
              * @memberof x3dom.nodeTypes.ScalarDamper
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -2193,6 +2237,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} destination
              * @memberof x3dom.nodeTypes.ScalarDamper
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -2362,6 +2407,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.CoordinateDamper
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2371,6 +2417,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} initialValue
              * @memberof x3dom.nodeTypes.CoordinateDamper
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2381,6 +2428,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} value
              * @memberof x3dom.nodeTypes.CoordinateDamper
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2390,6 +2438,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} destination
              * @memberof x3dom.nodeTypes.CoordinateDamper
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2424,6 +2473,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2433,6 +2483,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} initialValue
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2443,6 +2494,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} value
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2452,6 +2504,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} destination
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */

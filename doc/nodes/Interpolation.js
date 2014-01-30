@@ -33,6 +33,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} key
              * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -42,6 +43,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} set_fraction
              * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -90,6 +92,7 @@ x3dom.registerNodeType(
              *
              * @var {MFRotation} keyValue
              * @memberof x3dom.nodeTypes.OrientationInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -134,6 +137,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} keyValue
              * @memberof x3dom.nodeTypes.PositionInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -179,6 +183,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} keyValue
              * @memberof x3dom.nodeTypes.NormalInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -224,6 +229,7 @@ x3dom.registerNodeType(
              *
              * @var {MFColor} keyValue
              * @memberof x3dom.nodeTypes.ColorInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -270,6 +276,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} keyValue
              * @memberof x3dom.nodeTypes.ScalarInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -315,6 +322,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} keyValue
              * @memberof x3dom.nodeTypes.CoordinateInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */

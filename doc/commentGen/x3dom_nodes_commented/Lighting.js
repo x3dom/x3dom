@@ -42,6 +42,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} ambientIntensity
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -51,6 +52,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} color
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -60,6 +62,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} intensity
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -69,6 +72,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} global
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -78,6 +82,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} on
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -87,6 +92,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} shadowIntensity
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -98,6 +104,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} shadowOffset
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -107,6 +114,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zNear
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -116,6 +124,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zFar
              * @memberof x3dom.nodeTypes.X3DLightNode
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -183,6 +192,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} direction
              * @memberof x3dom.nodeTypes.DirectionalLight
+             * @initvalue 0,0,-1
              * @field x3dom
              * @instance
              */
@@ -227,6 +237,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} attenuation
              * @memberof x3dom.nodeTypes.PointLight
+             * @initvalue 1,0,0
              * @field x3dom
              * @instance
              */
@@ -236,6 +247,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} location
              * @memberof x3dom.nodeTypes.PointLight
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -245,6 +257,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.PointLight
+             * @initvalue 100
              * @field x3dom
              * @instance
              */
@@ -288,6 +301,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} direction
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 0,0,-1
              * @field x3dom
              * @instance
              */
@@ -297,6 +311,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} attenuation
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 1,0,0
              * @field x3dom
              * @instance
              */
@@ -306,6 +321,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} location
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -315,6 +331,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 100
              * @field x3dom
              * @instance
              */
@@ -324,6 +341,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} beamWidth
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 1.5707963
              * @field x3dom
              * @instance
              */
@@ -333,6 +351,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} cutOffAngle
              * @memberof x3dom.nodeTypes.SpotLight
+             * @initvalue 1.5707963
              * @field x3dom
              * @instance
              */

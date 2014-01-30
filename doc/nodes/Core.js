@@ -56,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} metadata
              * @memberof x3dom.nodeTypes.X3DNode
+             * @initvalue x3dom.nodeTypes.X3DMetadataObject
              * @field x3dom
              * @instance
              */
@@ -770,6 +771,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.X3DMetadataObject
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -779,6 +781,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} reference
              * @memberof x3dom.nodeTypes.X3DMetadataObject
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -811,6 +814,7 @@ x3dom.registerNodeType(
              *
              * @var {MFBoolean} value
              * @memberof x3dom.nodeTypes.MetadataBoolean
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -843,6 +847,7 @@ x3dom.registerNodeType(
              *
              * @var {MFDouble} value
              * @memberof x3dom.nodeTypes.MetadataDouble
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -875,6 +880,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} value
              * @memberof x3dom.nodeTypes.MetadataFloat
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -907,6 +913,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} value
              * @memberof x3dom.nodeTypes.MetadataInteger
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -939,6 +946,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} value
              * @memberof x3dom.nodeTypes.MetadataSet
+             * @initvalue x3dom.nodeTypes.X3DMetadataObject
              * @field x3dom
              * @instance
              */
@@ -971,6 +979,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} value
              * @memberof x3dom.nodeTypes.MetadataString
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1003,6 +1012,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.Field
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1012,6 +1022,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} type
              * @memberof x3dom.nodeTypes.Field
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1021,6 +1032,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} value
              * @memberof x3dom.nodeTypes.Field
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1086,6 +1098,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} bind
              * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1095,6 +1108,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} description
              * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1104,6 +1118,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isActive
              * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1203,6 +1218,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} info
              * @memberof x3dom.nodeTypes.WorldInfo
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1212,6 +1228,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} title
              * @memberof x3dom.nodeTypes.WorldInfo
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1247,6 +1264,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} render
              * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -1256,6 +1274,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} bboxCenter
              * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1265,6 +1284,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} bboxSize
              * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue -1,-1,-1
              * @field x3dom
              * @instance
              */

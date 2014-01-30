@@ -55,6 +55,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} source
              * @memberof x3dom.nodeTypes.Sound
+             * @initvalue x3dom.nodeTypes.X3DSoundSourceNode
              * @field x3dom
              * @instance
              */
@@ -175,6 +176,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -184,6 +186,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enabled
              * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -193,6 +196,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} loop
              * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue false
              * @field x3dom
              * @instance
              */

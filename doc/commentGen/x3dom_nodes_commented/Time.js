@@ -38,6 +38,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} cycleInterval
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -47,6 +48,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enabled
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -56,6 +58,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} loop
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -65,6 +68,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} startTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -74,6 +78,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} stopTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -83,6 +88,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} pauseTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -92,6 +98,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} resumeTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -102,6 +109,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} cycleTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -111,6 +119,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} elapsedTime
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -120,6 +129,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} fraction_changed
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -129,6 +139,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isActive
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -138,6 +149,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isPaused
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -147,6 +159,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} time
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -157,6 +170,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} first
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -166,6 +180,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} firstCycle
              * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0.0
              * @field x3dom
              * @instance
              */
@@ -356,6 +371,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} loop
              * @memberof x3dom.nodeTypes.X3DTimeDependentNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */

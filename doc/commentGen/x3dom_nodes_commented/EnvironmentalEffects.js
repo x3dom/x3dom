@@ -33,6 +33,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} withCredentials
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -102,6 +103,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} color
              * @memberof x3dom.nodeTypes.Fog
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -111,6 +113,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} fogType
              * @memberof x3dom.nodeTypes.Fog
+             * @initvalue "LINEAR"
              * @field x3dom
              * @instance
              */
@@ -120,6 +123,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} visibilityRange
              * @memberof x3dom.nodeTypes.Fog
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -157,6 +161,7 @@ x3dom.registerNodeType(
              *
              * @var {MFColor} skyColor
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue [newx3dom.fields.SFColor(0,0,0
              * @field x3dom
              * @instance
              */
@@ -166,6 +171,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} skyAngle
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -175,6 +181,7 @@ x3dom.registerNodeType(
              *
              * @var {MFColor} groundColor
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -184,6 +191,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} groundAngle
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -193,6 +201,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} transparency
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue trans
              * @field x3dom
              * @instance
              */
@@ -202,6 +211,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} backUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -211,6 +221,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} bottomUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -220,6 +231,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} frontUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -229,6 +241,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} leftUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -238,6 +251,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} rightUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -247,6 +261,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} topUrl
              * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -337,6 +352,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} sortTrans
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -348,6 +364,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} shadowExcludeTransparentObjects
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -359,6 +376,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} gammaCorrectionDefault
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue "none"
              * @field x3dom
              * @instance
              */
@@ -371,6 +389,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} frustumCulling
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -382,6 +401,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} smallFeatureCulling
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -391,6 +411,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} smallFeatureThreshold
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -402,6 +423,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} occlusionCulling
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -411,6 +433,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} occlusionVisibilityThreshold
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 0.0
              * @field x3dom
              * @instance
              */
@@ -422,6 +445,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} lowPriorityCulling
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -431,6 +455,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} lowPriorityThreshold
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -442,6 +467,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} tessellationDetailCulling
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -451,6 +477,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} tessellationErrorThreshold
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 0.0
              * @field x3dom
              * @instance
              */
@@ -462,6 +489,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enableARC
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -472,6 +500,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} minFrameRate
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -481,6 +510,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} maxFrameRate
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue 62.5
              * @field x3dom
              * @instance
              */
@@ -493,6 +523,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} userDataFactor
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -502,6 +533,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} smallFeatureFactor
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -511,6 +543,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} occlusionVisibilityFactor
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -520,6 +553,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} lowPriorityFactor
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -529,6 +563,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} tessellationErrorFactor
              * @memberof x3dom.nodeTypes.Environment
+             * @initvalue -1
              * @field x3dom
              * @instance
              */

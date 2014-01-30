@@ -34,6 +34,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} size
              * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 2,2
              * @field x3dom
              * @instance
              */
@@ -43,6 +44,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -52,6 +54,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} center
              * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -61,6 +64,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} primType
              * @memberof x3dom.nodeTypes.Patch
+             * @initvalue ['TRIANGLES']
              * @field x3dom
              * @instance
              */
@@ -727,6 +731,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} factor
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -736,6 +741,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} maxDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 3
              * @field x3dom
              * @instance
              */
@@ -745,6 +751,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} minDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -754,6 +761,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} smoothLoading
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -763,6 +771,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} interactionDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue this._vf.maxDepth
              * @field x3dom
              * @instance
              */
@@ -772,6 +781,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} size
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -782,6 +792,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} octSize
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -791,6 +802,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -800,6 +812,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} url
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -809,6 +822,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} elevationUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -818,6 +832,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} textureUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -827,6 +842,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -836,6 +852,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} mode
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "3d"
              * @field x3dom
              * @instance
              */
@@ -845,6 +862,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} subMode
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "wmts"
              * @field x3dom
              * @instance
              */
@@ -854,6 +872,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} elevationFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
              * @field x3dom
              * @instance
              */
@@ -863,6 +882,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} textureFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
              * @field x3dom
              * @instance
              */
@@ -872,6 +892,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
              * @field x3dom
              * @instance
              */
@@ -881,6 +902,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} maxElevation
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -890,6 +912,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} useNormals
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -899,6 +922,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} lit
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -909,6 +933,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} bvhCount
              * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 8
              * @field x3dom
              * @instance
              */

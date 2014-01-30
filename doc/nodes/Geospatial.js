@@ -34,6 +34,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} point
              * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -43,6 +44,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -52,6 +54,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue x3dom.nodeTypes.GeoOrigin
              * @field x3dom
              * @instance
              */
@@ -427,6 +430,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -436,6 +440,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3d} geoGridOrigin
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -445,6 +450,7 @@ x3dom.registerNodeType(
              *
              * @var {MFDouble} height
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -454,6 +460,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} ccw
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -464,6 +471,7 @@ x3dom.registerNodeType(
              *
              * @var {SFDouble} creaseAngle
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -475,6 +483,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} xDimension
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -484,6 +493,7 @@ x3dom.registerNodeType(
              *
              * @var {SFDouble} xSpacing
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -493,6 +503,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} yScale
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -502,6 +513,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} zDimension
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -511,6 +523,7 @@ x3dom.registerNodeType(
              *
              * @var {SFDouble} zSpacing
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -523,6 +536,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue x3dom.nodeTypes.GeoOrigin
              * @field x3dom
              * @instance
              */
@@ -532,6 +546,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} lit
              * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -764,6 +779,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -773,6 +789,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} rootUrl
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -782,6 +799,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} child1Url
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -791,6 +809,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} child2Url
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -800,6 +819,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} child3Url
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -809,6 +829,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} child4Url
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -819,6 +840,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} range
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue 10
              * @field x3dom
              * @instance
              */
@@ -828,6 +850,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} referenceBindableDescription
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -837,6 +860,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -846,6 +870,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} rootNode
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -855,6 +880,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} privateChild1Node
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -864,6 +890,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} privateChild2Node
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -873,6 +900,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} privateChild3Node
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -882,6 +910,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} privateChild4Node
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -891,6 +920,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} privateRootNode
              * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -924,6 +954,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -933,6 +964,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3d} geoCoords
              * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -942,6 +974,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -1040,6 +1073,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.GeoMetadata
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1049,6 +1083,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} data
              * @memberof x3dom.nodeTypes.GeoMetadata
+             * @initvalue x3dom.nodeTypes.X3DInfoNode
              * @field x3dom
              * @instance
              */
@@ -1058,6 +1093,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} summary
              * @memberof x3dom.nodeTypes.GeoMetadata
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1090,6 +1126,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoOrigin
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -1099,6 +1136,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3d} geoCoords
              * @memberof x3dom.nodeTypes.GeoOrigin
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1108,6 +1146,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} rotateYUp
              * @memberof x3dom.nodeTypes.GeoOrigin
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1140,6 +1179,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -1149,6 +1189,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3d} keyValue
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1158,6 +1199,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
+             * @initvalue x3dom.nodeTypes.X3DInterpolatorNode
              * @field x3dom
              * @instance
              */
@@ -1190,6 +1232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3d} geoCenter
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1199,6 +1242,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} rotation
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -1208,6 +1252,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} scale
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -1217,6 +1262,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} scaleOrientation
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -1226,6 +1272,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} translation
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1235,6 +1282,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue x3dom.nodeTypes.Transform
              * @field x3dom
              * @instance
              */
@@ -1244,6 +1292,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoTransform
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -1276,6 +1325,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue ['GD','WE']
              * @field x3dom
              * @instance
              */
@@ -1285,6 +1335,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue 0.785398
              * @field x3dom
              * @instance
              */
@@ -1294,6 +1345,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} orientation
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -1303,6 +1355,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3d} position
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue 0,0,100000
              * @field x3dom
              * @instance
              */
@@ -1312,6 +1365,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} headlight
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -1321,6 +1375,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} navType
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue 'EXAMINE'
              * @field x3dom
              * @instance
              */
@@ -1330,6 +1385,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} speedFactor
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -1339,6 +1395,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoViewpoint
+             * @initvalue x3dom.nodeTypes.X3DViewpointNode
              * @field x3dom
              * @instance
              */

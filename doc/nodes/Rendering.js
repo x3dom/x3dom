@@ -34,6 +34,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} solid
              * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -43,6 +44,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} ccw
              * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -54,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} useGeoCache
              * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -67,6 +70,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} lit
              * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -155,6 +159,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} primType
              * @memberof x3dom.nodeTypes.Mesh
+             * @initvalue "triangle"
              * @field x3dom
              * @instance
              */
@@ -164,6 +169,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.Mesh
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -174,6 +180,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} vertexAttributes
              * @memberof x3dom.nodeTypes.Mesh
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom
              * @instance
              */
@@ -252,6 +259,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.PointSet
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3dom
              * @instance
              */
@@ -261,6 +269,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.PointSet
+             * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3dom
              * @instance
              */
@@ -361,6 +370,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -370,6 +380,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -379,6 +390,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalUpdateMode
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue 'fast'
              * @field x3dom
              * @instance
              */
@@ -389,6 +401,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom
              * @instance
              */
@@ -399,6 +412,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3dom
              * @instance
              */
@@ -408,6 +422,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} normal
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.Normal
              * @field x3dom
              * @instance
              */
@@ -417,6 +432,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3dom
              * @instance
              */
@@ -426,6 +442,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} texCoord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
              * @field x3dom
              * @instance
              */
@@ -498,6 +515,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} vertexCount
              * @memberof x3dom.nodeTypes.LineSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -508,6 +526,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.LineSet
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom
              * @instance
              */
@@ -517,6 +536,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.LineSet
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3dom
              * @instance
              */
@@ -526,6 +546,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.LineSet
+             * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3dom
              * @instance
              */
@@ -619,6 +640,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -629,6 +651,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom
              * @instance
              */
@@ -638,6 +661,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3dom
              * @instance
              */
@@ -647,6 +671,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3dom
              * @instance
              */
@@ -657,6 +682,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} coordIndex
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -666,6 +692,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} colorIndex
              * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -939,6 +966,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedTriangleSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1373,6 +1401,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedTriangleStripSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2285,6 +2314,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} point
              * @memberof x3dom.nodeTypes.Coordinate
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2323,6 +2353,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} vector
              * @memberof x3dom.nodeTypes.Normal
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2409,6 +2440,7 @@ x3dom.registerNodeType(
              *
              * @var {MFColor} color
              * @memberof x3dom.nodeTypes.Color
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -2441,6 +2473,7 @@ x3dom.registerNodeType(
              *
              * @var {MFColorRGBA} color
              * @memberof x3dom.nodeTypes.ColorRGBA
+             * @initvalue []
              * @field x3dom
              * @instance
              */

@@ -56,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} textureCoordinatesId
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -65,6 +66,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} channelMask
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
+             * @initvalue "DEFAULT"
              * @field x3dom
              * @instance
              */
@@ -74,6 +76,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isSRGB
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -83,6 +86,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} texture
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -92,6 +96,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} textureTransform
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
+             * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
              * @field x3dom
              * @instance
              */
@@ -124,6 +129,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} language
              * @memberof x3dom.nodeTypes.X3DShaderNode
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -156,6 +162,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} tangentTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -165,6 +172,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} binormalTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -174,6 +182,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} emissiveFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -183,6 +192,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} emissiveTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -192,6 +202,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} emissiveTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -201,6 +212,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} emissiveTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -210,6 +222,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} ambientFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0.2,0.2,0.2
              * @field x3dom
              * @instance
              */
@@ -219,6 +232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} ambientTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -228,6 +242,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} ambientTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -237,6 +252,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} ambientTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -246,6 +262,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} diffuseFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -255,6 +272,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} diffuseTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -264,6 +282,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} diffuseTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -273,6 +292,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} diffuseTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -282,6 +302,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} specularFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -291,6 +312,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} specularTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -300,6 +322,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} specularTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -309,6 +332,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} specularTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -318,6 +342,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} shininessFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -327,6 +352,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} shininessTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -336,6 +362,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} shininessTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -345,6 +372,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} shininessTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'a'
              * @field x3dom
              * @instance
              */
@@ -354,6 +382,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalFormat
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'UNORM'
              * @field x3dom
              * @instance
              */
@@ -363,6 +392,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalSpace
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'TANGENT'
              * @field x3dom
              * @instance
              */
@@ -372,6 +402,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} normalTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -381,6 +412,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} normalTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -390,6 +422,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} normalTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -399,6 +432,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} reflectionFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -408,6 +442,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} reflectionTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -417,6 +452,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} reflectionTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -426,6 +462,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} reflectionTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -435,6 +472,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} transmissionFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -444,6 +482,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} transmissionTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -453,6 +492,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} transmissionTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -462,6 +502,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} transmissionTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -471,6 +512,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} environmentFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -480,6 +522,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} environmentTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -489,6 +532,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} environmentTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -498,6 +542,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} environmentTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'rgb'
              * @field x3dom
              * @instance
              */
@@ -507,6 +552,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} relativeIndexOfRefraction
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -516,6 +562,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} fresnelBlend
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -525,6 +572,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} displacementAxis
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'y'
              * @field x3dom
              * @instance
              */
@@ -534,6 +582,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} displacementFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 255.0
              * @field x3dom
              * @instance
              */
@@ -543,6 +592,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} displacementTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -552,6 +602,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} displacementTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -561,6 +612,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} emissiveTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -570,6 +622,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} ambientTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -579,6 +632,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} diffuseTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -588,6 +642,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} specularTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -597,6 +652,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} shininessTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -606,6 +662,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} normalTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -615,6 +672,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} reflectionTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -624,6 +682,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} transmissionTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -633,6 +692,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} environmentTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -642,6 +702,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} displacementTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -651,6 +712,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} diffuseDisplacementTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -661,6 +723,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} normalScale
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 2,2,2
              * @field x3dom
              * @instance
              */
@@ -670,6 +733,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} normalBias
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1,-1,-1
              * @field x3dom
              * @instance
              */
@@ -679,6 +743,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} alphaFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -688,6 +753,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} invertAlphaTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -697,6 +763,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} alphaTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -706,6 +773,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} alphaTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -715,6 +783,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} alphaTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 'a'
              * @field x3dom
              * @instance
              */
@@ -724,6 +793,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} alphaTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -863,6 +933,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} fields
              * @memberof x3dom.nodeTypes.ComposedShader
+             * @initvalue x3dom.nodeTypes.Field
              * @field x3dom
              * @instance
              */
@@ -872,6 +943,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} parts
              * @memberof x3dom.nodeTypes.ComposedShader
+             * @initvalue x3dom.nodeTypes.ShaderPart
              * @field x3dom
              * @instance
              */
@@ -1042,6 +1114,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.ShaderPart
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1051,6 +1124,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} type
              * @memberof x3dom.nodeTypes.ShaderPart
+             * @initvalue "VERTEX"
              * @field x3dom
              * @instance
              */
@@ -1158,6 +1232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.X3DVertexAttributeNode
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -1190,6 +1265,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} numComponents
              * @memberof x3dom.nodeTypes.FloatVertexAttribute
+             * @initvalue 4
              * @field x3dom
              * @instance
              */
@@ -1199,6 +1275,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} value
              * @memberof x3dom.nodeTypes.FloatVertexAttribute
+             * @initvalue []
              * @field x3dom
              * @instance
              */

@@ -56,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} center
              * @memberof x3dom.nodeTypes.TextureTransform
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -65,6 +66,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} rotation
              * @memberof x3dom.nodeTypes.TextureTransform
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -74,6 +76,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} scale
              * @memberof x3dom.nodeTypes.TextureTransform
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -83,6 +86,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} translation
              * @memberof x3dom.nodeTypes.TextureTransform
+             * @initvalue 0,0
              * @field x3dom
              * @instance
              */
@@ -148,6 +152,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} anisotropicDegree
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -157,6 +162,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColorRGBA} borderColor
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue 0,0,0,0
              * @field x3dom
              * @instance
              */
@@ -166,6 +172,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} borderWidth
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -175,6 +182,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} boundaryModeS
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "REPEAT"
              * @field x3dom
              * @instance
              */
@@ -184,6 +192,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} boundaryModeT
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "REPEAT"
              * @field x3dom
              * @instance
              */
@@ -193,6 +202,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} boundaryModeR
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "REPEAT"
              * @field x3dom
              * @instance
              */
@@ -202,6 +212,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} magnificationFilter
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "FASTEST"
              * @field x3dom
              * @instance
              */
@@ -211,6 +222,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} minificationFilter
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "FASTEST"
              * @field x3dom
              * @instance
              */
@@ -220,6 +232,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} textureCompression
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue "FASTEST"
              * @field x3dom
              * @instance
              */
@@ -229,6 +242,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} texturePriority
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -238,6 +252,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} generateMipMaps
              * @memberof x3dom.nodeTypes.TextureProperties
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -286,6 +301,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} origChannelCount
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -295,6 +311,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -304,6 +321,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} repeatS
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -313,6 +331,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} repeatT
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -322,6 +341,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} scale
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -331,6 +351,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} withCredentials
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -340,6 +361,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} textureProperties
              * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue x3dom.nodeTypes.TextureProperties
              * @field x3dom
              * @instance
              */
@@ -441,6 +463,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} texture
              * @memberof x3dom.nodeTypes.MultiTexture
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -490,6 +513,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} hideChildren
              * @memberof x3dom.nodeTypes.Texture
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -589,6 +613,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} viewpoint
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DViewpointNode
              * @field x3dom
              * @instance
              */
@@ -598,6 +623,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} background
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DBackgroundNode
              * @field x3dom
              * @instance
              */
@@ -607,6 +633,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} fog
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DFogNode
              * @field x3dom
              * @instance
              */
@@ -616,6 +643,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} scene
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DNode
              * @field x3dom
              * @instance
              */
@@ -625,6 +653,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} excludeNodes
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DNode
              * @field x3dom
              * @instance
              */
@@ -634,6 +663,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} dimensions
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue [128,128,4]
              * @field x3dom
              * @instance
              */
@@ -643,6 +673,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} update
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 'NONE'
              * @field x3dom
              * @instance
              */
@@ -652,6 +683,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} showNormals
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -662,6 +694,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} stereoMode
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 'NONE'
              * @field x3dom
              * @instance
              */
@@ -671,6 +704,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} interpupillaryDistance
              * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 0.064
              * @field x3dom
              * @instance
              */
@@ -861,6 +895,7 @@ x3dom.registerNodeType(
              *
              * @var {SFImage} image
              * @memberof x3dom.nodeTypes.PixelTexture
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -923,6 +958,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} loop
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -932,6 +968,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} speed
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -942,6 +979,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} pauseTime
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -951,6 +989,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} pitch
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -960,6 +999,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} resumeTime
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -969,6 +1009,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} startTime
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -978,6 +1019,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} stopTime
              * @memberof x3dom.nodeTypes.MovieTexture
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -1041,6 +1083,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} back
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1050,6 +1093,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} front
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1059,6 +1103,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} bottom
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1068,6 +1113,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} top
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1077,6 +1123,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} left
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1086,6 +1133,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} right
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
+             * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
              */
@@ -1131,6 +1179,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} size
              * @memberof x3dom.nodeTypes.GeneratedCubeMapTexture
+             * @initvalue 128
              * @field x3dom
              * @instance
              */
@@ -1140,6 +1189,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} update
              * @memberof x3dom.nodeTypes.GeneratedCubeMapTexture
+             * @initvalue 'NONE'
              * @field x3dom
              * @instance
              */
@@ -1220,6 +1270,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} point
              * @memberof x3dom.nodeTypes.TextureCoordinate
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1252,6 +1303,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} mode
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
+             * @initvalue "SPHERE"
              * @field x3dom
              * @instance
              */
@@ -1261,6 +1313,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} parameter
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1293,6 +1346,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} texCoord
              * @memberof x3dom.nodeTypes.MultiTextureCoordinate
+             * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
              * @field x3dom
              * @instance
              */

@@ -33,6 +33,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} children
              * @memberof x3dom.nodeTypes.X3DGroupingNode
+             * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
              * @instance
              */
@@ -103,6 +104,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} whichChoice
              * @memberof x3dom.nodeTypes.Switch
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -374,6 +376,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} center
              * @memberof x3dom.nodeTypes.Transform
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -383,6 +386,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} translation
              * @memberof x3dom.nodeTypes.Transform
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -392,6 +396,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} rotation
              * @memberof x3dom.nodeTypes.Transform
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -401,6 +406,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} scale
              * @memberof x3dom.nodeTypes.Transform
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -410,6 +416,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} scaleOrientation
              * @memberof x3dom.nodeTypes.Transform
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -476,6 +483,7 @@ x3dom.registerNodeType(
              *
              * @var {SFMatrix4f} matrix
              * @memberof x3dom.nodeTypes.MatrixTransform
+             * @initvalue 1,0,0,0
              * @field x3dom
              * @instance
              */
@@ -548,6 +556,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} nameSpaceName
              * @memberof x3dom.nodeTypes.Block
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -582,6 +591,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} debug
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -591,6 +601,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} showDebugBoxVolumes
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -602,6 +613,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} bvhType
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 'jsBIH'
              * @field x3dom
              * @instance
              */
@@ -611,6 +623,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} maxObjectsPerNode
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -621,6 +634,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} maxDepth
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -630,6 +644,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} minRelativeBBoxSize
              * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 0.01
              * @field x3dom
              * @instance
              */
@@ -775,6 +790,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue ["ws://localhost:35668/cstreams/0"]
              * @field x3dom
              * @instance
              */
@@ -784,6 +800,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} label
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -793,6 +810,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} maxRenderedIds
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -802,6 +820,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} reconnect
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -811,6 +830,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} scaleRenderedIdsOnMove
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -820,6 +840,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enableCulling
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -829,6 +850,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} invisibleNodes
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1170,6 +1192,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} pickMode
              * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "idBuf"
              * @field x3dom
              * @instance
              */
@@ -1180,6 +1203,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} doPickPass
              * @memberof x3dom.nodeTypes.Scene
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -1191,6 +1215,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} shadowObjectIdMapping
              * @memberof x3dom.nodeTypes.Scene
+             * @initvalue ""
              * @field x3dom
              * @instance
              */

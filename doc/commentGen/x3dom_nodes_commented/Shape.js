@@ -55,6 +55,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} material
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DMaterialNode
              * @field x3dom
              * @instance
              */
@@ -64,6 +65,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} texture
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
              * @instance
              */
@@ -73,6 +75,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} textureTransform
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
              * @field x3dom
              * @instance
              */
@@ -82,6 +85,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} lineProperties
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.LineProperties
              * @field x3dom
              * @instance
              */
@@ -91,6 +95,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} colorMaskMode
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.ColorMaskMode
              * @field x3dom
              * @instance
              */
@@ -100,6 +105,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} blendMode
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.BlendMode
              * @field x3dom
              * @instance
              */
@@ -109,6 +115,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} depthMode
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.DepthMode
              * @field x3dom
              * @instance
              */
@@ -118,6 +125,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} shaders
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DShaderNode
              * @field x3dom
              * @instance
              */
@@ -128,6 +136,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} sortKey
              * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -250,6 +259,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} srcFactor
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue "src_alpha"
              * @field x3dom
              * @instance
              */
@@ -259,6 +269,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} destFactor
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue "one_minus_src_alpha"
              * @field x3dom
              * @instance
              */
@@ -268,6 +279,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} color
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -277,6 +289,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} colorTransparency
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -286,6 +299,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} alphaFunc
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue "none"
              * @field x3dom
              * @instance
              */
@@ -295,6 +309,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} alphaFuncValue
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -304,6 +319,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} equation
              * @memberof x3dom.nodeTypes.BlendMode
+             * @initvalue "none"
              * @field x3dom
              * @instance
              */
@@ -336,6 +352,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enableDepthTest
              * @memberof x3dom.nodeTypes.DepthMode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -345,6 +362,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} depthFunc
              * @memberof x3dom.nodeTypes.DepthMode
+             * @initvalue "none"
              * @field x3dom
              * @instance
              */
@@ -354,6 +372,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} readOnly
              * @memberof x3dom.nodeTypes.DepthMode
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -363,6 +382,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zNearRange
              * @memberof x3dom.nodeTypes.DepthMode
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -372,6 +392,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zFarRange
              * @memberof x3dom.nodeTypes.DepthMode
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -404,6 +425,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} maskR
              * @memberof x3dom.nodeTypes.ColorMaskMode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -413,6 +435,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} maskG
              * @memberof x3dom.nodeTypes.ColorMaskMode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -422,6 +445,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} maskB
              * @memberof x3dom.nodeTypes.ColorMaskMode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -431,6 +455,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} maskA
              * @memberof x3dom.nodeTypes.ColorMaskMode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -465,6 +490,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} applied
              * @memberof x3dom.nodeTypes.LineProperties
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -474,6 +500,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} linetype
              * @memberof x3dom.nodeTypes.LineProperties
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -483,6 +510,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} linewidthScaleFactor
              * @memberof x3dom.nodeTypes.LineProperties
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -516,6 +544,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} ambientIntensity
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -525,6 +554,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} diffuseColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -534,6 +564,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} emissiveColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -543,6 +574,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} shininess
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -552,6 +584,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} specularColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -561,6 +594,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} transparency
              * @memberof x3dom.nodeTypes.X3DMaterialNode
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -638,6 +672,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} backAmbientIntensity
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -647,6 +682,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} backDiffuseColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0.8,0.8,0.8
              * @field x3dom
              * @instance
              */
@@ -656,6 +692,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} backEmissiveColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -665,6 +702,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} backShininess
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0.2
              * @field x3dom
              * @instance
              */
@@ -674,6 +712,7 @@ x3dom.registerNodeType(
              *
              * @var {SFColor} backSpecularColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -683,6 +722,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} backTransparency
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -692,6 +732,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} separateBackColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -744,6 +785,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} isPickable
              * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -753,6 +795,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} appearance
              * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue x3dom.nodeTypes.X3DAppearanceNode
              * @field x3dom
              * @instance
              */
@@ -762,6 +805,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} geometry
              * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue x3dom.nodeTypes.X3DGeometryNode
              * @field x3dom
              * @instance
              */

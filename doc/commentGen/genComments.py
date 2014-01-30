@@ -120,6 +120,7 @@ def annotateField(fa, na):
     str += indentation + " *\n"
     str += indentation + " * @var {" + fa.type + "} " + fa.name + "\n"
     str += indentation + " * @memberof x3dom.nodeTypes." + na.nodeName + "\n"    
+    str += indentation + " * @initvalue " + fa.defaultvalue + "\n"    
     str += indentation + " * @field x3dom\n"
     str += indentation + " * @instance\n"
     str += indentation + " */\n"    

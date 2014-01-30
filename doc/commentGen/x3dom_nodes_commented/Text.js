@@ -56,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} family
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ['SERIF']
              * @field x3dom
              * @instance
              */
@@ -65,6 +66,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} horizontal
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -74,6 +76,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} justify
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ['BEGIN']
              * @field x3dom
              * @instance
              */
@@ -83,6 +86,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} language
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -92,6 +96,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} leftToRight
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -101,6 +106,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} size
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -110,6 +116,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} spacing
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -119,6 +126,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} style
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue "PLAIN"
              * @field x3dom
              * @instance
              */
@@ -128,6 +136,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} topToBottom
              * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -179,6 +188,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} string
              * @memberof x3dom.nodeTypes.Text
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -188,6 +198,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} length
              * @memberof x3dom.nodeTypes.Text
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -197,6 +208,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} maxExtent
              * @memberof x3dom.nodeTypes.Text
+             * @initvalue 0.0
              * @field x3dom
              * @instance
              */
@@ -206,6 +218,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} fontStyle
              * @memberof x3dom.nodeTypes.Text
+             * @initvalue x3dom.nodeTypes.X3DFontStyleNode
              * @field x3dom
              * @instance
              */

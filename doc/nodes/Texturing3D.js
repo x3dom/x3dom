@@ -55,6 +55,7 @@ x3dom.registerNodeType(
              *
              * @var {MFNode} texture
              * @memberof x3dom.nodeTypes.ComposedTexture3D
+             * @initvalue x3dom.nodeTypes.X3DTexture3DNode
              * @field x3dom
              * @instance
              */
@@ -131,6 +132,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec3f} point
              * @memberof x3dom.nodeTypes.TextureCoordinate3D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -163,6 +165,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} center
              * @memberof x3dom.nodeTypes.TextureTransform3D
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -172,6 +175,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} rotation
              * @memberof x3dom.nodeTypes.TextureTransform3D
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -181,6 +185,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} scale
              * @memberof x3dom.nodeTypes.TextureTransform3D
+             * @initvalue 1,1,1
              * @field x3dom
              * @instance
              */
@@ -190,6 +195,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} translation
              * @memberof x3dom.nodeTypes.TextureTransform3D
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -199,6 +205,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} scaleOrientation
              * @memberof x3dom.nodeTypes.TextureTransform3D
+             * @initvalue 0,0,1,0
              * @field x3dom
              * @instance
              */
@@ -231,6 +238,7 @@ x3dom.registerNodeType(
              *
              * @var {SFMatrix4f} matrix
              * @memberof x3dom.nodeTypes.TextureTransformMatrix3D
+             * @initvalue 1,0,0,0
              * @field x3dom
              * @instance
              */
@@ -266,6 +274,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} numberOfSlices
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -275,6 +284,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} slicesOverX
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -284,6 +294,7 @@ x3dom.registerNodeType(
              *
              * @var {SFInt32} slicesOverY
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
+             * @initvalue 0
              * @field x3dom
              * @instance
              */

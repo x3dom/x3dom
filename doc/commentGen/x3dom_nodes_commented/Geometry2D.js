@@ -56,6 +56,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -65,6 +66,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} startAngle
              * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -74,6 +76,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} endAngle
              * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 1.570796
              * @field x3dom
              * @instance
              */
@@ -83,6 +86,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 32
              * @field x3dom
              * @instance
              */
@@ -212,6 +216,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} closureType
              * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue "PIE"
              * @field x3dom
              * @instance
              */
@@ -221,6 +226,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -230,6 +236,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} startAngle
              * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -239,6 +246,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} endAngle
              * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 1.570796
              * @field x3dom
              * @instance
              */
@@ -248,6 +256,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} subdivision
              * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 32
              * @field x3dom
              * @instance
              */
@@ -547,6 +556,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.Circle2D
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -556,6 +566,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Circle2D
+             * @initvalue 32
              * @field x3dom
              * @instance
              */
@@ -670,6 +681,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} innerRadius
              * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 0
              * @field x3dom
              * @instance
              */
@@ -679,6 +691,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} outerRadius
              * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 1
              * @field x3dom
              * @instance
              */
@@ -688,6 +701,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 32
              * @field x3dom
              * @instance
              */
@@ -863,6 +877,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} lineSegments
              * @memberof x3dom.nodeTypes.Polyline2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -959,6 +974,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} point
              * @memberof x3dom.nodeTypes.Polypoint2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1043,6 +1059,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} size
              * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 2,2
              * @field x3dom
              * @instance
              */
@@ -1052,6 +1069,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -1202,6 +1220,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} vertices
              * @memberof x3dom.nodeTypes.TriangleSet2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -1211,6 +1230,7 @@ x3dom.registerNodeType(
              *
              * @var {MFVec2f} lineSegments
              * @memberof x3dom.nodeTypes.TriangleSet2D
+             * @initvalue []
              * @field x3dom
              * @instance
              */

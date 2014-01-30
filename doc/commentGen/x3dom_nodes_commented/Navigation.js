@@ -142,6 +142,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0.785398
              * @field x3dom
              * @instance
              */
@@ -151,6 +152,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} position
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,10
              * @field x3dom
              * @instance
              */
@@ -160,6 +162,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} orientation
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,0,1
              * @field x3dom
              * @instance
              */
@@ -169,6 +172,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -178,6 +182,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zNear
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -187,6 +192,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zFar
              * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
              * @field x3dom
              * @instance
              */
@@ -378,6 +384,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue [-1,-1,1,1]
              * @field x3dom
              * @instance
              */
@@ -387,6 +394,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} position
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue 0,0,10
              * @field x3dom
              * @instance
              */
@@ -396,6 +404,7 @@ x3dom.registerNodeType(
              *
              * @var {SFRotation} orientation
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue 0,0,0,1
              * @field x3dom
              * @instance
              */
@@ -405,6 +414,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -414,6 +424,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zNear
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue 0.1
              * @field x3dom
              * @instance
              */
@@ -423,6 +434,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} zFar
              * @memberof x3dom.nodeTypes.OrthoViewpoint
+             * @initvalue 10000
              * @field x3dom
              * @instance
              */
@@ -521,6 +533,7 @@ x3dom.registerNodeType(
              *
              * @var {SFMatrix4f} modelview
              * @memberof x3dom.nodeTypes.Viewfrustum
+             * @initvalue 1,0,0,0
              * @field x3dom
              * @instance
              */
@@ -533,6 +546,7 @@ x3dom.registerNodeType(
              *
              * @var {SFMatrix4f} projection
              * @memberof x3dom.nodeTypes.Viewfrustum
+             * @initvalue 1,0,0,0
              * @field x3dom
              * @instance
              */
@@ -634,6 +648,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} headlight
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -643,6 +658,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} type
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue ["EXAMINE","ANY"]
              * @field x3dom
              * @instance
              */
@@ -654,6 +670,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} typeParams
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue [-0.4,60,0.05,2.8]
              * @field x3dom
              * @instance
              */
@@ -665,6 +682,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} explorationMode
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 'all'
              * @field x3dom
              * @instance
              */
@@ -675,6 +693,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} avatarSize
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue [0.25,1.6,0.75]
              * @field x3dom
              * @instance
              */
@@ -684,6 +703,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} visibilityLimit
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 0.0
              * @field x3dom
              * @instance
              */
@@ -693,6 +713,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} speed
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -703,6 +724,7 @@ x3dom.registerNodeType(
              *
              * @var {SFTime} transitionTime
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 1.0
              * @field x3dom
              * @instance
              */
@@ -712,6 +734,7 @@ x3dom.registerNodeType(
              *
              * @var {MFString} transitionType
              * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue ["LINEAR"]
              * @field x3dom
              * @instance
              */
@@ -856,6 +879,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} axisOfRotation
              * @memberof x3dom.nodeTypes.Billboard
+             * @initvalue 0,1,0
              * @field x3dom
              * @instance
              */
@@ -978,6 +1002,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} enabled",true)
              * @memberof x3dom.nodeTypes.Collision
+             * @initvalue nabled",true
              * @field x3dom
              * @instance
              */
@@ -987,6 +1012,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} proxy",x3dom.nodeTypes.X3DGroupingNode)
              * @memberof x3dom.nodeTypes.Collision
+             * @initvalue roxy",x3dom.nodeTypes.X3DGroupingNode
              * @field x3dom
              * @instance
              */
@@ -1055,6 +1081,7 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} forceTransitions",false)
              * @memberof x3dom.nodeTypes.X3DLODNode
+             * @initvalue orceTransitions",false
              * @field x3dom
              * @instance
              */
@@ -1064,6 +1091,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec3f} center",0,0,0)
              * @memberof x3dom.nodeTypes.X3DLODNode
+             * @initvalue enter",0,0,0
              * @field x3dom
              * @instance
              */
@@ -1124,6 +1152,7 @@ x3dom.registerNodeType(
              *
              * @var {MFFloat} range",[])
              * @memberof x3dom.nodeTypes.LOD
+             * @initvalue ange",[]
              * @field x3dom
              * @instance
              */
@@ -1247,6 +1276,7 @@ x3dom.registerNodeType(
              *
              * @var {SFFloat} subScale
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 0.5
              * @field x3dom
              * @instance
              */
@@ -1256,6 +1286,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} size
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 2,2
              * @field x3dom
              * @instance
              */
@@ -1265,6 +1296,7 @@ x3dom.registerNodeType(
              *
              * @var {SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 1,1
              * @field x3dom
              * @instance
              */
@@ -1274,6 +1306,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} root
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue x3dom.nodeTypes.X3DShapeNode
              * @field x3dom
              * @instance
              */
@@ -1284,6 +1317,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} urlHead
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue "http://r"
              * @field x3dom
              * @instance
              */
@@ -1293,6 +1327,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} urlCenter
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue ".ortho.tiles.virtualearth.net/tiles/h"
              * @field x3dom
              * @instance
              */
@@ -1302,6 +1337,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} urlTail
              * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue ".png?g=-1"
              * @field x3dom
              * @instance
              */

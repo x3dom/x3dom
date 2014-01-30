@@ -44,6 +44,7 @@ x3dom.registerNodeType(
              *
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedQuadSet
+             * @initvalue []
              * @field x3dom
              * @instance
              */
@@ -640,6 +641,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADLayer
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -676,6 +678,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADAssembly
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -711,6 +714,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADPart
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -743,6 +747,7 @@ x3dom.registerNodeType(
              *
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADFace
+             * @initvalue ""
              * @field x3dom
              * @instance
              */
@@ -752,6 +757,7 @@ x3dom.registerNodeType(
              *
              * @var {SFNode} shape
              * @memberof x3dom.nodeTypes.CADFace
+             * @initvalue x3dom.nodeTypes.X3DShapeNode
              * @field x3dom
              * @instance
              */
