@@ -140,11 +140,14 @@ exports.publish = function(taffyData, opts, tutorials) {
         if(node.augments)
         {
             var parent = helper.find(taffy(typeLists.x3dNodes) , {longname:node.augments} )[0];
-            if(!parent.childNodes)
-                parent.childNodes = [];
+            if( parent)
+            {
+                if(!parent.childNodes)
+                    parent.childNodes = [];
 
-            parent.childNodes.push(node);
-            node.parentNode = parent;
+                parent.childNodes.push(node);
+                node.parentNode = parent;
+            }
         }
     }
 
