@@ -743,7 +743,7 @@ function generateXNDF(name, node)
     var delim = "    ";
 
 
-    var html = '<?xml version="1.0" encoding=UTF-8"?>\n';
+    var html = '<?xml version="1.0" encoding="UTF-8"?>\n';
 
     html += '<node \n';
     html += delim + 'name="'+name+'"\n';
@@ -761,7 +761,7 @@ function generateXNDF(name, node)
     {
         members.forEach(function(m)
         {
-            if(m.field)
+            if(m.field && !m.inherits)
             {
 
                 html += delim + '<field \n';
