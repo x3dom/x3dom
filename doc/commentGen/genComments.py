@@ -103,10 +103,10 @@ def annotateProperty(pa, na):
     str = "\n"
     str += indentation + "/**\n"
     str += indentation + " *\n"
-    str += indentation + " *@var {} " + pa.name + "\n"
-    str += indentation + " *@memberof x3dom.nodeTypes." + na.nodeName + "\n"
-    str += indentation + " *@instance\n"
-    str += indentation + " *@protected\n"
+    str += indentation + " * @var {} " + pa.name + "\n"
+    str += indentation + " * @memberof x3dom.nodeTypes." + na.nodeName + "\n"
+    str += indentation + " * @instance\n"
+    str += indentation + " * @protected\n"
     str += indentation + " */\n"
     na.result += str    
 
