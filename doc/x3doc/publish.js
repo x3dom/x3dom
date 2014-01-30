@@ -589,7 +589,7 @@ function generateComponents(componentMap)
             componentMap[c][m].url = componentMap[c][m].name + ".html";
         }
 
-        generateIndex("Component" + c, componentMap[c], false, "node/"+c+"/index.html", false);
+        generateIndex("Component: " + c, componentMap[c], false, "node/"+c+"/index.html", false);
     }
 
     generateIndex("Components",components, false, "node/components.html");
