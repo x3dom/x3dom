@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * CADGeometry:
  * CADGeometry component of X3D extension to the

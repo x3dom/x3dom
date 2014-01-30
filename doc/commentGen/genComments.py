@@ -186,7 +186,7 @@ except:
     print "Error while reading JS file."
     raise
     
-result = "";
+result = "/** @namespace x3dom.nodeTypes */\n";
     
 nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
 

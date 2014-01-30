@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * HAnim Humanoid Animation component, X3D extension to the
  * X3DOM JavaScript Library

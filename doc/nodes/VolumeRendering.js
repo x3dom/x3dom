@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * MEDX3DOM JavaScript Library
  * http://medx3dom.org
