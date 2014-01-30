@@ -51,19 +51,6 @@ def annotateNode(str):
     annotateNodeType(na)
     
     
-    #openingBrackets = len(re.split("{",str[constructorPos:]))
-    #closingBrackets = len(re.split("}",str[constructorPos:]))
-    
-    #print "op"
-    #print openingBrackets
-        
-    #print "cl"
-    #print closingBrackets
-    
-    
-    if (len(sys.argv) == 4 and sys.argv[3] == '--x'):
-        genXDF.writeXDF(na)
-    
     
     return "".join(na.result)
     
