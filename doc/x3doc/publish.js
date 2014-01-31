@@ -158,8 +158,8 @@ exports.publish = function(taffyData, opts, tutorials) {
             var myClasses = helper.find(taffy(typeLists.classes), {longname: longname});
             if (myClasses.length)
             {
-                view.api = "full";
-                generateClass('Class: ' + myClasses[0].name, myClasses, createFullApiPathWithFolders("full."+helper.longnameToUrl[longname], false, true));
+                view.api = "developer";
+                generateClass('Class: ' + myClasses[0].name, myClasses, createDeveloperlApiPathWithFolders("developer."+helper.longnameToUrl[longname], false, true));
             }
 
             //generate X3D Nodes
@@ -173,8 +173,8 @@ exports.publish = function(taffyData, opts, tutorials) {
                 componentMap[x3dNodes[0].component].push(x3dNodes[0]);
 
                 //console.log(x3dNodes[0].name+ " " +x3dNodes[0].x3d + " " + x3dNodes[0].component);
-                view.api = "node";
-                generateX3DNode('Node: ' + x3dNodes[0].name, x3dNodes, createNodeApiPathWithFolders( x3dNodes[0],helper.longnameToUrl[longname]));
+                view.api = "author";
+                generateX3DNode('Node: ' + x3dNodes[0].name, x3dNodes, createSceneAuthorApiPathWithFolders( x3dNodes[0],helper.longnameToUrl[longname]));
 
                 if(xndf)
                 {
@@ -188,35 +188,35 @@ exports.publish = function(taffyData, opts, tutorials) {
             {
                 var classes = helper.find(taffy(typeLists.classes), { memberof: longname});
 
-                view.api = "full";
-                generateNameSpace('Namespace: ' + namespaces[0].name, namespaces, classes, createFullApiPathWithFolders("full."+helper.longnameToUrl[longname],true,true));
+                view.api = "developer";
+                generateNameSpace('Namespace: ' + namespaces[0].name, namespaces, classes, createDeveloperlApiPathWithFolders("developer."+helper.longnameToUrl[longname],true,true));
             }
         }
     }
 
-    view.api = "full";
-    generateIndex("Classes", typeLists.classes, false, "full/classes.html",true);
-    generateIndex("Namespaces", typeLists.namespaces, true, "full/namespaces.html",true);
+    view.api = "developer";
+    generateIndex("Classes", typeLists.classes, false, "developer/classes.html",true);
+    generateIndex("Namespaces", typeLists.namespaces, true, "developer/namespaces.html",true);
 
-    view.api = "node";
+    view.api = "author";
     generateComponents(componentMap);
-    generateIndex("Nodes",typeLists.x3dNodes,false,"node/nodes.html",true);
+    generateIndex("Nodes",typeLists.x3dNodes,false,"author/nodes.html",true);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function createNodeApiPathWithFolders(doc,url, addNodeFolder)
+function createSceneAuthorApiPathWithFolders(doc,url, addNodeFolder)
 {
     addNodeFolder = addNodeFolder === false ? false : true;
     var desc = disassemble(url,true,/\./g);
 
-    return (addNodeFolder ? "node/" : "")+doc.component+"/"+desc.name+ "." + desc.ending;
+    return (addNodeFolder ? "author/" : "")+doc.component+"/"+desc.name+ "." + desc.ending;
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-function createFullApiPathWithFolders(url, isNamespace, hasEnding)
+function createDeveloperlApiPathWithFolders(url, isNamespace, hasEnding)
 {
     hasEnding = (typeof hasEnding != 'undefined') ? hasEnding : true;
     isNamespace = (typeof isNamespace != 'undefined') ? isNamespace : false;
@@ -322,7 +322,7 @@ function createFolderStructure(outdir, namespaces, components)
     //Create base folders
     var baseFolders =
     [
-        "/full/", "/node/"
+        "/developer/", "/author/"
     ];
 
     for(var path in baseFolders)
@@ -333,13 +333,13 @@ function createFolderStructure(outdir, namespaces, components)
     //create namespace folders
     for(var ldr in namespaces)
     {
-        fs.mkPath(outdir+"/full/"+namespaces[ldr]);
+        fs.mkPath(outdir+"/developer/"+namespaces[ldr]);
     }
 
     //create component folders
     for(var cmp in components)
     {
-        fs.mkPath(outdir+"/node/"+components[cmp]);
+        fs.mkPath(outdir+"/author/"+components[cmp]);
     }
 }
 
@@ -589,10 +589,10 @@ function generateComponents(componentMap)
             componentMap[c][m].url = componentMap[c][m].name + ".html";
         }
 
-        generateIndex("Component: " + c, componentMap[c], false, "node/"+c+"/index.html", false);
+        generateIndex("Component: " + c, componentMap[c], false, "author/"+c+"/index.html", false);
     }
 
-    generateIndex("Components",components, false, "node/components.html");
+    generateIndex("Components",components, false, "author/components.html");
 }
 
 
@@ -615,9 +615,9 @@ function generateIndex(title, objects, isNameSpace, filename, generateUrls)
         docData.indexed.push({
             name: isNameSpace ? objects[o].longname : objects[o].name,
             url: generateUrls ?
-                (view.api == "full" ?
-                    createFullApiPathWithFolders(objects[o].longname,isNameSpace,false) :
-                    createNodeApiPathWithFolders(objects[o], helper.longnameToUrl[objects[o].longname],false)) :
+                (view.api == "developer" ?
+                    createDeveloperlApiPathWithFolders(objects[o].longname,isNameSpace,false) :
+                    createSceneAuthorApiPathWithFolders(objects[o], helper.longnameToUrl[objects[o].longname],false)) :
                 objects[o].url
         });
     }
@@ -710,7 +710,7 @@ function linkFromTo(longnameFrom, fromNamespace, longnameTo, toNameSpace, linkte
 function linkFromContextTo( longnameTo, toNameSpace, linktext, cssClass)
 {
     var link = "";
-    if(view.api == "full")
+    if(view.api == "developer")
     {
         link = linkFromTo(view.context.longname, view.context.kind == 'namespace', longnameTo, toNameSpace, linktext, cssClass);
     }

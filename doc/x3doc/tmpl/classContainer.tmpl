@@ -34,7 +34,7 @@
 
     <header>
         <h2>
-            <?js if ( self.api == "full"){
+            <?js if ( self.api == "developer"){
                    if (doc.ancestors && doc.ancestors.length) { ?>
             <span class="ancestors"><?js= doc.ancestors.join('') ?></span>
             <?js } ?>
@@ -143,13 +143,13 @@
             <?js } ?>
             </ul>
 
-            <?js if (self.api == "full" && doc.kind === 'class') { ?>
+            <?js if (self.api == "developer" && doc.kind === 'class') { ?>
             <br>
             <h3 class="subsection-title">Constructor<a href="#">&#10548;</a></h3>
             <?js ?>
             <?js= self.partial('method.tmpl', doc) ?>
             <?js } else { ?>
-            <?js if ( self.api == "full" && doc.description) { ?>
+            <?js if ( self.api == "developer" && doc.description) { ?>
             <div class="description"><?js= doc.description ?></div>
             <?js } ?>
 
@@ -185,7 +185,7 @@
 
         <?js= self.partial('classFields.tmpl', obj) ?>
         <?js }
-         if( self.api == "full" && properties.length)
+         if( self.api == "developer" && properties.length)
          {
                 var obj =
                 {
@@ -202,7 +202,7 @@
 
         <?js
         var methods = self.find({kind: 'function', memberof: title === 'Global' ? {isUndefined: true} : doc.longname});
-        if (self.api == "full" && methods && methods.length && methods.forEach) {
+        if (self.api == "developer" && methods && methods.length && methods.forEach) {
     ?>
         <br>
         <br>

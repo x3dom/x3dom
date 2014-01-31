@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
 
-    <?js  if ( this.api == 'full'){ ?>
+    <?js  if ( this.api == 'developer'){ ?>
 
-        <title>X3DOM Full API Documentation: <?js= title ?></title>
+        <title>X3DOM Developer API Documentation: <?js= title ?></title>
 
-    <?js } else if (this.api == 'node') { ?>
+    <?js } else if (this.api == 'author') { ?>
 
-        <title>X3DOM Node API Documentation: <?js= title ?></title>
+        <title>X3DOM Scene Author API Documentation: <?js= title ?></title>
 
     <?js } ?>
 
@@ -45,37 +45,37 @@
     <a href="<?js= backPath ?>index.html">documentation</a>
     >
 
-    <?js if(this.api == "full"){ ?>
-    <a href="<?js= backPath ?>full/index.html">Full API</a>
+    <?js if(this.api == "developer"){ ?>
+    <a href="<?js= backPath ?>developer/index.html">Developer API</a>
     <?js }else{ ?>
-    <a href="<?js= backPath ?>node/index.html">Node API</a>
+    <a href="<?js= backPath ?>author/index.html">Scene Author API</a>
     <?js } ?>
 
 </div>
 
 <div id="docu-navbar">
 
-    <a href="<?js= backPath+ (this.api == 'node' ? '/node/' : '/full/' )  ?>index.html">
+    <a href="<?js= backPath+ (this.api == 'author' ? '/author/' : '/developer/' )  ?>index.html">
         <div class="docu-navitem <?js= (title == 'Overview'? 'docu-navitem-active' : '') ?>">Overview</div>
     </a>
 
-    <?js if( this.api == "node"){ ?>
+    <?js if( this.api == "author"){ ?>
 
-    <a href="<?js= backPath ?>node/nodes.html">
+    <a href="<?js= backPath ?>author/nodes.html">
         <div class="docu-navitem <?js= (title == 'Nodes'? 'docu-navitem-active' : '') ?>">Nodes</div>
     </a>
 
-    <a href="<?js= backPath ?>node/components.html">
+    <a href="<?js= backPath ?>author/components.html">
         <div class="docu-navitem <?js= (title == 'Components'? 'docu-navitem-active' : '') ?>">Components</div>
     </a>
 
     <?js }else{ ?>
 
-    <a href="<?js= backPath ?>full/classes.html">
+    <a href="<?js= backPath ?>developer/classes.html">
         <div class="docu-navitem <?js= (title == 'Classes' ? 'docu-navitem-active' : '') ?>">Classes</div>
     </a>
 
-    <a href="<?js= backPath ?>full/namespaces.html">
+    <a href="<?js= backPath ?>developer/namespaces.html">
         <div class="docu-navitem <?js= (title == 'Namespaces'? 'docu-navitem-active' : '') ?>">Namespaces</div>
     </a>
     <?js } ?>

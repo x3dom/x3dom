@@ -28,7 +28,7 @@ var title = obj.title;
             <div class="x3d-propdesc">
                 X3D:
                 <div class="x3d-value ">
-                    <?js if(self.api == "full"){ ?>
+                    <?js if(self.api == "developer"){ ?>
                          <?js= doc.x3d ?>
                     <?js }else{ ?>
                         <a href="<?js= link ?>"><?js= doc.x3d ?></a>
@@ -40,7 +40,7 @@ var title = obj.title;
             <div class="x3d-propdesc">
                 Component:
                 <div class="x3d-component">
-                    <?js if(self.api == "full"){ ?>
+                    <?js if(self.api == "developer"){ ?>
                     <?js= doc.component ?>
                     <?js }else{ ?>
                     <a href="index.html"><?js= doc.component ?></a>
@@ -75,7 +75,7 @@ var title = obj.title;
 
         <?js
             }
-            if (self.api == "full")
+            if (self.api == "developer")
             {
         ?>
 
