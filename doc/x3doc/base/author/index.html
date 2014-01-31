@@ -46,7 +46,105 @@
             <p>            
             Welcome to the <strong>X3DOM Scene Author API Documentation</strong>!
             Within this documentation package, you will find detailed information about all <strong>X3DOM Nodes</strong> and their <strong>Fields</strong>.
-            Within a typical X3DOM application, nodes are a regular part of the HTML DOM and can therefore also be dynamically manipulated via standard DOM scripting.            
+            The following sections furthermore introduce the general DOM methods that are available on all X3DOM nodes to dynamically manipulate field values.
+            
+            
+            <h3>DOM Scripting</h3>
+            Within a typical X3DOM application, nodes are a regular part of the HTML DOM.
+            You can access and dynamically manipulate the fields of all X3DOM nodes inside the DOM in various ways, which are listed below.
+            </p>
+            
+            
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                      getAttribute
+                      <span class="signature">
+                        (fieldname)
+                      </span>
+                      <span class="type-signature">
+                        &#8594 FIELDTYPE
+                      </span>                  
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Returns the value of the field with the given name.
+                      The value is returned as a string, just like it appears in the DOM.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field
+                                    </td>
+                                </tr>                               
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">the current field value</div>  
+              </dd>
+            </dl>
+
+            
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                      setAttribute
+                      <span class="signature">
+                        (fieldname, fieldvalue)
+                      </span>                 
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Sets the value of the field with the given name to the given value.
+                      The value is specified as a string, as it appears in the DOM.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field where the value should be set
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldvalue</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the new field value
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+              </dd>
+            </dl>
+            
+            
+            <p>            
+            Like regular HTML attributes, your can manipulate X3DOM values with the standard <code>getAttribute(..)</code> and <code>setAttribute(..)</code> methods, which are defined as follows:
+            
+            
             You may, for instance, have this HTML representation of a <code>material</code> node:
             </p>
             
@@ -55,8 +153,10 @@
             </code></pre>
             
             <p>
-            You can then access and manipulate the fields of the X3DOM node like regular HTML attributes, for example:
+            Imagine you would want to change the <code>diffuseColor</code> field of this material node.
+            This can be easily achieved with the <code>getAttribute(..)</code> and <code>setAttribute(..)</code> methods:
             </p>
+            
             
             <pre class="prettyprint"><code class="language-js">
     var oldMaterial = document.getElementById('myMaterial').getAttribute('diffuseColor');
@@ -67,6 +167,11 @@
             <p>
             Since HTML attributes are not case sensitive, X3DOM attributes behave in the same way.
             You may therefore write <code>'diffuseColor'</code> as well as <code>'DiffuseColor'</code> or <code>'diffusecolor'</code>, for example.
+            </p>
+            
+            
+            <h4>Manipulate Fields with <code>getField(..)</code> and <code>setField(..)</code></h4>
+            <p>
             </p>
             
             
