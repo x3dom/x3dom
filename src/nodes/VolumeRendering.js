@@ -79,12 +79,20 @@ x3dom.registerNodeType(
                 "attribute vec3 color;\n"+
                 "uniform mat4 modelViewProjectionMatrix;\n"+
                 "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
-                "\n" +
+                "varying vec4 vertexPosition;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shader += "uniform mat4 modelViewMatrix;\n"+
+                    "varying vec4 position_eye;\n";
+                }
+                shader += "\n" +
                 "void main()\n"+
                 "{\n"+
                 "  vertexColor = color;\n"+
-                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
+                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                   shader += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
+                }
+                shader += 
                 "  gl_Position = vertexPosition;\n"+
                 "}";
                 return shader;
@@ -149,7 +157,7 @@ x3dom.registerNodeType(
                 "           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
                 "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
                 "       }\n" +
-                "   }\n" +   
+                "   }\n" +
                 "   vec3  H = normalize( L + V );\n" +
                 "   float NdotL = max(0.0, dot(L, N));\n" +
                 "   float NdotH = max(0.0, dot(H, N));\n" +   
@@ -167,7 +175,6 @@ x3dom.registerNodeType(
                 return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
                 "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
                 "   n.a = length(n.xyz);\n"+
-                "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
                 "   n.xyz = normalize(n.xyz);\n"+
                 "   return n;\n"+
                 "}\n"+
@@ -180,8 +187,7 @@ x3dom.registerNodeType(
                 "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                 "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                 "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
+                "   return vec4(normalize(grad), length(grad));\n"+
                 "}\n"+
                 "\n";
             },    
@@ -199,33 +205,33 @@ x3dom.registerNodeType(
                 "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
                 "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
+                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  float cont = 0.0;\n"+
+                "  vec3 step = dir/Steps;\n";
                 //Light init values
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     shaderLoop +=
                     "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
                     "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
-                    "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
-                }
-                shaderLoop +=
-                "  float cont = 0.0;\n"+
-                "  vec3 step = dir/Steps;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    shaderLoop += "  float lightFactor = 1.0;\n";
+                    "  vec3 specular = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec4 step_eye = modelViewMatrix * vec4(step, 0.0);\n"+
+                    "  vec4 positionE = position_eye;\n"+
+                    "  float lightFactor = 1.0;\n"; 
                 }else{
                     shaderLoop += "  float lightFactor = 1.2;\n";
                 }
                 shaderLoop += initializeValues+
-                "  float opacityFactor = 6.0;\n"+
+                "  float opacityFactor = 10.0;\n"+
                 "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                 "  {\n"+
                 "    value = cTexture3D(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
                 "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
                 if(this._cf.surfaceNormals.node){
-                    shaderLoop += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                    shaderLoop += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }else{
-                    shaderLoop += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                    shaderLoop += "    vec4 gradEye = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }
+                shaderLoop += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shaderLoop += "    lighting(light"+l+"_Type, " +
                     "light"+l+"_Location, " +
@@ -237,7 +243,7 @@ x3dom.registerNodeType(
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "grad.xyz, vertexPosition.xyz+pos.xyz, ambient, diffuse, specular);\n";
+                    "gradEye.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
                 }
                 shaderLoop += inlineShaderText;
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
@@ -250,12 +256,16 @@ x3dom.registerNodeType(
                 "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
                 "    accum.a += (1.0 - accum.a) * sample.a;\n"+
                 "    //advance the current position\n"+
-                "    pos.xyz += step;\n"+
+                "    pos.xyz += step;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    shaderLoop +="    positionE += step_eye;\n";
+                }
+                shaderLoop +=
                 "    //break if the position is greater than <1, 1, 1>\n"+
                 "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
                 "      break;\n"+
                 "  }\n"+
-                "  gl_FragColor = accum;\n"+
+                "   gl_FragColor = accum;\n"+
                 "}";
                 return shaderLoop;
             }
@@ -279,11 +289,15 @@ x3dom.registerNodeType(
                 "uniform sampler2D uBackCoord;\n"+
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 offset;\n"+
-                "uniform mat4 normalMatrix;\n"+
+                "uniform mat4 modelViewMatrix;\n"+
                 "uniform mat4 modelViewMatrixInverse;\n"+
                 "uniform sampler2D uSurfaceNormals;\n"+ //Necessary for composed style, even it is not used in others
                 "varying vec3 vertexColor;\n"+
-                "varying vec4 vertexPosition;\n"+
+                "varying vec4 vertexPosition;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    uniformsText += "varying vec4 position_eye;\n";
+                }
+                uniformsText +=
                 "const float Steps = 60.0;\n"+
                 "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
                 "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
@@ -461,9 +475,12 @@ x3dom.registerNodeType(
                 var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData,pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n"+
                 "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n";
                 if(this._cf.renderStyle.node && this._cf.renderStyle.node._cf.surfaceNormals.node){
-                    inlineText += "    vec4 blendGrad = getNormalFromTexture(uBlendSurfaceNormals, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                    inlineText += "    vec4 blendGradEye = getNormalFromTexture(uBlendSurfaceNormals, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }else{
-                    inlineText += "    vec4 blendGrad = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                    inlineText += "    vec4 blendGradEye = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                }
+                if (x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        inlineText += "    vec4 blendGrad = vec4((modelViewMatrixInverse * vec4(blendGradEye.xyz, 0.0)).xyz, blendGradEye.a);\n";
                 }
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     inlineText += "    lighting(light"+l+"_Type, " +
@@ -476,7 +493,7 @@ x3dom.registerNodeType(
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "blendGrad.xyz, vertexPosition.xyz+pos.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
+                    "blendGradEye.xyz, -positionE.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
                 }
                 if(this._cf.renderStyle.node){
                     var tempText = this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
@@ -1422,22 +1439,31 @@ x3dom.registerNodeType(
                     
                     // here goes the volume shader
                     this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
-                    this.vrcFrontCubeShaderVertex._vf.url[0]=
+                    var shaderText=
                     "attribute vec3 position;\n"+
                     "attribute vec3 color;\n"+
                     "uniform mat4 modelViewProjectionMatrix;\n"+
                     "varying vec3 vertexColor;\n"+
-                    "varying vec4 vertexPosition;\n"+
-                    "\n" +
+                    "varying vec4 vertexPosition;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        shaderText += "uniform mat4 modelViewMatrix;\n"+
+                        "varying vec4 position_eye;\n";
+                    }
+                    shaderText += "\n" +
                     "void main()\n"+
                     "{\n"+
                     "  vertexColor = color;\n"+
-                    "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
+                    "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                       shaderText += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
+                    }
+                    shaderText += 
                     "  gl_Position = vertexPosition;\n"+
                     "}";
+                    this.vrcFrontCubeShaderVertex._vf.url[0] = shaderText;
 
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
-                    var shaderText =
+                    shaderText =
                     "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                     "  precision highp float;\n" +
                     "#else\n" +
@@ -1446,11 +1472,12 @@ x3dom.registerNodeType(
                     "uniform sampler2D uBackCoord;\n"+
                     "uniform sampler2D uVolData;\n"+
                     "uniform vec3 offset;\n"+
-                    "uniform mat4 normalMatrix;\n"+
                     "uniform mat4 modelViewMatrixInverse;\n"+
+                    "uniform mat4 modelViewMatrix;\n"+
                     //"uniform sampler2D uSurfaceNormals;\n"+
                     "varying vec3 vertexColor;\n"+
                     "varying vec4 vertexPosition;\n"+
+                    "varying vec4 position_eye;\n"+
                     "const float Steps = 60.0;\n"+
                     "const float numberOfSlices = "+ this.vrcVolumeTexture._vf.numberOfSlices.toPrecision(5)+";\n"+
                     "const float slicesOverX = " + this.vrcVolumeTexture._vf.slicesOverX.toPrecision(5) +";\n"+
@@ -1495,7 +1522,6 @@ x3dom.registerNodeType(
                     "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
                     "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
                     "   n.a = length(n.xyz);\n"+
-                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
                     "   n.xyz = normalize(n.xyz);\n"+
                     "   return n;\n"+
                     "}\n"+
@@ -1508,8 +1534,7 @@ x3dom.registerNodeType(
                     "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                     "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                     "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
+                    "   return vec4(normalize(grad), length(grad));\n"+
                     "}\n"+
                     "\n"+
                     this.lightEquationShaderText();
@@ -1522,19 +1547,18 @@ x3dom.registerNodeType(
                     "  vec3 pos = vertexColor;\n"+
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  float sample = 0.0;\n"+
-                    "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n";
+                    "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                    "  float cont = 0.0;\n"+
+                    "  vec3 step = dir/Steps;\n";
                     //Light init values
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                         shaderText +=
                         "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
                         "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
-                        "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
-                    }
-                    shaderText +=
-                    "  float cont = 0.0;\n"+
-                    "  vec3 step = dir/Steps;\n";
-                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                        shaderText += "  float lightFactor = 1.0;\n";
+                        "  vec3 specular = vec3(0.0, 0.0, 0.0);\n"+
+                        "  vec4 step_eye = modelViewMatrix * vec4(step, 0.0);\n"+
+                        "  vec4 positionE = position_eye;\n"+
+                        "  float lightFactor = 1.0;\n"; 
                     }else{
                         shaderText += "  float lightFactor = 1.2;\n";
                     }
@@ -1545,10 +1569,11 @@ x3dom.registerNodeType(
                     "    value = cTexture3D(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
                     "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
                     if(this._cf.gradients.node){
-                        shaderText += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                        shaderText += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }else{
-                        shaderText += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                        shaderText += "    vec4 gradEye = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }
+                    shaderText += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                     for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                         shaderText += "    lighting(light"+l+"_Type, " +
                         "light"+l+"_Location, " +
@@ -1560,7 +1585,7 @@ x3dom.registerNodeType(
                         "light"+l+"_AmbientIntensity, " +
                         "light"+l+"_BeamWidth, " +
                         "light"+l+"_CutOffAngle, " +
-                        "grad.xyz, vertexPosition.xyz+pos.xyz, ambient, diffuse, specular);\n";
+                        "grad.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
                     }
                     shaderText += this.inlineStyleShaderText();
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
@@ -1568,7 +1593,11 @@ x3dom.registerNodeType(
                     }
                     shaderText +=
                     "    //advance the current position\n"+
-                    "    pos.xyz += step;\n"+
+                    "    pos.xyz += step;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        shaderText +="    positionE += step_eye;\n";
+                    }
+                    shaderText +=
                     "    //break if the position is greater than <1, 1, 1>\n"+
                     "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
                     "      break;\n"+
@@ -2220,22 +2249,31 @@ x3dom.registerNodeType(
                     
                     // here goes the volume shader
                     this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
-                    this.vrcFrontCubeShaderVertex._vf.url[0]=
+                    var shaderText=
                     "attribute vec3 position;\n"+
                     "attribute vec3 color;\n"+
                     "uniform mat4 modelViewProjectionMatrix;\n"+
                     "varying vec3 vertexColor;\n"+
-                    "varying vec4 vertexPosition;\n"+
-                    "\n" +
+                    "varying vec4 vertexPosition;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        shaderText += "uniform mat4 modelViewMatrix;\n"+
+                        "varying vec4 position_eye;\n";
+                    }
+                    shaderText += "\n" +
                     "void main()\n"+
                     "{\n"+
                     "  vertexColor = color;\n"+
-                    "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
+                    "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                       shaderText += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
+                    }
+                    shaderText += 
                     "  gl_Position = vertexPosition;\n"+
                     "}";
+                    this.vrcFrontCubeShaderVertex._vf.url[0] = shaderText;
 
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
-                    var shaderText =
+                    shaderText =
                     "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                     "  precision highp float;\n" +
                     "#else\n" +
@@ -2244,11 +2282,14 @@ x3dom.registerNodeType(
                     "uniform sampler2D uBackCoord;\n"+
                     "uniform sampler2D uVolData;\n"+
                     "uniform vec3 offset;\n"+
-                    "uniform mat4 normalMatrix;\n"+
                     "uniform mat4 modelViewMatrixInverse;\n"+
                     "uniform sampler2D uSurfaceNormals;\n"+
                     "varying vec3 vertexColor;\n"+
-                    "varying vec4 vertexPosition;\n"+
+                    "varying vec4 vertexPosition;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        shaderText += "varying vec4 position_eye;\n";
+                    }
+                    shaderText +=
                     "const float Steps = 60.0;\n"+
                     "const float numberOfSlices = "+ this.vrcVolumeTexture._vf.numberOfSlices.toPrecision(5)+";\n"+
                     "const float slicesOverX = " + this.vrcVolumeTexture._vf.slicesOverX.toPrecision(5) +";\n"+
@@ -2294,7 +2335,6 @@ x3dom.registerNodeType(
                     "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
                     "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
                     "   n.a = length(n.xyz);\n"+
-                    "   n.xyz = (modelViewMatrixInverse * vec4(n.xyz, 0.0)).xyz;\n"+
                     "   n.xyz = normalize(n.xyz);\n"+
                     "   return n;\n"+
                     "}\n"+
@@ -2307,8 +2347,7 @@ x3dom.registerNodeType(
                     "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                     "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                     "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
-                    "   vec3 gradEyeSpace = (modelViewMatrixInverse * vec4(grad, 0.0)).xyz;\n"+
-                    "   return vec4(normalize(gradEyeSpace), length(grad));\n"+
+                    "   return vec4(normalize(grad), length(grad));\n"+
                     "}\n"+
                     "\n"+
                     this.lightEquationShaderText();
@@ -2322,19 +2361,18 @@ x3dom.registerNodeType(
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  float offset_s = 1.0/(2.0*maxSegments);\n";
+                    "  float offset_s = 1.0/(2.0*maxSegments);\n"+
+                    "  float cont = 0.0;\n"+
+                    "  vec3 step = dir/Steps;\n";
                     //Light init values
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                         shaderText +=
                         "  vec3 ambient = vec3(0.0, 0.0, 0.0);\n"+
                         "  vec3 diffuse = vec3(0.0, 0.0, 0.0);\n"+
-                        "  vec3 specular = vec3(0.0, 0.0, 0.0);\n";
-                    }
-                    shaderText +=
-                    "  float cont = 0.0;\n"+
-                    "  vec3 step = dir/Steps;\n";
-                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                        shaderText += "  float lightFactor = 1.0;\n";
+                        "  vec3 specular = vec3(0.0, 0.0, 0.0);\n"+
+                        "  vec4 step_eye = modelViewMatrix * vec4(step, 0.0);\n"+
+                        "  vec4 positionE = position_eye;\n"+
+                        "  float lightFactor = 1.0;\n"; 
                     }else{
                         shaderText += "  float lightFactor = 1.2;\n";
                     }
@@ -2345,12 +2383,13 @@ x3dom.registerNodeType(
                     "    value = cTexture3D(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
                     "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
                     if(this.normalTextureProvided){
-                        shaderText += "    vec4 grad = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                        shaderText += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }else{
-                        shaderText += "    vec4 grad = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                        shaderText += "    vec4 gradEye = getNormalOnTheFly(uVolData, pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }
+                    shaderText += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                     for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                        shaderText += "    lighting(light"+l+"_Type, " +
+                        shaderText +="    lighting(light"+l+"_Type, " +
                         "light"+l+"_Location, " +
                         "light"+l+"_Direction, " +
                         "light"+l+"_Color, " + 
@@ -2360,7 +2399,7 @@ x3dom.registerNodeType(
                         "light"+l+"_AmbientIntensity, " +
                         "light"+l+"_BeamWidth, " +
                         "light"+l+"_CutOffAngle, " +
-                        "grad.xyz, vertexPosition.xyz+pos.xyz, ambient, diffuse, specular);\n";
+                        "grad.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
                     }
                     shaderText += this.inlineStyleShaderText();
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
@@ -2373,7 +2412,11 @@ x3dom.registerNodeType(
                     "    accum.rgb += (1.0 - accum.a) * sample.rgb;\n"+
                     "    accum.a += (1.0 - accum.a) * sample.a;\n"+
                     "    //advance the current position\n"+
-                    "    pos.xyz += step;\n"+
+                    "    pos.xyz += step;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        shaderLoop +="    positionE += step_eye;\n";
+                    }
+                    shaderText +=
                     "    //break if the position is greater than <1, 1, 1>\n"+
                     "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0)\n"+
                     "      break;\n"+
@@ -2620,7 +2663,6 @@ x3dom.registerNodeType(
                     "               else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
                     "           }\n" +
                     "       }\n" +
-                    
                     "       vec3 H = normalize( L + V );\n" +
                     "       float NdotL = max(0.0, dot(L, N));\n" +
                     "       float NdotH = max(0.0, dot(H, N));\n" +
@@ -2646,10 +2688,10 @@ x3dom.registerNodeType(
                 var shaderText = "    if(uEnableShaded){\n";
                 if(this._vf.lighting == true){
                     if(this._cf.material.node){
-                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
-                    }else{
-                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*value.rgb + specular*specularColor);\n"+
+                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*diffuseColor*value.rgb + specular*specularColor);\n"+
                         "      value.a = value.a*(1.0-transparency);\n";
+                    }else{
+                        shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
                     }
                 }
                 shaderText += "    }\n";
