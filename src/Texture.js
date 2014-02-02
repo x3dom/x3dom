@@ -176,6 +176,12 @@ x3dom.Texture.prototype.updateTexture = function()
 			} else if (this.minFilter == gl.LINEAR) {
 				this.minFilter  = gl.LINEAR_MIPMAP_LINEAR;
 			}
+
+            if (this.texture && (this.texture.ready || this.texture.textureCubeReady)) {
+                gl.bindTexture(this.type, this.texture);
+                gl.generateMipmap(this.type);
+                gl.bindTexture(this.type, null);
+            }
 		} else {
 			this.genMipMaps = false;
 			
@@ -326,12 +332,12 @@ x3dom.Texture.prototype.updateTexture = function()
 	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
 	{
 		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false, 
-		                                         tex._vf.withCredentials, tex._vf.scale);
+		                                         tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
 	}
 	else 
 	{
 		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]), 
-		                                       false, tex._vf.withCredentials, tex._vf.scale);
+		                                       false, tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
 	}
 };
 
