@@ -348,9 +348,9 @@
             X3DOM's output. Still, there might be cases where your changes have to be internally processed by X3DOM before they finally take place in the rendered result.
             X3DOM might, for example, need to update some values on the GPU after you changed a certain field in your application.
             In order to do so, X3DOM also needs a notification that you have finished your changes to the internal field object, so it can process the changes properly.
-            To do so, you will have to call the <code>returnFieldRef</code> method. You can think about this process as if you would "borrow" the object, manipulate it and give it back to X3DOM.
-            Imagine, for example, you would have an array with colors, as it is provided as the <code>color</code> multi value field of type <code>MFColor</code> of the <code>Color</code> node.            
-            To change the red channel of the entry at index 23, you could then do the following:
+            To do so, you will have to call the <code>returnFieldRef</code> method. You can think of this process as of "borrowing" the object, manipulating it and giving it back to X3DOM.
+            For example, imagine you have an array of colors provided as <code>color</code> multi value field of type <code>MFColor</code> by the <code>Color</code> node.
+            To change the red channel of the entry at index 23 you do the following:
             </p>
             
             <pre class="prettyprint"><code class="language-js">
