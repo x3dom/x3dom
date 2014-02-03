@@ -1000,9 +1000,9 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} enabled",true)
+             * @var {SFBool} enabled
              * @memberof x3dom.nodeTypes.Collision
-             * @initvalue nabled",true
+             * @initvalue true
              * @field x3dom
              * @instance
              */
@@ -1010,9 +1010,9 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} proxy",x3dom.nodeTypes.X3DGroupingNode)
+             * @var {SFNode} proxy
              * @memberof x3dom.nodeTypes.Collision
-             * @initvalue roxy",x3dom.nodeTypes.X3DGroupingNode
+             * @initvalue x3dom.nodeTypes.X3DGroupingNode
              * @field x3dom
              * @instance
              */
@@ -1079,9 +1079,9 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} forceTransitions",false)
+             * @var {SFBool} forceTransitions
              * @memberof x3dom.nodeTypes.X3DLODNode
-             * @initvalue orceTransitions",false
+             * @initvalue false
              * @field x3dom
              * @instance
              */
@@ -1089,9 +1089,9 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} center",0,0,0)
+             * @var {SFVec3f} center
              * @memberof x3dom.nodeTypes.X3DLODNode
-             * @initvalue enter",0,0,0
+             * @initvalue 0,0,0
              * @field x3dom
              * @instance
              */
@@ -1150,9 +1150,9 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} range",[])
+             * @var {MFFloat} range
              * @memberof x3dom.nodeTypes.LOD
-             * @initvalue ange",[]
+             * @initvalue []
              * @field x3dom
              * @instance
              */
