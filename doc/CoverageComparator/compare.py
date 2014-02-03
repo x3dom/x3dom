@@ -3,79 +3,132 @@ import sys
 import re
 from xml.dom import minidom
 
-class ContainedIn:
-	def __init__(self):
-		self.avalon = False
-		self.x3dom = False
-
+#------------------------------------------------------------------------------------------------------
+		
 class FieldComparison:
 	def __init__(self):
 		self.name = ""
-		self.contained = ContainedIn()
-	
+		self.avalon = 0
+		self.x3dom = 0
+		
+#------------------------------------------------------------------------------------------------------	
 	
 class NodeComparison:
     def __init__(self):
 		self.name = ""
-		#self.contained = ContainedIn()
 		self.fieldNames = []
 		self.fields = []
+		self.parents = []
 
+
+#------------------------------------------------------------------------------------------------------
+
+def getFieldComparison(name, nodeComparison):
+	if name in nodeComparison.fieldNames:
+		return nodeComparison.fields[nodeComparison.fieldNames.index(name)]
+	else:
+		nodeComparison.fieldNames.append(name)
+		fieldComparison = FieldComparison()
+		fieldComparison.name = name
+		nodeComparison.fields.append(fieldComparison)
+		return fieldComparison
+
+#------------------------------------------------------------------------------------------------------
+		
+def getNodeComparison(name):
+	if name in nodeNames:
+		return nodes[nodeNames.index(name)]
+	else:
+		nodeNames.append(name);
+		nodeComparison = NodeComparison()
+		nodeComparison.name = name
+		nodes.append(nodeComparison)		
+		return nodeComparison
+		
+#------------------------------------------------------------------------------------------------------		
+		
 def updateNodeComparison(xml, context):
 	for node in xml.getElementsByTagName("node"):
 		name = node.attributes["name"].value
-		if name in nodeNames:
-			nodeComparison = nodes[nodeNames.index(name)]
-		else:
-			nodeNames.append(name);
-			nodeComparison = NodeComparison()
-			nodeComparison.name = name
-			nodes.append(nodeComparison)		
+		nodeComparison = getNodeComparison(name)
 		
-		#if context == "x3dom":
-		#	nodeComparison.contained.x3dom = True
-		#else:
-		#	nodeComparison.contained.avalon = True
+		parent = node.attributes["parent"].value
 		
+		if parent != "" and parent != "null":
+			nodeComparison.parents.append(parent)
 		
 		#iterate fields
 		for field in xml.getElementsByTagName("field"):
 			fieldname = field.attributes["name"].value
-			
-			if fieldname in nodeComparison.fieldNames:
-				fieldComparison = nodeComparison.fields[nodeComparison.fieldNames.index(fieldname)]
-			else:
-				nodeComparison.fieldNames.append(fieldname)
-				fieldComparison = FieldComparison()
-				fieldComparison.name = fieldname
-				nodeComparison.fields.append(fieldComparison)
-			
+			fieldComparison = getFieldComparison(fieldname, nodeComparison)
 			if context == "x3dom":
-				fieldComparison.contained.x3dom = True
+				fieldComparison.x3dom = 1 
 			else:
-				fieldComparison.contained.avalon = True
+				fieldComparison.avalon = 1
+	
+
+#------------------------------------------------------------------------------------------------------
+
+def collectParentFieldsRecursive( nodeComparison, parentComparison ):
+	print "collecting parent "+parentComparison.name+" for "+nodeComparison.name
+	
+	for parentFieldName in parentComparison.fieldNames:
+			parentField = parentComparison.fields[parentComparison.fieldNames.index(parentFieldName)]
+			fieldComparison = getFieldComparison(parentFieldName, nodeComparison)
 			
+			if parentField.x3dom != 0:
+				fieldComparison.x3dom = 2
+			
+			if parentField.avalon != 0:
+				fieldComparison.avalon = 2
 	
+	for parentName in parentComparison.parents:
+		parentComparison = getNodeComparison(parentName)
+		collectParentFieldsRecursive(nodeComparison, parentComparison)
+		
+			
+			
+			
+#------------------------------------------------------------------------------------------------------
+			
+def collectParentField(nodeComparison):
 	
-    
+	for parentName in nodeComparison.parents:
+		parentComparison = getNodeComparison(parentName)
+		collectParentFieldsRecursive(nodeComparison, parentComparison)
+	
+#------------------------------------------------------------------------------------------------------    
 
 def readXmlFromFile(path):
 	#print "opening file " + path + " \n"
 	xmldoc = minidom.parse(path)
 	return xmldoc
+
+#------------------------------------------------------------------------------------------------------
 	
+def getCssClassString(int):
+	if int == 0:
+		return "no-member"
+	else:
+		if int == 1:
+			return "member"
+		else:
+			return "inherited"
+	
+#------------------------------------------------------------------------------------------------------
 
 def createComparisonPage():
 	result = []
 	
-	result.append("<html><head><h1>Node Coverage Comparison</h1><style>.true{background-color:green;}.false{background-color:red;}</style></head><body>");
+	result.append("<html><head><h1>Node Coverage Comparison</h1><style>.member{background-color:green;}.no-member{background-color:red;}.inherited{background-color:yellow;}</style></head><body>");
 	
 	for node in nodes:
 		result.append("<table><caption>"+node.name+"</caption>")
 		result.append("<thead><tr><th>Name</th><th>Avalon</th><th>x3dom</th></tr></thead><tbody>")
 		
 		for field in node.fields:
-			result.append("<tr><td>"+field.name+"</td><td " + ("class='true'" if field.contained.avalon else "class='false'")  + " ></td><td " + ("class='true'" if field.contained.x3dom else "class='false'")+ "></td></tr>");
+				
+			result.append("<tr><td>"+field.name+"</td><td class='"+ getCssClassString(field.avalon) +  "' ></td><td class='" + getCssClassString(field.x3dom) + "'></td></tr>");
 		
 		result.append("</tbody></table><br>")
 	
@@ -103,6 +156,8 @@ for dirname, dirnames, filenames in os.walk(sys.argv[1]):
 		ndfs.append(readXmlFromFile(path))
 		
 
+# read XNFD folder
+print "Reading folder \"" + sys.argv[2] + "\" ...\n",
 		
 		
 for dirname, dirnames, filenames in os.walk(sys.argv[2]):
@@ -119,6 +174,10 @@ for xml in ndfs:
 
 for xml in xndfs:
 	updateNodeComparison(xml,"x3dom")
+	
+for node in nodes:
+	collectParentField(node)
+	
 
 html = createComparisonPage()
     
