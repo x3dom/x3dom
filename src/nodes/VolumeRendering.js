@@ -598,6 +598,23 @@ x3dom.registerNodeType(
             this.uniformBoolEnableBoundary = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'retainedOpacity':
+                        this.uniformFloatRetainedOpacity._vf.value = this._vf.retainedOpacity;
+                        this.uniformFloatRetainedOpacity.fieldChanged("value");
+                        break;
+                    case 'boundaryOpacity':
+                        this.uniformFloatBoundaryOpacity._vf.value = this._vf.boundaryOpacity;
+                        this.uniformFloatBoundaryOpacity.fieldChanged("value");
+                        break;
+                    case 'opacityFactor':
+                        this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
+                        this.uniformFloatOpacityFactor.fieldChanged("value");
+                        break;
+                }
+            },
+
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
@@ -708,6 +725,23 @@ x3dom.registerNodeType(
             this.uniformBoolEnableCartoon = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'parallelColor':
+                        this.uniformParallelColor._vf.value = this._vf.parallelColor;
+                        this.uniformParallelColor.fieldChanged("value");
+                        break;
+                    case 'orthogonalColor':
+                        this.uniformOrthogonalColor._vf.value = this._vf.orthogonalColor;
+                        this.uniformOrthogonalColor.fieldChanged("value");
+                        break;
+                    case 'colorSteps':
+                        this.uniformIntColorSteps._vf.value = this._vf.colorSteps;
+                        this.uniformIntColorSteps.fieldChanged("value");
+                        break;
+                }
+            },
+
             uniforms: function(){
                 var unis = [];
 
@@ -1019,11 +1053,21 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'gradientThreshold', 0.4);
 
             this.uniformColorEdgeColor = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformIntGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEdgeEnable = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
+            fieldChanged: function(fieldName){
+                if (fieldName == "edgeColor") {
+                    this.uniformColorEdgeColor._vf.value = this._vf.edgeColor;
+                    this.uniformColorEdgeColor.fieldChanged("value");
+                }else if (fieldName == "gradientThreshold") {
+                    this.uniformFloatGradientThreshold._vf.value = this._vf.gradientThreshold;
+                    this.uniformFloatGradientThreshold.fieldChanged("value");
+                }
+            },
+
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
@@ -1047,10 +1091,10 @@ x3dom.registerNodeType(
                 this.uniformColorEdgeColor._vf.value = this._vf.edgeColor;
                 unis.push(this.uniformColorEdgeColor);
 
-                this.uniformIntGradientThreshold._vf.name = 'uGradientThreshold';
-                this.uniformIntGradientThreshold._vf.type = 'SFFloat';
-                this.uniformIntGradientThreshold._vf.value = this._vf.gradientThreshold;
-                unis.push(this.uniformIntGradientThreshold);
+                this.uniformFloatGradientThreshold._vf.name = 'uGradientThreshold';
+                this.uniformFloatGradientThreshold._vf.type = 'SFFloat';
+                this.uniformFloatGradientThreshold._vf.value = this._vf.gradientThreshold;
+                unis.push(this.uniformFloatGradientThreshold);
 
                 this.uniformBoolEdgeEnable._vf.name = 'uEnableEdge';
                 this.uniformBoolEdgeEnable._vf.type = 'SFBool';
@@ -2733,6 +2777,23 @@ x3dom.registerNodeType(
             this.uniformBoolEnableSilhouette = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'silhouetteBoundaryOpacity':
+                        this.uniformFloatBoundaryOpacity._vf.value = this._vf.silhouetteBoundaryOpacity;
+                        this.uniformFloatBoundaryOpacity.fieldChanged("value");
+                        break;
+                    case 'silhouetteRetainedOpacity':
+                        this.uniformFloatRetainedOpacity._vf.value = this._vf.silhouetteRetainedOpacity;
+                        this.uniformFloatRetainedOpacity.fieldChanged("value");
+                        break;
+                    case 'silhouetteSharpness':
+                        this.uniformFloatSilhouetteSharpness._vf.value = this._vf.silhouetteSharpness;
+                        this.uniformFloatSilhouetteSharpness.fieldChanged("value");
+                        break;
+                }
+            },
+
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
@@ -2867,6 +2928,19 @@ x3dom.registerNodeType(
             this.uniformBoolEnableToneMapped = new x3dom.nodeTypes.Uniform(ctx);
         },
         {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'coolColor':
+                        this.uniformCoolColor._vf.value = this._vf.coolColor;
+                        this.uniformCoolColor.fieldChanged("value");
+                        break;
+                    case 'warmColor':
+                        this.uniformWarmColor._vf.value = this._vf.warmColor;
+                        this.uniformWarmColor.fieldChanged("value");
+                        break;
+                }
+            },
+
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
