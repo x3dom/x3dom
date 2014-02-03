@@ -2935,8 +2935,8 @@ x3dom.registerNodeType(
                 "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
                 "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - (-(vertexPosition.xyz+pos.xyz))) : normalize(light"+l+"_Direction);\n"+
-                    "       toneMapped(value, toneColor, grad.xyz, L);\n";
+                    shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - positionE.xyz) : -light"+l+"_Direction;\n"+
+                    "       toneMapped(value, toneColor, gradEye.xyz, L);\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;
