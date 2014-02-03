@@ -58,12 +58,12 @@ def extractField(str):
     
     if fa.type != "MFNode" and fa.type != "SFNode":
         #ignore first 'ctx' param
-        addFieldParams = addFieldParams[addFieldParams.find(',')+2:]
-    else:
-        addFieldParams = addFieldParams[1:]
-  
+        addFieldParams = addFieldParams[addFieldParams.find(',')+1:]                
     
-    fieldNameEnd = addFieldParams.find('\'')
+    strDelimiter   = addFieldParams[0]
+    addFieldParams = addFieldParams[1:]
+    
+    fieldNameEnd = addFieldParams.find(strDelimiter)
     
     fa.name         = addFieldParams[:fieldNameEnd]
     fa.defaultvalue = addFieldParams[fieldNameEnd+2:addFieldParams.find(')')]
