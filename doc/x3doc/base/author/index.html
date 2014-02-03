@@ -39,32 +39,100 @@
 
 <div id="main">
 
+    <div class="class-summary">
+        <div class="overviewContainer" style="float:right; margin:0 32px;">            
+            <h3>DOM Element Functions</h3>
+                <ul>
+                    <li><a href="#getAttribute">&#10152; getAttribute</a></li>
+                    <li><a href="#setAttribute">&#10152; setAttribute</a></li>
+                    <li><a href="#getField">&#10152; getField</a></li>                    
+                    <li><a href="#setField">&#10152; setField</a></li>
+                    <li><a href="#requestFieldRef">&#10152; requestFieldRef</a></li>
+                    <li><a href="#returnFieldRef">&#10152; returnFieldRef</a></li>
+                </ul>
+        </div>
+    </div>
+                
     <section>
         <article>
-        
+            
             <h2>Introduction</h2>
             <p>            
             Welcome to the <strong>X3DOM Scene Author API Documentation</strong>!
-            Within this documentation package, you will find detailed information about all <strong>X3DOM Nodes</strong> and their <strong>Fields</strong>.
-            The following sections furthermore introduce the general DOM methods that are available on all X3DOM nodes to dynamically manipulate field values.
+            Within this documentation package, you will find detailed information about all <strong>X3DOM Nodes</strong> and their <strong>Fields</strong>.            
+            Like in the X3D standard, X3DOM nodes are grouped into <strong>Components</strong>.
+            There are several ways to find what you are looking for:
+
+            <ul>
+                <li><a href="nodes.html">Node Index</a></li>
+                <li><a href="components.html">Component Index</a></li>
+            </ul>
+
+            The Node Index allows you to directly browse nodes by their name, while the Component Index
+            lists all Components and provides a list of nodes for each of them.            
+            The following sections on this overview page furthermore introduce the general DOM methods that are available on all X3DOM nodes to dynamically manipulate field values.            
+            </p>
+                           
             
-            
-            <h3>DOM Scripting</h3>
-            Within a typical X3DOM application, nodes are a regular part of the HTML DOM.
-            You can access and dynamically manipulate the fields of all X3DOM nodes inside the DOM in various ways, which are listed below.
+            <h2>Scope</h2>
+            <p>
+            This API documentation is automatically generated during a nightly build process, using the latest available code from
+            the </strong>X3DOM development branch</strong>. It is therefore intended for use with this branch of X3DOM.
+            <br>
+            Please note that the X3DOM API documentation project started during the development of version 1.6, therefore there is
+            unfortunately no such documentation available for older versions of X3DOM.
+            However, the X3DOM team will provide a proper snapshot of this documentation for each upcoming release.
             </p>
             
             
+            <h2>Manipulating Fields with DOM Element Functions</h2>
+            <p>
+            Within a typical X3DOM application, nodes are a regular part of the HTML DOM.
+            You can access and dynamically manipulate the fields of all X3DOM nodes inside the DOM in three ways, and it depends on your particular needs and your application which one suits best.
+            
+            
+            <h3>Using <code>getAttribute</code> and <code>setAttribute</code></h3>
+            Like regular HTML attributes, your can manipulate X3DOM values with the standard <code>getAttribute</code> and <code>setAttribute</code> methods.
+            You may, for instance, have this HTML representation of a <code>material</code> node:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-html">
+    &lt;material id='myMaterial' diffuseColor='1 0 0'&gt;&lt;/material&gt;
+            </code></pre>
+            
+            <p>
+            Imagine you would want to change the <code>diffuseColor</code> field of this material node.
+            This can be easily achieved with the <code>getAttribute</code> and <code>setAttribute</code> methods:
+            </p>
+            
+            
+            <pre class="prettyprint"><code class="language-js">
+    var oldMaterial = document.getElementById('myMaterial').getAttribute('diffuseColor');
+    console.log('The old value was ' + oldMaterial);    
+    var newMaterial = document.getElementById('myMaterial').setAttribute('diffuseColor', '0 1 0');
+    console.log('The new value is ' + newMaterial);
+            </code></pre>
+            <p>
+            Since HTML attributes are not case sensitive, X3DOM attributes behave in the same way.
+            You may therefore write <code>'diffuseColor'</code> as well as <code>'DiffuseColor'</code> or <code>'diffusecolor'</code>, for example.
+            </p>
+            
+            <p>
+            The standard DOM <code>getAttribute</code> and <code>setAttribute</code> methods are defined as follows:
+            </p>
+            
+            <!--- GET ATTRIBUTE --->
             <dl class="method-container">
                 <dt>
                     <h4 class="name method-container-header">
-                      getAttribute
-                      <span class="signature">
+                        getAttribute
+                        <span class="signature">
                         (fieldname)
-                      </span>
-                      <span class="type-signature">
-                        &#8594 FIELDTYPE
-                      </span>                  
+                        </span>
+                        <span class="type-signature">
+                        &#8594 String
+                        </span>
+                      <a name="getAttribute" class="upwardsLink" href="#">&#10548;</a>
                     </h4>                  
                 </dt>
                 <dd>
@@ -91,18 +159,20 @@
                         </table>
                     </div> <br>
                     <h5>Returns:</h5>
-                    <div class="param-desc">the current field value</div>  
+                    <div class="param-desc">the current field value, as a string</div>  
               </dd>
             </dl>
 
             
+            <!--- SET ATTRIBUTE --->
             <dl class="method-container">
                 <dt>
                     <h4 class="name method-container-header">
-                      setAttribute
-                      <span class="signature">
+                        setAttribute
+                        <span class="signature">
                         (fieldname, fieldvalue)
-                      </span>                 
+                        </span>
+                        <a name="setAttribute" class="upwardsLink" href="#">&#10548;</a>                      
                     </h4>                  
                 </dt>
                 <dd>
@@ -140,66 +210,239 @@
               </dd>
             </dl>
             
+            <br>
             
-            <p>            
-            Like regular HTML attributes, your can manipulate X3DOM values with the standard <code>getAttribute(..)</code> and <code>setAttribute(..)</code> methods, which are defined as follows:
-            
-            
-            You may, for instance, have this HTML representation of a <code>material</code> node:
-            </p>
-            
-            <pre class="prettyprint"><code class="language-html">
-    &lt;material id='myMaterial' diffuseColor='1 0 0'&gt;&lt;/material&gt;
-            </code></pre>
-            
+            <h3>Using <code>getField</code> and <code>setField</code></h3>
             <p>
-            Imagine you would want to change the <code>diffuseColor</code> field of this material node.
-            This can be easily achieved with the <code>getAttribute(..)</code> and <code>setAttribute(..)</code> methods:
+            If you are interested in manipulating the value of a field in a more sophisticated way than just giving it a fixed value in a string representation,
+            for example because you want to change a single coordinate value or a single channel of a color, you might find the standard DOM methods a bit inconvenient.
+            Therefore, X3DOM also offers methods to directly access the typed field values.
+            This means that you will no longer need to operate on strings, but instead you can directly use objects with the types of the corresponding fields.
+            For the above example with the <color>diffuseColor</color> attribute, this means that you can also directly get and set the field value
+            as an <color>SFColor</color> object:            
             </p>
-            
             
             <pre class="prettyprint"><code class="language-js">
-    var oldMaterial = document.getElementById('myMaterial').getAttribute('diffuseColor');
-    console.log('The old value was ' + oldMaterial);    
-    var newMaterial = document.getElementById('myMaterial').setAttribute('diffuseColor', '0 1 0');
-    console.log('The new value is ' + newMaterial);
+    var myColor = document.getElementById('myMaterial').getField('diffuseColor');
+    myColor.r = 1.0;    //the myColor object is of type 'SFColor', so we can directly set RGB values 
+    document.getElementById('myMaterial').setField('diffuseColor', myColor);
             </code></pre>
+            
             <p>
-            Since HTML attributes are not case sensitive, X3DOM attributes behave in the same way.
-            You may therefore write <code>'diffuseColor'</code> as well as <code>'DiffuseColor'</code> or <code>'diffusecolor'</code>, for example.
+            The X3DOM <code>getField</code> and <code>setField</code> methods, which are available on all X3DOM nodes, are defined as follows:
             </p>
             
+            <!--- GET FIELD --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        getField
+                        <span class="signature">
+                        (fieldname)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 FIELDTYPE
+                        </span>
+                      <a name="getField" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Returns the value of the field with the given name.
+                      The value is returned as an object of the corresponding field type.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field
+                                    </td>
+                                </tr>                               
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">the current field value, as a field object</div>  
+              </dd>
+            </dl>
+
             
-            <h4>Manipulate Fields with <code>getField(..)</code> and <code>setField(..)</code></h4>
-            <p>
-            </p>
+            <!--- SET FIELD --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        setField
+                        <span class="signature">
+                        (fieldname, fieldvalue)
+                        </span>
+                        <a name="setField" class="upwardsLink" href="#">&#10548;</a>                      
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Sets the value of the field with the given name to the given value.
+                      The value is specified as an object of the corresponding field type.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field where the value should be set
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldvalue</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">FIELDTYPE</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the new field value
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+              </dd>
+            </dl>
             
-            
-            <h2>Scope</h2>
-            <p>
-            This API documentation is automatically generated during a nightly build process, using the latest available code from
-            the </strong>X3DOM development branch</strong>. It is therefore intended for use with this branch of X3DOM.
             <br>
-            Please note that the X3DOM API documentation project started during the development of version 1.6, therefore there is
-            unfortunately no such documentation available for older versions of X3DOM.
-            However, the X3DOM team will provide a proper snapshot of this documentation for each upcoming release.
+            
+            <h3>Using <code>requestFieldRef</code> and <code>returnFieldRef</code></h3>
+            <p>
+            If you want to manipulate specific field values in a more convenient way, the <code>getField</code> and <code>setField</code> methods already do a good job.
+            However, <code>getField</code> will always return field object <i>by value</i>, which means you will get a copy of the corresponding field object that X3DOM uses internally.
+            For many use cases, this is perfectly fine: you will rececive a copy of the field object, manipulate the copy and and use it somewhere, without affecting the value of the field -
+            just like you would probably expect it, and just like it already works for other methods like <code>setAttribute</code>, for instance.
+            The problem of getting everything <i>by value</i> is that it involves copy operations, which will potentially become time-consuming.
+            This is especially the case if the following assumptions apply:
             </p>
             
-
-            <h2>Resources</h2>
-            <p>
-            Like in the X3D standard, X3DOM nodes are grouped into <strong>Components</strong>.
-            There are several ways to find what you are looking for:
-
             <ul>
-                <li><a href="nodes.html">Node Index</a></li>
-                <li><a href="components.html">Component Index</a></li>
+                <li>The field value is changed very frequently (for example, 60 times in a second)</li>
+                <li>The field value is a large array of values</li>
             </ul>
-
-            The Node Index allows you to directly browse nodes by their name, while the Component Index
-            lists all Components and provides a list of nodes for each of them.
-
+            
+            <p>
+            In the latter case, the field usually is a multi valued field, with its type starting with "MF".
+            For example, <code>MFVec3f</code> denotes a field type which represents an array of three-element float vectors.
+            Such a field may contain an arbitrary number of elements, therefore you may want to avoid to copy the corresponding field object every time you change some of its values.
+            The solution in this case is to operate on a <i>reference</i> to the <i>original field object</i> which is internally used by X3DOM, instead of using a copy.            
+            This is possible by using the X3DOM <code>requestFieldRef</code> method, which returns the original field object <i>by reference</i>.
+            Of course, you should be aware that you are manipulating the original object used by X3DOM, and that any change you make to it will potentially directly be reflected in
+            X3DOM's output. Still, there might be cases where your changes have to be internally processed by X3DOM before they finally take place in the rendered result.
+            X3DOM might, for example, need to update some values on the GPU after you changed a certain field in your application.
+            In order to do so, X3DOM also needs a notification that you have finished your changes to the internal field object, so it can process the changes properly.
+            To do so, you will have to call the <code>returnFieldRef</code> method. You can think about this process as if you would "borrow" the object, manipulate it and give it back to X3DOM.
+            Imagine, for example, you would have an array with colors, as it is provided as the <code>color</code> multi value field of type <code>MFColor</code> of the <code>Color</code> node.            
+            To change the red channel of the entry at index 23, you could then do the following:
             </p>
+            
+            <pre class="prettyprint"><code class="language-js">
+    var myColorArray = document.getElementById('myColorNode').requestFieldRef('color');
+    myColorArray[23].r = 1.0;    //the myColorArray object is of type 'MFColor', and it is the same object that is internally used by X3DOM
+    document.getElementById('myColorNode').returnFieldRef('color');
+            </code></pre>
+            
+            <p>
+            The X3DOM <code>requestFieldRef</code> and <code>returnFieldRef</code> methods, which are available on all X3DOM nodes, are defined as follows:
+            </p>
+            
+            <!--- REQUEST FIELDREF --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        requestFieldRef
+                        <span class="signature">
+                        (fieldname)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 FIELDTYPE
+                        </span>
+                      <a name="requestFieldRef" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Returns the field object of the field with the given name.
+                      The returned object is no copy, but instead a reference to X3DOM's internal field object.
+                      Changes to this object should be commited using the <code>returnFieldRef</code> function.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field
+                                    </td>
+                                </tr>                               
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">the current field object, as it is also used by X3DOM</div>  
+              </dd>
+            </dl>
+
+            
+            <!--- RETURN FIELDREF --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        returnFieldRef
+                        <span class="signature">
+                        (fieldname)
+                        </span>
+                        <a name="returnFieldRef" class="upwardsLink" href="#">&#10548;</a>                      
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                      Commits all changes made to the internal field object of the field with the given name.
+                      This must be done in order to notify X3DOM to process all related changes internally.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table>
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>fieldname</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        the name of the field
+                                    </td>
+                                </tr>                               
+                            </tbody>
+                        </table>
+                    </div> <br>
+              </dd>
+            </dl>        
             
             <br>
             
