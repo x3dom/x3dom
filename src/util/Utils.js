@@ -75,6 +75,9 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
     var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    if (genMipMaps) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+    }
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture.ready = false;
