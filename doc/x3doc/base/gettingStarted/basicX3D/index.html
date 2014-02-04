@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>X3DOM Documentation: Getting Started</title>    
     <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs.css">
+    <script src="../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
@@ -44,9 +45,9 @@
             The behavior of each node, like, for instance, the color of a material, can be defined by setting the node's <i>fields</i>.
             The XML description of a material node, which defines a surface of some object to be red (in RGB encoding <code>1 0 0</code>), could, for example, look like this:
             
-            <div class="codeSnippet">
-            &lt;Material diffuseColor='1 0 0'&gt;&lt;/Material&gt;
-            </div>
+            <pre class="prettyprint"><code class="language-html">
+    &lt;Material diffuseColor='1 0 0'&gt;&lt;/Material&gt;
+            </code></pre>
             
             As you might have recognized, the XML description of the X3D node looks pretty much like regular HTML code, and the value of its field entitled <code>diffuseColor</code> is just defined like you would do it for an HTML attribute.
             In fact, if you are already familiar with HTML, learning how to use nodes in X3DOM is not that hard.
