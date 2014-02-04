@@ -111,6 +111,32 @@ x3dom.setElementAttribute = function(attrName, newVal)
     }
 };
 
+
+// helper to get a reference to a nodes's field
+x3dom.requestFieldRef = function(fieldName)
+{
+    var x3dNode = this._x3domNode;
+    if (x3dNode && x3dNode._vf[fieldName])
+    {
+        return x3dNode._vf[fieldName];
+    }
+
+    return null;
+} ;
+
+
+// helper to return a reference to a nodes's field
+x3dom.returnFieldRef = function(fieldName)
+{
+    var x3dNode = this._x3domNode;
+    if (x3dNode && x3dNode._vf[fieldName])
+    {
+        x3dNode.fieldChanged(fieldName);
+        x3dNode._nameSpace.doc.needRender = true;
+    }
+};
+
+
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     var n = null;
 
@@ -202,6 +228,10 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 }
                 return null;
             }
+
+            //attach X3DOM's custom field interface functions
+            domNode.requestFieldRef = x3dom.requestFieldRef;
+            domNode.returnFieldRef  = x3dom.returnFieldRef;
 
             // find the NodeType for the given dom-node
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
