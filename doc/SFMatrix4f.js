@@ -41,7 +41,6 @@ x3dom.fields = {};
 
 
 // shortcut for convenience
-//TODO: remove
 var VecMath = x3dom.fields;
 
 
