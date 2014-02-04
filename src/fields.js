@@ -2181,7 +2181,7 @@ x3dom.fields.MFColorRGBA.prototype.setValueByStr = function(str) {
     this.length = 0;
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
-        this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
+        this.push( new x3dom.fields.SFColorRGBA(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
     }
 };
 
