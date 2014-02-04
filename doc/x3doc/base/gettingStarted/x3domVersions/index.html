@@ -37,6 +37,8 @@
             <h2>3. Picking an X3DOM Version</h2>
             </div>            
             <br>
+            
+            <h3>Versions and Components</h3>
             <p>
             There are several versions of X3DOM available, so you might be wondering which one is best for your particular purposes.
             In general, we recommended to use the development version, since it always contains the latest features and fixes.
@@ -80,6 +82,18 @@
     &lt;script src="http://www.x3dom.org/download/1.3/x3dom.swf"&gt;&lt;/script&gt;
     &lt;link rel="stylesheet" href="http://www.x3dom.org/download/1.3/x3dom.css"&gt;                
             </code></pre>
+            
+            <br>
+            
+            <h3>Debugging</h3>
+            <p>
+            If you want, for whatever reason, to be able to look into the source code of X3DOM during debugging of your application,
+            you can replace <code>x3dom.js</code> with <code>x3dom.debug.js</code>, and you can replace <code>x3dom-full.js</code> with <code>x3dom-full.debug.js</code>.
+            Please note that this feature is available from X3DOM version 1.4, and not available for older versions.
+            While the debug version, in contrast to the minified version, contains human-readable formatting and comments, it is also significantly larger
+            than the minified version. Therefore, it is not well-suited as a final version for the distribution of your Web application,
+            but only for temporary debugging purposes during application development.
+            </p>
     </section>
 
 </div>
