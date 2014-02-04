@@ -713,7 +713,7 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
 
                 bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.withCredentials, true);
+                    true, bgnd._vf.withCredentials, true, false);
             }
             else {
                 bgnd._webgl = {
@@ -727,7 +727,7 @@ x3dom.gfx_webgl = (function () {
                 url = bgnd._nameSpace.getURL(url[0]);
 
                 bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.withCredentials, true);
+                    true, bgnd._vf.withCredentials, true, false);
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 
@@ -1791,6 +1791,8 @@ x3dom.gfx_webgl = (function () {
         var mat = s_app ? s_app._cf.material.node : null;
         var shader = s_app ? s_app._shader : null;
 
+        var isUserDefinedShader = shader && x3dom.isa(shader, x3dom.nodeTypes.ComposedShader);
+
         if (s_gl.csshader) {
             sp.diffuseColor = shader._vf.diffuseFactor.toGL();
             sp.specularColor = shader._vf.specularFactor.toGL();
@@ -1837,7 +1839,7 @@ x3dom.gfx_webgl = (function () {
 
         //Look for user-defined shaders
         if (shader) {
-            if (x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
+            if (isUserDefinedShader) {
                 for (var fName in shader._vf) {
                     if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
                         var field = shader._vf[fName];
@@ -2054,8 +2056,16 @@ x3dom.gfx_webgl = (function () {
         sp.normalMatrix = model_view_inv.transpose().toGL();
         sp.modelViewMatrixInverse = model_view_inv.toGL();
 
-        sp.projectionMatrix = mat_proj.toGL();
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
+
+        // only calculate on "request" (maybe of interest for users)
+        if (isUserDefinedShader) {
+            sp.projectionMatrix = mat_proj.toGL();
+
+            sp.worldMatrix = transform.toGL();
+            sp.worldInverseTranspose = transform.inverse().transpose().toGL();
+            sp.viewMatrixInverse = mat_view.inverse().toGL();
+        }
 
 
         //PopGeometry: adapt LOD and set shader variables
@@ -2074,12 +2084,7 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
             gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
 
-            // TODO: this is expensive and probably only required on change, track e.g. via stateManager
-            if (tex.genMipMaps) {
-                gl.generateMipmap(tex.type);
-            }
-
-            if (!shader || !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
+            if (!shader || !isUserDefinedShader) {
                 if (!sp[tex.samplerName])
                     sp[tex.samplerName] = cnt;
             }

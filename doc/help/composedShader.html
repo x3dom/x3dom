@@ -21,7 +21,7 @@ during the build process
 	  <tr>
 		<td>&bull;</td>
 		<td style="color:blue;">attribute vec3</td>
-		<td>position</td>
+		<td>position <span style="color:purple;"> (vec4 if normals embedded)</span></td>
 	  </tr>
 	  <tr>
 		<td>&bull;</td>
@@ -36,12 +36,7 @@ during the build process
 	  <tr>
 		<td>&bull;</td>
 		<td style="color:blue;">attribute vec3</td>
-		<td>color</td>
-	  </tr>
-	  <tr>
-		<td>&bull;</td>
-		<td style="color:blue;">attribute vec4</td>
-		<td>color</td>
+		<td>color <span style="color:purple;"> (vec4 for ColorRGBA)</span></td></td>
 	  </tr>
 	  <tr>
 		<td>&bull;</td>
@@ -62,6 +57,11 @@ during the build process
 		<td style="color:blue;">uniform mat4</td>
 		<td>viewMatrix</td>
 	  </tr>
+	  <tr>
+  		<td>&bull;</td>
+  		<td style="color:blue;">uniform mat4</td>
+  		<td>viewMatrixInverse</td>
+  	  </tr>
 	  <tr>
 		<td>&bull;</td>
 		<td style="color:blue;">uniform mat4</td>
@@ -86,6 +86,16 @@ during the build process
 		<td>&bull;</td>
 		<td style="color:blue;">uniform mat4</td>
 		<td>modelViewProjectionMatrix</td>
+	  </tr>
+  	  <tr>
+  		<td>&bull;</td>
+  		<td style="color:blue;">uniform mat4</td>
+  		<td>worldMatrix</td>
+  	  </tr>
+  	  <tr>
+		<td>&bull;</td>
+		<td style="color:blue;">uniform mat4</td>
+		<td>worldInverseTranspose</td>
 	  </tr>
 	  <tr>
 		<td>&bull;</td>

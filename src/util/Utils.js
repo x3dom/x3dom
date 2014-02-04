@@ -67,7 +67,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -98,6 +98,9 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		//gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        if (genMipMaps) {
+            gl.generateMipmap(gl.TEXTURE_2D);
+        }
 		gl.bindTexture(gl.TEXTURE_2D, null);
 		if(bgnd == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -123,7 +126,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale)
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -180,6 +183,13 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
                     texture.width  = width;
                     texture.height = height;
 					texture.textureCubeReady = true;
+
+                    if (genMipMaps) {
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    }
+
 					x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
 					doc.needRender = true;
 				}

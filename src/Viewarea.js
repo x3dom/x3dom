@@ -162,7 +162,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         var step = (this._lastButton & 2) ? -1 : 1;
         step *= (this._deltaT * navi._vf.speed);
 
-        var phi = Math.PI * this._deltaT * (this._pressX - this._lastX) / this._width;
+        var phi = 2 * Math.PI * this._deltaT * (this._pressX - this._lastX) / this._width;
         var theta = Math.PI * this._deltaT * (this._pressY - this._lastY) / this._height;
 
         if (this._needNavigationMatrixUpdate === true)
