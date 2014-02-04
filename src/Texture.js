@@ -151,14 +151,8 @@ x3dom.Texture.prototype.updateTexture = function()
 	} else {
 		this.format = gl.RGBA;
 	}
-	
-	//Looking for child texture
-	var childTex = (tex._video !== undefined && 
-					tex._video !== null && 
-					tex._needPerFrameUpdate !== undefined && 
-					tex._needPerFrameUpdate === true);
-	
-	//Set texture min, mag, wrapS and wrapT
+
+    //Set texture min, mag, wrapS and wrapT
     if (tex._cf.textureProperties.node !== null) {
 		var texProp = tex._cf.textureProperties.node;
 
@@ -167,10 +161,10 @@ x3dom.Texture.prototype.updateTexture = function()
 
 		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter);
 		this.magFilter = x3dom.Utils.magFilterDic(gl, texProp._vf.magnificationFilter);
-		
+
 		if (texProp._vf.generateMipMaps === true) {
 			this.genMipMaps = true;
-						
+
 			if (this.minFilter == gl.NEAREST) {
 				this.minFilter  = gl.NEAREST_MIPMAP_NEAREST;
 			} else if (this.minFilter == gl.LINEAR) {
@@ -184,7 +178,7 @@ x3dom.Texture.prototype.updateTexture = function()
             }
 		} else {
 			this.genMipMaps = false;
-			
+
 			if ( (this.minFilter == gl.LINEAR_MIPMAP_LINEAR) ||
 				 (this.minFilter == gl.LINEAR_MIPMAP_NEAREST) ) {
 				this.minFilter  = gl.LINEAR;
@@ -209,7 +203,13 @@ x3dom.Texture.prototype.updateTexture = function()
             this.wrapT = gl.REPEAT;
         }
 	}
-	
+
+    //Looking for child texture
+    var childTex = (tex._video !== undefined &&
+                    tex._video !== null &&
+                    tex._needPerFrameUpdate !== undefined &&
+                    tex._needPerFrameUpdate === true);
+
 	//Set texture
 	if (tex._isCanvas && tex._canvas)
 	{
@@ -218,9 +218,13 @@ x3dom.Texture.prototype.updateTexture = function()
 		}
         this.texture.width  = tex._canvas.width;
         this.texture.height = tex._canvas.height;
+        this.texture.ready = true;
 
 		gl.bindTexture(this.type, this.texture);
         gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, tex._canvas);
+        if (this.genMipMaps) {
+            gl.generateMipmap(this.type);
+        }
 		gl.bindTexture(this.type, null);
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
@@ -232,6 +236,9 @@ x3dom.Texture.prototype.updateTexture = function()
             this.texture = null;
             x3dom.debug.logError("Try updating RenderedTexture without FBO initialized!");
         }
+        if (this.texture) {
+            this.texture.ready = true;
+        }
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
 	{
@@ -240,6 +247,7 @@ x3dom.Texture.prototype.updateTexture = function()
 		}
         this.texture.width  = tex._vf.image.width;
         this.texture.height = tex._vf.image.height;
+        this.texture.ready = true;
 		
 		var pixelArr = tex._vf.image.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
@@ -255,6 +263,9 @@ x3dom.Texture.prototype.updateTexture = function()
         gl.texImage2D(this.type, 0, this.format, 
                       tex._vf.image.width, tex._vf.image.height, 0, 
                       this.format, gl.UNSIGNED_BYTE, pixels);
+        if (this.genMipMaps) {
+            gl.generateMipmap(this.type);
+        }
 		gl.bindTexture(this.type, null);
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
@@ -301,7 +312,11 @@ x3dom.Texture.prototype.updateTexture = function()
 		{	
 			gl.bindTexture(that.type, that.texture);
 			gl.texImage2D(that.type, 0, that.format, that.format, gl.UNSIGNED_BYTE, tex._video);
+            if (that.genMipMaps) {
+                gl.generateMipmap(that.type);
+            }
 			gl.bindTexture(that.type, null);
+            that.texture.ready = true;
 			doc.needRender = true;
 		};
 		
