@@ -359,10 +359,10 @@ x3dom.registerNodeType(
                         this.uniformFloatWeightConstant2.fieldChanged("value");
                         break;
                     case 'weightFunction1':
-                        //Reload node
+                        //TODO: Reload node
                         break;
                     case 'weightFunction2':
-                        //reload node
+                        //TODO: Reload node
                         break;
                 }
             },
@@ -1223,14 +1223,14 @@ x3dom.registerNodeType(
                     case 'surfaceValues':
                         this.uniformFloatArraySurfaceValues._vf.value = this._vf.surfaceValues;
                         this.uniformFloatArraySurfaceValues.fieldChanged("value");
-                        //Reload Node
+                        //TODO: Reload node
                         break;
                     case 'surfaceTolerance':
                         this.uniformFloatSurfaceTolerance._vf.value = this._vf.surfaceTolerance;
                         this.uniformFloatSurfaceTolerance.fieldChanged("value");
                         break;
                     case 'contourStepSize':
-                        //Reload node
+                        //TODO: Reload node
                         break;
                 }
             },
@@ -1984,8 +1984,8 @@ x3dom.registerNodeType(
                 if (fieldName === 'intensityThreshold') {
                     this.uniformIntensityThreshold._vf.value = this._vf.intensityThreshold;
                     this.uniformIntensityThreshold.fieldChanged("value");
-                }else if(fieldname === 'type'){
-                    //Reload node
+                }else if(fieldName === 'type'){
+                    //TODO: Reload node
                 }
             },
 
@@ -2130,7 +2130,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName){
                 if (fieldName === "numberOfMaxSegments" || fieldname === "segmentIdentifiers") {
-                    //Reload node   
+                    //TODO: Reload node   
                 }
             },
 
@@ -2645,7 +2645,7 @@ x3dom.registerNodeType(
                         this.uniformBoolShadows.fieldChanged("value");
                         break;
                     default:
-                        //Reload node
+                        //TODO: Reload node
                         break;
                 }
             },
