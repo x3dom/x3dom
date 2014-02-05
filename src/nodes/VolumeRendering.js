@@ -376,7 +376,7 @@ x3dom.registerNodeType(
                         volumeDataParent = volumeDataParent._parentNodes[0];
                     }
                     if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][OpacityMapVolumeStyle] Not VolumeData parent found!");
+                        x3dom.debug.logError("[VolumeRendering][BlendVolumeStyle] Not VolumeData parent found!");
                         volumeDataParent = null;
                     }
 
