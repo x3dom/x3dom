@@ -179,16 +179,17 @@ x3dom.registerNodeType(
                                 app._dirty[cf] = true;
                             }
                         }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
-                            if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
-                                Array.forEach(app._parentNodes, function(shape){
-                                    shape._dirty.texture = true;
-                                });
-                            }
-                        }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
-                            if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
-                                app._dirty.texture = true;
+                        else if (x3dom.nodeTypes.X3DVolumeDataNode != undefined){
+                            if(x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
+                                if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
+                                    Array.forEach(app._parentNodes, function(shape){
+                                        shape._dirty.texture = true;
+                                    });
+                                }
+                            }else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
+                                if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
+                                    app._dirty.texture = true;
+                                }
                             }
                         }
                     });
