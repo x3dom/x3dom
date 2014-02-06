@@ -142,6 +142,7 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
+                    this._nameSpace.doc._viewarea.resetNavHelpers();
                 }
                 else if (fieldName == "fieldOfView" ||
                          fieldName == "zNear" || fieldName == "zFar") {
@@ -169,11 +170,8 @@ x3dom.registerNodeType(
             },
 
             resetView: function() {
-                var viewarea = this._nameSpace.doc._viewarea;
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix()).inverse();
-                viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
-                viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
             },
             
             getNear: function() {
@@ -274,12 +272,12 @@ x3dom.registerNodeType(
                 else if (this._lastAspect != aspect)
                 {
                     this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
+                    this._lastAspect = aspect;
                 }
 
                 // also needed for being able to ask for near and far
                 this._zNear = znear;
                 this._zFar = zfar;
-                this._lastAspect = aspect;
 
                 return this._projMatrix;
             }

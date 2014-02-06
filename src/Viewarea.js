@@ -983,11 +983,16 @@ x3dom.Viewarea.prototype.resetView = function()
         this._scene.getViewpoint().resetView();
     }
 
+    this.resetNavHelpers();
+    navi._heliUpdated = false;
+};
+
+x3dom.Viewarea.prototype.resetNavHelpers = function()
+{
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
     this._needNavigationMatrixUpdate = true;
-    navi._heliUpdated = false;
 };
 
 x3dom.Viewarea.prototype.uprightView = function()
