@@ -169,8 +169,11 @@ x3dom.registerNodeType(
             },
 
             resetView: function() {
+                var viewarea = this._nameSpace.doc._viewarea;
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix()).inverse();
+                viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
+                viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
             },
             
             getNear: function() {
