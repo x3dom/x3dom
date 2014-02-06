@@ -394,6 +394,10 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";
             }
+
+            shader += "ambient = clamp(ambient, 0.0, 1.0);\n";
+            shader += "diffuse = clamp(diffuse, 0.0, 1.0);\n";
+            shader += "specular = clamp(specular, 0.0, 1.0);\n";
         }
 		
 		//Textures & blending

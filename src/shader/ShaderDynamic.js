@@ -595,10 +595,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                                     "light"+l+"_BeamWidth, " +
                                     "light"+l+"_CutOffAngle, " +
                                     "normal, eye);\n";
+                shader += "   ads = clamp(ads, 0.0, 1.0);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";
             }
+
+            shader += "ambient = clamp(ambient, 0.0, 1.0);\n";
+            shader += "diffuse = clamp(diffuse, 0.0, 1.0);\n";
+            shader += "specular = clamp(specular, 0.0, 1.0);\n";
         }
 		
 		//Specularmap
