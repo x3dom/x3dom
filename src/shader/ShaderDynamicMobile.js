@@ -407,7 +407,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragColor.rgb = (emissiveColor + specular*specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		} else {
-			shader += "fragColor.rgb = (emissiveColor + ambient*rgb + diffuse*rgb + specular*specularColor);\n";
+			shader += "fragColor.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * rgb + specular*specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		}
 	} else {
@@ -513,7 +513,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 				shader += "color.a *= texColor.a;\n";
 			}
 		} else {
-			shader += "color.rgb += fragAmbient*texColor.rgb + fragDiffuse*texColor.rgb;\n";
+			shader += "color.rgb += clamp(fragAmbient + fragDiffuse, 0.0, 1.0) * texColor.rgb;\n";
 			shader += "color.a *= texColor.a;\n";
 		}
 	} 
@@ -526,7 +526,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 	}
 	
 	//Output
-	shader += "gl_FragColor = color;\n";
+	shader += "gl_FragColor = clamp(color, 0.0, 1.0);\n";
 	
 	//End of shader
 	shader += "}\n";

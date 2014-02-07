@@ -595,7 +595,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                                     "light"+l+"_BeamWidth, " +
                                     "light"+l+"_CutOffAngle, " +
                                     "normal, eye);\n";
-                shader += "   ads = clamp(ads, 0.0, 1.0);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";
@@ -632,17 +631,17 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "color.a *= texColor.a;\n";
 			}
 			if(properties.BLENDING){
-				shader += "color.rgb = (emissiveColor + ambient*color.rgb + diffuse*color.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * color.rgb + specular*specularColor);\n";
 				if(properties.CUBEMAP) {
 					shader += "color.rgb = mix(color.rgb, texColor.rgb, vec3(0.75));\n";
 				} else {
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 			}else{
-				shader += "color.rgb = (emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * texColor.rgb + specular*specularColor);\n";
 			}
 		}else{
-			shader += "color.rgb = (emissiveColor + ambient*color.rgb + diffuse*color.rgb + specular*specularColor);\n";
+			shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * color.rgb + specular*specularColor);\n";
 		}
 		
 	} else {
@@ -681,6 +680,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	}
 
     //Output the gamma encoded result.
+    shader += "color = clamp(color, 0.0, 1.0);\n";
     shader += "gl_FragColor = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
 	
 	//End Of Shader

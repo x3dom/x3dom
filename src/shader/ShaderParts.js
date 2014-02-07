@@ -306,8 +306,8 @@ x3dom.shader.light = function(numLights) {
 					"   }\n" +
 					
 					"   vec3  H = normalize( L + V );\n" +
-					"   float NdotL = max(0.0, dot(L, N));\n" +
-					"   float NdotH = max(0.0, dot(H, N));\n" +
+					"   float NdotL = clamp(dot(L, N), 0.0, 1.0);\n" +
+					"   float NdotH = clamp(dot(H, N), 0.0, 1.0);\n" +
 					
 					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
