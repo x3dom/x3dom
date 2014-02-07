@@ -163,7 +163,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                     version = "dev";
                 }
                 else {
-                    version = x3dom.versionInfo.version.substr(3);
+                    //Get modification number
+                    var modification = test.substr(test.length-1);
+
+                    //Check if modification number is greater than 0
+                    if(modification > 0) {
+                        version = x3dom.versionInfo.version;
+                    } else {
+                        version = x3dom.versionInfo.version.substr(3);
+                    }
                 }
 
                 swf_path = "http://www.x3dom.org/download/" + version + "/x3dom.swf";
