@@ -108,6 +108,11 @@ x3dom.userAgentFeature = {
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
+
+        // set an attribute to show it has been processed
+        x3ds = x3ds.filter(function(x3d) { return x3d.getAttribute('x3domLoaded') !== "true"; });
+        x3ds.forEach(function(x3d) { x3d.setAttribute("x3domLoaded", "true"); });
+
         var w3sg = document.getElementsByTagName('webSG');	// FIXME
 
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
