@@ -107,11 +107,14 @@ x3dom.userAgentFeature = {
         var i,j;  // counters
 
         // Search all X3D elements in the page
-        var x3ds = document.getElementsByTagName('X3D');
+        var x3ds_unfiltered = document.getElementsByTagName('X3D');
+        var x3ds = [];
 
-        // set an attribute to show it has been processed
-        x3ds = x3ds.filter(function(x3d) { return x3d.getAttribute('x3domLoaded') !== "true"; });
-        x3ds.forEach(function(x3d) { x3d.setAttribute("x3domLoaded", "true"); });
+        // check if element already has been processed
+        for (i=0; i < x3ds_unfiltered.length; i++) {
+            if (x3ds_unfiltered[i].hasRuntime === undefined)
+                x3ds.push(x3ds_unfiltered[i]);
+        }
 
         var w3sg = document.getElementsByTagName('webSG');	// FIXME
 
