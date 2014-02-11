@@ -328,14 +328,8 @@ x3dom.userAgentFeature = {
         }
     };
     
-    /** Initializes an <x3d> root element that was added after document load.
-     *
-     *  If there already was an <x3d> element, it needs to be removed before:
-     *  var x3d = document.getElementsByTagName("x3d")[0];
-	 *	x3d.parentNode.removeChild(x3d);
-     */
+    /** Initializes an <x3d> root element that was added after document load. */
     x3dom.reload = function() {
-        onunload();
         onload();
     };
 	

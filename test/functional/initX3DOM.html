@@ -5,17 +5,26 @@
 
 <body>
 <input type="button" value="Create" onclick="addX3D();">
-<div id='container'></div>
+<div id='container0'></div>
+<div id='container1'></div>
+<div id='container2'></div>
 
 <script>
+var i = 0;
 function addX3D()
 {
-    var x3d = document.getElementsByTagName("x3d")[0];
-    if (x3d && x3d.parentNode)
-        x3d.parentNode.removeChild(x3d);
-    
-    document.getElementById('container').innerHTML = 
-    '<x3d id="x3dPreview" showStat="false" showLog="false" width="400px" height="300px">'+
+    if (i >= 3) {
+        var x3d = document.getElementsByTagName("x3d");
+        for (var j=x3d.length-1; j>=0; j--) {
+            var el = x3d[j];
+            if (el && el.parentNode)
+                el.parentNode.removeChild(el);
+        }
+        i = 0;
+    }
+
+    document.getElementById('container'+(i++)).innerHTML =
+    '<x3d id="x3dPreview'+i+'" showStat="false" showLog="false" width="400px" height="300px">'+
       '<scene>'+
         '<viewpoint position="0 0 10"></viewpoint>'+
           '<shape>'+
