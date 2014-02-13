@@ -582,7 +582,6 @@ x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
  */
 x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
 {
-    console.log(obj);
     if (obj && obj._x3domNode)
     {
         if (updateCenterOfRotation === undefined) {
@@ -603,10 +602,12 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
         //TODO: revise separation of "getVolume" and "getCurrentTransform"
         //      for the transform nodes - currently, both "overlap" because
         //      both include the transform's own matrix
+        //      but which is what you usually expect from both methods...
         if (x3dom.isa(obj._x3domNode, x3dom.nodeTypes.X3DTransformNode))
         {
-             min = obj._x3domNode._trafo.inverse().multMatrixPnt(min);
-             max = obj._x3domNode._trafo.inverse().multMatrixPnt(max);
+            var invMat = obj._x3domNode._trafo.inverse();
+            min = invMat.multMatrixPnt(min);
+            max = invMat.multMatrixPnt(max);
         }
 
         this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
