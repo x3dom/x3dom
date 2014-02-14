@@ -179,14 +179,14 @@ x3dom.registerNodeType(
                                 app._dirty[cf] = true;
                             }
                         }
-                        else if (x3dom.nodeTypes.X3DVolumeDataNode != undefined){
-                            if(x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
+                        else if (x3dom.nodeTypes.X3DVolumeDataNode !== undefined) {
+                            if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
                                 if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
                                     Array.forEach(app._parentNodes, function(shape){
                                         shape._dirty.texture = true;
                                     });
                                 }
-                            }else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
+                            } else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
                                 if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
                                     app._dirty.texture = true;
                                 }
@@ -400,16 +400,22 @@ x3dom.registerNodeType(
                     this._clearParents = false;
                 }
 
-                var vbP = this._nameSpace.doc._scene.getViewpoint();
+                var locScene = this._cf.scene.node;
+                var scene = this._nameSpace.doc._scene;
+                var vbP = scene.getViewpoint();
                 var view = this._cf.viewpoint.node;
                 var ret_mat = null;
 
                 if (view === null || view === vbP) {
                     ret_mat = this._nameSpace.doc._viewarea.getViewMatrix();
                 }
+                else if (locScene && locScene !== scene) {
+                    // in case of completely local scene do not transform local viewpoint
+                    ret_mat = view.getViewMatrix()
+                }
                 else {
                     var mat_viewpoint = view.getCurrentTransform();
-                    ret_mat = mat_viewpoint.mult(view.getViewMatrix());
+                    ret_mat = view.getViewMatrix().mult(mat_viewpoint.inverse());
                 }
 
                 var stereoMode = this._vf.stereoMode.toUpperCase();
