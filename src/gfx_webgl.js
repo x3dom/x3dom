@@ -2804,6 +2804,7 @@ x3dom.gfx_webgl = (function () {
 
         var shadowedLights, numShadowMaps;
         var i, j, n, size, sizeAvailable;
+        var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 
         scene.updateVolume();
 		
@@ -2879,7 +2880,6 @@ x3dom.gfx_webgl = (function () {
 			//initialize Data for post processing
 			scene._webgl.ppBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
-			var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);		
 			
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
@@ -2895,7 +2895,18 @@ x3dom.gfx_webgl = (function () {
                     gl.deleteTexture(this._webgl.fbo.tex);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    // TODO: delete fboPingPong objects
                 };
+
+                if (x3dom.isa(rt_tex, x3dom.nodeTypes.RefinementTexture)) {
+                    rt_tex._webgl.positionBuffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
+                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = [];
+                }
             }
 
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
@@ -2940,6 +2951,17 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+
+                if (x3dom.isa(rt_tex, x3dom.nodeTypes.RefinementTexture)) {
+                    rt_tex._webgl.positionBuffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
+                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = [];
+                }
+
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
                                     rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
@@ -3247,10 +3269,86 @@ x3dom.gfx_webgl = (function () {
     };
 
     /*****************************************************************************
+     * Render special PingPong-Pass
+     *****************************************************************************/
+    Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
+        // load next level
+        if (rt._currLoadLevel < rt._vf.loadLevel) {
+            ++rt._currLoadLevel;
+
+            var filename = rt._vf.url[0];
+            var pos = filename.lastIndexOf('.');
+            var ext = (pos >= 0) ? filename.substring(pos + 1) : "";
+            filename = filename.substring(0, pos) + rt._currLoadLevel + "." + ext;
+
+            rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
+                              rt._nameSpace.getURL(filename), false, false, false, false);
+        }
+
+        // TODO; implement real refinement algo! This is only a test...
+        if (!rt._webgl.texture.length || !rt._webgl.texture[0].ready)
+            return;
+
+        // first pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fboPingPong.fbo);
+        this.stateManager.viewport(0, 0, rt._webgl.fboPingPong.width, rt._webgl.fboPingPong.height);
+
+        this.stateManager.disable(gl.BLEND);
+        this.stateManager.disable(gl.CULL_FACE);
+        this.stateManager.disable(gl.DEPTH_TEST);
+
+        gl.clearColor(0, 0, 0, 1);
+        gl.clearDepth(1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        var sp = this.cache.getShader(gl, x3dom.shader.TEXTURE_REFINEMENT);
+
+        this.stateManager.useProgram(sp);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, rt._webgl.positionBuffer);
+        gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(sp.position);
+
+        sp.tex0 = 0;
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture[0]);    // just draw image to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        // second pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fboPingPong.tex);   // draw fbo content (just the image)
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        gl.disableVertexAttribArray(sp.position);
+
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
+    };
+
+    /*****************************************************************************
      * Render RenderedTexture-Pass
      *****************************************************************************/
     Context.prototype.renderRTPass = function (gl, viewarea, rt)
     {
+        // begin special case
+        if (x3dom.isa(rt, x3dom.nodeTypes.RefinementTexture)) {
+            this.renderPingPongPass(gl, viewarea, rt);
+            return;
+        }
+        // end special case
+
         switch (rt._vf.update.toUpperCase()) {
             case "NONE":
                 return;
