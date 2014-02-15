@@ -315,14 +315,12 @@ x3dom.userAgentFeature = {
     };
     
     var onunload = function() {
-        /*
         if (x3dom.canvases) {
             for (var i=0; i<x3dom.canvases.length; i++) {
                 x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
             }
             x3dom.canvases = [];
         }
-        */
     };
     
     /** Initializes an <x3d> root element that was added after document load. */

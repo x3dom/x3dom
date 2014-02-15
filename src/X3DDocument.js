@@ -160,7 +160,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.Scene)) {
                 if (node._webgl) {
-                    node._fgnd = null;
                     node._webgl = null;
                     // TODO; explicitly delete all gl objects
                 }
@@ -227,8 +226,15 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     var sceneNode = runtime.canvas.doc._scene._xmlNode;
 
                     removeX3DOMBackendGraph(sceneNode);
+
                     // also clear corresponding X3DCanvas element
-                    cleanNodeBag(x3dom.canvases, runtime.canvas);
+                    for (var i=0; i<x3dom.canvases.length; i++) {
+                        if (x3dom.canvases[i] === runtime.canvas) {
+                            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+                            x3dom.canvases.splice(i, 1);
+                            break;
+                        }
+                    }
 
                     runtime.canvas.doc._scene = null;
                     runtime.canvas.doc._viewarea = null;
