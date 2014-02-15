@@ -137,6 +137,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture)) {
                 cleanNodeBag(doc._nodeBag.renderTextures, node);
+                if (node._cleanupGLObjects) {
+                    node._cleanupGLObjects();
+                }
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.Texture)) {
                 node.shutdown();    // general texture might have video
@@ -153,6 +156,13 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 // Background may have geometry
                 if (node._cleanupGLObjects) {
                     node._cleanupGLObjects();
+                }
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.Scene)) {
+                if (node._webgl) {
+                    node._fgnd = null;
+                    node._webgl = null;
+                    // TODO; explicitly delete all gl objects
                 }
             }
 
@@ -208,6 +218,26 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
                 if (fromNode && toNode) {
                     fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
+                }
+            }
+            else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
+                var runtime = domNode.runtime;
+
+                if (runtime && runtime.canvas && runtime.canvas.doc && runtime.canvas.doc._scene) {
+                    var sceneNode = runtime.canvas.doc._scene._xmlNode;
+
+                    removeX3DOMBackendGraph(sceneNode);
+                    // also clear corresponding X3DCanvas element
+                    cleanNodeBag(x3dom.canvases, runtime.canvas);
+
+                    runtime.canvas.doc._scene = null;
+                    runtime.canvas.doc._viewarea = null;
+                    runtime.canvas.doc = null;
+                    runtime.canvas = null;
+                    runtime = null;
+
+                    domNode.context = null;
+                    domNode.runtime = null;
                 }
             }
         },

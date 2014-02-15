@@ -67,6 +67,11 @@ x3dom.States = function (x3dElem) {
      *
      */
     this.update = function () {
+        if (!x3dElem.runtime && this.updateMethodID !== undefined) {
+            clearInterval(this.updateMethodID);
+            return;
+        }
+
         var infos = x3dElem.runtime.states.infos;
         var measurements = x3dElem.runtime.states.measurements;
 
@@ -115,7 +120,7 @@ x3dom.States = function (x3dElem) {
         }
     };
 
-    window.setInterval(function () {
+    this.updateMethodID = window.setInterval(function () {
         that.update();
     }, 1000);
 
