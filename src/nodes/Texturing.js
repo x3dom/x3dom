@@ -507,6 +507,27 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### RefinementTexture ### */
+x3dom.registerNodeType(
+    "RefinementTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.RenderedTexture,
+        function (ctx) {
+            x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
+
+            // URL field already defined in parent node, takes this base url,
+            // refinements ending with number of loadLevel are fetched later.
+            // this.addField_MFString(ctx, 'url', []);
+            this.addField_SFInt32(ctx, 'loadLevel', -1);
+
+            this._currLoadLevel = -1;
+        },
+        {
+        }
+    )
+);
+
+
 /* ### PixelTexture ### */
 x3dom.registerNodeType(
     "PixelTexture",
