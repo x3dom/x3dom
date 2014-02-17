@@ -1,0 +1,65 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>geoTypes</title>
+    <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+</head>
+<body>
+<X3D id="x3d" width="800px" height="600px">
+    <Scene>
+        <Viewpoint position="0 0 100"></Viewpoint>
+        <Transform translation="-40 30 0">
+            <Inline url="./binGeo.x3d"></Inline>
+        </Transform>
+        <Transform translation="0 30 0">
+            <Inline url="./binGeoi.x3d"></Inline>
+        </Transform>
+        <Transform translation="40 30 0">
+            <Inline url="./binGeoc.x3d"></Inline>
+        </Transform>
+        <Transform translation="-40 0 0">
+            <Inline url="./binGeopic.x3d"></Inline>
+        </Transform>
+        <Transform translation="0 0 0">
+            <Inline url="./binGeosic.x3d"></Inline>
+        </Transform>
+        <Transform translation="40 0 0">
+            <Inline url="./popGeo.x3d"></Inline>
+        </Transform>
+        <Transform translation="-40 -30 0">
+            <Inline url="./popGeoi.x3d"></Inline>
+        </Transform>
+        <Transform translation="0 -30 0">
+            <Inline url="./popGeoip.x3d"></Inline>
+        </Transform>
+        <Transform translation="40 -30 0">
+            <Inline url="./popGeoipb.x3d"></Inline>
+        </Transform>
+    </Scene>
+</X3D>
+<style>
+    table, th, td{
+        border: 2px solid black;
+        border-collapse:collapse;
+        padding: 25px;
+    }
+</style>
+<table>
+    <tr>
+        <td>binGeo</td>
+        <td>binGeo indexed</td>
+        <td>binGeo compact</td>
+    </tr>
+    <tr>        <td>binGeo compact indexed spherical</td>
+        <td>binGeo compact indexed striplefied</td>
+        <td>popGeo</td>
+    </tr>
+    <tr>        <td>popGeo indexed</td>
+        <td>popGeo indexed spherical</td>
+        <td>popGeo indexed spherical protect-borders</td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>CSS3 3D Transformations</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+	
+<body>
+
+	<style type="text/css">
+
+
+  	  #innerTrans1 {
+  	      -webkit-transform: translate3d(0.2em,0em,0.0em);
+  	      -moz-transform:    translate3d(0.2em,0em,0.0em);
+  	      -ms-transform:     translate3d(0.2em,0em,0.0em);
+  	      transform:         translate3d(0.2em,0em,0.0em);
+          display:block;
+  	  }
+
+  	  #innerTrans2 {
+	      -webkit-transform: rotateZ(45deg);
+	      -moz-transform:    rotateZ(45deg);
+	      -ms-transform:     rotateZ(45deg);
+	      transform:         rotateZ(45deg);
+		  display:block;
+	  }
+
+	</style>
+
+    
+		<x3d id="boxes" showLog='true' width="800px" height="600px">
+			<scene>
+                <viewpoint position="0.48657 -8.56239 9.29259" orientation="0.99756 0.04318 0.05494 0.78553">
+                </viewpoint>
+				<background id='bgnd' transparency='0' skyColor='1 1 1' ></background>
+				<transform id="outerTrans1">
+					<transform id='innerTrans1'>
+						<shape>
+							<appearance>
+								<material diffuseColor='1.0 0.0 0.0'></material>
+							</appearance>
+							<box></box>
+						</shape>
+					</transform>
+                </transform> 
+                <transform id="outerTrans2" >
+					<transform id='innerTrans2'>
+						<transform scale="0.6 0.6 1.5">
+                            <shape>
+                                <appearance>
+                                    <material diffuseColor='0.0 1.0 0.0'></material>
+                                </appearance>
+                                <box></box>
+                            </shape>
+                        </transform>
+					</transform>
+				</transform> 
+			</scene>
+		</x3d>
+	
+</body>
+</html>

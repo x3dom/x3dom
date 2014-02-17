@@ -1,0 +1,24 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Extrusion</title>
+    <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+</head>
+
+<body>
+<X3D id="x3d" showLog="true" width="800px" height="600px">
+    <Scene>
+        <Viewpoint position="8.27960 5.48600 -6.52726" orientation="-0.09645 0.97527 0.19886 2.25791"
+                   zNear="6.65673" zFar="17.51360" description="defaultX3DViewpointNode"></Viewpoint>
+        <Shape>
+            <Appearance>
+                <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' ></Material>
+                <Texture><img src="./x3d_256.jpg" ></Texture></Texture>
+            </Appearance>
+            <Extrusion crossSection='1 1, 1 -1, -1 -1, -1 1, 1 1' scale='1 2 2 1.0' spine='0 0 0, 0 2 0'></Extrusion>
+        </Shape>
+    </Scene>
+</X3D>
+</body>
+</html>

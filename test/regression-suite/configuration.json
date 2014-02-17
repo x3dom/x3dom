@@ -1,0 +1,772 @@
+{
+    "urlPrefix" : "http://localhost:63342/x3dom-testing",
+    "outputPath"  :    "output",
+    "profiles" :
+        [
+            {
+                "name"      : "Chrome",
+                "command"   : "function () { return new webdriver.Builder().withCapabilities(webdriver.Capabilities.chrome()).build();}"
+            },
+            {
+                "name"      : "Firefox",
+                "command"   : "function() { return new webdriver.Builder().withCapabilities(webdriver.Capabilities.firefox()).build();}"
+            }
+        ],
+    "tests" :
+        [
+            {
+                "url"   : "/test/cases/helloX3DWorld/helloX3DWorld.xhtml",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/shadows/shadows.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "document.getElementById('trans').setAttribute('translation', '0 -3 0');document.getElementById('mat1').setAttribute('diffuseColor', '0.2 0 0.7');"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/text/text.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/texture/texture.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/billboard/billboard.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "move_vp();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/cadTeapot/cadTeapot.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "click_body();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/picking/picking.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "x"   :   "430",
+                                "y"   :   "320"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareValue",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "id"      :   "test-result",
+                                "value"     :   "1.1332057369"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/canvas/canvas.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteDrag",
+                            "params"    :
+                            {
+                                "target"       :   "myCanvas",
+                                "x"   :   "10 248",
+                                "y"   :   "10 248"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/surfaceShader/surfaceShader.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/cubemap/cubemap.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/concave/concave.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/cssTransforms/cssTransforms.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/defUse/defUse.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/changeShaderAndDOM/changeShaderAndDOM.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "changeShader();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "changeShader();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/elevationGrid/elevationGrid.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/extrusion/extrusion.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoPrim2D/geoPrim2D.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "1000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoPrim3D/geoPrim3D.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "1000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/routes/routes.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "rotor();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "rotor();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoTypes/geoTypes.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "4000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/fitting/fitting.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "fitBox();"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "fitAll();"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "fitSphere();"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/chaser/chaser.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "505",
+                                "y"     :   "257"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "201",
+                                "y"     :   "389"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/fog/fog.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoElevationGrid/geoElevationGrid.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/imageFormats/imageFormats.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"  :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/coordinateInterpolator/coordinateInterpolator.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geospatial/geospatial.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/reload/reload.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "addX3D();"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "addX3D();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/inlineEvents/inlineEvents.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "1000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "test();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/lightRadius/lightRadius.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            }
+        ]
+}
+

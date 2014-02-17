@@ -1,0 +1,84 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>test</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+       
+<body>
+
+	    <X3D id="x3d" xmlns="http://www.web3d.org/specifications/x3d-namespace"  showLog='true' width='800px' height='600px'>
+			<scene>
+            	<Background skyColor='0 0 0' ></Background>
+             
+                <transform translation="-4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPlane" diffuseColor='yellow'></material>
+                      <imageTexture url='./x3d_256.jpg' ></imageTexture>
+                    </appearance>
+                    <Plane id="testPlane" size ='1 1' subdivision='20 20' ></Plane>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorSphere" diffuseColor='yellow'></material>
+                      <imageTexture url='./x3d_256.jpg' ></imageTexture>
+                    </appearance>
+                    <Sphere id="testSphere" radius ='1' subdivision='30 30' ></Sphere>
+                  </shape>
+                </transform>
+                
+                <transform translation="4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorTorus" diffuseColor='yellow'></material>
+                      <imageTexture url='./x3d_256.jpg' ></imageTexture>
+                    </appearance>
+                    <Torus id="testTorus" innerRadius = '0.3' outerRadius = '0.5' subdivision='24 24' ></Torus>
+                  </shape>
+                </transform>
+                
+                <transform translation="-4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCone" diffuseColor='yellow'></material>
+                      <imageTexture url='./x3d_256.jpg' ></imageTexture>
+                    </appearance>
+                    <Cone id="testCone" height='2' bottomRadius = '0.5' bottom = 'true' subdivision='8' ></Cone>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCylinder" diffuseColor='yellow'></material>
+                      <imageTexture url='./x3d_256.jpg' ></imageTexture>
+                    </appearance>
+                    <Cylinder id="testCylinder" radius = '0.5' height='1' bottom = 'true' top = 'true' subdivision='8' ></Cylinder>
+                  </shape>
+                </transform>
+                            
+                 <transform translation="3 -3 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      </Appearance>
+                      <IndexedFaceSet id="testIndexedFaceSet" creaseAngle='3.14' coordIndex='0 1 2 -1  2 1 3  -1'>
+                                       
+                       	<Coordinate id="testIndexedFaceSetCoordinate" point='0 0 0   1 0 0   0 1 0  1 1 0'></Coordinate>
+                        <Color id="testIndexedFaceSetColor" color='1 0 1  0 1 1  0 0 1  1 0 0'></Color>
+                        <TextureCoordinate id="testIndexedFaceSetTextureCoordinate" point='1 1  1 1  0.7 0.3  1 1  '></TextureCoordinate>
+                        <Normal id="testIndexedFaceSetNormal" vector='0 0 1 0 0 1  0 0 1 0 0 1'></Normal>
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform>
+               
+ 			</scene>
+        </X3D>
+
+</body>
+</html>

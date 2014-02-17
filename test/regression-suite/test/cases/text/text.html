@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <title>Shadows</title>
+</head>
+<body>
+    <x3d id="x3d" width="800px" height="600px">
+    <scene>
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0.5 0.5 0.5'></background>
+      <shape id="the_shape">
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='Hello World' solid='false'>
+            <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
+            <fontstyle family="'TYPEWRITER' 'Orbitron'" style="BOLDITALIC" justify="MIDDLE" size="1" leftToRight="true"></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+</body>
+</html>
