@@ -13,14 +13,13 @@
  * @namespace Namespace container for x3dom objects.
  */
 var x3dom = {
-    canvases: []
-};
+    canvases : [],
 
-x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
-x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
-x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
-x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
-// <<<<<<<<<<<<<
+    x3dNS    : 'http://www.web3d.org/specifications/x3d-namespace',
+    x3dextNS : 'http://philip.html5.org/x3d/ext',
+    xsltNS   : 'http://www.w3.org/1999/XSL/x3dom.Transform',
+    xhtmlNS  : 'http://www.w3.org/1999/xhtml'
+};
 
 /** @namespace the x3dom.nodeTypes namespace. */
 x3dom.nodeTypes = {};
@@ -62,7 +61,7 @@ x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     var name = (node.nodeType === Node.ELEMENT_NODE && node.localName) ? node.localName.toLowerCase() : null;
     return (name && (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[name] ||
-            name == "x3d" || name == "websg" || name == "scene" || name == "route"));
+            name == "x3d" || name == "websg" || name == "route"));
 };
 
 /*

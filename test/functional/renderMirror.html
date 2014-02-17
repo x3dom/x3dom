@@ -104,54 +104,9 @@
             <shape>
               <plane DEF='node' size='8 8'></plane>
               <appearance>
-                <renderedTexture id='FBO' update='always' dimensions='1024 1024 4' repeatS='false' repeatT='false'>
-                  <plane USE='node' containerField='excludeNodes'></plane>
-                  <background USE='back' containerField='background'></background>
-				  <group USE="root" containerField="scene"></group>
-                </renderedTexture>
-                <composedShader>
-                  <field name='tex' type='SFInt32' value='0'></field>
-                  <shaderPart>
-					attribute vec3 position;
-					attribute vec3 normal;
-					uniform mat4 modelViewMatrix;
-					uniform mat4 modelViewProjectionMatrix;
-					uniform vec3 bgCenter;
-					uniform vec3 bgSize;
-					uniform float bgPrecisionMax;
-					uniform float bgPrecisionNorMax;
-					varying vec2 fragTexcoord;
-					
-					void main()
-					{
-						vec4 vertex = vec4(bgCenter + bgSize * position / bgPrecisionMax, 1.0);
-						
-						vec4 pos = modelViewMatrix * vertex;
-						
-						gl_Position = modelViewProjectionMatrix * vertex;
-						
-						vec3 eye = normalize(pos.xyz);
-						vec3 norm = normalize(normal / bgPrecisionNorMax);
-						
-						vec3 refl = reflect(eye, norm);
-						float m = 0.5 * sqrt( dot(refl, refl) );
-						refl = refl / m + 0.5;
-						
-						fragTexcoord = refl.xy;	
-					}
-                  </shaderPart>
-                  <shaderPart type='FRAGMENT'>
-				    precision highp float;
-					
-					uniform sampler2D tex;
-					varying vec2 fragTexcoord;
-					
-					void main()
-					{
-						gl_FragColor = texture2D(tex, fragTexcoord);
-					}
-                  </shaderPart>
-                </composedShader>
+                <MirrorTexture DEF='mirror' id='mirror' viewOffset="0.0 0.0 0.0" mirrorScale='10.0'>
+                    <background USE='back'></background>
+                </MirrorTexture>
               </appearance>
             </shape>
         </transform>
@@ -170,33 +125,6 @@
     var runtime = null;
     var rt = null;
     var lastW, lastH;
-
-    document.onload = function ()
-    {
-        runtime = document.getElementById('x3dElement').runtime;
-        rt = document.getElementById('FBO');
-
-        lastW = +runtime.getWidth();
-        lastH = +runtime.getHeight();
-
-        var hw = Math.round(lastW / 2);
-        rt.setAttribute('dimensions',  hw + ' ' + lastH + ' 4');
-
-        runtime.exitFrame = function ()
-        {
-            var w = +runtime.getWidth();
-            var h = +runtime.getHeight();
-
-            if (w != lastW || h != lastH)
-            {
-                var half = Math.round(w / 2);
-                rt.setAttribute('dimensions',  half + ' ' + h + ' 4');
-
-                lastW = w;
-                lastH = h;
-            }
-        };
-    };
 </script>
   </body>
 </html>

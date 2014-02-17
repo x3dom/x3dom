@@ -626,7 +626,6 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
 
 		property.CSHADER          = appearance._shader._id; //shape._objectID;
-        console.log(property.CSHADER);
 	}
     else if (geometry) {
 

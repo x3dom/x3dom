@@ -57,10 +57,8 @@ x3dom.registerNodeType(
                         x = Math.sin(beta);
                         z = -Math.cos(beta);
 
-                        if (topRadius > x3dom.fields.Eps) {
-                            px = x * topRadius + this._vf.xoff;
-                            pz = z * topRadius + this._vf.yoff;
-                        }
+                        px = x * topRadius + this._vf.xoff;
+                        pz = z * topRadius + this._vf.yoff;
 
                         this._mesh._positions[0].push(px, height / 2, pz);
                         this._mesh._normals[0].push(x / nlen, incl / nlen, z / nlen);
