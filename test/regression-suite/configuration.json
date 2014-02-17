@@ -326,7 +326,7 @@
                             "type"      :   "Wait",
                             "params"    :
                             {
-                                "time"       :   "1000"
+                                "time"       :   "1200"
                             }
                         },
                         {
@@ -346,7 +346,7 @@
                             "type"      :   "Wait",
                             "params"    :
                             {
-                                "time"       :   "1000"
+                                "time"       :   "1200"
                             }
                         },
                         {
