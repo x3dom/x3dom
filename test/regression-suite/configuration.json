@@ -1,5 +1,5 @@
 {
-    "urlPrefix" : "http://localhost:63342/x3dom-testing",
+    "urlPrefix" : "http://localhost:63342/x3dom/test/regression-suite",
     "outputPath"  :    "output",
     "profiles" :
         [
@@ -14,19 +14,6 @@
         ],
     "tests" :
         [
-            {
-                "url"   : "/test/cases/helloX3DWorld/helloX3DWorld.xhtml",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
             {
                 "url"   : "/test/cases/shadows/shadows.html",
                 "steps" :
