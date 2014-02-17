@@ -142,7 +142,10 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
-                    this._nameSpace.doc._viewarea.resetNavHelpers();
+                    if(this._nameSpace.doc._viewarea)
+                    {
+                      this._nameSpace.doc._viewarea.resetNavHelpers();
+                    }
                 }
                 else if (fieldName == "fieldOfView" ||
                          fieldName == "zNear" || fieldName == "zFar") {
