@@ -10,7 +10,7 @@
 	<h1>Render Texture</h1>
     
 	<div class="group">
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='512px' height='512px'>
+    <X3D id='someUniqueId' showStat='true' showLog='true' width='512px' height='512px'>
       <Scene DEF='scene'>
         <Viewpoint id='view1' position='0 0 12'></Viewpoint>
         <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
@@ -47,10 +47,11 @@
             <Shape DEF='aNode'>
               <IndexedFaceSet solid="false" coordIndex='0 1 2 3 -1'>
                 <Coordinate point='-4 -4 0, 4 -4 0, 4 4 0, -4 4 0'></Coordinate>
-                <TextureCoordinate point='1 1 0 1 0 0 1 0'></TextureCoordinate>
+                <TextureCoordinate point='0 1, 1 1, 1 0, 0 0'></TextureCoordinate><!-- y flipped -->
               </IndexedFaceSet>
               <Appearance DEF='rtApp'>
-                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false' showNormals="true">
+                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' 
+								 repeatS='false' repeatT='false' >
                   <Shape USE='aNode' containerField='excludeNodes' ></Shape>
                   <Background USE='back' containerField='background' ></Background>
                   <Viewpoint DEF='view3' containerField='viewpoint' ></Viewpoint>

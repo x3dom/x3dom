@@ -31,6 +31,12 @@
         
         var mouseMoved = function(event)
         {
+            //offsetX / offsetY polyfill for FF
+            var target = event.target || event.srcElement;
+            var rect = target.getBoundingClientRect();
+            event.offsetX = event.clientX - rect.left;
+            event.offsetY = event.clientY - rect.top;
+        
             if (lastMouseX === -1)
             {
                 lastMouseX = event.offsetX;

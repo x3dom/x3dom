@@ -2889,8 +2889,13 @@ x3dom.gfx_webgl = (function () {
                 rt_tex = rentex[rtl_i];
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0],
-                    rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+
+                rt_tex._cleanupGLObjects = function() {
+                    gl.deleteTexture(this._webgl.fbo.tex);
+                    gl.deleteFramebuffer(this._webgl.fbo.fbo);
+                    gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                };
             }
 
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
@@ -2923,6 +2928,15 @@ x3dom.gfx_webgl = (function () {
                     continue;
 
                 rt_tex.invalidateGLObject();
+                if (rt_tex._cleanupGLObjects)
+                    rt_tex._cleanupGLObjects();
+                else
+                    rt_tex._cleanupGLObjects = function() {
+                        gl.deleteTexture(this._webgl.fbo.tex);
+                        gl.deleteFramebuffer(this._webgl.fbo.fbo);
+                        gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    };
+
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
