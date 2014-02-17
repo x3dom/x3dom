@@ -4,7 +4,9 @@
 var pathes = [
     "../../",
     "../../../x3dom/",
-    "../../../../x3dom/"
+    "../../../../x3dom/",
+    "../../../../"
+
 ];
 
 var packages = "tools/packages.json";
@@ -41,7 +43,7 @@ function send_xhr(path){
                 //this is only for tests
                 document.write("<script src=\""+ path + "test/functional/media/js/tests.js\"></script>");
             }else{
-                console.error('xhr status is not 200 on: ' + path);
+                //console.error('xhr status is not 200 on: ' + path);
 				if (i < pathes.length) {
 					send_xhr(pathes[i++]);
 				}
