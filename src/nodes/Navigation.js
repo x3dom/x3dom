@@ -71,6 +71,10 @@ x3dom.registerNodeType(
                 return new x3dom.fields.SFVec3f(0, 0, 0);
             },
 
+            setCenterOfRotation: function(cor) {
+                this._vf.centerOfRotation.setValues(cor);   // method overwritten by Viewfrustum
+            },
+
             getFieldOfView: function() {
                 return 1.57079633;
             },
@@ -407,6 +411,10 @@ x3dom.registerNodeType(
             getCenterOfRotation: function() {
                 return this._centerOfRotation;  // this field is only a little helper for examine mode
             },
+
+            setCenterOfRotation: function(cor) {
+                this._centerOfRotation.setValues(cor);   // update internal helper field
+            },
             
             getViewMatrix: function() {
                 return this._viewMatrix;
@@ -492,6 +500,10 @@ x3dom.registerNodeType(
                         case 'helicopter':
                             this._heliUpdated = false;
                             break;
+                        case "turntable":
+                            this._nameSpace.doc._viewarea.initMouseState();
+                            this._nameSpace.doc._viewarea.initTurnTable(this);
+                            break;
                         default:
                             break;
                     }
@@ -517,6 +529,18 @@ x3dom.registerNodeType(
                     case 'helicopter':
                         if (oldType !== navType) {
                             this._heliUpdated = false;
+                        }
+                        break;
+                    case "turntable":
+                        if (oldType !== navType) {
+                            if (viewarea) {
+                                viewarea.initMouseState();
+                                viewarea.initTurnTable(this);
+                            }
+                            else {
+                                this._nameSpace.doc._viewarea.initMouseState();
+                                this._nameSpace.doc._viewarea.initTurnTable(this);
+                            }
                         }
                         break;
                     default:

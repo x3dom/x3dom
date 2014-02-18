@@ -937,24 +937,23 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
     var viewpoint = this._scene.getViewpoint();
     var fov = viewpoint.getFieldOfView();
 
-    var tanfov2 = Math.tan(fov / 2.0);
-
     var viewmat = x3dom.fields.SFMatrix4f.copy(this.getViewMatrix());
 
     var rightDir = new x3dom.fields.SFVec3f(viewmat._00, viewmat._01, viewmat._02);
     var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
     var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
 
+    var tanfov2 = Math.tan(fov / 2.0);
     var dist = bsr / tanfov2;
-    var lookAt = center;
-    var eyePos = lookAt.add(viewDir.multiply(dist));
+
+    var eyePos = center.add(viewDir.multiply(dist));
 
     viewmat._03 = -rightDir.dot(eyePos);
     viewmat._13 = -upDir.dot(eyePos);
     viewmat._23 = -viewDir.dot(eyePos);
 
     if (updateCenterOfRotation) {
-        viewpoint._vf.centerOfRotation = center;
+        viewpoint.setCenterOfRotation(center);
     }
 
     this.animateTo(viewmat, viewpoint);
@@ -1129,6 +1128,29 @@ x3dom.Viewarea.prototype.initMouseState = function()
     this._needNavigationMatrixUpdate = true;
 };
 
+x3dom.Viewarea.prototype.initTurnTable = function(navi)
+{
+    var currViewMat = this.getViewMatrix();
+
+    var viewpoint = this._scene.getViewpoint();
+    var center = x3dom.fields.SFVec3f.copy(viewpoint.getCenterOfRotation());
+
+    this._flyMat = currViewMat.inverse();
+
+    this._from = this._flyMat.e3();
+    //this._at = this._from.subtract(this._flyMat.e2());
+    this._at = center;
+    this._up = this._flyMat.e1();
+
+    this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+    this._flyMat = this.calcOrbit(0, 0, navi);
+
+    var dur = 0.2 / navi._vf.speed;   // fly to pivot point
+    this.animateTo(this._flyMat.inverse(), viewpoint, dur);
+
+    this.resetNavHelpers();
+};
+
 x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 {
     this._needNavigationMatrixUpdate = true;
@@ -1147,26 +1169,9 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._isMoving = false;
 
     var navi = this._scene.getNavigationInfo();
-    var navType = navi.getType();
 
-    if (navType === "turntable")
-    {
-        var currViewMat = this.getViewMatrix();
-
-        var viewpoint = this._scene.getViewpoint();
-        var center = x3dom.fields.SFVec3f.copy(viewpoint.getCenterOfRotation());
-
-        this._flyMat = currViewMat.inverse();
-
-        this._from = this._flyMat.e3();
-        //this._at = this._from.subtract(this._flyMat.e2());
-        this._at = center;
-        this._up = this._flyMat.e1();
-
-        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
-
-        var dur = 0.2 / navi._vf.speed;   // fly to pivot point
-        this.animateTo(this._flyMat.inverse(), viewpoint, dur);
+    if (navi.getType() === "turntable") {
+        this.initTurnTable(navi);
     }
 };
 
@@ -1325,12 +1330,7 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 
     var viewpoint = this._scene.getViewpoint();
 
-    if (viewpoint._vf.centerOfRotation) {
-        viewpoint._vf.centerOfRotation.setValues(this._pick);
-    }
-    else {
-        viewpoint._centerOfRotation.setValues(this._pick);  // Viewfrustum
-    }
+    viewpoint.setCenterOfRotation(this._pick);
     x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
 
     var mat = this.getViewMatrix().inverse();
@@ -1443,7 +1443,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
     var dx = x - this._lastX;
     var dy = y - this._lastY;
-    var d, vec, mat = null;
+    var d, vec, cor, mat = null;
     var alpha, beta;
 
     buttonState = ((navRestrict & buttonState) != buttonState) ? navRestrict : buttonState;
@@ -1505,46 +1505,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             alpha = (dy * 2 * Math.PI) / this._height;
             beta = (dx * 2 * Math.PI) / this._width;
 
-            this._up   = this._flyMat.e1();
-            this._from = this._flyMat.e3();
-
-            var offset = this._from.subtract(this._at);
-
-            // angle in xz-plane
-            var phi = Math.atan2(offset.x, offset.z);
-
-            // angle from y-axis
-            var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
-
-            phi -= Math.min(beta, 0.1);
-            theta -= Math.min(alpha, 0.1);
-
-            // clamp theta
-            var typeParams = navi.getTypeParams();
-            theta = Math.max(typeParams[2], Math.min(typeParams[3], theta));
-
-            var radius = offset.length();
-
-            // calc new cam position
-            var rSinPhi = radius * Math.sin(theta);
-
-            offset.x = rSinPhi * Math.sin(phi);
-            offset.y = radius  * Math.cos(theta);
-            offset.z = rSinPhi * Math.cos(phi);
-
-            offset = this._at.add(offset);
-
-            // calc new up vector
-            theta -= Math.PI / 2;
-
-            var sinPhi = Math.sin(theta);
-            var cosPhi = Math.cos(theta);
-            var up = new x3dom.fields.SFVec3f(sinPhi * Math.sin(phi), cosPhi, sinPhi * Math.cos(phi));
-
-            if (up.y < 0)
-                up = up.negate();
-
-            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(offset, this._at, up);
+            this._flyMat = this.calcOrbit(alpha, beta, navi);
             viewpoint.setView(this._flyMat.inverse());
         }
         else if (buttonState & 2) //right
@@ -1553,20 +1514,63 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             this._up   = this._flyMat.e1();
-            this._from = this._flyMat.e3();
+            this._from = this._flyMat.e3(); // eye
 
             // zoom in/out
-            var lastDir  = this._from.subtract(this._at);
+            cor = viewpoint.getCenterOfRotation();
+
+            var lastDir  = cor.subtract(this._from);
             var lastDirL = lastDir.length();
+            lastDir = lastDir.normalize();
 
-            var zoomAmount = -d*(dx+dy) / this._height;
+            var zoomAmount = d * (dx + dy) / this._height;
 
-            //maintain minimum distance to prevent orientation flips
-            var newDist = Math.max(lastDirL + zoomAmount, 1.0);
+        /*
+            // maintain minimum distance to prevent orientation flips
+            var newDist = Math.min(zoomAmount, lastDirL - 0.01);
 
-            this._from = this._at.addScaled(lastDir.normalize(), newDist);
+            // move along viewing ray, scaled with zoom factor
+            this._from = this._from.addScaled(lastDir, newDist);
+        */
 
-            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+            // add z offset to look-at position, alternatively clamp
+            var diff = zoomAmount - lastDirL + 0.01;
+            if (diff >= 0) {
+                cor = cor.addScaled(lastDir, diff);
+                viewpoint.setCenterOfRotation(cor);
+            }
+
+            // move along viewing ray, scaled with zoom factor
+            this._from = this._from.addScaled(lastDir, zoomAmount);
+
+            // update camera matrix with lookAt() and invert again
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
+            viewpoint.setView(this._flyMat.inverse());
+        }
+        else if (buttonState & 4) //middle
+        {
+            d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+
+            var tx = -d * dx / this._width;
+            var ty =  d * dy / this._height;
+
+            this._up   = this._flyMat.e1();
+            this._from = this._flyMat.e3(); // eye
+            var s = this._flyMat.e0();
+
+            // add xy offset to camera position for pan
+            this._from = this._from.addScaled(this._up, ty);
+            this._from = this._from.addScaled(s, tx);
+
+            // add xy offset to look-at position
+            cor = viewpoint.getCenterOfRotation();
+            cor = cor.addScaled(this._up, ty);
+            cor = cor.addScaled(s, tx);
+            viewpoint.setCenterOfRotation(cor);
+
+            // update camera matrix with lookAt() and invert
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
             viewpoint.setView(this._flyMat.inverse());
         }
 
@@ -1578,6 +1582,50 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
     this._lastX = x;
     this._lastY = y;
+};
+
+x3dom.Viewarea.prototype.calcOrbit = function (alpha, beta, navi)
+{
+    this._up   = this._flyMat.e1();
+    this._from = this._flyMat.e3();
+
+    var offset = this._from.subtract(this._at);
+
+    // angle in xz-plane
+    var phi = Math.atan2(offset.x, offset.z);
+
+    // angle from y-axis
+    var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
+
+    phi -= Math.min(beta, 0.1);
+    theta -= Math.min(alpha, 0.1);
+
+    // clamp theta
+    var typeParams = navi.getTypeParams();
+    theta = Math.max(typeParams[2], Math.min(typeParams[3], theta));
+
+    var radius = offset.length();
+
+    // calc new cam position
+    var rSinPhi = radius * Math.sin(theta);
+
+    offset.x = rSinPhi * Math.sin(phi);
+    offset.y = radius  * Math.cos(theta);
+    offset.z = rSinPhi * Math.cos(phi);
+
+    offset = this._at.add(offset);
+
+    // calc new up vector
+    theta -= Math.PI / 2;
+
+    var sinPhi = Math.sin(theta);
+    var cosPhi = Math.cos(theta);
+    var up = new x3dom.fields.SFVec3f(sinPhi * Math.sin(phi), cosPhi, sinPhi * Math.cos(phi));
+
+    if (up.y < 0)
+        up = up.negate();
+
+    return x3dom.fields.SFMatrix4f.lookAt(offset, this._at, up);
 };
 
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
