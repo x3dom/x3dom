@@ -160,6 +160,8 @@ Other conventions
   (variables declared in ``for`` loops are accessible in whole function).
   Variables thus should be declared/initialized at beginning of function
 - Use speaking names (verbNoun)
+- methods and variables start with lower-case character, e.g. doStuff()
+- "classes" internally start with upper-case character, e.g. Transform
 - For inspiration:
   http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml
 
