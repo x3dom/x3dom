@@ -135,10 +135,19 @@ x3dom.registerNodeType(
             invalidateGLObject: function ()
             {
                 Array.forEach(this._parentNodes, function (app) {
-                        Array.forEach(app._parentNodes, function (shape) {
+                    Array.forEach(app._parentNodes, function (shape) {
+                        // THINKABOUTME: this is a bit ugly, cleanup more generically
+                        if (x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
                             shape._dirty.texture = true;
-                        });
+                        }
+                        else {
+                            // Texture maybe in MultiTexture or CommonSurfaceShader
+                            Array.forEach(shape._parentNodes, function (realShape) {
+                                realShape._dirty.texture = true;
+                            });
+                        }
                     });
+                });
 
                 this._nameSpace.doc.needRender = true;
             },
@@ -146,14 +155,32 @@ x3dom.registerNodeType(
             parentAdded: function(parent)
             {
                 Array.forEach(parent._parentNodes, function (shape) {
-                    shape._dirty.texture = true;
+                    // THINKABOUTME: this is a bit ugly, cleanup more generically
+                    if (x3dom.isa(shape, x3dom.nodeTypes.Shape)) {
+                        shape._dirty.texture = true;
+                    }
+                    else {
+                        // Texture maybe in MultiTexture or CommonSurfaceShader
+                        Array.forEach(shape._parentNodes, function (realShape) {
+                            realShape._dirty.texture = true;
+                        });
+                    }
                 });
             },
 
             parentRemoved: function(parent)
             {
                 Array.forEach(parent._parentNodes, function (shape) {
-                    shape._dirty.texture = true;
+                    // THINKABOUTME: this is a bit ugly, cleanup more generically
+                    if (x3dom.isa(shape, x3dom.nodeTypes.Shape)) {
+                        shape._dirty.texture = true;
+                    }
+                    else {
+                        // Texture maybe in MultiTexture or CommonSurfaceShader
+                        Array.forEach(shape._parentNodes, function (realShape) {
+                            realShape._dirty.texture = true;
+                        });
+                    }
                 });
             },
 
@@ -702,6 +729,7 @@ x3dom.registerNodeType(
 );
 
 
+// TODO; remove this node, use GeneratedCubeMapTexture instead!!!
 /* ### MirrorRenderedTexture ### */
 x3dom.registerNodeType(
     "MirrorRenderedTexture",
@@ -713,47 +741,9 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'viewOffset', 0, 0, 0);
         },
         {
-            invalidateGLObject: function ()
-            {
-                Array.forEach(this._parentNodes, function (app) {
-                    Array.forEach(app._parentNodes, function (shape) {
-                        if(x3dom.isa(parent, x3dom.nodeTypes.Shape))
-                        {
-                            shape._dirty.texture = true;
-                        }else
-                        {
-                            Array.forEach(shape._parentNodes, function (s) {
-                                s._dirty.texture = true;                                    
-                            });
-                        }
-                    });
-                });
-
-                this._nameSpace.doc.needRender = true;
-            },
-            
-            parentAdded: function(parent)
-            {
-                Array.forEach(parent._parentNodes, function (shape) {
-                    if(x3dom.isa(parent, x3dom.nodeTypes.Shape))
-                    {
-                        shape._dirty.texture = true;
-                    }else
-                    {
-                        Array.forEach(shape._parentNodes, function (s) {
-                            s._dirty.texture = true;                                    
-                        });
-                    }
-                });
-            },
-            
             getViewMatrix: function ()
             {
                 if (this._clearParents && this._cf.excludeNodes.nodes.length) {
-                    // FIXME; avoid recursions cleverer and more generic than this
-                    //        (Problem: nodes in excludeNodes field have this node
-                    //         as first parent, which leads to a recursion loop in
-                    //         getCurrentTransform()
                     var that = this;
 
                     Array.forEach(this._cf.excludeNodes.nodes, function(node) {
@@ -773,7 +763,7 @@ x3dom.registerNodeType(
                 var ret_mat = null;
 
                 if (view === null || view === vbP) {
-                    ret_mat = this._nameSpace.doc._viewarea.getViewMatrix();
+                    ret_mat = this._nameSpace.doc._viewarea.getViewMatrix();    // viewOffset?!
                 }
                 else {
                     // Grab only the translation to pass it to the final transform matrix
@@ -786,21 +776,6 @@ x3dom.registerNodeType(
                     ret_mat = view.getViewMatrix().mult(mat_translate);
                 }
 
-                var stereoMode = this._vf.stereoMode.toUpperCase();
-                if (stereoMode != "NONE") {
-                    var d = this._vf.interpupillaryDistance / 2;
-                    if (stereoMode == "RIGHT_EYE") {
-                        d = -d;
-                    }
-                    var modifier = new x3dom.fields.SFMatrix4f(
-                        1, 0, 0, d,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1
-                    );
-                    ret_mat = modifier.mult(ret_mat);
-                }
-
                 return ret_mat;
             }
         }
@@ -808,6 +783,7 @@ x3dom.registerNodeType(
 );
 
 
+// TODO; use GeneratedCubeMapTexture and move GLSL code to src/shader/ for integration!
 /* ### MirrorTexture ### */
 x3dom.registerNodeType(
     "MirrorTexture",
@@ -820,9 +796,6 @@ x3dom.registerNodeType(
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);  
             this.addField_SFVec3f(ctx, 'viewOffset', 0, 0, 0); 
             this.addField_SFFloat(ctx, 'mirrorScale', 1.0);
-            
-            this._ctx = ctx;
-            this._nameSpace = ctx;
             
             this._faceRTs = [
                 new x3dom.nodeTypes.MirrorRenderedTexture(ctx),
@@ -843,90 +816,83 @@ x3dom.registerNodeType(
             ];
             
             this.scaleField = new x3dom.nodeTypes.Field(ctx);
-            
-            // Orientations for each direction of the cube map
-            // 0 - front, 1 - left, 2 - back, 3 - right, 4 - up, 5 - down
-            var orientations = [
-                [0.0, 1.0, 0.0, 0.0],
-                [0.0, 1.0, 0.0, 1.57],
-                [0.0, 1.0, 0.0, 3.14],
-                [0.0, 1.0, 0.0, 4.71],
-                [1.0, 0.0, 0.0, 1.57],
-                [1.0, 0.0, 0.0, 4.71]
-            ];
-
-            // Initialize RenderedTextures for each face of the cube
-            for(var i = 0; i < this._faceRTs.length; i++)
-            {   
-                this._faceRTs[i]._nameSpace = this._nameSpace;
-                this._faceRTs[i]._vf.update = 'always';
-                this._faceRTs[i]._vf.dimensions = [1024, 1024, 2];
-                this._faceRTs[i]._vf.repeatS = false;
-                this._faceRTs[i]._vf.repeatT = false;
-
-                var vp = new x3dom.nodeTypes.Viewpoint(this._ctx);
-                vp._nameSpace = this._nameSpace;
-                vp._vf.position = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
-                vp.fieldChanged("position");
-                vp._vf.orientation = x3dom.fields.Quaternion.axisAngle(
-                        new x3dom.fields.SFVec3f(
-                            orientations[i][0], 
-                            orientations[i][1], 
-                            orientations[i][2]
-                            ), 
-                        orientations[i][3]
-                        );
-                vp.fieldChanged("orientation");
-                vp._vf.fieldOfView = 1.57;
-                vp.fieldChanged("fieldOfView");
-                vp._vf.zNear = 0.1;
-                vp.fieldChanged("zNear");
-                vp._vf.zFar = 2000.0;
-                vp.fieldChanged("zFar");
-
-                this.addChild(this._faceRTs[i], 'texture');
-                this._faceRTs[i].nodeChanged();
-
-                this._faceRTs[i].addChild(vp, 'viewpoint');
-                vp.nodeChanged();
-
-
-                // Initialize the corresponding fields for the sampler2D shader-objects
-                this.samplerFields[i]._nameSpace = this._nameSpace;
-                this.samplerFields[i]._vf.name = 'mirror' + i;
-                this.samplerFields[i]._vf.type = 'SFInt32';
-                this.samplerFields[i]._vf.value = i;
-            }
-            
-            this.scaleField._nameSpace = this._nameSpace;
-            this.scaleField._vf.name = 'mirrorScale';
-            this.scaleField._vf.type = 'SFFloat';
-            this.scaleField._vf.value = 1.0;
         },
-        {      
-            nodeChanged: function() {            
-                for(var i = 0; i < this._faceRTs.length; i++)
-                {   
-                    this._faceRTs[i]._nameSpace = this._nameSpace;
-                    this._faceRTs[i]._vf.viewOffset = this._vf.viewOffset;
-                    
-                    if(this._cf.background.node)
-                    {
-                        this._faceRTs[i].addChild(this._cf.background.node, 'background');
-                        this._cf.background.node.nodeChanged();
-                    }
-                
-                    this._faceRTs[i].nodeChanged();
-                }
-                
-                this.scaleField._vf.value = this._vf.mirrorScale;
-                this.scaleField.nodeChanged();
-                if(this.scaleField._parentNodes.length > 0)
+        {
+            // nodeChanged is called after subtree is parsed and attached in DOM
+            nodeChanged: function() {
+                if (!this.size())
                 {
-                    this.scaleField._parentNodes[0].nodeChanged();
+                    // Orientations for each direction of the cube map
+                    // 0 - front, 1 - left, 2 - back, 3 - right, 4 - up, 5 - down
+                    var orientations = [
+                        [0.0, 1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0, Math.PI/2],
+                        [0.0, 1.0, 0.0, Math.PI],
+                        [0.0, 1.0, 0.0, 3*Math.PI/2],
+                        [1.0, 0.0, 0.0, Math.PI/2],
+                        [1.0, 0.0, 0.0, 3*Math.PI/2]
+                    ];
+
+                    // Initialize RenderedTextures for each face of the cube
+                    for (var i = 0; i < this._faceRTs.length; i++)
+                    {
+                        this._faceRTs[i]._nameSpace = this._nameSpace;
+                        this._faceRTs[i]._vf.update = 'always';
+                        this._faceRTs[i]._vf.dimensions = [1024, 1024, 2];  // make dynamic!
+                        this._faceRTs[i]._vf.repeatS = false;
+                        this._faceRTs[i]._vf.repeatT = false;
+                        this._faceRTs[i]._vf.viewOffset = this._vf.viewOffset;
+
+                        var vp = new x3dom.nodeTypes.Viewpoint();
+
+                        vp._nameSpace = this._nameSpace;
+                        vp._vf.position = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
+                        vp.fieldChanged("position");
+                        vp._vf.orientation = x3dom.fields.Quaternion.axisAngle(
+                            new x3dom.fields.SFVec3f(
+                                orientations[i][0],
+                                orientations[i][1],
+                                orientations[i][2]
+                            ),
+                            orientations[i][3]
+                        );
+                        vp.fieldChanged("orientation");
+                        vp._vf.fieldOfView = 1.570796;
+                        vp.fieldChanged("fieldOfView");
+                        vp._vf.zNear = 0.1;         // make dynamic
+                        vp.fieldChanged("zNear");
+                        vp._vf.zFar = 5000.0;       // make dynamic
+                        vp.fieldChanged("zFar");
+
+                        this._faceRTs[i].addChild(vp, 'viewpoint');
+                        vp.nodeChanged();
+
+                        if(this._cf.background.node) {
+                            this._faceRTs[i].addChild(this._cf.background.node, 'background');
+                            this._cf.background.node.nodeChanged();
+                        }
+
+                        this.addChild(this._faceRTs[i], 'texture');
+                        this._faceRTs[i].nodeChanged();
+
+                        // Initialize the corresponding fields for the sampler2D shader-objects
+                        this.samplerFields[i]._nameSpace = this._nameSpace;
+                        this.samplerFields[i]._vf.name = 'mirror' + i;
+                        this.samplerFields[i]._vf.type = 'SFInt32';
+                        this.samplerFields[i]._vf.value = i;
+                    }
+
+                    this.scaleField._nameSpace = this._nameSpace;
+                    this.scaleField._vf.name = 'mirrorScale';
+                    this.scaleField._vf.type = 'SFFloat';
+                    this.scaleField._vf.value = 1.0;
+                    this.scaleField._vf.value = this._vf.mirrorScale;
+                    this.scaleField.nodeChanged();
                 }
             },
-            
+
+            // FIXME; shaders don't belong here as this either doesn't work together
+            // with general appearance settings as well as with Flash backend!
             getVertexShaderCode : function()
             {        
                 var shader =  
@@ -955,7 +921,12 @@ x3dom.registerNodeType(
             
             getFragmentShaderCode : function()
             {                
-                var shader =  'precision highp float;\n' +
+                var shader =
+                        "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
+                        " precision highp float;\n" +
+                        "#else\n" +
+                        " precision mediump float;\n" +
+                        "#endif\n\n" +
                         'varying vec3 norm;\n' +
                         'varying vec3 eye;\n' +
                         'varying float eyeLength;\n' +
@@ -1004,61 +975,41 @@ x3dom.registerNodeType(
                 
                 return shader;
             },
-            
+
             parentAdded: function(parent)
             {
-                x3dom.nodeTypes.MultiTexture.superClass.prototype.parentAdded(parent);
-                
-                if(x3dom.isa(parent, x3dom.nodeTypes.Appearance))
-                {
-                    // Add a mirror shader if the parent node is an appearance. 
-                    // Add support for other parent nodes later.                                      
-                    
+                if (x3dom.isa(parent, x3dom.nodeTypes.Appearance)) {
+                    // Add a mirror shader if the parent node is an appearance.
                     // Create shader
-                    var shader = new x3dom.nodeTypes.ComposedShader(this._ctx);
+                    var shader = new x3dom.nodeTypes.ComposedShader();
                     shader._nameSpace = this._nameSpace;
-                    var vertexShader = new x3dom.nodeTypes.ShaderPart(this._ctx);
+                    var vertexShader = new x3dom.nodeTypes.ShaderPart();
                     vertexShader._nameSpace = this._nameSpace;
-                    var fragmentShader = new x3dom.nodeTypes.ShaderPart(this._ctx);
+                    var fragmentShader = new x3dom.nodeTypes.ShaderPart();
                     fragmentShader._nameSpace = this._nameSpace;
-                                        
+
                     vertexShader._vf.type = 'vertex';
                     vertexShader._vf.url[0] = this.getVertexShaderCode();
                     shader.addChild(vertexShader, 'parts');
                     vertexShader.nodeChanged();
-                    
+
                     fragmentShader._vf.type = 'fragment';
                     fragmentShader._vf.url[0] = this.getFragmentShaderCode();
                     shader.addChild(fragmentShader, 'parts');
                     fragmentShader.nodeChanged();
-                    
+
                     // Add field for each sampler2D
-                    for(var i = 0; i < this.samplerFields.length; i++)
+                    for (var i = 0; i < this.samplerFields.length; i++)
                     {
                         shader.addChild(this.samplerFields[i], 'fields');
                         this.samplerFields[i].nodeChanged();
                     }
                     shader.addChild(this.scaleField);
                     this.scaleField.nodeChanged();
-                    
+
                     parent.addChild(shader, 'shaders');
                     shader.nodeChanged();
                 }
-            },
-            
-            getTexture: function(pos) {
-                if (pos >= 0 && pos < this._cf.texture.nodes.length) {
-                    return this._cf.texture.nodes[pos];
-                }
-                return null;
-            },
-			
-            getTextures: function() {
-                    return this._cf.texture.nodes;
-            },
-
-            size: function() {
-                return this._cf.texture.nodes.length;
             },
             
             parentRemoved: function(parent)
