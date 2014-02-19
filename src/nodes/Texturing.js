@@ -518,9 +518,10 @@ x3dom.registerNodeType(
             // URL field already defined in parent node, takes this base url,
             // refinements ending with number of loadLevel are fetched later.
             // this.addField_MFString(ctx, 'url', []);
-            this.addField_SFInt32(ctx, 'loadLevel', -1);
+            this.addField_SFInt32(ctx, 'loadLevel', 1);
+            this.addField_SFString(ctx, 'format', 'jpg');
 
-            this._currLoadLevel = -1;
+            this._currLoadLevel = 0;
         },
         {
         }

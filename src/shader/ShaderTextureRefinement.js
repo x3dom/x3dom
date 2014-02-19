@@ -63,11 +63,36 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
                  " precision mediump float;\n" +
                  "#endif\n\n";
 
-    shader += "uniform sampler2D tex0;\n" +
+    shader += "uniform sampler2D stamp;\n" +
+              "uniform sampler2D lastTex;\n" +
+              "uniform sampler2D curTex;\n" +
+              "uniform int mode;\n" +
+              "uniform float repeatU;\n" +
+              "uniform float repeatV;\n" +
               "varying vec2 fragTexCoord;\n" +
               "\n" +
+              "void init(void);\n" +
+              "void refine(void);\n" +
               "void main(void) {\n" +
-              "    gl_FragColor = texture2D(tex0, fragTexCoord);\n" +
+              "    if (mode == 0) { init(); }\n" +
+              "    else { refine(); }\n" +
+              "}\n" +
+              "\n" +
+              "void init(void) {\n" +
+              "    gl_FragColor = texture2D(curTex, fragTexCoord);\n" +
+              "}\n" +
+              "\n" +
+              "void refine(void) {\n" +
+              "    vec3 red = texture2D(stamp, vec2(repeatU*fragTexCoord.x," +
+              "                                     repeatV*fragTexCoord.y)).rgb;\n" +
+              "    vec3 v1 = texture2D(lastTex, fragTexCoord).rgb;\n" +
+              "    vec3 v2 = texture2D(curTex, fragTexCoord).rgb;\n" +
+              "    if (red.r <= 0.5) {\n" +
+              "        gl_FragColor = vec4(v1.rgb, 1.0);\n" +
+              "    }\n" +
+              "    else {\n" +
+              "        gl_FragColor = vec4(v2.rgb, 1.0);\n" +
+              "    }\n" +
               "}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
