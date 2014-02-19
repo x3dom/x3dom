@@ -1,5 +1,5 @@
 {
-    "urlPrefix" : "http://localhost:63342/x3dom/test/regression-suite",
+    "urlPrefix" : "http://localhost:8080/test/regression-suite",
     "outputPath"  :    "output",
     "profiles" :
         [
@@ -310,6 +310,13 @@
                     [
 
                         {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "1200"
+                            }
+                        },
+                        {
                             "type"      :   "CompareScreenshot",
                             "params"    :
                             {
@@ -579,7 +586,7 @@
                             "params"    :
                             {
                                 "x3d"       :   "x3d",
-                                "time"  :   "1000"
+                                "time"  :   "1200"
                             }
                         },
                         {
@@ -635,7 +642,7 @@
                             "type"      :   "Wait",
                             "params"    :
                             {
-                                "time"       :   "1000"
+                                "time"       :   "1200"
                             }
                         },
                         {
@@ -684,7 +691,7 @@
                             "type"      :   "Wait",
                             "params"    :
                             {
-                                "time"       :   "500"
+                                "time"       :   "1200"
                             }
                         },
                         {
