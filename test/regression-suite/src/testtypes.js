@@ -1,8 +1,9 @@
 var fw = require('./filewriter');
-var gm = require('gm');
-gm.compare = require('./comparemod.js')();
+//var gm = require('gm');
+//gm.compare = require('./comparemod.js')();
 var ts = require('./testsuite');
 var webdriver = require("selenium-webdriver");
+var resemble = require("resemble");
 
 function CompareScreenshot()
 {
@@ -50,67 +51,104 @@ function CompareScreenshot()
         });
     }
 
+
     this.compareImages = function(referenceImagePath, renderedImagePath)
     {
         //console.log(referenceImagePath + " <-> "+renderedImagePath);
-        gm.compare(referenceImagePath, renderedImagePath, 0.0001,
-            function(cerr, isEqual, equality, raw)
+
+        resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
+            var equal = data.misMatchPercentage < 0.01;
+            if(!equal)
             {
-                if(cerr)
-                {
-                    //console.log("Error comparing images: "+cerr);
-                    console.log("Reference Image not found: " + referenceImagePath);
-                    that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": cerr}));
-                }
-                else
-                {
-                    //if not equal render difference image
-                    var diffImage;
-                    if(!isEqual)
+                //write diff
+                var diffImage = renderedImagePath.replace(/(.*\/)(?!(.*\/.*))/i, '$1diff/');
+                var diffImageFolder = diffImage.substring(0, diffImage.lastIndexOf("/"));
+                var buf = new Buffer(data.getImageDataUrl().replace(/^data:image\/png;base64,/,''),'base64');
+                fw.writeFile(diffImage, buf, function(err){
+                    if(err)
                     {
-                        diffImage = renderedImagePath.replace(/(.*\/)(?!(.*\/.*))/i, '$1diff/');
-                        var diffImageFolder = diffImage.substring(0, diffImage.lastIndexOf("/"));
-                        var options = {
-                            highlightStyle: 'Threshold',
-                            highlightColor: 'red', // optional. Defaults to red
-                            file: diffImage // required
-                        };
-
-                        fw.writeFile(diffImageFolder, "", function(err){
-                        if(err)
-                            console.log(err);
-                        else
-                        {
-                            gm.compare(referenceImagePath, renderedImagePath, options, function(cerr)
-                            {
-                                if(cerr)
-                                    console.log(cerr);
-                            });
-                        }
-                        });
+                        console.log("Error writing rendered image: "+ err);
+                        that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
+                        that.context.finishedCallback();
                     }
-
-                    that.context.result.details.push( isEqual ?
+                });
+            }
+            that.context.result.details.push( equal ?
                         new ts.SuccessDetail(
                             {
                                 "context"   : that.context,
-                                "equality"      : equality,
-                                "raw" : raw,
+                                "equality"      : data.misMatchPercentage,
                                 "type" : "CompareScreenshot"
                             }) :
                         new ts.FailureDetail(
                             {
                                 "context"   : that.context,
-                                "equality"      : equality,
-                                "raw" : raw,
+                                "equality"      : data.misMatchPercentage,
                                 "type" : "CompareScreenshot"
-                            }));
+                            }
+                        )
+            );
+            that.context.finishedCallback();
+        });
 
-                }
-                that.context.finishedCallback();
-
-            }
-        );
+//        gm.compare(referenceImagePath, renderedImagePath, 0.0001,
+//            function(cerr, isEqual, equality, raw)
+//            {
+//                if(cerr)
+//                {
+//                    //console.log("Error comparing images: "+cerr);
+//                    console.log("Reference Image not found: " + referenceImagePath);
+//                    that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": cerr}));
+//                }
+//                else
+//                {
+//                    //if not equal render difference image
+//                    var diffImage;
+//                    if(!isEqual)
+//                    {
+//                        diffImage = renderedImagePath.replace(/(.*\/)(?!(.*\/.*))/i, '$1diff/');
+//                        var diffImageFolder = diffImage.substring(0, diffImage.lastIndexOf("/"));
+//                        var options = {
+//                            highlightStyle: 'Threshold',
+//                            highlightColor: 'red', // optional. Defaults to red
+//                            file: diffImage // required
+//                        };
+//
+//                        fw.writeFile(diffImageFolder, "", function(err){
+//                        if(err)
+//                            console.log(err);
+//                        else
+//                        {
+//                            gm.compare(referenceImagePath, renderedImagePath, options, function(cerr)
+//                            {
+//                                if(cerr)
+//                                    console.log(cerr);
+//                            });
+//                        }
+//                        });
+//                    }
+//
+//                    that.context.result.details.push( isEqual ?
+//                        new ts.SuccessDetail(
+//                            {
+//                                "context"   : that.context,
+//                                "equality"      : equality,
+//                                "raw" : raw,
+//                                "type" : "CompareScreenshot"
+//                            }) :
+//                        new ts.FailureDetail(
+//                            {
+//                                "context"   : that.context,
+//                                "equality"      : equality,
+//                                "raw" : raw,
+//                                "type" : "CompareScreenshot"
+//                            }));
+//
+//                }
+//                that.context.finishedCallback();
+//
+//            }
+//        );
     }
 }
 

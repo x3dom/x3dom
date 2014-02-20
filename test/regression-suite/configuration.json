@@ -216,7 +216,6 @@
                 "url"   : "/test/cases/cssTransforms/cssTransforms.html",
                 "steps" :
                     [
-
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
@@ -230,7 +229,13 @@
                 "url"   : "/test/cases/defUse/defUse.html",
                 "steps" :
                     [
-
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "2000"
+                            }
+                        },
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :

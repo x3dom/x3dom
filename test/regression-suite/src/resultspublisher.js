@@ -71,7 +71,7 @@ var ResultsPublisher = function(outputPath)
                     statistics.passed++;
                     if(detail.data.type == "CompareScreenshot") //CompareScreenshot
                     {
-                        resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #94ff86; '>" + step.type + "</h3><div>Difference: " + detail.data.equality + "<br/>" + imagetag + reftag + "<br/>" + detail.data.raw.replace(/\n/g, "<br/>") + "</div></div>";
+                        resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #94ff86; '>" + step.type + "</h3><div>Difference: " + detail.data.equality + "<br/>" + imagetag + reftag + "<br/>" + "</div></div>";
                     }else if(detail.data.type == "CompareValue") //CompareValue
                     {
                         resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #94ff86; '>" + step.type + "</h3><div>Distance: " + detail.data.distance + "<br/>Value: " + detail.data.actualValue + "<br/>Reference: " + detail.data.referenceValue + "</div></div>";
@@ -82,7 +82,7 @@ var ResultsPublisher = function(outputPath)
                     statistics.failed++;
                     if(detail.data.type == "CompareScreenshot") //CompareScreenshot
                     {
-                        resultText += "<div class='accordion' style='width: 500px; '><h3 style='background: none; background-color: #ff7e74;'>" + step.type + "</h3><div>Difference: "+detail.data.equality+"<br/>" + imagetag + reftag + difftag + "<br/>" + detail.data.raw.replace(/\n/g, "<br/>") + "</div></div>";
+                        resultText += "<div class='accordion' style='width: 500px; '><h3 style='background: none; background-color: #ff7e74;'>" + step.type + "</h3><div>Difference: "+detail.data.equality+"<br/>" + imagetag + reftag + difftag + "<br/>" + "</div></div>";
                     }else if(detail.data.type == "CompareValue") //CompareValue
                     {
                         resultText += "<div class='accordion' style='width: 500px; '><h3 style='background: none; background-color: #ff7e74;'>" + step.type + "</h3><div>Distance: " + detail.data.distance + "<br/>Value: " + detail.data.actualValue + "<br/>Reference: " + detail.data.referenceValue + "</div></div>";
