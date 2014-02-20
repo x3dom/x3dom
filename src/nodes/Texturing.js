@@ -514,12 +514,11 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.RenderedTexture,
         function (ctx) {
             x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
-
-            // URL field already defined in parent node, takes this base url,
-            // refinements ending with number of loadLevel are fetched later.
-            // this.addField_MFString(ctx, 'url', []);
-            this.addField_SFInt32(ctx, 'loadLevel', 1);
+            // Maximum level that should be loaded (if GSM smaller than on DSL6000)
             this.addField_SFInt32(ctx, 'maxLevel', 7);
+            this._vf.maxLevel = (this._vf.maxLevel > 7) ? 7 : this._vf.maxLevel;
+            this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
+            // Format of the images of the dataset that should be loaded
             this.addField_SFString(ctx, 'format', 'jpg');
 
             // Additional parameters to control the refinment mechanism on shader
@@ -527,8 +526,15 @@ x3dom.registerNodeType(
             this._repeatV = this._vf.dimensions[1] / 32;
             this._renderedImage = 0;
             this._currLoadLevel = 0;
+            this._loadLevel = 1;
         },
         {
+            nextLevel: function(){
+                if (this._loadLevel < this._vf.maxLevel){
+                    this._loadLevel++;
+                    this._nameSpace.doc.needRender = true;
+                }
+            }
         }
     )
 );

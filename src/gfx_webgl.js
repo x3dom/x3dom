@@ -3286,7 +3286,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         // load next level
-        if (rt._currLoadLevel < rt._vf.loadLevel) {
+        if (rt._currLoadLevel < rt._loadLevel) {
             ++rt._currLoadLevel;
 
             var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
@@ -3376,6 +3376,7 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
         rt._renderedImage++;
         rt._webgl.texture[rt._currLoadLevel].ready = false;
+        rt.nextLevel();
     };
 
     /*****************************************************************************

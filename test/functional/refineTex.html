@@ -16,64 +16,29 @@
         }
     </style>
 
-    <script>
-        $(function(){
-            var spinner = $("#loadlevel").spinner({
-                value: 0,
-                min: 0,
-                max: 7,
-                stop:function(event,ui){
-                    if ($(this).spinner('value') < 0)
-                        $(this).spinner('value', 0);
-                    if ($(this).spinner('value') > 7)
-                        $(this).spinner('value', 7);
-                    document.getElementById("refTex").setAttribute("loadLevel", $(this).spinner('value'));
-
-                }
-            });
-            spinner.spinner("value", 1);
-            spinner.spinner("option", "min", 1);
-            spinner.spinner("option", "max", 7);
-
-
-
-            $( "#accordion" ).accordion({});
-
-            $( "#accordion" ).draggable();
-        });
-    </script>
-
 </head>
        
 <body>
-    <h3>GPUII - GPU-based Image Interlacing</h3>
-	<div class="group">
-        <!------------------------------------------------------------- UI ----------------------------------------------------------------------->
-        <div id="accordion" style="z-index: 10000; width: 200px; font: 65.5% 'Trebuchet MS', sans-serif; position:absolute; left:50px; top:112px;">
-            <h3 style="font-weight: inherit; font-size: 14px;">Parameters</h3>
-            <div style="overflow: hidden;">
-                <div style="float:left; margin-top: 5px; padding-bottom: 15px;  padding-bottom: 15px; border-bottom: #414141 solid 1px;">
-                    <div style="float:left; font-size: 12px; float:left; font-weight: bold; width: 100px; line-height: 20px;">Change the loading level: <br /></div>
-                    <input id="loadlevel" style="width: 25px; float:left; height: 35px; font: 130% 'Trebuchet MS', sans-serif;" />
-                </div>
-            </div>
-        </div>
+    <h3>GPUII - GPU-based Image Interlacing using X3DOM's RefinementTexture</h3>
 
         <!------------------------------------------------------------- X3DOM -------------------------------------------------------------------->
-		<X3D showStat="true" showLog="true" style="width: 100%; margin-left: 4px; height: 60%;">
+		<X3D showStat="false" showLog="false" style="width: 100%; margin-left: 4px; height: 82%;">
           <Scene>
-             <Shape>
-                <Appearance>
-                    <Material></Material>	
-                     <!--RefinementTexture id="refTex" url="gpuii/room_1" dimensions="1024 1024 4" repeatS="false" repeatT="false">
-					 </RefinementTexture-->
-                     <RefinementTexture id="refTex" url="gpuii/room_2" dimensions="1920 1440" repeatS="false" repeatT="false">
-					 </RefinementTexture>
-                </Appearance>
-                <Plane></Plane>
-             </Shape>
+             <transform scale="1.9 0.75 1">
+                 <Shape>
+                    <Appearance>
+                        <Material></Material>
+                         <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" repeatS="false" repeatT="false">
+                         </RefinementTexture>
+                         <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" repeatS="false" repeatT="false">
+                         </RefinementTexture-->
+                    </Appearance>
+                    <Plane></Plane>
+                 </Shape>
+             </transform>
 
-             <Viewpoint position="0 0 2.5" zNear="0.1" zFar="10000" description="camera"></Viewpoint>
+              <Viewpoint position="0.00000 0.00000 1.81478" orientation="0.00000 0.00000 0.00000 0.00000"
+                         zNear="0.10000" zFar="10000.00000" description="camera"></Viewpoint>
           </Scene>
         </X3D>
 	</div>
