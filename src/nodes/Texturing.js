@@ -502,6 +502,11 @@ x3dom.registerNodeType(
                 if (this._cf.scene.node) {
                     this._cf.scene.node.parentRemoved(this);
                 }
+            },
+
+            requirePingPong: function()
+            {
+                return false;
             }
         }
     )
@@ -514,14 +519,15 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.RenderedTexture,
         function (ctx) {
             x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
+
+            // Format of the images of the dataset that should be loaded
+            this.addField_SFString(ctx, 'format', 'jpg');
             // Maximum level that should be loaded (if GSM smaller than on DSL6000)
             this.addField_SFInt32(ctx, 'maxLevel', 7);
             this._vf.maxLevel = (this._vf.maxLevel > 7) ? 7 : this._vf.maxLevel;
             this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
-            // Format of the images of the dataset that should be loaded
-            this.addField_SFString(ctx, 'format', 'jpg');
 
-            // Additional parameters to control the refinment mechanism on shader
+            // Additional parameters to control the refinement mechanism on shader
             this._repeatU = this._vf.dimensions[0] / 16;
             this._repeatV = this._vf.dimensions[1] / 32;
             this._renderedImage = 0;
@@ -529,11 +535,15 @@ x3dom.registerNodeType(
             this._loadLevel = 1;
         },
         {
-            nextLevel: function(){
+            nextLevel: function() {
                 if (this._loadLevel < this._vf.maxLevel){
                     this._loadLevel++;
                     this._nameSpace.doc.needRender = true;
                 }
+            },
+
+            requirePingPong: function() {
+                return (this._currLoadLevel <= this._vf.maxLevel);
             }
         }
     )

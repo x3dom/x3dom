@@ -2891,14 +2891,22 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
 
-                rt_tex._cleanupGLObjects = function() {
-                    gl.deleteTexture(this._webgl.fbo.tex);
+                rt_tex._cleanupGLObjects = function(retainTex) {
+                    if (!retainTex)
+                        gl.deleteTexture(this._webgl.fbo.tex);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     gl.deleteRenderbuffer(this._webgl.fbo.rbo);
-                    // TODO: delete fboPingPong objects
+                    delete this._webgl.fbo.fbo;
+                    delete this._webgl.fbo.rbo;
+                    if (this._webgl.fboPingPong) {
+                        gl.deleteTexture(this._webgl.fboPingPong.tex);
+                        gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
+                        gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
+                        delete this._webgl.fboPingPong;
+                    }
                 };
 
-                if (x3dom.isa(rt_tex, x3dom.nodeTypes.RefinementTexture)) {
+                if (rt_tex.requirePingPong()) {
                     rt_tex._webgl.positionBuffer = gl.createBuffer();
                     gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -2943,17 +2951,26 @@ x3dom.gfx_webgl = (function () {
                 if (rt_tex._cleanupGLObjects)
                     rt_tex._cleanupGLObjects();
                 else
-                    rt_tex._cleanupGLObjects = function() {
-                        gl.deleteTexture(this._webgl.fbo.tex);
+                    rt_tex._cleanupGLObjects = function(retainTex) {
+                        if (!retainTex)
+                            gl.deleteTexture(this._webgl.fbo.tex);
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
                         gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        delete this._webgl.fbo.fbo;
+                        delete this._webgl.fbo.rbo;
+                        if (this._webgl.fboPingPong) {
+                            gl.deleteTexture(this._webgl.fboPingPong.tex);
+                            gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
+                            gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
+                            delete this._webgl.fboPingPong;
+                        }
                     };
 
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
 
-                if (x3dom.isa(rt_tex, x3dom.nodeTypes.RefinementTexture)) {
+                if (rt_tex.requirePingPong()) {
                     rt_tex._webgl.positionBuffer = gl.createBuffer();
                     gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -3246,6 +3263,8 @@ x3dom.gfx_webgl = (function () {
 
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
+                if (!rt_tex._webgl.fbo.fbo) // might be deleted (--> RefinementTexture when finished)
+                    continue;
 
                 this.stateManager.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
                                            this.canvas.width / 8, this.canvas.height / 8);
@@ -3275,21 +3294,23 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
 
-        if (rt._currLoadLevel === (rt._vf.maxLevel + 1))
+        if (!rt.requirePingPong()) {
             return;
+        }
 
         if (rt._currLoadLevel === 1){
+            // TODO; make stamps path dynamic!
             rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
                rt._nameSpace.getURL("gpuii/stamps/0.gif"), false, false, false, false);
             rt._webgl.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-                rt._nameSpace.getURL("gpuii/stamps/1.gif"), false, false, false, false);
+               rt._nameSpace.getURL("gpuii/stamps/1.gif"), false, false, false, false);
         }
 
         // load next level
         if (rt._currLoadLevel < rt._loadLevel) {
             ++rt._currLoadLevel;
 
-            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
+            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;  // care for upper/lower case!
 
             rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
                               rt._nameSpace.getURL(filename), false, false, false, false);
@@ -3297,7 +3318,6 @@ x3dom.gfx_webgl = (function () {
             (rt._currLoadLevel % 2 == 0) ? rt._repeatU *= 2.0 : rt._repeatV *= 2.0;
         }
 
-        // TODO; implement real refinement algo! This is only a test...
         if (!rt._webgl.texture.length || !rt._webgl.texture[rt._currLoadLevel].ready)
             return;
 
@@ -3322,7 +3342,7 @@ x3dom.gfx_webgl = (function () {
 
         sp.stamp = 0;
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.stamps[(rt._currLoadLevel + 1) % 2]);    // just draw image to fbo
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.stamps[(rt._currLoadLevel + 1) % 2]);    // draw stamp image to fbo
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
@@ -3331,7 +3351,7 @@ x3dom.gfx_webgl = (function () {
         if (rt._currLoadLevel > 1){
             sp.lastTex = 1;
             gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);    // just draw image to fbo
+            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3340,7 +3360,7 @@ x3dom.gfx_webgl = (function () {
 
         sp.curTex = 2;
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture[rt._currLoadLevel]);    // just draw image to fbo
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture[rt._currLoadLevel]);    // draw level image to fbo
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3349,17 +3369,19 @@ x3dom.gfx_webgl = (function () {
         sp.mode = rt._currLoadLevel - 1;
         sp.repeatU = rt._repeatU;
         sp.repeatV = rt._repeatV;
-        console.log("(" + rt._repeatU + " | " + rt._repeatV + ")")
+        // use SFVec2f/vec2 instead for performance
+        console.log(rt._currLoadLevel + " (" + rt._repeatU + " | " + rt._repeatV + ")");
+
         gl.drawArrays(gl.TRIANGLES, 0, 6);
 
         // second pass
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
-        sp.mode = 0;
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+        sp.mode = 0;
         sp.curTex = 2;
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fboPingPong.tex);   // just draw image to fbo
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fboPingPong.tex);   // draw result to fbo
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3372,11 +3394,20 @@ x3dom.gfx_webgl = (function () {
 
         gl.disableVertexAttribArray(sp.position);
 
+        // pass done
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
+
         rt._renderedImage++;
-        rt._webgl.texture[rt._currLoadLevel].ready = false;
         rt.nextLevel();
+
+        if (rt._currLoadLevel == rt._vf.maxLevel)
+            rt._currLoadLevel++;
+
+        if (!rt.requirePingPong()) {
+            // we're finally done: cleanup/delete all helper FBOs
+            rt._cleanupGLObjects(true);
+        }
     };
 
     /*****************************************************************************
@@ -3384,12 +3415,12 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.renderRTPass = function (gl, viewarea, rt)
     {
-        // begin special case
+        /// begin special case (progressive image refinement)
         if (x3dom.isa(rt, x3dom.nodeTypes.RefinementTexture)) {
             this.renderPingPongPass(gl, viewarea, rt);
             return;
         }
-        // end special case
+        /// end special case
 
         switch (rt._vf.update.toUpperCase()) {
             case "NONE":

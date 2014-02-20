@@ -5,40 +5,30 @@
 
     <title>GPU-based Image Interlacing</title>
 
-    <link href="media/css/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" />
-    <script src="media/js/jquery-1.9.1.js"></script>
-    <script src="media/js/jquery-ui-1.10.3.custom.min.js"></script>
     <script type="text/javascript" src="../x3dom_include.js"></script>
-
-    <style>
-        #x3dom_logdiv{
-            width: 100%;
-        }
-    </style>
-
 </head>
        
 <body>
     <h3>GPUII - GPU-based Image Interlacing using X3DOM's RefinementTexture</h3>
 
-        <!------------------------------------------------------------- X3DOM -------------------------------------------------------------------->
+        <!------------------------------------------ X3DOM ------------------------------------------------->
 		<X3D showStat="false" showLog="false" style="width: 100%; margin-left: 4px; height: 82%;">
           <Scene>
              <transform scale="1.9 0.75 1">
                  <Shape>
                     <Appearance>
                         <Material></Material>
-                         <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" repeatS="false" repeatT="false">
-                         </RefinementTexture>
-                         <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" repeatS="false" repeatT="false">
-                         </RefinementTexture-->
+                        <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" repeatS="false" repeatT="false">
+                        </RefinementTexture>
+                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" repeatS="false" repeatT="false">
+                        </RefinementTexture-->
                     </Appearance>
                     <Plane></Plane>
                  </Shape>
              </transform>
 
-              <Viewpoint position="0.00000 0.00000 1.81478" orientation="0.00000 0.00000 0.00000 0.00000"
-                         zNear="0.10000" zFar="10000.00000" description="camera"></Viewpoint>
+             <Viewpoint position="0.00000 0.00000 1.81478" orientation="0.00000 0.00000 0.00000 0.00000"
+                        zNear="0.10000" zFar="10000.00000" description="camera"></Viewpoint>
           </Scene>
         </X3D>
 	</div>
