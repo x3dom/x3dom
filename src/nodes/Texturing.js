@@ -519,8 +519,13 @@ x3dom.registerNodeType(
             // refinements ending with number of loadLevel are fetched later.
             // this.addField_MFString(ctx, 'url', []);
             this.addField_SFInt32(ctx, 'loadLevel', 1);
+            this.addField_SFInt32(ctx, 'maxLevel', 7);
             this.addField_SFString(ctx, 'format', 'jpg');
 
+            // Additional parameters to control the refinment mechanism on shader
+            this._repeatU = this._vf.dimensions[0] / 16;
+            this._repeatV = this._vf.dimensions[1] / 32;
+            this._renderedImage = 0;
             this._currLoadLevel = 0;
         },
         {

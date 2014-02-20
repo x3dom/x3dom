@@ -28,6 +28,7 @@
                     if ($(this).spinner('value') > 7)
                         $(this).spinner('value', 7);
                     document.getElementById("refTex").setAttribute("loadLevel", $(this).spinner('value'));
+
                 }
             });
             spinner.spinner("value", 1);
@@ -64,7 +65,7 @@
              <Shape>
                 <Appearance>
                     <Material diffuseColor='1 0 0' ></Material>	
-                     <RefinementTexture id="refTex" url="gpuii/room_1" format="jpg" dimensions="1024 1024 4" loadLevel="1"></RefinementTexture>
+                     <RefinementTexture id="refTex" url="gpuii/room_1" dimensions="1024 1024"></RefinementTexture>
                 </Appearance>
                 <Plane></Plane>
              </Shape>
