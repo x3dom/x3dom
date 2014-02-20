@@ -60,19 +60,20 @@
         </div>
 
         <!------------------------------------------------------------- X3DOM -------------------------------------------------------------------->
-		<X3D showStat="true" showLog="true" style="width: 100%; margin-left: 4px; height: 60%;" style="background-color: ivory;">
+		<X3D showStat="true" showLog="true" style="width: 100%; margin-left: 4px; height: 60%;">
           <Scene>
              <Shape>
                 <Appearance>
-                    <Material diffuseColor='1 0 0' ></Material>	
-                     <!--RefinementTexture id="refTex" url="gpuii/room_1" dimensions="1024 1024"></RefinementTexture-->
-                     <RefinementTexture id="refTex" url="gpuii/room_2" dimensions="1920 1440"></RefinementTexture>
+                    <Material></Material>	
+                     <!--RefinementTexture id="refTex" url="gpuii/room_1" dimensions="1024 1024 4" repeatS="false" repeatT="false">
+					 </RefinementTexture-->
+                     <RefinementTexture id="refTex" url="gpuii/room_2" dimensions="1920 1440 4" repeatS="false" repeatT="false">
+					 </RefinementTexture>
                 </Appearance>
                 <Plane></Plane>
              </Shape>
 
-              <Viewpoint position="0.00000 0.00000 3.60630" orientation="0.00000 0.00000 0.00000 0.00000"
-                         zNear="0.1" zFar="10000" description="defaultX3DViewpointNode"></Viewpoint>
+             <Viewpoint position="0 0 2.5" zNear="0.1" zFar="10000" description="camera"></Viewpoint>
           </Scene>
         </X3D>
 	</div>
