@@ -577,7 +577,8 @@ x3dom.registerNodeType(
             },
 
             requirePingPong: function() {
-                return (this._currLoadLevel <= this._vf.maxLevel);
+                return (this._currLoadLevel <= this._vf.maxLevel &&
+                        this._renderedImage < this._loadLevel);
             }
         }
     )

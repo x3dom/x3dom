@@ -2912,9 +2912,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
                     rt_tex._webgl.fboPingPong = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
-                    rt_tex._webgl.texture = [];
-                    rt_tex._webgl.stamps = [];
+                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = null;
+                    rt_tex._webgl.stamps = new Array(2);
                 }
             }
 
@@ -2976,9 +2976,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
                     rt_tex._webgl.fboPingPong = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
-                    rt_tex._webgl.texture = [];
-                    rt_tex._webgl.stamps = [];
+                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = null;
+                    rt_tex._webgl.stamps = new Array(2);
                 }
 
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
@@ -3293,12 +3293,8 @@ x3dom.gfx_webgl = (function () {
      * Render special PingPong-Pass
      *****************************************************************************/
     Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
-
-        if (rt._renderedImage >= rt._loadLevel){
-            return;
-        }
-
-        if (rt._currLoadLevel == 1) {
+        // load stamp textures
+        if (rt._currLoadLevel == 0) {
             rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
                rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
             rt._webgl.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
@@ -3307,20 +3303,24 @@ x3dom.gfx_webgl = (function () {
 
         // load next level of image
         if (rt._currLoadLevel < rt._loadLevel) {
-            ++rt._currLoadLevel;
+            rt._currLoadLevel++;
+
+            if (rt._webgl.texture)
+                gl.deleteTexture(rt._webgl.texture);
 
             var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
 
-            rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
-                              rt._nameSpace.getURL(filename), false, false, false, false);
+            rt._webgl.texture = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
+                                rt._nameSpace.getURL(filename), false, false, false, false);
 
             (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
         }
 
-        if (!rt._webgl.texture.length || !rt._webgl.texture[rt._currLoadLevel].ready)
+        if (!rt._webgl.texture.ready || !rt._webgl.stamps[0].ready || !rt._webgl.stamps[1].ready)
             return;
 
         // first pass
+        // THINKABOUTME: fboPingPong probably can be shared amongst all RefinementTextures, therefore attach to scene
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fboPingPong.fbo);
         this.stateManager.viewport(0, 0, rt._webgl.fboPingPong.width, rt._webgl.fboPingPong.height);
 
@@ -3359,7 +3359,7 @@ x3dom.gfx_webgl = (function () {
 
         sp.curTex = 2;
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture[rt._currLoadLevel]);    // draw level image to fbo
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture);    // draw level image to fbo
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3401,8 +3401,15 @@ x3dom.gfx_webgl = (function () {
         if (rt._currLoadLevel == rt._vf.maxLevel)
             rt._currLoadLevel++;
 
+        // we're finally done: cleanup/delete all helper FBOs
         if (!rt.requirePingPong()) {
-            // we're finally done: cleanup/delete all helper FBOs
+            gl.deleteTexture(rt._webgl.stamps[0]);
+            gl.deleteTexture(rt._webgl.stamps[1]);
+            delete rt._webgl.stamps;
+
+            gl.deleteTexture(rt._webgl.texture);
+            delete rt._webgl.texture;
+
             rt._cleanupGLObjects(true);
         }
     };
