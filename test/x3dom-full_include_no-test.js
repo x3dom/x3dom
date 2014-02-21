@@ -5,7 +5,8 @@ var pathes = [
     "../../",
 	"../",		// examples
     "../../../x3dom/",
-    "../../../../x3dom/"
+    "../../../../x3dom/",
+    "../../../../"
 ];
 
 var packages = "tools/packages.json";

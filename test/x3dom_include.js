@@ -3,9 +3,10 @@
 
 var pathes = [
     "../../",
+	"../",		// examples
     "../../../x3dom/",
     "../../../../x3dom/",
-    "../../../../../"
+    "../../../../"
 ];
 
 var packages = "tools/packages.json";
@@ -20,8 +21,8 @@ function send_xhr(path){
     xhr.open('GET', path + packages, false);
 
     xhr.onreadystatechange = function(){
-        if(xhr.readyState == 4){
-            if(xhr.status == 200 || xhr.status == 0){
+        if (xhr.readyState == 4) {
+            if (xhr.responseText && (xhr.status == 200 || xhr.status == 0)) {
                 console.log("found x3dom script base path on: " + path);
                 setCSS(path);
 
@@ -44,7 +45,7 @@ function send_xhr(path){
 
                 //this is only for tests
                 document.write("<script src=\""+ path + "test/functional/media/js/tests.js\"></script>");
-            }else{
+            } else {
                 console.error('xhr status is not 200 on: ' + path);
 				if (i < pathes.length) {
 					send_xhr(pathes[i++]);

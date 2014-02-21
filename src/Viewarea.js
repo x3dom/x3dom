@@ -1550,7 +1550,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         else if (buttonState & 4) //middle
         {
             d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed * 0.75;
 
             var tx = -d * dx / this._width;
             var ty =  d * dy / this._height;
