@@ -38,9 +38,19 @@ var ResultsPublisher = function(outputPath)
         }
 
 
+        function pad(num, size)
+        {
+            var s = num+"";
+            while (s.length < size) s = "0" + s;
+            return s;
+        }
+
+        var date = new Date();
+        var dateString = pad(date.getDate(),2)+"."+pad((date.getMonth()+1), 2)+"."+date.getFullYear()+" - "+pad(date.getHours(), 2)+":"+pad(date.getMinutes(),2)+":"+pad(date.getSeconds(),2);
+
         var includes = "<link rel='stylesheet' href='../../jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='../../jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='../../jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
         var script = "<script>$(function(){$(\".accordion\").accordion({collapsible: true, heightStyle: 'content', active: false});});</script>"
-        var pageStart = "<html><head>"+includes+script+"<title>x3dom Regression Tests for "+ profile.name +"</title></head><body><h1>"+profile.name +" results overview - "+ statistics.passed +" / "+ (statistics.passed + statistics.failed) +" passed</h1>";
+        var pageStart = "<html><head>"+includes+script+"<title>x3dom Regression Tests for "+ profile.name +"</title></head><body><h1>"+profile.name +" results overview - "+ statistics.passed +" / "+ (statistics.passed + statistics.failed) +" passed</h1><h3>" + dateString + "</h3>";
         var pageEnd = "<br/><br/><br/><br/>"+"</body>";
 
         var details = contents.join("");
