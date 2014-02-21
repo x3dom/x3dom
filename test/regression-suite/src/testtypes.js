@@ -1,4 +1,5 @@
 var fw = require('./filewriter');
+var fs = require("fs");
 //var gm = require('gm');
 //gm.compare = require('./comparemod.js')();
 var ts = require('./testsuite');
@@ -34,46 +35,53 @@ function CompareScreenshot()
         var script = "var x3d_node = document.getElementById('"+params.x3d+"');if(!x3d_node) x3d_node = document.getElementsByTagName('x3d')[0]; return x3d_node.runtime.getScreenshot()";
 
         driver.executeScript(script)
-        .then(function(return_value)
-        {
-            var buf = new Buffer(return_value.replace(/^data:image\/png;base64,/,''),'base64');
-            //console.log("OutputPath: " +outputPath);
-            fw.writeFile(outputPath, buf, function(err){
-                if(err)
-                {
-                    console.log("Error writing rendered image: "+ err);
-                    that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
-                    that.context.finishedCallback();
-                }
-                else
-                    callback();
-            });
-        });
-    }
-
-
-    this.compareImages = function(referenceImagePath, renderedImagePath)
-    {
-        //console.log(referenceImagePath + " <-> "+renderedImagePath);
-
-        resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
-            var equal = data.misMatchPercentage < 0.01;
-            if(!equal)
+            .then(function(return_value)
             {
-                //write diff
-                var diffImage = renderedImagePath.replace(/(.*\/)(?!(.*\/.*))/i, '$1diff/');
-                var diffImageFolder = diffImage.substring(0, diffImage.lastIndexOf("/"));
-                var buf = new Buffer(data.getImageDataUrl().replace(/^data:image\/png;base64,/,''),'base64');
-                fw.writeFile(diffImage, buf, function(err){
+                var buf = new Buffer(return_value.replace(/^data:image\/png;base64,/,''),'base64');
+                //console.log("OutputPath: " +outputPath);
+                fw.writeFile(outputPath, buf, function(err){
                     if(err)
                     {
                         console.log("Error writing rendered image: "+ err);
                         that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
                         that.context.finishedCallback();
                     }
+                    else
+                        callback();
                 });
+            });
+    }
+
+
+    this.compareImages = function(referenceImagePath, renderedImagePath)
+    {
+        //console.log(referenceImagePath + " <-> "+renderedImagePath);
+        fs.exists(referenceImagePath, function(exists){
+            if(!exists)
+            {
+                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": "Reference image not found!"}));
+                that.context.finishedCallback();
             }
-            that.context.result.details.push( equal ?
+            else
+            {
+                resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
+                    var equal = data.misMatchPercentage < 0.01;
+                    if(!equal)
+                    {
+                        //write diff
+                        var diffImage = renderedImagePath.replace(/(.*\/)(?!(.*\/.*))/i, '$1diff/');
+                        var diffImageFolder = diffImage.substring(0, diffImage.lastIndexOf("/"));
+                        var buf = new Buffer(data.getImageDataUrl().replace(/^data:image\/png;base64,/,''),'base64');
+                        fw.writeFile(diffImage, buf, function(err){
+                            if(err)
+                            {
+                                console.log("Error writing rendered image: "+ err);
+                                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
+                                that.context.finishedCallback();
+                            }
+                        });
+                    }
+                    that.context.result.details.push( equal ?
                         new ts.SuccessDetail(
                             {
                                 "context"   : that.context,
@@ -87,8 +95,11 @@ function CompareScreenshot()
                                 "type" : "CompareScreenshot"
                             }
                         )
-            );
-            that.context.finishedCallback();
+                    );
+                    that.context.finishedCallback();
+                });
+
+            }
         });
 
 //        gm.compare(referenceImagePath, renderedImagePath, 0.0001,
@@ -188,10 +199,10 @@ function ExecuteCommand(){
 
         context.driver.executeScript(script).then(function(){
             that.context.result.details.push(new ts.InfoDetail(
-                    {
-                        "context": that.context,
-                        "info"   : script
-                    }));
+                {
+                    "context": that.context,
+                    "info"   : script
+                }));
             that.context.finishedCallback();
         });
     }
