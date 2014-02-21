@@ -2804,6 +2804,7 @@ x3dom.gfx_webgl = (function () {
 
         var shadowedLights, numShadowMaps;
         var i, j, n, size, sizeAvailable;
+        var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 
         scene.updateVolume();
 		
@@ -2879,7 +2880,6 @@ x3dom.gfx_webgl = (function () {
 			//initialize Data for post processing
 			scene._webgl.ppBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
-			var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);		
 			
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
@@ -2891,11 +2891,31 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
 
-                rt_tex._cleanupGLObjects = function() {
-                    gl.deleteTexture(this._webgl.fbo.tex);
+                rt_tex._cleanupGLObjects = function(retainTex) {
+                    if (!retainTex)
+                        gl.deleteTexture(this._webgl.fbo.tex);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    delete this._webgl.fbo.fbo;
+                    delete this._webgl.fbo.rbo;
+                    if (this._webgl.fboPingPong) {
+                        gl.deleteTexture(this._webgl.fboPingPong.tex);
+                        gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
+                        gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
+                        delete this._webgl.fboPingPong;
+                    }
                 };
+
+                if (rt_tex.requirePingPong()) {
+                    rt_tex._webgl.positionBuffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = [];
+                    rt_tex._webgl.stamps = [];
+                }
             }
 
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
@@ -2931,15 +2951,36 @@ x3dom.gfx_webgl = (function () {
                 if (rt_tex._cleanupGLObjects)
                     rt_tex._cleanupGLObjects();
                 else
-                    rt_tex._cleanupGLObjects = function() {
-                        gl.deleteTexture(this._webgl.fbo.tex);
+                    rt_tex._cleanupGLObjects = function(retainTex) {
+                        if (!retainTex)
+                            gl.deleteTexture(this._webgl.fbo.tex);
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
                         gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        delete this._webgl.fbo.fbo;
+                        delete this._webgl.fbo.rbo;
+                        if (this._webgl.fboPingPong) {
+                            gl.deleteTexture(this._webgl.fboPingPong.tex);
+                            gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
+                            gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
+                            delete this._webgl.fboPingPong;
+                        }
                     };
 
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+
+                if (rt_tex.requirePingPong()) {
+                    rt_tex._webgl.positionBuffer = gl.createBuffer();
+                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._webgl.texture = [];
+                    rt_tex._webgl.stamps = [];
+                }
+
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
                                     rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
@@ -3222,6 +3263,8 @@ x3dom.gfx_webgl = (function () {
 
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
+                if (!rt_tex._webgl.fbo.fbo) // might be deleted (--> RefinementTexture when finished)
+                    continue;
 
                 this.stateManager.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
                                            this.canvas.width / 8, this.canvas.height / 8);
@@ -3247,10 +3290,132 @@ x3dom.gfx_webgl = (function () {
     };
 
     /*****************************************************************************
+     * Render special PingPong-Pass
+     *****************************************************************************/
+    Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
+        if (rt._currLoadLevel == 1) {
+            rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+               rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
+            rt._webgl.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+               rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
+        }
+
+        // load next level of image
+        if (rt._currLoadLevel < rt._loadLevel) {
+            ++rt._currLoadLevel;
+
+            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
+
+            rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
+                              rt._nameSpace.getURL(filename), false, false, false, false);
+
+            (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+        }
+
+        if (!rt._webgl.texture.length || !rt._webgl.texture[rt._currLoadLevel].ready)
+            return;
+
+        // first pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fboPingPong.fbo);
+        this.stateManager.viewport(0, 0, rt._webgl.fboPingPong.width, rt._webgl.fboPingPong.height);
+
+        this.stateManager.disable(gl.BLEND);
+        this.stateManager.disable(gl.CULL_FACE);
+        this.stateManager.disable(gl.DEPTH_TEST);
+
+        gl.clearColor(0, 0, 0, 1);
+        gl.clearDepth(1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        var sp = this.cache.getShader(gl, x3dom.shader.TEXTURE_REFINEMENT);
+        this.stateManager.useProgram(sp);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, rt._webgl.positionBuffer);
+        gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(sp.position);
+
+        sp.stamp = 0;
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.stamps[(rt._currLoadLevel + 1) % 2]);    // draw stamp image to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+        if (rt._currLoadLevel > 1){
+            sp.lastTex = 1;
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+
+        sp.curTex = 2;
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture[rt._currLoadLevel]);    // draw level image to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        sp.mode = rt._currLoadLevel - 1;
+        sp.repeat = rt._repeat.toGL();
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        // second pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        sp.mode = 0;
+        sp.curTex = 2;
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fboPingPong.tex);   // draw result to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        gl.disableVertexAttribArray(sp.position);
+
+        // pass done
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+        rt._renderedImage++;
+        if (rt._vf.autoRefinement)
+            rt.nextLevel();
+
+        if (rt._currLoadLevel == rt._vf.maxLevel)
+            rt._currLoadLevel++;
+
+        if (!rt.requirePingPong()) {
+            // we're finally done: cleanup/delete all helper FBOs
+            rt._cleanupGLObjects(true);
+        }
+    };
+
+    /*****************************************************************************
      * Render RenderedTexture-Pass
      *****************************************************************************/
     Context.prototype.renderRTPass = function (gl, viewarea, rt)
     {
+        /// begin special case (progressive image refinement)
+        if (x3dom.isa(rt, x3dom.nodeTypes.RefinementTexture)) {
+            if (rt.requirePingPong()) {
+                this.renderPingPongPass(gl, viewarea, rt);
+            }
+            return;
+        }
+        /// end special case
+
         switch (rt._vf.update.toUpperCase()) {
             case "NONE":
                 return;
