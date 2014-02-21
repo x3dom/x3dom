@@ -40,6 +40,7 @@ x3dom.registerNodeType(
             // INITIALIZATION
             //---------------------------------------
 
+
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -126,14 +127,14 @@ x3dom.registerNodeType(
             {
                 var that = this;
 
-                var pointerOverCallback     = function(event){ that._pointerEnteredOverSibling(event, sibling); };
-                var pointerOutCallback      = function(event){ that._pointerLeavedOverSibling(event, sibling); };
+                var pointerOverCallback     = function(event){ that._pointerEnteredSibling(event, sibling); };
+                var pointerOutCallback      = function(event){ that._pointerLeftSibling(event, sibling); };
                 var pointerMovedCallback    = function(event){ that._pointerMovedOverSibling(event, sibling); };
                 var pointerPressedCallback  = function(event){ that._pointerPressedOverSibling(event, sibling); };
                 var pointerReleasedCallback = function(event){ that._pointerReleasedOverSibling(event, sibling); };
 
                 listenerSet.setListener("mouseover", pointerOverCallback);
-                listenerSet.setListener("mouseover", pointerOutCallback);
+                listenerSet.setListener("mouseout",  pointerOutCallback);
                 listenerSet.setListener("mousemove", pointerMovedCallback);
                 listenerSet.setListener("mousedown", pointerPressedCallback);
                 listenerSet.setListener("mouseup",   pointerReleasedCallback);
@@ -160,10 +161,9 @@ x3dom.registerNodeType(
              * @param {X3DNode] sibling - the sibling node
              * @private
              */
-            _pointerEnteredOverSibling: function()
+            _pointerEnteredSibling: function(event, sibling)
             {
                 //currently, nothing is done here
-                console.log("IN");
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -175,10 +175,9 @@ x3dom.registerNodeType(
              * @param {X3DNode] sibling - the sibling node
              * @private
              */
-            _pointerLeavedOverSibling: function()
+            _pointerLeftSibling: function(event, sibling)
             {
                 //currently, nothing is done here
-                console.log("OUT");
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -190,7 +189,7 @@ x3dom.registerNodeType(
              * @param {X3DNode] sibling - the sibling node
              * @private
              */
-            _pointerMovedOverSibling: function()
+            _pointerMovedOverSibling: function(event, sibling)
             {
                 //currently, nothing is done here
             },
@@ -206,7 +205,7 @@ x3dom.registerNodeType(
              */
             _pointerPressedOverSibling: function(event, sibling)
             {
-                console.log("Pointer pressed over sibling!");
+                console.log(event);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
