@@ -17,6 +17,7 @@
         {"path": "util/StateManager.js"},
         {"path": "util/BinaryContainerSetup.js"},
         {"path": "util/DrawableCollection.js"},
+        {"path": "util/NodeListenerSet.js"},
         {"path": "util/BVH.js"},
         {"path": "X3DCanvas.js"},
         {"path": "Runtime.js"},
