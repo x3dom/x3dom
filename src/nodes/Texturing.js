@@ -520,6 +520,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
 
+            // Defines if texture refinement should be managed by another component
+            this.addField_SFBool(ctx, 'autoRefinement', true);
             // Format of the images of the dataset that should be loaded
             this.addField_SFString(ctx, 'format', 'jpg');
             // Maximum level that should be loaded (if GSM smaller than on DSL6000)
@@ -528,8 +530,8 @@ x3dom.registerNodeType(
             this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
 
             // Additional parameters to control the refinement mechanism on shader
-            this._repeatU = this._vf.dimensions[0] / 16;
-            this._repeatV = this._vf.dimensions[1] / 32;
+            this._repeat = new x3dom.fields.SFVec2f(this._vf.dimensions[0] / 16,
+                                                    this._vf.dimensions[1] / 32);
             this._renderedImage = 0;
             this._currLoadLevel = 0;
             this._loadLevel = 1;

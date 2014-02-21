@@ -67,8 +67,7 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
               "uniform sampler2D lastTex;\n" +
               "uniform sampler2D curTex;\n" +
               "uniform int mode;\n" +
-              "uniform float repeatU;\n" +
-              "uniform float repeatV;\n" +
+              "uniform vec2 repeat;\n" +
               "varying vec2 fragTexCoord;\n" +
               "\n" +
               "void init(void);\n" +
@@ -83,8 +82,8 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
               "}\n" +
               "\n" +
               "void refine(void) {\n" +
-              "    vec3 red = texture2D(stamp, vec2(repeatU*fragTexCoord.x," +
-              "                                     repeatV*fragTexCoord.y)).rgb;\n" +
+              "    vec3 red = texture2D(stamp, vec2(repeat.x*fragTexCoord.x," +
+              "                                     repeat.y*fragTexCoord.y)).rgb;\n" +
               "    vec3 v1 = texture2D(lastTex, fragTexCoord).rgb;\n" +
               "    vec3 v2 = texture2D(curTex, fragTexCoord).rgb;\n" +
               "    if (red.r <= 0.5) {\n" +

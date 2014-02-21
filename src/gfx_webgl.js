@@ -3306,7 +3306,7 @@ x3dom.gfx_webgl = (function () {
                rt._nameSpace.getURL("gpuii/stamps/1.gif"), false, false, false, false);
         }
 
-        // load next level
+        // load next level of image
         if (rt._currLoadLevel < rt._loadLevel) {
             ++rt._currLoadLevel;
 
@@ -3315,7 +3315,7 @@ x3dom.gfx_webgl = (function () {
             rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
                               rt._nameSpace.getURL(filename), false, false, false, false);
 
-            (rt._currLoadLevel % 2 == 0) ? rt._repeatU *= 2.0 : rt._repeatV *= 2.0;
+            (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
         }
 
         if (!rt._webgl.texture.length || !rt._webgl.texture[rt._currLoadLevel].ready)
@@ -3367,10 +3367,7 @@ x3dom.gfx_webgl = (function () {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
         sp.mode = rt._currLoadLevel - 1;
-        sp.repeatU = rt._repeatU;
-        sp.repeatV = rt._repeatV;
-        // use SFVec2f/vec2 instead for performance
-        console.log(rt._currLoadLevel + " (" + rt._repeatU + " | " + rt._repeatV + ")");
+        sp.repeat = rt._repeat.toGL();
 
         gl.drawArrays(gl.TRIANGLES, 0, 6);
 
@@ -3399,7 +3396,8 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 
         rt._renderedImage++;
-        rt.nextLevel();
+        if (rt._vf.autoRefinement)
+            rt.nextLevel();
 
         if (rt._currLoadLevel == rt._vf.maxLevel)
             rt._currLoadLevel++;
