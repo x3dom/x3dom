@@ -40,7 +40,7 @@ x3dom.registerNodeType(
             // INITIALIZATION
             //---------------------------------------
 
-
+            //currently, nothing is done here
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -155,8 +155,7 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * Function that gets called if the pointing device has been moved and enters the area over a shape element
-             * which is a sibling of this pointing devide sensor node
+             * Function that gets called if the pointing device has entered the area over a sibling node of this sensor
              * @param {DOMEvent] event - the pointer event
              * @param {X3DNode] sibling - the sibling node
              * @private
@@ -169,8 +168,7 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * Function that gets called if the pointing device has been moved and leaves the area over a shape element
-             * which is a sibling of this pointing devide sensor node
+             * Function that gets called if the pointing device has left the area over a sibling node of this sensor
              * @param {DOMEvent] event - the pointer event
              * @param {X3DNode] sibling - the sibling node
              * @private
@@ -183,8 +181,7 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * Function that gets called if the pointing device has been moved over a shape element
-             * which is a sibling of this pointing devide sensor node
+             * Function that gets called if the pointing device has been moved over a sibling node of this sensor
              * @param {DOMEvent] event - the pointer event
              * @param {X3DNode] sibling - the sibling node
              * @private
@@ -197,27 +194,46 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * Function that gets called if the pointing device has been moved over a node
-             * which is a sibling of this pointing devide sensor node
+             * Function that gets called if the pointing device has been pressed over a sibling node of this sensor
              * @param {DOMEvent] event - the pointer event
              * @param {X3DNode] sibling - the sibling node
              * @private
              */
             _pointerPressedOverSibling: function(event, sibling)
             {
-                console.log(event);
+                var that = this;
+
+                //attach a listener to catch the mouseup event, also out of the sibling
+                var tmpListener = function(event) {
+                    that._pointerReleased(event);
+                    document.removeEventListener("mouseup", tmpListener);
+                };
+
+                document.addEventListener("mouseup", tmpListener);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * Function that gets called if the pointing device has been moved over a node
-             * which is a sibling of this pointing devide sensor node
+             * Function that gets called if the pointing device has been released over a sibling node of this sensor
              * @param {DOMEvent] event - the pointer event
              * @param {X3DNode] sibling - the sibling node
              * @private
              */
             _pointerReleasedOverSibling: function(event, sibling)
+            {
+                //currently, nothing is done here
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
+             * Function that gets called if the pointing device has been released,
+             * after it has been pressed over a sibling of this node
+             * @param {DOMEvent] event - the pointer event
+             * @private
+             */
+            _pointerReleased: function(event)
             {
                 //currently, nothing is done here
             }
