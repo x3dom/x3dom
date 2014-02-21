@@ -19,14 +19,14 @@ function CompareScreenshot()
         var filename = context.test.name + "_" +(context.result.screenshotCount++)+".png";
         var renderedImagePath = context.outputPath+"/"+filename;
 
-        var referenceImagePath = "test/reference/"+filename;
+        var referenceImagePath = globals.referencePath+filename;
 
         setTimeout(function(){
             that.writeRenderedImage(context.driver, step.params,renderedImagePath, function()
             {
                 that.compareImages(referenceImagePath, renderedImagePath);
             });
-        }, 100);
+        }, globals.screenshotDelay);
     }
 
     this.writeRenderedImage = function(driver, params, outputPath, callback)
