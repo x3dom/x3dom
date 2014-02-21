@@ -3293,6 +3293,11 @@ x3dom.gfx_webgl = (function () {
      * Render special PingPong-Pass
      *****************************************************************************/
     Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
+
+        if (rt._renderedImage >= rt._loadLevel){
+            return;
+        }
+
         if (rt._currLoadLevel == 1) {
             rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
                rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
