@@ -3293,24 +3293,18 @@ x3dom.gfx_webgl = (function () {
      * Render special PingPong-Pass
      *****************************************************************************/
     Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
-
-        if (!rt.requirePingPong()) {
-            return;
-        }
-
-        if (rt._currLoadLevel === 1){
-            // TODO; make stamps path dynamic!
+        if (rt._currLoadLevel == 1) {
             rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-               rt._nameSpace.getURL("gpuii/stamps/0.gif"), false, false, false, false);
+               rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
             rt._webgl.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-               rt._nameSpace.getURL("gpuii/stamps/1.gif"), false, false, false, false);
+               rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
         }
 
         // load next level of image
         if (rt._currLoadLevel < rt._loadLevel) {
             ++rt._currLoadLevel;
 
-            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;  // care for upper/lower case!
+            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
 
             rt._webgl.texture[rt._currLoadLevel] = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
                               rt._nameSpace.getURL(filename), false, false, false, false);
@@ -3415,7 +3409,9 @@ x3dom.gfx_webgl = (function () {
     {
         /// begin special case (progressive image refinement)
         if (x3dom.isa(rt, x3dom.nodeTypes.RefinementTexture)) {
-            this.renderPingPongPass(gl, viewarea, rt);
+            if (rt.requirePingPong()) {
+                this.renderPingPongPass(gl, viewarea, rt);
+            }
             return;
         }
         /// end special case

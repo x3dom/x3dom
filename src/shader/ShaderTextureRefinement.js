@@ -11,7 +11,6 @@
 
 /**
  * Generate the final shader program
- * TODO: NOT YET USEFUL, IMPLEMENT SHADERS
  */
 x3dom.shader.TextureRefinementShader = function (gl) {
     this.program = gl.createProgram();
@@ -72,6 +71,7 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
               "\n" +
               "void init(void);\n" +
               "void refine(void);\n" +
+              "\n" +
               "void main(void) {\n" +
               "    if (mode == 0) { init(); }\n" +
               "    else { refine(); }\n" +
@@ -82,15 +82,14 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
               "}\n" +
               "\n" +
               "void refine(void) {\n" +
-              "    vec3 red = texture2D(stamp, vec2(repeat.x*fragTexCoord.x," +
-              "                                     repeat.y*fragTexCoord.y)).rgb;\n" +
-              "    vec3 v1 = texture2D(lastTex, fragTexCoord).rgb;\n" +
-              "    vec3 v2 = texture2D(curTex, fragTexCoord).rgb;\n" +
+              "    vec3 red = texture2D(stamp, repeat * fragTexCoord).rgb;\n" +
+              "    vec3 v1  = texture2D(lastTex, fragTexCoord).rgb;\n" +
+              "    vec3 v2  = texture2D(curTex, fragTexCoord).rgb;\n" +
               "    if (red.r <= 0.5) {\n" +
-              "        gl_FragColor = vec4(v1.rgb, 1.0);\n" +
+              "        gl_FragColor = vec4(v1, 1.0);\n" +
               "    }\n" +
               "    else {\n" +
-              "        gl_FragColor = vec4(v2.rgb, 1.0);\n" +
+              "        gl_FragColor = vec4(v2, 1.0);\n" +
               "    }\n" +
               "}\n";
 

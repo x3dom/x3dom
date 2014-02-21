@@ -520,12 +520,17 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
 
+            // Specify first stamp texture
+            this.addField_SFString(ctx, 'stamp0', "gpuii/stamps/0.gif");
+            // Specifiy second stamp texture
+            this.addField_SFString(ctx, 'stamp1', "gpuii/stamps/1.gif");
             // Defines if texture refinement should be managed by another component
             this.addField_SFBool(ctx, 'autoRefinement', true);
             // Format of the images of the dataset that should be loaded
             this.addField_SFString(ctx, 'format', 'jpg');
             // Maximum level that should be loaded (if GSM smaller than on DSL6000)
             this.addField_SFInt32(ctx, 'maxLevel', 7);
+
             this._vf.maxLevel = (this._vf.maxLevel > 7) ? 7 : this._vf.maxLevel;
             this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
 
@@ -538,7 +543,7 @@ x3dom.registerNodeType(
         },
         {
             nextLevel: function() {
-                if (this._loadLevel < this._vf.maxLevel){
+                if (this._loadLevel < this._vf.maxLevel) {
                     this._loadLevel++;
                     this._nameSpace.doc.needRender = true;
                 }
