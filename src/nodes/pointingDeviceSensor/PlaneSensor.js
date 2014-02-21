@@ -9,20 +9,19 @@ x3dom.registerNodeType(
     "PointingDeviceSensor",
     defineClass(x3dom.nodeTypes.X3DDragSensorNode,
 
-        /**
-         * Constructor.
-         * @abstract
-         * @constructs x3dom.nodeTypes.PlaneSensor
-         * @x3d x.x
-         * @component PointingDeviceSensor
-         * @status experimental
-         * @extends x3dom.nodeTypes.X3DDragSensorNode
-         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         */
         function (ctx)
         {
             x3dom.nodeTypes.PlaneSensor.superClass.call(this, ctx);
 
+            this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
+
+            this.addField_SFVec2f(ctx, 'minPosition', -1, -1);
+            this.addField_SFVec2f(ctx, 'maxPosition',  0,  0);
+
+            this.addField_SFVec3f(ctx, 'offset', 0, 0, 0);
+
+            //route-able output fields
+            //this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
         }
     )
 );

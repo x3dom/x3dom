@@ -1080,6 +1080,11 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'enabled', true);
+
+            //route-able output fields
+            this.addField_SFBool(ctx, 'isActive', false);
         }
     )
 );
