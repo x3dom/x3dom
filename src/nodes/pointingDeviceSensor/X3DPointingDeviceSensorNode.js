@@ -51,7 +51,8 @@ x3dom.registerNodeType(
              * Overrides X3DSensorNode.siblingAdded
              * @param {X3DNode} sibling - the sibling which was added
              */
-            siblingAdded: function(sibling) {
+            siblingAdded: function(sibling)
+            {
                 x3dom.nodeTypes.X3DSensorNode.prototype.siblingAdded.call(this, sibling);
 
                 var index = this._findSiblingNodeListenerSetIndex(sibling._xmlNode);
@@ -77,7 +78,8 @@ x3dom.registerNodeType(
              * Overrides X3DSensorNode.siblingRemoved
              * @param {X3DNode} sibling - the sibling which was removed
              */
-            siblingRemoved: function(sibling) {
+            siblingRemoved: function(sibling)
+            {
                 x3dom.nodeTypes.X3DSensorNode.prototype.siblingRemoved.call(this, sibling);
 
                 var index = this._findSiblingNodeListenerSetIndex(sibling._xmlNode);
@@ -202,14 +204,29 @@ x3dom.registerNodeType(
             _pointerPressedOverSibling: function(event, sibling)
             {
                 var that = this;
+                var x3dCanvas = this.findX3DDoc().canvas;
 
-                //attach a listener to catch the mouseup event, also out of the sibling
-                var tmpListener = function(event) {
-                    that._pointerReleased(event);
-                    document.removeEventListener("mouseup", tmpListener);
+
+                //attach a listener to catch the mousemove event, also outside of the siblings
+                var tmpListenerMove = function(event) {
+                    that._pointerMoved(event);
                 };
+                x3dCanvas.addEventListener("mousemove", tmpListenerMove);
 
-                document.addEventListener("mouseup", tmpListener);
+
+                //attach a listener to catch the mouseup event, also outside of the siblings
+                var tmpListenerRelease = function(event) {
+                    that._pointerReleased(event);
+
+                    //remove the temporary listeners on mouse release
+                    document.removeEventListener("mouseup", tmpListenerRelease);
+                    x3dCanvas.removeEventListener("mousemove", tmpListenerMove);
+                };
+                document.addEventListener("mouseup", tmpListenerRelease);
+
+
+                //disable the navigation
+                //TODO: implement
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -228,6 +245,19 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
+             * Function that gets called if the pointing device has been moved,
+             * after it has been pressed over a sibling of this node
+             * @param {DOMEvent] event - the pointer event
+             * @private
+             */
+            _pointerMoved: function(event)
+            {
+                //currently, nothing is done here
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
              * Function that gets called if the pointing device has been released,
              * after it has been pressed over a sibling of this node
              * @param {DOMEvent] event - the pointer event
@@ -235,7 +265,8 @@ x3dom.registerNodeType(
              */
             _pointerReleased: function(event)
             {
-                //currently, nothing is done here
+                //reset the navigation to the previous mode
+                //TODO: implement
             }
 
             //----------------------------------------------------------------------------------------------------------------------

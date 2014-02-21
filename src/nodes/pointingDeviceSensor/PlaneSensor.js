@@ -22,6 +22,31 @@ x3dom.registerNodeType(
 
             //route-able output fields
             //this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
+        },
+        {
+            //----------------------------------------------------------------------------------------------------------------------
+            // PRIVATE FUNCTIONS
+            //----------------------------------------------------------------------------------------------------------------------
+
+            _pointerPressedOverSibling: function(event, sibling)
+            {
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._pointerPressedOverSibling.call(this, event, sibling);
+
+                //TODO: document, implement
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            _pointerMoved: function(event)
+            {
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._pointerMoved.call(this, event);
+
+                //TODO: document, implement
+                //currently, nothing is done here
+                console.log(event.clientX + ", " + event.clientY);
+            }
+
+            //----------------------------------------------------------------------------------------------------------------------
         }
     )
 );
