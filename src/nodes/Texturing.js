@@ -529,10 +529,60 @@ x3dom.registerNodeType(
                 if (this._cf.scene.node) {
                     this._cf.scene.node.parentRemoved(this);
                 }
+            },
+
+            requirePingPong: function()
+            {
+                return false;
             }
         }
     )
 );
+
+/* ### RefinementTexture ### */
+x3dom.registerNodeType(
+    "RefinementTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.RenderedTexture,
+        function (ctx) {
+            x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
+
+            // Specify first stamp texture
+            this.addField_SFString(ctx, 'stamp0', "gpuii/stamps/0.gif");
+            // Specifiy second stamp texture
+            this.addField_SFString(ctx, 'stamp1', "gpuii/stamps/1.gif");
+            // Defines if texture refinement should be managed by another component
+            this.addField_SFBool(ctx, 'autoRefinement', true);
+            // Format of the images of the dataset that should be loaded
+            this.addField_SFString(ctx, 'format', 'jpg');
+            // Maximum level that should be loaded (if GSM smaller than on DSL6000)
+            this.addField_SFInt32(ctx, 'maxLevel', 7);
+
+            this._vf.maxLevel = (this._vf.maxLevel > 7) ? 7 : this._vf.maxLevel;
+            this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
+
+            // Additional parameters to control the refinement mechanism on shader
+            this._repeat = new x3dom.fields.SFVec2f(this._vf.dimensions[0] / 16,
+                                                    this._vf.dimensions[1] / 32);
+            this._renderedImage = 0;
+            this._currLoadLevel = 0;
+            this._loadLevel = 1;
+        },
+        {
+            nextLevel: function() {
+                if (this._loadLevel < this._vf.maxLevel) {
+                    this._loadLevel++;
+                    this._nameSpace.doc.needRender = true;
+                }
+            },
+
+            requirePingPong: function() {
+                return (this._currLoadLevel <= this._vf.maxLevel);
+            }
+        }
+    )
+);
+
 
 /* ### PixelTexture ### */
 x3dom.registerNodeType(

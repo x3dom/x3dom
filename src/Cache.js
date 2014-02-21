@@ -99,6 +99,9 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
             case x3dom.shader.NORMAL:
                 program = new x3dom.shader.NormalShader(gl);
                 break;
+            case x3dom.shader.TEXTURE_REFINEMENT:
+                program = new x3dom.shader.TextureRefinementShader(gl);
+                break;
             default:
                 break;
         }
