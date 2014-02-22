@@ -2895,16 +2895,23 @@ x3dom.gfx_webgl = (function () {
             // This must be refreshed on node change!
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
+
+                var texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
 
                 rt_tex._cleanupGLObjects = function(retainTex) {
+                    gl.bindFramebuffer(gl.FRAMEBUFFER, this._webgl.fbo.fbo);
+                    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
+                    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
+                    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
                     if (!retainTex)
                         gl.deleteTexture(this._webgl.fbo.tex);
 
-                    gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     delete this._webgl.fbo.rbo;
                     delete this._webgl.fbo.fbo;
                 };
@@ -2913,7 +2920,7 @@ x3dom.gfx_webgl = (function () {
                     var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
                     if (scene._webgl.refinement[refinementPos] === undefined) {
                         scene._webgl.refinement[refinementPos] = this.initFbo(gl,
-                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
                     }
                     rt_tex._webgl.texture = null;
                 }
@@ -2953,24 +2960,30 @@ x3dom.gfx_webgl = (function () {
                     rt_tex._cleanupGLObjects();
                 else
                     rt_tex._cleanupGLObjects = function(retainTex) {
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, this._webgl.fbo.fbo);
+                        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
+                        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
                         if (!retainTex)
                             gl.deleteTexture(this._webgl.fbo.tex);
 
-                        gl.deleteFramebuffer(this._webgl.fbo.fbo);
                         gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        gl.deleteFramebuffer(this._webgl.fbo.fbo);
                         delete this._webgl.fbo.rbo;
                         delete this._webgl.fbo.fbo;
                     };
 
+                var texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
-                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
 
                 if (rt_tex.requirePingPong()) {
                     var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
                     if (scene._webgl.refinement[refinementPos] === undefined) {
                         scene._webgl.refinement[refinementPos] = this.initFbo(gl,
-                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
                     }
                     rt_tex._webgl.texture = null;
                 }
