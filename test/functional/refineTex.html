@@ -10,27 +10,86 @@
        
 <body>
     <h3>GPUII - GPU-based Image Interlacing using X3DOM's RefinementTexture</h3>
-
+	<div>
         <!------------------------------------------ X3DOM ------------------------------------------------->
 		<X3D showStat="false" showLog="false" style="width: 100%; margin-left: 4px; height: 82%;">
           <Scene>
-             <transform scale="1.9 0.75 1">
+             <transform id="root" scale="1.9 0.75 1">
                  <Shape>
                     <Appearance>
                         <Material></Material>
-                        <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
+                        <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" 
+							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
                         </RefinementTexture>
-                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" repeatS="false" repeatT="false">
+                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" 
+							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
                         </RefinementTexture-->
                     </Appearance>
                     <Plane></Plane>
                  </Shape>
              </transform>
 
-             <Viewpoint position="0.00000 0.00000 1.81478" orientation="0.00000 0.00000 0.00000 0.00000"
-                        zNear="0.10000" zFar="10000.00000" description="camera"></Viewpoint>
+             <Viewpoint position="0 0 10" zNear="0.1" zFar="10000" description="camera"></Viewpoint>
           </Scene>
         </X3D>
+	</div>
+	
+	<script type="text/javascript">
+	var cnt = 0;
+	var N = 20;
+	
+    function addNode(n) {
+		for (var i=0; i<n; i++) {
+			var x = Math.random() * 6 - 3;
+			var y = Math.random() * 6 - 3;
+			var z = Math.random() * 6 - 3;
+		
+			var s = Math.random() + 0.5;
+			
+			var t = document.createElement('Transform');
+			t.setAttribute("translation", x + " " + y + " " + z);
+			t.setAttribute("scale", s + " " + s + " " + s);
+			var s = document.createElement('Shape');
+			
+			var app = document.createElement("Appearance");
+			var tex = document.createElement("RefinementTexture");
+			
+			tex.setAttribute("repeatS", "false");
+			tex.setAttribute("repeatT", "false");
+			tex.setAttribute("url", "gpuii/example_1");
+			tex.setAttribute("autoRefinement", "true");
+			tex.setAttribute("dimensions", "1088 610");
+			tex.setAttribute("maxLevel", "7");
+			
+			app.appendChild(tex);
+			s.appendChild(app);
+			
+			t.appendChild(s);
+			var b = document.createElement('Plane');
+			s.appendChild(b);
+			
+			var ot = document.getElementById('root');
+			ot.appendChild(t);
+		}
+		console.log( cnt+=n );
+    }
+    
+    function removeNode() {
+        var ot = document.getElementById('root');
+        for (var i = 0; i < ot.childNodes.length; i++) {
+        	if (ot.childNodes[i].nodeType === Node.ELEMENT_NODE) {
+        		ot.removeChild(ot.childNodes[i]);
+				cnt--;
+  				break;
+  			}
+  		}
+    }
+	</script>
+	
+	<div class="group">
+        <input type="button" value="Add 1 Node" onclick="addNode(1);" />
+		<input type="button" value="Add N Nodes" onclick="addNode(N);" />
+		<input type="button" value="Remove Node" onclick="removeNode();" />
 	</div>
 </body>
 </html>

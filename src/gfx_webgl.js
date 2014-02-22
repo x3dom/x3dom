@@ -2883,8 +2883,16 @@ x3dom.gfx_webgl = (function () {
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);		
 			
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
+
+            // TODO; cleanup on shutdown and lazily create on first use like size-dependent variables below
+            scene._webgl.refinement = {
+                stamps: new Array(2),
+                positionBuffer: gl.createBuffer()
+            };
+            gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.refinement.positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
             
-            // TODO; for testing do it on init, but must be refreshed on node change!
+            // This must be refreshed on node change!
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
                 rt_tex._webgl = {};
@@ -2894,27 +2902,20 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._cleanupGLObjects = function(retainTex) {
                     if (!retainTex)
                         gl.deleteTexture(this._webgl.fbo.tex);
+
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
                     gl.deleteRenderbuffer(this._webgl.fbo.rbo);
-                    delete this._webgl.fbo.fbo;
                     delete this._webgl.fbo.rbo;
-                    if (this._webgl.fboPingPong) {
-                        gl.deleteTexture(this._webgl.fboPingPong.tex);
-                        gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
-                        gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
-                        delete this._webgl.fboPingPong;
-                    }
+                    delete this._webgl.fbo.fbo;
                 };
 
                 if (rt_tex.requirePingPong()) {
-                    rt_tex._webgl.positionBuffer = gl.createBuffer();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
-                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
-                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    if (scene._webgl.refinement[refinementPos] === undefined) {
+                        scene._webgl.refinement[refinementPos] = this.initFbo(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    }
                     rt_tex._webgl.texture = null;
-                    rt_tex._webgl.stamps = new Array(2);
                 }
             }
 
@@ -2954,16 +2955,11 @@ x3dom.gfx_webgl = (function () {
                     rt_tex._cleanupGLObjects = function(retainTex) {
                         if (!retainTex)
                             gl.deleteTexture(this._webgl.fbo.tex);
+
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
                         gl.deleteRenderbuffer(this._webgl.fbo.rbo);
-                        delete this._webgl.fbo.fbo;
                         delete this._webgl.fbo.rbo;
-                        if (this._webgl.fboPingPong) {
-                            gl.deleteTexture(this._webgl.fboPingPong.tex);
-                            gl.deleteFramebuffer(this._webgl.fboPingPong.fbo);
-                            gl.deleteRenderbuffer(this._webgl.fboPingPong.rbo);
-                            delete this._webgl.fboPingPong;
-                        }
+                        delete this._webgl.fbo.fbo;
                     };
 
                 rt_tex._webgl = {};
@@ -2971,14 +2967,23 @@ x3dom.gfx_webgl = (function () {
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
 
                 if (rt_tex.requirePingPong()) {
-                    rt_tex._webgl.positionBuffer = gl.createBuffer();
-                    gl.bindBuffer(gl.ARRAY_BUFFER, rt_tex._webgl.positionBuffer);
-                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-
-                    rt_tex._webgl.fboPingPong = this.initFbo(gl,
-                        rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    if (scene._webgl.refinement[refinementPos] === undefined) {
+                        scene._webgl.refinement[refinementPos] = this.initFbo(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                    }
                     rt_tex._webgl.texture = null;
-                    rt_tex._webgl.stamps = new Array(2);
+                }
+
+                var glErr = gl.getError();
+                if (glErr) {
+                    if (glErr == gl.OUT_OF_MEMORY) {
+                        x3dom.debug.logError("GL-Error " + glErr + " on creating FBOs (out of memory).");
+                        console.error("WebGL: OUT_OF_MEMORY");
+                    }
+                    else {
+                        x3dom.debug.logError("GL-Error " + glErr + " on creating FBOs.");
+                    }
                 }
 
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
@@ -3293,12 +3298,17 @@ x3dom.gfx_webgl = (function () {
      * Render special PingPong-Pass
      *****************************************************************************/
     Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
+        var scene = viewarea._scene;
+        var refinementPos = rt._vf.dimensions[0] + "x" + rt._vf.dimensions[1];
+        var refinementFbo = scene._webgl.refinement[refinementPos];
+
+
         // load stamp textures
-        if (rt._currLoadLevel == 0) {
-            rt._webgl.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-               rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
-            rt._webgl.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-               rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
+        if (rt._currLoadLevel == 0 && (!scene._webgl.refinement.stamps[0] || !scene._webgl.refinement.stamps[1])) {
+            scene._webgl.refinement.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+                                    rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
+            scene._webgl.refinement.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+                                    rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
         }
 
         // load next level of image
@@ -3316,13 +3326,13 @@ x3dom.gfx_webgl = (function () {
             (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
         }
 
-        if (!rt._webgl.texture.ready || !rt._webgl.stamps[0].ready || !rt._webgl.stamps[1].ready)
+        if (!rt._webgl.texture.ready ||
+            !scene._webgl.refinement.stamps[0].ready || !scene._webgl.refinement.stamps[1].ready)
             return;
 
         // first pass
-        // THINKABOUTME: fboPingPong probably can be shared amongst all RefinementTextures, therefore attach to scene
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fboPingPong.fbo);
-        this.stateManager.viewport(0, 0, rt._webgl.fboPingPong.width, rt._webgl.fboPingPong.height);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, refinementFbo.fbo);
+        this.stateManager.viewport(0, 0, refinementFbo.width, refinementFbo.height);
 
         this.stateManager.disable(gl.BLEND);
         this.stateManager.disable(gl.CULL_FACE);
@@ -3335,19 +3345,19 @@ x3dom.gfx_webgl = (function () {
         var sp = this.cache.getShader(gl, x3dom.shader.TEXTURE_REFINEMENT);
         this.stateManager.useProgram(sp);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, rt._webgl.positionBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.refinement.positionBuffer);
         gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(sp.position);
 
         sp.stamp = 0;
         gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.stamps[(rt._currLoadLevel + 1) % 2]);    // draw stamp image to fbo
+        gl.bindTexture(gl.TEXTURE_2D, scene._webgl.refinement.stamps[(rt._currLoadLevel + 1) % 2]);    // draw stamp
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-        if (rt._currLoadLevel > 1){
+        if (rt._currLoadLevel > 1) {
             sp.lastTex = 1;
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
@@ -3377,7 +3387,7 @@ x3dom.gfx_webgl = (function () {
         sp.mode = 0;
         sp.curTex = 2;
         gl.activeTexture(gl.TEXTURE2);
-        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fboPingPong.tex);   // draw result to fbo
+        gl.bindTexture(gl.TEXTURE_2D, refinementFbo.tex);   // draw result to fbo
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3403,10 +3413,6 @@ x3dom.gfx_webgl = (function () {
 
         // we're finally done: cleanup/delete all helper FBOs
         if (!rt.requirePingPong()) {
-            gl.deleteTexture(rt._webgl.stamps[0]);
-            gl.deleteTexture(rt._webgl.stamps[1]);
-            delete rt._webgl.stamps;
-
             gl.deleteTexture(rt._webgl.texture);
             delete rt._webgl.texture;
 
