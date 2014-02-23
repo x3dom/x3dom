@@ -11,6 +11,7 @@
 
 
 x3dom.gfx_webgl = (function () {
+    "use strict";
 
     /*****************************************************************************
      * Context constructor
@@ -23,7 +24,6 @@ x3dom.gfx_webgl = (function () {
         this.IG_PositionBuffer = null;
         this.cache = new x3dom.Cache();
         this.stateManager = new x3dom.StateManager(ctx3d);
-        this.activeShader = null;
     }
 
 
@@ -160,6 +160,7 @@ x3dom.gfx_webgl = (function () {
         var q = 0, q5;
         var textures, t;
         var vertices, positionBuffer;
+        var texCoordBuffer, normalBuffer, colorBuffer;
         var indicesBuffer, indexArray;
 
         var shape = drawable.shape;
@@ -585,7 +586,7 @@ x3dom.gfx_webgl = (function () {
                     vertices = null;
                 }
                 if (sp.normal !== undefined || shape._webgl.normals[q]) {
-                    var normalBuffer = gl.createBuffer();
+                    normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5 + 2] = normalBuffer;
 
                     var normals = new Float32Array(shape._webgl.normals[q]);
@@ -619,7 +620,7 @@ x3dom.gfx_webgl = (function () {
                     texCoords = null;
                 }
                 if (sp.color !== undefined) {
-                    var colorBuffer = gl.createBuffer();
+                    colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5 + 4] = colorBuffer;
 
                     var colors = new Float32Array(shape._webgl.colors[q]);
@@ -3855,11 +3856,16 @@ x3dom.gfx_webgl = (function () {
 				numShadowMaps = mat_light.length;
 				
 				for (i=0; i< numShadowMaps; i++){
-						gl.activeTexture(gl.TEXTURE1 + shadowIndex);
-						gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
-						sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
-						sp['light'+p+'_'+i+'_Matrix'] = mat_light[i].toGL();
-						shadowIndex++;
+                    gl.activeTexture(gl.TEXTURE1 + shadowIndex);
+                    gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+                    sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
+                    sp['light'+p+'_'+i+'_Matrix'] = mat_light[i].toGL();
+                    shadowIndex++;
 				}
 				sp['light'+p+'_ViewMatrix'] = lightMatrix.toGL();						
 
