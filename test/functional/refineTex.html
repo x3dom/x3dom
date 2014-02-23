@@ -18,10 +18,10 @@
                  <Shape>
                     <Appearance>
                         <Material></Material>
-                        <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610" 
+                        <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610 4" 
 							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
                         </RefinementTexture>
-                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404" 
+                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404 4" 
 							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
                         </RefinementTexture-->
                     </Appearance>
@@ -35,8 +35,8 @@
 	</div>
 	
 	<script type="text/javascript">
-	var cnt = 0;
-	var N = 20;
+	var cnt = 1;
+	var N = 350;
 	
     function addNode(n) {
 		for (var i=0; i<n; i++) {
@@ -58,7 +58,7 @@
 			tex.setAttribute("repeatT", "false");
 			tex.setAttribute("url", "gpuii/example_1");
 			tex.setAttribute("autoRefinement", "true");
-			tex.setAttribute("dimensions", "1088 610");
+			tex.setAttribute("dimensions", "1088 610 4");
 			tex.setAttribute("maxLevel", "7");
 			
 			app.appendChild(tex);
@@ -74,22 +74,26 @@
 		console.log( cnt+=n );
     }
     
-    function removeNode() {
+    function removeNode(n) {
         var ot = document.getElementById('root');
-        for (var i = 0; i < ot.childNodes.length; i++) {
+        for (var j=0, i=ot.childNodes.length-1; i>=0; i--) {
         	if (ot.childNodes[i].nodeType === Node.ELEMENT_NODE) {
         		ot.removeChild(ot.childNodes[i]);
 				cnt--;
-  				break;
+				if (++j >= n)
+					break;
   			}
   		}
+		console.log(cnt);
     }
 	</script>
 	
 	<div class="group">
         <input type="button" value="Add 1 Node" onclick="addNode(1);" />
-		<input type="button" value="Add N Nodes" onclick="addNode(N);" />
-		<input type="button" value="Remove Node" onclick="removeNode();" />
+		<input type="button" value="Add 10 Nodes" onclick="addNode(10);" />
+		<input type="button" value="Add many Nodes" onclick="addNode(N);" />
+		<input type="button" value="Remove 1 Node" onclick="removeNode(1);" />
+		<input type="button" value="Remove many Nodes" onclick="removeNode(N);" />
 	</div>
 </body>
 </html>

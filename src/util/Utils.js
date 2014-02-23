@@ -214,6 +214,74 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 };
 
 /*****************************************************************************
+ * Initialize framebuffer object and associated texture(s)
+ *****************************************************************************/
+x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
+    var tex = gl.createTexture();
+    tex.width  = w;
+    tex.height = h;
+
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, type, null);
+    if (mipMap)
+        gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    var i, mrts = null;
+
+    if (x3dom.caps.DRAW_BUFFERS && numMrt !== undefined) {
+        mrts = [ tex ];
+
+        for (i=1; i<numMrt; i++) {
+            mrts[i] = gl.createTexture();
+            mrts[i].width  = w;
+            mrts[i].height = h;
+
+            gl.bindTexture(gl.TEXTURE_2D, mrts[i]);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, type, null);
+            if (mipMap)
+                gl.generateMipmap(gl.TEXTURE_2D);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+    }
+
+    var fbo = gl.createFramebuffer();
+    var rb = null;
+
+    if (needRenderBuf) {
+        rb = gl.createRenderbuffer();
+
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    if (x3dom.caps.DRAW_BUFFERS && numMrt !== undefined) {
+        for (i=1; i<numMrt; i++) {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, mrts[i], 0);
+        }
+    }
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+
+    var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status != gl.FRAMEBUFFER_COMPLETE) {
+        x3dom.debug.logWarning("[Utils|InitFBO] FBO-Status: " + status);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    return {
+        fbo: fbo, rbo: rb,
+        tex: tex, texTargets: mrts,
+        width: w, height: h,
+        type: type
+    };
+};
+
+/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.getFileName = function(url)

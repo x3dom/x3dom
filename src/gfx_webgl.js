@@ -2789,7 +2789,7 @@ x3dom.gfx_webgl = (function () {
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
 
-        // for initFbo
+        // for initFBO
         var type = gl.UNSIGNED_BYTE;
         var shadowType = gl.UNSIGNED_BYTE;
         var nearestFilt = false;
@@ -2798,12 +2798,13 @@ x3dom.gfx_webgl = (function () {
             type = gl.FLOAT;
             shadowType = gl.FLOAT;
             if (!x3dom.caps.FPL_TEXTURES) {
-                nearestFilt = true;
+                nearestFilt = true;             // TODO: use correct filtering for fp-textures
             }
         }
 
         var shadowedLights, numShadowMaps;
         var i, j, n, size, sizeAvailable;
+        var texType, refinementPos;
         var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 
         scene.updateVolume();
@@ -2823,8 +2824,8 @@ x3dom.gfx_webgl = (function () {
             // TODO: FIXME when spec ready: readPixels not (yet?) available for float textures
             // https://bugzilla.mozilla.org/show_bug.cgi?id=681903
             // https://www.khronos.org/webgl/public-mailing-list/archives/1108/msg00025.html
-            scene._webgl.fboPick = this.initFbo(gl,
-                                   scene._webgl._currFboWidth, scene._webgl._currFboHeight, true, gl.UNSIGNED_BYTE);
+            scene._webgl.fboPick = x3dom.Utils.initFBO(gl,
+                                   scene._webgl._currFboWidth, scene._webgl._currFboHeight, gl.UNSIGNED_BYTE, false, true);
             scene._webgl.fboPick.pixelData = null;
 
             //Set picking shaders
@@ -2856,11 +2857,11 @@ x3dom.gfx_webgl = (function () {
 				scene._webgl.fboShadow[i] = [];
 				
 				for (j=0; j < numShadowMaps; j++)
-					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboShadow[i][j] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 			
 			if (scene._webgl.fboShadow.length > 0)
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
+				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			scene._webgl.fboBlur = [];
 						
 			//initialize blur fbo (different fbos for different sizes)
@@ -2874,7 +2875,7 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 			
 			//initialize Data for post processing
@@ -2896,31 +2897,27 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
-                var texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
+                texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
-                rt_tex._webgl.fbo = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
+                rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
 
                 rt_tex._cleanupGLObjects = function(retainTex) {
-                    gl.bindFramebuffer(gl.FRAMEBUFFER, this._webgl.fbo.fbo);
-                    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
-                    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
-                    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
                     if (!retainTex)
                         gl.deleteTexture(this._webgl.fbo.tex);
-
-                    gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    if (this._webgl.fbo.rbo)
+                        gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                    delete this._webgl.fbo.rbo;
-                    delete this._webgl.fbo.fbo;
+                    this._webgl.fbo.rbo = null;
+                    this._webgl.fbo.fbo = null;
                 };
 
                 if (rt_tex.requirePingPong()) {
-                    var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
                     if (scene._webgl.refinement[refinementPos] === undefined) {
-                        scene._webgl.refinement[refinementPos] = this.initFbo(gl,
-                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
+                        scene._webgl.refinement[refinementPos] = x3dom.Utils.initFBO(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, false);
                     }
                     rt_tex._webgl.texture = null;
                 }
@@ -2942,7 +2939,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl._currFboWidth = fboWidth;
                 scene._webgl._currFboHeight = fboHeight;
 
-                scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true, scene._webgl.fboPick.typ);
+                scene._webgl.fboPick = x3dom.Utils.initFBO(gl, fboWidth, fboHeight, scene._webgl.fboPick.type, false, true);
                 scene._webgl.fboPick.pixelData = null;
 
                 x3dom.debug.logInfo("Refreshed picking FBO to size (" + fboWidth + ", " + fboHeight + ")");
@@ -2960,43 +2957,28 @@ x3dom.gfx_webgl = (function () {
                     rt_tex._cleanupGLObjects();
                 else
                     rt_tex._cleanupGLObjects = function(retainTex) {
-                        gl.bindFramebuffer(gl.FRAMEBUFFER, this._webgl.fbo.fbo);
-                        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
-                        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, null);
-                        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
                         if (!retainTex)
                             gl.deleteTexture(this._webgl.fbo.tex);
-
-                        gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        if (this._webgl.fbo.rbo)
+                            gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                        delete this._webgl.fbo.rbo;
-                        delete this._webgl.fbo.fbo;
+                        this._webgl.fbo.rbo = null;
+                        this._webgl.fbo.fbo = null;
                     };
 
-                var texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
+                texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
-                rt_tex._webgl.fbo = this.initFbo(gl,
-                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
+                rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
+                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
 
                 if (rt_tex.requirePingPong()) {
-                    var refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
                     if (scene._webgl.refinement[refinementPos] === undefined) {
-                        scene._webgl.refinement[refinementPos] = this.initFbo(gl,
-                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, texType);
+                        scene._webgl.refinement[refinementPos] = x3dom.Utils.initFBO(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, false);
                     }
                     rt_tex._webgl.texture = null;
-                }
-
-                var glErr = gl.getError();
-                if (glErr) {
-                    if (glErr == gl.OUT_OF_MEMORY) {
-                        x3dom.debug.logError("GL-Error " + glErr + " on creating FBOs (out of memory).");
-                        console.error("WebGL: OUT_OF_MEMORY");
-                    }
-                    else {
-                        x3dom.debug.logError("GL-Error " + glErr + " on creating FBOs.");
-                    }
                 }
 
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
@@ -3022,7 +3004,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboShadow[i][0].height != size) {
 					scene._webgl.fboShadow[i] = [];
 					for (j=0;j<numShadowMaps;j++){
-						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+						scene._webgl.fboShadow[i][j] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 					}
 				}			
 			}
@@ -3037,12 +3019,12 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 
 			if (scene._webgl.fboShadow.length > 0 && typeof scene._webgl.fboScene == "undefined" || scene._webgl.fboScene &&
 				(this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height)) {
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
+				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			}
         }
 
@@ -3774,106 +3756,6 @@ x3dom.gfx_webgl = (function () {
 
         //Release Texture and Shader Resources
         this.cache.Release(gl);
-    };
-
-    /*****************************************************************************
-     * Start of fbo init stuff
-     *****************************************************************************/
-    Context.prototype.emptyTexImage2D = function (gl, internalFormat, width, height, format, type) {
-        try {
-            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
-        }
-        catch (e) {
-            // seems to be no longer necessary, but anyway...
-            var bytes = 3;
-            switch (internalFormat) {
-                case gl.DEPTH_COMPONENT:
-                    bytes = 3;
-                    break;
-                case gl.ALPHA:
-                    bytes = 1;
-                    break;
-                case gl.RGB:
-                    bytes = 3;
-                    break;
-                case gl.RGBA:
-                    bytes = 4;
-                    break;
-                case gl.LUMINANCE:
-                    bytes = 1;
-                    break;
-                case gl.LUMINANCE_ALPHA:
-                    bytes = 2;
-                    break;
-            }
-            var pixels = new Uint8Array(width * height * bytes);
-            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
-        }
-    };
-
-    /*****************************************************************************
-     * Init Texture
-     *****************************************************************************/
-    Context.prototype.initTex = function (gl, w, h, nearest, type) {
-        var tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-
-        this.emptyTexImage2D(gl, gl.RGBA, w, h, gl.RGBA, type);
-        //this.emptyTexImage2D(gl, gl.DEPTH_COMPONENT16, w, h, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE);
-
-        if (nearest) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        }
-        else {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        }
-        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        //gl.generateMipmap(gl.TEXTURE_2D);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-        tex.width = w;
-        tex.height = h;
-
-        return tex;
-    };
-
-    /*****************************************************************************
-     * Creates FBO with given size
-     * (taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009)
-     *
-     * Returned Object has rbo, fbo, tex, width, height
-     *****************************************************************************/
-    Context.prototype.initFbo = function (gl, w, h, nearest, type) {
-        var fbo = gl.createFramebuffer();
-        var rb = gl.createRenderbuffer();
-
-        var tex = this.initTex(gl, w, h, nearest, type);
-
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
-        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-        if (status != gl.FRAMEBUFFER_COMPLETE)
-            x3dom.debug.logWarning("[Context|InitFBO] FBO-Status: " + status);
-
-        return {
-            fbo: fbo,
-            rbo: rb,
-            tex: tex,
-            width: w,
-            height: h,
-            typ: type
-        };
     };
 	
 	/*****************************************************************************
