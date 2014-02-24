@@ -61,10 +61,10 @@ x3dom.registerNodeType(
                 //that._runtime.noNav();
                 //===============================================
 
-                this._lastX = event.clientX;
-                this._lastY = event.clientX;
+                this._lastX = event.layerX;
+                this._lastY = event.layerY;
 
-                this._startDragging(event.clientX, event.clientY);
+                this._startDragging(event.layerX, event.layerY);
             },
 
             //----------------------------------------------------------------------------------------------------------------------

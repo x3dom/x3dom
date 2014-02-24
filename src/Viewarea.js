@@ -9,6 +9,19 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
+/**
+ * Input types - X3DOM allows either navigation or interaction.
+ * During each frame, only interaction of the current type is being processed, it is not possible to
+ * perform interaction (for instance, selecting or dragging objects) and navigation at the same time
+ */
+x3dom.InputTypes = {};
+
+x3dom.InputTypes.NAVIGATION  = 1;
+x3dom.InputTypes.INTERACTION = 2;
+
+
+
 // ### Viewarea ###
 x3dom.Viewarea = function (document, scene) {
     this._doc = document; // x3ddocument
@@ -25,6 +38,8 @@ x3dom.Viewarea = function (document, scene) {
         lastClickObj: null,
         shadowObjectId: -1
     };
+
+    this._currentInputType = x3dom.InputTypes.NAVIGATION;
 
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
@@ -1048,6 +1063,18 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 {
     var that = this;
     var needRecurse = true;
+    var childNode;
+    var i;
+
+    //pointing sensors might still be in use, if the mouse has previoulsy been pressed over sensor geometry
+    //(in general, transitions between INTERACTION and NAVIGATION require that the mouse is not pressed)
+    if (buttonState == 0)
+    {
+        this._doc._nodeBag.affectedPointingSensors = [];
+    }
+
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+
 
     var event = {
         target: {},
@@ -1097,6 +1124,22 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
                     needRecurse = false;
                 }
             }
+
+            //find the lowest pointing device sensors in the hierarchy that might be affected
+            //(note that, for X3DTouchSensors, 'affected' does not necessarily mean 'activated')
+            if (buttonState == 0 && eventType == 'onmousemove' && affectedPointingSensorsList.length == 0)
+            {
+                for (i = 0; i < node._childNodes.length; ++i)
+                {
+                    childNode = node._childNodes[i];
+
+                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode))
+                    {
+                        affectedPointingSensorsList.push(childNode);
+                    }
+                }
+            }
+
             if (x3dom.isa(node, x3dom.nodeTypes.Anchor) && eventType === 'onclick') {
                 node.handleTouch();
                 needRecurse = false;
@@ -1110,9 +1153,47 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     if (needRecurse && obj) {
         recurse(obj);
     }
-	
+
 	return needRecurse;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Notifies all pointing device sensors that are currently affected by mouse events, if any, about the given event
+ * @param {DOMEvent} event - a mouse event, enriched by X3DOM-specific members
+ */
+x3dom.Viewarea.prototype._notifyAffectedPointingSensors = function(event)
+{
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+
+    if (affectedPointingSensorsList.length > 0)
+    {
+        if (event.type == 'mousedown')
+        {
+            for (i = 0; i < affectedPointingSensorsList.length; ++i)
+            {
+                affectedPointingSensorsList[i].pointerPressedOverSibling(event);
+            }
+        }
+        else if (event.type == 'mousemove')
+        {
+            for (i = 0; i < affectedPointingSensorsList.length; ++i)
+            {
+                affectedPointingSensorsList[i].pointerMoved(event);
+            }
+        }
+        else if (event.type == 'mouseup')
+        {
+            for (i = 0; i < affectedPointingSensorsList.length; ++i)
+            {
+                affectedPointingSensorsList[i].pointerReleased(event);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 x3dom.Viewarea.prototype.initMouseState = function()
 {
@@ -1168,10 +1249,13 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._lastButton = buttonState;
     this._isMoving = false;
 
-    var navi = this._scene.getNavigationInfo();
+    if (this._currentInputType == x3dom.InputTypes.NAVIGATION)
+    {
+        var navi = this._scene.getNavigationInfo();
 
-    if (navi.getType() === "turntable") {
-        this.initTurnTable(navi);
+        if (navi.getType() === "turntable") {
+            this.initTurnTable(navi);
+        }
     }
 };
 
@@ -1242,7 +1326,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
     }
     this._pickingInfo.firstObj = null;
 
-    if ((this._pickingInfo.pickObj || this._pickingInfo.shadowObjectId >= 0) &&
+    if (this._currentInputType == x3dom.InputTypes.NAVIGATION &&
+        (this._pickingInfo.pickObj || this._pickingInfo.shadowObjectId >= 0) &&
         navType === "lookat" && this._pressX === x && this._pressY === y)
     {
         var step = (this._lastButton & 2) ? -1 : 1;
@@ -1391,38 +1476,41 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
 // multi-touch version of examine mode, called from X3DCanvas.js
 x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 {
-	var navi = this._scene.getNavigationInfo();
-	var viewpoint = this._scene.getViewpoint();
+    if (this._currentInputType == x3dom.InputTypes.NAVIGATION)
+    {
+        var navi = this._scene.getNavigationInfo();
+        var viewpoint = this._scene.getViewpoint();
 
-	if (navi.getType() === "examine")
-	{
-		if (translation)
-		{
-			var distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-			distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
-			
-			translation = translation.multiply(distance);
-            this._movement = this._movement.add(translation);
+        if (navi.getType() === "examine")
+        {
+            if (translation)
+            {
+                var distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 
-            this._transMat = viewpoint.getViewMatrix().inverse().
-                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(viewpoint.getViewMatrix());
-		}
-		
-		if (rotation)
-        {            
-            var center = viewpoint.getCenterOfRotation();
-            var mat = this.getViewMatrix();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+                translation = translation.multiply(distance);
+                this._movement = this._movement.add(translation);
 
-            this._rotMat = this._rotMat.
-                           mult(x3dom.fields.SFMatrix4f.translation(center)).
-                           mult(mat.inverse()).mult(rotation).mult(mat).
-                           mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
-		}
+                this._transMat = viewpoint.getViewMatrix().inverse().
+                    mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                    mult(viewpoint.getViewMatrix());
+            }
 
-        this._isMoving = true;
-	}
+            if (rotation)
+            {
+                var center = viewpoint.getCenterOfRotation();
+                var mat = this.getViewMatrix();
+                mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+
+                this._rotMat = this._rotMat.
+                               mult(x3dom.fields.SFMatrix4f.translation(center)).
+                               mult(mat.inverse()).mult(rotation).mult(mat).
+                               mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+            }
+
+            this._isMoving = true;
+        }
+    }
 };
 
 x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
@@ -1430,151 +1518,154 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     // should onmouseover/-out be handled on drag?
     this.handleMoveEvt(x, y, buttonState);
 
-    var navi = this._scene.getNavigationInfo();
-
-    var navType = navi.getType();
-    var navRestrict = navi.getExplorationMode();
-    
-    if (navType === "none" || navRestrict == 0) {
-        return;
-    }
-
-    var viewpoint = this._scene.getViewpoint();
-
-    var dx = x - this._lastX;
-    var dy = y - this._lastY;
-    var d, vec, cor, mat = null;
-    var alpha, beta;
-
-    buttonState = ((navRestrict & buttonState) != buttonState) ? navRestrict : buttonState;
-
-    if (navType === "examine")
+    if (this._currentInputType == x3dom.InputTypes.NAVIGATION)
     {
-        if (buttonState & 1) //left
-        {
-            alpha = (dy * 2 * Math.PI) / this._width;
-            beta = (dx * 2 * Math.PI) / this._height;
-            mat = this.getViewMatrix();
+        var navi = this._scene.getNavigationInfo();
 
-            var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
-            var my = x3dom.fields.SFMatrix4f.rotationY(beta);
+        var navType = navi.getType();
+        var navRestrict = navi.getExplorationMode();
 
-            var center = viewpoint.getCenterOfRotation();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
-
-            this._rotMat = this._rotMat.
-                           mult(x3dom.fields.SFMatrix4f.translation(center)).
-                           mult(mat.inverse()).mult(mx).mult(my).mult(mat).
-                           mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
-        }
-        if (buttonState & 4) //middle
-        {
-			d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
-
-            vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
-            this._movement = this._movement.add(vec);
-
-            mat = this.getViewpointMatrix().mult(this._transMat);
-            //TODO; move real distance along viewing plane
-            this._transMat = mat.inverse().
-                             mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                             mult(mat);
-        }
-        if (buttonState & 2) //right
-        {
-			d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
-
-            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
-            this._movement = this._movement.add(vec);
-
-            mat = this.getViewpointMatrix().mult(this._transMat);
-            //TODO; move real distance along viewing ray
-            this._transMat = mat.inverse().
-                             mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                             mult(mat);
+        if (navType === "none" || navRestrict == 0) {
+            return;
         }
 
-        this._isMoving = true;
-    }
-    else if (navType === "turntable")   // requires that y is up vector in world coords
-    {
-        if (buttonState & 1) //left
+        var viewpoint = this._scene.getViewpoint();
+
+        var dx = x - this._lastX;
+        var dy = y - this._lastY;
+        var d, vec, cor, mat = null;
+        var alpha, beta;
+
+        buttonState = ((navRestrict & buttonState) != buttonState) ? navRestrict : buttonState;
+
+        if (navType === "examine")
         {
-            alpha = (dy * 2 * Math.PI) / this._height;
-            beta = (dx * 2 * Math.PI) / this._width;
+            if (buttonState & 1) //left
+            {
+                alpha = (dy * 2 * Math.PI) / this._width;
+                beta = (dx * 2 * Math.PI) / this._height;
+                mat = this.getViewMatrix();
 
-            this._flyMat = this.calcOrbit(alpha, beta, navi);
-            viewpoint.setView(this._flyMat.inverse());
-        }
-        else if (buttonState & 2) //right
-        {
-            d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+                var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
+                var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 
-            this._up   = this._flyMat.e1();
-            this._from = this._flyMat.e3(); // eye
+                var center = viewpoint.getCenterOfRotation();
+                mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
 
-            // zoom in/out
-            cor = viewpoint.getCenterOfRotation();
+                this._rotMat = this._rotMat.
+                               mult(x3dom.fields.SFMatrix4f.translation(center)).
+                               mult(mat.inverse()).mult(mx).mult(my).mult(mat).
+                               mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+            }
+            if (buttonState & 4) //middle
+            {
+                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            var lastDir  = cor.subtract(this._from);
-            var lastDirL = lastDir.length();
-            lastDir = lastDir.normalize();
+                vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
+                this._movement = this._movement.add(vec);
 
-            var zoomAmount = d * (dx + dy) / this._height;
+                mat = this.getViewpointMatrix().mult(this._transMat);
+                //TODO; move real distance along viewing plane
+                this._transMat = mat.inverse().
+                                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                                 mult(mat);
+            }
+            if (buttonState & 2) //right
+            {
+                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-        /*
-            // maintain minimum distance to prevent orientation flips
-            var newDist = Math.min(zoomAmount, lastDirL - 0.01);
+                vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
+                this._movement = this._movement.add(vec);
 
-            // move along viewing ray, scaled with zoom factor
-            this._from = this._from.addScaled(lastDir, newDist);
-        */
-
-            // add z offset to look-at position, alternatively clamp
-            var diff = zoomAmount - lastDirL + 0.01;
-            if (diff >= 0) {
-                cor = cor.addScaled(lastDir, diff);
-                viewpoint.setCenterOfRotation(cor);
+                mat = this.getViewpointMatrix().mult(this._transMat);
+                //TODO; move real distance along viewing ray
+                this._transMat = mat.inverse().
+                                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                                 mult(mat);
             }
 
-            // move along viewing ray, scaled with zoom factor
-            this._from = this._from.addScaled(lastDir, zoomAmount);
-
-            // update camera matrix with lookAt() and invert again
-            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
-            viewpoint.setView(this._flyMat.inverse());
+            this._isMoving = true;
         }
-        else if (buttonState & 4) //middle
+        else if (navType === "turntable")   // requires that y is up vector in world coords
         {
-            d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed * 0.75;
+            if (buttonState & 1) //left
+            {
+                alpha = (dy * 2 * Math.PI) / this._height;
+                beta = (dx * 2 * Math.PI) / this._width;
 
-            var tx = -d * dx / this._width;
-            var ty =  d * dy / this._height;
+                this._flyMat = this.calcOrbit(alpha, beta, navi);
+                viewpoint.setView(this._flyMat.inverse());
+            }
+            else if (buttonState & 2) //right
+            {
+                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            this._up   = this._flyMat.e1();
-            this._from = this._flyMat.e3(); // eye
-            var s = this._flyMat.e0();
+                this._up   = this._flyMat.e1();
+                this._from = this._flyMat.e3(); // eye
 
-            // add xy offset to camera position for pan
-            this._from = this._from.addScaled(this._up, ty);
-            this._from = this._from.addScaled(s, tx);
+                // zoom in/out
+                cor = viewpoint.getCenterOfRotation();
 
-            // add xy offset to look-at position
-            cor = viewpoint.getCenterOfRotation();
-            cor = cor.addScaled(this._up, ty);
-            cor = cor.addScaled(s, tx);
-            viewpoint.setCenterOfRotation(cor);
+                var lastDir  = cor.subtract(this._from);
+                var lastDirL = lastDir.length();
+                lastDir = lastDir.normalize();
 
-            // update camera matrix with lookAt() and invert
-            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
-            viewpoint.setView(this._flyMat.inverse());
+                var zoomAmount = d * (dx + dy) / this._height;
+
+            /*
+                // maintain minimum distance to prevent orientation flips
+                var newDist = Math.min(zoomAmount, lastDirL - 0.01);
+
+                // move along viewing ray, scaled with zoom factor
+                this._from = this._from.addScaled(lastDir, newDist);
+            */
+
+                // add z offset to look-at position, alternatively clamp
+                var diff = zoomAmount - lastDirL + 0.01;
+                if (diff >= 0) {
+                    cor = cor.addScaled(lastDir, diff);
+                    viewpoint.setCenterOfRotation(cor);
+                }
+
+                // move along viewing ray, scaled with zoom factor
+                this._from = this._from.addScaled(lastDir, zoomAmount);
+
+                // update camera matrix with lookAt() and invert again
+                this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
+                viewpoint.setView(this._flyMat.inverse());
+            }
+            else if (buttonState & 4) //middle
+            {
+                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed * 0.75;
+
+                var tx = -d * dx / this._width;
+                var ty =  d * dy / this._height;
+
+                this._up   = this._flyMat.e1();
+                this._from = this._flyMat.e3(); // eye
+                var s = this._flyMat.e0();
+
+                // add xy offset to camera position for pan
+                this._from = this._from.addScaled(this._up, ty);
+                this._from = this._from.addScaled(s, tx);
+
+                // add xy offset to look-at position
+                cor = viewpoint.getCenterOfRotation();
+                cor = cor.addScaled(this._up, ty);
+                cor = cor.addScaled(s, tx);
+                viewpoint.setCenterOfRotation(cor);
+
+                // update camera matrix with lookAt() and invert
+                this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
+                viewpoint.setView(this._flyMat.inverse());
+            }
+
+            this._isMoving = true;
         }
-
-        this._isMoving = true;
     }
 
     this._dx = dx;
@@ -1630,9 +1721,10 @@ x3dom.Viewarea.prototype.calcOrbit = function (alpha, beta, navi)
 
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
-    var pickMode = this._scene._vf.pickMode.toLowerCase();
-    var avoidTraversal = (pickMode.indexOf("idbuf") == 0 ||
-                          pickMode == "color" || pickMode == "texcoord");
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    var pickMode                    = this._scene._vf.pickMode.toLowerCase();
+    var avoidTraversal              = (pickMode.indexOf("idbuf") == 0 ||
+                                       pickMode == "color" || pickMode == "texcoord");
 
     if (avoidTraversal) {
         var obj = this._pickingInfo.pickObj;
@@ -1649,6 +1741,25 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
                 x3dom.debug.logInfo("Ray hit at position " + this._pick);
             }
         }
+    }
+
+    //forward event to affected pointing device sensors
+    this._notifyAffectedPointingSensors(event);
+
+    //if the mouse is released, reset the list of currently affected pointing sensors
+    if (eventType == 'mouseup')
+    {
+        affectedPointingSensorsList = [];
+    }
+
+    //switch between navigation and interaction
+    if (affectedPointingSensorsList.length > 0)
+    {
+        this._currentInputType = x3dom.InputTypes.INTERACTION;
+    }
+    else
+    {
+        this._currentInputType = x3dom.InputTypes.NAVIGATION;
     }
 };
 
