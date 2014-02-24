@@ -88,6 +88,10 @@ fs.readFile(configuration,function(err, data)
                         });
                     }
                 }
+                else
+                {
+                    publisher.publishOverview();
+                }
             }
         });
 
