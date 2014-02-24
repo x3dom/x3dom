@@ -6,7 +6,6 @@
 		<script type="text/javascript" src="x3dom_dev/x3dom-full.js"></script>
 		<link rel='stylesheet' type='text/css' href='x3dom_dev/x3dom.css'/>
 		<script type='text/javascript' src='ammo.js-master/builds/ammo.js'></script>
-		<script type='text/javascript' src="stats.js-master/build/stats.min.js"></script>
 		
 		<style type="text/css">
 			* { -webkit-user-select: none; -moz-user-select: none; cursor: default; }
@@ -36,9 +35,7 @@
 					</CollidableShape>
 				
 				<Group>
-					
-					<!--///////////////////////////////CollidableShapes for balljoints///////////////////////////////-->
-					
+
 					<CollidableShape index='1' DEF='BALL-J1' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 35 0'>
 						<Shape containerField='Shape'>
 							<Sphere DEF='sphere_j1' radius='1'/>
@@ -81,17 +78,9 @@
 						</Shape>
 					</CollidableShape>
 					
-					
-					<!--//////////////////////////////////////////////////////////////-->
-
 				</Group>
 				
-				
-				
-				
-				
-				<!--///////////////////////////////Transforms for balljoints///////////////////////////////-->
-					
+
 				<Transform index='0' DEF='Tavani' translation='0 40 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
@@ -171,27 +160,14 @@
 						<Sphere DEF='sphere_j7' radius='1'/>
 					</Shape>
 				</Transform>	
-					
-					<!--//////////////////////////////////////////////////////////////-->
+
 				
 				
-				
-				
-				
-				
-				
-				<!-- BODY_COLLECTION ROUTE:  [from CONTACT-SCRIPT.correctedContacts to set_contacts ] -->
 				<RigidBodyCollection DEF='BODY_COLLECTION' containerField='children' autoDisable='false' constantForceMix='0.0001' contactSurfaceThickness='1000' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' errorCorrection='0.8' gravity='0 -19.8 0' iterations='10' maxCorrectionSpeed='-1' preferAccuracy='false'>
-					
-					
-					<!--///////////////////////////////Rigidbodies for balljoints///////////////////////////////-->
-				
+
 					<RigidBody DEF='BODY_Tavani' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.001' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='0' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='Tavani_Col' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					
-					
-				
 					<RigidBody DEF='BODY_J1' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.1' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J1' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
@@ -213,8 +189,6 @@
 					<RigidBody DEF='BODY_J7' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J7' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					
-					
 					
 					
 					<BallJoint anchorPoint='0 3 0' containerField='joints'>
@@ -251,19 +225,13 @@
 						<RigidBody USE='BODY_J6' containerField='body1'/>
 						<RigidBody USE='BODY_J7' containerField='body2'/>
 					</BallJoint>
-					
-					<!--//////////////////////////////////////////////////////-->
 				
-
 				</RigidBodyCollection>
 				
 				
 				<CollisionSensor DEF='COLLISION-OUTPUT' enabled='true'>
 					<CollisionCollection DEF='COLLISION-JOINTS-GROUP' bounce='1.0' containerField='collidables' minBounceSpeed='1.0' appliedParameters='BOUNCE' enabled='true' frictionCoefficients='0 1.2' slipFactors='0 0' softnessConstantForceMix='0.0001' softnessErrorCorrection='0.8' surfaceSpeed='0 0'>		
-						
 						<CollidableShape USE='Tavani_Col' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
-						
-						<!--///////////////////////////////Rigidbodies for balljoints///////////////////////////////-->
 						<CollidableShape USE='BALL-J1' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J2' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J3' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
@@ -271,36 +239,13 @@
 						<CollidableShape USE='BALL-J5' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J6' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J7' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
-						
-						<!--//////////////////////////////////////////////////////-->
 					</CollisionCollection>		
 				</CollisionSensor>
-
 			
 			</Scene>
 		</X3D> 
 
-		
-		<script>  <![CDATA[
-		
-		// Append Stats Script
-		var stats = new Stats();
-		stats.setMode(0); // 0: fps, 1: ms
-
-		// Align top-left
-		stats.domElement.style.position = 'absolute';
-		stats.domElement.style.left = '10px';
-		stats.domElement.style.top = '50px';
-
-		document.body.appendChild( stats.domElement );
-
-		setInterval( function () {
-			stats.begin();
-			// your code goes here
-			stats.end();
-		}, 1000 / 60 );
 	
-	]]></script>
 		
 		
 		
