@@ -27,6 +27,7 @@ x3dom.registerNodeType(
             // PROPERTIES
             //---------------------------------------
 
+            //TODO: revise if those are still needed
             /**
              * Last mouse position in x direction.
              * @type {Double}
@@ -48,18 +49,15 @@ x3dom.registerNodeType(
 
             /**
              * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerPressedOverSibling
-             * @param {DOMEvent] event - the pointer event
+             * @param {DOMEvent} event - the pointer event
              * @private
              */
-            _pointerPressedOverSibling: function(event, sibling)
+            _pointerPressedOverSibling: function(event)
             {
                 x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerPressedOverSibling.call(this, event, sibling);
 
-                //temporarily disable navigation during dragging
-                //===============================================
-                //that._navType = that._runtime.navigationType();
-                //that._runtime.noNav();
-                //===============================================
+                this._vf["isActive"] = true;
+                //TODO: fire activation event?
 
                 this._lastX = event.layerX;
                 this._lastY = event.layerY;
@@ -76,9 +74,12 @@ x3dom.registerNodeType(
              */
             _pointerMoved: function(event)
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerMoved.call(this, event);
-
                 this._process2DDrag(event.clientX-this._lastX, event.clientX-this._lastY);
+
+                if (this._vf["isActive"] && this._vf["enabled"])
+                {
+                    x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerMoved.call(this, event);
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -92,14 +93,10 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerReleased.call(this, event);
 
-                //reset navigation to its state before the dragging was started
-                //===============================================
-                //var navi = that._runtime.canvas.doc._scene.getNavigationInfo();
-                //navi.setType(that._navType);
-                //that._runtime.getCanvas().style.cursor = "pointer";
-                //===============================================
-
                 this._stopDragging();
+
+                this._vf["isActive"] = false;
+                //TODO: fire deactivation event?
             },
 
             //----------------------------------------------------------------------------------------------------------------------
