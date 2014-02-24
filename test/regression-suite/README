@@ -4,6 +4,7 @@ A results page and diffs are created alongside the screenshots in the browsers s
 The overview page is adjusted for the server folder structure.
 
 Prerequisites:
+-currently only windows is supported
 -JRE(any version)
 -node.js(only 32Bit works at the moment!)
 -Browsers
@@ -19,5 +20,5 @@ Execution:
 -run_conservative.bat runs the test with different parameters, adjusted for the daily build.
 
 Parameters:
--c, --conservative : adds a five second delay before screenshoting to give x3dom time to finish XHRs (loading textures, inlines).
--m, --no-aa : change the directory of reference images to reference-no-aa (for test server).
+-c, --conservative : adds a one second delay before screenshoting to give x3dom time to finish XHRs (loading textures, inlines).
+-m, --no-aa : change the directory of reference images to reference-no-aa (for virtual graphics card on server-vm).

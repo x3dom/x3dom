@@ -66,7 +66,7 @@ var ResultsPublisher = function(outputPath)
                 var image = result.test.name + "_" + detail.data.context.screenshotId + ".png";
                 var difftag = "<a target='_blank' href='diff/" + image + "'><img width = '200px' height = '150px' src='diff/" + image + "'/></a>";
                 var imagetag = "<a target='_blank' href='" + image + "'><img width = '200px' height = '150px' src='" + image + "'/></a>";
-                var reftag = "<a target='_blank' href='../../test/reference/" + image + "'><img width = '200px' height = '150px' src='../../test/reference/" + image + "'/></a>";
+                var reftag = "<a target='_blank' href='../../"+globals.referencePath + image + "'><img width = '200px' height = '150px' src='../../"+globals.referencePath + image + "'/></a>";
                 if(detail.status == 'success')
                 {
                     statistics.passed++;
@@ -120,7 +120,7 @@ var ResultsPublisher = function(outputPath)
 
     this.publishOverview = function()
     {
-        var style="<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{backgruond-color: #FF7E74;} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>"
+        var style="<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{background-color: #FF7E74;} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>"
         var pageStart = "<html><head><title>x3dom Testing Overview</title>"+style+"</head><body><h1>Regression Test Results</h1><h3>"+that.getDateString()+"</h3>";
         pageStart += "<table><tr><th>Browser</th><th>Test-Results</th></tr>";
         var content = "";

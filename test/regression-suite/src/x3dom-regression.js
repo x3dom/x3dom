@@ -18,7 +18,7 @@ process.argv.forEach(function(val, index, array){
         if(val == '-c' || val == '--conservative')
         {
             console.log("Running in conservative mode");
-            globals.screenshotDelay = 5000;
+            globals.screenshotDelay = 1000;
         }
         if(val == '-n' || val == '--no-aa')
         {
