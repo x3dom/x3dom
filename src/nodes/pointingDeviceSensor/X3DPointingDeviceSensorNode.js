@@ -34,13 +34,6 @@ x3dom.registerNodeType(
              * @private
              */
             this._siblingNodeListenerSets = [];
-
-
-            //---------------------------------------
-            // INITIALIZATION
-            //---------------------------------------
-
-            //currently, nothing is done here
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -164,7 +157,7 @@ x3dom.registerNodeType(
              */
             _pointerEnteredSibling: function(event, sibling)
             {
-                //currently, nothing is done here
+
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -177,7 +170,7 @@ x3dom.registerNodeType(
              */
             _pointerLeftSibling: function(event, sibling)
             {
-                //currently, nothing is done here
+
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -190,7 +183,7 @@ x3dom.registerNodeType(
              */
             _pointerMovedOverSibling: function(event, sibling)
             {
-                //currently, nothing is done here
+
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -223,10 +216,6 @@ x3dom.registerNodeType(
                     x3dCanvas.removeEventListener("mousemove", tmpListenerMove);
                 };
                 document.addEventListener("mouseup", tmpListenerRelease);
-
-
-                //disable the navigation
-                //TODO: implement
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -239,7 +228,7 @@ x3dom.registerNodeType(
              */
             _pointerReleasedOverSibling: function(event, sibling)
             {
-                //currently, nothing is done here
+
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -252,7 +241,7 @@ x3dom.registerNodeType(
              */
             _pointerMoved: function(event)
             {
-                //currently, nothing is done here
+
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -265,8 +254,7 @@ x3dom.registerNodeType(
              */
             _pointerReleased: function(event)
             {
-                //reset the navigation to the previous mode
-                //TODO: implement
+
             }
 
             //----------------------------------------------------------------------------------------------------------------------

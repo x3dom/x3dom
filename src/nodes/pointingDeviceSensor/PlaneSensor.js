@@ -13,6 +13,10 @@ x3dom.registerNodeType(
         {
             x3dom.nodeTypes.PlaneSensor.superClass.call(this, ctx);
 
+            //---------------------------------------
+            // FIELDS
+            //---------------------------------------
+
             this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
 
             this.addField_SFVec2f(ctx, 'minPosition', -1, -1);
@@ -22,28 +26,76 @@ x3dom.registerNodeType(
 
             //route-able output fields
             //this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
+
+
+            //---------------------------------------
+            // PROPERTIES
+            //---------------------------------------
+
+            /**
+             * 3D vector which is associated with a drag action the x-axis in screen coordinates
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._draggingRightVec = null;
+
+            /**
+             * 3D vector which is associated with a drag action the y-axis in screen coordinates
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._draggingUpVec    = null;
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
             // PRIVATE FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
 
-            _pointerPressedOverSibling: function(event, sibling)
+            /**
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._startDragging
+             * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
+             * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
+             * @private
+             */
+            _startDragging: function(x, y)
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._pointerPressedOverSibling.call(this, event, sibling);
+                //get model matrix for this node
+                //...
 
-                //TODO: document, implement
+                //apply the axis rotation
+                //...
+
+                //get view matrix
+                //...
+
+                //compute drag vectors
+                //...
             },
 
             //----------------------------------------------------------------------------------------------------------------------
 
-            _pointerMoved: function(event)
+            /**
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._process2DDrag
+             * @private
+             */
+            _process2DDrag: function(dx, dy)
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._pointerMoved.call(this, event);
+                //apply drag vectors to current transformation
+                //...
 
-                //TODO: document, implement
-                //currently, nothing is done here
-                console.log(event.clientX + ", " + event.clientY);
+                //fire out field routing event
+                //...
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._stopDragging
+             * @private
+             */
+            _stopDragging: function()
+            {
+
             }
 
             //----------------------------------------------------------------------------------------------------------------------
