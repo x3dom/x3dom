@@ -3400,7 +3400,6 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 
-        rt._renderedImage++;
         if (rt._vf.autoRefinement)
             rt.nextLevel();
 
@@ -3414,6 +3413,8 @@ x3dom.gfx_webgl = (function () {
 
             rt._cleanupGLObjects(true);
         }
+
+        rt._renderedImage++;
     };
 
     /*****************************************************************************
