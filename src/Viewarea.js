@@ -1165,6 +1165,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
  */
 x3dom.Viewarea.prototype._notifyAffectedPointingSensors = function(event)
 {
+    var i;
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
 
     if (affectedPointingSensorsList.length > 0)
@@ -1181,13 +1182,6 @@ x3dom.Viewarea.prototype._notifyAffectedPointingSensors = function(event)
             for (i = 0; i < affectedPointingSensorsList.length; ++i)
             {
                 affectedPointingSensorsList[i].pointerMoved(event);
-            }
-        }
-        else if (event.type == 'mouseup')
-        {
-            for (i = 0; i < affectedPointingSensorsList.length; ++i)
-            {
-                affectedPointingSensorsList[i].pointerReleased(event);
             }
         }
     }
@@ -1261,6 +1255,15 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
 {
+    var i;
+    //if the mouse is released, reset the list of currently affected pointing sensors
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    for (i = 0; i < affectedPointingSensorsList.length; ++i)
+    {
+        affectedPointingSensorsList[i].pointerReleased();
+    }
+    this._doc._nodeBag.affectedPointingSensors = [];
+
     var tDist = 3.0;  // distance modifier for lookat, could be param
     var dir;
     var navi = this._scene.getNavigationInfo();
@@ -1726,8 +1729,10 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
     var avoidTraversal              = (pickMode.indexOf("idbuf") == 0 ||
                                        pickMode == "color" || pickMode == "texcoord");
 
+    var obj = null;
+
     if (avoidTraversal) {
-        var obj = this._pickingInfo.pickObj;
+        obj = this._pickingInfo.pickObj;
 
         if (obj) {
             this._pick.setValues(this._pickingInfo.pickPos);
@@ -1743,14 +1748,30 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
         }
     }
 
+    //TODO: this is pretty redundant - but from where should we obtain this object?
+    //      this also needs to work if there is no picked object, and independent from "avoidTraversal"?
+    var that = this;
+    var event = {
+        type: eventType.substr(2, eventType.length-2),
+        button: buttonState,
+        layerX: x,
+        layerY: y,
+        worldX: that._pick.x,
+        worldY: that._pick.y,
+        worldZ: that._pick.z,
+        normalX: that._pickNorm.x,
+        normalY: that._pickNorm.y,
+        normalZ: that._pickNorm.z,
+        hitPnt: that._pick.toGL(), // for convenience
+        hitObject: (obj && obj._xmlNode) ? obj._xmlNode : null,
+        shadowObjectId: that._pickingInfo.shadowObjectId,
+        cancelBubble: false,
+        stopPropagation: function() { this.cancelBubble = true; },
+        preventDefault: function() { this.cancelBubble = true; }
+    };
+
     //forward event to affected pointing device sensors
     this._notifyAffectedPointingSensors(event);
-
-    //if the mouse is released, reset the list of currently affected pointing sensors
-    if (eventType == 'mouseup')
-    {
-        affectedPointingSensorsList = [];
-    }
 
     //switch between navigation and interaction
     if (affectedPointingSensorsList.length > 0)

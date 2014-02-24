@@ -40,7 +40,8 @@ x3dom.registerNodeType(
              */
             pointerPressedOverSibling: function(event)
             {
-
+                this._vf["isActive"] = true;
+                //TODO: fire activation event?
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -61,12 +62,12 @@ x3dom.registerNodeType(
             /**
              * Function that gets called if the pointing device has been released,
              * after it has been pressed over a sibling of this node
-             * @param {DOMEvent} event - the pointer event
              * @private
              */
-            pointerReleased: function(event)
+            pointerReleased: function()
             {
-
+                this._vf["isActive"] = false;
+                //TODO: fire deactivation event?
             }
 
             //----------------------------------------------------------------------------------------------------------------------

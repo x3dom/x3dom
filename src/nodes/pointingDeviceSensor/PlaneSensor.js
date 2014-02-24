@@ -80,6 +80,8 @@ x3dom.registerNodeType(
              */
             _process2DDrag: function(dx, dy)
             {
+                x3dom.debug.logInfo("PlaneSensor Received drag event with mouse delta " + dy + ", " + dy);
+
                 //apply drag vectors to current transformation
                 //...
 

@@ -44,7 +44,7 @@ x3dom.registerNodeType(
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
-            // PRIVATE FUNCTIONS
+            // PUBLIC FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
@@ -52,12 +52,9 @@ x3dom.registerNodeType(
              * @param {DOMEvent} event - the pointer event
              * @private
              */
-            _pointerPressedOverSibling: function(event)
+            pointerPressedOverSibling: function(event)
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerPressedOverSibling.call(this, event, sibling);
-
-                this._vf["isActive"] = true;
-                //TODO: fire activation event?
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerPressedOverSibling.call(this, event);
 
                 this._lastX = event.layerX;
                 this._lastY = event.layerY;
@@ -72,13 +69,14 @@ x3dom.registerNodeType(
              * @param {DOMEvent] event - the pointer event
              * @private
              */
-            _pointerMoved: function(event)
+            pointerMoved: function(event)
             {
-                this._process2DDrag(event.clientX-this._lastX, event.clientX-this._lastY);
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerMoved.call(this, event);
 
                 if (this._vf["isActive"] && this._vf["enabled"])
                 {
-                    x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerMoved.call(this, event);
+                    this._process2DDrag(event.layerX-this._lastX,
+                                        event.layerY-this._lastY);
                 }
             },
 
@@ -89,16 +87,17 @@ x3dom.registerNodeType(
              * @param {DOMEvent] event - the pointer event
              * @private
              */
-            _pointerReleased: function(event)
+            pointerReleased: function()
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerReleased.call(this, event);
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerReleased.call(this);
 
                 this._stopDragging();
-
-                this._vf["isActive"] = false;
-                //TODO: fire deactivation event?
             },
 
+            //----------------------------------------------------------------------------------------------------------------------
+
+            //----------------------------------------------------------------------------------------------------------------------
+            // PRIVATE FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
