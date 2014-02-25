@@ -96,12 +96,27 @@ x3dom.registerNodeType(
                 //apply view matrix of the view that started the drag
                 matrix.mult(viewarea.getViewMatrix());
 
+                //compute plane normal in view coordinates
+                var planeNormal = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, 1.0));
+
+
+                //compute and remember initial point of intersection with the plane
+                var viewRay = viewarea.calcViewRay(x, y);
+                //...
+
+
+                //=================
+
+                /*
                 //compute the world coordinates of drag vectors from the sensor's local coordinate system
+
+
                 this._draggingRightVec = matrix.multMatrixVec(new x3dom.fields.SFVec3f(1.0, 0.0, 0.0));
                 this._draggingUpVec    = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
 
                 //compute magnification factor (size of a world unit in pixels)
                 //...
+                 */
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -114,7 +129,21 @@ x3dom.registerNodeType(
             {
                 x3dom.debug.logInfo("PlaneSensor Received drag event with mouse delta " + dy + ", " + dy);
 
-                var pixelsToMeters = 0.002;
+
+                //compute point of intersection with the plane
+                //...
+
+                //compute difference between new point of intersection and initial point
+                //...
+
+                //fire out field routing event
+                //...
+
+
+                //=================
+
+
+                /*var pixelsToMeters = 0.002;
 
                 //apply drag vectors to current transformation
                 this._currentTranslation = this._currentTranslation.add(this._draggingRightVec.multiply(dx * pixelsToMeters));
@@ -125,6 +154,7 @@ x3dom.registerNodeType(
 
                 //fire out field routing event
                 this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
+                */
             },
 
             //----------------------------------------------------------------------------------------------------------------------
