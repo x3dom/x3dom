@@ -32,6 +32,7 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
         viewarea: [],             // Viewport (for updating camera navigation)
         affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
                                   // this list is maintained for efficient update / deactivation
+                                  // TODO; de-register in removeX3DOMBackendGraph() below, if node is removed
     };
 
     this.onload = function () {};

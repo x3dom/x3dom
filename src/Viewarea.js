@@ -148,7 +148,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     var navi = this._scene.getNavigationInfo();
     var navType = navi.getType();
     
-    var needNavAnim = ( navType === "game" ||
+    var needNavAnim = (this._currentInputType == x3dom.InputTypes.NAVIGATION) &&
+                      ( navType === "game" ||
                         (this._lastButton > 0 &&
                         (navType.indexOf("fly") >= 0 ||
                          navType === "walk" ||
@@ -1066,7 +1067,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     var childNode;
     var i;
 
-    //pointing sensors might still be in use, if the mouse has previoulsy been pressed over sensor geometry
+    //pointing sensors might still be in use, if the mouse has previously been pressed over sensor geometry
     //(in general, transitions between INTERACTION and NAVIGATION require that the mouse is not pressed)
     if (buttonState == 0)
     {
@@ -1077,6 +1078,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
 
     var event = {
+        viewarea: that,
         target: {},
         type: eventType.substr(2, eventType.length-2),
         button: buttonState,
@@ -1127,6 +1129,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
             //find the lowest pointing device sensors in the hierarchy that might be affected
             //(note that, for X3DTouchSensors, 'affected' does not necessarily mean 'activated')
+            // THINKABOUTME: what about mouseover and mouseout?
             if (buttonState == 0 && eventType == 'onmousemove' && affectedPointingSensorsList.length == 0)
             {
                 for (i = 0; i < node._childNodes.length; ++i)
@@ -1750,22 +1753,28 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 
     //TODO: this is pretty redundant - but from where should we obtain this object?
     //      this also needs to work if there is no picked object, and independent from "avoidTraversal"?
-    var that = this;
+
+    // FIXME;  avoidTraversal is only to distinguish between the ancient box and the other render-based pick modes,
+    //         thus it seems the cleanest thing to just remove the old traversal-based and non-functional box mode.
+    //         Concerning background: what about if we unify the onbackgroundClicked event such that there is also
+    //         an onbackgroundMoved event etc?
+
     var event = {
-        viewarea: that,
+        viewarea: this,
+        target: {},     // should be hit xml element
         type: eventType.substr(2, eventType.length-2),
         button: buttonState,
         layerX: x,
         layerY: y,
-        worldX: that._pick.x,
-        worldY: that._pick.y,
-        worldZ: that._pick.z,
-        normalX: that._pickNorm.x,
-        normalY: that._pickNorm.y,
-        normalZ: that._pickNorm.z,
-        hitPnt: that._pick.toGL(), // for convenience
+        worldX: this._pick.x,
+        worldY: this._pick.y,
+        worldZ: this._pick.z,
+        normalX: this._pickNorm.x,
+        normalY: this._pickNorm.y,
+        normalZ: this._pickNorm.z,
+        hitPnt: this._pick.toGL(), // for convenience
         hitObject: (obj && obj._xmlNode) ? obj._xmlNode : null,
-        shadowObjectId: that._pickingInfo.shadowObjectId,
+        shadowObjectId: this._pickingInfo.shadowObjectId,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; },
         preventDefault: function() { this.cancelBubble = true; }
