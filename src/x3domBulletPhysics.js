@@ -336,19 +336,28 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 
 (function(){
 
-	var CollidableShapes = [], JointShapes = [], scene, initScene, render, main, updateRigidbodies, MakeUpdateList, 
-		CreateRigidbodies, rigidbodies = [], WorldGravity = new Vector3d(),obj, startPos, currPos, drag = false, 
-		updateRigidbody, updateJoint, runtime = null, x3d, intervalVar, building_constraints = true, debug_mode=false;
 	
-	/*
-		Get all CollidableShapes from the scene and create an instance of the X3DCollidableShape using their attributes.
-	*/
 	
+	
+	//Get all CollidableShapes from the scene and create an instance of the X3DCollidableShape using their attributes.
 	var colShape = document.getElementsByTagName("CollidableShape");
 	if(colShape == null){
 		console.log("NO CollidableShape node");
 	}
 	else{
+	
+		var head = document.getElementsByTagName("head")[0];
+		var ammojs = document.createElement('script');
+		ammojs.type = "text/javascript";
+		ammojs.src = "ammo.js";
+		head.appendChild(ammojs);
+	
+	
+		var CollidableShapes = [], JointShapes = [], scene, initScene, render, main, updateRigidbodies, MakeUpdateList, 
+			CreateRigidbodies, rigidbodies = [], WorldGravity = new Vector3d(),obj, startPos, currPos, drag = false, 
+			updateRigidbody, updateJoint, runtime = null, x3d, intervalVar, building_constraints = true, debug_mode=false;
+	
+	
 	for (i=0; i < colShape.length; i++) {
 	
 		var X3D_CS = new X3DCollidableShape;
