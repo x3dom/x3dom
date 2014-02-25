@@ -1129,7 +1129,6 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
             //find the lowest pointing device sensors in the hierarchy that might be affected
             //(note that, for X3DTouchSensors, 'affected' does not necessarily mean 'activated')
-            // THINKABOUTME: what about mouseover and mouseout?
             if (buttonState == 0 && eventType == 'onmousemove' && affectedPointingSensorsList.length == 0)
             {
                 for (i = 0; i < node._childNodes.length; ++i)
@@ -1751,7 +1750,7 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
         }
     }
 
-    //TODO: this is pretty redundant - but from where should we obtain this object?
+    //TODO: this is pretty redundant - but from where should we obtain this event object?
     //      this also needs to work if there is no picked object, and independent from "avoidTraversal"?
 
     // FIXME;  avoidTraversal is only to distinguish between the ancient box and the other render-based pick modes,

@@ -31,8 +31,7 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
         renderTextures: [],       // RenderedTexture
         viewarea: [],             // Viewport (for updating camera navigation)
         affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
-                                  // this list is maintained for efficient update / deactivation
-                                  // TODO; de-register in removeX3DOMBackendGraph() below, if node is removed
+                                    // this list is maintained for efficient update / deactivation
     };
 
     this.onload = function () {};
@@ -143,6 +142,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 if (node._cleanupGLObjects) {
                     node._cleanupGLObjects();
                 }
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DPointingDeviceSensorNode)) {
+                cleanNodeBag(doc._nodeBag.affectedPointingSensors, node);
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.Texture)) {
                 node.shutdown();    // general texture might have video
