@@ -3,9 +3,8 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<script type="text/javascript" src="x3dom_dev/x3dom-full.js"></script>
-		<link rel='stylesheet' type='text/css' href='x3dom_dev/x3dom.css'/>
-		<script type='text/javascript' src='ammo.js-master/builds/ammo.js'></script>
+		<script type="text/javascript" src="x3dom-full.js"></script>
+		<link rel='stylesheet' type='text/css' href='x3dom.css'/>
 		
 		<style type="text/css">
 			* { -webkit-user-select: none; -moz-user-select: none; cursor: default; }
@@ -17,7 +16,7 @@
 			h2 { font: bold italic 17px/17px Georgia; padding-top: 10px; }
 		</style>
 		
-				
+		
 	</head>
 	<body>
 		<X3D width="900px" height="600px" profile='Immersive' version='3.2' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.2.xsd '>
@@ -26,11 +25,11 @@
 				
 				<Viewpoint position='0 25 90' orientation='0 0 1 0' fieldOfView='0.7854' retainUserOffsets='true'/>
 				<Background skyColor='0.371 0.539 0.542' groundColor='0.271 0.4 0.442'/>
-				<DirectionalLight/> 
 				
-					<CollidableShape index='0' DEF='Tavani_Col' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 40 0'>
+				
+					<CollidableShape index='0' DEF='Ceil_Col' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 40 0'>
 						<Shape containerField='Shape'>
-							<Cylinder DEF='Tavani' height='10' radius='2'/>
+							<Cylinder height='10' radius='2'/>
 						</Shape>
 					</CollidableShape>
 				
@@ -81,13 +80,12 @@
 				</Group>
 				
 
-				<Transform index='0' DEF='Tavani' translation='0 40 0' rotation='0 0 1 0'>
+				<Transform index='0' DEF='Ceil' translation='0 40 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/texture.jpg"'/>
+							<Material emissiveColor='0 0.1 0'/>
 						</Appearance>
-						<Cylinder DEF='Tavani' bottom='TRUE' top='TRUE' height='10' radius='2'/>
+						<Cylinder bottom='TRUE' top='TRUE' height='10' radius='2'/>
 					</Shape>
 				</Transform>
 				
@@ -95,8 +93,7 @@
 				<Transform index='1' DEF='Sphere_J1' translation='0 35 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall15.jpg"'/>
+							<Material emissiveColor='1 0 0.1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j1' radius='1'/>
 					</Shape>
@@ -105,8 +102,7 @@
 				<Transform index='2' DEF='Sphere_J2' translation='0 34 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall14.jpg"'/>
+							<Material emissiveColor='0 0.1 1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j2' radius='1'/>
 					</Shape>
@@ -115,8 +111,7 @@
 				<Transform index='3' DEF='Sphere_J3' translation='0 33 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall13.jpg"'/>
+							<Material emissiveColor='1 0 0.1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j3' radius='1'/>
 					</Shape>
@@ -126,8 +121,7 @@
 				<Transform index='4' DEF='Sphere_J4' translation='0 32 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall12.jpg"'/>
+							<Material emissiveColor='0 0.1 1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j4' radius='1'/>
 					</Shape>
@@ -136,8 +130,7 @@
 				<Transform index='5' DEF='Sphere_J5' translation='0 31 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall11.jpg"'/>
+							<Material emissiveColor='1 0 0.1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j5' radius='1'/>
 					</Shape>
@@ -145,8 +138,7 @@
 				<Transform index='6' DEF='Sphere_J6' translation='0 30 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall8.jpg"'/>
+							<Material emissiveColor='0 0.1 1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j6' radius='1'/>
 					</Shape>
@@ -154,8 +146,7 @@
 				<Transform index='7' DEF='Sphere_J7' translation='0 29 0' rotation='0 0 1 0'>
 					<Shape>
 						<Appearance>
-							<Material diffuseColor='1 0 0' specularColor='0.1 0.1 0.1'/>
-							<ImageTexture containerField='texture' url='"Texture/billiardBall7.jpg"'/>
+							<Material emissiveColor='1 0 0.1'/>
 						</Appearance>
 						<Sphere DEF='sphere_j7' radius='1'/>
 					</Shape>
@@ -165,25 +156,25 @@
 				
 				<RigidBodyCollection DEF='BODY_COLLECTION' containerField='children' autoDisable='false' constantForceMix='0.0001' contactSurfaceThickness='1000' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' errorCorrection='0.8' gravity='0 -19.8 0' iterations='10' maxCorrectionSpeed='-1' preferAccuracy='false'>
 
-					<RigidBody DEF='BODY_Tavani' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.001' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='0' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
-						<CollidableShape USE='Tavani_Col' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
+					<RigidBody DEF='BODY_Ceil' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.001' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='0' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+						<CollidableShape USE='Ceil_Col' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J1' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.1' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J1' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.1' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J1' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J2' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J2' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J2' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J3' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J3' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J3' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J4' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J4' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J4' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J5' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J5' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J5' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
-					<RigidBody DEF='BODY_J6' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+					<RigidBody DEF='BODY_J6' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
 						<CollidableShape USE='BALL-J6' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 					</RigidBody>
 					<RigidBody DEF='BODY_J7' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='true' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
@@ -192,7 +183,7 @@
 					
 					
 					<BallJoint anchorPoint='0 3 0' containerField='joints'>
-						<RigidBody USE='BODY_Tavani' containerField='body1' />
+						<RigidBody USE='BODY_Ceil' containerField='body1' />
 						<RigidBody USE='BODY_J1' containerField='body2' />
 					</BallJoint>
 					
@@ -231,7 +222,7 @@
 				
 				<CollisionSensor DEF='COLLISION-OUTPUT' enabled='true'>
 					<CollisionCollection DEF='COLLISION-JOINTS-GROUP' bounce='1.0' containerField='collidables' minBounceSpeed='1.0' appliedParameters='BOUNCE' enabled='true' frictionCoefficients='0 1.2' slipFactors='0 0' softnessConstantForceMix='0.0001' softnessErrorCorrection='0.8' surfaceSpeed='0 0'>		
-						<CollidableShape USE='Tavani_Col' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
+						<CollidableShape USE='Ceil_Col' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J1' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J2' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
 						<CollidableShape USE='BALL-J3' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'/>
@@ -245,10 +236,6 @@
 			</Scene>
 		</X3D> 
 
-	
-		
-		
-		
 		<script type='text/javascript' src="x3domBulletPhysics.js"></script>
 		
 	</body>
