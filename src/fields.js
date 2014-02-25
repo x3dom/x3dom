@@ -2606,10 +2606,11 @@ x3dom.fields.MFNode.prototype.length = function() {
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-/** Line constructor.
-    @class Represents a Line (as internal helper).
-  */
-x3dom.fields.Line = function(pos, dir) 
+/**
+ * Ray constructor.
+ *  @class Represents a Ray (as internal helper).
+ */
+x3dom.fields.Ray = function(pos, dir)
 {
     if (arguments.length === 0) 
     {
@@ -2633,12 +2634,46 @@ x3dom.fields.Line = function(pos, dir)
     this.dist = Number.MAX_VALUE;
 };
 
-x3dom.fields.Line.prototype.toString = function () {
-    return 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
+//----------------------------------------------------------------------------------------------------------------------
+
+x3dom.fields.Ray.prototype.toString = function () {
+    return 'Ray: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * Intersects this ray with a plane, defined by the given anchor point and normal.
+ * The result returned is the point of intersection, if any. If no point of intersection exists, null is returned.
+ * Null is also returned in case there is an infinite number of solutions (, i.e., if the ray origin lies in the plane).
+ *
+ * @param p {x3dom.fields.SFVec3f} - anchor point
+ * @param n {x3dom.fields.SFVec3f} - plane normal
+ * @returns {x3dom.fields.SFVec3f} the point of intersection, can be null
+ */
+x3dom.fields.Ray.prototype.intersectPlane = function(p, n)
+{
+    var result = null;
+
+    var alpha; //ray parameter, should be computed
+
+    var nDotDir = n.dot(this.dir);
+
+    //if the ray hits the plane, the plane normal and ray direction must be facing each other
+    if (nDotDir < 0.0)
+    {
+        alpha = p.dot(n) - this.pos.dot(n) / nDotDir;
+
+        result = this.pos.addScaled(this.dir, alpha);
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 /** intersect line with box volume given by low and high */
-x3dom.fields.Line.prototype.intersect = function(low, high)
+x3dom.fields.Ray.prototype.intersect = function(low, high)
 {
     var isect = 0.0;
     var out = Number.MAX_VALUE;

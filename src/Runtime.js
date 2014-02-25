@@ -310,7 +310,7 @@ x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
  * Returns the viewing ray for a given (x, y) position.
  *
  * Returns:
- * 		Line object
+ * 		Ray object
  */
 x3dom.Runtime.prototype.getViewingRay = function(x, y) {
     return this.canvas.doc._viewarea.calcViewRay(x, y);

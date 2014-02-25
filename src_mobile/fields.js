@@ -1596,10 +1596,10 @@ x3dom.fields.MFNode.prototype.length = function() {
 };
 
 
-/** Line constructor.
-    @class Represents a Line (as internal helper).
+/** Ray constructor.
+    @class Represents a Ray (as internal helper).
   */
-x3dom.fields.Line = function(pos, dir) 
+x3dom.fields.Ray = function(pos, dir)
 {
     if (arguments.length == 0) 
     {
@@ -1623,13 +1623,13 @@ x3dom.fields.Line = function(pos, dir)
     this.dist = Number.MAX_VALUE;
 };
 
-x3dom.fields.Line.prototype.toString = function () {
+x3dom.fields.Ray.prototype.toString = function () {
     var str = 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
     return str;
 };
 
 /** intersect line with box volume given by low and high */
-x3dom.fields.Line.prototype.intersect = function(low, high)
+x3dom.fields.Ray.prototype.intersect = function(low, high)
 {
     var isect = 0.0;
     var out = Number.MAX_VALUE;

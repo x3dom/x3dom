@@ -75,7 +75,9 @@ x3dom.registerNodeType(
 
                 if (this._vf["isActive"] && this._vf["enabled"])
                 {
-                    this._process2DDrag(event.layerX-this._lastX,
+                    this._process2DDrag(event.layerX,
+                                        event.layerY,
+                                        event.layerX-this._lastX,
                                         event.layerY-this._lastY);
                 }
             },
@@ -116,9 +118,13 @@ x3dom.registerNodeType(
 
             /**
              * Processes a 2D drag action, using the given 2D delta values.
+             * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
+             * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
+             * @param {Double} dx - delta of x, with respect to the last time the function was invoked
+             * @param {Double} dY - delta of Y, with respect to the last time the function was invoked
              * @private
              */
-            _process2DDrag: function(dx, dy)
+            _process2DDrag: function(x, y, dx, dy)
             {
 
             },

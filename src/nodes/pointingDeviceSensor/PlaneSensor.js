@@ -33,25 +33,40 @@ x3dom.registerNodeType(
             //---------------------------------------
 
             /**
-             * 3D vector which is associated with a drag action the x-axis in screen coordinates
-             * @type {x3dom.fields.SFVec3f}
-             * @private
-             */
-            this._draggingRightVec = null;
-
-            /**
-             * 3D vector which is associated with a drag action the y-axis in screen coordinates
-             * @type {x3dom.fields.SFVec3f}
-             * @private
-             */
-            this._draggingUpVec = null;
-
-            /**
              *
              * @type {x3dom.fields.Quaternion}
              * @private
              */
             this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+
+            /**
+             * Initial intersection point with the sensor's plane, at the time the sensor was activated
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._initialPlaneIntersection = null;
+
+            /**
+             * Plane anchor point, computed on drag start and used during dragging to compute plane intersections
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._planeAnchor = null;
+
+            /**
+             * Plane normal, computed on drag start and used during dragging to compute plane intersections
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._planeNormal = null;
+
+            /**
+             * Current viewarea that is used for dragging, needed for ray setup to compute the plane intersection
+             *
+             * @type {x3dom.Viewarea}
+             * @private
+             */
+            this._viewArea = null;
 
             /**
              * Current translation that is produced by this drag sensor
@@ -71,7 +86,7 @@ x3dom.registerNodeType(
              */
             getCurrentTransform: function ()
             {
-                var parentTransform = x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.getCurrentTransform.call(this);
+                var parentTransform = x3dom.nodeTypes.X3DDragSensorNode.prototype.getCurrentTransform.call(this);
 
                 return parentTransform.mult(this._rotationMatrix);
             },
@@ -81,13 +96,19 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._startDragging
+             * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
              * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
              * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
              * @private
              */
             _startDragging: function(viewarea, x, y)
             {
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y);
+
+                //TODO: check
+                this._currentTranslation = x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
+
+
                 //TODO: handle multi-path nodes
 
                 //get model matrix for this node, combined with the axis rotation
@@ -96,76 +117,74 @@ x3dom.registerNodeType(
                 //apply view matrix of the view that started the drag
                 matrix.mult(viewarea.getViewMatrix());
 
-                //compute plane normal in view coordinates
-                var planeNormal = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, 1.0));
+                this._viewArea = viewarea;
+
+                //compute plane parameters in view coordinates
+                this._planeAnchor = matrix.multMatrixPnt(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0));
+                this._planeNormal = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, 1.0));
 
 
                 //compute and remember initial point of intersection with the plane
                 var viewRay = viewarea.calcViewRay(x, y);
-                //...
 
+                this._initialPlaneIntersection = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
 
-                //=================
-
-                /*
-                //compute the world coordinates of drag vectors from the sensor's local coordinate system
-
-
-                this._draggingRightVec = matrix.multMatrixVec(new x3dom.fields.SFVec3f(1.0, 0.0, 0.0));
-                this._draggingUpVec    = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
-
-                //compute magnification factor (size of a world unit in pixels)
-                //...
-                 */
+                //allow projection on the negative side of the plane
+                if (!this._initialPlaneIntersection)
+                {
+                    this._planeNormal = this._planeNormal.negate();
+                    this._initialPlaneIntersection = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._process2DDrag
+             * @overrides x3dom.nodeTypes.X3DDragSensorNode._process2DDrag
              * @private
              */
-            _process2DDrag: function(dx, dy)
+            _process2DDrag: function(x, y, dx, dy)
             {
-                x3dom.debug.logInfo("PlaneSensor Received drag event with mouse delta " + dy + ", " + dy);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call(this, x, y, dx, dy);
 
+                var intersectionPoint;
 
-                //compute point of intersection with the plane
-                //...
+                if (this._initialPlaneIntersection)
+                {
+                    //compute point of intersection with the plane
+                    var viewRay = this._viewArea.calcViewRay(x, y);
+                    intersectionPoint = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
 
-                //compute difference between new point of intersection and initial point
-                //...
+                    if (intersectionPoint)
+                    {
+                        //compute difference between new point of intersection and initial point
+                        this._currentTranslation = intersectionPoint.subtract(this._initialPlaneIntersection);
+                        this._currentTranslation = this._currentTranslation.add(this._vf["offset"]);
 
-                //fire out field routing event
-                //...
-
-
-                //=================
-
-
-                /*var pixelsToMeters = 0.002;
-
-                //apply drag vectors to current transformation
-                this._currentTranslation = this._currentTranslation.add(this._draggingRightVec.multiply(dx * pixelsToMeters));
-                this._currentTranslation = this._currentTranslation.add(this._draggingUpVec.multiply(  -dy * pixelsToMeters));
-
-
-                console.log(this._currentTranslation);
-
-                //fire out field routing event
-                this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
-                */
+                        //fire out field routing event
+                        this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
+                    }
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._stopDragging
+             * @overrides x3dom.nodeTypes.X3DDragSensorNode._stopDragging
              * @private
              */
             _stopDragging: function()
             {
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
 
+                if (this._vf["autoOffset"])
+                {
+                    this._vf["offset"] = this._currentTranslation;
+
+                    this.postMessage('offset_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
+                }
+
+                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
             }
 
             //----------------------------------------------------------------------------------------------------------------------

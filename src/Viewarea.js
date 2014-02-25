@@ -879,7 +879,7 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y, mat)
     var at = cctowc.multFullMatrixPnt(new x3dom.fields.SFVec3f(rx, ry,  1));
     var dir = at.subtract(from);
 
-    return new x3dom.fields.Line(from, dir);
+    return new x3dom.fields.Ray(from, dir);
 };
 
 x3dom.Viewarea.prototype.showAll = function(axis)
