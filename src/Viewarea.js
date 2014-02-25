@@ -1752,6 +1752,7 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
     //      this also needs to work if there is no picked object, and independent from "avoidTraversal"?
     var that = this;
     var event = {
+        viewarea: that,
         type: eventType.substr(2, eventType.length-2),
         button: buttonState,
         layerX: x,

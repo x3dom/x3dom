@@ -45,8 +45,30 @@ x3dom.registerNodeType(
              * @private
              */
             this._draggingUpVec    = null;
+
+            /**
+             *
+             * @type {x3dom.fields.Quaternion}
+             * @private
+             */
+            this._rotationMatrix   = this._vf['axisRotation'].toMatrix();
         },
         {
+            //----------------------------------------------------------------------------------------------------------------------
+            // PUBLIC FUNCTIONS
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
+             * This function returns the parent transformation of this node, combined with its current axisRotation
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.getCurrentTransform
+             */
+            getCurrentTransform: function ()
+            {
+                var parentTransform = x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.getCurrentTransform.call(this);
+
+                return parentTransform.mult(this._rotationMatrix);
+            },
+
             //----------------------------------------------------------------------------------------------------------------------
             // PRIVATE FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
@@ -57,15 +79,14 @@ x3dom.registerNodeType(
              * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
              * @private
              */
-            _startDragging: function(x, y)
+            _startDragging: function(viewarea, x, y)
             {
-                //get model matrix for this node
-                //...
+                //TODO: handle multi-path nodes
 
-                //apply the axis rotation
-                //...
+                //get model matrix for this node, combined with the axis rotation
+                var modelMatrix = this.getCurrentTransform();
 
-                //get view matrix
+                //get view matrix of the view that started the drag
                 //...
 
                 //compute drag vectors

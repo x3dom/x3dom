@@ -48,7 +48,7 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerPressedOverSibling
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode._pointerPressedOverSibling
              * @param {DOMEvent} event - the pointer event
              * @private
              */
@@ -59,13 +59,13 @@ x3dom.registerNodeType(
                 this._lastX = event.layerX;
                 this._lastY = event.layerY;
 
-                this._startDragging(event.layerX, event.layerY);
+                this._startDragging(event.viewarea, event.layerX, event.layerY);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerMoved
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode._pointerMoved
              * @param {DOMEvent] event - the pointer event
              * @private
              */
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
-             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype._pointerReleased
+             * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode._pointerReleased
              * @param {DOMEvent] event - the pointer event
              * @private
              */
@@ -102,11 +102,12 @@ x3dom.registerNodeType(
 
             /**
              * Function that is called as soon as a drag action is initiated.
+             * @param {x3dom.Viewarea} viewarea - the viewarea which initiated the drag operation
              * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
              * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
              * @private
              */
-            _startDragging: function(x, y)
+            _startDragging: function(viewarea, x, y)
             {
 
             },
