@@ -1487,13 +1487,25 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
-            this._movement = this._movement.add(vec);
 
-            mat = this.getViewpointMatrix().mult(this._transMat);
-            //TODO; move real distance along viewing ray
-            this._transMat = mat.inverse().
-                             mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                             mult(mat);
+            if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+            {
+                viewpoint._vf.fieldOfView[0] += vec.z;
+                viewpoint._vf.fieldOfView[1] += vec.z;
+                viewpoint._vf.fieldOfView[2] -= vec.z;
+                viewpoint._vf.fieldOfView[3] -= vec.z;
+                viewpoint._projMatrix = null;
+                viewpoint.resetView();
+            }
+            else
+            {
+                this._movement = this._movement.add(vec);
+                mat = this.getViewpointMatrix().mult(this._transMat);
+                //TODO; move real distance along viewing ray
+                this._transMat = mat.inverse().
+                                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                                 mult(mat);
+            }
         }
 
         this._isMoving = true;
