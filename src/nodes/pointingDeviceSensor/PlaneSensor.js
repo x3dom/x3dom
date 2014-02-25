@@ -44,14 +44,21 @@ x3dom.registerNodeType(
              * @type {x3dom.fields.SFVec3f}
              * @private
              */
-            this._draggingUpVec    = null;
+            this._draggingUpVec = null;
 
             /**
              *
              * @type {x3dom.fields.Quaternion}
              * @private
              */
-            this._rotationMatrix   = this._vf['axisRotation'].toMatrix();
+            this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+
+            /**
+             * Current translation that is produced by this drag sensor
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -84,12 +91,16 @@ x3dom.registerNodeType(
                 //TODO: handle multi-path nodes
 
                 //get model matrix for this node, combined with the axis rotation
-                var modelMatrix = this.getCurrentTransform();
+                var matrix = this.getCurrentTransform();
 
-                //get view matrix of the view that started the drag
-                //...
+                //apply view matrix of the view that started the drag
+                matrix.mult(viewarea.getViewMatrix());
 
-                //compute drag vectors
+                //compute the world coordinates of drag vectors from the sensor's local coordinate system
+                this._draggingRightVec = matrix.multMatrixVec(new x3dom.fields.SFVec3f(1.0, 0.0, 0.0));
+                this._draggingUpVec    = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
+
+                //compute magnification factor (size of a world unit in pixels)
                 //...
             },
 
@@ -103,11 +114,17 @@ x3dom.registerNodeType(
             {
                 x3dom.debug.logInfo("PlaneSensor Received drag event with mouse delta " + dy + ", " + dy);
 
+                var pixelsToMeters = 0.002;
+
                 //apply drag vectors to current transformation
-                //...
+                this._currentTranslation = this._currentTranslation.add(this._draggingRightVec.multiply(dx * pixelsToMeters));
+                this._currentTranslation = this._currentTranslation.add(this._draggingUpVec.multiply(  -dy * pixelsToMeters));
+
+
+                console.log(this._currentTranslation);
 
                 //fire out field routing event
-                //...
+                this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
             },
 
             //----------------------------------------------------------------------------------------------------------------------
