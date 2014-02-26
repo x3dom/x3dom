@@ -19,8 +19,8 @@ x3dom.registerNodeType(
 
             this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
 
-            this.addField_SFVec2f(ctx, 'minPosition', -1, -1);
-            this.addField_SFVec2f(ctx, 'maxPosition',  0,  0);
+            this.addField_SFVec2f(ctx, 'minPosition',  0,  0);
+            this.addField_SFVec2f(ctx, 'maxPosition', -1, -1);
 
             this.addField_SFVec3f(ctx, 'offset', 0, 0, 0);
 
@@ -148,6 +148,7 @@ x3dom.registerNodeType(
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call(this, x, y, dx, dy);
 
                 var intersectionPoint;
+                var minPos, maxPos;
 
                 if (this._initialPlaneIntersection)
                 {
@@ -160,6 +161,21 @@ x3dom.registerNodeType(
                         //compute difference between new point of intersection and initial point
                         this._currentTranslation = intersectionPoint.subtract(this._initialPlaneIntersection);
                         this._currentTranslation = this._currentTranslation.add(this._vf["offset"]);
+
+                        //clamp translation components, if desired
+                        minPos = this._vf["minPosition"];
+                        maxPos = this._vf["maxPosition"];
+
+                        if (minPos.x <= maxPos.x)
+                        {
+                            this._currentTranslation.x = Math.min(this._currentTranslation.x, maxPos.x);
+                            this._currentTranslation.x = Math.max(this._currentTranslation.x, minPos.x);
+                        }
+                        if (minPos.y <= maxPos.y)
+                        {
+                            this._currentTranslation.y = Math.min(this._currentTranslation.y, maxPos.y);
+                            this._currentTranslation.y = Math.max(this._currentTranslation.y, minPos.y);
+                        }
 
                         //fire out field routing event
                         this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
