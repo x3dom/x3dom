@@ -19,7 +19,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'autoOffset', false);
 
             //route-able output fields
-            //this.addField_SFBool(ctx, 'isActive', false);
             //this.addField_SFVec3f(ctx, 'trackPoint_changed', 0, 0, 0);
 
 

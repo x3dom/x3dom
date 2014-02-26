@@ -1129,7 +1129,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
             //find the lowest pointing device sensors in the hierarchy that might be affected
             //(note that, for X3DTouchSensors, 'affected' does not necessarily mean 'activated')
-            if (buttonState == 0 && eventType == 'onmousemove' && affectedPointingSensorsList.length == 0)
+            if (buttonState == 0 && affectedPointingSensorsList.length == 0 &&
+                (eventType == 'onmousemove' || eventType == 'onmouseover' || eventType == 'onmouseout') )
             {
                 for (i = 0; i < node._childNodes.length; ++i)
                 {
@@ -1184,6 +1185,20 @@ x3dom.Viewarea.prototype._notifyAffectedPointingSensors = function(event)
             for (i = 0; i < affectedPointingSensorsList.length; ++i)
             {
                 affectedPointingSensorsList[i].pointerMoved(event);
+            }
+        }
+        else if (event.type == 'mouseover')
+        {
+            for (i = 0; i < affectedPointingSensorsList.length; ++i)
+            {
+                affectedPointingSensorsList[i].pointerMovedOver(event);
+            }
+        }
+        else if (event.type == 'mouseout')
+        {
+            for (i = 0; i < affectedPointingSensorsList.length; ++i)
+            {
+                affectedPointingSensorsList[i].pointerMovedOut(event);
             }
         }
     }

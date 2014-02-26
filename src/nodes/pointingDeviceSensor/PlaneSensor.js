@@ -106,7 +106,7 @@ x3dom.registerNodeType(
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y);
 
                 //TODO: check
-                this._currentTranslation = x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
+                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
 
 
                 //TODO: handle multi-path nodes

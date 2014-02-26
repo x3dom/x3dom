@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             pointerPressedOverSibling: function(event)
             {
                 this._vf["isActive"] = true;
-                //TODO: fire activation event?
+                this.postMessage('isActive ', true);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -60,6 +60,28 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
 
             /**
+             * Function that gets called if the pointing device has entered a sibling of this node.
+             * @param {DOMEvent} event - the pointer event
+             */
+            pointerMovedOver: function(event)
+            {
+                this.postMessage('isOver ', true);
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
+             * Function that gets called if the pointing device has left a sibling of this node.
+             * @param {DOMEvent} event - the pointer event
+             */
+            pointerMovedOut: function(event)
+            {
+                this.postMessage('isOver ', false);
+            },
+
+            //----------------------------------------------------------------------------------------------------------------------
+
+            /**
              * Function that gets called if the pointing device has been released,
              * after it has been pressed over a sibling of this node
              * @private
@@ -67,7 +89,7 @@ x3dom.registerNodeType(
             pointerReleased: function()
             {
                 this._vf["isActive"] = false;
-                //TODO: fire deactivation event?
+                this.postMessage('isActive ', false);
             }
 
             //----------------------------------------------------------------------------------------------------------------------
