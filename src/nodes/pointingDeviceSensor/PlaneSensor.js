@@ -105,11 +105,11 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y);
 
-                //TODO: check
                 this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
 
-
                 //TODO: handle multi-path nodes
+
+                //TODO: use the sensor coordinate system here
 
                 //get model matrix for this node, combined with the axis rotation
                 var matrix = this.getCurrentTransform();
@@ -124,6 +124,7 @@ x3dom.registerNodeType(
                 this._planeNormal = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, 1.0));
 
 
+                //TODO: use the 3D collision point here, as a plane anchor point
                 //compute and remember initial point of intersection with the plane
                 var viewRay = viewarea.calcViewRay(x, y);
 
@@ -155,6 +156,8 @@ x3dom.registerNodeType(
                     //compute point of intersection with the plane
                     var viewRay = this._viewArea.calcViewRay(x, y);
                     intersectionPoint = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
+
+                    //TODO: use the sensor coordinate system here
 
                     if (intersectionPoint)
                     {
