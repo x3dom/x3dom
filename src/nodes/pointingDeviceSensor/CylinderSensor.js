@@ -37,6 +37,27 @@ x3dom.registerNodeType(
             this._rotationMatrix = this._vf['axisRotation'].toMatrix();
 
             /**
+             * Initial intersection point with the sensor's virtual cylinder, at the time the sensor was activated
+             * @type {x3dom.fields.SFVec3f}
+             * @private
+             */
+            this._initialCylinderIntersection = null;
+
+            /**
+             * Current radius of the virtual cylinder.
+             * @type {number}
+             * @private
+             */
+            this._cylinderRadius = 0.0;
+
+            /**
+             * A line that specifies the current local, virtual y-Axis of this sensor, given in world coordinates.
+             * @type {x3dom.fields.Line}
+             * @private
+             */
+            this._yAxisLine = null;
+
+            /**
              * Specifies whether we are currently using cylinder behavior or disk behavior.
              * @type {boolean}
              * @private
@@ -78,24 +99,19 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
 
-                var intersection = new x3dom.fields.SFVec3f(x, y, z);
+                this._initialCylinderIntersection = new x3dom.fields.SFVec3f(x, y, z);
 
                 //compute local coordinate system origin and y-axis direction, both in world space
-                var matrix = this.getCurrentTransform();
+                var matrix         = this.getCurrentTransform();
                 var localOrigin    = matrix.multMatrixPnt(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0));
                 var yAxisDirection = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
-
-                //compute distance between point of intersection and y-axis
-                var yAxisLine = new x3dom.fields.Line(localOrigin, yAxisDirection.normalize());
-                this._cylinderRadius = yAxisLine.shortestDistance(intersection);
-
-
-
+                this._yAxisLine    = new x3dom.fields.Line(localOrigin, yAxisDirection.normalize());
 
                 //TODO: add disk mode
 
-                //cylinder mode
+                //compute distance between point of intersection and y-axis
 
+                this._cylinderRadius = this._yAxisLine.shortestDistance(this._initialCylinderIntersection);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -111,12 +127,24 @@ x3dom.registerNodeType(
                 //cylinder mode
                 if (this._cylinderMode)
                 {
+                    //compute hit point on virtual cylinder geometry
+                    //...
 
+                    //TODO: output trackPoint_changed event
+
+                    //compute angle between initial intersection point and new hit point
+                    //...
+                    //this._initialCylinderIntersection
+
+                    var currentRotation = x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(0, 1, 0), 1.0);
+
+                    //output rotationChanged_event
+                    this.postMessage('rotation_changed', x3dom.fields.Quaternion.copy(currentRotation));
                 }
                 //disk mode
                 else
                 {
-
+                    //TODO: implement
                 }
             },
 

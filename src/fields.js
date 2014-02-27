@@ -2640,7 +2640,7 @@ x3dom.fields.Line.prototype.closestPoint = function(p)
     //project the distance vector on the line
     var projDist = distVec.dot(this.dir);
 
-    return this.pos.add(this.dir.mult(projDist));
+    return this.pos.add(this.dir.multiply(projDist));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -2658,7 +2658,7 @@ x3dom.fields.Line.prototype.shortestDistance = function(p)
     var projDist = distVec.dot(this.dir);
 
     //subtract the projected distance vector, to obtain the part that is orthogonal to this line
-    return distVec.subtract(this.dir.mult(projDist)).length();
+    return distVec.subtract(this.dir.multiply(projDist)).length();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
