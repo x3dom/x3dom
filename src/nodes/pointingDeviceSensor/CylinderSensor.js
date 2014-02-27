@@ -108,6 +108,8 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
 
+                this._currentRotation = new x3dom.fields.Quaternion();
+
                 this._viewArea = viewarea;
 
                 var initialCylinderIntersection = new x3dom.fields.SFVec3f(x, y, z);
@@ -232,8 +234,6 @@ x3dom.registerNodeType(
 
                     this.postMessage('offset_changed', this._vf["offset"]);
                 }
-
-                this._currentRotation = new x3dom.fields.Quaternion();
             }
 
             //----------------------------------------------------------------------------------------------------------------------

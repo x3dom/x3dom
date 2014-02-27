@@ -37,7 +37,14 @@ x3dom.registerNodeType(
              * @type {x3dom.fields.Quaternion}
              * @private
              */
+            //TODO: update on change
             this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+
+            /**
+             * World-To-Local matrix for this node, including the axisRotation of the sensor
+             */
+            this._worldToLocalMatrix = null;
+
 
             /**
              * Initial intersection point with the sensor's plane, at the time the sensor was activated
@@ -45,13 +52,6 @@ x3dom.registerNodeType(
              * @private
              */
             this._initialPlaneIntersection = null;
-
-            /**
-             * Plane anchor point, computed on drag start and used during dragging to compute plane intersections
-             * @type {x3dom.fields.SFVec3f}
-             * @private
-             */
-            this._planeAnchor = null;
 
             /**
              * Plane normal, computed on drag start and used during dragging to compute plane intersections
@@ -107,33 +107,18 @@ x3dom.registerNodeType(
 
                 //TODO: handle multi-path nodes
 
-                //TODO: use the sensor coordinate system here
-
                 //get model matrix for this node, combined with the axis rotation
-                var matrix = this.getCurrentTransform();
+                this._worldToLocalMatrix = this.getCurrentTransform().inverse();
 
-                //apply view matrix of the view that started the drag
-                matrix.mult(viewarea.getViewMatrix());
 
                 this._viewArea = viewarea;
 
-                //compute plane parameters in view coordinates
-                this._planeAnchor = matrix.multMatrixPnt(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0));
-                this._planeNormal = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 0.0, 1.0));
 
+                //remember initial point of intersection with the plane, transform it to local sensor coordinates
+                this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(x, y, z));
 
-                //TODO: use the 3D collision point here, as a plane anchor point
-                //compute and remember initial point of intersection with the plane
-                var viewRay = viewarea.calcViewRay(x, y);
-
-                this._initialPlaneIntersection = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
-
-                //allow projection on the negative side of the plane
-                if (!this._initialPlaneIntersection)
-                {
-                    this._planeNormal = this._planeNormal.negate();
-                    this._initialPlaneIntersection = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
-                }
+                //compute plane parameters in local coordinates
+                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0, 1.0);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -153,9 +138,12 @@ x3dom.registerNodeType(
                 {
                     //compute point of intersection with the plane
                     var viewRay = this._viewArea.calcViewRay(x, y);
-                    intersectionPoint = viewRay.intersectPlane(this._planeAnchor, this._planeNormal);
 
-                    //TODO: use the sensor coordinate system here
+                    //transform the world coordinates, used for the ray, to local sensor coordinates
+                    viewRay.pos = this._worldToLocalMatrix.multMatrixPnt(viewRay.pos);
+                    viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir);
+
+                    intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal);
 
                     if (intersectionPoint)
                     {
@@ -200,8 +188,6 @@ x3dom.registerNodeType(
 
                     this.postMessage('offset_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
                 }
-
-                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
             }
 
             //----------------------------------------------------------------------------------------------------------------------
