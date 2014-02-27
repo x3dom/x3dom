@@ -117,8 +117,8 @@ x3dom.registerNodeType(
                 //remember initial point of intersection with the plane, transform it to local sensor coordinates
                 this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(x, y, z));
 
-                //compute plane parameters in local coordinates
-                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0, 1.0);
+                //compute plane normal in local coordinates
+                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0,  1.0);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -144,6 +144,12 @@ x3dom.registerNodeType(
                     viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir);
 
                     intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal);
+
+                    //allow interaction from both sides of the plane
+                    if (!intersectionPoint)
+                    {
+                        intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal.negate());
+                    }
 
                     if (intersectionPoint)
                     {
