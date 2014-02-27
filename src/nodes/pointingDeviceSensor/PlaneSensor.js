@@ -97,13 +97,11 @@ x3dom.registerNodeType(
 
             /**
              * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
-             * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
-             * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
              * @private
              */
-            _startDragging: function(viewarea, x, y)
+            _startDragging: function(viewarea, x, y, z)
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
 
                 this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
 

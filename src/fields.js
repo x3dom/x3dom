@@ -2602,13 +2602,73 @@ x3dom.fields.MFNode.prototype.length = function() {
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Math Helper Node Definitions
+// Math Helper Class Definitions
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Line constructor.
+ * @param {SFVec3f} pos - anchor point of the line
+ * @param {SFVec3f} dir - direction of the line, must be normalized
+ * @class Represents a Line (as internal helper).
+ *        A line has an origin and a vector that describes a direction, it is infinite in both directions.
+ */
+x3dom.fields.Line = function(pos, dir)
+{
+    if (arguments.length === 0)
+    {
+        this.pos = new x3dom.fields.SFVec3f(0, 0, 0);
+        this.dir = new x3dom.fields.SFVec3f(0, 0, 1);
+    }
+
+    this.pos = x3dom.fields.SFVec3f.copy(pos);
+    this.dir = x3dom.fields.SFVec3f.copy(dir);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * For a given point, this function returns the closest point on this line.
+ * @param p {x3dom.fields.SFVec3f} - the point
+ * @returns {x3dom.fields.SFVec3f} the closest point
+ */
+x3dom.fields.Line.prototype.closestPoint = function(p)
+{
+    var distVec = p.subtract(this.pos);
+
+    //project the distance vector on the line
+    var projDist = distVec.dot(this.dir);
+
+    return this.pos.add(this.dir.mult(projDist));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ * For a given point, this function returns the distance to the closest point on this line.
+ * @param p {x3dom.fields.SFVec3f} - the point
+ * @returns {Double} the distance to the closest point
+ */
+x3dom.fields.Line.prototype.shortestDistance = function(p)
+{
+    var distVec = p.subtract(this.pos);
+
+    //project the distance vector on the line
+    var projDist = distVec.dot(this.dir);
+
+    //subtract the projected distance vector, to obtain the part that is orthogonal to this line
+    return distVec.subtract(this.dir.mult(projDist)).length();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
 /**
  * Ray constructor.
- *  @class Represents a Ray (as internal helper).
+ * @param {SFVec3f} pos - anchor point of the ray
+ * @param {SFVec3f} dir - direction of the ray, must be normalized
+ * @class Represents a Ray (as internal helper).
+ *        A ray is a special line that extends to only one direction from its origin.
  */
 x3dom.fields.Ray = function(pos, dir)
 {
@@ -2678,33 +2738,33 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     var isect = 0.0;
     var out = Number.MAX_VALUE;
     var r, te, tl;
-    
+
     if (this.dir.x > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.x;
-    
+
         te = (low.x - this.pos.x) * r;
         tl = (high.x - this.pos.x) * r;
-    
-        if (tl < out){ 
+
+        if (tl < out){
             out = tl;
         }
-    
-        if (te > isect){ 
+
+        if (te > isect){
             isect  = te;
         }
     }
     else if (this.dir.x < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.x;
-    
+
         te = (high.x - this.pos.x) * r;
         tl = (low.x - this.pos.x) * r;
-    
+
         if (tl < out){
             out = tl;
         }
-    
+
         if (te > isect)   {
             isect = te;
         }
@@ -2713,22 +2773,22 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     {
         return false;
     }
-    
+
     if (this.dir.y > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.y;
-    
+
         te = (low.y - this.pos.y) * r;
         tl = (high.y - this.pos.y) * r;
-    
-        if (tl < out){ 
+
+        if (tl < out){
             out = tl;
         }
-    
+
         if (te > isect) {
             isect = te;
         }
-    
+
         if (isect-out >= x3dom.fields.Eps) {
             return false;
         }
@@ -2736,18 +2796,18 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     else if (this.dir.y < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.y;
-    
+
         te = (high.y - this.pos.y) * r;
         tl = (low.y - this.pos.y) * r;
-    
-        if (tl < out){ 
+
+        if (tl < out){
             out = tl;
         }
-    
+
         if (te > isect) {
             isect = te;
         }
-    
+
         if (isect-out >= x3dom.fields.Eps) {
             return false;
         }
@@ -2756,18 +2816,18 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     {
         return false;
     }
-    
+
     if (this.dir.z > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.z;
-    
+
         te = (low.z - this.pos.z) * r;
         tl = (high.z - this.pos.z) * r;
-    
+
         if (tl < out) {
             out = tl;
         }
-    
+
         if (te > isect) {
             isect = te;
         }
@@ -2775,14 +2835,14 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     else if (this.dir.z < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.z;
-    
+
         te = (high.z - this.pos.z) * r;
         tl = (low.z - this.pos.z) * r;
-    
+
         if (tl < out) {
             out = tl;
         }
-    
+
         if (te > isect) {
             isect = te;
         }
@@ -2791,7 +2851,7 @@ x3dom.fields.Ray.prototype.intersect = function(low, high)
     {
         return false;
     }
-    
+
     this.enter = isect;
     this.exit  = out;
 

@@ -58,7 +58,7 @@ x3dom.registerNodeType(
                 this._lastX = event.layerX;
                 this._lastY = event.layerY;
 
-                this._startDragging(event.viewarea, event.layerX, event.layerY);
+                this._startDragging(event.viewarea, event.worldX, event.worldY, event.worldZ);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -104,11 +104,12 @@ x3dom.registerNodeType(
             /**
              * Function that is called as soon as a drag action is initiated.
              * @param {x3dom.Viewarea} viewarea - the viewarea which initiated the drag operation
-             * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
-             * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
+             * @param {Double} x - 3D world x pick coordinate on the sensor geometry at the time of the dragging initiation
+             * @param {Double} y - 3D world x pick coordinate on the sensor geometry at the time of the dragging initiation
+             * @param {Double} z - 3D world z pick coordinate on the sensor geometry at the time of the dragging initiation
              * @private
              */
-            _startDragging: function(viewarea, x, y)
+            _startDragging: function(viewarea, x, y, z)
             {
 
             },
