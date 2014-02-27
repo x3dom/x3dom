@@ -104,15 +104,15 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
              * @private
              */
-            _startDragging: function(viewarea, x, y, z)
+            _startDragging: function(viewarea, x, y, wx, wy, wz)
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, wx, wy, wz);
 
                 this._currentRotation = new x3dom.fields.Quaternion();
 
                 this._viewArea = viewarea;
 
-                var initialCylinderIntersection = new x3dom.fields.SFVec3f(x, y, z);
+                var initialCylinderIntersection = new x3dom.fields.SFVec3f(wx, wy, wz);
 
                 //compute local coordinate system origin and y-axis direction, both in world space
                 var matrix         = this.getCurrentTransform();

@@ -99,9 +99,11 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
              * @private
              */
-            _startDragging: function(viewarea, x, y, z)
+            _startDragging: function(viewarea, x, y, wx, wy, wz)
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, wx, wy, wz);
+
+                this._viewArea = viewarea;
 
                 this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
 
@@ -110,12 +112,20 @@ x3dom.registerNodeType(
                 //get model matrix for this node, combined with the axis rotation
                 this._worldToLocalMatrix = this.getCurrentTransform().inverse();
 
-
-                this._viewArea = viewarea;
-
-
                 //remember initial point of intersection with the plane, transform it to local sensor coordinates
-                this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(x, y, z));
+                this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(wx, wy, wz));
+
+                // here, a correction is applied, to compensate for the unprecise picking world coordinates, which must
+                // perfectly match with our ray of sight in order to prevent unwanted jitterring during interaction
+                /*var viewRay = this._viewArea.calcViewRay(x, y);
+                viewRay.pos = this._worldToLocalMatrix.multMatrixPnt(viewRay.pos);
+                viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir.normalize());
+                if (viewRay.dir.z > 0)
+                {
+                    var alpha = (this._initialPlaneIntersection.z - viewRay.pos.z) / viewRay.dir.z;
+                    this._initialPlaneIntersection = viewRay.pos.add(viewRay.dir.multiply(alpha));
+                }*/
+
 
                 //compute plane normal in local coordinates
                 this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0,  1.0);
@@ -141,7 +151,7 @@ x3dom.registerNodeType(
 
                     //transform the world coordinates, used for the ray, to local sensor coordinates
                     viewRay.pos = this._worldToLocalMatrix.multMatrixPnt(viewRay.pos);
-                    viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir);
+                    viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir.normalize());
 
                     intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal);
 

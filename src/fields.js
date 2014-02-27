@@ -2722,7 +2722,7 @@ x3dom.fields.Ray.prototype.intersectPlane = function(p, n)
     //if the ray hits the plane, the plane normal and ray direction must be facing each other
     if (nDotDir < 0.0)
     {
-        alpha = p.dot(n) - this.pos.dot(n) / nDotDir;
+        alpha = (p.dot(n) - this.pos.dot(n)) / nDotDir;
 
         result = this.pos.addScaled(this.dir, alpha);
     }
