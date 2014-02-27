@@ -1,3 +1,23 @@
+Based on Extensible 3D (X3D), Part 1: Architecture and base components, 37 Rigid body physics (http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/rigid_physics.html)
+
+Implementation of Rigid body physics component support level 1
+1. CollidableShape Node (Sphere, Box, Cylinder, Cone, IndexedFaceSet and IndexedTriangleSet).
+2. CollisionCollection Node
+
+Implementation of Rigid body physics component support level 2
+1. RigidBody Node
+2. RigidBodyCollection Node
+3. BallJoint
+4. UniversalJoint
+5. SingleAxisHingeJoint
+6. DoubleAxisHingeJoint
+7. SliderJoint
+8. MotorJoint
+
+
+Implemented attributes for each Node described in X3D Rigid body physics component, are shown below.
+
+
 RigidBody : X3DNode {
 	SFFloat    [in,out] angularDampingFactor 0.001   [0,1]				implemented
 	SFVec3f    [in,out] angularVelocity      0 0 0   (-∞,∞)				implemented
