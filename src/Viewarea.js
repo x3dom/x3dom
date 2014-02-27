@@ -956,7 +956,19 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
         viewpoint.setCenterOfRotation(center);
     }
 
-    this.animateTo(viewmat, viewpoint);
+    if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+    {
+        viewpoint._vf.fieldOfView[0] = -dist;
+        viewpoint._vf.fieldOfView[1] = -dist;
+        viewpoint._vf.fieldOfView[2] = dist;
+        viewpoint._vf.fieldOfView[3] = dist;
+        viewpoint._projMatrix = null;
+        this.animateTo(viewmat, viewpoint, 0);
+    }
+    else
+    {
+        this.animateTo(viewmat, viewpoint);
+    }
 };
 
 x3dom.Viewarea.prototype.resetView = function()
@@ -1495,7 +1507,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 viewpoint._vf.fieldOfView[2] -= vec.z;
                 viewpoint._vf.fieldOfView[3] -= vec.z;
                 viewpoint._projMatrix = null;
-                viewpoint.resetView();
             }
             else
             {
