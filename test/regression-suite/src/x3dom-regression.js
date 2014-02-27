@@ -7,6 +7,27 @@ var rp = require("./resultspublisher.js");
 
 
 var configuration = "configuration.json";
+globals = new Object();
+globals.screenshotDelay = 100;
+globals.referencePath = "test/reference/";
+
+console.log("parsing args");
+process.argv.forEach(function(val, index, array){
+    if(index > 1)
+    {
+        if(val == '-c' || val == '--conservative')
+        {
+            console.log("Running in conservative mode");
+            globals.screenshotDelay = 1000;
+        }
+        if(val == '-n' || val == '--no-aa')
+        {
+
+            console.log("Using reference folder: test/reference-no-aa");
+            globals.referencePath = "test/reference-no-aa/";
+        }
+    }
+});
 
 function removeOutput(callback){
         //delete outfolder
@@ -66,6 +87,10 @@ fs.readFile(configuration,function(err, data)
                             runProfile();
                         });
                     }
+                }
+                else
+                {
+                    publisher.publishOverview();
                 }
             }
         });

@@ -1,0 +1,24 @@
+This is the regression test suite for x3dom.
+It runs the test cases in x3dom, creates screenshots, stores them in the output folder and compares them to reference images.
+A results page and diffs are created alongside the screenshots in the browsers subfolder (e.g. output/Chrome).
+The overview page is adjusted for the server folder structure.
+
+Prerequisites:
+-currently only windows is supported
+-JRE(any version)
+-node.js(only 32Bit works at the moment!)
+-Browsers
+-x3dom
+
+Installation:
+-no installation is required, but some points should be noted:
+-this suite must reside in the x3dom project in x3dom/test/regression-suite
+-changing this requires path adaptations in src/server.js, configuration.json and the test-cases
+
+Execution:
+-execute run.bat to run the tests
+-run_conservative.bat runs the test with different parameters, adjusted for the daily build.
+
+Parameters:
+-c, --conservative : adds a one second delay before screenshoting to give x3dom time to finish XHRs (loading textures, inlines).
+-m, --no-aa : change the directory of reference images to reference-no-aa (for virtual graphics card on server-vm).

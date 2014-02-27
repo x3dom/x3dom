@@ -355,15 +355,18 @@ x3dom.registerNodeType(
             else
                 x3dom.debug.logWarning("RenderedTexture: No runtime context found!");
 
+            // Original proposal taken from:  http://www.xj3d.org/extensions/render_texture.html
+            // http://doc.instantreality.org/documentation/nodetype/RenderedTexture/?filter=None
+
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
             this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);    //TODO
             this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
-            this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
+            this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);    // w, h, color components (and numMRTs)
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
-            this.addField_SFBool(ctx, 'showNormals', false);
 
+            this.addField_SFBool(ctx, 'showNormals', false);
             this.addField_SFString(ctx, 'stereoMode', 'NONE');     // ("NONE"|"LEFT_EYE"|"RIGHT_EYE")
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
 
@@ -376,7 +379,8 @@ x3dom.registerNodeType(
             //hRes, vRes = 1280 x 800
             this.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
 
-            x3dom.debug.assert(this._vf.dimensions.length >= 3);
+            x3dom.debug.assert(this._vf.dimensions.length >= 3,
+                               "RenderedTexture.dimensions requires at least 3 entries.");
             this._clearParents = true;
             this._needRenderUpdate = true;
         },
@@ -529,10 +533,61 @@ x3dom.registerNodeType(
                 if (this._cf.scene.node) {
                     this._cf.scene.node.parentRemoved(this);
                 }
+            },
+
+            requirePingPong: function()
+            {
+                return false;
             }
         }
     )
 );
+
+/* ### RefinementTexture ### */
+x3dom.registerNodeType(
+    "RefinementTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.RenderedTexture,
+        function (ctx) {
+            x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
+
+            // Specify first stamp texture
+            this.addField_SFString(ctx, 'stamp0', "gpuii/stamps/0.gif");
+            // Specifiy second stamp texture
+            this.addField_SFString(ctx, 'stamp1', "gpuii/stamps/1.gif");
+            // Defines if texture refinement should be managed by another component
+            this.addField_SFBool(ctx, 'autoRefinement', true);
+            // Format of the images of the dataset that should be loaded
+            this.addField_SFString(ctx, 'format', 'jpg');
+            // Maximum level that should be loaded (if GSM smaller than on DSL6000)
+            this.addField_SFInt32(ctx, 'maxLevel', 7);
+
+            this._vf.maxLevel = (this._vf.maxLevel > 7) ? 7 : this._vf.maxLevel;
+            this._vf.maxLevel = (this._vf.maxLevel < 1) ? 1 : this._vf.maxLevel;
+
+            // Additional parameters to control the refinement mechanism on shader
+            this._repeat = new x3dom.fields.SFVec2f(this._vf.dimensions[0] / 16,
+                                                    this._vf.dimensions[1] / 32);
+            this._renderedImage = 0;
+            this._currLoadLevel = 0;
+            this._loadLevel = 1;
+        },
+        {
+            nextLevel: function() {
+                if (this._loadLevel < this._vf.maxLevel) {
+                    this._loadLevel++;
+                    this._nameSpace.doc.needRender = true;
+                }
+            },
+
+            requirePingPong: function() {
+                return (this._currLoadLevel <= this._vf.maxLevel &&
+                        this._renderedImage < this._loadLevel);
+            }
+        }
+    )
+);
+
 
 /* ### PixelTexture ### */
 x3dom.registerNodeType(

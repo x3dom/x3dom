@@ -972,7 +972,19 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
         viewpoint.setCenterOfRotation(center);
     }
 
-    this.animateTo(viewmat, viewpoint);
+    if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+    {
+        viewpoint._vf.fieldOfView[0] = -dist;
+        viewpoint._vf.fieldOfView[1] = -dist;
+        viewpoint._vf.fieldOfView[2] = dist;
+        viewpoint._vf.fieldOfView[3] = dist;
+        viewpoint._projMatrix = null;
+        this.animateTo(viewmat, viewpoint, 0);
+    }
+    else
+    {
+        this.animateTo(viewmat, viewpoint);
+    }
 };
 
 x3dom.Viewarea.prototype.resetView = function()
@@ -1596,15 +1608,26 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
                 d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-                vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
-                this._movement = this._movement.add(vec);
+            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
 
+            if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+            {
+                viewpoint._vf.fieldOfView[0] += vec.z;
+                viewpoint._vf.fieldOfView[1] += vec.z;
+                viewpoint._vf.fieldOfView[2] -= vec.z;
+                viewpoint._vf.fieldOfView[3] -= vec.z;
+                viewpoint._projMatrix = null;
+            }
+            else
+            {
+                this._movement = this._movement.add(vec);
                 mat = this.getViewpointMatrix().mult(this._transMat);
                 //TODO; move real distance along viewing ray
                 this._transMat = mat.inverse().
                                  mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                                  mult(mat);
             }
+        }
 
             this._isMoving = true;
         }

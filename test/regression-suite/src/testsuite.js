@@ -62,14 +62,15 @@ var TestSuite = function(urlPrefix, outputPath, profile, tests, driver)
         var split = test.url.split("/");
         test.name = split[split.length-1].split(".")[0];
 
-        this.driver.get(url);
+        this.driver.get(url).then(function(){
+            var result = new TestResult(test);
+            result.screenshotCount = 0;
+            that.results.push(result);
+            that.currentResult = result;
+            that.currentStepId = 0;
+            that.runSteps();
+        });
 
-        var result = new TestResult(test);
-        result.screenshotCount = 0;
-        that.results.push(result);
-        that.currentResult = result;
-        that.currentStepId = 0;
-        that.runSteps();
     }
 
     //----------------------------------------------------------------------------------------------------------------------

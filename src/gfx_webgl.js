@@ -11,6 +11,7 @@
 
 
 x3dom.gfx_webgl = (function () {
+    "use strict";
 
     /*****************************************************************************
      * Context constructor
@@ -23,7 +24,6 @@ x3dom.gfx_webgl = (function () {
         this.IG_PositionBuffer = null;
         this.cache = new x3dom.Cache();
         this.stateManager = new x3dom.StateManager(ctx3d);
-        this.activeShader = null;
     }
 
 
@@ -160,6 +160,7 @@ x3dom.gfx_webgl = (function () {
         var q = 0, q5;
         var textures, t;
         var vertices, positionBuffer;
+        var texCoordBuffer, normalBuffer, colorBuffer;
         var indicesBuffer, indexArray;
 
         var shape = drawable.shape;
@@ -585,7 +586,7 @@ x3dom.gfx_webgl = (function () {
                     vertices = null;
                 }
                 if (sp.normal !== undefined || shape._webgl.normals[q]) {
-                    var normalBuffer = gl.createBuffer();
+                    normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5 + 2] = normalBuffer;
 
                     var normals = new Float32Array(shape._webgl.normals[q]);
@@ -619,7 +620,7 @@ x3dom.gfx_webgl = (function () {
                     texCoords = null;
                 }
                 if (sp.color !== undefined) {
-                    var colorBuffer = gl.createBuffer();
+                    colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5 + 4] = colorBuffer;
 
                     var colors = new Float32Array(shape._webgl.colors[q]);
@@ -2789,7 +2790,7 @@ x3dom.gfx_webgl = (function () {
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
 
-        // for initFbo
+        // for initFBO
         var type = gl.UNSIGNED_BYTE;
         var shadowType = gl.UNSIGNED_BYTE;
         var nearestFilt = false;
@@ -2798,12 +2799,14 @@ x3dom.gfx_webgl = (function () {
             type = gl.FLOAT;
             shadowType = gl.FLOAT;
             if (!x3dom.caps.FPL_TEXTURES) {
-                nearestFilt = true;
+                nearestFilt = true;             // TODO: use correct filtering for fp-textures
             }
         }
 
         var shadowedLights, numShadowMaps;
         var i, j, n, size, sizeAvailable;
+        var texType, refinementPos;
+        var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 
         scene.updateVolume();
 		
@@ -2822,8 +2825,8 @@ x3dom.gfx_webgl = (function () {
             // TODO: FIXME when spec ready: readPixels not (yet?) available for float textures
             // https://bugzilla.mozilla.org/show_bug.cgi?id=681903
             // https://www.khronos.org/webgl/public-mailing-list/archives/1108/msg00025.html
-            scene._webgl.fboPick = this.initFbo(gl,
-                                   scene._webgl._currFboWidth, scene._webgl._currFboHeight, true, gl.UNSIGNED_BYTE);
+            scene._webgl.fboPick = x3dom.Utils.initFBO(gl,
+                                   scene._webgl._currFboWidth, scene._webgl._currFboHeight, gl.UNSIGNED_BYTE, false, true);
             scene._webgl.fboPick.pixelData = null;
 
             //Set picking shaders
@@ -2855,11 +2858,11 @@ x3dom.gfx_webgl = (function () {
 				scene._webgl.fboShadow[i] = [];
 				
 				for (j=0; j < numShadowMaps; j++)
-					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboShadow[i][j] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 			
 			if (scene._webgl.fboShadow.length > 0)
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
+				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			scene._webgl.fboBlur = [];
 						
 			//initialize blur fbo (different fbos for different sizes)
@@ -2873,29 +2876,52 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 			
 			//initialize Data for post processing
 			scene._webgl.ppBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
-			var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
 			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);		
 			
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
+
+            // TODO; cleanup on shutdown and lazily create on first use like size-dependent variables below
+            scene._webgl.refinement = {
+                stamps: new Array(2),
+                positionBuffer: gl.createBuffer()
+            };
+            gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.refinement.positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
             
-            // TODO; for testing do it on init, but must be refreshed on node change!
+            // This must be refreshed on node change!
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
-                rt_tex._webgl = {};
-                rt_tex._webgl.fbo = this.initFbo(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
 
-                rt_tex._cleanupGLObjects = function() {
-                    gl.deleteTexture(this._webgl.fbo.tex);
+                texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
+                rt_tex._webgl = {};
+                rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
+
+                rt_tex._cleanupGLObjects = function(retainTex) {
+                    if (!retainTex)
+                        gl.deleteTexture(this._webgl.fbo.tex);
+                    if (this._webgl.fbo.rbo)
+                        gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                    gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                    this._webgl.fbo.rbo = null;
+                    this._webgl.fbo.fbo = null;
                 };
+
+                if (rt_tex.requirePingPong()) {
+                    refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    if (scene._webgl.refinement[refinementPos] === undefined) {
+                        scene._webgl.refinement[refinementPos] = x3dom.Utils.initFBO(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, false);
+                    }
+                    rt_tex._webgl.texture = null;
+                }
             }
 
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
@@ -2914,7 +2940,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl._currFboWidth = fboWidth;
                 scene._webgl._currFboHeight = fboHeight;
 
-                scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true, scene._webgl.fboPick.typ);
+                scene._webgl.fboPick = x3dom.Utils.initFBO(gl, fboWidth, fboHeight, scene._webgl.fboPick.type, false, true);
                 scene._webgl.fboPick.pixelData = null;
 
                 x3dom.debug.logInfo("Refreshed picking FBO to size (" + fboWidth + ", " + fboHeight + ")");
@@ -2931,15 +2957,31 @@ x3dom.gfx_webgl = (function () {
                 if (rt_tex._cleanupGLObjects)
                     rt_tex._cleanupGLObjects();
                 else
-                    rt_tex._cleanupGLObjects = function() {
-                        gl.deleteTexture(this._webgl.fbo.tex);
+                    rt_tex._cleanupGLObjects = function(retainTex) {
+                        if (!retainTex)
+                            gl.deleteTexture(this._webgl.fbo.tex);
+                        if (this._webgl.fbo.rbo)
+                            gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                        gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+                        this._webgl.fbo.rbo = null;
+                        this._webgl.fbo.fbo = null;
                     };
 
+                texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
-                rt_tex._webgl.fbo = this.initFbo(gl,
-                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], nearestFilt, type);
+                rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
+                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
+
+                if (rt_tex.requirePingPong()) {
+                    refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
+                    if (scene._webgl.refinement[refinementPos] === undefined) {
+                        scene._webgl.refinement[refinementPos] = x3dom.Utils.initFBO(gl,
+                            rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, false);
+                    }
+                    rt_tex._webgl.texture = null;
+                }
+
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
                                     rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
@@ -2963,7 +3005,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboShadow[i][0].height != size) {
 					scene._webgl.fboShadow[i] = [];
 					for (j=0;j<numShadowMaps;j++){
-						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+						scene._webgl.fboShadow[i][j] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 					}
 				}			
 			}
@@ -2978,12 +3020,12 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 
 			if (scene._webgl.fboShadow.length > 0 && typeof scene._webgl.fboScene == "undefined" || scene._webgl.fboScene &&
 				(this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height)) {
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
+				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			}
         }
 
@@ -3222,6 +3264,8 @@ x3dom.gfx_webgl = (function () {
 
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
+                if (!rt_tex._webgl.fbo.fbo) // might be deleted (--> RefinementTexture when finished)
+                    continue;
 
                 this.stateManager.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
                                            this.canvas.width / 8, this.canvas.height / 8);
@@ -3247,10 +3291,146 @@ x3dom.gfx_webgl = (function () {
     };
 
     /*****************************************************************************
+     * Render special PingPong-Pass
+     *****************************************************************************/
+    Context.prototype.renderPingPongPass = function (gl, viewarea, rt) {
+        var scene = viewarea._scene;
+        var refinementPos = rt._vf.dimensions[0] + "x" + rt._vf.dimensions[1];
+        var refinementFbo = scene._webgl.refinement[refinementPos];
+
+
+        // load stamp textures
+        if (rt._currLoadLevel == 0 && (!scene._webgl.refinement.stamps[0] || !scene._webgl.refinement.stamps[1])) {
+            scene._webgl.refinement.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+                                    rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
+            scene._webgl.refinement.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
+                                    rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
+        }
+
+        // load next level of image
+        if (rt._currLoadLevel < rt._loadLevel) {
+            rt._currLoadLevel++;
+
+            if (rt._webgl.texture)
+                gl.deleteTexture(rt._webgl.texture);
+
+            var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
+
+            rt._webgl.texture = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
+                                rt._nameSpace.getURL(filename), false, false, false, false);
+
+            (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+        }
+
+        if (!rt._webgl.texture.ready ||
+            !scene._webgl.refinement.stamps[0].ready || !scene._webgl.refinement.stamps[1].ready)
+            return;
+
+        // first pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, refinementFbo.fbo);
+        this.stateManager.viewport(0, 0, refinementFbo.width, refinementFbo.height);
+
+        this.stateManager.disable(gl.BLEND);
+        this.stateManager.disable(gl.CULL_FACE);
+        this.stateManager.disable(gl.DEPTH_TEST);
+
+        gl.clearColor(0, 0, 0, 1);
+        gl.clearDepth(1);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        var sp = this.cache.getShader(gl, x3dom.shader.TEXTURE_REFINEMENT);
+        this.stateManager.useProgram(sp);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.refinement.positionBuffer);
+        gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(sp.position);
+
+        sp.stamp = 0;
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, scene._webgl.refinement.stamps[(rt._currLoadLevel + 1) % 2]);    // draw stamp
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+
+        if (rt._currLoadLevel > 1) {
+            sp.lastTex = 1;
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+
+        sp.curTex = 2;
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, rt._webgl.texture);    // draw level image to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        sp.mode = rt._currLoadLevel - 1;
+        sp.repeat = rt._repeat.toGL();
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        // second pass
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        sp.mode = 0;
+        sp.curTex = 2;
+        gl.activeTexture(gl.TEXTURE2);
+        gl.bindTexture(gl.TEXTURE_2D, refinementFbo.tex);   // draw result to fbo
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+
+        gl.disableVertexAttribArray(sp.position);
+
+        // pass done
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+        if (rt._vf.autoRefinement)
+            rt.nextLevel();
+
+        if (rt._currLoadLevel == rt._vf.maxLevel)
+            rt._currLoadLevel++;
+
+        // we're finally done: cleanup/delete all helper FBOs
+        if (!rt.requirePingPong()) {
+            gl.deleteTexture(rt._webgl.texture);
+            delete rt._webgl.texture;
+
+            rt._cleanupGLObjects(true);
+        }
+
+        rt._renderedImage++;
+    };
+
+    /*****************************************************************************
      * Render RenderedTexture-Pass
      *****************************************************************************/
     Context.prototype.renderRTPass = function (gl, viewarea, rt)
     {
+        /// begin special case (progressive image refinement)
+        if (x3dom.isa(rt, x3dom.nodeTypes.RefinementTexture)) {
+            if (rt.requirePingPong()) {
+                this.renderPingPongPass(gl, viewarea, rt);
+            }
+            return;
+        }
+        /// end special case
+
         switch (rt._vf.update.toUpperCase()) {
             case "NONE":
                 return;
@@ -3579,106 +3759,6 @@ x3dom.gfx_webgl = (function () {
         //Release Texture and Shader Resources
         this.cache.Release(gl);
     };
-
-    /*****************************************************************************
-     * Start of fbo init stuff
-     *****************************************************************************/
-    Context.prototype.emptyTexImage2D = function (gl, internalFormat, width, height, format, type) {
-        try {
-            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
-        }
-        catch (e) {
-            // seems to be no longer necessary, but anyway...
-            var bytes = 3;
-            switch (internalFormat) {
-                case gl.DEPTH_COMPONENT:
-                    bytes = 3;
-                    break;
-                case gl.ALPHA:
-                    bytes = 1;
-                    break;
-                case gl.RGB:
-                    bytes = 3;
-                    break;
-                case gl.RGBA:
-                    bytes = 4;
-                    break;
-                case gl.LUMINANCE:
-                    bytes = 1;
-                    break;
-                case gl.LUMINANCE_ALPHA:
-                    bytes = 2;
-                    break;
-            }
-            var pixels = new Uint8Array(width * height * bytes);
-            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
-        }
-    };
-
-    /*****************************************************************************
-     * Init Texture
-     *****************************************************************************/
-    Context.prototype.initTex = function (gl, w, h, nearest, type) {
-        var tex = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-
-        this.emptyTexImage2D(gl, gl.RGBA, w, h, gl.RGBA, type);
-        //this.emptyTexImage2D(gl, gl.DEPTH_COMPONENT16, w, h, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE);
-
-        if (nearest) {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        }
-        else {
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        }
-        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        //gl.generateMipmap(gl.TEXTURE_2D);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-
-        tex.width = w;
-        tex.height = h;
-
-        return tex;
-    };
-
-    /*****************************************************************************
-     * Creates FBO with given size
-     * (taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009)
-     *
-     * Returned Object has rbo, fbo, tex, width, height
-     *****************************************************************************/
-    Context.prototype.initFbo = function (gl, w, h, nearest, type) {
-        var fbo = gl.createFramebuffer();
-        var rb = gl.createRenderbuffer();
-
-        var tex = this.initTex(gl, w, h, nearest, type);
-
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, fbo);
-        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
-        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
-        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
-
-        var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-        if (status != gl.FRAMEBUFFER_COMPLETE)
-            x3dom.debug.logWarning("[Context|InitFBO] FBO-Status: " + status);
-
-        return {
-            fbo: fbo,
-            rbo: rb,
-            tex: tex,
-            width: w,
-            height: h,
-            typ: type
-        };
-    };
 	
 	/*****************************************************************************
     * Draw shadows on screen
@@ -3777,11 +3857,16 @@ x3dom.gfx_webgl = (function () {
 				numShadowMaps = mat_light.length;
 				
 				for (i=0; i< numShadowMaps; i++){
-						gl.activeTexture(gl.TEXTURE1 + shadowIndex);
-						gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
-						sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
-						sp['light'+p+'_'+i+'_Matrix'] = mat_light[i].toGL();
-						shadowIndex++;
+                    gl.activeTexture(gl.TEXTURE1 + shadowIndex);
+                    gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+                    sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
+                    sp['light'+p+'_'+i+'_Matrix'] = mat_light[i].toGL();
+                    shadowIndex++;
 				}
 				sp['light'+p+'_ViewMatrix'] = lightMatrix.toGL();						
 
