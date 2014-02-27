@@ -31,17 +31,26 @@ x3dom.registerNodeType(
 
             /**
              * Rotation matrix, derived from the current value of the axisRotation field
-             * @type {x3dom.fields.Quaternion}
+             * @type {x3dom.fields.SFMatrix4f}
              * @private
              */
             this._rotationMatrix = this._vf['axisRotation'].toMatrix();
 
             /**
-             * Initial intersection point with the sensor's virtual cylinder, at the time the sensor was activated
+             * Vector from the virtual local y-Axis to the initial intersection point with the virtual cylinder,
+             * at the time the sensor was activated
              * @type {x3dom.fields.SFVec3f}
              * @private
              */
-            this._initialCylinderIntersection = null;
+            this._initialCylinderIntersectionVector = null;
+
+            /**
+             * Current viewarea that is used for dragging, needed for ray setup to compute the cylinder intersection
+             *
+             * @type {x3dom.Viewarea}
+             * @private
+             */
+            this._viewArea = null;
 
             /**
              * Current radius of the virtual cylinder.
@@ -65,8 +74,8 @@ x3dom.registerNodeType(
             this._cylinderMode = true;
 
             /**
-             * Current rotation angle that is produced by this cylinder sensor
-             * @type {Double}
+             * Current rotation that is produced by this cylinder sensor
+             * @type {x3dom.fields.Quaternion}
              * @private
              */
             this._currentRotationAngle = 0.0;
@@ -99,7 +108,9 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, z);
 
-                this._initialCylinderIntersection = new x3dom.fields.SFVec3f(x, y, z);
+                this._viewArea = viewarea;
+
+                var initialCylinderIntersection = new x3dom.fields.SFVec3f(x, y, z);
 
                 //compute local coordinate system origin and y-axis direction, both in world space
                 var matrix         = this.getCurrentTransform();
@@ -111,7 +122,13 @@ x3dom.registerNodeType(
 
                 //compute distance between point of intersection and y-axis
 
-                this._cylinderRadius = this._yAxisLine.shortestDistance(this._initialCylinderIntersection);
+                var closestPointOnYAxis = this._yAxisLine.closestPoint(initialCylinderIntersection);
+
+                this._initialCylinderIntersectionVector = initialCylinderIntersection.subtract(closestPointOnYAxis);
+
+                this._cylinderRadius = this._initialCylinderIntersectionVector.length();
+
+                this._initialCylinderIntersectionVector = this._initialCylinderIntersectionVector.normalize();
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -128,18 +145,69 @@ x3dom.registerNodeType(
                 if (this._cylinderMode)
                 {
                     //compute hit point on virtual cylinder geometry
-                    //...
+                    var viewRay = this._viewArea.calcViewRay(x, y);
 
-                    //TODO: output trackPoint_changed event
+                    //0. assume the following equation:
+                    // At the point of intersection, the distance between the ray of sight and the cylinder equals
+                    // the cylinder radius r.
+                    // This means a ray parameter alpha must be found, so that the minimum distance between the point on
+                    // the ray and the cylinder axis equals r:
+                    // | ((S + alpha*V) - O) - Y*<(S + alpha*V) - O, Y> | = r
+                    // with:
+                    // | X | = length of vector X
+                    // <X1, X2> = dot product of vectors X1, X2
+                    // and variables
+                    // alpha := Ray Parameter (should be found)
+                    // S := Ray Origin
+                    // V := Ray Direction
+                    // O := Local Y-Axis Anchor Point
+                    // Y := Local Y-Axis Direction
 
-                    //compute angle between initial intersection point and new hit point
-                    //...
-                    //this._initialCylinderIntersection
+                    //1. bring equation into the following form:
+                    //   | alpha * A - B | = r
+                    var A = viewRay.dir.subtract(this._yAxisLine.dir.multiply(viewRay.dir.dot(this._yAxisLine.dir)));
+                    var B = viewRay.pos.subtract(this._yAxisLine.pos).add(this._yAxisLine.dir.multiply(this._yAxisLine.dir.dot(this._yAxisLine.pos.subtract(viewRay.pos))));
 
-                    var currentRotation = x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(0, 1, 0), 1.0);
+                    //2. solve quadratic formula (0, 1 or 2 solutions are possible)
+                    var p = 2 * A.dot(B) / A.dot(A);
+                    var q = (B.dot(B) - this._cylinderRadius*this._cylinderRadius) / A.dot(A);
 
-                    //output rotationChanged_event
-                    this.postMessage('rotation_changed', x3dom.fields.Quaternion.copy(currentRotation));
+                    var sqrt_part = p*p*0.25 - q;
+
+                    var alpha_1;
+                    var alpha_2;
+
+                    //is the cylinder hit?
+                    if (sqrt_part >= 0)
+                    {
+                        sqrt_part = Math.sqrt(sqrt_part);
+                        alpha_1 = -p*0.5 + sqrt_part;
+                        alpha_2 = -p*0.5 - sqrt_part;
+
+                        //if we are inside the cylinder, do nothing, otherwise pick the closest point of intersection
+                        alpha_1 = Math.min(alpha_1, alpha_2);
+
+                        if (alpha_1 > 0.0)
+                        {
+                            //TODO: output trackPoint_changed event
+                            var hitPoint = viewRay.pos.add(viewRay.dir.multiply(alpha_1));
+
+                            var closestPointOnYAxis = this._yAxisLine.closestPoint(hitPoint);
+
+                            var vecToHitPoint = hitPoint.subtract(closestPointOnYAxis).normalize();
+
+                            this._currentRotation = x3dom.fields.Quaternion.rotateFromTo(this._initialCylinderIntersectionVector, vecToHitPoint);
+
+                            var offsetQuat = x3dom.fields.Quaternion.axisAngle(this._yAxisLine.dir, this._vf["offset"]);
+
+                            this._currentRotation = this._currentRotation.multiply(offsetQuat);
+
+                            //console.log(this._currentRotation.angle());
+
+                            //output rotationChanged_event
+                            this.postMessage('rotation_changed', x3dom.fields.Quaternion.copy(this._currentRotation));
+                        }
+                    }
                 }
                 //disk mode
                 else
@@ -160,9 +228,9 @@ x3dom.registerNodeType(
 
                 if (this._vf["autoOffset"])
                 {
-                    this._vf["offset"] = this._currentRotation;
+                    this._vf["offset"] = this._currentRotation.angle();
 
-                    this.postMessage('offset_changed', x3dom.fields.Quaternion.copy(this._currentRotation));
+                    this.postMessage('offset_changed', this._vf["offset"]);
                 }
 
                 this._currentRotation = new x3dom.fields.Quaternion();
