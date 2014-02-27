@@ -85,7 +85,7 @@ x3dom.hasElementAttribute = function(attrName)
 x3dom.getElementAttribute = function(attrName)
 {
     var attrib = this.__getAttribute(attrName);
-    if (!attrib && attrName) {
+    if (!attrib && attrib != "" && attrName) {
         attrib = this.__getAttribute(attrName.toLowerCase());
     }
 
