@@ -47,7 +47,6 @@ GNU General Public License for more details.
 */
 
 
-
 function Vector2d(){
 	var x;
 	var y;
@@ -353,18 +352,20 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 
 (function(){
 
+
+	var CollidableShapes = [], JointShapes = [], scene, initScene, render, main, updateRigidbodies, MakeUpdateList, 
+		CreateRigidbodies, rigidbodies = [], WorldGravity = new Vector3d(),obj, startPos, currPos, drag = false, 
+		updateRigidbody, updateJoint, runtime = null, x3d, intervalVar, building_constraints = true, debug_mode=false
+		append_ammo=false;
+
+		
 	//Get all CollidableShapes from the scene and create an instance of the X3DCollidableShape using their attributes.
 	var colShape = document.getElementsByTagName("CollidableShape");
 	if(colShape == null){
 		console.log("NO CollidableShape node");
 	}
 	else{
-	
-		var CollidableShapes = [], JointShapes = [], scene, initScene, render, main, updateRigidbodies, MakeUpdateList, 
-		CreateRigidbodies, rigidbodies = [], WorldGravity = new Vector3d(),obj, startPos, currPos, drag = false, 
-		updateRigidbody, updateJoint, runtime = null, x3d, intervalVar, building_constraints = true, debug_mode=false
-		append_ammo=false;
-	
+
 		if(append_ammo == false){
 			append_ammo = true;
 			var head = document.getElementsByTagName("head")[0];
@@ -373,19 +374,17 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 			ammojs.src = "ammo.js";
 			head.appendChild(ammojs);
 		}
-		
 
-	
 		for (i=0; i < colShape.length; i++) {
-		
+	
 			var X3D_CS = new X3DCollidableShape;
 			
 			X3D_CS.CS_index = colShape[i].getAttribute("index");
 			X3D_CS.CS_DEF = colShape[i].getAttribute('DEF');
 			X3D_CS.CS_containerField = colShape[i].getAttribute('containerField');
 			X3D_CS.CS_enabled = colShape[i].getAttribute('enabled');
-			
-			if(colShape[i].getAttribute('rotation') != null){
+
+			if(colShape[i].hasAttribute('rotation')){
 				var tempArraySize =colShape[i].getAttribute("rotation").split(" ");
 				X3D_CS.CS_Rotation = new Vector4d;
 				X3D_CS.CS_Rotation.x = tempArraySize[0];
@@ -400,7 +399,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 				X3D_CS.CS_InitialRotation.w = tempArraySize[3];
 			}
 			
-			if(colShape[i].getAttribute('translation') != null){
+			if(colShape[i].hasAttribute('translation')){
 				var tempArraySize =colShape[i].getAttribute("translation").split(" ");
 				X3D_CS.CS_Translation = new Vector3d;
 				X3D_CS.CS_Translation.x = parseFloat(tempArraySize[0]);
@@ -430,14 +429,14 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_CS.CC_appliedParameters = colSensorChilds[cs].getAttribute('appliedParameters');
 							X3D_CS.CC_enabled = colSensorChilds[cs].getAttribute('enabled');
 								
-							if(colSensorChilds[cs].getAttribute('frictionCoefficients') != null){
+							if(colSensorChilds[cs].hasAttribute('frictionCoefficients')){
 								var tempArray = colSensorChilds[cs].getAttribute('frictionCoefficients').split(" ");
 								X3D_CS.CC_frictionCoefficients = new Vector2d;
 								X3D_CS.CC_frictionCoefficients.x = tempArray[0];
 								X3D_CS.CC_frictionCoefficients.y = tempArray[1];
 							}
 								
-							if(colSensorChilds[cs].getAttribute('slipFactors') != null){
+							if(colSensorChilds[cs].hasAttribute('slipFactors')){
 								var tempArray = colSensorChilds[cs].getAttribute('slipFactors').split(" ");
 								X3D_CS.CC_slipFactors = new Vector2d;
 								X3D_CS.CC_slipFactors.x = tempArray[0];
@@ -447,7 +446,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_CS.CC_softnessConstantForceMix = parseFloat(colSensorChilds[cs].getAttribute('softnessConstantForceMix'));
 							X3D_CS.CC_softnessErrorCorrection = parseFloat(colSensorChilds[cs].getAttribute('softnessErrorCorrection'));
 								
-							if(colSensorChilds[cs].getAttribute('surfaceSpeed') != null){
+							if(colSensorChilds[cs].hasAttribute('surfaceSpeed')){
 								var tempArray = colSensorChilds[cs].getAttribute('surfaceSpeed').split(" ");
 								X3D_CS.CC_surfaceSpeed = new Vector2d;
 								X3D_CS.CC_surfaceSpeed.x = tempArray[0];
@@ -463,7 +462,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 			var shapes = colShape[i].getElementsByTagName("Shape");
 			for (s=0; s < shapes.length; s++) {
 				for (s2=0; s2 < shapes[s].childNodes.length; s2++) {
-					if (shapes[s].childNodes[s2].nodeType == 1 && !(shapes[s].childNodes[s2].nodeName =="Appearance" || shapes[s].childNodes[s2].nodeName == "appearance")){ // to 1 shmainei oti to node einai typou element
+					if (shapes[s].childNodes[s2].nodeType == 1 && !(shapes[s].childNodes[s2].nodeName =="Appearance" || shapes[s].childNodes[s2].nodeName == "appearance")){ // 1: type-element
 						
 						CollidableShapes.push( X3D_CS );
 						
@@ -475,13 +474,14 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						else{
 							X3D_CS.DEF = null;
 						}
-						
-						switch(shapes[s].childNodes[s2].nodeName){
-						
+
+						switch(X3D_CS.Name){
+							
+							case "BOX":
 							case "Box":
 							{
 						
-								if(shapes[s].childNodes[s2].getAttribute('size') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('size')){
 									var tempArraySize =shapes[s].childNodes[s2].getAttribute("size").split(" ");
 									X3D_CS.C_Size = new Vector3d;
 									X3D_CS.C_Size.x = tempArraySize[0];
@@ -492,46 +492,45 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							}
 							break;
 						
-						
+							case "SPHERE":
 							case "Sphere":
 							{
-							
-								if(shapes[s].childNodes[s2].getAttribute('radius') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('radius')){
 									X3D_CS.C_Radius = parseFloat(shapes[s].childNodes[s2].getAttribute('radius'));
 								}
 								
 							}
 							break;
 						
-						
+							case "CYLINDER":
 							case "Cylinder":
 							{
 							
-								if(shapes[s].childNodes[s2].getAttribute('radius') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('radius')){
 									X3D_CS.C_Radius = parseFloat(shapes[s].childNodes[s2].getAttribute('radius'));
 								}
-								if(shapes[s].childNodes[s2].getAttribute('height') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('height')){
 									X3D_CS.C_Height = parseFloat(shapes[s].childNodes[s2].getAttribute('height'));
 								}
 								
 							}
 							break;
 						
-						
+							case "CONE":
 							case "Cone":
 							{
 							
-								if(shapes[s].childNodes[s2].getAttribute('bottomRadius') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('bottomRadius')){
 									X3D_CS.C_Radius = parseFloat(shapes[s].childNodes[s2].getAttribute('bottomRadius'));
 								}
-								if(shapes[s].childNodes[s2].getAttribute('height') != null){
+								if(shapes[s].childNodes[s2].hasAttribute('height')){
 									X3D_CS.C_Height = parseFloat(shapes[s].childNodes[s2].getAttribute('height'));
 								}
 							
 							}
 							break;
 							
-							
+							case "INDEXEDFACESET":
 							case "IndexedFaceSet":
 							{
 							
@@ -565,7 +564,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							}
 							break;
 							
-							
+							case "INDEXEDTRIANGLESET":
 							case "IndexedTriangleSet":
 							{
 								
@@ -611,11 +610,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											
 											if(CollidableShapes[cs].CS_index == transform_index){
 												
-												if(transform[t].getAttribute("DEF") !=null){
+												if(transform[t].hasAttribute("DEF")){
 													X3D_CS.T_DEF = transform[t].getAttribute("DEF");
 												}
 												
-												if(transform[t].getAttribute("scale") !=null){
+												if(transform[t].hasAttribute("scale")){
 													var tempArrayScale = transform[t].getAttribute("scale").split(" ");
 													X3D_CS.Scale = new Vector3d;
 													X3D_CS.Scale.x = tempArrayScale[0];
@@ -626,7 +625,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 												X3D_CS.Radius = parseFloat(transformElem[t2].childNodes[t3].getAttribute('radius'));
 												X3D_CS.Height = parseFloat(transformElem[t2].childNodes[t3].getAttribute('height'));
 												
-												if(transform[t].getAttribute("translation") != null){
+												if(transform[t].hasAttribute("translation")){
 													var tempArrayTranslation = transform[t].getAttribute("translation").split(" ");
 													X3D_CS.Translation = new Vector3d;
 													X3D_CS.Translation.x = tempArrayTranslation[0];
@@ -634,7 +633,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 													X3D_CS.Translation.z = tempArrayTranslation[2];
 												}
 
-												if(transform[t].getAttribute("rotation") != null){
+												if(transform[t].hasAttribute("rotation")){
 													var tempArrayRotation = transform[t].getAttribute("rotation").split(" ");
 													X3D_CS.Rotation = new Vector4d;
 													X3D_CS.Rotation.x = tempArrayRotation[0];
@@ -643,7 +642,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 													X3D_CS.Rotation.w = tempArrayRotation[3];
 												}
 												
-												if(transformElem[t2].childNodes[t3].getAttribute("size") != null){
+												if(transformElem[t2].childNodes[t3].hasAttribute("size")){
 													var tempArraySize =transformElem[t2].childNodes[t3].getAttribute("size").split(" ");
 													X3D_CS.Size = new Vector3d;
 													X3D_CS.Size.x = tempArraySize[0];
@@ -693,14 +692,12 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 				X3D_CS.RBC_enabled = Rigid_b[rb].getAttribute("enabled");
 				X3D_CS.RBC_errorCorrection = parseFloat(Rigid_b[rb].getAttribute("errorCorrection"));
 				
-				if(Rigid_b[rb].getAttribute("gravity") != null){
-				
+				if(Rigid_b[rb].hasAttribute("gravity")){
 					var tempArray = Rigid_b[rb].getAttribute("gravity").split(" ");
 					X3D_CS.RBC_gravity = new Vector3d;
 					X3D_CS.RBC_gravity.x = tempArray[0];
 					X3D_CS.RBC_gravity.y = tempArray[1];
 					X3D_CS.RBC_gravity.z = tempArray[2];
-					
 				}
 				
 				X3D_CS.RBC_iterations = parseFloat(Rigid_b[rb].getAttribute("iterations"));
@@ -713,23 +710,22 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 				
 				var RigBD_elem = Rigid_b[rb].childNodes;
 				for (rbe=0; rbe < RigBD_elem.length; rbe++) {
-					if(RigBD_elem[rbe].nodeName == "RigidBody"){
-						
+					if(RigBD_elem[rbe].nodeName == "RigidBody" || RigBD_elem[rbe].nodeName == "RIGIDBODY"){
 						var RigBD_CollShape = RigBD_elem[rbe].childNodes;
 						for (rbcs=0; rbcs < RigBD_CollShape.length; rbcs++) {
-							if(RigBD_CollShape[rbcs].nodeName == "CollidableShape"){
+							if(RigBD_CollShape[rbcs].nodeName == "CollidableShape" || RigBD_CollShape[rbcs].nodeName == "COLLIDABLESHAPE"){
 								for (rcs=0; rcs < CollidableShapes.length; rcs++) {
 									if(RigBD_CollShape[rbcs].getAttribute("USE") == CollidableShapes[rcs].CS_DEF){
 									
-										if(RigBD_elem[rbe].getAttribute("DEF") != null){
+										if(RigBD_elem[rbe].hasAttribute("DEF")){
 											X3D_CS.RB_DEF = RigBD_elem[rbe].getAttribute("DEF");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("angularDampingFactor") != null){
+										if(RigBD_elem[rbe].hasAttribute("angularDampingFactor")){
 											X3D_CS.RB_angularDampingFactor = parseFloat(RigBD_elem[rbe].getAttribute("angularDampingFactor"));
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("angularVelocity") != null){
+										if(RigBD_elem[rbe].hasAttribute("angularVelocity")){
 											var tempArray = RigBD_elem[rbe].getAttribute("angularVelocity").split(" ");
 											X3D_CS.RB_angularVelocity = new Vector3d;
 											X3D_CS.RB_angularVelocity.x = tempArray[0];
@@ -737,15 +733,14 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_angularVelocity.z = tempArray[2];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("autoDamp") !=null){
+										if(RigBD_elem[rbe].hasAttribute("autoDamp")){
 											X3D_CS.RB_autoDamp = RigBD_elem[rbe].getAttribute("autoDamp");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("autoDisable") !=null){
+										if(RigBD_elem[rbe].hasAttribute("autoDisable")){
 											X3D_CS.RB_autoDisable = RigBD_elem[rbe].getAttribute("autoDisable");
 										}
-										
-										if(RigBD_elem[rbe].getAttribute("centerOfMass") != null){
+										if(RigBD_elem[rbe].hasAttribute("centerOfMass")){
 											var tempArray = RigBD_elem[rbe].getAttribute("centerOfMass").split(" ");
 											X3D_CS.RB_centerOfMass = new Vector3d;
 											X3D_CS.RB_centerOfMass.x = tempArray[0];
@@ -753,23 +748,23 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_centerOfMass.z = tempArray[2];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("disableAngularSpeed") !=null){
+										if(RigBD_elem[rbe].hasAttribute("disableAngularSpeed")){
 											X3D_CS.RB_disableAngularSpeed = RigBD_elem[rbe].getAttribute("disableAngularSpeed");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("disableLinearSpeed") !=null){
+										if(RigBD_elem[rbe].hasAttribute("disableLinearSpeed")){
 											X3D_CS.RB_disableLinearSpeed = RigBD_elem[rbe].getAttribute("disableLinearSpeed");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("disableTime") !=null){
+										if(RigBD_elem[rbe].hasAttribute("disableTime")){
 											X3D_CS.RB_disableTime = RigBD_elem[rbe].getAttribute("disableTime");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("enabled") !=null){
+										if(RigBD_elem[rbe].getAttribute("enabled")){
 											X3D_CS.RB_enabled = RigBD_elem[rbe].getAttribute("enabled");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("finiteRotationAxis") != null){
+										if(RigBD_elem[rbe].hasAttribute("finiteRotationAxis")){
 											var tempArray = RigBD_elem[rbe].getAttribute("finiteRotationAxis").split(" ");
 											X3D_CS.RB_finiteRotationAxis = new Vector3d;
 											X3D_CS.RB_finiteRotationAxis.x = tempArray[0];
@@ -777,19 +772,19 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_finiteRotationAxis.z = tempArray[2];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("fixed") != null){
+										if(RigBD_elem[rbe].hasAttribute("fixed")){
 											X3D_CS.RB_fixed = RigBD_elem[rbe].getAttribute("fixed");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("forces") != null){
+										if(RigBD_elem[rbe].hasAttribute("forces")){
 											X3D_CS.RB_forces = RigBD_elem[rbe].getAttribute("forces");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("geometry") != null){
+										if(RigBD_elem[rbe].hasAttribute("geometry")){
 											X3D_CS.RB_geometry = RigBD_elem[rbe].getAttribute("geometry");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("inertia") != null){
+										if(RigBD_elem[rbe].hasAttribute("inertia")){
 											var tempArray = RigBD_elem[rbe].getAttribute("inertia").split(" ");
 											X3D_CS.RB_inertia = new Vector3x3d;
 											X3D_CS.RB_inertia.xx = tempArray[0];
@@ -803,11 +798,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_inertia.zz = tempArray[8];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("linearDampingFactor") != null){
+										if(RigBD_elem[rbe].hasAttribute("linearDampingFactor")){
 											X3D_CS.RB_linearDampingFactor = parseFloat(RigBD_elem[rbe].getAttribute("linearDampingFactor"));
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("linearVelocity") != null){
+										if(RigBD_elem[rbe].hasAttribute("linearVelocity")){
 											var tempArray = RigBD_elem[rbe].getAttribute("linearVelocity").split(" ");
 											X3D_CS.RB_linearVelocity = new Vector3d;
 											X3D_CS.RB_linearVelocity.x = tempArray[0];
@@ -815,19 +810,19 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_linearVelocity.z = tempArray[2];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("mass") != null){
+										if(RigBD_elem[rbe].hasAttribute("mass")){
 											X3D_CS.RB_mass = parseFloat(RigBD_elem[rbe].getAttribute("mass"));
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("massDensityModel") != null){
+										if(RigBD_elem[rbe].hasAttribute("massDensityModel")){
 											X3D_CS.RB_massDensityModel = parseFloat(RigBD_elem[rbe].getAttribute("massDensityModel"));
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("metadata") != null){
+										if(RigBD_elem[rbe].hasAttribute("metadata")){
 											X3D_CS.RB_metadata = parseFloat(RigBD_elem[rbe].getAttribute("metadata"));
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("orientation") != null){
+										if(RigBD_elem[rbe].hasAttribute("orientation")){
 											var tempArray = RigBD_elem[rbe].getAttribute("orientation").split(" ");
 											X3D_CS.RB_orientation = new Vector4d;
 											X3D_CS.RB_orientation.x = tempArray[0];
@@ -836,7 +831,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_orientation.w = tempArray[3];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("position") != null){
+										if(RigBD_elem[rbe].hasAttribute("position")){
 											var tempArray = RigBD_elem[rbe].getAttribute("position").split(" ");
 											X3D_CS.RB_position = new Vector3d;
 											X3D_CS.RB_position.x = tempArray[0];
@@ -844,15 +839,15 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 											X3D_CS.RB_position.z = tempArray[2];
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("torques") != null){
+										if(RigBD_elem[rbe].hasAttribute("torques")){
 											X3D_CS.RB_torques = RigBD_elem[rbe].getAttribute("torques");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("useFiniteRotation") != null){
+										if(RigBD_elem[rbe].hasAttribute("useFiniteRotation")){
 											X3D_CS.RB_useFiniteRotation = RigBD_elem[rbe].getAttribute("useFiniteRotation");
 										}
 										
-										if(RigBD_elem[rbe].getAttribute("useGlobalGravity") != null){
+										if(RigBD_elem[rbe].hasAttribute("useGlobalGravity")){
 											X3D_CS.RB_useGlobalGravity = RigBD_elem[rbe].getAttribute("useGlobalGravity");
 										}
 										
@@ -868,10 +863,10 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 			
 			X3D_CS.createRigid = true;
 			
-		}	
+		}		
 
-	
-	
+		
+		
 		if(Rigid_b != null){
 			for (rb=0; rb < Rigid_b.length; rb++) {
 				
@@ -881,18 +876,18 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					
 					switch(RigBD_elem[rbe].nodeName){
 						
+						case "BALLJOINT":
 						case "BallJoint":{
-						
 							var X3D_J = new X3DJoint;
 							X3D_J.createJoint = true;
 							X3D_J.X3D_JointType = new BallJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 							
-							if(RigBD_elem[rbe].getAttribute("anchorPoint") != null){
+							if(RigBD_elem[rbe].hasAttribute("anchorPoint")){
 								var tempArray = RigBD_elem[rbe].getAttribute("anchorPoint").split(" ");
 								X3D_J.X3D_JointType.anchorPoint = new Vector3d;
 								X3D_J.X3D_JointType.anchorPoint.x = tempArray[0];
@@ -902,7 +897,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){	
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){	
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
 										for (ii=0; ii < CollidableShapes.length; ii++) {
@@ -932,6 +927,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 							
+						case "MOTORJOINT":
 						case "MotorJoint":{
 						
 							var X3D_J = new X3DJoint;
@@ -939,11 +935,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_J.X3D_JointType = new MotorJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;	
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("motor1Axis") != null){
+							if(RigBD_elem[rbe].hasAttribute("motor1Axis")){
 								var tempArray = RigBD_elem[rbe].getAttribute("motor1Axis").split(" ");
 								X3D_J.X3D_JointType.motor1Axis = new Vector3d;
 								X3D_J.X3D_JointType.motor1Axis.x = tempArray[0];
@@ -951,7 +947,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.motor1Axis.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("motor2Axis") != null){
+							if(RigBD_elem[rbe].hasAttribute("motor2Axis")){
 								var tempArray = RigBD_elem[rbe].getAttribute("motor2Axis").split(" ");
 								X3D_J.X3D_JointType.motor2Axis = new Vector3d;
 								X3D_J.X3D_JointType.motor2Axis.x = tempArray[0];
@@ -959,7 +955,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.motor2Axis.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("motor3Axis") != null){
+							if(RigBD_elem[rbe].hasAttribute("motor3Axis")){
 								var tempArray = RigBD_elem[rbe].getAttribute("motor3Axis").split(" ");
 								X3D_J.X3D_JointType.motor3Axis = new Vector3d;
 								X3D_J.X3D_JointType.motor3Axis.x = tempArray[0];
@@ -967,47 +963,47 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.motor3Axis.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("axis1Angle") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis1Angle")){
 								X3D_J.X3D_JointType.axis1Angle = parseFloat(RigBD_elem[rbe].getAttribute("axis1Angle")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("axis2Angle") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis2Angle")){
 								X3D_J.X3D_JointType.axis2Angle = parseFloat(RigBD_elem[rbe].getAttribute("axis2Angle")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("axis3Angle") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis3Angle")){
 								X3D_J.X3D_JointType.axis3Angle = parseFloat(RigBD_elem[rbe].getAttribute("axis3Angle")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("axis1Torque") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis1Torque")){
 								X3D_J.X3D_JointType.axis1Torque = parseFloat(RigBD_elem[rbe].getAttribute("axis1Torque"));
 							}
-							if(RigBD_elem[rbe].getAttribute("axis2Torque") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis2Torque")){
 								X3D_J.X3D_JointType.axis2Torque = parseFloat(RigBD_elem[rbe].getAttribute("axis2Torque"));
 							}
-							if(RigBD_elem[rbe].getAttribute("axis3Torque") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis3Torque")){
 								X3D_J.X3D_JointType.axis3Torque = parseFloat(RigBD_elem[rbe].getAttribute("axis3Torque"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop1Bounce") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop1Bounce")){
 								X3D_J.X3D_JointType.stop1Bounce = parseFloat(RigBD_elem[rbe].getAttribute("stop1Bounce"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop1ErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop1ErrorCorrection")){
 								X3D_J.X3D_JointType.stop1ErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stop1ErrorCorrection"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop2Bounce") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop2Bounce")){
 								X3D_J.X3D_JointType.stop2Bounce = parseFloat(RigBD_elem[rbe].getAttribute("stop2Bounce"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop2ErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop2ErrorCorrection")){
 								X3D_J.X3D_JointType.stop2ErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stop2ErrorCorrection"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop3Bounce") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop3Bounce")){
 								X3D_J.X3D_JointType.stop3Bounce = parseFloat(RigBD_elem[rbe].getAttribute("stop3Bounce"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop3ErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop3ErrorCorrection")){
 								X3D_J.X3D_JointType.stop3ErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stop3ErrorCorrection"));
 							}
 								
 								
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
 										for (ii=0; ii < CollidableShapes.length; ii++) {
@@ -1048,6 +1044,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 							
+						case "SLIDERJOINT":
 						case "SliderJoint":{
 
 							var X3D_J = new X3DJoint;
@@ -1055,11 +1052,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_J.X3D_JointType = new SliderJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 
-							if(RigBD_elem[rbe].getAttribute("axis") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis").split(" ");
 								X3D_J.X3D_JointType.axis = new Vector3d;
 								X3D_J.X3D_JointType.axis.x = tempArray[0];
@@ -1067,22 +1064,22 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis.z = tempArray[2];
 							}
 							
-							if(RigBD_elem[rbe].getAttribute("maxSeparation") != null){
+							if(RigBD_elem[rbe].hasAttribute("maxSeparation")){
 								X3D_J.X3D_JointType.maxSeparation = parseFloat(RigBD_elem[rbe].getAttribute("maxSeparation"));
 							}
-							if(RigBD_elem[rbe].getAttribute("minSeparation") != null){
+							if(RigBD_elem[rbe].hasAttribute("minSeparation")){
 								X3D_J.X3D_JointType.minSeparation = parseFloat(RigBD_elem[rbe].getAttribute("minSeparation"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopBounce") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopBounce")){
 								X3D_J.X3D_JointType.stopBounce = parseFloat(RigBD_elem[rbe].getAttribute("stopBounce"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopErrorCorrection")){
 								X3D_J.X3D_JointType.stopErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stopErrorCorrection"));
 							}
 							
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){
 										
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
@@ -1114,6 +1111,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 							
+						case "UNIVERSALJOINT":
 						case "UniversalJoint":{
 						
 							var X3D_J = new X3DJoint;
@@ -1121,11 +1119,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_J.X3D_JointType = new UniversalJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 							
-							if(RigBD_elem[rbe].getAttribute("axis1") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis1")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis1").split(" ");
 								X3D_J.X3D_JointType.axis1 = new Vector3d;
 								X3D_J.X3D_JointType.axis1.x = tempArray[0];
@@ -1133,7 +1131,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis1.z = tempArray[2];
 							}
 							
-							if(RigBD_elem[rbe].getAttribute("axis2") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis2")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis2").split(" ");
 								X3D_J.X3D_JointType.axis2 = new Vector3d;
 								X3D_J.X3D_JointType.axis2.x = tempArray[0];
@@ -1141,7 +1139,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis2.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("anchorPoint") != null){
+							if(RigBD_elem[rbe].hasAttribute("anchorPoint")){
 								var tempArray = RigBD_elem[rbe].getAttribute("anchorPoint").split(" ");
 								X3D_J.X3D_JointType.anchorPoint = new Vector3d;
 								X3D_J.X3D_JointType.anchorPoint.x = tempArray[0];
@@ -1149,23 +1147,23 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.anchorPoint.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("stopBounce1") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopBounce1")){
 								X3D_J.X3D_JointType.stopBounce1 = parseFloat(RigBD_elem[rbe].getAttribute("stopBounce1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop1ErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop1ErrorCorrection")){
 								X3D_J.X3D_JointType.stop1ErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stop1ErrorCorrection"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopBounce2") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopBounce2")){
 								X3D_J.X3D_JointType.stopBounce2 = parseFloat(RigBD_elem[rbe].getAttribute("stopBounce2"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stop2ErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stop2ErrorCorrection")){
 								X3D_J.X3D_JointType.stop2ErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stop2ErrorCorrection"));
 							}
 							
 
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){				
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){				
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
 											
@@ -1197,7 +1195,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							JointShapes.push( X3D_J );
 						}
 						break;
-							
+						
+						case "SINGLEAXISHINGEJOINT":
 						case "SingleAxisHingeJoint":{
 						
 							var X3D_J = new X3DJoint;
@@ -1205,11 +1204,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_J.X3D_JointType = new SingleAxisHingeJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 							
-							if(RigBD_elem[rbe].getAttribute("axis") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis").split(" ");
 								X3D_J.X3D_JointType.axis = new Vector3d;
 								X3D_J.X3D_JointType.axis.x = tempArray[0];
@@ -1217,7 +1216,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("anchorPoint") != null){
+							if(RigBD_elem[rbe].hasAttribute("anchorPoint")){
 								var tempArray = RigBD_elem[rbe].getAttribute("anchorPoint").split(" ");
 								X3D_J.X3D_JointType.anchorPoint = new Vector3d;
 								X3D_J.X3D_JointType.anchorPoint.x = tempArray[0];
@@ -1225,22 +1224,22 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.anchorPoint.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("maxAngle") != null){
+							if(RigBD_elem[rbe].hasAttribute("maxAngle")){
 								X3D_J.X3D_JointType.maxAngle = parseFloat(RigBD_elem[rbe].getAttribute("maxAngle")) * 0.0174532925; //radians
 							}
-							if(RigBD_elem[rbe].getAttribute("minAngle") != null){
+							if(RigBD_elem[rbe].hasAttribute("minAngle")){
 								X3D_J.X3D_JointType.minAngle = parseFloat(RigBD_elem[rbe].getAttribute("minAngle")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("stopBounce") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopBounce")){
 								X3D_J.X3D_JointType.stopBounce = parseFloat(RigBD_elem[rbe].getAttribute("stopBounce"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopErrorCorrection")){
 								X3D_J.X3D_JointType.stopErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("stopErrorCorrection"));
 							}
 								
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){
 										
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
@@ -1272,7 +1271,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							
 						}
 						break;
-							
+						case "DOUBLEAXISHINGEJOINT":
 						case "DoubleAxisHingeJoint":{
 						
 							var X3D_J = new X3DJoint;
@@ -1280,11 +1279,11 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							X3D_J.X3D_JointType = new DoubleAxisHingeJoint;
 							X3D_J.JointTypeName = RigBD_elem[rbe].nodeName;
 							
-							if(RigBD_elem[rbe].getAttribute("debugMode") != null){
+							if(RigBD_elem[rbe].hasAttribute("debugMode")){
 								X3D_J.X3D_JointType.debugMode = RigBD_elem[rbe].getAttribute("debugMode");
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("axis1") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis1")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis1").split(" ");
 								X3D_J.X3D_JointType.axis1 = new Vector3d;
 								X3D_J.X3D_JointType.axis1.x = tempArray[0];
@@ -1292,7 +1291,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis1.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("axis2") != null){
+							if(RigBD_elem[rbe].hasAttribute("axis2")){
 								var tempArray = RigBD_elem[rbe].getAttribute("axis2").split(" ");
 								X3D_J.X3D_JointType.axis2 = new Vector3d;
 								X3D_J.X3D_JointType.axis2.x = tempArray[0];
@@ -1300,7 +1299,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.axis2.z = tempArray[2];
 							}
 								
-							if(RigBD_elem[rbe].getAttribute("anchorPoint") != null){
+							if(RigBD_elem[rbe].hasAttribute("anchorPoint")){
 								var tempArray = RigBD_elem[rbe].getAttribute("anchorPoint").split(" ");
 								X3D_J.X3D_JointType.anchorPoint = new Vector3d;
 								X3D_J.X3D_JointType.anchorPoint.x = tempArray[0];
@@ -1308,43 +1307,43 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 								X3D_J.X3D_JointType.anchorPoint.z = tempArray[2];
 							}
 			
-							if(RigBD_elem[rbe].getAttribute("desiredAngularVelocity1") != null){
+							if(RigBD_elem[rbe].hasAttribute("desiredAngularVelocity1")){
 								X3D_J.X3D_JointType.desiredAngularVelocity1 = parseFloat(RigBD_elem[rbe].getAttribute("desiredAngularVelocity1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("desiredAngularVelocity2") != null){
+							if(RigBD_elem[rbe].hasAttribute("desiredAngularVelocity2")){
 								X3D_J.X3D_JointType.desiredAngularVelocity2 = parseFloat(RigBD_elem[rbe].getAttribute("desiredAngularVelocity2"));
 							}
-							if(RigBD_elem[rbe].getAttribute("maxAngle1") != null){
+							if(RigBD_elem[rbe].hasAttribute("maxAngle1")){
 								X3D_J.X3D_JointType.maxAngle1 = parseFloat(RigBD_elem[rbe].getAttribute("maxAngle1")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("minAngle1") != null){
+							if(RigBD_elem[rbe].hasAttribute("minAngle1")){
 								X3D_J.X3D_JointType.minAngle1 = parseFloat(RigBD_elem[rbe].getAttribute("minAngle1")) * 0.0174532925;
 							}
-							if(RigBD_elem[rbe].getAttribute("maxTorque1") != null){
+							if(RigBD_elem[rbe].hasAttribute("maxTorque1")){
 								X3D_J.X3D_JointType.maxTorque1 = parseFloat(RigBD_elem[rbe].getAttribute("maxTorque1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("maxTorque2") != null){
+							if(RigBD_elem[rbe].hasAttribute("maxTorque2")){
 								X3D_J.X3D_JointType.maxTorque2 = parseFloat(RigBD_elem[rbe].getAttribute("maxTorque2"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopBounce1") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopBounce1")){
 								X3D_J.X3D_JointType.stopBounce1 = parseFloat(RigBD_elem[rbe].getAttribute("stopBounce1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopConstantForceMix1") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopConstantForceMix1")){
 								X3D_J.X3D_JointType.stopConstantForceMix1 = parseFloat(RigBD_elem[rbe].getAttribute("stopConstantForceMix1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("stopErrorCorrection1") != null){
+							if(RigBD_elem[rbe].hasAttribute("stopErrorCorrection1")){
 								X3D_J.X3D_JointType.stopErrorCorrection1 = parseFloat(RigBD_elem[rbe].getAttribute("stopErrorCorrection1"));
 							}
-							if(RigBD_elem[rbe].getAttribute("suspensionErrorCorrection") != null){
+							if(RigBD_elem[rbe].hasAttribute("suspensionErrorCorrection")){
 								X3D_J.X3D_JointType.suspensionErrorCorrection = parseFloat(RigBD_elem[rbe].getAttribute("suspensionErrorCorrection"));
 							}
-							if(RigBD_elem[rbe].getAttribute("suspensionForce") != null){
+							if(RigBD_elem[rbe].hasAttribute("suspensionForce")){
 								X3D_J.X3D_JointType.suspensionForce = parseFloat(RigBD_elem[rbe].getAttribute("suspensionForce"));
 							}
 								
 							var RigBD_Joints = RigBD_elem[rbe].childNodes;
 							for (rbj=0; rbj < RigBD_Joints.length; rbj++) {
-								if(RigBD_Joints[rbj].nodeName == "RigidBody"){
+								if(RigBD_Joints[rbj].nodeName == "RigidBody" || RigBD_Joints[rbj].nodeName == "RIGIDBODY"){
 											
 									if(X3D_J.X3D_JointType.body1_USE == null){
 										X3D_J.X3D_JointType.body1_USE = RigBD_Joints[rbj].getAttribute("USE");
@@ -1444,7 +1443,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 				
 					switch (CollidableShapes[i].Name)
 					{
-					 case "Sphere":		// Create a sphere physics model
+						case "SPHERE":
+						case "Sphere":		// Create a sphere physics model
 						{
 						
 							var sphere = CollidableShapes[i];
@@ -1535,8 +1535,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 						
-						
-					case "Box":		// Create a box physics model
+						case "BOX":
+						case "Box":		// Create a box physics model
 						{
 							var box = CollidableShapes[i];
 
@@ -1624,8 +1624,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 						
-						
-					case "Cylinder":	// Create a cylinder physics model
+						case "CYLINDER":
+						case "Cylinder":	// Create a cylinder physics model
 						{
 							var cylinder = CollidableShapes[i];
 							
@@ -1644,7 +1644,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 							else{
 								FiniteRotation = new Ammo.btQuaternion(0, 0, 0, 0);
 							}
-							
+
 							var CenterOfMass = new Ammo.btVector3(CollidableShapes[i].RB_centerOfMass.x, CollidableShapes[i].RB_centerOfMass.y, CollidableShapes[i].RB_centerOfMass.z);
 							
 							startTransform = new Ammo.btTransform(FiniteRotation, CenterOfMass);
@@ -1711,8 +1711,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 						
-						
-					case "Cone":	// Create a cone physics model
+						case "CONE":
+						case "Cone":	// Create a cone physics model
 						{
 							var cone = CollidableShapes[i];
 							
@@ -1801,7 +1801,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 						
-						
+						case "INDEXEDFACESET":
 						case "IndexedFaceSet":		// Create a convexHull physics model
 						{
 
@@ -2005,7 +2005,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 						}
 						break;
 						
-						
+						case "INDEXEDTRIANGLESET":
 						case "IndexedTriangleSet": // Create a convexHull physics model
 						{
 
@@ -2235,7 +2235,8 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 			for (var i=0; i < JointShapes.length; i++) {
 				
 				switch(JointShapes[i].JointTypeName){
-						
+					
+					case "BALLJOINT":
 					case "BallJoint":
 					{
 							
@@ -2296,7 +2297,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					}
 					break;
 						
-						
+					case "SLIDERJOINT":
 					case "SliderJoint":
 					{
 
@@ -2362,7 +2363,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					}
 					break;
 						
-						
+					case "UNIVERSALJOINT":
 					case "UniversalJoint":
 					{
 
@@ -2426,7 +2427,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					}	
 					break;
 						
-
+					case "MOTORJOINT":
 					case "MotorJoint":
 					{
 
@@ -2576,7 +2577,7 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					}		
 					break;
 						
-						
+					case "SINGLEAXISHINGEJOINT":
 					case "SingleAxisHingeJoint":
 					{
 							
@@ -2651,10 +2652,9 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					}
 					break;
 						
-						
-						
-						case "DoubleAxisHingeJoint":
-						{
+					case "DOUBLEAXISHINGEJOINT":
+					case "DoubleAxisHingeJoint":
+					{
 						
 						for ( j = 0; j < rigidbodies.length; j++ ) {
 							if(rigidbodies[j].mesh.CS_DEF == JointShapes[i].X3D_JointType.CollidableShape_body1_USE){
@@ -2866,7 +2866,6 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 					rigidbodies[i].mesh.CS_Translation.y = origin.y();
 					rigidbodies[i].mesh.CS_Translation.z = origin.z();
 					
-					
 					pos_x = rigidbodies[i].mesh.CS_Translation.x;
 					pos_y = rigidbodies[i].mesh.CS_Translation.y;
 					pos_z = rigidbodies[i].mesh.CS_Translation.z;
@@ -2944,9 +2943,24 @@ function DoubleAxisHingeJoint(){ // as btHingeConstraint in Bullet
 		
 		window.onload = function(){
 			initScene();
-			main();
+			requestAnimFrame(main);
 			CreateRigidbodies();
 			CreateInteractiveObjects();
 		}
+	
+	
 	}
 })();
+
+
+window['requestAnimFrame'] = (function(){
+  return  window.requestAnimationFrame       || 
+          window.webkitRequestAnimationFrame || 
+          window.mozRequestAnimationFrame    || 
+          window.oRequestAnimationFrame      || 
+          window.msRequestAnimationFrame     || 
+          function(/* function */ callback, /* DOMElement */ element){
+            window.setTimeout(callback, 1000 / 60);
+          };
+})();
+	
