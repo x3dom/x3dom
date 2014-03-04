@@ -297,17 +297,18 @@ x3dom.registerNodeType(
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-								//x3dom.ImageLoadManager.push( that );
 
-                                if (childDomNode.localName === "video") {
+                                if (childDomNode.localName.toLowerCase() === "video") {
                                     that._needPerFrameUpdate = true;
                                     //that._video = childDomNode;
 
                                     that._video = document.createElement('video');
-                                    that._video.setAttribute('autobuffer', 'true');
+                                    that._video.setAttribute('preload', 'auto');
+                                    that._video.setAttribute('muted', 'muted');
                                     var p = document.getElementsByTagName('body')[0];
                                     p.appendChild(that._video);
                                     that._video.style.display = "none";
+                                    that._video.style.visibility = "hidden";
                                 }
                             }
                             else if (childDomNode.localName.toLowerCase() === "canvas") {
