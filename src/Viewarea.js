@@ -1079,12 +1079,6 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     var childNode;
     var i;
 
-    //pointing sensors might still be in use, if the mouse has previously been pressed over sensor geometry
-    //(in general, transitions between INTERACTION and NAVIGATION require that the mouse is not pressed)
-    if (buttonState == 0)
-    {
-        this._doc._nodeBag.affectedPointingSensors = [];
-    }
 
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
 
@@ -1469,6 +1463,13 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 
 x3dom.Viewarea.prototype.handleMoveEvt = function (x, y, buttonState)
 {
+    //pointing sensors might still be in use, if the mouse has previously been pressed over sensor geometry
+    //(in general, transitions between INTERACTION and NAVIGATION require that the mouse is not pressed)
+    if (buttonState == 0)
+    {
+        this._doc._nodeBag.affectedPointingSensors = [];
+    }
+
     this.prepareEvents(x, y, buttonState, "onmousemove");
 
     if (this._pickingInfo.pickObj !== this._pickingInfo.lastObj)

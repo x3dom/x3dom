@@ -233,6 +233,7 @@ x3dom.registerNodeType(
             // TODO: timestamps and stuff
             this._vf[field] = msg;  // FIXME; _cf!!!
             var listeners = this._fieldWatchers[field];
+
             var thisp = this;
             if (listeners) {
                 Array.forEach(listeners, function (l) { l.call(thisp, msg); });

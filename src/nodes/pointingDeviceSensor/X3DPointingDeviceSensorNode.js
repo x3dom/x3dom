@@ -40,8 +40,11 @@ x3dom.registerNodeType(
              */
             pointerPressedOverSibling: function(event)
             {
-                this._vf["isActive"] = true;
-                this.postMessage('isActive ', true);
+                if (this._vf["enabled"])
+                {
+                    this._vf["isActive"] = true;
+                    this.postMessage('isActive', true);
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +68,10 @@ x3dom.registerNodeType(
              */
             pointerMovedOver: function(event)
             {
-                this.postMessage('isOver ', true);
+                if (this._vf["enabled"])
+                {
+                    this.postMessage('isOver', true);
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -76,7 +82,10 @@ x3dom.registerNodeType(
              */
             pointerMovedOut: function(event)
             {
-                this.postMessage('isOver ', false);
+                if (this._vf["enabled"])
+                {
+                    this.postMessage('isOver', false);
+                }
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -88,8 +97,11 @@ x3dom.registerNodeType(
              */
             pointerReleased: function()
             {
-                this._vf["isActive"] = false;
-                this.postMessage('isActive ', false);
+                if (this._vf["enabled"])
+                {
+                    this._vf["isActive"] = false;
+                    this.postMessage('isActive', false);
+                }
             }
 
             //----------------------------------------------------------------------------------------------------------------------

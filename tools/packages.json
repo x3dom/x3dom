@@ -97,6 +97,8 @@
         {"path": "nodes/pointingDeviceSensor/pointingDeviceSensor.js"},
         {"path": "nodes/pointingDeviceSensor/X3DPointingDeviceSensorNode.js"},
         {"path": "nodes/pointingDeviceSensor/X3DDragSensorNode.js"},
+        {"path": "nodes/pointingDeviceSensor/X3DTouchSensorNode.js"},
+        {"path": "nodes/pointingDeviceSensor/TouchSensor.js"},
         {"path": "nodes/pointingDeviceSensor/PlaneSensor.js"},        
         {"path": "nodes/pointingDeviceSensor/SphereSensor.js"},        
         {"path": "nodes/pointingDeviceSensor/CylinderSensor.js"},        
