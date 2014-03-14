@@ -1,17 +1,93 @@
-var webdriver = require("selenium-webdriver");
+var ts = require("./testsuite.js");
+var rp = require("./resultspublisher.js");
 var fs = require("fs");
 var rmdir = require("rimraf");
 
-var ts = require("./testsuite.js");
-var rp = require("./resultspublisher.js");
 
-
-var configuration = "configuration.json";
 globals = new Object();
 globals.screenshotDelay = 100;
 globals.referencePath = "test/reference/";
+globals.configuration = "configuration.json";
+globals.testOnly = false;
+globals.publishOnly= false;
 
-console.log("parsing args");
+
+function run(){
+    if(!globals.publishOnly)
+    {
+        var testsuite = new TestSuite();
+        testsuite.startTesting(globals.configuration, function(){
+
+        })
+    }
+}
+
+function removeOutput(callback){
+    //delete outfolder
+    try{
+        rmdir.sync("output",function(){
+            console.log("Error removing output folder");
+        });
+    }catch(e){};
+    fs.exists("output", function(exists){
+        if(exists)
+        {
+            console.log("remove output");
+            removeOutput(callback);
+        }
+        else
+        {
+            callback();
+        }
+    });
+}
+
+function parseConfig()
+{
+    fs.readFile(globals.configuration,function(err, data)
+    {
+        if(err)
+            console.log("Could not find configuration file: "+configuration);
+        else
+        {
+            var config = JSON.parse(data);
+
+            if(!config)
+                console.log("Error reading configuration file: "+configuration);
+
+            console.log("deleting output folder...");
+            removeOutput(function(){
+                var publisher = new rp.ResultsPublisher();
+                if(globals.publishOnly)
+                {
+                    publisher.publishResults(config.profiles, config.outputPath, function(){
+                        //done;
+                    });
+                }
+                else
+                {
+                    var testsuite = new ts.TestSuite();
+                    testsuite.startTesting(config, function(profile, results, callback){
+                        if(!globals.testOnly)
+                        {
+                            publisher.storeResults(profile, results, config.outputPath, callback);
+                        }
+                        else{
+                            callback();
+                        }
+                    }, function(){
+                        if(!globals.testOnly)publisher.publishResults(config.profiles, config.outputPath, function(){
+                            //done;
+                        });
+                    });
+                }
+            });
+
+        }
+    });
+}
+
+//parse command line arguments
 process.argv.forEach(function(val, index, array){
     if(index > 1)
     {
@@ -26,74 +102,14 @@ process.argv.forEach(function(val, index, array){
             console.log("Using reference folder: test/reference-no-aa");
             globals.referencePath = "test/reference-no-aa/";
         }
+        if(val == '-t' || val == '--testing-only')
+        {
+            globals.testOnly = true;
+        }
+        if(val == '-p' || val == '--publish-only')
+        {
+            globals.publishOnly = true;
+        }
     }
 });
-
-function removeOutput(callback){
-        //delete outfolder
-        try{
-            rmdir.sync("output",function(){
-                console.log("Error removing output folder");
-            });
-        }catch(e){};
-        fs.exists("output", function(exists){
-            if(exists)
-            {
-                removeOutput(callback);
-            }
-            else
-            {
-                callback();
-            }
-        });
-}
-
-//read test configuration file and start regression
-fs.readFile(configuration,function(err, data)
-{
-    if(err)
-        console.log("Could not find configuration file: "+configuration);
-    else
-    {
-        var config = JSON.parse(data);
-
-        if(!config)
-            console.log("Error reading configuration file: "+configuration);
-
-        console.log("deleting output folder...");
-        removeOutput(function(){
-
-            //publishes the results as webpages
-            var publisher = new rp.ResultsPublisher(config.outputPath);
-
-
-            var currentProfile = 0;
-            runProfile();
-
-            function runProfile()
-            {
-                if(currentProfile < config.profiles.length)
-                {
-                    var profile = config.profiles[currentProfile++];
-                    var driver = eval("("+profile.command+")")();
-
-                    var suite = new ts.TestSuite(config.urlPrefix, config.outputPath, profile, config.tests, driver);
-                    if(suite)
-                    {
-
-                        console.log("Running tests for profile: "+profile.name);
-                        suite.runTests(function(profile, results){
-                            publisher.publishResults(profile, results);
-                            runProfile();
-                        });
-                    }
-                }
-                else
-                {
-                    publisher.publishOverview();
-                }
-            }
-        });
-
-    }
-});
+parseConfig();
