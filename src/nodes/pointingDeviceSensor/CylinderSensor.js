@@ -22,7 +22,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'maxAngle', -1);
 
             //route-able output fields
-            this.addField_SFRotation(ctx, 'rotation_changed', 0, 0, 1, 0);
+            //this.addField_SFRotation(ctx, 'rotation_changed', 0, 0, 1, 0);
 
 
             //---------------------------------------
@@ -207,8 +207,7 @@ x3dom.registerNodeType(
                             //console.log(this._currentRotation.angle());
 
                             //output rotationChanged_event
-                            this._vf['rotation_changed'] = x3dom.fields.Quaternion.copy(this._currentRotation);
-                            this.postMessage('rotation_changed', this._vf['rotation_changed']);
+                            this.postMessage('rotation_changed', x3dom.fields.Quaternion.copy(this._currentRotation));
                         }
                     }
                 }
