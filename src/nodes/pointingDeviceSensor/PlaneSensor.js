@@ -25,7 +25,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'offset', 0, 0, 0);
 
             //route-able output fields
-            //this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
 
 
             //---------------------------------------
@@ -183,7 +183,8 @@ x3dom.registerNodeType(
                         }
 
                         //fire out field routing event
-                        this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
+                        this._vf['translation_changed'] = x3dom.fields.SFVec3f.copy(this._currentTranslation);
+                        this.postMessage('translation_changed', this._vf['translation_changed']);
                     }
                 }
             },
@@ -200,9 +201,8 @@ x3dom.registerNodeType(
 
                 if (this._vf["autoOffset"])
                 {
-                    this._vf["offset"] = this._currentTranslation;
-
-                    this.postMessage('offset_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
+                    this._vf["offset"] = x3dom.fields.SFVec3f.copy(this._currentTranslation);
+                    this.postMessage('offset_changed', this._vf["offset"]);
                 }
             }
 
