@@ -115,20 +115,8 @@ x3dom.registerNodeType(
                 //remember initial point of intersection with the plane, transform it to local sensor coordinates
                 this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(wx, wy, wz));
 
-                // here, a correction is applied, to compensate for the unprecise picking world coordinates, which must
-                // perfectly match with our ray of sight in order to prevent unwanted jitterring during interaction
-                /*var viewRay = this._viewArea.calcViewRay(x, y);
-                viewRay.pos = this._worldToLocalMatrix.multMatrixPnt(viewRay.pos);
-                viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir.normalize());
-                if (viewRay.dir.z > 0)
-                {
-                    var alpha = (this._initialPlaneIntersection.z - viewRay.pos.z) / viewRay.dir.z;
-                    this._initialPlaneIntersection = viewRay.pos.add(viewRay.dir.multiply(alpha));
-                }*/
-
-
                 //compute plane normal in local coordinates
-                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0,  1.0);
+                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0, 1.0);
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -182,7 +170,7 @@ x3dom.registerNodeType(
                             this._currentTranslation.y = Math.max(this._currentTranslation.y, minPos.y);
                         }
 
-                        //fire out field routing event
+                        //output translation_changed event
                         this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));
                     }
                 }

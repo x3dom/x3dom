@@ -34,7 +34,15 @@ x3dom.registerNodeType(
              * @type {x3dom.fields.SFMatrix4f}
              * @private
              */
+            //TODO: updates
             this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+
+            /**
+             * Current value of the matrix that transforms world coordinates to local sensor coordinates
+             * @type {x3dom.fields.SFMatrix4f}
+             * @private
+             */
+            this._inverseToWorldMatrix = null;
 
             /**
              * Vector from the virtual local y-Axis to the initial intersection point with the virtual cylinder,
@@ -112,21 +120,22 @@ x3dom.registerNodeType(
 
                 this._viewArea = viewarea;
 
-                var initialCylinderIntersection = new x3dom.fields.SFVec3f(wx, wy, wz);
+                //y axis line, in local sensor coordinates
+                this._yAxisLine = new x3dom.fields.Line(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0),
+                                                        new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
 
-                //compute local coordinate system origin and y-axis direction, both in world space
-                var matrix         = this.getCurrentTransform();
-                var localOrigin    = matrix.multMatrixPnt(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0));
-                var yAxisDirection = matrix.multMatrixVec(new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
-                this._yAxisLine    = new x3dom.fields.Line(localOrigin, yAxisDirection.normalize());
+                this._inverseToWorldMatrix = this.getCurrentTransform().inverse();
+
+                //compute initial cylinder intersection point, in local sensor coordinates
+                var firstIntersection = this._inverseToWorldMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(wx, wy, wz));
 
                 //TODO: add disk mode
 
                 //compute distance between point of intersection and y-axis
 
-                var closestPointOnYAxis = this._yAxisLine.closestPoint(initialCylinderIntersection);
+                var closestPointOnYAxis = this._yAxisLine.closestPoint(firstIntersection);
 
-                this._initialCylinderIntersectionVector = initialCylinderIntersection.subtract(closestPointOnYAxis);
+                this._initialCylinderIntersectionVector = firstIntersection.subtract(closestPointOnYAxis);
 
                 this._cylinderRadius = this._initialCylinderIntersectionVector.length();
 
@@ -148,6 +157,9 @@ x3dom.registerNodeType(
                 {
                     //compute hit point on virtual cylinder geometry
                     var viewRay = this._viewArea.calcViewRay(x, y);
+
+                    viewRay.pos = this._inverseToWorldMatrix.multMatrixPnt(viewRay.pos);
+                    viewRay.dir = this._inverseToWorldMatrix.multMatrixVec(viewRay.dir);
 
                     //0. assume the following equation:
                     // At the point of intersection, the distance between the ray of sight and the cylinder equals
@@ -204,10 +216,8 @@ x3dom.registerNodeType(
 
                             this._currentRotation = this._currentRotation.multiply(offsetQuat);
 
-                            //console.log(this._currentRotation.angle());
-
-                            //output rotationChanged_event
-                            this.postMessage('rotation_changed', x3dom.fields.Quaternion.copy(this._currentRotation));
+                            //output rotationChanged_event, given in local sensor coordinates
+                            this.postMessage('rotation_changed', this._currentRotation);
                         }
                     }
                 }
