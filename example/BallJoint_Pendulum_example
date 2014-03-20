@@ -1,0 +1,220 @@
+<!DOCTYPE html >
+<html >
+	<head>
+		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+		<script type="text/javascript" src="x3dom-full.js"></script>
+		<link rel='stylesheet' type='text/css' href='x3dom.css'/>
+		<script type='text/javascript' src='ammo.js'></script>
+		
+		<style type="text/css">
+			* { -webkit-user-select: none; -moz-user-select: none; cursor: default; }
+			body { font: 13px/18px Arial, sans-serif; background: black; color: white;}
+			a { color: inherit; cursor: pointer; }
+			img { display: none; }
+			ul { padding: 0 0 0 0px; }
+			h1 { font: bold italic 30px/30px Georgia; text-align: center; }
+			h2 { font: bold italic 17px/17px Georgia; padding-top: 10px; }
+		</style>
+		
+		
+	</head>
+	<body>
+		<x3d xmlns="http://www.x3dom.org/x3dom" showStat="false" showLog="false" x="0px" y="0px" width="900" height="600px">
+         	<scene>
+				<viewpoint position='0 25 90' orientation='0 0 1 0' fieldOfView='0.7854' retainUserOffsets='true'></viewpoint>
+				<background skyColor='0.6901 0.7686 0.8705' groundColor='0.4117 0.4117 0.4117'></background>
+				
+				<transform DEF='Ceil' translation='0 40 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.1 0.1 0.1' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<cylinder bottom='TRUE' top='TRUE' height='1' radius='5'></cylinder>
+					</shape>
+				</transform>
+				<transform DEF='sphere_J1' translation='0 35 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>	
+				<transform DEF='sphere_J2' translation='0 34 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>	
+				<transform DEF='sphere_J3' translation='0 33 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>
+				<transform DEF='sphere_J4' translation='0 32 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>	
+				<transform DEF='sphere_J5' translation='0 31 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>	
+				<transform DEF='sphere_J6' translation='0 30 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.7 0' emissiveColor='0 0.8 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='0.5'></sphere>
+					</shape>
+				</transform>	
+				<transform DEF='sphere_J7' translation='0 29 0' rotation='0 0 1 0'>
+					<shape>
+						<appearance>
+							<material diffuseColor='0.7 0.3 0' emissiveColor='0.8 0 0' specularColor='0.1 0.1 0.1'></material>
+						</appearance>
+						<sphere radius='1.5'></sphere>
+					</shape>
+				</transform>	
+
+				<group>
+					<collidableShape DEF='Ceil_Col' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 40 0'>
+						<transform USE='Ceil' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<cylinder height='1' radius='5'></cylinder>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J1' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 35 0'>
+						<transform USE='sphere_J1' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J2' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 34 0'>
+						<transform USE='sphere_J2' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J3' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 33 0'>
+						<transform USE='sphere_J3' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J4' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 32 0'>
+						<transform USE='sphere_J4' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J5' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 31 0'>
+						<transform USE='sphere_J5' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J6' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 30 0'>
+						<transform USE='sphere_J6' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='0.5'></sphere>
+						</shape>
+					</collidableShape>
+					<collidableShape DEF='BALL-J7' containerField='children' enabled='true' rotation='0 0 1 0' translation='0 29 0'>
+						<transform USE='sphere_J7' containerField='physics'></transform>
+						<shape containerField='Shape'>
+							<sphere radius='1.5'></sphere>
+						</shape>
+					</collidableShape>
+				</group>
+			
+				
+				<rigidBodyCollection DEF='BODY_COLLECTION' containerField='children' autoDisable='false' constantForceMix='0.0001' contactSurfaceThickness='2' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' errorCorrection='0.8' gravity='0 -9.8 0' iterations='10' maxCorrectionSpeed='-1' preferAccuracy='false'>
+					<rigidBody DEF='BODY_Ceil' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.001' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='0' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+						<collidableShape USE='Ceil_Col' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J1' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.1' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J1' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J2' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J2' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J3' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J3' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J4' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J4' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J5' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J5' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J6' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='10' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='false'>
+						<collidableShape USE='BALL-J6' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					<rigidBody DEF='BODY_J7' containerField='bodies' position='0.0 0.0 0.0' angularDampingFactor='0.01' angularVelocity='0 0 0' autoDamp='false' autoDisable='false' centerOfMass='0 0 0' disableAngularSpeed='0' disableLinearSpeed='0' disableTime='0' enabled='true' finiteRotationAxis='0 1 0' fixed='false' inertia='1 0 0 0 1 0 0 0 1' linearDampingFactor='0.001' linearVelocity='0 0 0' mass='100' orientation='0 0 1 0' useFiniteRotation='false' useGlobalGravity='true'>
+						<collidableShape USE='BALL-J7' containerField='geometry' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</rigidBody>
+					
+					<ballJoint anchorPoint='0 3 0' containerField='joints'>
+						<rigidBody USE='BODY_Ceil' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J1' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>	
+						<rigidBody USE='BODY_J1' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J2' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>
+						<rigidBody USE='BODY_J2' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J3' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>
+						<rigidBody USE='BODY_J3' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J4' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>
+						<rigidBody USE='BODY_J4' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J5' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>
+						<rigidBody USE='BODY_J5' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J6' containerField='body2'></rigidBody>
+					</ballJoint>
+					<ballJoint anchorPoint='0 2 0' containerField='joints'>
+						<rigidBody USE='BODY_J6' containerField='body1'></rigidBody>
+						<rigidBody USE='BODY_J7' containerField='body2'></rigidBody>
+					</ballJoint>
+				</rigidBodyCollection>
+				
+				<collisionSensor DEF='COLLISION-OUTPUT' enabled='true'>
+					<collisionCollection DEF='COLLISION-JOINTS-group' bounce='1.0' containerField='collidables' minBounceSpeed='1.0' appliedParameters='BOUNCE' enabled='true' frictionCoefficients='0 1.2' slipFactors='0 0' softnessConstantForceMix='0.0001' softnessErrorCorrection='0.8' surfaceSpeed='0 0'>		
+						<collidableShape USE='Ceil_Col' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J1' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J2' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J3' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J4' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J5' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J6' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+						<collidableShape USE='BALL-J7' containerField='collidables' enabled='true' rotation='0 0 1 0' translation='0 0 0'></collidableShape>
+					</collisionCollection>		
+				</collisionSensor>
+			
+			</scene>
+		</x3d> 
+
+
+	<script type='text/javascript' src="x3domBulletPhysics.js"></script>
+		
+	</body>
+</html>
