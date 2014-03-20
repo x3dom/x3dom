@@ -122,11 +122,11 @@ x3dom.requestFieldRef = function(fieldName)
     }
 
     return null;
-} ;
+};
 
 
-// helper to return a reference to a nodes's field
-x3dom.returnFieldRef = function(fieldName)
+// helper to release a reference to a nodes's field
+x3dom.releaseFieldRef = function(fieldName)
 {
     var x3dNode = this._x3domNode;
     if (x3dNode && x3dNode._vf[fieldName])

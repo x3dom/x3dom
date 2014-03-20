@@ -272,7 +272,7 @@ x3dom.registerNodeType(
                     }
                 }
                 if (f === undefined) {
-                    f = {};
+                    f = null;
                     this._vf[field] = f;
                 }
             }

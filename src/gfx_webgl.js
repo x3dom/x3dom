@@ -1456,6 +1456,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             var s_geo = shape._cf.geometry.node;
+            var s_app = shape._cf.appearance.node;
             var s_msh = s_geo._mesh;
 
             sp.modelMatrix = trafo.toGL();
@@ -1557,6 +1558,40 @@ x3dom.gfx_webgl = (function () {
             }
             else {
                 this.stateManager.disable(gl.CULL_FACE);
+            }
+
+
+            //===========================================================================
+            // Set DepthMode
+            //===========================================================================
+            var depthMode = s_app ? s_app._cf.depthMode.node : null;
+            if (depthMode)
+            {
+                if (depthMode._vf.enableDepthTest)
+                {
+                    //Enable Depth Test
+                    this.stateManager.enable(gl.DEPTH_TEST);
+
+                    //Set Depth Mask
+                    this.stateManager.depthMask(!depthMode._vf.readOnly);
+
+                    //Set Depth Function
+                    this.stateManager.depthFunc(x3dom.Utils.depthFunc(gl, depthMode._vf.depthFunc));
+
+                    //Set Depth Range
+                    this.stateManager.depthRange(depthMode._vf.zNearRange, depthMode._vf.zFarRange);
+                }
+                else
+                {
+                    //Disable Depth Test
+                    this.stateManager.disable(gl.DEPTH_TEST);
+                }
+            }
+            else //Set Defaults
+            {
+                this.stateManager.enable(gl.DEPTH_TEST);
+                this.stateManager.depthMask(true);
+                this.stateManager.depthFunc(gl.LEQUAL);
             }
 
             //PopGeometry: adapt LOD and set shader variables

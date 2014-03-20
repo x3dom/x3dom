@@ -82,6 +82,7 @@ x3dom.isX3DElement = function(node) {
  *	See Also:
  *		Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
  */
+// TODO; unify with defineClass, which does basically the same
 x3dom.extend = function(f) {
   function G() {}
   G.prototype = f.prototype || f;
@@ -147,6 +148,7 @@ function defineClass(parent, ctor, methods) {
     @return true or false
   */
 x3dom.isa = function(object, clazz) {
+    /*
 	if (!object || !object.constructor || object.constructor.superClass === undefined) {
 		return false;
 	}
@@ -164,6 +166,8 @@ x3dom.isa = function(object, clazz) {
         return false;
     }
     return f(object.constructor.superClass);
+    */
+    return (object instanceof clazz);
 };
 
 

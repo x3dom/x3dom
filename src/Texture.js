@@ -205,10 +205,7 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 
     //Looking for child texture
-    var childTex = (tex._video !== undefined &&
-                    tex._video !== null &&
-                    tex._needPerFrameUpdate !== undefined &&
-                    tex._needPerFrameUpdate === true);
+    var childTex = (tex._video && tex._needPerFrameUpdate === true);
 
 	//Set texture
 	if (tex._isCanvas && tex._canvas)
@@ -281,7 +278,8 @@ x3dom.Texture.prototype.updateTexture = function()
             var element_vid = document.createElement('div');
             element_vid.setAttribute('class', 'dash-video-player' + x3dom.Texture.textNum);
             tex._video = document.createElement('video');
-            tex._video.setAttribute('autobuffer', 'true');
+            tex._video.setAttribute('preload', 'auto');
+            tex._video.setAttribute('muted', 'muted');
 
             var scriptToRun = document.createElement('script');
             scriptToRun.setAttribute('type', 'text/javascript');
@@ -291,13 +289,16 @@ x3dom.Texture.prototype.updateTexture = function()
             element_vid.appendChild(tex._video);
             p.appendChild(element_vid);
             tex._video.style.visibility = "hidden";
+            tex._video.style.display = "none";
         }
         else {
             if (!childTex) {
                 tex._video = document.createElement('video');
-                tex._video.setAttribute('autobuffer', 'true');
+                tex._video.setAttribute('preload', 'auto');
+                tex._video.setAttribute('muted', 'muted');
                 p.appendChild(tex._video);
                 tex._video.style.visibility = "hidden";
+                tex._video.style.display = "none";
             }
             for (var i = 0; i < tex._vf.url.length; i++) {
                 var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);

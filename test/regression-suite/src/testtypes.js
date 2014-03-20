@@ -6,6 +6,14 @@ var ts = require('./testsuite');
 var webdriver = require("selenium-webdriver");
 var resemble = require("resemble");
 
+
+
+function getName(path)
+{
+    return path.replace("\\", "/").replace(/^\/(.+\/)*(.+)\.(.+)$/i, '$2');
+}
+
+
 function CompareScreenshot()
 {
     var that = this;
@@ -25,7 +33,7 @@ function CompareScreenshot()
         setTimeout(function(){
             that.writeRenderedImage(context.driver, step.params,renderedImagePath, function()
             {
-                that.compareImages(referenceImagePath, renderedImagePath);
+                that.compareImages(referenceImagePath, renderedImagePath, context);
             });
         }, globals.screenshotDelay);
     }
@@ -34,6 +42,7 @@ function CompareScreenshot()
     {
         var script = "var x3d_node = document.getElementById('"+params.x3d+"');if(!x3d_node) x3d_node = document.getElementsByTagName('x3d')[0]; return x3d_node.runtime.getScreenshot()";
 
+        driver.executeScript(script)
         driver.executeScript(script)
             .then(function(return_value)
             {
@@ -53,7 +62,7 @@ function CompareScreenshot()
     }
 
 
-    this.compareImages = function(referenceImagePath, renderedImagePath)
+    this.compareImages = function(referenceImagePath, renderedImagePath, context)
     {
         //console.log(referenceImagePath + " <-> "+renderedImagePath);
         fs.exists(referenceImagePath, function(exists){
@@ -84,15 +93,17 @@ function CompareScreenshot()
                     that.context.result.details.push( equal ?
                         new ts.SuccessDetail(
                             {
-                                "context"   : that.context,
+                                "screenshotId"   : that.context.screenshotId,
                                 "equality"      : data.misMatchPercentage,
-                                "type" : "CompareScreenshot"
+                                "type" : "CompareScreenshot",
+                                "testName"   : getName(context.test.url)
                             }) :
                         new ts.FailureDetail(
                             {
-                                "context"   : that.context,
+                                "screenshotId"   : that.context.screenshotId,
                                 "equality"      : data.misMatchPercentage,
-                                "type" : "CompareScreenshot"
+                                "type" : "CompareScreenshot",
+                                "testName"   : getName(context.test.url)
                             }
                         )
                     );
@@ -176,11 +187,11 @@ function CompareValue(){
             var actualValue = parseFloat(val).toFixed(floatingPoints);
             var distance = actualValue - referenceValue;
             var detail = {
-                "context" : that.context,
                 "distance" : distance,
                 "actualValue" : actualValue,
                 "referenceValue" : referenceValue,
-                "type" : "CompareValue"
+                "type" : "CompareValue",
+                "testName"   : getName(context.test.url)
             }
             that.context.result.details.push(
                 (distance != 0) ? new ts.SuccessDetail(detail) : new ts.FailureDetail(detail)
@@ -200,8 +211,8 @@ function ExecuteCommand(){
         context.driver.executeScript(script).then(function(){
             that.context.result.details.push(new ts.InfoDetail(
                 {
-                    "context": that.context,
-                    "info"   : script
+                    "info"   : script,
+                    "type"   : "ExecuteCommand"
                 }));
             that.context.finishedCallback();
         });

@@ -1044,11 +1044,10 @@ x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
 {
     if (!node || !node._xmlNode)
         return null;
-        
-    event.target = node._xmlNode;
-    var attrib = node._xmlNode[eventType];
 
     try {
+        var attrib = node._xmlNode[eventType];
+
         if (typeof(attrib) === "function") {
             attrib.call(node._xmlNode, event);
         }
@@ -1078,6 +1077,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     var needRecurse = true;
     var childNode;
     var i;
+    var target = (obj && obj._xmlNode) ? obj._xmlNode : {};
 
 
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
@@ -1085,7 +1085,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
     var event = {
         viewarea: that,
-        target: {},
+        target: target,
         type: eventType.substr(2, eventType.length-2),
         button: buttonState,
         layerX: x,
@@ -1097,7 +1097,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         normalY: that._pickNorm.y,
         normalZ: that._pickNorm.z,
         hitPnt: that._pick.toGL(), // for convenience
-        hitObject: (obj && obj._xmlNode) ? obj._xmlNode : null,
+        hitObject: target,         // deprecated, remove!
         shadowObjectId: that._pickingInfo.shadowObjectId,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; },
@@ -1311,7 +1311,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
                         this._scene._xmlNode.hasAttribute("on" + eventType) ||
                         this._scene._listeners[eventType]) ) {
                     var event = {
-                        target: {}, type: eventType,
+                        target: this._scene._xmlNode, type: eventType,
                         button: prevButton, layerX: x, layerY: y,
                         cancelBubble: false,
                         stopPropagation: function () { this.cancelBubble = true; },
