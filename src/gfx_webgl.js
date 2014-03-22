@@ -3450,7 +3450,7 @@ x3dom.gfx_webgl = (function () {
             gl.generateMipmap(gl.TEXTURE_2D);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
-        
+
         // we're finally done: cleanup/delete all helper FBOs
         if (!rt.requirePingPong()) {
             gl.deleteTexture(rt._webgl.texture);
