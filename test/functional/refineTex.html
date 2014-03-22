@@ -14,21 +14,29 @@
         <!------------------------------------------ X3DOM ------------------------------------------------->
 		<X3D showStat="false" showLog="false" style="width: 100%; margin-left: 4px; height: 82%;">
           <Scene>
-             <transform id="root" scale="1.9 0.75 1">
+             <transform id="root" scale="1.9 0.75 1" translation="-2 0 0">
                  <Shape>
                     <Appearance>
                         <Material></Material>
                         <RefinementTexture id="refTex" url="gpuii/example_1" dimensions="1088 610 4" 
 							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
                         </RefinementTexture>
-                        <!--RefinementTexture id="refTex" url="gpuii/example_2" dimensions="1216 404 4" 
-							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
-                        </RefinementTexture-->
                     </Appearance>
                     <Plane></Plane>
                  </Shape>
              </transform>
-
+             <transform id="rootN" scale="1.9 0.75 1" translation="2 0 0">
+                 <Shape>
+                    <Appearance>
+                        <Material></Material>
+                        <RefinementTexture id="refTexN" url="gpuii/example_2" dimensions="1216 404 4" 
+							autoRefinement="true" maxLevel="7" repeatS="false" repeatT="false">
+                        </RefinementTexture>
+                    </Appearance>
+                    <Plane></Plane>
+                 </Shape>
+             </transform>
+             <DirectionalLight intensity="0.3" direction="0 0 -1"></DirectionalLight>
              <Viewpoint position="0 0 10" zNear="0.1" zFar="10000" description="camera"></Viewpoint>
           </Scene>
         </X3D>

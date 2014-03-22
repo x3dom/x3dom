@@ -277,7 +277,7 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
         fbo: fbo, rbo: rb,
         tex: tex, texTargets: mrts,
         width: w, height: h,
-        type: type
+        type: type, mipMap: mipMap
     };
 };
 
