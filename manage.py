@@ -138,6 +138,8 @@ def build(mode='production'):
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
     shutil.copy(DOC_ROOT + '/help/dumpNodeTypeTree.html', DIST_ROOT + '/docs')
     shutil.copy(SRC_ROOT + '/dash.all.js', DIST_ROOT)
+    shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
+    shutil.copy(SRC_ROOT + '/ammo.js', DIST_ROOT)
     # end other files
 
 def _build_examples():
