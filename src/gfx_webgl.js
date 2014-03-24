@@ -3358,7 +3358,10 @@ x3dom.gfx_webgl = (function () {
             rt._webgl.texture = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
                                 rt._nameSpace.getURL(filename), false, false, false, false);
 
-            (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+            if (rt._vf.iterations % 2 === 0)
+                (rt._currLoadLevel % 2 !== 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+            else
+                (rt._currLoadLevel % 2 === 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
         }
 
         if (!rt._webgl.texture.ready ||
