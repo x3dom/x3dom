@@ -14,7 +14,7 @@
         <!------------------------------------------ X3DOM ------------------------------------------------->
 		<X3D showStat="false" showLog="false" style="width: 100%; margin-left: 4px; height: 82%;">
           <Scene>
-             <transform id="root" scale="1.9 0.75 1" translation="-2 0 0">
+             <transform id="root" scale="1.9 0.75 1" translation="-3 0 0">
                  <Shape>
                     <Appearance>
                         <Material></Material>
@@ -25,7 +25,24 @@
                     <Plane></Plane>
                  </Shape>
              </transform>
-             <transform id="rootN" scale="1.9 0.75 1" translation="2 0 0">
+             
+             <transform>
+                 <Shape>
+                    <Appearance>
+                        <Material></Material>
+                        <RefinementTexture id="refTexPOT" url="gpuii/room_1" dimensions="1024 1024 4" 
+							autoRefinement="true" maxLevel="7">
+                          <textureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
+                                magnificationFilter='LINEAR' minificationFilter='LINEAR_MIPMAP_LINEAR'
+                                generateMipMaps='true'>
+                          </textureProperties>
+                        </RefinementTexture>
+                    </Appearance>
+                    <Plane></Plane>
+                 </Shape>
+             </transform>
+             
+             <transform id="rootN" scale="1.9 0.75 1" translation="3 0 0">
                  <Shape>
                     <Appearance>
                         <Material></Material>
