@@ -1696,6 +1696,13 @@ x3dom.gfx_webgl = (function () {
         if (x3dom.Utils.needLineWidth) {
             this.stateManager.lineWidth(1);
         }
+        
+        if (depthMode) {
+            this.stateManager.enable(gl.DEPTH_TEST);
+            this.stateManager.depthMask(true);
+            this.stateManager.depthFunc(gl.LEQUAL);
+            this.stateManager.depthRange(0, 1);
+        }
 
         gl.flush();
 
