@@ -81,7 +81,7 @@ x3dom.registerNodeType(
             },
 
             needLighting: function() {
-                var hasTris = this._mesh._primType.indexOf("TRIANGLE") == 0;
+                var hasTris = this._mesh._primType.indexOf("TRIANGLE") >= 0;
                 return (this._vf.lit && hasTris);
             }
         }

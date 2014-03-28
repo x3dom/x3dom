@@ -1531,7 +1531,7 @@ x3dom.registerNodeType(
             },
 
             needLighting: function() {
-                var hasTris = (this._vf.primType.length && this._vf.primType[0].indexOf("TRIANGLE") == 0);
+                var hasTris = (this._vf.primType.length && this._vf.primType[0].indexOf("TRIANGLE") >= 0);
                 return (this._vf.lit && hasTris);
             }
         }
