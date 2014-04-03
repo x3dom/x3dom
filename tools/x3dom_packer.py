@@ -1,14 +1,16 @@
 #!/usr/bin/python
 
+from StringIO import StringIO
+from optparse import OptionParser
 import os
-import sys
-import jsmin
+from os.path import isfile, join
 import re
 from subprocess import Popen, PIPE
+import sys
 
-from optparse import OptionParser
-from StringIO import StringIO
+import jsmin
 from jspacker import JavaScriptPacker
+
 
 VERSION_TEMPLATE = """
 x3dom.versionInfo = {
@@ -75,8 +77,27 @@ class packer(object):
     self.VERSION_STRING = "/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date)
     return version_out
   
+  
+  #File merging helper
+  def _mergeFile(self, concatenated_file, filename):
+      print "File:", filename
+      try:
+        print "  " + os.path.abspath(filename)
+        f = open(filename, 'r')
+        concatenated_file += f.read()
+        f.close()
+      except:
+        print "Could not open input file '%s'. Skipping" % filename    
+      concatenated_file += "\n"
+      return concatenated_file
+  
+  
   # Packaging
   def build(self, input_files, output_file, packaging_module, include_version=True):
+    
+    print "output file:", output_file
+    print "input_files:", input_files
+    
     
     if include_version == True:
         # find the VERSION file
@@ -101,16 +122,20 @@ class packer(object):
     # Merging files
     print "Packing Files"
     for filename in input_files:
-      try:
-        print "  " + os.path.abspath(filename)
-        f = open(filename, 'r')
-        concatenated_file += f.read()
-        f.close()
-      except:
-        print "Could not open input file '%s'. Skipping" % filename    
-      concatenated_file += "\n"
+      #Single file?
+      if filename[-3:] == ".js":
+          #Merge directly
+          concatenated_file = self._mergeFile(concatenated_file, filename)
+      #Otherwise (folder)
+      else:
+          #Open all files in folder and merge individually
+          print "Folder: ", filename
+          node_files = [f for f in os.listdir(filename) if isfile(join(filename,f)) and f[-3:]==".js"]
+          print ";".join(node_files)
+          for node_file in node_files:
+              concatenated_file = self._mergeFile(concatenated_file, join(filename,node_file))
     print ""
-     
+    
     outpath = os.path.dirname(os.path.abspath(output_file))
     
     if not os.access(outpath, os.F_OK):

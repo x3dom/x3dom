@@ -86,7 +86,7 @@
     {"group": "COMPONENTS",
      "data": [
         {"path": "nodes/Geospatial.js"},
-        {"path": "nodes/Geometry2D.js"},
+        {"path": "nodes/Geometry2D/"},
         {"path": "nodes/VolumeRendering.js"},
         {"path": "nodes/CADGeometry.js"},
         {"path": "nodes/BVHRefiner.js"},

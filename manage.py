@@ -117,8 +117,18 @@ def build(mode='production'):
         
     for src in prefix_path(COMPONENTS, SRC_ROOT):
         try:
-            print "  Copying file %s to %s" % (src, nodes_dest)
-            packer.build([src], os.path.join(nodes_dest, os.path.basename(src)), 'jsmin', include_version=False)
+            #Handle special case (folder instead of single js file):
+            if not src.endswith(".js"):
+                #Construct name for concatenated file:
+                if src.endswith("/"):
+                    filename = src[:-1]+".js"
+                else:
+                    filename = src+".js"
+                print "  Copying files from folder %s concatenated as %s to %s" % (src, filename, nodes_dest)
+            else:
+                print "  Copying file %s to %s" % (src, nodes_dest)
+                filename = src
+            packer.build([src], os.path.join(nodes_dest, os.path.basename(filename)), 'jsmin', include_version=False)
 #            shutil.copy(src, nodes_dest)
         except:
             print "  Error copying file %s" % src
