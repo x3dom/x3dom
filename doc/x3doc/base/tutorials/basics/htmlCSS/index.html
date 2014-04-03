@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="../../../index.html">documentation</a>    
+    >
+    <a href="../../index.html">Tutorials</a>
+	>
+    <a href="#">X3DOM, HTML and CSS</a>
+</div>
+<div id="main">
+
+    <section>	
+        
+        <div>
+            <div class="simpleButton" style="float:left;"><a href="../hello/index.html" style="float:right;">&#8678; Previous Section</a></div>
+            <div class="simpleButton" style="float:right;"><a href="../imagesMovies/index.html" style="float:right;">Next Section &#8680;</a></div>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h1>X3DOM, HTML and CSS</h1>
+        </div>            
+        <br>
+		
+        <p>
+		Within this tutorial, you will learn more about how X3DOM, HTML and CSS are related, and how you can build powerful 3D applications
+        with well-known, conventional HTML and CSS mechanisms.
+        As a starting point, we will simply use the <code>HelloX3DOM.html</code> example from the previous tutorial.
+        Copy it to another folder and name it something like <code>HTMLEventsCSS</code>.
+        </p>
+        
+        <h2>X3DOM and regular 2D CSS</h2>
+        <p>
+		We will now first take a deeper look at how X3DOM content can be manipulated via CSS.
+        You might have noticed that the X3DOM 3D context from the <code>HelloX3DOM.html</code> example
+        is a basically just plain white area, surrounded by a black border. The 3D content is then drawn into this area.
+        X3DOM comes with a separate css file, since version 1.3 consistently named <code>x3dom.css</code>,
+        where all CSS definitions related to the X3DOM context and to some debug overlays can be found.
+        Let's say the style of your page uses gray and orange as its main colors.
+        To change the CSS default properties of X3DOM, you have a bunch of possibilities:
+        <ul>
+            <li>Change X3DOM's default CSS definitions in your personal version of <code>x3dom.css</code></li>
+            <li>Override X3DOM's defaults CSS definitions with an own CSS file that is included after <code>x3dom.css</code> (<i>External Style Sheet</i>)</li>
+            <li>Override X3DOM's defaults CSS definitions within a <code>style</code> tag in your HTML document, after <code>x3dom.css</code> has already been included (<i>Internal Style Sheet</i>)</li>
+            <li>Override X3DOM's default CSS definitions by directly manipulating the <code>style</code> attributes of the corresponding elements (<i>Inline Styles</i>)</li>
+        </ul>
+        The various possibilities of using CSS are also documented in many online articles, for example <a href="http://www.w3schools.com/css/css_howto.asp">here</a>.
+        We will now continue by inserting some internal style sheet via a <code>style</code> tag.
+        But, of course, any of the other possibilities will also do the job, and you should feel free to pick the way you like most for your purposes - the last method (Inline Styles) is, however, usually not recommended.
+        To add some custom CSS code for the border of your X3DOM context, which is represented by the <code>x3d</code> element, insert a <code>style</code> tag
+        into the head of your HTML page, after the <code>x3dom.css</code> file has been included:
+		</p>
+        <pre class="prettyprint"><code class="language-html">	
+    &lt;html&gt; 
+    &lt;head&gt; 
+        &lt;title&gt;My first X3DOM page&lt;/title&gt; 			
+        &lt;script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'&gt; &lt;/script&gt; 
+        &lt;link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'&gt;&lt;/link&gt; 
+        &lt;style&gt;
+            x3d
+            {
+                border:2px solid darkorange;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt; 
+    &lt;body&gt; 
+        &lt;h1&gt;Hello, X3DOM!&lt;/h1&gt; 
+        &lt;p&gt; 
+            This is my first html page with some 3d objects. 
+        &lt;/p&gt;
+        &lt;x3d width='600px' height='400px'&gt; 
+        ...
+        &lt;/x3d&gt; 
+
+    &lt;/body&gt; 
+    &lt;/html&gt;      
+        </pre></code>
+		
+        <p>
+        If you take a look at the result inside your browser, you should now see that the border around the X3DOM context has changed, according to our new CSS code.
+        Let's assume your page already has some orange and gray style, using a small tiled background image named <code>pattern.png</code> (example file available <a href="pattern.png">here</a>).
+        Then the full style sheet might, for example, look like this:
+        </p>
+        
+		<pre class="prettyprint"><code class="language-css">			
+    x3d
+    {
+        border:2px solid darkorange;        
+    }
+    
+    body
+    {     
+        font-size:110%;
+        font-family:verdana, sans-serif;
+        background-image: url('pattern.png');
+        margin: 3em;
+        color: lightgray;
+    }
+    
+    h1
+    {
+        color: darkorange;
+    }             
+        </pre></code> 
+        
+        <p>
+        Try this CSS code with your example page now. The rendered result should look like the following:
+        </p>
+        
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot1.png'>
+                <div class="docuCaption">The X3DOM context uses the same background image as the rest of the page.</div>
+            </div>
+        </div>     
+        
+        <p>
+        As you can see, the background of the HTML page, using the tiled background image with the gray stripes, is also rendered as a background for the X3DOM context.
+        This is a very important aspect: Your X3DOM scene will just render on top of the underlying HTML content, unless you specify something else.
+        Let's insert a semi-transparent background for the <code>x3d</code> element:
+        </p>
+        
+        <pre class="prettyprint"><code class="language-css">			
+    x3d
+    {
+        border:2px solid darkorange;        
+        background: rgba(128, 128, 128, 0.4);
+    }       
+        </pre></code>
+        
+        <p>
+        The result should look like this:
+        </p>
+        
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot2.png'>
+                <div class="docuCaption">The X3DOM context now has a semi-transparent background.</div>
+            </div>
+        </div>     
+        
+        <p>
+        The X3DOM context now has a semi-transparent background, which is blended with the background of the page.
+        As you can see, you can apply all the regular CSS transforms you like in order to make X3DOM fit into the design and layout of your Web application.
+        </p>
+        
+        
+        <h2>X3DOM and CSS 3D Transforms</h2>
+        ...
+        
+        
+        <h2>X3DOM and HTML events</h2>
+        ...
+        
+        
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="contentBox">                        
+            <h2>Get this X3DOM example:</h2>
+            <ul>
+                <li><a href="HTMLEventsCSS.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'HTMLEventsCSS.html');"><img src="../../source.png">View example page source</a></li>                
+                <li><a href="HTMLEventsCSS.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <ul>
+                <li><a href="../../../node/derp.html">Transform</a></li>
+                
+                <li><a href="../../../node/derp.html">Appearance</a></li>
+                
+                <li><a href="../../../node/derp.html">Material</a></li>
+                
+                <li><a href="../../../node/Geometry3D/Box.html">Box</a></li>
+                
+                <li><a href="../../../node/Geometry3D/Sphere.html">Sphere</a></li>
+                
+                <li><a href="../../../node/Geometry3D/Cone.html">Cone</a></li>                
+            </ul>
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+</body>
+</html>
