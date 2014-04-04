@@ -18,7 +18,7 @@ body {
 X3D, x3d {
   position:relative;    /* in order to be able to position stat-div within X3D */
   float:left;           /* float the element so it has the same size like the canvas */
-  cursor:pointer;
+  cursor:grab;
   margin: 0;
   padding: 0;
   border: 1px solid #000;
@@ -43,10 +43,14 @@ x3d:hover,
 
 .x3dom-canvas {
   border:none;
-  cursor:pointer;
+  cursor:grab;
   width:100%;
   height:100%;
   float:left;
+}
+
+.x3dom-canvas-mousedown {
+  cursor:grabbing;
 }
 
 .x3dom-canvas:focus {
