@@ -27,7 +27,7 @@ usage = \
 
 tools_path = os.path.abspath(__file__)
 tools_path = os.path.dirname(tools_path)
-#os.chdir(os.path.abspath(tools_path + "/../src"))
+# os.chdir(os.path.abspath(tools_path + "/../src"))
 
 class packer(object):
 
@@ -78,9 +78,21 @@ class packer(object):
     return version_out
   
   
-  #File merging helper
+  # File merging helper
   def _mergeFile(self, concatenated_file, filename):
-      print "File:", filename
+      """
+      Append content of the given file to the given buffer
+      
+      @param concatenated_file: Buffer containing the already concatenated files
+      @type concatenated_file: String
+      
+      @param filename: Path to file that shall be appended
+      @type filename: String
+      
+      @return: A String with contents of the given file appended
+      @rtype: String
+      """
+      # print "File:", filename
       try:
         print "  " + os.path.abspath(filename)
         f = open(filename, 'r')
@@ -92,12 +104,38 @@ class packer(object):
       return concatenated_file
   
   
+  def _prefixFilePath(self, filename, src_prefix_path):
+      """
+      Prefix filename with path if path is not empty
+      
+      @param filename: Name of the file
+      @type filename: String
+      
+      @param src_prefix_path: Path to use
+      @type src_prefix_path: String
+      
+      @return: filename with prefix if path is not empty
+      @rtype: String 
+      """
+      if src_prefix_path != "":
+          filename = src_prefix_path + "/" + filename
+      return filename
+  
+  
+  
   # Packaging
-  def build(self, input_files, output_file, packaging_module, include_version=True):
+  def build(self, input_files, output_file, packaging_module, include_version=True, src_prefix_path=""):
+    """
+    Build distributable version of x3dom
+    
+    @param src_prefix_path: Optional path that is used as prefix for all source files
+    @type src_prefix_path: String
+    """
     
     print "output file:", output_file
     print "input_files:", input_files
     
+    version_out = ""
     
     if include_version == True:
         # find the VERSION file
@@ -106,14 +144,14 @@ class packer(object):
         elif os.path.isfile("src/VERSION"):
             version_file_name = "src/VERSION"
         else:
-          print "FATAL: Cannot find any VERSION file"
-          sys.exit(0)
+            print "FATAL: Cannot find any VERSION file"
+            sys.exit(0)
     
         # parse file & generate version.js
         version_out = self.generate_version_file(version_file_name);
     
         # Add the version.js to the list of input files
-        input_files.append(version_out)
+        input_files.append((version_out, [version_out]))
 
     concatenated_file = ""
     in_len = 0
@@ -121,19 +159,27 @@ class packer(object):
     
     # Merging files
     print "Packing Files"
-    for filename in input_files:
-      #Single file?
-      if filename[-3:] == ".js":
-          #Merge directly
-          concatenated_file = self._mergeFile(concatenated_file, filename)
-      #Otherwise (folder)
-      else:
-          #Open all files in folder and merge individually
-          print "Folder: ", filename
-          node_files = [f for f in os.listdir(filename) if isfile(join(filename,f)) and f[-3:]==".js"]
-          print ";".join(node_files)
-          for node_file in node_files:
-              concatenated_file = self._mergeFile(concatenated_file, join(filename,node_file))
+    for (_, files) in input_files:
+        for f in files:
+            if f == version_out:
+                concatenated_file = self._mergeFile(concatenated_file, f)
+            else:
+                concatenated_file = self._mergeFile(concatenated_file, self._prefixFilePath(f, src_prefix_path))
+            """       
+              #Single file?
+              if filename[-3:] == ".js":
+                  #Merge directly
+                  concatenated_file = self._mergeFile(concatenated_file, filename)
+              #Otherwise (folder)
+              else:
+                  #Open all files in folder and merge individually
+                  print "Folder: ", filename
+                  node_files = [f for f in os.listdir(filename) if isfile(join(filename,f)) and f[-3:]==".js"]
+                  print ";".join(node_files)
+                  for node_file in node_files:
+                      concatenated_file = self._mergeFile(concatenated_file, join(filename,node_file))
+            """
+    
     print ""
     
     outpath = os.path.dirname(os.path.abspath(output_file))
@@ -179,11 +225,18 @@ class packer(object):
     
       # collect files
       files = []
-      for filename in input_files:
-        files += ["--js=" + filename]
+      for (_, filesForComponent) in input_files:
+          for f in filesForComponent:
+              if f == version_out:
+                  files += ["--js=" + f]
+              else:
+                  files += ["--js=" + self._prefixFilePath(f, src_prefix_path)]
+              #concatenated_file = self._mergeFile(concatenated_file, _prefixFilePath(f, src_prefix_path))
+
+        
         
       Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file, "--summary_detail_level=3", "--warning_level=VERBOSE"] + files)
-      #Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file] + files)
+      # Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file] + files)
     
     # NONE
     elif packaging_module == 'none':
@@ -201,8 +254,8 @@ class packer(object):
 if __name__ == '__main__':
     parser = OptionParser(usage)
     
-    parser.add_option("-a", "--algo",       type="string",  dest="algo",      help='The algorithm to use. [jsmin, jspacker, closure, none]',    default="jsmin")
-    parser.add_option("-o", "--outfile",    type="string",  dest="outfile",   help='The name of the output file.')
+    parser.add_option("-a", "--algo", type="string", dest="algo", help='The algorithm to use. [jsmin, jspacker, closure, none]', default="jsmin")
+    parser.add_option("-o", "--outfile", type="string", dest="outfile", help='The name of the output file.')
     
     (options, input_files) = parser.parse_args()
     

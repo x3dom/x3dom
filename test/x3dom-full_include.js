@@ -35,8 +35,22 @@ function send_xhr(path){
 
                 for(group in data.grouplist){
                     for(p in data.grouplist[group].data){
-                        document.write("<script src=\"" + path + "src/" + 
-						data.grouplist[group].data[p].path + "\"></script>");
+                    	relativePath = data.grouplist[group].data[p].path
+                    	//Single file?
+                    	if(data.grouplist[group].data[p].type == "file")
+                    	{
+                    		document.write("<script src=\"" + path + "src/" + relativePath + "\"></script>");
+                    	}
+                    	//Folder?
+                    	else
+                    	{
+                    		 for(f in data.grouplist[group].data[p].files)
+                    		 {
+                    			 filePath = relativePath + data.grouplist[group].data[p].files[f].path
+                         		 document.write("<script src=\"" + path + "src/" + filePath + "\"></script>");
+                    		 }
+                    		
+                    	}
                     }
                 }
 

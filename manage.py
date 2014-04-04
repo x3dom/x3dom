@@ -100,13 +100,13 @@ def build(mode='production'):
     packer = x3dom_packer.packer()
     
     # building compressed files
-    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin", include_version=True)
-    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin", include_version=True)
+    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
+    packer.build(CORE_PROFILE, "dist/x3dom.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
         
     if not mode == 'no-debug':
         # building plain files (debug)
-        packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.debug.js", 'none')
-        packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
+        packer.build(FULL_PROFILE, "dist/x3dom-full.debug.js", 'none', src_prefix_path=SRC_ROOT)
+        packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     print("\nBundling components...")
@@ -115,8 +115,11 @@ def build(mode='production'):
     if not os.path.exists(nodes_dest):
         os.makedirs(nodes_dest)
         
-    for src in prefix_path(COMPONENTS, SRC_ROOT):
+    for (component, files) in COMPONENTS:
+        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component)), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
+
         try:
+            """
             #Handle special case (folder instead of single js file):
             if not src.endswith(".js"):
                 #Construct name for concatenated file:
@@ -128,10 +131,10 @@ def build(mode='production'):
             else:
                 print "  Copying file %s to %s" % (src, nodes_dest)
                 filename = src
-            packer.build([src], os.path.join(nodes_dest, os.path.basename(filename)), 'jsmin', include_version=False)
+            """
 #            shutil.copy(src, nodes_dest)
         except:
-            print "  Error copying file %s" % src
+            print "  Error copying file to %s" % component
     # done with components
     
     # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
