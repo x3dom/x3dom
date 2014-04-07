@@ -21,6 +21,7 @@ var TestSuite = function(config)
     this.currentStepId = 0;
     this.stepWorking = false;
     this.currentResult;
+    this.id;
 
     //results array
     this.results = [];
@@ -43,12 +44,13 @@ var TestSuite = function(config)
 
                 console.log("Running tests for profile: "+that.profile.name);
                 that.currentTestId = 0;
+                that.id = new Date().getTime();
                 that.results = [];
                 that.runTests(function(profile, results){
                     //store results then publish them
                     if(!globals.testOnly)
                     {
-                        resultsFunc(profile, results, function(){
+                        resultsFunc(profile, results, that.id, function(){
                             runProfile();
                         });
                     }
@@ -139,7 +141,7 @@ var TestSuite = function(config)
         {
             var context =
             {
-                outputPath : that.config.outputPath +"/" + that.profile.name,
+                outputPath : that.config.dbPath + "/" + that.profile.name + "/" + that.id,
                 driver : that.driver,
                 test : test,
                 stepId : that.currentStepId,
@@ -152,6 +154,7 @@ var TestSuite = function(config)
                     that.stepWorking = false;
                 }
             };
+            console.log(context.outputPath);
             instance.run(context);
         }
         else

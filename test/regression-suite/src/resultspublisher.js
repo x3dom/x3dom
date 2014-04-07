@@ -18,7 +18,7 @@ var ResultsPublisher = function()
 
     //------------------------------------------------------------------------------------------------------------------
 
-    this.storeResults = function(profile, results, outputPath, callback)
+    this.storeResults = function(profile, results, id, outputPath, callback)
     {
         var db = {};
         that.dbPath = "db/"+profile.name+"_results.json";
@@ -38,7 +38,7 @@ var ResultsPublisher = function()
 //                    console.log(detail.data);
 //                });
 //            });
-            db.data.unshift({"results": results, "time": new Date().getTime()});
+            db.data.unshift({"results": results, "time": id});
             fw.writeFile(that.dbPath, JSON.stringify(db), callback);
         });
     }
@@ -93,7 +93,7 @@ var ResultsPublisher = function()
     this.createProfilePage = function(profile, statistics, contents, path)
     {
         var db = that.db[profile.name];
-        db.data[db.data.length-1].results.forEach(function(result){
+        db.data[0].results.forEach(function(result){
             that.evaluateTestResult(result,statistics,contents);
         });
 

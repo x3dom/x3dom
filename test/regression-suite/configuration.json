@@ -1,6 +1,7 @@
 {
     "urlPrefix" : "http://localhost:8080/test/regression-suite",
     "outputPath"  :    "output",
+    "dbPath" : "db",
     "profiles" :
         [
             {

@@ -67,10 +67,10 @@ function parseConfig()
                 else
                 {
                     var testsuite = new ts.TestSuite(config);
-                    testsuite.startTesting(function(profile, results, callback){
+                    testsuite.startTesting(function(profile, results, id, callback){
                         if(!globals.testOnly)
                         {
-                            publisher.storeResults(profile, results, config.outputPath, callback);
+                            publisher.storeResults(profile, results, id, config.outputPath, callback);
                         }
                         else{
                             callback();

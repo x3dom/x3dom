@@ -7,8 +7,6 @@
         {"path": "debug.js", "type": "file"},
         {"path": "util/AdaptiveRenderControl.js", "type": "file"},
         {"path": "util/DownloadManager.js", "type": "file"},
-        {"path": "util/RefinementJobManager.js", "type": "file"},
-        {"path": "util/RefinementJobWorker.js", "type": "file"},
         {"path": "util/Properties.js", "type": "file"},
         {"path": "util/DoublyLinkedList.js", "type": "file"},
         {"path": "util/EarClipping.js", "type": "file"},
@@ -17,12 +15,12 @@
         {"path": "util/StateManager.js", "type": "file"},
         {"path": "util/BinaryContainerSetup.js", "type": "file"},
         {"path": "util/DrawableCollection.js", "type": "file"},
-        {"path": "util/BVH.js", "type": "file"},
         {"path": "X3DCanvas.js", "type": "file"},
         {"path": "Runtime.js", "type": "file"},
         {"path": "Main.js", "type": "file"},
         {"path": "Cache.js", "type": "file"},
-        {"path": "Texture.js", "type": "file"}
+        {"path": "Texture.js", "type": "file"},
+        {"path": "Bindable.js", "type": "file"}
     ]},
 
     {"group": "SHADER",
@@ -65,7 +63,6 @@
         {"path": "nodes/NodeNameSpace.js", "type": "file"},
         {"path": "nodes/Core.js", "type": "file"},
         {"path": "nodes/Grouping.js", "type": "file"},
-        {"path": "nodes/Bindable.js", "type": "file"},
         {"path": "nodes/Rendering.js", "type": "file"},
         {"path": "nodes/Shape.js", "type": "file"},
         {"path": "nodes/Lighting.js", "type": "file"},
