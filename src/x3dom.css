@@ -44,9 +44,16 @@ x3d:hover,
 .x3dom-canvas {
   border:none;
   cursor:pointer;
+  cursor:-webkit-grab;
+  cursor:grab;
   width:100%;
   height:100%;
   float:left;
+}
+
+.x3dom-canvas-mousedown {
+  cursor:-webkit-grabbing;
+  cursor:grabbing;
 }
 
 .x3dom-canvas:focus {
