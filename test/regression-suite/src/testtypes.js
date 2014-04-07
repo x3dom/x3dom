@@ -43,7 +43,6 @@ function CompareScreenshot()
         var script = "var x3d_node = document.getElementById('"+params.x3d+"');if(!x3d_node) x3d_node = document.getElementsByTagName('x3d')[0]; return x3d_node.runtime.getScreenshot()";
 
         driver.executeScript(script)
-        driver.executeScript(script)
             .then(function(return_value)
             {
                 var buf = new Buffer(return_value.replace(/^data:image\/png;base64,/,''),'base64');

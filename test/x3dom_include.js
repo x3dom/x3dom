@@ -6,7 +6,8 @@ var pathes = [
 	"../",		// examples
     "../../../x3dom/",
     "../../../../x3dom/",
-    "../../../../"
+    "../../../../",
+    "../../../../../"
 ];
 
 var packages = "tools/packages.json";
@@ -47,12 +48,12 @@ function send_xhr(path){
                     	//Folder?
                     	else
                     	{
-                    		 for(f in data.grouplist[group].data[p].files)
+                    		 for(var f in data.grouplist[group].data[p].files)
                     		 {
                     			 filePath = relativePath + data.grouplist[group].data[p].files[f].path
                          		 document.write("<script src=\"" + path + "src/" + filePath + "\"></script>");
                     		 }
-                    		
+
                     	}
                     }
                 }
