@@ -147,12 +147,15 @@ x3dom.registerNodeType(
 
                 var startAudio = function()
                 {
-                    that._audio.play();
+                    if (that._vf.enabled === true)
+                    {
+                        that._audio.play();
+                    }
                 };
 
                 var audioDone = function()
                 {
-                    if (that._vf.loop === true)
+                    if (that._vf.enabled === true && that._vf.loop === true)
                     {
                         that._audio.play();
                     }
@@ -177,7 +180,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName === "loop")
                 {
-                    if (this._vf.loop === true)
+                    if (this._vf.enabled === true && this._vf.loop === true)
                     {
                         this._audio.play();
                     }

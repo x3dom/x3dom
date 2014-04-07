@@ -1696,6 +1696,13 @@ x3dom.gfx_webgl = (function () {
         if (x3dom.Utils.needLineWidth) {
             this.stateManager.lineWidth(1);
         }
+        
+        if (depthMode) {
+            this.stateManager.enable(gl.DEPTH_TEST);
+            this.stateManager.depthMask(true);
+            this.stateManager.depthFunc(gl.LEQUAL);
+            this.stateManager.depthRange(0, 1);
+        }
 
         gl.flush();
 
@@ -2824,6 +2831,7 @@ x3dom.gfx_webgl = (function () {
 
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
+        var texProp = null;
 
         // for initFBO
         var type = gl.UNSIGNED_BYTE;
@@ -2933,10 +2941,12 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
+                texProp = rt_tex._cf.textureProperties.node;
                 texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
-                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
+                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType,
+                    (texProp && texProp._vf.generateMipMaps), !rt_tex.requirePingPong());
 
                 rt_tex._cleanupGLObjects = function(retainTex) {
                     if (!retainTex)
@@ -3003,10 +3013,12 @@ x3dom.gfx_webgl = (function () {
                         this._webgl.fbo.fbo = null;
                     };
 
+                texProp = rt_tex._cf.textureProperties.node;
                 texType = rt_tex.requirePingPong() ? gl.UNSIGNED_BYTE : type;
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
-                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType, false, !rt_tex.requirePingPong());
+                                    rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType,
+                                    (texProp && texProp._vf.generateMipMaps), !rt_tex.requirePingPong());
 
                 if (rt_tex.requirePingPong()) {
                     refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];
@@ -3333,7 +3345,6 @@ x3dom.gfx_webgl = (function () {
         var refinementPos = rt._vf.dimensions[0] + "x" + rt._vf.dimensions[1];
         var refinementFbo = scene._webgl.refinement[refinementPos];
 
-
         // load stamp textures
         if (rt._currLoadLevel == 0 && (!scene._webgl.refinement.stamps[0] || !scene._webgl.refinement.stamps[1])) {
             scene._webgl.refinement.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
@@ -3354,7 +3365,10 @@ x3dom.gfx_webgl = (function () {
             rt._webgl.texture = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
                                 rt._nameSpace.getURL(filename), false, false, false, false);
 
-            (rt._currLoadLevel % 2 == 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+            if (rt._vf.iterations % 2 === 0)
+                (rt._currLoadLevel % 2 !== 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
+            else
+                (rt._currLoadLevel % 2 === 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
         }
 
         if (!rt._webgl.texture.ready ||
@@ -3440,6 +3454,12 @@ x3dom.gfx_webgl = (function () {
 
         if (rt._currLoadLevel == rt._vf.maxLevel)
             rt._currLoadLevel++;
+
+        if (rt._webgl.fbo.mipMap) {
+            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
 
         // we're finally done: cleanup/delete all helper FBOs
         if (!rt.requirePingPong()) {
@@ -3606,6 +3626,12 @@ x3dom.gfx_webgl = (function () {
 
         gl.flush();
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+        if (rt._webgl.fbo.mipMap) {
+            gl.bindTexture(gl.TEXTURE_2D, rt._webgl.fbo.tex);
+            gl.generateMipmap(gl.TEXTURE_2D);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
 
         for (i = 0; i < m; i++) {
             if (arr[i] !== 0) {

@@ -50,11 +50,10 @@
                 <TextureCoordinate point='0 1, 1 1, 1 0, 0 0'></TextureCoordinate><!-- y flipped -->
               </IndexedFaceSet>
               <Appearance DEF='rtApp'>
-                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' 
-								 repeatS='false' repeatT='false' >
+                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4'>
                   <Shape USE='aNode' containerField='excludeNodes' ></Shape>
                   <Background USE='back' containerField='background' ></Background>
-                  <Viewpoint DEF='view3' containerField='viewpoint' ></Viewpoint>
+                  <Viewpoint DEF='view3' containerField='viewpoint' zNear="1" zFar="1000" ></Viewpoint>
                   <Group>
                      <Shape DEF="sphereShape">
 						<Appearance>
@@ -66,6 +65,10 @@
                         <Shape USE='GEO'></Shape>
                      </Transform>
                   </Group>
+                  <textureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
+                                   magnificationFilter='LINEAR' minificationFilter='LINEAR_MIPMAP_LINEAR'
+                                   generateMipMaps='true' id='texProps'>
+                  </textureProperties>
                 </RenderedTexture>
               </Appearance>
             </Shape>
