@@ -12,6 +12,10 @@
                 "command"   : "function() { return new webdriver.Builder().withCapabilities(webdriver.Capabilities.firefox()).build();}"
             }
         ],
+    "settings" :
+    {
+        "misMatchPercentage" : "1"
+    },
     "tests" :
         [
             {
