@@ -1,20 +1,10 @@
 // load all x3dom JS files
 (function() {
 
-var pathes = [
-    "../../",
-	"../",		// examples
-    "../../../x3dom/",
-    "../../../../x3dom/",
-    "../../../../"
-];
-
 var packages = "tools/packages.json";
 var fallback_path = "http://www.x3dom.org/x3dom/";
-var i = 0;
-
-if (i < pathes.length)
-    send_xhr(pathes[i++]);
+var maxDepth = 6;
+send_xhr("../");
 
 function send_xhr(path){
     var xhr = new XMLHttpRequest();
@@ -60,9 +50,9 @@ function send_xhr(path){
                 //this is only for tests
                 document.write("<script src=\""+ path + "test/functional/media/js/tests.js\"></script>");
             } else {
-                console.error('xhr status is not 200 on: ' + path);
-				if (i < pathes.length) {
-					send_xhr(pathes[i++]);
+                //console.error('xhr status is not 200 on: ' + path);
+				if (maxDepth-- > 0) {
+					send_xhr(path + "../");
 				}
 				else {
                     console.warn('FALLBACK to x3dom.org base path');
