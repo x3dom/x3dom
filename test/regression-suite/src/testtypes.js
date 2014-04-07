@@ -74,7 +74,7 @@ function CompareScreenshot()
             {
                 resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
                     var equal = data.misMatchPercentage < that.context.config.settings.misMatchPercentage;
-                    console.log(equal + "  " + data.misMatchPercentage + " " +that.context.config.settings.misMatchPercentage);
+                    //console.log(equal + "  " + data.misMatchPercentage + " " +that.context.config.settings.misMatchPercentage);
                     if(!equal)
                     {
                         //write diff
