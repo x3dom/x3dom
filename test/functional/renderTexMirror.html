@@ -1,0 +1,134 @@
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>Using RenderedTexture for Mirror Effects</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+    
+    <script>
+        var x3domRuntime;
+        
+        var defaultUpVec   = new x3dom.fields.SFVec3f(0, 1, 0);
+        
+        var frameStart = function()
+        {               
+            var ms = document.getElementById('myMirrorShape');
+            var mv = document.getElementById('myMirrorTextureViewPoint');            
+            
+            //compute transformations related to local mirror space
+            var mirrorToWorldMat = ms._x3domNode.getCurrentTransform();
+            var worldToMirrorMat = mirrorToWorldMat.inverse();
+            var mirrorPos    = new x3dom.fields.SFVec3f(0, 0, 0);
+            var mirrorNormal = new x3dom.fields.SFVec3f(0, 0, 1);
+            
+            //transform view vector and view point to local mirror space            
+            var viewMatInv = x3domRuntime.viewMatrix().inverse();
+            var vPos = viewMatInv.multMatrixPnt(new x3dom.fields.SFVec3f(0, 0, 0));
+                vPos = worldToMirrorMat.multMatrixPnt(vPos);                
+           
+            var vVec = vPos.subtract(mirrorPos);
+                vVec = vVec.normalize();
+                      
+            //compute distance between viewer and mirror
+            var viewDist = mirrorPos.subtract(vPos).length();            
+            
+            //reflect view vector on mirror normal
+            var reflect = mirrorNormal.multiply(2 * vVec.dot(mirrorNormal)).subtract(vVec);            
+            
+            //update mirror's camera settings
+            var mirrorEye = mirrorPos.subtract(reflect.multiply(viewDist));
+            var vMatMirr  = x3dom.fields.SFMatrix4f.lookAt(mirrorEye, mirrorEye.add(reflect), defaultUpVec);
+            
+            x3dom.debug.logInfo("*******************");
+            x3dom.debug.logInfo("VVEC:"  + vVec);
+            x3dom.debug.logInfo("VDIS: " + viewDist);
+            x3dom.debug.logInfo("REFL: " + reflect);
+            x3dom.debug.logInfo("VPOS: " + vPos);
+            x3dom.debug.logInfo("MPOS: " + mirrorPos);
+            x3dom.debug.logInfo("MEYE: " + mirrorEye);
+            x3dom.debug.logInfo("REFL * VDIS: " + reflect.multiply(viewDist));
+            x3dom.debug.logInfo("*******************");
+            
+            mv._x3domNode.setView(vMatMirr);       
+        };
+        
+        document.onload = function(){
+            x3domRuntime = document.getElementById('myX3DWorld').runtime;
+            x3domRuntime.enterFrame = frameStart;
+        };
+    </script>
+</head>
+<body>
+	<h1>RenderedTexture and Mirror Effects</h1>
+    
+	<div class="group">
+        <X3D id='myX3DWorld' showStat='false' showLog='true' width='512px' height='512px'>
+          <Scene DEF='scene'>
+            <Viewpoint id='view1' position='0 0 12'></Viewpoint>
+            <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
+                       DEF='view2' position="0 0 -20" orientation="0 1 0 3.14159265" ></Viewpoint>
+            <Background id='back' 
+                backUrl="media/texture/generic/ocean_3_back.jpg"
+                bottomUrl="media/texture/generic/ocean_3_bottom.jpg"
+                frontUrl="media/texture/generic/ocean_3_front.jpg"
+                leftUrl="media/texture/generic/ocean_3_left.jpg"
+                rightUrl="media/texture/generic/ocean_3_right.jpg"
+                topUrl="media/texture/generic/ocean_3_top.jpg"
+                skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82' 
+                groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1'
+            ></Background>
+            <group DEF='BOXES'>
+                <Transform DEF='trans1' translation='-2 2 0'>
+                  <Shape DEF='GEO'>
+                    <Appearance>
+                      <ImageTexture repeatS='false' repeatT='false' url='"media/texture/generic/crate.gif"'></ImageTexture>
+                    </Appearance>
+                    <Box ></Box>
+                  </Shape>
+                </Transform>
+                <Transform DEF='trans2' translation='2 2 0'>
+                  <Shape USE='GEO'></Shape>
+                </Transform>
+                <Transform DEF='trans3' translation='-2 -2 0'>
+                  <Shape USE='GEO'></Shape>
+                </Transform>
+                <Transform DEF='trans4' translation='2 -2 0'>
+                  <Shape USE='GEO'></Shape>
+                </Transform>
+            </group>
+            <Transform rotation='0.7071 0.7071 0 -0.9' translation='2 0 -8'>
+                <Transform translation='0.0 0.0 -0.5' scale='7.0 7.0 0.2'>
+                    <Shape>
+                        <Appearance><Material diffuseColor='0.8 0.75 0.6'></Material></Appearance>
+                        <Box></Box>
+                    </Shape>
+                </Transform>
+                <Shape id='myMirrorShape' DEF='myMirrorShape'>
+                  <IndexedFaceSet solid="false" coordIndex='0 1 2 3 -1'>
+                    <Coordinate point='-6 -6 0, 6 -6 0, 6 6 0, -6 6 0'></Coordinate>
+                    <TextureCoordinate point='0 1, 1 1, 1 0, 0 0'></TextureCoordinate><!-- y flipped -->
+                  </IndexedFaceSet>
+                  <Appearance DEF='rtApp'>
+                    <RenderedTexture id='myRenderedTexture' update='always' dimensions='512 512 4' 
+                                     repeatS='false' repeatT='false' >
+                      <Shape USE='myMirrorShape' containerField='excludeNodes' ></Shape>
+                      <Background USE='back' containerField='background' ></Background>
+                      <Viewpoint id='myMirrorTextureViewPoint' zNear="0.1" zFar="1000" containerField='viewpoint' ></Viewpoint>
+                      <Group USE='BOXES'>                         
+                      </Group>
+                    </RenderedTexture>
+                  </Appearance>
+                </Shape>
+            </Transform>
+            <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1'></TimeSensor>
+            <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='0 1 1 0 0 1 1 1.57 0 1 1 3.14 0 1 1 4.71 0 1 1 6.28'></OrientationInterpolator>
+            <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oi' toField='set_fraction'></ROUTE>
+            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans4' toField='set_rotation'></ROUTE>
+            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans3' toField='set_rotation'></ROUTE>
+            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans2' toField='set_rotation'></ROUTE>
+            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans1' toField='set_rotation'></ROUTE>
+          </Scene>
+        </X3D>
+	</div>
+  </body>
+</html>
