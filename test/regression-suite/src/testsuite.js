@@ -3,16 +3,16 @@ var fs = require("fs");
 var webdriver = require("selenium-webdriver");
 var retry_delay = 20;
 
-var TestSuite = function()
+var TestSuite = function(config)
 {
     var that = this;
 
-    this.urlPrefix;
-    this.outputPath;
     this.profile;
     this.testList;
 
     this.driver;
+
+    this.config = config;
 
     //current testing status
     this.currentProfile = 0;
@@ -30,19 +30,16 @@ var TestSuite = function()
 
 
     //read test configuration file and start regression
-    this.startTesting = function(config, resultsFunc, callback){
+    this.startTesting = function(resultsFunc, callback){
         runProfile();
 
         function runProfile()
         {
-            if(that.currentProfile < config.profiles.length)
+            if(that.currentProfile < that.config.profiles.length)
             {
-                that.profile = config.profiles[that.currentProfile++];
+                that.profile = that.config.profiles[that.currentProfile++];
                 that.driver = eval("("+that.profile.command+")")();
-                that.testList = config.tests;
-                that.urlPrefix = config.urlPrefix;
-                that.outputPath = config.outputPath;
-
+                that.testList = that.config.tests;
 
                 console.log("Running tests for profile: "+that.profile.name);
                 that.currentTestId = 0;
@@ -98,7 +95,7 @@ var TestSuite = function()
 
     this.runTest = function(test)
     {
-        var url = that.urlPrefix+test.url;
+        var url = that.config.urlPrefix+test.url;
         console.log("Testing on " + that.profile.name + ": " + url);
 
         var split = test.url.split("/");
@@ -142,11 +139,13 @@ var TestSuite = function()
         {
             var context =
             {
-                outputPath : that.outputPath +"/" + that.profile.name,
+                outputPath : that.config.outputPath +"/" + that.profile.name,
                 driver : that.driver,
                 test : test,
                 stepId : that.currentStepId,
                 result : that.currentResult,
+                config : that.config,
+
                 finishedCallback: function()
                 {
                     that.currentStepId ++;

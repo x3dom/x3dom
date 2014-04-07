@@ -16,7 +16,7 @@ function run(){
     if(!globals.publishOnly)
     {
         var testsuite = new TestSuite();
-        testsuite.startTesting(globals.configuration, function(){
+        testsuite.startTesting(function(){
 
         })
     }
@@ -66,8 +66,8 @@ function parseConfig()
                 }
                 else
                 {
-                    var testsuite = new ts.TestSuite();
-                    testsuite.startTesting(config, function(profile, results, callback){
+                    var testsuite = new ts.TestSuite(config);
+                    testsuite.startTesting(function(profile, results, callback){
                         if(!globals.testOnly)
                         {
                             publisher.storeResults(profile, results, config.outputPath, callback);

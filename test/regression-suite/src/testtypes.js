@@ -26,7 +26,7 @@ function CompareScreenshot()
 
         context.screenshotId = context.result.screenshotCount;
         var filename = context.test.name + "_" +(context.result.screenshotCount++)+".png";
-        var renderedImagePath = context.outputPath+"/"+filename;
+        var renderedImagePath = context.config.outputPath+"/"+filename;
 
         var referenceImagePath = globals.referencePath+filename;
 
@@ -73,7 +73,8 @@ function CompareScreenshot()
             else
             {
                 resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
-                    var equal = data.misMatchPercentage < 0.01;
+                    var equal = data.misMatchPercentage < that.context.config.settings.misMatchPercentage;
+                    console.log(equal + "  " + data.misMatchPercentage + " " +that.context.config.settings.misMatchPercentage);
                     if(!equal)
                     {
                         //write diff
