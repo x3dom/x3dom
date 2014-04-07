@@ -36,7 +36,7 @@ function send_xhr(path){
                     	{
                     		 for(f in data.grouplist[group].data[p].files)
                     		 {
-                    			 filePath = relativePath + data.grouplist[group].data[p].files[f].path
+                    			 filePath = data.grouplist[group].data[p].files[f].path
                          		 document.write("<script src=\"" + path + "src/" + filePath + "\"></script>");
                     		 }
                     		
