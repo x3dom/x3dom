@@ -4,7 +4,6 @@ var ResultsPublisher = function()
 {
     var that = this;
     this.outputPath;
-    this.dbPath;
     this.overviewData = {};
     this.overviewData.profiles = [];
     this.db = {};
@@ -18,15 +17,15 @@ var ResultsPublisher = function()
 
     //------------------------------------------------------------------------------------------------------------------
 
-    this.storeResults = function(profile, results, id, outputPath, callback)
+    this.storeResults = function(profile, results, id, config, callback)
     {
         var db = {};
-        that.dbPath = "db/"+profile.name+"_results.json";
-        fs.readFile(that.dbPath, function(err, data)
+        that.dbFile = config.dbPath + "/" + profile.name + "_results.json";
+        fs.readFile(that.dbFile, function(err, data)
         {
             if(err)
             {
-                console.log("Could not find db file: " + that.dbPath);
+                console.log("Could not find db file: " + that.dbFile);
                 db.data = [];
             }
             else
@@ -39,33 +38,31 @@ var ResultsPublisher = function()
 //                });
 //            });
             db.data.unshift({"results": results, "time": id});
-            fw.writeFile(that.dbPath, JSON.stringify(db), callback);
+            fw.writeFile(that.dbFile, JSON.stringify(db), callback);
         });
     }
 
-    this.publishResults = function(profiles, outputPath, callback, index)
+    this.publishResults = function(config, callback, index)
     {
         if(!index)
         {
             index = 0;
         }
-        if (index >= profiles.length)
+        if (index >= config.profiles.length)
         {
             //done
             return that.publishOverview(callback);
         }
-        console.log(index);
-        var profile = profiles[index];
-        that.dbPath = "db/"+profile.name+"_results.json";
-        that.outputPath = outputPath;
-        var profilePath = that.outputPath+"/"+profile.name+"/";
-        that.db = {};
+        var profile = config.profiles[index];
+        var dbFile = config.dbPath + "/" + profile.name + "_results.json";
+        that.outputPath = config.outputPath;
+        var profileDbPath = config.dbPath + "/" + profile.name + "/" ;
         var db;
-        fs.readFile(that.dbPath, function(err, data)
+        fs.readFile(dbFile, function(err, data)
         {
             if(err)
             {
-                console.log("Could not find db file: " + that.dbPath);
+                console.log("Could not find db file: " + dbFile);
                 return;
             }
             else
@@ -82,27 +79,32 @@ var ResultsPublisher = function()
             };
             var contents = [];
 
-            that.createProfilePage(profile, statistics, contents, profilePath);
+            for (var i = 0; i < db.data.length; i++)
+            {
+                var id = db.data[i].time;
+                that.createProfilePage(profile, statistics, contents, that.outputPath, profileDbPath, id);
+            }
             that.createTimelinePage(profile, function(){
-                that.publishResults(profiles, outputPath, callback, index+1);
+                that.publishResults(config, callback, index+1);
             });
         });
     }
 
 
-    this.createProfilePage = function(profile, statistics, contents, path)
+    this.createProfilePage = function(profile, statistics, contents, outputPath, profileDbPath, id)
     {
+        var pathPrefix = "../"
         var db = that.db[profile.name];
+        var imagePath = profileDbPath + "/" + id + "/";
         db.data[0].results.forEach(function(result){
-            that.evaluateTestResult(result,statistics,contents);
+            that.evaluateTestResult(result, statistics, contents, imagePath, pathPrefix);
         });
-
 
 
 
         var dateString = that.getDateString();
 
-        var includes = "<link rel='stylesheet' href='../../jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='../../jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='../../jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
+        var includes = "<link rel='stylesheet' href='" + pathPrefix + "jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
         var script = "<script>$(function(){$(\".accordion\").accordion({collapsible: true, heightStyle: 'content', active: false});});</script>"
         var pageStart = "<html><head>"+includes+script+"<title>x3dom Regression Tests for "+ profile.name +"</title></head><body><h1>"+profile.name +" results overview - "+ statistics.passed +" / "+ (statistics.passed + statistics.failed) +" passed</h1><h3>" + dateString + "</h3>";
         var pageEnd = "<br/><br/><br/><br/>"+"</body>";
@@ -111,12 +113,12 @@ var ResultsPublisher = function()
         profile.statistics = statistics;
         that.overviewData.profiles.push(profile);
 
-        fw.writeFile(path+"index.html", pageStart+details+pageEnd);
+        fw.writeFile(outputPath +"/" + profile.name + "_" + id + ".html", pageStart + details + pageEnd);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    this.evaluateTestResult = function(result, statistics, content)
+    this.evaluateTestResult = function(result, statistics, content, imagePath, pathPrefix)
     {
         var success = true;
 
@@ -125,11 +127,12 @@ var ResultsPublisher = function()
         for(var d in result.details)
         {
             var detail = result.details[d];
-            console.log("detail" + Object.keys(detail.data));
+            console.log(detail.data.type);
             var image = result.testName + "_" + detail.data.screenshotId + ".png";
-            var difftag = "<a target='_blank' href='diff/" + image + "'><img width = '200px' height = '150px' src='diff/" + image + "'/></a>";
-            var imagetag = "<a target='_blank' href='" + image + "'><img width = '200px' height = '150px' src='" + image + "'/></a>";
-            var reftag = "<a target='_blank' href='../../"+globals.referencePath + image + "'><img width = '200px' height = '150px' src='../../"+globals.referencePath + image + "'/></a>";
+            var imagePrefix = pathPrefix + imagePath;
+            var difftag = "<a target='_blank' href='" + imagePrefix + "diff/" + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + "diff/" + image + "'/></a>";
+            var imagetag = "<a target='_blank' href='" + imagePrefix + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + image + "'/></a>";
+            var reftag = "<a target='_blank' href='" + imagePrefix + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + globals.referencePath + image + "'/></a>";
             if(detail.status == 'success')
             {
                 statistics.passed++;
@@ -159,7 +162,8 @@ var ResultsPublisher = function()
             }
             else if(detail.status == 'error')
             {
-                resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #ff7e74; '>" + detail.data.type + "</h3><div>"+detail.data.error + "</div></div>";
+                if(detail.data.type)statistics.failed++;
+                resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #ff7e74; '>" + detail.data.type + "</h3><div>"+detail.data.error.message + "</div></div>";
             }
 
         }
@@ -197,16 +201,19 @@ var ResultsPublisher = function()
         for(var i in that.overviewData.profiles)
         {
             var profile = that.overviewData.profiles[i];
+            console.log(that.db);
+            var profilePage = profile.name + "_" + that.db[profile.name].data[0].time + ".html";
             var success = profile.statistics.failed <= 0;
             var anyNewFail = false;
-            that.newFail[profile.name][0].forEach(function(nf){
-                anyNewFail = anyNewFail || nf;
-            });
+            for(var nf = 0; nf < that.newFail[profile.name][0].length; nf++)
+            {
+                anyNewFail = anyNewFail || that.newFail[profile.name][0][nf];
+            }
             var successString = success?"success":anyNewFail[0]?"failed":"broken";
             content += "<tr>";
-            content += "<td><img src='img/"+profile.name+"_icon.png'/></td>";
-            content += "<td class='"+successString+"'><a href='results/"+profile.name+"/index.html'>"+profile.statistics.passed+" / "+(profile.statistics.passed + profile.statistics.failed)+" passed</a></td>";
-            content += "<td><a href='timeline_"+profile.name+".html'>Timeline</a></td></tr>";
+            content += "<td><img src='../img/" + profile.name + "_icon.png'/></td>";
+            content += "<td class='"+successString+"'><a href='" + profilePage + "'>"+profile.statistics.passed+" / "+(profile.statistics.passed + profile.statistics.failed)+" passed</a></td>";
+            content += "<td><a href='timeline_" + profile.name + ".html'>Timeline</a></td></tr>";
             content += "</tr>";
         }
         var pageEnd = "</table></body></html>";
@@ -225,8 +232,7 @@ var ResultsPublisher = function()
         var pageEnd = "</table></body></html>";
         var body = "";
 
-        var newFail = that.newFail[profile.name];
-        newFail = [];
+        var newFail = [];
         for (var resultId = -1; resultId < db.data[0].results.length; resultId++)
         {
             body += "<tr>";
@@ -289,6 +295,14 @@ var ResultsPublisher = function()
         that.newFail[profile.name] = newFail;
         fw.writeFile(path, pageStart+body+pageEnd);
         callback(newFail);
+    }
+
+    this.calcRelativePath = function (path1, path2){
+        var p1 = path1.replace("\\", "/");
+        var p2 = path2.replace("\\", "/");
+        var count1 = p1.match(/\//g).length;
+        var count2 = p2.match(/\//g).length;
+        var prefix = "";
     }
 
 };

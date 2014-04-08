@@ -60,7 +60,7 @@ function parseConfig()
                 var publisher = new rp.ResultsPublisher();
                 if(globals.publishOnly)
                 {
-                    publisher.publishResults(config.profiles, config.outputPath, function(){
+                    publisher.publishResults(config, function(){
                         //done;
                     });
                 }
@@ -70,13 +70,13 @@ function parseConfig()
                     testsuite.startTesting(function(profile, results, id, callback){
                         if(!globals.testOnly)
                         {
-                            publisher.storeResults(profile, results, id, config.outputPath, callback);
+                            publisher.storeResults(profile, results, id, config, callback);
                         }
                         else{
                             callback();
                         }
                     }, function(){
-                        if(!globals.testOnly)publisher.publishResults(config.profiles, config.outputPath, function(){
+                        if(!globals.testOnly)publisher.publishResults(config, function(){
                             //done;
                         });
                     });

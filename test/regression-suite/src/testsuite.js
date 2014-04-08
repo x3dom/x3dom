@@ -154,7 +154,6 @@ var TestSuite = function(config)
                     that.stepWorking = false;
                 }
             };
-            console.log(context.outputPath);
             instance.run(context);
         }
         else
