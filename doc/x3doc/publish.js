@@ -84,8 +84,17 @@ exports.publish = function(taffyData, opts, tutorials) {
     data().each(function(doclet) {
         var url = helper.longnameToUrl[doclet.longname];
 
+        //Remove global parts of long names
+        /*var globalIndex =  url.indexOf("global.html#");
+        if( globalIndex == 0)
+        {
+            url = url.substring(globalIndex+12);
+            doclet.longname = url;
+            console.log(doclet.name + "  " + doclet.longname);
+        }*/
+
         if (url.indexOf('#') > -1) {
-            doclet.id = helper.longnameToUrl[doclet.longname].split(/#/).pop();
+            doclet.id = url.split(/#/).pop();
         }
         else {
             doclet.id = doclet.name;
@@ -189,7 +198,9 @@ exports.publish = function(taffyData, opts, tutorials) {
                 var classes = helper.find(taffy(typeLists.classes), { memberof: longname});
 
                 view.api = "developer";
-                generateNameSpace('Namespace: ' + namespaces[0].name, namespaces, classes, createDeveloperlApiPathWithFolders("developer."+helper.longnameToUrl[longname],true,true));
+
+                if(helper.longnameToUrl[longname].indexOf("global") != 0 )
+                    generateNameSpace('Namespace: ' + namespaces[0].name, namespaces, classes, createDeveloperlApiPathWithFolders("developer."+helper.longnameToUrl[longname],true,true));
             }
         }
     }
@@ -208,7 +219,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 function createSceneAuthorApiPathWithFolders(doc,url, addNodeFolder)
 {
     addNodeFolder = addNodeFolder === false ? false : true;
-    var desc = disassemble(url,true,/\./g);
+    var desc = disassemble(url,true,/\./g, false);
 
     return (addNodeFolder ? "author/" : "")+doc.component+"/"+desc.name+ "." + desc.ending;
 }
@@ -220,7 +231,7 @@ function createDeveloperlApiPathWithFolders(url, isNamespace, hasEnding)
 {
     hasEnding = (typeof hasEnding != 'undefined') ? hasEnding : true;
     isNamespace = (typeof isNamespace != 'undefined') ? isNamespace : false;
-    var desc = disassemble(url, hasEnding, /\./g);
+    var desc = disassemble(url, hasEnding, /\./g, isNamespace);
 
     var path = desc.path.toString().replace(/,/g,"/");
     var val = isNamespace ?
