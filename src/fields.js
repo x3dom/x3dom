@@ -13,6 +13,9 @@
 /** If used as standalone lib, define some basics first. */
 if (typeof x3dom === "undefined")
 {
+    /**
+     * @namespace x3dom
+     */
     x3dom = {
         extend: function(f) {
             function G() {}
@@ -46,7 +49,8 @@ if (typeof x3dom === "undefined")
 
 /**
  * The x3dom.fields namespace.
- * @namespace x3dom.fields */
+ * @namespace x3dom.fields
+ */
 x3dom.fields = {};
 
 /// shortcut for convenience
@@ -61,10 +65,27 @@ x3dom.fields.Eps = 0.000001;
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-/** SFMatrix4f constructor. 
-    @class Represents a SFMatrix4f
-    THINKABOUTME: use array instead of _xx?
-  */
+/**
+ * Constructor. You must either speficy all argument values or no argument. In the latter case, an identity matrix will be created.
+ *
+ * @class Represents a 4x4 matrix in row major format.
+ * @param {Number} [_00=1] - value at [0,0]
+ * @param {Number} [_01=0] - value at [0,1]
+ * @param {Number} [_02=0] - value at [0,2]
+ * @param {Number} [_03=0] - value at [0,3]
+ * @param {Number} [_10=0] - value at [1,0]
+ * @param {Number} [_11=1] - value at [1,1]
+ * @param {Number} [_12=0] - value at [1,2]
+ * @param {Number} [_13=0] - value at [1,3]
+ * @param {Number} [_20=0] - value at [2,0]
+ * @param {Number} [_21=0] - value at [2,1]
+ * @param {Number} [_22=1] - value at [2,2]
+ * @param {Number} [_23=0] - value at [2,3]
+ * @param {Number} [_30=0] - value at [3,0]
+ * @param {Number} [_31=0] - value at [3,1]
+ * @param {Number} [_32=0] - value at [3,2]
+ * @param {Number} [_33=1] - value at [3,3]
+ */
 x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03, 
 									_10, _11, _12, _13, 
 									_20, _21, _22, _23, 
@@ -84,30 +105,46 @@ x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03,
     }
 };
 
-/** returns 1st base vector (right) */
+/**
+ * Returns the first column vector of the matrix.
+ * @returns {x3dom.fields.SFVec3f} the vector
+ */
 x3dom.fields.SFMatrix4f.prototype.e0 = function () {
     var baseVec = new x3dom.fields.SFVec3f(this._00, this._10, this._20);
     return baseVec.normalize();
 };
 
-/** returns 2nd base vector (up) */
+/**
+ * Returns the second column vector of the matrix.
+ * @returns {x3dom.fields.SFVec3f} the vector
+ */
 x3dom.fields.SFMatrix4f.prototype.e1 = function () {
     var baseVec = new x3dom.fields.SFVec3f(this._01, this._11, this._21);
     return baseVec.normalize();
 };
 
-/** returns 3rd base vector (fwd) */
+/**
+ * Returns the third column vector of the matrix.
+ * @returns {x3dom.fields.SFVec3f} the vector
+ */
 x3dom.fields.SFMatrix4f.prototype.e2 = function () {
     var baseVec = new x3dom.fields.SFVec3f(this._02, this._12, this._22);
     return baseVec.normalize();
 };
 
-/** returns 4th base vector (pos) */
+/**
+ * Returns the fourth column vector of the matrix.
+ * @returns {x3dom.fields.SFVec3f} the vector
+ */
 x3dom.fields.SFMatrix4f.prototype.e3 = function () {
     return new x3dom.fields.SFVec3f(this._03, this._13, this._23);
 };
 
-/** Returns a copy of the argument matrix */
+/**
+ * Returns a copy of the argument matrix.
+ * @param {x3dom.fields.SFMatrix4f} m - the matrix to copy
+ * @returns {x3dom.fields.SFMatrix4f} the copy
+ */
 x3dom.fields.SFMatrix4f.copy = function(that) {
     return new x3dom.fields.SFMatrix4f(
         that._00, that._01, that._02, that._03,
@@ -117,7 +154,10 @@ x3dom.fields.SFMatrix4f.copy = function(that) {
     );
 };
 
-/** Returns a SFMatrix4f identity matrix. */
+/**
+ * Returns a SFMatrix4f identity matrix.
+ * @returns {x3dom.fields.SFMatrix4f} the new identity matrix
+ */
 x3dom.fields.SFMatrix4f.identity = function () {
     return new x3dom.fields.SFMatrix4f(
         1, 0, 0, 0,
@@ -127,7 +167,10 @@ x3dom.fields.SFMatrix4f.identity = function () {
     );
 };
 
-/** Returns a new null matrix */
+/**
+ * Returns a new null matrix.
+ * @returns {x3dom.fields.SFMatrix4f} the new null matrix
+ */
 x3dom.fields.SFMatrix4f.zeroMatrix = function () {
     return new x3dom.fields.SFMatrix4f(
         0, 0, 0, 0,
@@ -137,6 +180,11 @@ x3dom.fields.SFMatrix4f.zeroMatrix = function () {
     );
 };
 
+/**
+ * Returns a new translation matrix.
+ * @param {x3dom.fields.SFVec3f} vec - vector that describes the desired translation
+ * @returns {x3dom.fields.SFMatrix4f} the new identity matrix
+ */
 x3dom.fields.SFMatrix4f.translation = function (vec) {
     return new x3dom.fields.SFMatrix4f(
         1, 0, 0, vec.x,
@@ -146,6 +194,11 @@ x3dom.fields.SFMatrix4f.translation = function (vec) {
     );
 };
 
+/**
+ * Returns a new rotation matrix , rotating around the x axis.
+ * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
+ */
 x3dom.fields.SFMatrix4f.rotationX = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
@@ -157,6 +210,11 @@ x3dom.fields.SFMatrix4f.rotationX = function (a) {
     );
 };
 
+/**
+ * Returns a new rotation matrix , rotating around the y axis.
+ * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
+ */
 x3dom.fields.SFMatrix4f.rotationY = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
@@ -168,6 +226,11 @@ x3dom.fields.SFMatrix4f.rotationY = function (a) {
     );
 };
 
+/**
+ * Returns a new rotation matrix , rotating around the z axis.
+ * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
+ */
 x3dom.fields.SFMatrix4f.rotationZ = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
@@ -179,6 +242,11 @@ x3dom.fields.SFMatrix4f.rotationZ = function (a) {
     );
 };
 
+/**
+ * Returns a new scale matrix.
+ * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors along the three main axes
+ * @returns {x3dom.fields.SFMatrix4f} the new scale matrix
+ */
 x3dom.fields.SFMatrix4f.scale = function (vec) {
     return new x3dom.fields.SFMatrix4f(
         vec.x, 0, 0, 0,
@@ -188,7 +256,13 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
     );
 };
 
-//! Calculates look-at/camera matrix
+/**
+ * Returns a new view matrix, using the given "look at" parameters.
+ * @param {x3dom.fields.SFVec3f} from - eye point
+ * @param {x3dom.fields.SFVec3f} from - focus ("look at") point
+ * @param {x3dom.fields.SFVec3f} from - up vector
+ * @returns {x3dom.fields.SFMatrix4f} the new view matrix
+ */
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
     var view = from.subtract(at).normalize();
@@ -218,7 +292,14 @@ x3dom.fields.SFMatrix4f.perspectiveFrustum = function(left, right, bottom, top, 
     );
 };
 
-//! Calculates perspective projection matrix
+/**
+ * Returns a new perspective projection matrix.
+ * @param {Number} fov    - field-of-view angle in radians
+ * @param {Number} aspect - aspect ratio (width / height)
+ * @param {Number} near   - near clipping distance
+ * @param {Number} far    - far clipping distance
+ * @returns {x3dom.fields.SFMatrix4f} the new projection matrix
+ */
 x3dom.fields.SFMatrix4f.perspective = function(fov, aspect, near, far)
 {
     var f = 1 / Math.tan(fov / 2);
@@ -231,7 +312,17 @@ x3dom.fields.SFMatrix4f.perspective = function(fov, aspect, near, far)
     );
 };
 
-//! Calculates orthogonal projection matrix
+/**
+ * Returns a new orthogonal projection matrix.
+ * @param {Number} left         - left border value of the view area
+ * @param {Number} right        - right border value of the view area
+ * @param {Number} bottom       - bottom border value of the view area
+ * @param {Number} top          - top border value of the view area
+ * @param {Number} near         - near clipping distance
+ * @param {Number} far          - far clipping distance
+ * @param {Number} [aspect=1.0] - desired aspect ratio (width / height) of the projected image
+ * @returns {x3dom.fields.SFMatrix4f} the new projection matrix
+ */
 x3dom.fields.SFMatrix4f.ortho = function(left, right, bottom, top, near, far, aspect)
 {
     var rl = (right - left) / 2;    // hs
@@ -262,18 +353,30 @@ x3dom.fields.SFMatrix4f.ortho = function(left, right, bottom, top, near, far, as
     );
 };
 
+/**
+ * Sets the translation components of a homogenous transform matrix.
+ * @param {x3dom.fields.SFVec3f} vec - the translation vector
+ */
 x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
     this._03 = vec.x;
     this._13 = vec.y;
     this._23 = vec.z;
 };
 
+/**
+ * Sets the scale components of a homogenous transform matrix.
+ * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors along the three main axes
+ */
 x3dom.fields.SFMatrix4f.prototype.setScale = function (vec) {
     this._00 = vec.x;
     this._11 = vec.y;
     this._22 = vec.z;
 };
 
+/**
+ * Sets the rotation components of a homogenous transform matrix.
+ * @param {x3dom.fields.Quaternion} quat - quaternion that describes the rotation
+ */
 x3dom.fields.SFMatrix4f.prototype.setRotate = function (quat) {
     var xx = quat.x * quat.x;
     var xy = quat.x * quat.y;
@@ -290,6 +393,11 @@ x3dom.fields.SFMatrix4f.prototype.setRotate = function (quat) {
     this._20 = 2 * (xz - wy); this._21 = 2 * (yz + wx); this._22 = 1 - 2 * (xx + yy);
 };
 
+/**
+ * Creates a new matrix from a column major string representation, with values separated by commas
+ * @param {String} str - string to parse
+ * @return {x3dom.fields.SFMatrix4f} the new matrix
+ */
 x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
@@ -313,6 +421,11 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     ).transpose();
 };
 
+/**
+ * Creates a new matrix from a X3D-conformant string representation of rotation (using euler angles)
+ * @param {String} str - string to parse
+ * @return {x3dom.fields.SFMatrix4f} the new rotation matrix
+ */
 x3dom.fields.SFMatrix4f.parse = function (str) {
     var needTranspose = false;
     var val = /matrix.*\((.+)\)/;
@@ -354,7 +467,11 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
     }
 };
 
-//! Performs matrix multiplication
+/**
+ * Returns the result of multiplying this matrix with the given one, using "post-multiplication" / "right multiply".
+ * @param {x3dom.fields.SFMatrix4f} m - matrix to multiply with this one
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4f(
         this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, 
@@ -376,6 +493,11 @@ x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
     );
 };
 
+/**
+ * Transforms a given 3D point, using this matrix as a homogenous transform matrix.
+ * @param {x3dom.fields.SFVec3f} vec - point to transform
+ * @return {x3dom.fields.SFVec3f} resulting point
+ */
 x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function (vec) {
     return new x3dom.fields.SFVec3f(
         this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03,
@@ -384,6 +506,11 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function (vec) {
     );
 };
 
+/**
+ * Transforms a given 3D vector, using this matrix as a homogenous transform matrix.
+ * @param {x3dom.fields.SFVec3f} vec - vector to transform
+ * @return {x3dom.fields.SFVec3f} resulting vector
+ */
 x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
     return new x3dom.fields.SFVec3f(
         this._00*vec.x + this._01*vec.y + this._02*vec.z,
@@ -392,6 +519,13 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
     );
 };
 
+/**
+ * Transforms a given 3D point, using this matrix as a transform matrix.
+ * The resulting point is normalized by a w component.
+ * @param {x3dom.fields.SFVec3f} vec - point to transform
+ * @return {x3dom.fields.SFVec3f} resulting point
+ */
+    //TODO: understand better what this does and update documentation (or remove function, if not useful)
 x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
     if (w) { w = 1.0 / w; }
@@ -402,6 +536,10 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     );
 };
 
+/**
+ * Returns a transposed version of this matrix.
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.transpose = function () {
     return new x3dom.fields.SFMatrix4f(
         this._00, this._10, this._20, this._30,
@@ -411,6 +549,10 @@ x3dom.fields.SFMatrix4f.prototype.transpose = function () {
     );
 };
 
+/**
+ * Returns a negated version of this matrix.
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.negate = function () {
     return new x3dom.fields.SFMatrix4f(
         -this._00, -this._01, -this._02, -this._03,
@@ -420,7 +562,11 @@ x3dom.fields.SFMatrix4f.prototype.negate = function () {
     );
 };
 
-// scales matrix with factor s
+/**
+ * Returns a scaled version of this matrix.
+ * @param {Number} s - scale factor
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.multiply = function (s) {
     return new x3dom.fields.SFMatrix4f(
         s*this._00, s*this._01, s*this._02, s*this._03,
@@ -430,6 +576,11 @@ x3dom.fields.SFMatrix4f.prototype.multiply = function (s) {
     );
 };
 
+/**
+ * Returns the result of adding the given matrix to this matrix.
+ * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.add = function (that) {
     return new x3dom.fields.SFMatrix4f(
         this._00+that._00, this._01+that._01, this._02+that._02, this._03+that._03,
@@ -439,6 +590,12 @@ x3dom.fields.SFMatrix4f.prototype.add = function (that) {
     );
 };
 
+/**
+ * Returns the result of adding the given matrix to this matrix, using an additional scale factor for the argument matrix.
+ * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @param {Number} s - the scale factor
+ * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.addScaled = function (that, s) {
     return new x3dom.fields.SFMatrix4f(
         this._00+s*that._00, this._01+s*that._01, this._02+s*that._02, this._03+s*that._03,
@@ -448,6 +605,10 @@ x3dom.fields.SFMatrix4f.prototype.addScaled = function (that, s) {
     );
 };
 
+/**
+ * Fills the values of this matrix with the values of the another one.
+ * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
     this._00 = that._00; this._01 = that._01; this._02 = that._02; this._03 = that._03;
     this._10 = that._10; this._11 = that._11; this._12 = that._12; this._13 = that._13;
@@ -455,6 +616,14 @@ x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
     this._30 = that._30; this._31 = that._31; this._32 = that._32; this._33 = that._33;
 };
 
+/**
+ * Fills the upper left 3x3 or 3x4 values of this matrix, using the given (three or four) column vectors.
+ * @param {x3dom.fields.SFVec3f} v1             - first column vector
+ * @param {x3dom.fields.SFVec3f} v2             - second column vector
+ * @param {x3dom.fields.SFVec3f} v3             - third column vector
+ * @param {x3dom.fields.SFVec3f} [v4=undefined] - fourth column vector
+ */
+    //TODO: rename
 x3dom.fields.SFMatrix4f.prototype.setValue = function (v1, v2, v3, v4) {
     this._00 = v1.x; this._01 = v2.x; this._02 = v3.x;
     this._10 = v1.y; this._11 = v2.y; this._12 = v3.y;
@@ -469,6 +638,10 @@ x3dom.fields.SFMatrix4f.prototype.setValue = function (v1, v2, v3, v4) {
     }
 };
 
+/**
+ * Fills the values of this matrix, using the given array.
+ * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.setFromArray = function (a) {
     this._00 = a[0]; this._01 = a[4]; this._02 = a[ 8]; this._03 = a[12];
     this._10 = a[1]; this._11 = a[5]; this._12 = a[ 9]; this._13 = a[13];
@@ -476,6 +649,10 @@ x3dom.fields.SFMatrix4f.prototype.setFromArray = function (a) {
     this._30 = a[3]; this._31 = a[7]; this._32 = a[11]; this._33 = a[15];
 };
 
+/**
+ * Returns a column major version of this matrix, packed into a single array.
+ * @returns {Number[]} resulting array of 16 values
+ */
 x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     return [
         this._00, this._10, this._20, this._30,
@@ -485,12 +662,21 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     ];
 };
 
+/**
+ * Returns the value of this matrix at a given position.
+ * @param {Number} i - row index (starting with 0)
+ * @param {Number} j - column index (starting with 0)
+ * @returns {Number} the value
+ */
 x3dom.fields.SFMatrix4f.prototype.at = function (i, j) {
 	var field = "_" + i + j;
 	return this[field];
 };
 
-/** Computes the square root of the matrix, assumes det > 0 */
+/**
+ * Computes the square root of the matrix, assuming that its determinant is greater than zero.
+ * @return {SFMatrix4f} a matrix containing the result
+ */
 x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
     var Y = x3dom.fields.SFMatrix4f.identity();
     var result = x3dom.fields.SFMatrix4f.copy(this);
@@ -517,7 +703,11 @@ x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
     return result;
 };
 
-/** Returns the largest absolute value of all entries in the matrix */
+/**
+ * Returns the largest absolute value of all entries in the matrix.
+ * @returns {Number} the largest absolute value
+ */
+    //TODO: understand, possibly rename
 x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     var t = 0, m = 0;
 
@@ -576,8 +766,10 @@ x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     return m;
 };
 
-/** Returns the 1-norm of the upper left 3x3 part of this matrix.
-    The 1-norm is also known as maximum absolute column sum norm.
+/**
+ * Returns the 1-norm of the upper left 3x3 part of this matrix.
+ * The 1-norm is also known as maximum absolute column sum norm.
+ * @returns {Number} the resulting number
  */
 x3dom.fields.SFMatrix4f.prototype.norm1_3x3 = function() {
     var max = Math.abs(this._00) + 
@@ -600,8 +792,10 @@ x3dom.fields.SFMatrix4f.prototype.norm1_3x3 = function() {
     return max;
 };
 
-/** Returns the infinity-norm of the upper left 3x3 part of this matrix.
-    The infinity-norm is also known as maximum absolute row sum norm.
+/**
+ * Returns the infinity-norm of the upper left 3x3 part of this matrix.
+ * The infinity-norm is also known as maximum absolute row sum norm.
+ * @returns {Number} the resulting number
  */
 x3dom.fields.SFMatrix4f.prototype.normInf_3x3 = function() {
     var max = Math.abs(this._00) + 
@@ -624,6 +818,11 @@ x3dom.fields.SFMatrix4f.prototype.normInf_3x3 = function() {
     return max;
 };
 
+/**
+ * Computes the transposed adjoint of the upper left 3x3 part of this matrix,
+ * and stores it in the upper left part of a new 4x4 identity matrix.
+ * @returns {x3dom.fields.SFMatrix4f} the resulting matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.adjointT_3x3 = function () {
 	var result = x3dom.fields.SFMatrix4f.identity();
 	
@@ -642,6 +841,11 @@ x3dom.fields.SFMatrix4f.prototype.adjointT_3x3 = function () {
 	return result;
 };
 
+/**
+ * Checks whether this matrix equals another matrix.
+ * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @returns {Boolean}
+ */
 x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
     var eps = 0.000000000001;
     return Math.abs(this._00-that._00) < eps && Math.abs(this._01-that._01) < eps && 
@@ -654,13 +858,19 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
            Math.abs(this._32-that._32) < eps && Math.abs(this._33-that._33) < eps;
 };
 
-/** Decomposes the matrix into a translation, rotation, scale,
- *  and scale orientation. Any projection information is discarded.
- *  The decomposition depends upon choice of center point for
- *  rotation and scaling, which is optional as the last parameter.
- *  (Note that quaternions need to be converted via .toAxisAngle()
- *  to an axis/angle pair for being used in the x3d dom tree.)
+/**
+ * Decomposes the matrix into a translation, rotation, scale,
+ * and scale orientation. Any projection information is discarded.
+ * The decomposition depends upon choice of center point for rotation and scaling,
+ * which is optional as the last parameter.
+ * @param {x3dom.fields.SFVec3f} translation         - 3D vector to be filled with the translation values
+ * @param {x3dom.fields.Quaternion} rotation         - quaternion to be filled with the rotation values
+ * @param {x3dom.fields.SFVec3f} scaleFactor         - 3D vector to be filled with the scale factors
+ * @param {x3dom.fields.Quaternion} scaleOrientation - rotation (quaternion) to be applied before scaling
+ * @param {x3dom.fields.Quaternion} scaleOrientation - rotation (quaternion) to be applied before scaling
+ * @param {x3dom.fields.SFVec3f} [center=undefined]  - center point for rotation and scaling, if not origin
  */
+//TODO: check if these are really the correct types...
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 				        translation, rotation, scaleFactor, scaleOrientation, center) 
 {
@@ -682,6 +892,8 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 	scaleFactor.setValues(scaleFactor.multiply(flip));
 };
 
+//helper function
+//TODO: make this an inner function of "getTransform?"
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
 {
 	var A = x3dom.fields.SFMatrix4f.copy(this);
@@ -719,6 +931,13 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
 	return f;
 };
 
+/**
+ * Performs a polar decomposition of this matrix A into two matrices Q and S, so that A = QS
+ * @param {x3dom.fields.SFMatrix4f} Q - first resulting matrix
+ * @param {x3dom.fields.SFMatrix4f} S - first resulting matrix
+ * @returns {Number} determinant of the transposed adjoint upper 3x3 matrix
+ */
+    //TODO: revise (parameter namings etc.), document
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
     var TOL = 0.000000000001;
@@ -742,8 +961,8 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
         Mk_det = Mk._00 * MkAdjT._00 + 
                  Mk._01 * MkAdjT._01 +
                  Mk._02 * MkAdjT._02;
-        
-        // should this be a close to zero test ?
+
+        //TODO: should this be a close to zero test ?
         if (Mk_det == 0.0)
         {
             x3dom.debug.logWarning("polarDecompose: Mk_det == 0.0");
@@ -787,6 +1006,12 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
     return Mk_det;
 };
 
+/**
+ * Performs a spectral decomposition of this matrix.
+ * @param {x3dom.fields.SFMatrix4f} SO - resulting matrix
+ * @param {x3dom.fields.SFVec3f} k - resulting vector
+ */
+    //TODO: revise (parameter namings etc.), document
 x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
 {
     var next = [1, 2, 0];
@@ -860,7 +1085,10 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
     k.z = diag[2];
 };
 
-/** Computes the logarithm of this matrix, assumes det > 0 */
+/**
+ * Computes the logarithm of this matrix, assuming that its determinant is greater than zero.
+ * @returns {Number}
+ */
 x3dom.fields.SFMatrix4f.prototype.log = function () {
     var maxiter = 12;
     var eps = 1e-12;
@@ -911,7 +1139,10 @@ x3dom.fields.SFMatrix4f.prototype.log = function () {
     return result.multiply( -(1 << k) );
 };
 
-/** Computes the exponential of this matrix */
+/**
+ * Computes the exponential of this matrix.
+ * @returns {Number}
+ */
 x3dom.fields.SFMatrix4f.prototype.exp = function () {
     var q = 6;
     var A = x3dom.fields.SFMatrix4f.copy(this), 
@@ -955,13 +1186,29 @@ x3dom.fields.SFMatrix4f.prototype.exp = function () {
     return result;
 };
 
-//! helper to calculate a 3x3 determinant
+/**
+ * Computes a determinant for a 3x3 matrix m, given as values in row major order.
+ * @param {Number} a1 - value of m at (0,0)
+ * @param {Number} a2 - value of m at (0,1)
+ * @param {Number} a3 - value of m at (0,2)
+ * @param {Number} b1 - value of m at (1,0)
+ * @param {Number} b2 - value of m at (1,1)
+ * @param {Number} b3 - value of m at (1,2)
+ * @param {Number} c1 - value of m at (2,0)
+ * @param {Number} c2 - value of m at (2,1)
+ * @param {Number} c3 - value of m at (2,2)
+ * @returns {Number}
+ */
+//TODO: move this helper function into "det"?
 x3dom.fields.SFMatrix4f.prototype.det3 = function (a1, a2, a3, b1, b2, b3, c1, c2, c3) {
     return ((a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
             (a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1));
 };
 
-//! Returns the determinant of the whole 4x4 matrix
+/**
+ * Computes the determinant of this matrix.
+ * @returns {Number}
+ */
 x3dom.fields.SFMatrix4f.prototype.det = function () {
     var a1 = this._00;
     var b1 = this._10;
@@ -989,7 +1236,10 @@ x3dom.fields.SFMatrix4f.prototype.det = function () {
             d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
 };
 
-/** Method to invert the matrix, given that matrix is not singular */
+/**
+ * Computes the inverse of this matrix, given that it is not singular.
+ * @returns {x3dom.fields.SFMatrix4f}
+ */
 x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     var a1 = this._00;
     var b1 = this._10;
@@ -1043,7 +1293,10 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 };
 
 /**
- * Returns an array of euler angles (in radians) - this must be a rotation matrix!
+ * Returns an array of 2*3 = 6 euler angles (in radians), assuming that this is a rotation matrix.
+ * The first three and the second three values are alternatives for the three euler angles,
+ * where each of the two cases leads to the same resulting rotation.
+ * @returns {Number[]}
  */
 x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
     var theta_1, theta_2, theta;
@@ -1084,6 +1337,11 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
     }
 };
 
+/**
+ * Converts this matrix to a string representation, where all entries are separated by commas,
+ * and where rows are additionally separated by linebreaks.
+ * @returns {String}
+ */
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
     return '\n' +
 		this._00.toFixed(6)+', '+this._01.toFixed(6)+', '+
@@ -1096,6 +1354,13 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
 		this._32.toFixed(6)+', '+this._33.toFixed(6);
 };
 
+/**
+ * Fills the values of this matrix from a string, where the entries are separated
+ * by commas and given in column-major order.
+ * @param {String} str - the string representation
+ */
+    //TODO: where does this "matrix" prefix (or whatever= come from?
+    //      it seems to have an influence whether the result should be transposed
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
     var needTranspose = false;
     var val = /matrix.*\((.+)\)/;
@@ -1146,6 +1411,7 @@ x3dom.fields.SFVec2f = function(x, y) {
         this.y = y;
     }
 };
+
 
 x3dom.fields.SFVec2f.copy = function(v) {
     return new x3dom.fields.SFVec2f(v.x, v.y);
