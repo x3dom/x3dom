@@ -1,5 +1,6 @@
 import sys
 import re
+import os
 
 
 class PropertyAnnotation:
@@ -169,33 +170,67 @@ def annotateNode(str):
     return "".join(na.result)
     
     
+	
+def commentFolder(src, target):
+	#read packages.json
+	f = open(src+'../tools/packages.json', 'r')
+	import json
+	json_object = json.load(f)
+	for group in json_object["grouplist"]:
+		for entry in group["data"]:
+			if "path" in entry:
+				file = entry["path"]
+				commentFile(src+file, target+file)
+			elif "files" in entry:
+				prefix = entry["filePrefix"] if "filePrefix" in entry else ""
+				for fileEntry in entry["files"]:
+					commentFile(src+prefix+fileEntry["file"], target+prefix+fileEntry["file"]);
+			else:
+				print "entry without path or files"
+				
+def commentFile(src, target):
+	# read JS file
+	print "Reading JS file \"" + src + "\" ...\n",
+
+	try:
+		f = open(src, 'r')
+		jsStr = f.read()    
+		f.close()
+					
+	except:
+		print "Error while reading JS file."
+		raise
+		
+	result = "/** @namespace x3dom.nodeTypes */\n";
+		
+	nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
+
+	for n in nodeTypesArray:
+		result += (annotateNode(n) if n[0] == '(' else n)        
+
+	folder = target[0: target.rfind("/")]
+	if not os.path.exists(folder):
+		os.makedirs(folder)
+	f = open(target, 'w')
+	f.write(result)    
+	f.close() 
+
+	print "Success."
+
+	
 ## main script
-if len(sys.argv) <= 2:
-    print "Usage: python " + sys.argv[0] + " <ORIGINAL_FILE> <ANNOTATED_FILE> [--x]"
-    print "       --x: generate .xdf files"
-    quit()
-    
-# read JS file
-print "Reading JS file \"" + sys.argv[1] + "\" ...",
 
-try:
-    f = open(sys.argv[1], 'r')
-    jsStr = f.read()    
-    f.close()
-                
-except:
-    print "Error while reading JS file."
-    raise
-    
-result = "/** @namespace x3dom.nodeTypes */\n";
-    
-nodeTypesArray = re.split('x3dom\.registerNodeType', jsStr)
+#parse args
+if len(sys.argv) == 2 and sys.argv[1] == "--a":
+	print "commenting default folder"
+	commentFolder("../../src/", "x3dom_commented/")
+elif len(sys.argv) == 3:
+	commentFile(sys.argv[1], sys.argv[2])
+elif len(sys.argv) == 4 and sys.argv[3] == "--a":
+	commentFolder(sys.argv[1], sys.argv[2])
+else:
+	print "Usage: python " + sys.argv[0] + " <ORIGINAL_FILE> <ANNOTATED_FILE> [--x][--a]"
+	#print "       --x: generate .xdf files"
+	#print "       --a: comment whole folder"
+	quit()
 
-for n in nodeTypesArray:
-    result += (annotateNode(n) if n[0] == '(' else n)        
-
-f = open(sys.argv[2], 'w')
-f.write(result)    
-f.close() 
-
-print "Success."

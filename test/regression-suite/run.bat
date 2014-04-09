@@ -7,6 +7,6 @@ START "seleniumfirefox" java -DSTOP.PORT=8079 -DSTOP.KEY=secret -jar selenium-se
 START "nodeserv" node.exe src/server.js
 set "PATH=%PATH%;%CD%/node_modules/resemble/bin"
 TIMEOUT 2 > nul
-node src/x3dom-regression.js -p
+node src/x3dom-regression.js
 taskkill /fi "WINDOWTITLE eq nodeserv"
 taskkill /fi "WINDOWTITLE eq seleniumfirefox"
