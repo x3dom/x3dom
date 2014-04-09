@@ -6,53 +6,51 @@ var fallback_path = "http://www.x3dom.org/x3dom/";
 var maxDepth = 6;
 send_xhr("../");
 
-function send_xhr(path){
+function send_xhr(basePath){
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', path + packages, false);
+    xhr.open('GET', basePath + packages, false);
 
     xhr.onreadystatechange = function(){
         if (xhr.readyState == 4) {
             if (xhr.responseText && (xhr.status == 200 || xhr.status == 0)) {
-                console.log("found x3dom script base path on: " + path);
-                setCSS(path);
+                console.log("found x3dom script base path on: " + basePath);
+                setCSS(basePath);
 
-                var group, p;
+                var groupId, entryId, fileId;
                 var data = JSON.parse(xhr.responseText);
                 if (!data) {
                     console.error("cannot read " + packages);
                     return;
                 }
 
-                for(group in data.grouplist){
+                for(groupId in data.grouplist){
                     //skip COMPONENTS section
-                    if(data.grouplist[group].group == "COMPONENTS")
+                    if(data.grouplist[groupId].group == "EXTENSIONS")
                         continue;
-                    for(p in data.grouplist[group].data){
-                    	relativePath = data.grouplist[group].data[p].path
-                    	//Single file?
-                    	if(data.grouplist[group].data[p].type == "file")
-                    	{
-                    		document.write("<script src=\"" + path + "src/" + relativePath + "\"></script>");
-                    	}
-                    	//Folder?
-                    	else
-                    	{
-                    		 for(f in data.grouplist[group].data[p].files)
-                    		 {
-                    			 filePath = data.grouplist[group].data[p].files[f].path
-                         		 document.write("<script src=\"" + path + "src/" + filePath + "\"></script>");
-                    		 }
-
-                    	}
+                    for(entryId in data.grouplist[groupId].data){
+                    	var entry = data.grouplist[groupId].data[entryId];
+                        if(entry.path)
+                        {
+                            document.write("<script src=\"" + basePath + "src/" + entry.path + "\"></script>");
+                        }
+                        else if(entry.files && entry.files.length > 0)
+                        {
+                            var filePrefix = (entry.filePrefix)?entry.filePrefix:"";
+                            for(fileId in entry.files)
+                            {
+                                var fileEntry = entry.files[fileId];
+                                document.write("<script src=\"" + basePath + "src/" + filePrefix + fileEntry.file + "\"></script>");
+                            }
+                        }
                     }
                 }
 
                 //this is only for tests
-                document.write("<script src=\""+ path + "test/functional/media/js/tests.js\"></script>");
+                document.write("<script src=\""+ basePath + "test/functional/media/js/tests.js\"></script>");
             } else {
                 //console.error('xhr status is not 200 on: ' + path);
 				if (maxDepth-- > 0) {
-					send_xhr(path + "../");
+					send_xhr(basePath + "../");
 				}
 				else {
                     console.warn('FALLBACK to x3dom.org base path');

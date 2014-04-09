@@ -1,0 +1,130 @@
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
+
+/* ### OpacityMapVolumeStyle ### */
+x3dom.registerNodeType(
+    "OpacityMapVolumeStyle",
+    "VolumeRendering",
+    defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        function (ctx) {
+            x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call(this, ctx);
+
+            this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
+            this.addField_SFString(ctx, 'type', "simple");
+            this.addField_SFFloat(ctx, 'opacityFactor', 6.0);
+            this.addField_SFFloat(ctx, 'lightFactor', 1.2);
+
+            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableOpacityMap = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'opacityFactor':
+                        this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
+                        this.uniformFloatOpacityFactor.fieldChanged("value");
+                        break;
+                    case 'lightFactor':
+                        this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
+                        this.uniformFloatLightFactor.fieldChanged("value");
+                        break;
+                }
+            },
+
+            uniforms: function() {
+                var unis = [];
+
+                if (this._cf.transferFunction.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][OpacityMapVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
+                    }
+                    this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
+                    this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
+                    this.uniformSampler2DTransferFunction._vf.value = volumeDataParent._textureID++;
+                    unis.push(this.uniformSampler2DTransferFunction);
+                }
+
+                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor';
+                this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
+                this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
+                unis.push(this.uniformFloatOpacityFactor);
+
+                this.uniformFloatLightFactor._vf.name = 'uLightFactor';
+                this.uniformFloatLightFactor._vf.type = 'SFFloat';
+                this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
+                unis.push(this.uniformFloatLightFactor);
+
+                this.uniformBoolEnableOpacityMap._vf.name = 'uEnableOpacityMap';
+                this.uniformBoolEnableOpacityMap._vf.type = 'SFBool';
+                this.uniformBoolEnableOpacityMap._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableOpacityMap);
+
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                var tex = this._cf.transferFunction.node;
+                if (tex) {
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex);
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function() {
+                var uniformsText = "uniform float uOpacityFactor;\n"+
+                    "uniform float uLightFactor;\n"+
+                    "uniform bool uEnableOpacityMap;\n";
+                if (this._cf.transferFunction.node) {
+                    uniformsText += "uniform sampler2D uTransferFunction;\n";
+                }
+                return uniformsText;
+            },
+
+            inlineStyleShaderText: function(){
+                var shaderText = "    if(uEnableOpacityMap){\n"+
+                    "       opacityFactor = uOpacityFactor;\n"+
+                    "       lightFactor = uLightFactor;\n";
+                if (this._cf.transferFunction.node){
+                    shaderText += "     value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
+                }
+                shaderText += "    }\n";
+                return shaderText;
+            },
+
+            lightAssigment: function(){
+                var inlineText = "  if(uEnableOpacityMap){\n"+
+                    "         value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"+
+                    "   }\n";
+                return inlineText;
+            },
+
+            fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
+                var shader =
+                    this.preamble+
+                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                    this.styleUniformsShaderText()+
+                    this.texture3DFunctionShaderText+
+                    this.normalFunctionShaderText()+
+                    this.lightEquationShaderText()+
+                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
+        }
+    )
+);
