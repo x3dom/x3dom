@@ -205,9 +205,6 @@
                     {"file": "PixelTexture.js"},
                     {"file": "ImageTexture.js"},
                     {"file": "MovieTexture.js"},
-                    {"file": "X3DEnvironmentTextureNode.js"},
-                    {"file": "ComposedCubeMapTexture.js"},
-                    {"file": "GeneratedCubeMapTexture.js"},
                     {"file": "X3DTextureCoordinateNode.js"},
                     {"file": "TextureCoordinate.js"},
                     {"file": "TextureCoordinateGenerator.js"},
@@ -215,6 +212,11 @@
                     {"file": "MirrorRenderedTexture.js"},
                     {"file": "MirrorTexture.js"},
                     {"file": "ImageTextureAtlas.js"}
+                ]},
+                {"name": "CubeMapTexturing", "filePrefix": "nodes/CubeMapTexturing/", "files":[
+                    {"file": "X3DEnvironmentTextureNode.js"},
+                    {"file": "ComposedCubeMapTexture.js"},
+                    {"file": "GeneratedCubeMapTexture.js"}
                 ]},
                 {"name": "Shaders", "filePrefix": "nodes/Shaders/", "files":[
                     {"file": "Uniform.js"},

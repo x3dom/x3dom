@@ -71,18 +71,16 @@ var ResultsPublisher = function()
                 db = that.db[profile.name];
             }
 
-            var statistics =
-            {
-                "count" : db.data[0].results.length,
-                "failed" : 0,
-                "passed" : 0
-            };
-            var contents = [];
-
             for (var i = 0; i < db.data.length; i++)
             {
-                var id = db.data[i].time;
-                that.createProfilePage(profile, statistics, contents, that.outputPath, profileDbPath, id);
+                var statistics =
+                {
+                    "count" : db.data[0].results.length,
+                    "failed" : 0,
+                    "passed" : 0
+                };
+                var contents = [];
+                that.createProfilePage(profile, statistics, contents, that.outputPath, profileDbPath, i);
             }
             that.createTimelinePage(profile, function(){
                 that.publishResults(config, callback, index+1);
@@ -91,12 +89,14 @@ var ResultsPublisher = function()
     }
 
 
-    this.createProfilePage = function(profile, statistics, contents, outputPath, profileDbPath, id)
+    this.createProfilePage = function(profile, statistics, contents, outputPath, profileDbPath, i)
     {
+        console.log(i);
         var pathPrefix = "../"
         var db = that.db[profile.name];
+        var id = db.data[i].time;
         var imagePath = profileDbPath + "/" + id + "/";
-        db.data[0].results.forEach(function(result){
+        db.data[i].results.forEach(function(result){
             that.evaluateTestResult(result, statistics, contents, imagePath, pathPrefix);
         });
 
@@ -110,8 +110,11 @@ var ResultsPublisher = function()
         var pageEnd = "<br/><br/><br/><br/>"+"</body>";
 
         var details = contents.join("");
-        profile.statistics = statistics;
-        that.overviewData.profiles.push(profile);
+        if(i == 0)
+        {
+            profile.statistics = statistics;
+            that.overviewData.profiles.push(profile);
+        }
 
         fw.writeFile(outputPath +"/" + profile.name + "_" + id + ".html", pageStart + details + pageEnd);
     }
@@ -127,12 +130,11 @@ var ResultsPublisher = function()
         for(var d in result.details)
         {
             var detail = result.details[d];
-            console.log(detail.data.type);
             var image = result.testName + "_" + detail.data.screenshotId + ".png";
             var imagePrefix = pathPrefix + imagePath;
             var difftag = "<a target='_blank' href='" + imagePrefix + "diff/" + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + "diff/" + image + "'/></a>";
             var imagetag = "<a target='_blank' href='" + imagePrefix + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + image + "'/></a>";
-            var reftag = "<a target='_blank' href='" + imagePrefix + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + globals.referencePath + image + "'/></a>";
+            var reftag = "<a target='_blank' href='" + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + globals.referencePath + image + "'/></a>";
             if(detail.status == 'success')
             {
                 statistics.passed++;
@@ -201,7 +203,6 @@ var ResultsPublisher = function()
         for(var i in that.overviewData.profiles)
         {
             var profile = that.overviewData.profiles[i];
-            console.log(that.db);
             var profilePage = profile.name + "_" + that.db[profile.name].data[0].time + ".html";
             var success = profile.statistics.failed <= 0;
             var anyNewFail = false;
