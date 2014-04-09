@@ -9,10 +9,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-
-/**
- * @namespace Cache namespace
- */
 x3dom.Cache = function () {
     this.textures = [];
     this.shaders = [];

@@ -24,7 +24,8 @@
 
 // Global runtime
 /**
- * @namespace Namespace container for Runtime module
+ * Namespace container for Runtime module
+ * @namespace x3dom.runtime
  */
 x3dom.runtime = {};
 

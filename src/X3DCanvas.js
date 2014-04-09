@@ -33,7 +33,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     /**
      * The X3D Element
-     * @member {X3DELement} x3dElem
+     * @member {X3DElement} x3dElem
      */
     this.x3dElem = x3dElem;
 
@@ -725,7 +725,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 /**
  * Creates the WebGL context and returns it
  * @returns {WebGLContext} gl
- * @param {HTML canvas} canvas
+ * @param {HTMLCanvas} canvas
  * @param {Boolean} forbidMobileShaders - no mobile shaders allowed
  * @param {Boolean} forceMobileShaders - force mobile shaders
  * @param {Boolean} forceFlashForIE - force flash backend for internet explorer

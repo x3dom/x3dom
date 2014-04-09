@@ -90,7 +90,7 @@ x3dom.bridge = {
 
 x3dom.gfx_flash = (function () {
 
-    /**
+    /** Context
      *
      */
     function Context(object, name, renderType) {
@@ -100,7 +100,7 @@ x3dom.gfx_flash = (function () {
         this.renderType = renderType;
     }
 
-    /**
+    /** setup context
      *
      */
     function setupContext(object, renderType) {
@@ -112,14 +112,14 @@ x3dom.gfx_flash = (function () {
         return new Context(object, 'flash', renderType);
     }
 
-    /**
+    /** get context name
      *
      */
     Context.prototype.getName = function () {
         return this.name;
     };
 
-    /**
+    /** render scene
      *
      */
     Context.prototype.renderScene = function (viewarea) {
@@ -209,7 +209,7 @@ x3dom.gfx_flash = (function () {
         this.object.renderScene();
     };
 
-    /**
+    /** setup scene
      *
      */
     Context.prototype.setupScene = function (scene, viewarea) {
@@ -341,7 +341,7 @@ x3dom.gfx_flash = (function () {
         }
     };
 
-    /**
+    /** setup Background
      *
      */
     Context.prototype.setupBackground = function (background) {
@@ -357,7 +357,7 @@ x3dom.gfx_flash = (function () {
         }
     };
 
-    /**
+    /** setup Shape
      *
      */
     Context.prototype.setupShape = function (shape, trafo, refID) {
@@ -745,7 +745,7 @@ x3dom.gfx_flash = (function () {
     };
 
 
-    /**
+    /** pick Value
      *
      */
     Context.prototype.pickValue = function (viewarea, x, y, viewMat, sceneMat) {
@@ -772,7 +772,7 @@ x3dom.gfx_flash = (function () {
         return true;
     };
 
-    /**
+    /** shutdown
      *
      */
     Context.prototype.shutdown = function (viewarea) {

@@ -44,7 +44,9 @@ if (typeof x3dom === "undefined")
 }
 
 
-/** @namespace The x3dom.fields namespace. */
+/**
+ * The x3dom.fields namespace.
+ * @namespace x3dom.fields */
 x3dom.fields = {};
 
 /// shortcut for convenience
