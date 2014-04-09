@@ -85,6 +85,7 @@ from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
 
 PROJECT_ROOT = os.path.dirname(__file__)
 SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')
+LIB_ROOT = os.path.join(PROJECT_ROOT, 'lib')
 DIST_ROOT = os.path.join(PROJECT_ROOT, 'dist')
 DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc')
 GUIDE_ROOT = os.path.join(DOC_ROOT, 'guide')
@@ -149,9 +150,9 @@ def build(mode='production'):
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/dash.all.js', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/ammo.js', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/dash.all.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/ammo.js', DIST_ROOT)
+    #shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
     # end other files
 
 def _build_examples():
