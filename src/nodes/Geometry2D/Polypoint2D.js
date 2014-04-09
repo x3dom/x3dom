@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -14,9 +15,28 @@ x3dom.registerNodeType(
     "Polypoint2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Polypoint2D
+         * @constructs x3dom.nodeTypes.Polypoint2D
+         * @x3d x.x
+         * @component Geometry2D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Polypoint2D.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFVec2f} point
+             * @memberof x3dom.nodeTypes.Polypoint2D
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'point', []);
 
             this._mesh._primType = 'POINTS';
@@ -47,6 +67,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

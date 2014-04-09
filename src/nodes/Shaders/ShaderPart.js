@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,38 @@ x3dom.registerNodeType(
     "ShaderPart",
     "Shaders",
     defineClass(x3dom.nodeTypes.X3DNode,
+        
+        /**
+         * Constructor for ShaderPart
+         * @constructs x3dom.nodeTypes.ShaderPart
+         * @x3d x.x
+         * @component Shaders
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ShaderPart.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.ShaderPart
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', []);
+
+            /**
+             *
+             * @var {SFString} type
+             * @memberof x3dom.nodeTypes.ShaderPart
+             * @initvalue "VERTEX"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'type', "VERTEX");
 
             this._id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ?
@@ -22,6 +51,7 @@ x3dom.registerNodeType(
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                 this._vf.type.toLowerCase() == 'fragment');
+        
         },
         {
             nodeChanged: function()

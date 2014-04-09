@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,11 +13,22 @@ x3dom.registerNodeType(
     "Param",
     "Core",
     defineClass(x3dom.nodeTypes.X3DNode,
+        
+        /**
+         * Constructor for Param
+         * @constructs x3dom.nodeTypes.Param
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Param.superClass.call(this, ctx);
 
             x3dom.debug.logWarning('DEPRECATED: Param element needs to be child of X3D element '
                 + '[<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
+        
         }
     )
 );

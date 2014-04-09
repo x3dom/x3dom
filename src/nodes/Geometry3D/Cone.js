@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,15 +12,88 @@ x3dom.registerNodeType(
     "Cone",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Cone
+         * @constructs x3dom.nodeTypes.Cone
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} bottomRadius
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'bottomRadius', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} topRadius
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'topRadius', 0);
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue 2.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 2.0);
+
+            /**
+             *
+             * @var {SFBool} bottom
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bottom', true);
+
+            /**
+             *
+             * @var {SFBool} side
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'side', true);
+
+            /**
+             *
+             * @var {SFBool} top
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'top', true);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Cone
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var geoCacheID = 'Cone_' + this._vf.bottomRadius + '_' + this._vf.height + '_' + this._vf.top + '_' +
@@ -131,6 +205,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName)

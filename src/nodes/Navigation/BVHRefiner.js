@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,31 +13,230 @@ x3dom.registerNodeType(
     "BVHRefiner",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DLODNode,
+        
+        /**
+         * Constructor for BVHRefiner
+         * @constructs x3dom.nodeTypes.BVHRefiner
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DLODNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.BVHRefiner.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} factor
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'factor', 1.0);
+
+            /**
+             *
+             * @var {SFInt32} maxDepth
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 3
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'maxDepth', 3);
+
+            /**
+             *
+             * @var {SFInt32} minDepth
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'minDepth', 0);
+
+            /**
+             *
+             * @var {SFInt32} smoothLoading
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'smoothLoading', 1);
+
+            /**
+             *
+             * @var {SFInt32} interactionDepth
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue this._vf.maxDepth
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'interactionDepth', this._vf.maxDepth);
+
+            /**
+             *
+             * @var {SFVec2f} size
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'size', 1, 1);
             // TODO: delete if octree will be deleted
+
+            /**
+             *
+             * @var {SFVec3f} octSize
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'octSize', 1, 1, 1);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+
+            /**
+             *
+             * @var {SFString} url
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'url', "");
+
+            /**
+             *
+             * @var {SFString} elevationUrl
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'elevationUrl', "");
+
+            /**
+             *
+             * @var {SFString} textureUrl
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'textureUrl', "");
+
+            /**
+             *
+             * @var {SFString} normalUrl
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normalUrl', "");
+
+            /**
+             *
+             * @var {SFString} mode
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "3d"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'mode', "3d");
+
+            /**
+             *
+             * @var {SFString} subMode
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "wmts"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'subMode', "wmts");
+
+            /**
+             *
+             * @var {SFString} elevationFormat
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'elevationFormat', "png");
+
+            /**
+             *
+             * @var {SFString} textureFormat
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'textureFormat', "png");
+
+            /**
+             *
+             * @var {SFString} normalFormat
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue "png"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normalFormat', "png");
+
+            /**
+             *
+             * @var {SFFloat} maxElevation
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
+
+            /**
+             *
+             * @var {SFBool} useNormals
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'useNormals', true);
+
+            /**
+             *
+             * @var {SFBool} lit
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'lit', true);
             // count of elements on next level
+
+            /**
+             *
+             * @var {SFInt32} bvhCount
+             * @memberof x3dom.nodeTypes.BVHRefiner
+             * @initvalue 8
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'bvhCount', 8);
 
             this.creationSmooth = 0;
@@ -98,6 +298,7 @@ x3dom.registerNodeType(
                 x3dom.debug.logError("Error attribute mode. Value: '" + this._vf.mode +
                     "' isn't conform. Please use type 'bin', '2d' or '3d'");
             }
+        
         },
         {
             visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask) {

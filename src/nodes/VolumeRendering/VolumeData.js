@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,9 +12,28 @@ x3dom.registerNodeType(
     "VolumeData",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeDataNode,
+        
+        /**
+         * Constructor for VolumeData
+         * @constructs x3dom.nodeTypes.VolumeData
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DVolumeDataNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.VolumeData.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} renderStyle
+             * @memberof x3dom.nodeTypes.VolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('renderStyle', x3dom.nodeTypes.X3DVolumeRenderStyleNode);
 
             this.vrcMultiTexture = new x3dom.nodeTypes.MultiTexture(ctx);
@@ -33,6 +53,7 @@ x3dom.registerNodeType(
             this.vrcFrontCubeShaderFieldBackCoord = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldVolData = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldOffset = new x3dom.nodeTypes.Field(ctx);
+        
         },
         {
             // nodeChanged is called after subtree is parsed and attached in DOM

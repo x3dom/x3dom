@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,34 @@ x3dom.registerNodeType(
     "MatrixTransform",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DTransformNode,
+        
+        /**
+         * Constructor for MatrixTransform
+         * @constructs x3dom.nodeTypes.MatrixTransform
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DTransformNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.MatrixTransform.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFMatrix4f} matrix
+             * @memberof x3dom.nodeTypes.MatrixTransform
+             * @initvalue 1,0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1);
             this._trafo = this._vf.matrix.transpose();
+        
         },
         {
             fieldChanged: function (fieldName) {

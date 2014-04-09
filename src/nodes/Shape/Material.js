@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,8 +12,19 @@ x3dom.registerNodeType(
     "Material",
     "Shape",
     defineClass(x3dom.nodeTypes.X3DMaterialNode,
+        
+        /**
+         * Constructor for Material
+         * @constructs x3dom.nodeTypes.Material
+         * @x3d x.x
+         * @component Shape
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DMaterialNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Material.superClass.call(this, ctx);
+        
         },
         {
             fieldChanged: function(fieldName) {

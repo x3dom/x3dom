@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,58 @@ x3dom.registerNodeType(
     "X3DBinaryContainerGeometryNode",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for X3DBinaryContainerGeometryNode
+         * @constructs x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec3f} position
+             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFVec3f} size
+             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+             * @initvalue 1,1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
+
+            /**
+             *
+             * @var {MFInt32} vertexCount
+             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+             * @initvalue [0]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'vertexCount', [0]);
+
+            /**
+             *
+             * @var {MFString} primType
+             * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+             * @initvalue ['TRIANGLES']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 
             // correct min/max of bounding volume set in BinaryContainerGeometry
@@ -25,6 +72,7 @@ x3dom.registerNodeType(
             this._mesh._numFaces = 0;
 
             this._diameter = this._vf.size.length();
+        
         },
         {
             getMin: function() {

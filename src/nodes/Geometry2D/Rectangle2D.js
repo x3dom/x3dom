@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -14,10 +15,38 @@ x3dom.registerNodeType(
     "Rectangle2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Rectangle2D
+         * @constructs x3dom.nodeTypes.Rectangle2D
+         * @x3d x.x
+         * @component Geometry2D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Rectangle2D.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec2f} size
+             * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 2,2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'size', 2, 2);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
@@ -62,6 +91,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

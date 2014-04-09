@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,50 @@ x3dom.registerNodeType(
     "SegmentedVolumeData",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeDataNode,
+        
+        /**
+         * Constructor for SegmentedVolumeData
+         * @constructs x3dom.nodeTypes.SegmentedVolumeData
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DVolumeDataNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.SegmentedVolumeData.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFNode} renderStyle
+             * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
             //this.addField_MFBool(ctx, 'segmentEnabled', []);  // MFBool NYI!!!
             //this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
+
+            /**
+             *
+             * @var {SFNode} segmentIdentifiers
+             * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue x3dom.nodeTypes.Texture
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.Texture);
+
+            /**
+             *
+             * @var {SFFloat} numberOfMaxSegments
+             * @memberof x3dom.nodeTypes.SegmentedVolumeData
+             * @initvalue 10.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'numberOfMaxSegments', 10.0);
 
             this.uniformSampler2DSegmentIdentifiers = new x3dom.nodeTypes.Uniform(ctx);
@@ -40,6 +78,7 @@ x3dom.registerNodeType(
             this.vrcFrontCubeShaderFieldBackCoord = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldVolData = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldOffset = new x3dom.nodeTypes.Field(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

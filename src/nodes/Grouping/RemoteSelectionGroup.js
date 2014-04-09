@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,15 +12,88 @@ x3dom.registerNodeType(
     "RemoteSelectionGroup",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for RemoteSelectionGroup
+         * @constructs x3dom.nodeTypes.RemoteSelectionGroup
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue ["ws://localhost:35668/cstreams/0"]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', ["ws://localhost:35668/cstreams/0"]);  // address for WebSocket connection
+
+            /**
+             *
+             * @var {MFString} label
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
+
+            /**
+             *
+             * @var {SFInt32} maxRenderedIds
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
+
+            /**
+             *
+             * @var {SFBool} reconnect
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
+
+            /**
+             *
+             * @var {SFFloat} scaleRenderedIdsOnMove
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+
+            /**
+             *
+             * @var {SFBool} enableCulling
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
+
+            /**
+             *
+             * @var {MFString} invisibleNodes
+             * @memberof x3dom.nodeTypes.RemoteSelectionGroup
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
 
             this._idList = [];          // to be updated by socket connection
@@ -33,6 +107,7 @@ x3dom.registerNodeType(
                 this.initializeSocket();    // init socket connection
             else
                 x3dom.debug.logWarning("RemoteSelectionGroup: No runtime context found!");
+        
         },
         {
             initializeSocket: function()

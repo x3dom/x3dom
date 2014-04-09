@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -10,7 +11,16 @@
 x3dom.registerNodeType(
     "X3DNode",
     "Core",
-    defineClass(null, function (ctx) {
+    defineClass(null, 
+        /**
+         * Constructor for X3DNode
+         * @constructs x3dom.nodeTypes.X3DNode
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
+        function (ctx) {
             // reference to DOM element
             this._xmlNode = null;
 
@@ -38,7 +48,17 @@ x3dom.registerNodeType(
             // FIXME; should be removed and handled by _cf methods
             this._childNodes = [];
 
+
+            /**
+             *
+             * @var {SFNode} metadata
+             * @memberof x3dom.nodeTypes.X3DNode
+             * @initvalue x3dom.nodeTypes.X3DMetadataObject
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('metadata', x3dom.nodeTypes.X3DMetadataObject);
+        
         },
         {
             type: function () {

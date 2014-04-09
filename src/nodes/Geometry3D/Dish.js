@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,72 @@ x3dom.registerNodeType(
     "Dish",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Dish
+         * @constructs x3dom.nodeTypes.Dish
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Dish.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} diameter
+             * @memberof x3dom.nodeTypes.Dish
+             * @initvalue 2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'diameter', 2); 	//Diameter of base
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Dish
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base (section if < r)
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.Dish
+             * @initvalue this._vf.diameter/2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', this._vf.diameter / 2);  //Third semi-principal axes of ellipsoid
+
+            /**
+             *
+             * @var {SFBool} bottom
+             * @memberof x3dom.nodeTypes.Dish
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bottom', true);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Dish
+             * @initvalue 24,24
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

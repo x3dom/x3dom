@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,41 @@ x3dom.registerNodeType(
     "Viewfrustum",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DViewpointNode,
+        
+        /**
+         * Constructor for Viewfrustum
+         * @constructs x3dom.nodeTypes.Viewfrustum
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DViewpointNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Viewfrustum.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFMatrix4f} modelview
+             * @memberof x3dom.nodeTypes.Viewfrustum
+             * @initvalue 1,0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFMatrix4f(ctx, 'modelview',  1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1);
+
+            /**
+             *
+             * @var {SFMatrix4f} projection
+             * @memberof x3dom.nodeTypes.Viewfrustum
+             * @initvalue 1,0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFMatrix4f(ctx, 'projection', 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
@@ -28,6 +57,7 @@ x3dom.registerNodeType(
 
             this._centerOfRotation = new x3dom.fields.SFVec3f(0, 0, 0);
             // FIXME; derive near/far from current matrix, if requested!
+        
         },
         {
             fieldChanged: function (fieldName) {

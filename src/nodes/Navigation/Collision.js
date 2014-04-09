@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,42 @@ x3dom.registerNodeType(
     "Collision",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Collision
+         * @constructs x3dom.nodeTypes.Collision
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Collision.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} enabled
+             * @memberof x3dom.nodeTypes.Collision
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool (ctx, "enabled", true);
+
+            /**
+             *
+             * @var {SFNode} proxy
+             * @memberof x3dom.nodeTypes.Collision
+             * @initvalue x3dom.nodeTypes.X3DGroupingNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
 
             // TODO; add Slots: collideTime, isActive
+        
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

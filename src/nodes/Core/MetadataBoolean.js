@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "MetadataBoolean",
     "Core",
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        
+        /**
+         * Constructor for MetadataBoolean
+         * @constructs x3dom.nodeTypes.MetadataBoolean
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DMetadataObject
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.MetadataBoolean.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFBoolean} value
+             * @memberof x3dom.nodeTypes.MetadataBoolean
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFBoolean(ctx, 'value', []);
+        
         }
     )
 );

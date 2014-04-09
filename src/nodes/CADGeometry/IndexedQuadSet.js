@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "IndexedQuadSet",
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        
+        /**
+         * Constructor for IndexedQuadSet
+         * @constructs x3dom.nodeTypes.IndexedQuadSet
+         * @x3d x.x
+         * @component CADGeometry
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposedGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.IndexedQuadSet.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFInt32} index
+             * @memberof x3dom.nodeTypes.IndexedQuadSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'index', []);
+        
         },
         {
             nodeChanged: function()

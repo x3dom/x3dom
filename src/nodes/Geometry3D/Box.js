@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,38 @@ x3dom.registerNodeType(
     "Box",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Box
+         * @constructs x3dom.nodeTypes.Box
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec3f} size
+             * @memberof x3dom.nodeTypes.Box
+             * @initvalue 2,2,2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'size', 2, 2, 2);
+
+            /**
+             *
+             * @var {SFBool} hasHelperColors
+             * @memberof x3dom.nodeTypes.Box
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'hasHelperColors', false);
 
             var sx = this._vf.size.x,
@@ -80,6 +109,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName)

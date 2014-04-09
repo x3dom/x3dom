@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,8 +12,19 @@ x3dom.registerNodeType(
     "Uniform",
     "Shaders",
     defineClass(x3dom.nodeTypes.Field,
+        
+        /**
+         * Constructor for Uniform
+         * @constructs x3dom.nodeTypes.Uniform
+         * @x3d x.x
+         * @component Shaders
+         * @status experimental
+         * @extends x3dom.nodeTypes.Field
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Uniform.superClass.call(this, ctx);
+        
         }
     )
 );

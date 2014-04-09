@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,19 +12,102 @@ x3dom.registerNodeType(
     "Snout",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Snout
+         * @constructs x3dom.nodeTypes.Snout
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Snout.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} dbottom
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'dbottom', 1.0); // Diameter of bottom surface
+
+            /**
+             *
+             * @var {SFFloat} dtop
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'dtop', 0.5);    // Diameter of top surface
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 1.0);  // Perpendicular distance between surfaces
+
+            /**
+             *
+             * @var {SFFloat} xoff
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 0.25
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xoff', 0.25);   // Displacement of axes along X-axis
+
+            /**
+             *
+             * @var {SFFloat} yoff
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 0.25
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'yoff', 0.25);   // Displacement of axes along Y-axis
+
+            /**
+             *
+             * @var {SFBool} bottom
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bottom', true);
+
+            /**
+             *
+             * @var {SFBool} top
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'top', true);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Snout
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

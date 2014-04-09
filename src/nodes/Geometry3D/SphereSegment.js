@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,58 @@ x3dom.registerNodeType(
     "SphereSegment",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for SphereSegment
+         * @constructs x3dom.nodeTypes.SphereSegment
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.SphereSegment
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1);
+
+            /**
+             *
+             * @var {MFFloat} longitude
+             * @memberof x3dom.nodeTypes.SphereSegment
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'longitude', []);
+
+            /**
+             *
+             * @var {MFFloat} latitude
+             * @memberof x3dom.nodeTypes.SphereSegment
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'latitude', []);
+
+            /**
+             *
+             * @var {SFVec2f} stepSize
+             * @memberof x3dom.nodeTypes.SphereSegment
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'stepSize', 1, 1);
 
             var r = this._vf.radius;
@@ -76,6 +123,7 @@ x3dom.registerNodeType(
             this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
+        
         }
     )
 );

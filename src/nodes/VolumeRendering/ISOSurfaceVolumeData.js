@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,69 @@ x3dom.registerNodeType(
     "ISOSurfaceVolumeData",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeDataNode,
+        
+        /**
+         * Constructor for ISOSurfaceVolumeData
+         * @constructs x3dom.nodeTypes.ISOSurfaceVolumeData
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DVolumeDataNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ISOSurfaceVolumeData.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFNode} renderStyle
+             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeRenderStyleNode);
+
+            /**
+             *
+             * @var {SFNode} gradients
+             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue x3dom.nodeTypes.Texture
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('gradients', x3dom.nodeTypes.Texture);
             //this.addField_SFNode('gradients', x3dom.nodeTypes.X3DTexture3DNode);
+
+            /**
+             *
+             * @var {MFFloat} surfaceValues
+             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue [0.0]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'surfaceValues', [0.0]);
+
+            /**
+             *
+             * @var {SFFloat} contourStepSize
+             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'contourStepSize', 0);
+
+            /**
+             *
+             * @var {SFFloat} surfaceTolerance
+             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'surfaceTolerance', 0);
 
             this.uniformSampler2DGradients = new x3dom.nodeTypes.Uniform(ctx);
@@ -44,6 +100,7 @@ x3dom.registerNodeType(
             this.vrcFrontCubeShaderFieldBackCoord = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldVolData = new x3dom.nodeTypes.Field(ctx);
             this.vrcFrontCubeShaderFieldOffset = new x3dom.nodeTypes.Field(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

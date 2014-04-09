@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,29 +12,121 @@ x3dom.registerNodeType(
     "Extrusion",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for Extrusion
+         * @constructs x3dom.nodeTypes.Extrusion
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Extrusion.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} beginCap
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'beginCap', true);
+
+            /**
+             *
+             * @var {SFBool} endCap
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'endCap', true);
+
+            /**
+             *
+             * @var {SFBool} convex
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'convex', true);
+
+            /**
+             *
+             * @var {SFFloat} creaseAngle
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
+
+            /**
+             *
+             * @var {MFVec2f} crossSection
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue [newx3dom.fields.SFVec2f(1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'crossSection', [ new x3dom.fields.SFVec2f(1, 1),
                 new x3dom.fields.SFVec2f(1, -1),
                 new x3dom.fields.SFVec2f(-1, -1),
                 new x3dom.fields.SFVec2f(-1, 1),
                 new x3dom.fields.SFVec2f(1, 1)
             ]);
+
+            /**
+             *
+             * @var {MFRotation} orientation
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue [newx3dom.fields.Quaternion(0,0,0,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFRotation(ctx, 'orientation', [ new x3dom.fields.Quaternion(0, 0, 0, 1) ]);
+
+            /**
+             *
+             * @var {MFVec2f} scale
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue [newx3dom.fields.SFVec2f(1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'scale', [ new x3dom.fields.SFVec2f(1, 1) ]);
+
+            /**
+             *
+             * @var {MFVec3f} spine
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue [newx3dom.fields.SFVec3f(0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec3f(ctx, 'spine', [ new x3dom.fields.SFVec3f(0, 0, 0),
                 new x3dom.fields.SFVec3f(0, 1, 0)
             ]);
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Extrusion
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 0); // convenience field for setting default spine
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

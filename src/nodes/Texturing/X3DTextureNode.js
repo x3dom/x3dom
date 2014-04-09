@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,15 +12,88 @@ x3dom.registerNodeType(
     "X3DTextureNode",
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        
+        /**
+         * Constructor for X3DTextureNode
+         * @constructs x3dom.nodeTypes.X3DTextureNode
+         * @x3d x.x
+         * @component Texturing
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DAppearanceChildNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFInt32} origChannelCount
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'origChannelCount', 0); // 0 means the system should figure out the count
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', []);
+
+            /**
+             *
+             * @var {SFBool} repeatS
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'repeatS', true);
+
+            /**
+             *
+             * @var {SFBool} repeatT
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'repeatT', true);
+
+            /**
+             *
+             * @var {SFBool} scale
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'scale', true);
+
+            /**
+             *
+             * @var {SFBool} withCredentials
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'withCredentials', false);
+
+            /**
+             *
+             * @var {SFNode} textureProperties
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue x3dom.nodeTypes.TextureProperties
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
 
             this._needPerFrameUpdate = false;
@@ -27,6 +101,7 @@ x3dom.registerNodeType(
             this._type = "diffuseMap";
 
             this._blending = (this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2);
+        
         },
         {
             invalidateGLObject: function ()

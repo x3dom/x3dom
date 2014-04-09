@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "BoundaryEnhancementVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for BoundaryEnhancementVolumeStyle
+         * @constructs x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.BoundaryEnhancementVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} retainedOpacity
+             * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'retainedOpacity', 1);
+
+            /**
+             *
+             * @var {SFFloat} boundaryOpacity
+             * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'boundaryOpacity', 0);
+
+            /**
+             *
+             * @var {SFFloat} opacityFactor
+             * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'opacityFactor', 1);
 
             this.uniformFloatRetainedOpacity = new x3dom.nodeTypes.Uniform(ctx);
@@ -23,6 +61,7 @@ x3dom.registerNodeType(
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableBoundary = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

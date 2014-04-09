@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "X3DShapeNode",
     "Shape",
     defineClass(x3dom.nodeTypes.X3DBoundedNode,
+        
+        /**
+         * Constructor for X3DShapeNode
+         * @constructs x3dom.nodeTypes.X3DShapeNode
+         * @x3d x.x
+         * @component Shape
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBoundedNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} isPickable
+             * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'isPickable', true);
+
+            /**
+             *
+             * @var {SFNode} appearance
+             * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue x3dom.nodeTypes.X3DAppearanceNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
+
+            /**
+             *
+             * @var {SFNode} geometry
+             * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue x3dom.nodeTypes.X3DGeometryNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
 
             this._objectID = 0;
@@ -43,6 +81,7 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
+        
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

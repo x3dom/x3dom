@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,12 +13,58 @@ x3dom.registerNodeType(
     "MirrorTexture",
     "Texturing",
     defineClass(x3dom.nodeTypes.MultiTexture,
+        
+        /**
+         * Constructor for MirrorTexture
+         * @constructs x3dom.nodeTypes.MirrorTexture
+         * @x3d x.x
+         * @component Texturing
+         * @status experimental
+         * @extends x3dom.nodeTypes.MultiTexture
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.MirrorTexture.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} viewpoint
+             * @memberof x3dom.nodeTypes.MirrorTexture
+             * @initvalue x3dom.nodeTypes.X3DViewpointNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
+
+            /**
+             *
+             * @var {SFNode} background
+             * @memberof x3dom.nodeTypes.MirrorTexture
+             * @initvalue x3dom.nodeTypes.X3DBackgroundNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
+
+            /**
+             *
+             * @var {SFVec3f} viewOffset
+             * @memberof x3dom.nodeTypes.MirrorTexture
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'viewOffset', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFFloat} mirrorScale
+             * @memberof x3dom.nodeTypes.MirrorTexture
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'mirrorScale', 1.0);
 
             this._faceRTs = [
@@ -39,6 +86,7 @@ x3dom.registerNodeType(
             ];
 
             this.scaleField = new x3dom.nodeTypes.Field(ctx);
+        
         },
         {
             // nodeChanged is called after subtree is parsed and attached in DOM

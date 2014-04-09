@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,20 +12,112 @@ x3dom.registerNodeType(
     "SlopedCylinder",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for SlopedCylinder
+         * @constructs x3dom.nodeTypes.SlopedCylinder
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.SlopedCylinder.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 2.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 2.0);
+
+            /**
+             *
+             * @var {SFBool} bottom
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bottom', true);
+
+            /**
+             *
+             * @var {SFBool} top
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'top', true);
+
+            /**
+             *
+             * @var {SFFloat} xtshear
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 0.26179
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xtshear', 0.26179);
+
+            /**
+             *
+             * @var {SFFloat} ytshear
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'ytshear', 0.0);
+
+            /**
+             *
+             * @var {SFFloat} xbshear
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 0.26179
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xbshear', 0.26179);
+
+            /**
+             *
+             * @var {SFFloat} ybshear
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'ybshear', 0.0);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.SlopedCylinder
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

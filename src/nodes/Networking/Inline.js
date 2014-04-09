@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,17 +12,64 @@ x3dom.registerNodeType(
     "Inline",
     "Networking",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Inline
+         * @constructs x3dom.nodeTypes.Inline
+         * @x3d x.x
+         * @component Networking
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Inline.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.Inline
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', []);
+
+            /**
+             *
+             * @var {SFBool} load
+             * @memberof x3dom.nodeTypes.Inline
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'load', true);
+
+            /**
+             *
+             * @var {MFString} nameSpaceName
+             * @memberof x3dom.nodeTypes.Inline
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'nameSpaceName', []);
+
+            /**
+             *
+             * @var {SFBool} mapDEFToID
+             * @memberof x3dom.nodeTypes.Inline
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'mapDEFToID', false);
 
             this.initDone = false;
             this.count = 0;
             this.numRetries = x3dom.nodeTypes.Inline.MaximumRetries;
+        
         },
         {
             fieldChanged: function (fieldName)

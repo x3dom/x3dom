@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,18 +12,110 @@ x3dom.registerNodeType(
     "FontStyle",
     "Text",
     defineClass(x3dom.nodeTypes.X3DFontStyleNode,
+        
+        /**
+         * Constructor for FontStyle
+         * @constructs x3dom.nodeTypes.FontStyle
+         * @x3d x.x
+         * @component Text
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DFontStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} family
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ['SERIF']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'family', ['SERIF']);
+
+            /**
+             *
+             * @var {SFBool} horizontal
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'horizontal', true);
+
+            /**
+             *
+             * @var {MFString} justify
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ['BEGIN']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'justify', ['BEGIN']);
+
+            /**
+             *
+             * @var {SFString} language
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'language', "");
+
+            /**
+             *
+             * @var {SFBool} leftToRight
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'leftToRight', true);
+
+            /**
+             *
+             * @var {SFFloat} size
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'size', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} spacing
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'spacing', 1.0);
+
+            /**
+             *
+             * @var {SFString} style
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue "PLAIN"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'style', "PLAIN");
+
+            /**
+             *
+             * @var {SFBool} topToBottom
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'topToBottom', true);
+        
         },
         {
             fieldChanged: function(fieldName) {

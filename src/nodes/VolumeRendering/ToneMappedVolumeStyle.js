@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,45 @@ x3dom.registerNodeType(
     "ToneMappedVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for ToneMappedVolumeStyle
+         * @constructs x3dom.nodeTypes.ToneMappedVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ToneMappedVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFColor} coolColor
+             * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
+             * @initvalue 0,0,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'coolColor', 0, 0, 1);
+
+            /**
+             *
+             * @var {SFColor} warmColor
+             * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
+             * @initvalue 1,1,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'warmColor', 1, 1, 0);
 
             this.uniformCoolColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformWarmColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableToneMapped = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

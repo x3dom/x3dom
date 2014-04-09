@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,59 @@ x3dom.registerNodeType(
     "PositionChaser2D",
     "Followers",
     defineClass(x3dom.nodeTypes.X3DChaserNode,
+        
+        /**
+         * Constructor for PositionChaser2D
+         * @constructs x3dom.nodeTypes.PositionChaser2D
+         * @x3d x.x
+         * @component Followers
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChaserNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.PositionChaser2D.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec2f} initialDestination
+             * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
+
+            /**
+             *
+             * @var {SFVec2f} initialValue
+             * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
 
+
+            /**
+             *
+             * @var {SFVec2f} value
+             * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'value', 0, 0);
+
+            /**
+             *
+             * @var {SFVec2f} destination
+             * @memberof x3dom.nodeTypes.PositionChaser2D
+             * @initvalue 0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'destination', 0, 0);
 
             this._buffer = new x3dom.fields.MFVec2f();
@@ -25,6 +72,7 @@ x3dom.registerNodeType(
             this._value = new x3dom.fields.SFVec2f(0, 0);
 
             this.initialize();
+        
         },
         {
             fieldChanged: function(fieldName)

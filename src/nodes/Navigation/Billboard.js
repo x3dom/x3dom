@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,36 @@ x3dom.registerNodeType(
     "Billboard",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Billboard
+         * @constructs x3dom.nodeTypes.Billboard
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Billboard.superClass.call(this, ctx);
 
             // When the axisOfRotation field is set to (0, 0, 0),
             // the special case of viewer-alignment is indicated.
+
+            /**
+             *
+             * @var {SFVec3f} axisOfRotation
+             * @memberof x3dom.nodeTypes.Billboard
+             * @initvalue 0,1,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);
 
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
             this._eyeViewUp = new x3dom.fields.SFVec3f(0, 0, 0);
             this._eyeLook = new x3dom.fields.SFVec3f(0, 0, 0);
+        
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

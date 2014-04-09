@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,38 @@ x3dom.registerNodeType(
     "ComposedShader",
     "Shaders",
     defineClass(x3dom.nodeTypes.X3DShaderNode,
+        
+        /**
+         * Constructor for ComposedShader
+         * @constructs x3dom.nodeTypes.ComposedShader
+         * @x3d x.x
+         * @component Shaders
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DShaderNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ComposedShader.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFNode} fields
+             * @memberof x3dom.nodeTypes.ComposedShader
+             * @initvalue x3dom.nodeTypes.Field
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('fields', x3dom.nodeTypes.Field);
+
+            /**
+             *
+             * @var {MFNode} parts
+             * @memberof x3dom.nodeTypes.ComposedShader
+             * @initvalue x3dom.nodeTypes.ShaderPart
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('parts', x3dom.nodeTypes.ShaderPart);
 
             // shortcut to shader parts
@@ -39,6 +68,7 @@ x3dom.registerNodeType(
                     "    uniform sampler2D tex;\n");
                 x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown = true;
             }
+        
         },
         {
             nodeChanged: function()

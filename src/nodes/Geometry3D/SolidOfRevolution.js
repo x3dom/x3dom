@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,18 +12,74 @@ x3dom.registerNodeType(
     "SolidOfRevolution",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for SolidOfRevolution
+         * @constructs x3dom.nodeTypes.SolidOfRevolution
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} creaseAngle
+             * @memberof x3dom.nodeTypes.SolidOfRevolution
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
+
+            /**
+             *
+             * @var {MFVec2f} crossSection
+             * @memberof x3dom.nodeTypes.SolidOfRevolution
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'crossSection', []);
+
+            /**
+             *
+             * @var {SFFloat} angle
+             * @memberof x3dom.nodeTypes.SolidOfRevolution
+             * @initvalue 2*Math.PI
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
+
+            /**
+             *
+             * @var {SFBool} caps
+             * @memberof x3dom.nodeTypes.SolidOfRevolution
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'caps', true);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.SolidOfRevolution
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this._origCCW = this._vf.ccw;
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

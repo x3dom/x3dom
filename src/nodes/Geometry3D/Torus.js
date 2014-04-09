@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,80 @@ x3dom.registerNodeType(
     "Torus",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Torus
+         * @constructs x3dom.nodeTypes.Torus
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
 
             var twoPi = 2.0 * Math.PI;
 
+
+            /**
+             *
+             * @var {SFFloat} innerRadius
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'innerRadius', 0.5);
+
+            /**
+             *
+             * @var {SFFloat} outerRadius
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'outerRadius', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} angle
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue twoPi
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'angle', twoPi);
+
+            /**
+             *
+             * @var {SFBool} caps
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'caps', true);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue 24,24
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
+
+            /**
+             *
+             * @var {SFBool} insideOutsideRadius
+             * @memberof x3dom.nodeTypes.Torus
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'insideOutsideRadius', false);    // use other radius/orientation behavior
 
             // assure that angle in [0, 2 * PI]
@@ -202,6 +267,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function(fieldName)

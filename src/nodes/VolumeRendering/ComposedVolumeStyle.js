@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,42 @@ x3dom.registerNodeType(
     "ComposedVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for ComposedVolumeStyle
+         * @constructs x3dom.nodeTypes.ComposedVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ComposedVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} ordered
+             * @memberof x3dom.nodeTypes.ComposedVolumeStyle
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'ordered', false);
+
+            /**
+             *
+             * @var {MFNode} renderStyle
+             * @memberof x3dom.nodeTypes.ComposedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
             //Using only one normal texture
             this.normalTextureProvided = false;
+        
         },
         {
             uniforms: function(){

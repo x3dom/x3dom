@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -14,10 +15,30 @@ x3dom.registerNodeType(
     "CADPart",
     "CADGeometry",
     defineClass(x3dom.nodeTypes.Transform,
+        
+        /**
+         * Constructor for CADPart
+         * @constructs x3dom.nodeTypes.CADPart
+         * @x3d x.x
+         * @component CADGeometry
+         * @status experimental
+         * @extends x3dom.nodeTypes.Transform
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.CADPart.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} name
+             * @memberof x3dom.nodeTypes.CADPart
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'name', "");
+        
         }
     )
 );

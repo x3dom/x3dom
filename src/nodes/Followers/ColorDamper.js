@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,59 @@ x3dom.registerNodeType(
     "ColorDamper",
     "Followers",
     defineClass(x3dom.nodeTypes.X3DDamperNode,
+        
+        /**
+         * Constructor for ColorDamper
+         * @constructs x3dom.nodeTypes.ColorDamper
+         * @x3d x.x
+         * @component Followers
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DDamperNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ColorDamper.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFColor} initialDestination
+             * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0.8,0.8,0.8
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'initialDestination', 0.8, 0.8, 0.8);
+
+            /**
+             *
+             * @var {SFColor} initialValue
+             * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0.8,0.8,0.8
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'initialValue', 0.8, 0.8, 0.8);
 
+
+            /**
+             *
+             * @var {SFColor} value
+             * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'value', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFColor} destination
+             * @memberof x3dom.nodeTypes.ColorDamper
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'destination', 0, 0, 0);
 
             this._value0 = new x3dom.fields.SFColor(0, 0, 0);
@@ -28,6 +75,7 @@ x3dom.registerNodeType(
             this._value5 = new x3dom.fields.SFColor(0, 0, 0);
 
             this.initialize();
+        
         },
         {
             fieldChanged: function(fieldName)

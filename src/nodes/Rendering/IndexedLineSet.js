@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,20 +12,85 @@ x3dom.registerNodeType(
     "IndexedLineSet",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for IndexedLineSet
+         * @constructs x3dom.nodeTypes.IndexedLineSet
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.IndexedLineSet.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} colorPerVertex
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'colorPerVertex', true);  // TODO
 
+
+            /**
+             *
+             * @var {MFNode} attrib
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
+
+            /**
+             *
+             * @var {SFNode} coord
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+
+            /**
+             *
+             * @var {SFNode} color
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue x3dom.nodeTypes.X3DColorNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
+
+            /**
+             *
+             * @var {MFInt32} coordIndex
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'coordIndex', []);
+
+            /**
+             *
+             * @var {MFInt32} colorIndex
+             * @memberof x3dom.nodeTypes.IndexedLineSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'colorIndex', []);
 
             this._mesh._primType = 'LINES';
             x3dom.Utils.needLineWidth = true;
+        
         },
         {
             nodeChanged: function()

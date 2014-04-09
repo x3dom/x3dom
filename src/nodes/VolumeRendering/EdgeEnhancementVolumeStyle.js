@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,45 @@ x3dom.registerNodeType(
     "EdgeEnhancementVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for EdgeEnhancementVolumeStyle
+         * @constructs x3dom.nodeTypes.EdgeEnhancementVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.EdgeEnhancementVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFColor} edgeColor
+             * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'edgeColor', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFFloat} gradientThreshold
+             * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
+             * @initvalue 0.4
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'gradientThreshold', 0.4);
 
             this.uniformColorEdgeColor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEdgeEnable = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

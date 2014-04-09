@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "CartoonVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for CartoonVolumeStyle
+         * @constructs x3dom.nodeTypes.CartoonVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.CartoonVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFColor} parallelColor
+             * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'parallelColor', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFColor} orthogonalColor
+             * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 1,1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFColor(ctx, 'orthogonalColor', 1, 1, 1);
+
+            /**
+             *
+             * @var {SFInt32} colorSteps
+             * @memberof x3dom.nodeTypes.CartoonVolumeStyle
+             * @initvalue 4
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'colorSteps', 4);
 
             this.uniformParallelColor = new x3dom.nodeTypes.Uniform(ctx);
@@ -23,6 +61,7 @@ x3dom.registerNodeType(
             this.uniformIntColorSteps = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableCartoon = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

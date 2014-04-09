@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,32 @@ x3dom.registerNodeType(
     "LOD",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DLODNode,
+        
+        /**
+         * Constructor for LOD
+         * @constructs x3dom.nodeTypes.LOD
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DLODNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFFloat} range
+             * @memberof x3dom.nodeTypes.LOD
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, "range", []);
 
             this._lastRangePos = -1;
+        
         },
         {
             visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)

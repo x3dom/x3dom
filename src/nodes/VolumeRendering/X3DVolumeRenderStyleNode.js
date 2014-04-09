@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,9 +12,28 @@ x3dom.registerNodeType(
     "X3DVolumeRenderStyleNode",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DNode,
+        
+        /**
+         * Constructor for X3DVolumeRenderStyleNode
+         * @constructs x3dom.nodeTypes.X3DVolumeRenderStyleNode
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DVolumeRenderStyleNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} enabled
+             * @memberof x3dom.nodeTypes.X3DVolumeRenderStyleNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'enabled', true);
 
             this.preamble = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
@@ -21,6 +41,7 @@ x3dom.registerNodeType(
                 "#else\n" +
                 "  precision mediump float;\n" +
                 "#endif\n\n";
+        
         },
         {
             vertexShaderText: function(){

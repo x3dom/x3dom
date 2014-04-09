@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,33 @@ x3dom.registerNodeType(
     "IndexedTriangleStripSet",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        
+        /**
+         * Constructor for IndexedTriangleStripSet
+         * @constructs x3dom.nodeTypes.IndexedTriangleStripSet
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposedGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.IndexedTriangleStripSet.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFInt32} index
+             * @memberof x3dom.nodeTypes.IndexedTriangleStripSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'index', []);
 
             this._hasIndexOffset = false;
             this._indexOffset = null;
+        
         },
         {
             hasIndexOffset: function() {

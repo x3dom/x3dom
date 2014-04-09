@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,15 +12,88 @@ x3dom.registerNodeType(
     "Pyramid",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Pyramid
+         * @constructs x3dom.nodeTypes.Pyramid
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Pyramid.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} xbottom
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xbottom', 1);	//Dimension of bottom parallel to X-axis
+
+            /**
+             *
+             * @var {SFFloat} ybottom
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'ybottom', 1);	//Dimension of bottom parallel to Y-axis
+
+            /**
+             *
+             * @var {SFFloat} xtop
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xtop', 0.5);		//Dimension of top parallel to X-axis
+
+            /**
+             *
+             * @var {SFFloat} ytop
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'ytop', 0.5);		//Dimension of top parallel to Y-axis
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 1);	//Height between top and bottom surface
+
+            /**
+             *
+             * @var {SFFloat} xoff
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 0.25
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xoff', 0.25);		//Displacement of axes along X-axis
+
+            /**
+             *
+             * @var {SFFloat} yoff
+             * @memberof x3dom.nodeTypes.Pyramid
+             * @initvalue 0.25
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'yoff', 0.25);		//Displacement of axes along Y-axis
 
             var xTop = this._vf.xtop / 2;
@@ -61,6 +135,7 @@ x3dom.registerNodeType(
             this._mesh._invalidate = true;
             this._mesh._numFaces = 12;
             this._mesh._numCoords = 24;
+        
         },
         {
             fieldChanged: function(fieldName)

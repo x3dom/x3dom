@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,6 +12,16 @@ x3dom.registerNodeType(
     "RenderedTexture",
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DTextureNode,
+        
+        /**
+         * Constructor for RenderedTexture
+         * @constructs x3dom.nodeTypes.RenderedTexture
+         * @x3d x.x
+         * @component Texturing
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DTextureNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.RenderedTexture.superClass.call(this, ctx);
 
@@ -22,16 +33,106 @@ x3dom.registerNodeType(
             // Original proposal taken from:  http://www.xj3d.org/extensions/render_texture.html
             // http://doc.instantreality.org/documentation/nodetype/RenderedTexture/?filter=None
 
+
+            /**
+             *
+             * @var {SFNode} viewpoint
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DViewpointNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
+
+            /**
+             *
+             * @var {SFNode} background
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DBackgroundNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
+
+            /**
+             *
+             * @var {SFNode} fog
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DFogNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);    //TODO
+
+            /**
+             *
+             * @var {SFNode} scene
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
+
+            /**
+             *
+             * @var {MFNode} excludeNodes
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue x3dom.nodeTypes.X3DNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
+
+            /**
+             *
+             * @var {MFInt32} dimensions
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue [128,128,4]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);    // w, h, color components (and numMRTs)
+
+            /**
+             *
+             * @var {SFString} update
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 'NONE'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
+
+            /**
+             *
+             * @var {SFBool} showNormals
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'showNormals', false);
+
+            /**
+             *
+             * @var {SFString} stereoMode
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 'NONE'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'stereoMode', 'NONE');     // ("NONE"|"LEFT_EYE"|"RIGHT_EYE")
+
+            /**
+             *
+             * @var {SFFloat} interpupillaryDistance
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 0.064
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
 
             this.hScreenSize = 0.14976;
@@ -47,6 +148,7 @@ x3dom.registerNodeType(
                 "RenderedTexture.dimensions requires at least 3 entries.");
             this._clearParents = true;
             this._needRenderUpdate = true;
+        
         },
         {
             nodeChanged: function()

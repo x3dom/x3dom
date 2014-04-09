@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,19 +12,84 @@ x3dom.registerNodeType(
     "RectangularTorus",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for RectangularTorus
+         * @constructs x3dom.nodeTypes.RectangularTorus
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.RectangularTorus.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} innerRadius
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'innerRadius', 0.5); //Inside radius
+
+            /**
+             *
+             * @var {SFFloat} outerRadius
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'outerRadius', 1);	//Outside radius
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 1);	    //Height of rectangular section
+
+            /**
+             *
+             * @var {SFFloat} angle
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue 2*Math.PI
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'angle', 2 * Math.PI);	//Subtended angle
+
+            /**
+             *
+             * @var {SFBool} caps
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'caps', true);        //Show side caps
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.RectangularTorus
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this._origCCW = this._vf.ccw;
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

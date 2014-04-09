@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,42 @@ x3dom.registerNodeType(
     "PointSet",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for PointSet
+         * @constructs x3dom.nodeTypes.PointSet
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} coord
+             * @memberof x3dom.nodeTypes.PointSet
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+
+            /**
+             *
+             * @var {SFNode} color
+             * @memberof x3dom.nodeTypes.PointSet
+             * @initvalue x3dom.nodeTypes.X3DColorNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             this._mesh._primType = 'POINTS';
+        
         },
         {
             nodeChanged: function()

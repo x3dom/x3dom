@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,6 +12,16 @@ x3dom.registerNodeType(
     "TimeSensor",
     "Time",
     defineClass(x3dom.nodeTypes.X3DSensorNode,
+        
+        /**
+         * Constructor for TimeSensor
+         * @constructs x3dom.nodeTypes.TimeSensor
+         * @x3d x.x
+         * @component Time
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSensorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
 
@@ -19,22 +30,157 @@ x3dom.registerNodeType(
             else
                 x3dom.debug.logWarning("TimeSensor: No runtime context found!");
 
+
+            /**
+             *
+             * @var {SFTime} cycleInterval
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'cycleInterval', 1);
+
+            /**
+             *
+             * @var {SFBool} enabled
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'enabled', true);
+
+            /**
+             *
+             * @var {SFBool} loop
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'loop', false);
+
+            /**
+             *
+             * @var {SFTime} startTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'startTime', 0);
+
+            /**
+             *
+             * @var {SFTime} stopTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'stopTime', 0);
+
+            /**
+             *
+             * @var {SFTime} pauseTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'pauseTime', 0);
+
+            /**
+             *
+             * @var {SFTime} resumeTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'resumeTime', 0);
 
+
+            /**
+             *
+             * @var {SFTime} cycleTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'cycleTime', 0);
+
+            /**
+             *
+             * @var {SFTime} elapsedTime
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'elapsedTime', 0);
+
+            /**
+             *
+             * @var {SFFloat} fraction_changed
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'fraction_changed', 0);
+
+            /**
+             *
+             * @var {SFBool} isActive
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'isActive', false);
+
+            /**
+             *
+             * @var {SFBool} isPaused
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'isPaused', false);
+
+            /**
+             *
+             * @var {SFTime} time
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'time', 0);
 
+
+            /**
+             *
+             * @var {SFBool} first
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx,'first', true);
+
+            /**
+             *
+             * @var {SFFloat} firstCycle
+             * @memberof x3dom.nodeTypes.TimeSensor
+             * @initvalue 0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx,'firstCycle', 0.0);
 
             this._prevCycle = -1;
@@ -49,6 +195,7 @@ x3dom.registerNodeType(
             this._backupStartTime = this._vf.startTime;
             this._backupStopTime = this._vf.stopTime;
             this._backupCycleInterval = this._vf.cycleInterval;
+        
         },
         {
             tick: function (time)

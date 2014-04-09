@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,17 +12,82 @@ x3dom.registerNodeType(
     "Nozzle",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Nozzle
+         * @constructs x3dom.nodeTypes.Nozzle
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Nozzle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} nozzleHeight
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 0.1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'nozzleHeight', 0.1);
+
+            /**
+             *
+             * @var {SFFloat} nozzleRadius
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 0.6
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'nozzleRadius', 0.6);
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} outerRadius
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'outerRadius', 0.5);
+
+            /**
+             *
+             * @var {SFFloat} innerRadius
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 0.4
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'innerRadius', 0.4);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Nozzle
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this.rebuildGeometry();
+        
         },
         {
             rebuildGeometry: function()

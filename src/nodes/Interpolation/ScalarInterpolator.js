@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "ScalarInterpolator",
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        
+        /**
+         * Constructor for ScalarInterpolator
+         * @constructs x3dom.nodeTypes.ScalarInterpolator
+         * @x3d x.x
+         * @component Interpolation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DInterpolatorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFFloat} keyValue
+             * @memberof x3dom.nodeTypes.ScalarInterpolator
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'keyValue', []);
+        
         },
         {
             fieldChanged: function(fieldName)

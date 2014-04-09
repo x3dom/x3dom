@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,22 +12,96 @@ x3dom.registerNodeType(
     "DynamicLOD",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DLODNode,
+        
+        /**
+         * Constructor for DynamicLOD
+         * @constructs x3dom.nodeTypes.DynamicLOD
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DLODNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.DynamicLOD.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} subScale
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subScale', 0.5);
+
+            /**
+             *
+             * @var {SFVec2f} size
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 2,2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'size', 2, 2);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+
+            /**
+             *
+             * @var {SFNode} root
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue x3dom.nodeTypes.X3DShapeNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode ('root', x3dom.nodeTypes.X3DShapeNode);
 
+
+            /**
+             *
+             * @var {SFString} urlHead
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue "http://r"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'urlHead', "http://r");
+
+            /**
+             *
+             * @var {SFString} urlCenter
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue ".ortho.tiles.virtualearth.net/tiles/h"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'urlCenter', ".ortho.tiles.virtualearth.net/tiles/h");
+
+            /**
+             *
+             * @var {SFString} urlTail
+             * @memberof x3dom.nodeTypes.DynamicLOD
+             * @initvalue ".png?g=-1"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'urlTail', ".png?g=-1");
 
             this.rootGeometry = new x3dom.nodeTypes.Plane(ctx);
             this.level = 0;
             this.quadrant = 4;
             this.cell = "";
+        
         },
         {
             nodeChanged: function()

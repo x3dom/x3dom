@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "Switch",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Switch
+         * @constructs x3dom.nodeTypes.Switch
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Switch.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFInt32} whichChoice
+             * @memberof x3dom.nodeTypes.Switch
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'whichChoice', -1);
+        
         },
         {
             fieldChanged: function (fieldName) {

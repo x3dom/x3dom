@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,39 @@ x3dom.registerNodeType(
     "Sphere",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Sphere
+         * @constructs x3dom.nodeTypes.Sphere
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
 
             // sky box background creates sphere with r = 10000
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.Sphere
+             * @initvalue ctx?1:10000
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', ctx ? 1 : 10000);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Sphere
+             * @initvalue 24,24
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 
             var qfactor = 1.0;
@@ -109,6 +138,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function(fieldName) {

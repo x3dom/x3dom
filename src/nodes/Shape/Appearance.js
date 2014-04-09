@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,22 +12,123 @@ x3dom.registerNodeType(
     "Appearance",
     "Shape",
     defineClass(x3dom.nodeTypes.X3DAppearanceNode,
+        
+        /**
+         * Constructor for Appearance
+         * @constructs x3dom.nodeTypes.Appearance
+         * @x3d x.x
+         * @component Shape
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DAppearanceNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} material
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DMaterialNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
+
+            /**
+             *
+             * @var {SFNode} texture
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {SFNode} textureTransform
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
+
+            /**
+             *
+             * @var {SFNode} lineProperties
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.LineProperties
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('lineProperties', x3dom.nodeTypes.LineProperties);
+
+            /**
+             *
+             * @var {SFNode} colorMaskMode
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.ColorMaskMode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('colorMaskMode', x3dom.nodeTypes.ColorMaskMode);
+
+            /**
+             *
+             * @var {SFNode} blendMode
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.BlendMode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
+
+            /**
+             *
+             * @var {SFNode} depthMode
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.DepthMode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
+
+            /**
+             *
+             * @var {MFNode} shaders
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.X3DShaderNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
+
+            /**
+             *
+             * @var {SFString} sortType
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 'auto'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'sortType', 'auto');      // [auto, transparent, opaque]
+
+            /**
+             *
+             * @var {SFInt32} sortKey
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'sortKey', 0);             // Change render order manually
 
             // shortcut to shader program
             this._shader = null;
+        
         },
         {
             nodeChanged: function() {

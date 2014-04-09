@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "X3DBindableNode",
     "Core",
     defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+        /**
+         * Constructor for X3DBindableNode
+         * @constructs x3dom.nodeTypes.X3DBindableNode
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChildNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} bind
+             * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bind', false);
+
+            /**
+             *
+             * @var {SFString} description
+             * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'description', "");
+
+            /**
+             *
+             * @var {SFBool} isActive
+             * @memberof x3dom.nodeTypes.X3DBindableNode
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'isActive', false);
 
             this._autoGen = (ctx && ctx.autoGen ? true : false);
@@ -24,6 +62,7 @@ x3dom.registerNodeType(
 
             // Bindable stack to register node later on
             this._stack = null;
+        
         },
         {
             bind: function (value) {

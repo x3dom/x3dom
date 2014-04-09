@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,40 @@ x3dom.registerNodeType(
     "X3DInterpolatorNode",
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+        /**
+         * Constructor for X3DInterpolatorNode
+         * @constructs x3dom.nodeTypes.X3DInterpolatorNode
+         * @x3d x.x
+         * @component Interpolation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChildNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFFloat} key
+             * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'key', []);
+
+            /**
+             *
+             * @var {SFFloat} set_fraction
+             * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'set_fraction', 0);
+        
         },
         {
             linearInterp: function (time, interp) {

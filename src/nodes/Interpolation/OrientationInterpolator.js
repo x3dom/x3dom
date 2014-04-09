@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "OrientationInterpolator",
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        
+        /**
+         * Constructor for OrientationInterpolator
+         * @constructs x3dom.nodeTypes.OrientationInterpolator
+         * @x3d x.x
+         * @component Interpolation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DInterpolatorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFRotation} keyValue
+             * @memberof x3dom.nodeTypes.OrientationInterpolator
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFRotation(ctx, 'keyValue', []);
+        
         },
         {
             fieldChanged: function(fieldName)

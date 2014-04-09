@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,23 +12,114 @@ x3dom.registerNodeType(
     "NavigationInfo",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DNavigationInfoNode,
+        
+        /**
+         * Constructor for NavigationInfo
+         * @constructs x3dom.nodeTypes.NavigationInfo
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DNavigationInfoNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} headlight
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'headlight', true);
+
+            /**
+             *
+             * @var {MFString} type
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue ["EXAMINE","ANY"]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
             // view angle and height for helicopter mode and
             // min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
+
+            /**
+             *
+             * @var {MFFloat} typeParams
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue [-0.4,60,0.05,2.8]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 2.8]);
             // allows restricting examine and turntable navigation, overrides mouse buttons
             // can be one of [all, pan, zoom, rotate, none] (useful for special viewers)
+
+            /**
+             *
+             * @var {SFString} explorationMode
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 'all'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'explorationMode', 'all');
             // TODO; use avatarSize + visibilityLimit for projection matrix (near/far)
+
+            /**
+             *
+             * @var {MFFloat} avatarSize
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue [0.25,1.6,0.75]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
+
+            /**
+             *
+             * @var {SFFloat} visibilityLimit
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
+
+            /**
+             *
+             * @var {SFFloat} speed
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'speed', 1.0);
             // for 'jumping' between viewpoints (bind transition time)
+
+            /**
+             *
+             * @var {SFTime} transitionTime
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFTime(ctx, 'transitionTime', 1.0);
+
+            /**
+             *
+             * @var {MFString} transitionType
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue ["LINEAR"]
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
 
             this._validTypes = [
@@ -39,6 +131,7 @@ x3dom.registerNodeType(
 
             var type = this.checkType(this.getType());
             x3dom.debug.logInfo("NavType: " + type);
+        
         },
         {
             fieldChanged: function(fieldName) {

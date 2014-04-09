@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,6 +12,16 @@ x3dom.registerNodeType(
     "X3DTransformNode",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for X3DTransformNode
+         * @constructs x3dom.nodeTypes.X3DTransformNode
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
 
@@ -24,6 +35,7 @@ x3dom.registerNodeType(
 
             // workaround, only check on init if getStyle is necessary, since expensive
             this._needCssStyleUpdates = true;
+        
         },
         {
             tick: function (t)

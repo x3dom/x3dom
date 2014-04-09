@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,63 @@ x3dom.registerNodeType(
     "HAnimDisplacer",
     "H-Anim",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        
+        /**
+         * Constructor for HAnimDisplacer
+         * @constructs x3dom.nodeTypes.HAnimDisplacer
+         * @x3d x.x
+         * @component H-Anim
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.HAnimDisplacer.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} name
+             * @memberof x3dom.nodeTypes.HAnimDisplacer
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx,'name', "");
+
+            /**
+             *
+             * @var {SFFloat} weight
+             * @memberof x3dom.nodeTypes.HAnimDisplacer
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'weight', 0);
+
+            /**
+             *
+             * @var {MFInt32} coordIndex
+             * @memberof x3dom.nodeTypes.HAnimDisplacer
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'coordIndex', []);
+
+            /**
+             *
+             * @var {MFVec3f} displacements
+             * @memberof x3dom.nodeTypes.HAnimDisplacer
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec3f(ctx, 'displacements', []);
 
             // TODO displacement (add functionality e.g. via matrix palette skinning in shader)
             x3dom.debug.logWarning("HAnimDisplacer NYI!");
+        
         }
     )
 );

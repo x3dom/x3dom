@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "X3DComposableVolumeRenderStyleNode",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for X3DComposableVolumeRenderStyleNode
+         * @constructs x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} surfaceNormals
+             * @memberof x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+             * @initvalue x3dom.nodeTypes.X3DTexture3DNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('surfaceNormals', x3dom.nodeTypes.X3DTexture3DNode);
+        
         },
         {
             defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY){

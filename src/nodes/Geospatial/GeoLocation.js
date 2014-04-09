@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,11 +13,48 @@ x3dom.registerNodeType(
     "Geospatial",
     //was X3DGroupingNode which is how the node is defined in the spec
     defineClass(x3dom.nodeTypes.X3DTransformNode,
+        
+        /**
+         * Constructor for GeoLocation
+         * @constructs x3dom.nodeTypes.GeoLocation
+         * @x3d x.x
+         * @component Geospatial
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DTransformNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.GeoLocation.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} geoSystem
+             * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue ['GD','WE']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+
+            /**
+             *
+             * @var {SFVec3d} geoCoords
+             * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFNode} geoOrigin
+             * @memberof x3dom.nodeTypes.GeoLocation
+             * @initvalue x3dom.nodeTypes.X3DChildNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DChildNode);
 
             // similar to what transform in Grouping.js does
@@ -25,6 +63,7 @@ x3dom.registerNodeType(
             var geoOrigin = this._cf.geoOrigin;
 
             this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
+        
         },
         {
             getGeoRotMat: function (positionGC)

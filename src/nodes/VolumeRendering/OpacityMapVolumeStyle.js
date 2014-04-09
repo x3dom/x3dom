@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,18 +12,65 @@ x3dom.registerNodeType(
     "OpacityMapVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for OpacityMapVolumeStyle
+         * @constructs x3dom.nodeTypes.OpacityMapVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} transferFunction
+             * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue x3dom.nodeTypes.Texture
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
+
+            /**
+             *
+             * @var {SFString} type
+             * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue "simple"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'type', "simple");
+
+            /**
+             *
+             * @var {SFFloat} opacityFactor
+             * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue 6.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'opacityFactor', 6.0);
+
+            /**
+             *
+             * @var {SFFloat} lightFactor
+             * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
+             * @initvalue 1.2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'lightFactor', 1.2);
 
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableOpacityMap = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

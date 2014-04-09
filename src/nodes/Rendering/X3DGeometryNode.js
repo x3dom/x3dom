@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,22 +12,69 @@ x3dom.registerNodeType(
     "X3DGeometryNode",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DNode,
+        
+        /**
+         * Constructor for X3DGeometryNode
+         * @constructs x3dom.nodeTypes.X3DGeometryNode
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} solid
+             * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'solid', true);
+
+            /**
+             *
+             * @var {SFBool} ccw
+             * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'ccw', true);
             // Most geo primitives use geo cache and others might later on,
             // but one should be able to disable cache per geometry node.
+
+            /**
+             *
+             * @var {SFBool} useGeoCache
+             * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'useGeoCache', true);
 
             /**
              * Specifies whether this geometry should be rendered with or without lighting.
              */
+
+            /**
+             *
+             * @var {SFBool} lit
+             * @memberof x3dom.nodeTypes.X3DGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'lit', true);
 
             // mesh object also holds volume (_vol)
             this._mesh = new x3dom.Mesh(this);
+        
         },
         {
             getVolume: function() {

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,42 @@ x3dom.registerNodeType(
     "X3DLODNode",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for X3DLODNode
+         * @constructs x3dom.nodeTypes.X3DLODNode
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DLODNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} forceTransitions
+             * @memberof x3dom.nodeTypes.X3DLODNode
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool (ctx, "forceTransitions", false);
+
+            /**
+             *
+             * @var {SFVec3f} center
+             * @memberof x3dom.nodeTypes.X3DLODNode
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, "center", 0, 0, 0);
 
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
+        
         },
         {
             collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "SilhouetteEnhancementVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for SilhouetteEnhancementVolumeStyle
+         * @constructs x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} silhouetteBoundaryOpacity
+             * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
+
+            /**
+             *
+             * @var {SFFloat} silhouetteRetainedOpacity
+             * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'silhouetteRetainedOpacity', 1);
+
+            /**
+             *
+             * @var {SFFloat} silhouetteSharpness
+             * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'silhouetteSharpness', 0.5);
 
             this.uniformFloatBoundaryOpacity = new x3dom.nodeTypes.Uniform(ctx);
@@ -23,6 +61,7 @@ x3dom.registerNodeType(
             this.uniformFloatSilhouetteSharpness = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEnableSilhouette = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

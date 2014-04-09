@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,6 +12,16 @@ x3dom.registerNodeType(
     "X3DViewpointNode",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
+        
+        /**
+         * Constructor for X3DViewpointNode
+         * @constructs x3dom.nodeTypes.X3DViewpointNode
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBindableNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
 
@@ -41,6 +52,7 @@ x3dom.registerNodeType(
                     };
                 }
             }
+        
         },
         {
             activate: function (prev) {

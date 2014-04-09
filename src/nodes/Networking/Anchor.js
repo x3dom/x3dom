@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,40 @@ x3dom.registerNodeType(
     "Anchor",
     "Networking",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Anchor
+         * @constructs x3dom.nodeTypes.Anchor
+         * @x3d x.x
+         * @component Networking
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', []);
+
+            /**
+             *
+             * @var {MFString} parameter
+             * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'parameter', []);
+        
         },
         {
             doIntersect: function(line) {

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,11 +13,40 @@ x3dom.registerNodeType(
     "CADFace",
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for CADFace
+         * @constructs x3dom.nodeTypes.CADFace
+         * @x3d x.x
+         * @component CADGeometry
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.CADFace.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} name
+             * @memberof x3dom.nodeTypes.CADFace
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'name', "");
+
+            /**
+             *
+             * @var {SFNode} shape
+             * @memberof x3dom.nodeTypes.CADFace
+             * @initvalue x3dom.nodeTypes.X3DShapeNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('shape', x3dom.nodeTypes.X3DShapeNode);
+        
         },
         {
             getVolume: function()

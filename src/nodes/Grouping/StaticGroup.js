@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,24 +12,89 @@ x3dom.registerNodeType(
     "StaticGroup",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for StaticGroup
+         * @constructs x3dom.nodeTypes.StaticGroup
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.StaticGroup.superClass.call(this, ctx);
 
             // Node implements optimizations; no need to maintain the children node's
             // X3D representations, as they cannot be accessed after creation time
+
+            /**
+             *
+             * @var {SFBool} debug
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'debug', false);
+
+            /**
+             *
+             * @var {SFBool} showDebugBoxVolumes
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'showDebugBoxVolumes', false);
 
             // type of bvh to use, supported are 'jsBIH', 'BIH' and 'OCTREE'
+
+            /**
+             *
+             * @var {SFString} bvhType
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 'jsBIH'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'bvhType', 'jsBIH');
+
+            /**
+             *
+             * @var {SFInt32} maxObjectsPerNode
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'maxObjectsPerNode', 1);
             // -1 sets default values, other values forces maxDepth
+
+            /**
+             *
+             * @var {SFInt32} maxDepth
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'maxDepth', -1);
+
+            /**
+             *
+             * @var {SFFloat} minRelativeBBoxSize
+             * @memberof x3dom.nodeTypes.StaticGroup
+             * @initvalue 0.01
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'minRelativeBBoxSize', 0.01);
 
             this.needBvhRebuild = true;
             this.drawableCollection = null;
             this.bvh = null;
+        
         },
         {
             getMaxDepth : function()

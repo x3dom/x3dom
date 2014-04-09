@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -14,11 +15,48 @@ x3dom.registerNodeType(
     "Disk2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Disk2D
+         * @constructs x3dom.nodeTypes.Disk2D
+         * @x3d x.x
+         * @component Geometry2D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Disk2D.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} innerRadius
+             * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'innerRadius', 0);
+
+            /**
+             *
+             * @var {SFFloat} outerRadius
+             * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'outerRadius', 1);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Disk2D
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var ir = this._vf.innerRadius;
@@ -89,6 +127,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

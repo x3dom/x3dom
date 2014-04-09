@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,78 @@ x3dom.registerNodeType(
     "Viewpoint",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DViewpointNode,
+        
+        /**
+         * Constructor for Viewpoint
+         * @constructs x3dom.nodeTypes.Viewpoint
+         * @x3d x.x
+         * @component Navigation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DViewpointNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} fieldOfView
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0.785398
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
+
+            /**
+             *
+             * @var {SFVec3f} position
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,10
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
+
+            /**
+             *
+             * @var {SFRotation} orientation
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,0,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+
+            /**
+             *
+             * @var {SFVec3f} centerOfRotation
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFFloat} zNear
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'zNear', -1); //0.1);
+
+            /**
+             *
+             * @var {SFFloat} zFar
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'zFar', -1);  //100000);
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
@@ -36,6 +101,7 @@ x3dom.registerNodeType(
 
             // special stuff...
             this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
+        
         },
         {
             fieldChanged: function (fieldName) {

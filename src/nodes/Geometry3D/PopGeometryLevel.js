@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,50 @@ x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        
+        /**
+         * Constructor for PopGeometryLevel
+         * @constructs x3dom.nodeTypes.PopGeometryLevel
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} src
+             * @memberof x3dom.nodeTypes.PopGeometryLevel
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'src', "");
+
+            /**
+             *
+             * @var {SFInt32} numIndices
+             * @memberof x3dom.nodeTypes.PopGeometryLevel
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'numIndices', 0);
+
+            /**
+             *
+             * @var {SFInt32} vertexDataBufferOffset
+             * @memberof x3dom.nodeTypes.PopGeometryLevel
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
+        
         },
         {
             getSrc: function () {

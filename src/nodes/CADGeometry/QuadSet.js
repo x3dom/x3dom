@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,8 +13,19 @@ x3dom.registerNodeType(
     "QuadSet",
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        
+        /**
+         * Constructor for QuadSet
+         * @constructs x3dom.nodeTypes.QuadSet
+         * @x3d x.x
+         * @component CADGeometry
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposedGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.QuadSet.superClass.call(this, ctx);
+        
         },
         {
             nodeChanged: function()

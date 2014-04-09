@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,27 +12,146 @@ x3dom.registerNodeType(
     "GeoElevationGrid",
     "Geospatial",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for GeoElevationGrid
+         * @constructs x3dom.nodeTypes.GeoElevationGrid
+         * @x3d x.x
+         * @component Geospatial
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} geoSystem
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue ['GD','WE']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+
+            /**
+             *
+             * @var {SFVec3d} geoGridOrigin
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
+
+            /**
+             *
+             * @var {MFDouble} height
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFDouble(ctx, 'height', 0, 0);
+
+            /**
+             *
+             * @var {SFBool} ccw
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'ccw', true);
             //this.addField_SFBool(ctx, 'colorPerVertex', true);
+
+            /**
+             *
+             * @var {SFDouble} creaseAngle
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFDouble(ctx, 'creaseAngle', 0);
             //this.addField_SFBool(ctx, 'normalPerVertex', true);
             //this.addField_SFBool(ctx, 'solid', true);
+
+            /**
+             *
+             * @var {SFInt32} xDimension
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'xDimension', 0);
+
+            /**
+             *
+             * @var {SFDouble} xSpacing
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFDouble(ctx, 'xSpacing', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} yScale
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'yScale', 1);
+
+            /**
+             *
+             * @var {SFInt32} zDimension
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'zDimension', 0);
+
+            /**
+             *
+             * @var {SFDouble} zSpacing
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFDouble(ctx, 'zSpacing', 1.0);
             // this.addField_SFNode('color', x3dom.nodeTypes.PropertySetGeometry);
             // this.addField_SFNode('normal', x3dom.nodeTypes.PropertySetGeometry);
             // this.addField_SFNode('texCoord', x3dom.nodeTypes.PropertySetGeometry);
+
+            /**
+             *
+             * @var {SFNode} geoOrigin
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue x3dom.nodeTypes.GeoOrigin
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
+
+            /**
+             *
+             * @var {SFBool} lit
+             * @memberof x3dom.nodeTypes.GeoElevationGrid
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'lit', true);
+        
         },
         {
             nodeChanged: function()

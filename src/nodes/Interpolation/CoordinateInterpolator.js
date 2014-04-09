@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,9 +12,28 @@ x3dom.registerNodeType(
     "CoordinateInterpolator",
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        
+        /**
+         * Constructor for CoordinateInterpolator
+         * @constructs x3dom.nodeTypes.CoordinateInterpolator
+         * @x3d x.x
+         * @component Interpolation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DInterpolatorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.CoordinateInterpolator.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFVec3f} keyValue
+             * @memberof x3dom.nodeTypes.CoordinateInterpolator
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec3f(ctx, 'keyValue', []);
 
             if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
@@ -30,6 +50,7 @@ x3dom.registerNodeType(
                     this._vf.keyValue.push(val);
                 }
             }
+        
         },
         {
             fieldChanged: function(fieldName)

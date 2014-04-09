@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,21 +12,131 @@ x3dom.registerNodeType(
     "HAnimHumanoid",
     "H-Anim",
     defineClass(x3dom.nodeTypes.Transform,
+        
+        /**
+         * Constructor for HAnimHumanoid
+         * @constructs x3dom.nodeTypes.HAnimHumanoid
+         * @x3d x.x
+         * @component H-Anim
+         * @status experimental
+         * @extends x3dom.nodeTypes.Transform
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.HAnimHumanoid.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} name
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'name', "");
+
+            /**
+             *
+             * @var {SFString} version
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'version', "");
+
+            /**
+             *
+             * @var {MFString} info
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'info', []);
 
+
+            /**
+             *
+             * @var {MFNode} joints
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.HAnimJoint
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('joints', x3dom.nodeTypes.HAnimJoint);
+
+            /**
+             *
+             * @var {MFNode} segments
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.HAnimSegment
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('segments', x3dom.nodeTypes.HAnimSegment);
+
+            /**
+             *
+             * @var {MFNode} sites
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.HAnimSite
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('sites', x3dom.nodeTypes.HAnimSite);
+
+            /**
+             *
+             * @var {MFNode} skeleton
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.HAnimJoint
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('skeleton', x3dom.nodeTypes.HAnimJoint);
+
+            /**
+             *
+             * @var {MFNode} skin
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.X3DChildNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('skin', x3dom.nodeTypes.X3DChildNode);
+
+            /**
+             *
+             * @var {MFNode} skinCoord
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('skinCoord', x3dom.nodeTypes.X3DCoordinateNode);
+
+            /**
+             *
+             * @var {MFNode} skinNormal
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.X3DNormalNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('skinNormal', x3dom.nodeTypes.X3DNormalNode);
+
+            /**
+             *
+             * @var {MFNode} viewpoints
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue x3dom.nodeTypes.HAnimSite
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('viewpoints', x3dom.nodeTypes.HAnimSite);
+        
         },
         {
             // TODO skeleton   contains the HumanoidRoot Joint object functionality: map similar to children of Group

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,54 @@ x3dom.registerNodeType(
     "MPRVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for MPRVolumeStyle
+         * @constructs x3dom.nodeTypes.MPRVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.MPRVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec3f} originLine
+             * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 1.0,1.0,0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'originLine', 1.0, 1.0, 0.0);
+
+            /**
+             *
+             * @var {SFVec3f} finalLine
+             * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 0.0,1.0,0.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'finalLine', 0.0, 1.0, 0.0);
+
+            /**
+             *
+             * @var {SFFloat} positionLine
+             * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue 0.2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'positionLine', 0.2);
 
             this.uniformVec3fOriginLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformVec3fFinalLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatPosition = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName) {

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,43 @@ x3dom.registerNodeType(
     "ProjectionVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for ProjectionVolumeStyle
+         * @constructs x3dom.nodeTypes.ProjectionVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ProjectionVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} intensityThreshold
+             * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'intensityThreshold', 0);
+
+            /**
+             *
+             * @var {SFString} type
+             * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
+             * @initvalue "MAX"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'type', "MAX");
 
             this.uniformIntensityThreshold = new x3dom.nodeTypes.Uniform(ctx);
             //this.uniformType = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

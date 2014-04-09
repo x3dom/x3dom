@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,50 @@ x3dom.registerNodeType(
     "GeoCoordinate",
     "Geospatial",
     defineClass(x3dom.nodeTypes.X3DCoordinateNode,
+        
+        /**
+         * Constructor for GeoCoordinate
+         * @constructs x3dom.nodeTypes.GeoCoordinate
+         * @x3d x.x
+         * @component Geospatial
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DCoordinateNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.GeoCoordinate.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFVec3f} point
+             * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec3f(ctx, 'point', []);
+
+            /**
+             *
+             * @var {MFString} geoSystem
+             * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue ['GD','WE']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+
+            /**
+             *
+             * @var {SFNode} geoOrigin
+             * @memberof x3dom.nodeTypes.GeoCoordinate
+             * @initvalue x3dom.nodeTypes.GeoOrigin
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
+        
         },
         {
             elipsoideParameters:

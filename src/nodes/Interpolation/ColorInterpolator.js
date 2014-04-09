@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "ColorInterpolator",
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        
+        /**
+         * Constructor for ColorInterpolator
+         * @constructs x3dom.nodeTypes.ColorInterpolator
+         * @x3d x.x
+         * @component Interpolation
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DInterpolatorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ColorInterpolator.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFColor} keyValue
+             * @memberof x3dom.nodeTypes.ColorInterpolator
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFColor(ctx, 'keyValue', []);
+        
         },
         {
             fieldChanged: function(fieldName)

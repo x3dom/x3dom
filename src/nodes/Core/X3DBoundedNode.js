@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,48 @@ x3dom.registerNodeType(
     "X3DBoundedNode",
     "Core",
     defineClass(x3dom.nodeTypes.X3DChildNode,
+        
+        /**
+         * Constructor for X3DBoundedNode
+         * @constructs x3dom.nodeTypes.X3DBoundedNode
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChildNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} render
+             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'render', true);
+
+            /**
+             *
+             * @var {SFVec3f} bboxCenter
+             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
+
+            /**
+             *
+             * @var {SFVec3f} bboxSize
+             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @initvalue -1,-1,-1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
 
             this._graph = {
@@ -28,6 +66,7 @@ x3dom.registerNodeType(
                 coverage:     -1,       // currently approx. number of pixels on screen
                 needCulling:  true      // to be able to disable culling per node
             };
+        
         },
         {
             fieldChanged: function (fieldName) {

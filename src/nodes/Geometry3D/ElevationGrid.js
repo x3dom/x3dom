@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,23 +12,142 @@ x3dom.registerNodeType(
     "ElevationGrid",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for ElevationGrid
+         * @constructs x3dom.nodeTypes.ElevationGrid
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ElevationGrid.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} colorPerVertex
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'colorPerVertex', true);
+
+            /**
+             *
+             * @var {SFBool} normalPerVertex
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+
+            /**
+             *
+             * @var {SFFloat} creaseAngle
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
 
+
+            /**
+             *
+             * @var {MFNode} attrib
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
+
+            /**
+             *
+             * @var {SFNode} normal
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue x3dom.nodeTypes.Normal
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+
+            /**
+             *
+             * @var {SFNode} color
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue x3dom.nodeTypes.X3DColorNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
+
+            /**
+             *
+             * @var {SFNode} texCoord
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
 
+
+            /**
+             *
+             * @var {MFFloat} height
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFFloat(ctx, 'height', []);
+
+            /**
+             *
+             * @var {SFInt32} xDimension
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'xDimension', 0);
+
+            /**
+             *
+             * @var {SFFloat} xSpacing
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'xSpacing', 1.0);
+
+            /**
+             *
+             * @var {SFInt32} zDimension
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'zDimension', 0);
+
+            /**
+             *
+             * @var {SFFloat} zSpacing
+             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'zSpacing', 1.0);
+        
         },
         {
             nodeChanged: function()

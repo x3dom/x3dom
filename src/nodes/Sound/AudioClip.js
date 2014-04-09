@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,52 @@ x3dom.registerNodeType(
     "AudioClip",
     "Sound",
     defineClass(x3dom.nodeTypes.X3DSoundSourceNode,
+        
+        /**
+         * Constructor for AudioClip
+         * @constructs x3dom.nodeTypes.AudioClip
+         * @x3d x.x
+         * @component Sound
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSoundSourceNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFString} url
+             * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'url', []);
+
+            /**
+             *
+             * @var {SFBool} enabled
+             * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'enabled', true);
+
+            /**
+             *
+             * @var {SFBool} loop
+             * @memberof x3dom.nodeTypes.AudioClip
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'loop', false);
 
             this._audio = null;
+        
         },
         {
             nodeChanged: function()

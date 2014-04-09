@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,30 @@ x3dom.registerNodeType(
     "Sound",
     "Sound",
     defineClass(x3dom.nodeTypes.X3DSoundNode,
+        
+        /**
+         * Constructor for Sound
+         * @constructs x3dom.nodeTypes.Sound
+         * @x3d x.x
+         * @component Sound
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSoundNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Sound.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} source
+             * @memberof x3dom.nodeTypes.Sound
+             * @initvalue x3dom.nodeTypes.X3DSoundSourceNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('source', x3dom.nodeTypes.X3DSoundSourceNode);
+        
         },
         {
             nodeChanged: function()

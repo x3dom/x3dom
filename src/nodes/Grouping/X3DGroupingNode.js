@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,11 +12,31 @@ x3dom.registerNodeType(
     "X3DGroupingNode",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DBoundedNode,
+        
+        /**
+         * Constructor for X3DGroupingNode
+         * @constructs x3dom.nodeTypes.X3DGroupingNode
+         * @x3d x.x
+         * @component Grouping
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBoundedNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {MFNode} children
+             * @memberof x3dom.nodeTypes.X3DGroupingNode
+             * @initvalue x3dom.nodeTypes.X3DChildNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
             // FIXME; add addChild and removeChild slots ?
+        
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

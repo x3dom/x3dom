@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,81 @@ x3dom.registerNodeType(
     "IndexedFaceSet",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        
+        /**
+         * Constructor for IndexedFaceSet
+         * @constructs x3dom.nodeTypes.IndexedFaceSet
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposedGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} creaseAngle
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
+
+            /**
+             *
+             * @var {SFBool} convex
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'convex', true);
 
+
+            /**
+             *
+             * @var {MFInt32} coordIndex
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'coordIndex', []);
+
+            /**
+             *
+             * @var {MFInt32} normalIndex
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'normalIndex', []);
+
+            /**
+             *
+             * @var {MFInt32} colorIndex
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'colorIndex', []);
+
+            /**
+             *
+             * @var {MFInt32} texCoordIndex
+             * @memberof x3dom.nodeTypes.IndexedFaceSet
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
+        
         },
         {
             nodeChanged: function()

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,17 +12,99 @@ x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+        
+        /**
+         * Constructor for ImageGeometry
+         * @constructs x3dom.nodeTypes.ImageGeometry
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec2f} implicitMeshSize
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue 256,256
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
+
+            /**
+             *
+             * @var {SFInt32} numColorComponents
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue 3
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'numColorComponents', 3);
+
+            /**
+             *
+             * @var {SFInt32} numTexCoordComponents
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue 2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
 
+
+            /**
+             *
+             * @var {SFNode} index
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {MFNode} coord
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {SFNode} normal
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('normal', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {SFNode} texCoord
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {SFNode} color
+             * @memberof x3dom.nodeTypes.ImageGeometry
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
 
             this._mesh._numColComponents = this._vf.numColorComponents;
@@ -70,6 +153,7 @@ x3dom.registerNodeType(
                 color: true,
                 index: true
             };
+        
         },
         {
             setGeoDirty: function () {

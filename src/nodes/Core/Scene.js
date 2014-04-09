@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,15 +13,52 @@ x3dom.registerNodeType(
     "Scene",
     "Core",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        
+        /**
+         * Constructor for Scene
+         * @constructs x3dom.nodeTypes.Scene
+         * @x3d x.x
+         * @component Core
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGroupingNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
             // define the experimental picking mode: box, idBuf, idBuf24, idBufId, color, texCoord
+
+            /**
+             *
+             * @var {SFString} pickMode
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "idBuf"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
+
+            /**
+             *
+             * @var {SFBool} doPickPass
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'doPickPass', true);
 
             // another experimental field for shadow DOM remapping
+
+            /**
+             *
+             * @var {SFString} shadowObjectIdMapping
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
 
             this._lastMin = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -28,6 +66,7 @@ x3dom.registerNodeType(
 
             this._shadowIdMap = null;
             this.loadMapping();
+        
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */

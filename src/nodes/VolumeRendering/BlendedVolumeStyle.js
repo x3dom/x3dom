@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,16 +12,98 @@ x3dom.registerNodeType(
     "BlendedVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for BlendedVolumeStyle
+         * @constructs x3dom.nodeTypes.BlendedVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.BlendedVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} renderStyle
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
+
+            /**
+             *
+             * @var {SFNode} voxels
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DVolumeDataNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('voxels', x3dom.nodeTypes.X3DVolumeDataNode);
+
+            /**
+             *
+             * @var {SFFloat} weightConstant1
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'weightConstant1', 0.5);
+
+            /**
+             *
+             * @var {SFFloat} weightConstant2
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue 0.5
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'weightConstant2', 0.5);
+
+            /**
+             *
+             * @var {SFString} weightFunction1
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue "CONSTANT"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'weightFunction1', "CONSTANT");
+
+            /**
+             *
+             * @var {SFString} weightFunction2
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue "CONSTANT"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'weightFunction2', "CONSTANT");
+
+            /**
+             *
+             * @var {SFNode} weightTransferFunction1
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DTexture2DNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('weightTransferFunction1', x3dom.nodeTypes.X3DTexture2DNode);
+
+            /**
+             *
+             * @var {SFNode} weightTransferFunction2
+             * @memberof x3dom.nodeTypes.BlendedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DTexture2DNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('weightTransferFunction2', x3dom.nodeTypes.X3DTexture2DNode);
 
             this.uniformFloatWeightConstant1 = new x3dom.nodeTypes.Uniform(ctx);
@@ -28,6 +111,7 @@ x3dom.registerNodeType(
             this.uniformSampler2DVoxels = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DWeightTransferFunction1 = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DWeightTransferFunction2 = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

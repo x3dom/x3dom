@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,59 @@ x3dom.registerNodeType(
     "ScalarChaser",
     "Followers",
     defineClass(x3dom.nodeTypes.X3DChaserNode,
+        
+        /**
+         * Constructor for ScalarChaser
+         * @constructs x3dom.nodeTypes.ScalarChaser
+         * @x3d x.x
+         * @component Followers
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChaserNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ScalarChaser.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} initialDestination
+             * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'initialDestination', 0);
+
+            /**
+             *
+             * @var {SFFloat} initialValue
+             * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'initialValue', 0);
 
+
+            /**
+             *
+             * @var {SFFloat} value
+             * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'value', 0);
+
+            /**
+             *
+             * @var {SFFloat} destination
+             * @memberof x3dom.nodeTypes.ScalarChaser
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'destination', 0);
 
             this._buffer = [];
@@ -25,6 +72,7 @@ x3dom.registerNodeType(
             this._value = 0;
 
             this.initialize();
+        
         },
         {
             fieldChanged: function(fieldName)

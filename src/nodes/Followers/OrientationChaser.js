@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,13 +12,59 @@ x3dom.registerNodeType(
     "OrientationChaser",
     "Followers",
     defineClass(x3dom.nodeTypes.X3DChaserNode,
+        
+        /**
+         * Constructor for OrientationChaser
+         * @constructs x3dom.nodeTypes.OrientationChaser
+         * @x3d x.x
+         * @component Followers
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DChaserNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.OrientationChaser.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFRotation} initialDestination
+             * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'initialDestination', 0, 1, 0, 0);
+
+            /**
+             *
+             * @var {SFRotation} initialValue
+             * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
 
+
+            /**
+             *
+             * @var {SFRotation} value
+             * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'value', 0, 1, 0, 0);
+
+            /**
+             *
+             * @var {SFRotation} destination
+             * @memberof x3dom.nodeTypes.OrientationChaser
+             * @initvalue 0,1,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'destination', 0, 1, 0, 0);
 
             this._numSupports = 30;
@@ -26,6 +73,7 @@ x3dom.registerNodeType(
             this._value = new x3dom.fields.Quaternion(0, 1, 0, 0);
 
             this.initialize();
+        
         },
         {
             fieldChanged: function(fieldName)

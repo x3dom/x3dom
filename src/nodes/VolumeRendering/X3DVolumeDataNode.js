@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,10 +12,38 @@ x3dom.registerNodeType(
     "X3DVolumeDataNode",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DShapeNode,   // changed inheritance!
+        
+        /**
+         * Constructor for X3DVolumeDataNode
+         * @constructs x3dom.nodeTypes.X3DVolumeDataNode
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DShapeNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DVolumeDataNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec3f} dimensions
+             * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue 1,1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'dimensions', 1, 1, 1);
+
+            /**
+             *
+             * @var {SFNode} voxels
+             * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue x3dom.nodeTypes.Texture
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('voxels', x3dom.nodeTypes.Texture);
             //this.addField_MFNode('voxels', x3dom.nodeTypes.X3DTexture3DNode);
             //this.addField_SFBool(ctx, 'swapped', false);
@@ -24,6 +53,7 @@ x3dom.registerNodeType(
             this._textureID = 0;
 
             x3dom.debug.logWarning('VolumeRendering component NYI!!!');
+        
         },
         {
             getTextureSize: function(texture) {

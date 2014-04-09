@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,12 +12,58 @@ x3dom.registerNodeType(
     "ShadedVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        
+        /**
+         * Constructor for ShadedVolumeStyle
+         * @constructs x3dom.nodeTypes.ShadedVolumeStyle
+         * @x3d x.x
+         * @component VolumeRendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ShadedVolumeStyle.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFNode} material
+             * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue x3dom.nodeTypes.X3DMaterialNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
+
+            /**
+             *
+             * @var {SFBool} lighting
+             * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'lighting', false);
+
+            /**
+             *
+             * @var {SFBool} shadows
+             * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'shadows', false);
+
+            /**
+             *
+             * @var {SFString} phaseFunction
+             * @memberof x3dom.nodeTypes.ShadedVolumeStyle
+             * @initvalue "Henyey-Greenstein"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'phaseFunction', "Henyey-Greenstein");
 
             this.uniformBoolLigthning = new x3dom.nodeTypes.Uniform(ctx);
@@ -31,6 +78,7 @@ x3dom.registerNodeType(
             this.uniformColorDiffuse = new x3dom.nodeTypes.Uniform(ctx);
             //Enable/Disable style
             this.uniformBoolEnableShaded = new x3dom.nodeTypes.Uniform(ctx);
+        
         },
         {
             fieldChanged: function(fieldName){

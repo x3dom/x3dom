@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,31 +12,212 @@ x3dom.registerNodeType(
     "BinaryGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+        
+        /**
+         * Constructor for BinaryGeometry
+         * @constructs x3dom.nodeTypes.BinaryGeometry
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} index
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'index', "");   // Uint16
+
+            /**
+             *
+             * @var {SFString} coord
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'coord', "");   // Float32
+
+            /**
+             *
+             * @var {SFString} normal
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normal', "");
+
+            /**
+             *
+             * @var {SFString} texCoord
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'texCoord', "");    // THINKABOUTME: add texCoord1, texCoord2, ...?
+
+            /**
+             *
+             * @var {SFString} color
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'color', "");
+
+            /**
+             *
+             * @var {SFString} tangent
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'tangent', "");     // TODO
+
+            /**
+             *
+             * @var {SFString} binormal
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'binormal', "");    // TODO
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
+
+            /**
+             *
+             * @var {SFString} indexType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Uint16"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'indexType', "Uint16");
+
+            /**
+             *
+             * @var {SFString} coordType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'coordType', "Float32");
+
+            /**
+             *
+             * @var {SFString} normalType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normalType', "Float32");
+
+            /**
+             *
+             * @var {SFString} texCoordType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'texCoordType', "Float32");
+
+            /**
+             *
+             * @var {SFString} colorType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'colorType', "Float32");
+
+            /**
+             *
+             * @var {SFString} tangentType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'tangentType', "Float32");
+
+            /**
+             *
+             * @var {SFString} binormalType
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue "Float32"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'binormalType', "Float32");
 
+
+            /**
+             *
+             * @var {SFBool} normalAsSphericalCoordinates
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+
+            /**
+             *
+             * @var {SFBool} rgbaColors
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'rgbaColors', false);
+
+            /**
+             *
+             * @var {SFInt32} numTexCoordComponents
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue 2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+
+            /**
+             *
+             * @var {SFBool} normalPerVertex
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+
+            /**
+             *
+             * @var {SFBool} idsPerVertex
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'idsPerVertex', false);    /// Experimental flag to decide if IDs are in texCoords
 
             // workaround
@@ -50,6 +232,7 @@ x3dom.registerNodeType(
             for (var i=0; i<this._vf.vertexCount.length; ++i) {
                 this._vertexCountSum += this._vf.vertexCount[i];
             }
+        
         },
         {
             parentAdded: function(parent)

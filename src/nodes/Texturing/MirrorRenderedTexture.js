@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,10 +13,30 @@ x3dom.registerNodeType(
     "MirrorRenderedTexture",
     "Texturing",
     defineClass(x3dom.nodeTypes.RenderedTexture,
+        
+        /**
+         * Constructor for MirrorRenderedTexture
+         * @constructs x3dom.nodeTypes.MirrorRenderedTexture
+         * @x3d x.x
+         * @component Texturing
+         * @status experimental
+         * @extends x3dom.nodeTypes.RenderedTexture
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.MirrorRenderedTexture.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec3f} viewOffset
+             * @memberof x3dom.nodeTypes.MirrorRenderedTexture
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'viewOffset', 0, 0, 0);
+        
         },
         {
             getViewMatrix: function ()

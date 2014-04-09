@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -14,13 +15,68 @@ x3dom.registerNodeType(
     "ArcClose2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for ArcClose2D
+         * @constructs x3dom.nodeTypes.ArcClose2D
+         * @x3d x.x
+         * @component Geometry2D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.ArcClose2D.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} closureType
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue "PIE"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'closureType', "PIE");
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1);
+
+            /**
+             *
+             * @var {SFFloat} startAngle
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'startAngle', 0);
+
+            /**
+             *
+             * @var {SFFloat} endAngle
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 1.570796
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'endAngle', 1.570796);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var r = this._vf.radius;
@@ -131,6 +187,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

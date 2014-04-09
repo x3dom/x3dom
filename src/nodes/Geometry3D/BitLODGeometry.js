@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,22 +12,122 @@ x3dom.registerNodeType(
     "BitLODGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+        
+        /**
+         * Constructor for BitLODGeometry
+         * @constructs x3dom.nodeTypes.BitLODGeometry
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFString} index
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'index', "");   // Uint16
+
+            /**
+             *
+             * @var {SFBool} usesVLCIndices
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
+
+            /**
+             *
+             * @var {SFBool} clientSideNormals
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'clientSideNormals', false);  // variable-length coding
+
+            /**
+             *
+             * @var {SFBool} normalAsSphericalCoordinates
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+
+            /**
+             *
+             * @var {SFBool} normalPerVertex
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+
+            /**
+             *
+             * @var {MFNode} components
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue x3dom.nodeTypes.BitLODGeoComponent
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
             //this.addField_SFString(ctx, 'indexType', "Uint16");
+
+            /**
+             *
+             * @var {SFString} coordType
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue "Uint16"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'coordType', "Uint16");
+
+            /**
+             *
+             * @var {SFString} normalType
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue "Uint16"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normalType', "Uint16");
+
+            /**
+             *
+             * @var {SFString} texCoordType
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue "Uint16"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
+
+            /**
+             *
+             * @var {SFString} colorType
+             * @memberof x3dom.nodeTypes.BitLODGeometry
+             * @initvalue "Uint16"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'colorType', "Uint16");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
@@ -40,6 +141,7 @@ x3dom.registerNodeType(
             this._vf.normalPerVertex              = !this._vf.clientSideNormals;
             this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
             this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
+        
         },
         {
             parentAdded: function(parent)

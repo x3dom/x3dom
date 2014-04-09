@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,19 +12,102 @@ x3dom.registerNodeType(
     "X3DComposedGeometryNode",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        
+        /**
+         * Constructor for X3DComposedGeometryNode
+         * @constructs x3dom.nodeTypes.X3DComposedGeometryNode
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} colorPerVertex
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'colorPerVertex', true);
+
+            /**
+             *
+             * @var {SFBool} normalPerVertex
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+
+            /**
+             *
+             * @var {SFString} normalUpdateMode
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue 'fast'
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'normalUpdateMode', 'fast');  // none; fast; nice
 
+
+            /**
+             *
+             * @var {MFNode} attrib
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
+
+            /**
+             *
+             * @var {SFNode} coord
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+
+            /**
+             *
+             * @var {SFNode} normal
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.Normal
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+
+            /**
+             *
+             * @var {SFNode} color
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DColorNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
+
+            /**
+             *
+             * @var {SFNode} texCoord
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
+        
         },
         {
             handleAttribs: function()

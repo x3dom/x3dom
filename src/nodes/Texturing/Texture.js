@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,14 +13,34 @@ x3dom.registerNodeType(
     "Texture",      // X3DTexture2DNode
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DTextureNode,
+        
+        /**
+         * Constructor for Texture
+         * @constructs x3dom.nodeTypes.Texture
+         * @x3d x.x
+         * @component Texturing
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DTextureNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFBool} hideChildren
+             * @memberof x3dom.nodeTypes.Texture
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'hideChildren', true);
 
             this._video = null;
             this._intervalID = 0;
             this._canvas = null;
+        
         },
         {
             nodeChanged: function()

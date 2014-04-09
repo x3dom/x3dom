@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,14 +12,78 @@ x3dom.registerNodeType(
     "Cylinder",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Cylinder
+         * @constructs x3dom.nodeTypes.Cylinder
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFFloat} radius
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue 1.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1.0);
+
+            /**
+             *
+             * @var {SFFloat} height
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue 2.0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'height', 2.0);
+
+            /**
+             *
+             * @var {SFBool} bottom
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'bottom', true);
+
+            /**
+             *
+             * @var {SFBool} top
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'top', true);
+
+            /**
+             *
+             * @var {SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
+
+            /**
+             *
+             * @var {SFBool} side
+             * @memberof x3dom.nodeTypes.Cylinder
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFBool(ctx, 'side', true);
 
             var sides = this._vf.subdivision;
@@ -134,6 +199,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function(fieldName) {

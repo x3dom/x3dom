@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -11,8 +12,19 @@ x3dom.registerNodeType(
     "X3DColorNode",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        
+        /**
+         * Constructor for X3DColorNode
+         * @constructs x3dom.nodeTypes.X3DColorNode
+         * @x3d x.x
+         * @component Rendering
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.X3DColorNode.superClass.call(this, ctx);
+        
         },
         {
             fieldChanged: function (fieldName) {

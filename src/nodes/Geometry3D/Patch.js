@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -12,12 +13,58 @@ x3dom.registerNodeType(
     "Patch",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        
+        /**
+         * Constructor for Patch
+         * @constructs x3dom.nodeTypes.Patch
+         * @x3d x.x
+         * @component Geometry3D
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         */
         function (ctx) {
             x3dom.nodeTypes.Patch.superClass.call(this, ctx);
 
+
+            /**
+             *
+             * @var {SFVec2f} size
+             * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 2,2
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'size', 2, 2);
+
+            /**
+             *
+             * @var {SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+
+            /**
+             *
+             * @var {SFVec3f} center
+             * @memberof x3dom.nodeTypes.Patch
+             * @initvalue 0,0,0
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+
+            /**
+             *
+             * @var {MFString} primType
+             * @memberof x3dom.nodeTypes.Patch
+             * @initvalue ['TRIANGLES']
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
@@ -642,6 +689,7 @@ x3dom.registerNodeType(
             this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
+        
         },
         {
             hasIndexOffset: function() {
