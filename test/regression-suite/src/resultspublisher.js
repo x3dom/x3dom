@@ -102,7 +102,7 @@ var ResultsPublisher = function()
 
 
 
-        var dateString = that.getDateString();
+        var dateString = that.getDateString(id);
 
         var includes = "<link rel='stylesheet' href='" + pathPrefix + "jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
         var script = "<script>$(function(){$(\".accordion\").accordion({collapsible: true, heightStyle: 'content', active: false});});</script>"
@@ -134,7 +134,8 @@ var ResultsPublisher = function()
             var imagePrefix = pathPrefix + imagePath;
             var difftag = "<a target='_blank' href='" + imagePrefix + "diff/" + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + "diff/" + image + "'/></a>";
             var imagetag = "<a target='_blank' href='" + imagePrefix + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + image + "'/></a>";
-            var reftag = "<a target='_blank' href='" + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + globals.referencePath + image + "'/></a>";
+            console.log(globals.referencePath);
+            var reftag = "<a target='_blank' href='" + pathPrefix + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + pathPrefix + globals.referencePath + image + "'/></a>";
             if(detail.status == 'success')
             {
                 statistics.passed++;
@@ -173,7 +174,7 @@ var ResultsPublisher = function()
 
 
 
-        content.push("<h3>"+result.testName+"</h3><div>" + resultText +"</div>");
+        content.push("<h3 id='" + result.testName + "'>"+result.testName+"</h3><div>" + resultText +"</div>");
     }
 
     this.getDateString = function(time){
@@ -282,7 +283,8 @@ var ResultsPublisher = function()
                             }
 
                             var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
-                            body += "<td class='"+successString+"'>"+successString+"</td>";
+                            var link = profile.name + "_" + db.data[row].time + ".html#" + result.testName;
+                            body += "<td class='" + successString + "'><a href='" + link + "'>" + successString + "</a></td>";
                             if(row == db.data.length-1)//last row
                             {
                                 body += "</tr><tr>";
@@ -296,14 +298,6 @@ var ResultsPublisher = function()
         that.newFail[profile.name] = newFail;
         fw.writeFile(path, pageStart+body+pageEnd);
         callback(newFail);
-    }
-
-    this.calcRelativePath = function (path1, path2){
-        var p1 = path1.replace("\\", "/");
-        var p2 = path2.replace("\\", "/");
-        var count1 = p1.match(/\//g).length;
-        var count2 = p2.match(/\//g).length;
-        var prefix = "";
     }
 
 };
