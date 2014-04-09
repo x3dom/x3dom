@@ -1,0 +1,134 @@
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
+
+/* ### BoundaryEnhancementVolumeStyle ### */
+x3dom.registerNodeType(
+    "BoundaryEnhancementVolumeStyle",
+    "VolumeRendering",
+    defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+        function (ctx) {
+            x3dom.nodeTypes.BoundaryEnhancementVolumeStyle.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'retainedOpacity', 1);
+            this.addField_SFFloat(ctx, 'boundaryOpacity', 0);
+            this.addField_SFFloat(ctx, 'opacityFactor', 1);
+
+            this.uniformFloatRetainedOpacity = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatBoundaryOpacity = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformBoolEnableBoundary = new x3dom.nodeTypes.Uniform(ctx);
+        },
+        {
+            fieldChanged: function(fieldName){
+                switch(fieldName){
+                    case 'retainedOpacity':
+                        this.uniformFloatRetainedOpacity._vf.value = this._vf.retainedOpacity;
+                        this.uniformFloatRetainedOpacity.fieldChanged("value");
+                        break;
+                    case 'boundaryOpacity':
+                        this.uniformFloatBoundaryOpacity._vf.value = this._vf.boundaryOpacity;
+                        this.uniformFloatBoundaryOpacity.fieldChanged("value");
+                        break;
+                    case 'opacityFactor':
+                        this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
+                        this.uniformFloatOpacityFactor.fieldChanged("value");
+                        break;
+                }
+            },
+
+            uniforms: function(){
+                var unis = [];
+                if (this._cf.surfaceNormals.node) {
+                    //Lookup for the parent VolumeData
+                    var volumeDataParent = this._parentNodes[0];
+                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                        volumeDataParent = volumeDataParent._parentNodes[0];
+                    }
+                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
+                        x3dom.debug.logError("[VolumeRendering][BoundaryEnhancementVolumeStyle] Not VolumeData parent found!");
+                        volumeDataParent = null;
+                    }
+                    this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
+                    this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
+                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
+                    unis.push(this.uniformSampler2DSurfaceNormals);
+                }
+
+                this.uniformFloatRetainedOpacity._vf.name = 'uRetainedOpacity';
+                this.uniformFloatRetainedOpacity._vf.type = 'SFFloat';
+                this.uniformFloatRetainedOpacity._vf.value = this._vf.retainedOpacity;
+                unis.push(this.uniformFloatRetainedOpacity);
+
+                this.uniformFloatBoundaryOpacity._vf.name = 'uBoundaryOpacity';
+                this.uniformFloatBoundaryOpacity._vf.type = 'SFFloat';
+                this.uniformFloatBoundaryOpacity._vf.value = this._vf.boundaryOpacity;
+                unis.push(this.uniformFloatBoundaryOpacity);
+
+                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor';
+                this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
+                this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
+                unis.push(this.uniformFloatOpacityFactor);
+
+                this.uniformBoolEnableBoundary._vf.name = 'uEnableBoundary';
+                this.uniformBoolEnableBoundary._vf.type = 'SFBool';
+                this.uniformBoolEnableBoundary._vf.value = this._vf.enabled;
+                unis.push(this.uniformBoolEnableBoundary);
+                return unis;
+            },
+
+            textures: function() {
+                var texs = [];
+                if (!(this._cf.surfaceNormals.node==null)) {
+                    var tex = this._cf.surfaceNormals.node;
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex)
+                }
+                return texs;
+            },
+
+            styleUniformsShaderText: function(){
+                return "uniform float uRetainedOpacity;\n"+
+                    "uniform float uBoundaryOpacity;\n"+
+                    "uniform float uOpacityFactor;\n"+
+                    "uniform bool uEnableBoundary;\n";
+            },
+
+            styleShaderText: function(){
+                return "void boundaryEnhancement(inout vec4 original_color, float gradientMagnitude){\n"+
+                    "   original_color.a = original_color.a * (uRetainedOpacity + (uBoundaryOpacity*pow(gradientMagnitude, uOpacityFactor)));\n"+
+                    "}\n";
+            },
+
+            inlineStyleShaderText: function(){
+                var inlineText = "    if(uEnableBoundary){\n"+
+                    "    boundaryEnhancement(value, grad.w);\n"+
+                    "}\n";
+                return inlineText;
+            },
+
+            lightAssigment: function(){
+                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+            },
+
+            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+                var shader =
+                    this.preamble+
+                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                    this.styleUniformsShaderText()+
+                    this.styleShaderText()+
+                    this.texture3DFunctionShaderText+
+                    this.normalFunctionShaderText()+
+                    this.lightEquationShaderText()+
+                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
+                return shader;
+            }
+        }
+    )
+);

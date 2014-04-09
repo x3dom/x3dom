@@ -1,0 +1,66 @@
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
+
+/* ### X3DBindableNode ### */
+x3dom.registerNodeType(
+    "X3DBindableNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'bind', false);
+            this.addField_SFString(ctx, 'description', "");
+            this.addField_SFBool(ctx, 'isActive', false);
+
+            this._autoGen = (ctx && ctx.autoGen ? true : false);
+            if (this._autoGen)
+                this._vf.description = "default" + this.constructor.superClass._typeName;
+
+            // Bindable stack to register node later on
+            this._stack = null;
+        },
+        {
+            bind: function (value) {
+                if (this._stack) {
+                    if (value) {
+                        this._stack.push (this);
+                    }
+                    else {
+                        this._stack.pop  (this);
+                    }
+                }
+                else {
+                    x3dom.debug.logError ('No BindStack in ' + this.typeName() + 'Bindable');
+                }
+            },
+
+            activate: function (prev) {
+                this.postMessage('isActive', true);
+                x3dom.debug.logInfo('activate ' + this.typeName() + 'Bindable ' +
+                    this._DEF + '/' + this._vf.description);
+            },
+
+            deactivate: function (prev) {
+                this.postMessage('isActive', false);
+                x3dom.debug.logInfo('deactivate ' + this.typeName() + 'Bindable ' +
+                    this._DEF + '/' + this._vf.description);
+            },
+
+            fieldChanged: function(fieldName) {
+                if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
+                }
+            },
+
+            nodeChanged: function() {
+                this._stack = this._nameSpace.doc._bindableBag.addBindable(this);
+            }
+        }
+    )
+);
