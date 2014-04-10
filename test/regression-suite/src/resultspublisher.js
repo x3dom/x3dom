@@ -1,5 +1,6 @@
 var fw = require('./filewriter');
 var fs = require('fs');
+var rmdir = require("rimraf");
 var ResultsPublisher = function()
 {
     var that = this;
@@ -8,7 +9,8 @@ var ResultsPublisher = function()
     this.overviewData.profiles = [];
     this.db = {};
     this.newFail = {};
-    that.tableStyle = "<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{background-color: #FF7E74;} td.broken{background-color: #FFCC7E} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>";
+    this.maxTestResults = 10;
+    this.tableStyle = "<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{background-color: #FF7E74;} td.broken{background-color: #FFCC7E} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>";
 
 
 
@@ -38,9 +40,36 @@ var ResultsPublisher = function()
 //                });
 //            });
             db.data.unshift({"results": results, "time": id});
+            db = that.removeOldResults(config, profile, db);
             fw.writeFile(that.dbFile, JSON.stringify(db), callback);
         });
-    }
+    };
+
+    this.removeOldResults = function(config, profile, db)
+    {
+        while(db.data.length > that.maxTestResults)
+        {
+            var profilePage = that.getProfilePagePath(config, profile, db.data[that.maxTestResults - 1].time);
+            var profileFolder = that.getProfileDataFolder(config, profile, db.data[that.maxTestResults - 1].time);
+            fs.unlink(profilePage, function(err)
+            {
+                if(err)
+                {
+                    console.log(err.message);
+                }
+            });
+            console.log(profileFolder);
+            try{
+                rmdir.sync(profileFolder,function(){
+                    console.log("Error removing folder: " + profileFolder);
+                });
+            }catch(e){};
+            //remove from db
+            db.data.splice(that.maxTestResults, 1);
+        }
+
+        return db;
+    };
 
     this.publishResults = function(config, callback, index)
     {
@@ -56,7 +85,6 @@ var ResultsPublisher = function()
         var profile = config.profiles[index];
         var dbFile = config.dbPath + "/" + profile.name + "_results.json";
         that.outputPath = config.outputPath;
-        var profileDbPath = config.dbPath + "/" + profile.name + "/" ;
         var db;
         fs.readFile(dbFile, function(err, data)
         {
@@ -80,7 +108,7 @@ var ResultsPublisher = function()
                     "passed" : 0
                 };
                 var contents = [];
-                that.createProfilePage(profile, statistics, contents, that.outputPath, profileDbPath, i);
+                that.createProfilePage(profile, statistics, contents, config, i);
             }
             that.createTimelinePage(profile, function(){
                 that.publishResults(config, callback, index+1);
@@ -89,13 +117,12 @@ var ResultsPublisher = function()
     }
 
 
-    this.createProfilePage = function(profile, statistics, contents, outputPath, profileDbPath, i)
+    this.createProfilePage = function(profile, statistics, contents, config, i)
     {
-        console.log(i);
         var pathPrefix = "../"
         var db = that.db[profile.name];
         var id = db.data[i].time;
-        var imagePath = profileDbPath + "/" + id + "/";
+        var imagePath = that.getProfileDataFolder(config, profile, id);
         db.data[i].results.forEach(function(result){
             that.evaluateTestResult(result, statistics, contents, imagePath, pathPrefix);
         });
@@ -116,7 +143,7 @@ var ResultsPublisher = function()
             that.overviewData.profiles.push(profile);
         }
 
-        fw.writeFile(outputPath +"/" + profile.name + "_" + id + ".html", pageStart + details + pageEnd);
+        fw.writeFile(that.getProfilePagePath(config, profile, id), pageStart + details + pageEnd);
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -134,7 +161,6 @@ var ResultsPublisher = function()
             var imagePrefix = pathPrefix + imagePath;
             var difftag = "<a target='_blank' href='" + imagePrefix + "diff/" + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + "diff/" + image + "'/></a>";
             var imagetag = "<a target='_blank' href='" + imagePrefix + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + image + "'/></a>";
-            console.log(globals.referencePath);
             var reftag = "<a target='_blank' href='" + pathPrefix + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + pathPrefix + globals.referencePath + image + "'/></a>";
             if(detail.status == 'success')
             {
@@ -298,6 +324,15 @@ var ResultsPublisher = function()
         that.newFail[profile.name] = newFail;
         fw.writeFile(path, pageStart+body+pageEnd);
         callback(newFail);
+    }
+
+    this.getProfilePagePath = function(config, profile, id)
+    {
+        return config.outputPath +"/" + profile.name + "_" + id + ".html"
+    }
+    this.getProfileDataFolder = function(config, profile, id)
+    {
+        return config.dbPath + "/" + profile.name + "/" + id + "/";
     }
 
 };
