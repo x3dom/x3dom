@@ -13,6 +13,7 @@
             <span class="head-cell">Name</span>
             <span class="head-cell">Type</span>
             <span class="head-cell">Default Value</span>
+            <span class="head-cell">Range</span>
             <span class="head-cell">Inheritance</span>
             <span class="head-cell">Standard</span>
             <span class="head-cell">Description</span>
@@ -34,6 +35,8 @@
             </span>
 
             <span class="cell"><?js= (f.initvalue ? f.initvalue : '') ?></span>
+			
+            <span class="cell"><?js= (f.range ? f.range : '') ?></span>
 
             <span class="cell">
                 <?js if(f.inherits)
