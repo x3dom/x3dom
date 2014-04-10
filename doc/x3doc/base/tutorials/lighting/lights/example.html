@@ -1,0 +1,44 @@
+<html>
+<head>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+
+</head>
+<body>
+<h1>Light Tutorial</h1>
+<script>
+ function lightSwitch(id){
+     var light = document.getElementById(id);
+     if(light.getAttribute('on')!='TRUE')
+        light.setAttribute('on','TRUE');
+     else
+         light.setAttribute('on','FALSE');
+ }
+
+</script>
+<div id="content">
+<x3d width='500px' height='400px'>
+    <scene>
+        <background skyColor="0 0 0"></background>
+        <directionalLight id="directional" direction='0 0 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'>
+        </directionalLight>
+        <PointLight id='point' on='TRUE' intensity='0.9000' ambientIntensity='0.0000' color='0.0 0.6 0.0' location='0 10 0.5 '  attenuation='0 0 0' radius='5.0000'> </PointLight>
+        <SpotLight id='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22'></SpotLight>
+        <Inline nameSpaceName="light" mapDEFToID="true" url="teapot.x3d"></Inline>
+            <Transform translation="0 -2.5 0" rotation="1 0 0 -1.57">
+            <Shape>
+               <Appearance><Material diffuseColor="0.7 0.7 0.7"></Material></Appearance>
+               <Plane solid="false" size="30 30"></Plane>
+           </Shape>
+       </Transform>
+    </scene>
+</x3d>
+<div id="tools" style="width: 500px;">
+<button onclick="lightSwitch('point')">point light</button>
+<button onclick="lightSwitch('spot')">spot light</button>
+<button onclick="lightSwitch('directional')">directional light</button>
+</div>
+</div>
+</body>
+</html>

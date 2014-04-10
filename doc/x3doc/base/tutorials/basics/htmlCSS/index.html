@@ -21,7 +21,7 @@
     >
     <a href="../../index.html">Tutorials</a>
 	>
-    <a href="#">X3DOM, HTML and CSS</a>
+    <a href="#">X3DOM, HTML, CSS and some JavaScript</a>
 </div>
 <div id="main">
 
@@ -33,13 +33,14 @@
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>X3DOM, HTML and CSS</h1>
+            <h1>X3DOM, HTML, CSS and some JavaScript</h1>
         </div>            
         <br>
 		
         <p>
 		Within this tutorial, you will learn more about how X3DOM, HTML and CSS are related, and how you can build powerful 3D applications
-        with well-known, conventional HTML and CSS mechanisms.
+        with well-known, conventional HTML and CSS mechanisms. 
+		In the end of this tutorial you will get a short overview about how to use javaScript in your application. 
         As a starting point, we will simply use the <code>HelloX3DOM.html</code> example from the previous tutorial.
         Copy it to another folder and name it something like <code>HTMLEventsCSS</code>.
         </p>
@@ -160,7 +161,7 @@
         </p>
     
     
-        <h2>X3DOM and HTML events</h2>
+        <h2>X3DOM, HTML events and JavaScript</h2>
         <p>
         With HTML and JavaScript, you have a bunch of useful callback functions available on most kinds of DOM elements.
                    
@@ -180,9 +181,43 @@
         Currently, you can use the <i>onmousemove</i>, <i>onmousedown</i>, <i>onmouseup</i>, <i>onmouseover</i> and <i>onmouseout</i> events on X3DOM elements.
         You can install event not only on <i>shape</i> nodes, but also on grouping nodes, such as <i>transform</i> nodes.
         This way, you can catch events on multiple nodes, using a single callback function.
-        
+		<p>
+		 You can use JavaScript on every DOM element, so you are able to manipulate x3DOM nodes as you want. 
+		 You already know how to use the onclick-event, let's try to change the color of the box by clicking on it.
+		 If you never used JavaScript before it might be a good idea to take a tour around <a href="http://www.w3schools.com/js/default.asp">w3schools</a> first. 
+</p>
+		 First give the node you want to change an id.
+		 
+		 <pre class="prettyprint"><code class="language-html">		
+    &lt;shape onclick="alert('Hello, click!');"&gt; 
+        &lt;appearance&gt; 
+        &lt;material id="color" diffuseColor='1 0 0'&gt;&lt;/material&gt; 
+        &lt;/appearance&gt; 
+        &lt;box&gt;&lt;/box&gt; 
+    &lt;/shape&gt; 
+		</code></pre>
+		
+		Then you should be able to change the color with this small colorChange function: 
+		
+<pre class="prettyprint"><code class="language-html">
+&lt;script&gt; 
+     function changeColor()
+     {
+        if(document.getElementById("color").getAttribute('diffuseColor')=="1 0 0")
+           document.getElementById("color").setAttribute('diffuseColor', '0 0 1');
+        else
+           document.getElementById("color").setAttribute('diffuseColor', '1 0 0');
+     }
+&lt;/script&gt; 
+
+</code></pre>
+<pre class="prettyprint"><code class="language-html">
+    &lt;shape onclick="changeColor();"&gt; 
+	
+</code></pre>
+
         You have now learned the basic concepts that connect HTML and CSS with X3DOM.
-        In a <a href='..\..\animationInteraction\picking\index.html'>later tutorial</a>, you will learn more about picking events, which will enable you to implement more complex interaction scenarios.
+        In a <a href='..\..\animationInteraction\picking\index.html'>later tutorial</a>, you will learn more about x3DOM picking events, which will enable you to implement more complex interaction scenarios.
         For now, you should be able to create basic interaction on X3DOM elements, and you can style your X3DOM context, to fit ideally with your page design.
         
         <p>               
