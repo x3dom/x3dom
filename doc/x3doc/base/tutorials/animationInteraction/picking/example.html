@@ -1,0 +1,76 @@
+
+<!DOCTYPE>
+<html>
+<head>
+    <title>HTML Events on 3D objects</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+</head>
+
+<body>
+
+<h1>HTML Events on 3D objects</h1>
+Experimental 'onclick' event on 3D objects. <br>
+Just click on one of the objects... The current state only shows what are we aiming at. <br>
+
+
+    <X3D  id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
+        <Scene>
+            <Group onclick="document.getElementById('bar').setAttribute('translation', event.hitPnt);">
+
+                <Transform DEF="coneTrafo" translation="-4.5 0 0">
+                    <Shape DEF="coneShape">
+                        <Appearance DEF="coneApp">
+                            <Material diffuseColor="0 1 0" specularColor=".5 .5 .5" ></Material>
+                        </Appearance>
+                        <Cone DEF="cone" ></Cone>
+                    </Shape>
+                </Transform>
+
+                <Transform DEF="boxTrafo" translation='-1.5 0 0'>
+                    <Shape DEF="boxShape">
+                        <Appearance DEF="boxApp">
+                            <Material diffuseColor="1 0 0" specularColor=".5 .5 .5" ></Material>
+                        </Appearance>
+                        <Box DEF="box" onclick="alert('Red Box picked at position\n' + event.hitPnt);"></Box>
+                    </Shape>
+                </Transform>
+
+                <Transform DEF="sphereTrafo" translation="1.5 0 0">
+                    <Shape DEF="sphereShape">
+                        <Appearance DEF="sphereApp">
+                            <Material diffuseColor="0 0 1" specularColor=".5 .5 .5" ></Material>
+                        </Appearance>
+                        <Sphere DEF="sphere" onclick="alert('Blue Sphere picked at position\n' + event.hitPnt);" ></Sphere>
+                    </Shape>
+                </Transform>
+
+                <Transform DEF="cylinderTrafo" translation="4.5 0 0">
+                    <Shape DEF="cylinderShape">
+                        <Appearance DEF="cylinderApp">
+                            <Material diffuseColor="1 1 0" specularColor=".5 .5 .5"></Material>
+                        </Appearance>
+                        <Cylinder DEF="cylinder" radius="1.0" height="2.0"></Cylinder>
+                    </Shape>
+                </Transform>
+
+            </Group>
+
+            <Transform id="bar" DEF="foo" scale=".15 .15 .15">
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor="olivedrab" specularColor="peachpuff" ></Material>
+                    </Appearance>
+                    <Sphere></Sphere>
+                </Shape>
+            </Transform>
+
+        </Scene>
+    </X3D>
+
+
+<p> &nbsp; </p>
+
+
+</body>
+</html>

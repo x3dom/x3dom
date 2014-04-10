@@ -1,0 +1,27 @@
+<html>
+<head>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+</head>
+<body>
+<h1>Hello, X3DOM!</h1>
+<p>
+    Learn how to use sound.
+</p>
+<x3d width='500px' height='400px'>
+    <scene>
+        <shape>
+            <appearance>
+                <material diffuseColor='1 0 0'></material>
+            </appearance>
+            <sphere></sphere>
+        </shape>
+        <Sound>
+            <AudioClip loop='true' url="sound.wav"/>
+        </Sound>
+    </scene>
+
+</x3d>
+</body>
+</html>

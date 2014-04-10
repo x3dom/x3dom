@@ -1,0 +1,28 @@
+<html>
+<head>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+</head>
+<body>
+<h1>Hello, X3DOM!</h1>
+<script>
+    function redNose()
+    {
+        if(document.getElementById('Deer__MA_Nose').getAttribute('diffuseColor')!= '1 0 0')
+            document.getElementById('Deer__MA_Nose').setAttribute('diffuseColor', '1 0 0');
+        else
+            document.getElementById('Deer__MA_Nose').setAttribute('diffuseColor', '0 0 0');
+    }
+</script>
+<p>
+    Learn how to include external x3d models and change them.
+</p>
+<x3d width='500px' height='400px'>
+    <scene>
+            <Inline nameSpaceName="Deer" mapDEFToID="true"
+                    onclick='redNose();' url="Deer.x3d" />
+    </scene>
+</x3d>
+</body>
+</html>

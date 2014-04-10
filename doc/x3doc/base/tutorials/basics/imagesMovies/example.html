@@ -1,0 +1,33 @@
+<html>
+<head>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+</head>
+<body>
+<h1>Hello, X3DOM!</h1>
+<p>
+    Learn how to use images and videos as texture
+</p>
+<x3d width='500px' height='400px'>
+    <scene>
+        <shape>
+            <appearance>
+                <ImageTexture  url="http://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Peach_Rinkysplash.jpg/800px-Peach_Rinkysplash.jpg"/>
+            </appearance>
+            <box></box>
+        </shape>
+        <Transform translation='-3.2 0 0'>
+        <shape>
+
+           <appearance>
+               <MovieTexture repeatS="false" repeatT="false" loop='true' url="bigBuckBunny.ogv"/>
+           </appearance>
+            <box></box>
+
+        </shape>
+        </Transform>
+    </scene>
+</x3d>
+</body>
+</html>
