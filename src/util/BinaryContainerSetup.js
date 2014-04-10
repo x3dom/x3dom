@@ -685,6 +685,9 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         xmlhttp3.onload = function()
         {
+            var i;
+            var tmp;
+
             if (!shape._webgl)
                 return;
 
@@ -700,18 +703,50 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 return;
             }
 
-            var texcBuffer = gl.createBuffer();
-            shape._webgl.buffers[3] = texcBuffer;
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+            //if IDs are given in texture coordinates, interpret texcoords as ID buffer
+            if (binGeo._vf["idsPerVertex"])
+            {
+                var idBuffer = gl.createBuffer();
 
-            gl.vertexAttribPointer(sp.texcoord,
-                binGeo._mesh._numTexComponents,
-                shape._webgl.texCoordType, false,
-                shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-            gl.enableVertexAttribArray(sp.texcoord);
+                shape._webgl.buffers[5] = idBuffer;
 
+                gl.bindBuffer(gl.ARRAY_BUFFER, idBuffer);
+
+                //due to a current bug, stride is always 0, except for interleaved rendering
+                var texCoordStride = (shape._texCoordStrideOffset[0] === 0) ? 4 : shape._texCoordStrideOffset[0] / 4;
+
+                var v;
+
+                //swap x and y, in order to interpret tex coords as FLOAT later on
+                /*for (i = 0; i < texCoords.length; i+=texCoordStride)
+                {
+                    v = texCoords[i] + 65536 * texCoords[i+1];
+                    texCoords[i] = v;
+                }   */
+
+                gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+
+                gl.vertexAttribPointer(sp.id,
+                    binGeo._mesh._numTexComponents,
+                    shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.id);
+            }
+            else
+            {
+                var texcBuffer = gl.createBuffer();
+                shape._webgl.buffers[3] = texcBuffer;
+
+                gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+
+                gl.vertexAttribPointer(sp.texcoord,
+                    binGeo._mesh._numTexComponents,
+                    shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.texcoord);
+            }
             // Test reading Data
             //x3dom.debug.logWarning("arraybuffer[0].tx="+texCoords[0]);
 

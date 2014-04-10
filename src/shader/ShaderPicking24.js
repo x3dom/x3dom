@@ -97,6 +97,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
     else {
         shader =    "attribute vec3 position;\n" +
                     "attribute vec2 texcoord;\n" +
+                    "attribute float id;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
                     "uniform float bgPrecisionMax;\n" +

@@ -157,7 +157,7 @@ x3dom.gfx_webgl = (function () {
      * Setup GL objects for given shape
      *****************************************************************************/
     Context.prototype.setupShape = function (gl, drawable, viewarea) {
-        var q = 0, q5;
+        var q = 0, q6;
         var textures, t;
         var vertices, positionBuffer;
         var texCoordBuffer, normalBuffer, colorBuffer;
@@ -238,16 +238,16 @@ x3dom.gfx_webgl = (function () {
             {
                 for (q = 0; q < shape._webgl.positions.length; q++)
                 {
-                    q5 = 5 * q;
+                    q6 = 6 * q;
 
                     if (shape._dirty.positions == true || shape._dirty.indexes == true) {
                         if (shape._webgl.shader.position !== undefined) {
                             shape._webgl.indexes[q] = geoNode._mesh._indices[q];
 
-                            gl.deleteBuffer(shape._webgl.buffers[q5]);
+                            gl.deleteBuffer(shape._webgl.buffers[q6]);
 
                             indicesBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q5] = indicesBuffer;
+                            shape._webgl.buffers[q6] = indicesBuffer;
 
                             // explicitly check first positions array for consistency
                             if (x3dom.caps.INDEX_UINT && (geoNode._mesh._positions[0].length / 3 > 65535)) {
@@ -268,13 +268,13 @@ x3dom.gfx_webgl = (function () {
                             shape._webgl.positions[q] = geoNode._mesh._positions[q];
 
                             // TODO; don't delete VBO but use glMapBuffer() and DYNAMIC_DRAW
-                            gl.deleteBuffer(shape._webgl.buffers[q5 + 1]);
+                            gl.deleteBuffer(shape._webgl.buffers[q6 + 1]);
 
                             positionBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q5 + 1] = positionBuffer;
+                            shape._webgl.buffers[q6 + 1] = positionBuffer;
 
                             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[q5]);
+                            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[q6]);
 
                             vertices = new Float32Array(shape._webgl.positions[q]);
 
@@ -297,10 +297,10 @@ x3dom.gfx_webgl = (function () {
                         if (shape._webgl.shader.color !== undefined) {
                             shape._webgl.colors[q] = geoNode._mesh._colors[q];
 
-                            gl.deleteBuffer(shape._webgl.buffers[q5 + 4]);
+                            gl.deleteBuffer(shape._webgl.buffers[q6 + 4]);
 
                             colorBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q5 + 4] = colorBuffer;
+                            shape._webgl.buffers[q6 + 4] = colorBuffer;
 
                             colors = new Float32Array(shape._webgl.colors[q]);
 
@@ -322,10 +322,10 @@ x3dom.gfx_webgl = (function () {
                         if (shape._webgl.shader.normal !== undefined) {
                             shape._webgl.normals[q] = geoNode._mesh._normals[q];
 
-                            gl.deleteBuffer(shape._webgl.buffers[q5 + 2]);
+                            gl.deleteBuffer(shape._webgl.buffers[q6 + 2]);
 
                             normalBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q5 + 2] = normalBuffer;
+                            shape._webgl.buffers[q6 + 2] = normalBuffer;
 
                             normals = new Float32Array(shape._webgl.normals[q]);
 
@@ -347,10 +347,35 @@ x3dom.gfx_webgl = (function () {
                         if (shape._webgl.shader.texcoord !== undefined) {
                             shape._webgl.texcoords[q] = geoNode._mesh._texCoords[q];
 
-                            gl.deleteBuffer(shape._webgl.buffers[q5 + 3]);
+                            gl.deleteBuffer(shape._webgl.buffers[q6 + 3]);
 
                             texCoordBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q5 + 3] = texCoordBuffer;
+                            shape._webgl.buffers[q6 + 3] = texCoordBuffer;
+
+                            texCoords = new Float32Array(shape._webgl.texcoords[q]);
+
+                            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+                            gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+
+                            gl.vertexAttribPointer(shape._webgl.shader.texCoord,
+                                geoNode._mesh._numTexComponents,
+                                shape._webgl.texCoordType, false,
+                                shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+
+                            texCoords = null;
+                        }
+
+                        shape._dirty.texcoords = false;
+                    }
+
+                    if (shape._dirty.ids == true) {
+                        if (shape._webgl.shader.texcoord !== undefined) {
+                            shape._webgl.texcoords[q] = geoNode._mesh._texCoords[q];
+
+                            gl.deleteBuffer(shape._webgl.buffers[q6 + 3]);
+
+                            texCoordBuffer = gl.createBuffer();
+                            shape._webgl.buffers[q6 + 3] = texCoordBuffer;
 
                             texCoords = new Float32Array(shape._webgl.texcoords[q]);
 
@@ -429,23 +454,27 @@ x3dom.gfx_webgl = (function () {
                     var sp = this._webgl.shader;
 
                     for (var q = 0; q < this._webgl.positions.length; q++) {
-                        var q5 = 5 * q;
+                        var q6 = 6 * q;
 
                         if (sp.position !== undefined) {
-                            gl.deleteBuffer(this._webgl.buffers[q5 + 1]);
-                            gl.deleteBuffer(this._webgl.buffers[q5]);
+                            gl.deleteBuffer(this._webgl.buffers[q6 + 1]);
+                            gl.deleteBuffer(this._webgl.buffers[q6]);
                         }
 
                         if (sp.normal !== undefined) {
-                            gl.deleteBuffer(this._webgl.buffers[q5 + 2]);
+                            gl.deleteBuffer(this._webgl.buffers[q6 + 2]);
                         }
 
                         if (sp.texcoord !== undefined) {
-                            gl.deleteBuffer(this._webgl.buffers[q5 + 3]);
+                            gl.deleteBuffer(this._webgl.buffers[q6 + 3]);
                         }
 
                         if (sp.color !== undefined) {
-                            gl.deleteBuffer(this._webgl.buffers[q5 + 4]);
+                            gl.deleteBuffer(this._webgl.buffers[q6 + 4]);
+                        }
+
+                        if (sp.id !== undefined) {
+                            gl.deleteBuffer(this._webgl.buffers[q6 + 5]);
                         }
                     }
 
@@ -546,12 +575,12 @@ x3dom.gfx_webgl = (function () {
         {
             for (q = 0; q < shape._webgl.positions.length; q++)
             {
-                q5 = 5 * q;
+                q6 = 6 * q;
 
                 if (sp.position !== undefined) {
                     // bind indices for drawElements() call
                     indicesBuffer = gl.createBuffer();
-                    shape._webgl.buffers[q5] = indicesBuffer;
+                    shape._webgl.buffers[q6] = indicesBuffer;
 
                     // explicitly check first positions array for consistency
                     if (x3dom.caps.INDEX_UINT && (shape._webgl.positions[0].length / 3 > 65535)) {
@@ -569,7 +598,7 @@ x3dom.gfx_webgl = (function () {
                     indexArray = null;
 
                     positionBuffer = gl.createBuffer();
-                    shape._webgl.buffers[q5 + 1] = positionBuffer;
+                    shape._webgl.buffers[q6 + 1] = positionBuffer;
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
                     vertices = new Float32Array(shape._webgl.positions[q]);
@@ -587,7 +616,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 if (sp.normal !== undefined || shape._webgl.normals[q]) {
                     normalBuffer = gl.createBuffer();
-                    shape._webgl.buffers[q5 + 2] = normalBuffer;
+                    shape._webgl.buffers[q6 + 2] = normalBuffer;
 
                     var normals = new Float32Array(shape._webgl.normals[q]);
 
@@ -604,7 +633,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 if (sp.texcoord !== undefined) {
                     var texcBuffer = gl.createBuffer();
-                    shape._webgl.buffers[q5 + 3] = texcBuffer;
+                    shape._webgl.buffers[q6 + 3] = texcBuffer;
 
                     var texCoords = new Float32Array(shape._webgl.texcoords[q]);
 
@@ -621,7 +650,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 if (sp.color !== undefined) {
                     colorBuffer = gl.createBuffer();
-                    shape._webgl.buffers[q5 + 4] = colorBuffer;
+                    shape._webgl.buffers[q6 + 4] = colorBuffer;
 
                     var colors = new Float32Array(shape._webgl.colors[q]);
 
@@ -1307,18 +1336,18 @@ x3dom.gfx_webgl = (function () {
 
             //== end== code stolen from picking pass
             for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
-                var q5 = 5 * q;
+                var q6 = 6 * q;
                 var v, v_n, offset;
 
-                if ( !(sp.position !== undefined && s_gl.buffers[q5 + 1] && s_gl.indexes[q]) )
+                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
                     continue;
 
                 // set buffers
-                if (s_gl.buffers[q5]) {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q5]);
+                if (s_gl.buffers[q6]) {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
                 }
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 1]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
 
                 gl.vertexAttribPointer(sp.position,
                     s_msh._numPosComponents, s_gl.coordType, false,
@@ -1604,39 +1633,63 @@ x3dom.gfx_webgl = (function () {
 
 
             for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
-                var q5 = 5 * q;
+                var q6 = 6 * q;
                 var v, v_n, offset;
 
-                if ( !(sp.position !== undefined && s_gl.buffers[q5 + 1] && s_gl.indexes[q]) )
+                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
                     continue;
 
                 // set buffers
-                if (s_gl.buffers[q5]) {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q5]);
+                if (s_gl.buffers[q6]) {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
                 }
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 1]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
 
                 gl.vertexAttribPointer(sp.position,
                     s_msh._numPosComponents, s_gl.coordType, false,
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (sp.texcoord !== undefined && s_gl.buffers[q5 + 3]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 3]);
+                if (sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
 
                     gl.vertexAttribPointer(sp.texcoord,
                         s_msh._numTexComponents, s_gl.texCoordType, false,
                         shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.texcoord);
                 }
-                if (sp.color !== undefined && s_gl.buffers[q5 + 4]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 4]);
+                if (sp.color !== undefined && s_gl.buffers[q6 + 4]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
 
                     gl.vertexAttribPointer(sp.color,
                         s_msh._numColComponents, s_gl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
+                }
+
+                if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
+
+                    //texture coordinate hack for IDs
+                    if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
+                    {
+                        gl.vertexAttribPointer(sp.id,
+                            s_msh._numTexComponents,
+                            s_gl.texCoordType, false,
+                            shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.id);
+                    }
+                    else
+                    {
+                        /*
+                         gl.vertexAttribPointer(sp.id,
+                         1, gl.FLOAT, false,
+                         shape._idStrideOffset[0], shape._idStrideOffset[1]);
+                         gl.enableVertexAttribArray(sp.id);
+                         */
+                    }
                 }
 
                 // render mesh
@@ -1674,11 +1727,14 @@ x3dom.gfx_webgl = (function () {
 
                 gl.disableVertexAttribArray(sp.position);
 
-                if (sp.texcoord !== undefined && s_gl.buffers[q5 + 3]) {
+                if (sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
                     gl.disableVertexAttribArray(sp.texcoord);
                 }
-                if (sp.color !== undefined && s_gl.buffers[q5 + 4]) {
+                if (sp.color !== undefined && s_gl.buffers[q6 + 4]) {
                     gl.disableVertexAttribArray(sp.color);
+                }
+                if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
+                    gl.disableVertexAttribArray(sp.id);
                 }
             }
 
@@ -2158,49 +2214,70 @@ x3dom.gfx_webgl = (function () {
         var v, v_n, offset;
         
         for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
-            var q5 = 5 * q;
+            var q6 = 6 * q;
 
-            if ( !(sp.position !== undefined && s_gl.buffers[q5 + 1] && s_gl.indexes[q]) )
+            if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
                 continue;
 
-            if (s_gl.buffers[q5]) {
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q5]);
+            if (s_gl.buffers[q6]) {
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
             }
 
-            gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 1]);
+            gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
 
             gl.vertexAttribPointer(sp.position,
                 s_msh._numPosComponents, s_gl.coordType, false,
                 shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.position);
 
-            if (sp.normal !== undefined && s_gl.buffers[q5 + 2]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 2]);
+            if (sp.normal !== undefined && s_gl.buffers[q6 + 2]) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 2]);
 
                 gl.vertexAttribPointer(sp.normal,
                     s_msh._numNormComponents, s_gl.normalType, false,
                     shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.normal);
             }
-            if (sp.texcoord !== undefined && s_gl.buffers[q5 + 3]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 3]);
+            if (sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
 
                 gl.vertexAttribPointer(sp.texcoord,
                     s_msh._numTexComponents, s_gl.texCoordType, false,
                     shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.texcoord);
             }
-            if (sp.color !== undefined && s_gl.buffers[q5 + 4]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 4]);
+            if (sp.color !== undefined && s_gl.buffers[q6 + 4]) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
 
                 gl.vertexAttribPointer(sp.color,
                     s_msh._numColComponents, s_gl.colorType, false,
                     shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.color);
             }
-            if (s_gl.popGeometry != 0 && s_gl.buffers[q5 + 5]) {
+            if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
+
+                //texture coordinate hack for IDs
+                if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
+                {
+                    gl.vertexAttribPointer(sp.id,
+                       1, gl.FLOAT, false,
+                       shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.id);
+                }
+                else
+                {
+                    /*
+                    gl.vertexAttribPointer(sp.id,
+                        1, gl.FLOAT, false,
+                        shape._idStrideOffset[0], shape._idStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.id);
+                    */
+                }
+            }
+            if (s_gl.popGeometry != 0 && s_gl.buffers[q6 + 5]) {
                 //special case: mimic gl_VertexID
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 5]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
 
                 gl.vertexAttribPointer(sp.PG_vertexID, 1, gl.FLOAT, false, 4, 0);
                 gl.enableVertexAttribArray(sp.PG_vertexID);
@@ -2280,6 +2357,9 @@ x3dom.gfx_webgl = (function () {
             }
             if (sp.color !== undefined) {
                 gl.disableVertexAttribArray(sp.color);
+            }
+            if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
+                gl.disableVertexAttribArray(sp.id);
             }
             if (s_gl.popGeometry != 0 && sp.PG_vertexID !== undefined) {
                 gl.disableVertexAttribArray(sp.PG_vertexID);    // mimic gl_VertexID
@@ -3718,26 +3798,26 @@ x3dom.gfx_webgl = (function () {
 
             // render shape
             for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
-                var q5 = 5 * q;
+                var q6 = 6 * q;
                 var v, v_n, offset;
 
-                if ( !(sp.position !== undefined && s_gl.buffers[q5 + 1] && s_gl.indexes[q]) )
+                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
                     continue;
 
                 // bind buffers
-                if (s_gl.buffers[q5]) {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q5]);
+                if (s_gl.buffers[q6]) {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
                 }
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 1]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
 
                 gl.vertexAttribPointer(sp.position,
                     s_msh._numPosComponents, s_gl.coordType, false,
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (sp.normal !== undefined && s_gl.buffers[q5 + 2]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 2]);
+                if (sp.normal !== undefined && s_gl.buffers[q6 + 2]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 2]);
 
                     gl.vertexAttribPointer(sp.normal,
                         s_msh._numNormComponents, s_gl.normalType, false,

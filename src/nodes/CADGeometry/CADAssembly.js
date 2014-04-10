@@ -17,22 +17,23 @@ x3dom.registerNodeType(
         /**
          * Constructor for CADAssembly
          * @constructs x3dom.nodeTypes.CADAssembly
-         * @x3d x.x
+         * @x3d 3.1
          * @component CADGeometry
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The CADAssembly node holds a set of assemblies or parts grouped together.
          */
         function (ctx) {
             x3dom.nodeTypes.CADAssembly.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The name field documents the name of this CAD structure.
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADAssembly
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'name', "");
