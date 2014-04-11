@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for MetadataString
          * @constructs x3dom.nodeTypes.MetadataString
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DMetadataObject
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The metadata provided by this node is contained in the strings of the value field.
          */
         function (ctx) {
             x3dom.nodeTypes.MetadataString.superClass.call(this, ctx);
@@ -31,7 +32,7 @@ x3dom.registerNodeType(
              * @var {MFString} value
              * @memberof x3dom.nodeTypes.MetadataString
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'value', []);

@@ -16,32 +16,35 @@ x3dom.registerNodeType(
         /**
          * Constructor for Anchor
          * @constructs x3dom.nodeTypes.Anchor
-         * @x3d x.x
+         * @x3d 2.0
          * @component Networking
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Anchor is a Grouping node that can contain most nodes. Clicking Anchored geometry loads content specified by the url field.
+         * Loaded content completely replaces current content, if parameter is same window.
+         * Hint: insert a Shape node before adding geometry or Appearance.
          */
         function (ctx) {
             x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Address of replacement world, activated by clicking Anchor geometry. Hint: jump to a world's internal viewpoint by appending viewpoint name (e.g. #ViewpointName, someOtherCoolWorld.wrl#GrandTour). Hint: jump to a local viewpoint by only using viewpoint name (e.g. #GrandTour). Hint: Strings can have multiple values, so separate each string by quote marks [ 'http://www.url1.org' 'http://www.url2.org' 'etc.' ]. Hint: XML encoding for ' is ampersandquot; (a character entity). Warning: strictly match directory and filename capitalization for http links! Hint: can replace embedded blank(s) in url queries with %20 for each blank character.
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.Anchor
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'url', []);
 
             /**
-             *
+             * Passed parameter that signals web browser how to redirect url loading. Each string shall consist of "keyword=value" pairs. Hint: set parameter to target=_blank or target=_extern to load target url with a system-specific application. target=_self or target=_intern will open url in current x3d-browser window. Hint: set parameter to target=frame_name to load target url into another frame. Hint: Strings can have multiple values, so separate each string by quote marks. [ 'http://www.url1.org' 'http://www.url2.org' 'etc.' ]. Interchange profile hint: this field may be ignored.
              * @var {MFString} parameter
              * @memberof x3dom.nodeTypes.Anchor
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'parameter', []);

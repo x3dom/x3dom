@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DInfoNode
          * @constructs x3dom.nodeTypes.X3DInfoNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all nodes that contain only information without visual semantics.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DInfoNode.superClass.call(this, ctx);

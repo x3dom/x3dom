@@ -19,6 +19,8 @@
         var backPath = "";
         for( var i = 0; i < depth -1; ++i)
             backPath+="../"
+
+         backPath = backPath.replace('//','/');
     ?>
 
     <script src="<?js= backPath ?>../static/scripts/prettify/prettify.js"> </script>
@@ -55,7 +57,7 @@
 
 <div id="docu-navbar">
 
-    <a href="<?js= backPath+ (this.api == 'author' ? '/author/' : '/developer/' )  ?>index.html">
+    <a href="<?js= backPath+ (this.api == 'author' ? 'author/' : 'developer/' )  ?>index.html">
         <div class="docu-navitem <?js= (title == 'Overview'? 'docu-navitem-active' : '') ?>">Overview</div>
     </a>
 

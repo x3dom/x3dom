@@ -16,22 +16,25 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedQuadSet
          * @constructs x3dom.nodeTypes.IndexedQuadSet
-         * @x3d x.x
+         * @x3d 3.3
          * @component CADGeometry
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposedGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The IndexedQuadSet node represents a 3D shape composed of a collection of individual
+         * quadrilaterals (quads).
          */
         function (ctx) {
             x3dom.nodeTypes.IndexedQuadSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * IndexedQuadSet uses the indices in its index field to specify the vertices of each
+             * quad from the coord field.
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedQuadSet
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFInt32(ctx, 'index', []);

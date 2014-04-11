@@ -21,13 +21,16 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DColorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This node defines a set of RGB colours to be used in the fields of another node.
+         * Color nodes are only used to specify multiple colours for a single geometric shape, such as colours for the faces or vertices of an IndexedFaceSet.
+         * A Material node is used to specify the overall material parameters of lit geometry.Hint: colors are often controlled by Material instead.
          */
         function (ctx) {
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The RGB colors.
              * @var {MFColor} color
              * @memberof x3dom.nodeTypes.Color
              * @initvalue []

@@ -16,32 +16,36 @@ x3dom.registerNodeType(
         /**
          * Constructor for PointSet
          * @constructs x3dom.nodeTypes.PointSet
-         * @x3d x.x
+         * @x3d 2.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc PointSet is a node that contains a set of colored 3D points, represented by contained Color and Coordinate nodes.
+         * Color values or a Material emissiveColor is used to draw lines and points. Hint: use a different color (or emissiveColor) than the background color.
+         * Hint: insert a Shape node before adding geometry or Appearance. You can also substitute a type-matched ProtoInstance for content.
          */
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Coordinate node specifiying the vertices used by the geometry.
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.PointSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
+             * If NULL the geometry is rendered using the Material and texture defined in the Appearance node.
+             * If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.PointSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);

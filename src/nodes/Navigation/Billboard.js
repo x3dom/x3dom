@@ -16,11 +16,16 @@ x3dom.registerNodeType(
         /**
          * Constructor for Billboard
          * @constructs x3dom.nodeTypes.Billboard
-         * @x3d x.x
+         * @x3d 2.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Billboard is a Grouping node that can contain most nodes.
+         * Content faces the user, rotating about the specified axis. Set axisOfRotation=0 0 0 to fully face the user's camera.
+         * Hint: Put Billboard as close to the geometry as possible, nested inside Transform for local coordinate system.
+         * Hint: don't put Viewpoint inside a Billboard.
+         * Hint: insert a Shape node before adding geometry or Appearance.
          */
         function (ctx) {
             x3dom.nodeTypes.Billboard.superClass.call(this, ctx);
@@ -29,11 +34,11 @@ x3dom.registerNodeType(
             // the special case of viewer-alignment is indicated.
 
             /**
-             *
+             * axisOfRotation direction is relative to local coordinate system. Hint: axis 0 0 0 always faces viewer.
              * @var {SFVec3f} axisOfRotation
              * @memberof x3dom.nodeTypes.Billboard
              * @initvalue 0,1,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);

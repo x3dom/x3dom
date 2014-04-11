@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DSensorNode
          * @constructs x3dom.nodeTypes.X3DSensorNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base type for all sensors.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);

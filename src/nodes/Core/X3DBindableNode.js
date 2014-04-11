@@ -16,18 +16,19 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DBindableNode
          * @constructs x3dom.nodeTypes.X3DBindableNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc X3DBindableNode is the abstract base type for all bindable children nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Pushes/pops the node on/from the top of the bindable stack
              * @var {SFBool} bind
              * @memberof x3dom.nodeTypes.X3DBindableNode
              * @initvalue false
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bind', false);
 
             /**
-             *
+             * Description of the bindable node
              * @var {SFString} description
              * @memberof x3dom.nodeTypes.X3DBindableNode
              * @initvalue ""

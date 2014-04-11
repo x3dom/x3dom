@@ -18,9 +18,10 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Field
          * @x3d x.x
          * @component Core
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Class represents a field of a node containing name, type and value
          */
         function (ctx) {
             x3dom.nodeTypes.Field.superClass.call(this, ctx);
