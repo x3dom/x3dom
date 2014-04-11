@@ -16,22 +16,22 @@ x3dom.registerNodeType(
         /**
          * Constructor for CADLayer
          * @constructs x3dom.nodeTypes.CADLayer
-         * @x3d x.x
+         * @x3d 3.1
          * @component CADGeometry
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The CADLayer node defines a hierarchy of nodes used for showing layer structure for the CAD model.
          */
         function (ctx) {
             x3dom.nodeTypes.CADLayer.superClass.call(this, ctx);
 
-
             /**
-             *
+             * The name field describes the content of the layer.
              * @var {SFString} name
              * @memberof x3dom.nodeTypes.CADLayer
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx,'name', "");

@@ -17,11 +17,13 @@ x3dom.registerNodeType(
         /**
          * Constructor for QuadSet
          * @constructs x3dom.nodeTypes.QuadSet
-         * @x3d x.x
+         * @x3d 3.3
          * @component CADGeometry
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposedGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The QuadSet node represents a 3D shape that represents a collection of individual planar
+         * quadrilaterals.
          */
         function (ctx) {
             x3dom.nodeTypes.QuadSet.superClass.call(this, ctx);
