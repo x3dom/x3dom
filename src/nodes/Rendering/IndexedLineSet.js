@@ -16,74 +16,82 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedLineSet
          * @constructs x3dom.nodeTypes.IndexedLineSet
-         * @x3d x.x
+         * @x3d 2.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc IndexedLineSet is a geometry node that can contain a Color node and a Coordinate node.
+         * Color values or a Material emissiveColor is used to draw lines and points. Lines are not lit, are not texture-mapped, and do not participate in collision detection.
+         * Hint: use a different color (or emissiveColor) than the background color.
+         * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat each initial vertex to close each polygon outline.
+         * Hint: insert a Shape node before adding geometry or Appearance. You can also substitute a type-matched ProtoInstance for content.
          */
         function (ctx) {
             x3dom.nodeTypes.IndexedLineSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Whether Color node is applied per vertex (true) or per polygon (false).
              * @var {SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'colorPerVertex', true);  // TODO
 
 
             /**
-             *
+             * If the "attrib" field is not empty it shall contain a list of per-vertex attribute information for programmable shaders
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
             /**
-             *
+             * Coordinate node specifiying the vertices used by the geometry.
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
+             * If NULL the geometry is rendered using the Material and texture defined in the Appearance node. If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
 
             /**
-             *
+             * coordIndex indices provide order in which coordinates are applied.
+             * Order starts at index 0, commas are optional between sets, use -1 to separate indices for each polyline.
+             * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
              * @var {MFInt32} coordIndex
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFInt32(ctx, 'coordIndex', []);
 
             /**
-             *
+             * colorIndex indices provide order in which colors are applied.
+             * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
              * @var {MFInt32} colorIndex
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFInt32(ctx, 'colorIndex', []);

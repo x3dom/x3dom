@@ -19,11 +19,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for Arc2D
          * @constructs x3dom.nodeTypes.Arc2D
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry2D
          * @status experimental
          * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is an Arc
          */
         function (ctx) {
             x3dom.nodeTypes.Arc2D.superClass.call(this, ctx);

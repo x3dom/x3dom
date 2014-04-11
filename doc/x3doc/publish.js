@@ -751,7 +751,7 @@ function linkFromContextTo( longnameTo, toNameSpace, linktext, cssClass)
             }
         }
     }
-    return link;
+    return (!link)?linktext:link;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

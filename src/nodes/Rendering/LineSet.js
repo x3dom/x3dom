@@ -16,53 +16,60 @@ x3dom.registerNodeType(
         /**
          * Constructor for LineSet
          * @constructs x3dom.nodeTypes.LineSet
-         * @x3d x.x
+         * @x3d 3.1
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc LineSet is a geometry node that can contain a Color node and a Coordinate node.
+         * Color values or a Material emissiveColor is used to draw lines and points.
+         * Lines are not lit, are not texture-mapped, and do not participate in collision detection.
+         * Hint: use a different color (or emissiveColor) than the background color.
+         * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat each initial vertex to close each polygon outline.
+         * Hint: insert a Shape node before adding geometry or Appearance.
          */
         function (ctx) {
             x3dom.nodeTypes.LineSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * vertexCount describes how many vertices are used in each polyline from Coordinate field. Coordinates are assigned to each line by taking vertexCount[n] vertices from Coordinate field.
              * @var {MFInt32} vertexCount
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue []
-             * @field x3dom
+             * @field x3d
+             * @range 2..infinity
              * @instance
              */
             this.addField_MFInt32(ctx, 'vertexCount', []);
 
 
             /**
-             *
+             * If the "attrib" field is not empty it shall contain a list of per-vertex attribute information for programmable shaders
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
             /**
-             *
+             * Coordinate node specifiying the vertices used by the geometry.
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
+             * If NULL the geometry is rendered using the Material and texture defined in the Appearance node. If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);

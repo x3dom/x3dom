@@ -16,22 +16,25 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedTriangleSet
          * @constructs x3dom.nodeTypes.IndexedTriangleSet
-         * @x3d x.x
+         * @x3d 3.1
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposedGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc IndexedTriangleSet is a geometry node that can contain a Color, Coordinate, Normal and TextureCoordinate node.
+         * Hint: insert a Shape node before adding geometry or Appearance.
+         * You can also substitute a type-matched ProtoInstance for content.
          */
         function (ctx) {
             x3dom.nodeTypes.IndexedTriangleSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * index specifies triangles by connecting Coordinate vertices.
              * @var {MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedTriangleSet
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFInt32(ctx, 'index', []);
