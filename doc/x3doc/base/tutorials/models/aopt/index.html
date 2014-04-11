@@ -33,29 +33,69 @@
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>AOPT Optimized X3DOM Content</h1>
+            <h1>Using AOPT to Create Optimized X3DOM Content</h1>
         </div>            
         <br>
-		<p>
-		The InstantReality platform provides its users tools to help them better understand and optimize their (possibly large) 3D data sets. 
-		One such tool is aopt that (among other things) can help you in various ways to optimize 3D models with a special focus on scene-graph data.
+        <p>
+        X3DOM is able to use several kinds of geometry formats.
+        Besides the common X3D geometry nodes, there is a non-standardized, optimized <i>BinaryGeometry</i> node available in X3DOM.
+        Instead of including a text-based description of the geometry data (for instance, vertex positions), it uses external binary files.
+        This is very useful for several purposes: First of all, binary data is usually more compact, which means that you can save bandwidth.
+        Second, your HTML page will look much less cluttered, since it does not contain the large sets of vertex and index data any more.
+        Finally, a third advantage is that you 
         </p>
-		Get the AOPT tool <a href="http://www.instantreality.org/downloads/" target="_blank">here</a>.
+		<p>        
+		The <a href="http://www.instantreality.org/">InstantReality</a> platform provides its users tools to help them better understand and optimize their (possibly large) 3D data sets. 
+		One such tool is AOPT that (among other things) can help you in various ways to optimize 3D models with a special focus on scene-graph data.
+		You can get it <a href="http://www.instantreality.org/downloads/">here</a>.
+        Please note that AOPT is free for non-commercial use.
+        If you want to use it in commercial projects, please obtain a license first.
+        </p>
+
 		<p>
 		While on Windows and Linux the aopt tool is simply located in Instant Reality’s bin folder, on Mac it is sort of hidden here:
-		<br><br><span style="background-color: lightgrey">   /Applications/Instant Player.app/Contents/MacOS/aopt   </span>
+		
+        <pre class="prettyprint">
+        <code>
+    /Applications/Instant Player.app/Contents/MacOS/aopt  
+        </code></pre>        
         </p>
-		 <h2>aopt</h2>      
-		 aopt is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering “aopt” 
-		 will provide you with a list of all available command line arguments and some examples of its usage. 
-		 A very basic procedure for example would be to convert a file that InstantReality can open (e.g. in obj, ply or wrl format) into an X3D file:
-        <br><br><span style="background-color: lightgrey">aopt –i [input.foo] -x [output].x3d </span><br><br>
-		(Note: leave out “[” and “]” for the actual command line with your files.)
-		<br><br>
-		Or to HTML:<br>
-		<span style="background-color: lightgrey">aopt –i [input.foo] -N [output].html </span><br><br>
-		For a general introduction to data conversion with aopt check here. Generelly, you get some more advice calling aopt -h and aopt -H.
-		<p>               
+        
+		APOT is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering “aopt” 
+		will provide you with a list of all available command line arguments and some examples of its usage.        
+		A very basic procedure, for example, would be to convert a file that InstantReality can open (e.g. in obj, ply or wrl format) into an X3D file:
+        <pre class="prettyprint">
+        <code>
+    aopt –i myFile.foo -x myResult.x3d
+        </code></pre>  
+        
+		You can also directly convert any input to an X3DOM HTML page:<br>
+		<pre class="prettyprint">
+        <code>
+    aopt –i myFile.foo -N myResult.x3d
+        </code></pre>
+        
+        To create optimized BinaryGeometry nodes, you can, for instance, use the following command with <a href="myModel.x3d">this</a> example file:<br>
+		<pre class="prettyprint">
+        <code>
+    aopt –i myModel.x3d -F Scene:"cacheopt(true)" -G binGeo/:c -N example.html
+        </code></pre>
+        
+        Here, two new commands have been used to process the model data.
+        The "-F" command merges all parts with the same material together.
+        It then performs a cache optimization by re-arranging geometry data for faster rendering,
+        and finally splits the resulting parts again in order to fulfill a 16 bit index limit, as it is present with WebGL 1.0.
+        The second command, "-G", performs the actual conversion to X3DOM BinaryGeometry.
+        It exports a compressed ("c" = "compact") version of the model, referring to binary files in the folder "binGeo".
+        The resulting X3DOM nodes are contained in the "example.html" file.
+        
+        You can, of course, also export to BinaryGeometry without previous optimization.
+        By specifing and additional "a" flag (e.g., "-G binGeo/:ac"), the exporter will use a non-indexed version of the mesh automatically,
+        in case the index limit of WebGL can not be met by the model data ("a" = "autoindex").
+        
+        In the example file below, you can find an optimized model, created by the above AOPT example line, using the <i>BinaryGeometry</i> node.
+                
+        <p>                       
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
@@ -64,14 +104,13 @@
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
-                <li><a href="HelloX3DOM.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+                <li><a href="aopt.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
             </ul>      
             <br>
             
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
-                <li><a href="../../../node/foo.html">FOO</a></li>
-                <li><a href="../../../node/bar.html">BAR</a></li>
+                <li><a href="../../../author/Geometry3D/BinaryGeometry.html">BinaryGeometry</a></li>
             </ul>
         </div>
 

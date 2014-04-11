@@ -57,20 +57,20 @@
 		
 		
         <p>
-		Make sure that you close the inline tag, otherwise it can lead to strange behaviour. Do not use a self closing tag.
-		Your result could look like this: 
+		Make sure that you close the <i>inline</i> tag, otherwise it can lead to strange behaviour. Do not use a self closing tag.
+		If you, for instance, include <a href="Deer.x3d">this X3D file</a>, using the <i>inline</i> node, your result could look like this: 
         </p>
 		
         <div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">My own X3D-Model in X3DOM.</div>
+                <div class="docuCaption">An external X3D scene, loaded in X3DOM.</div>
             </div>
         </div>       
 
 <p>
 		To manipulate our model, it's necessary to make sure we don't have any name conflicts. 
-		Therefore we use a nameSpace. As shown in the previous example <a href=" ../htmlCSS/index.html" target="_blank">X3DOM, HTML, CSS and some JavaScript"</a>
+		Therefore we use a nameSpace. As shown in the previous example <a href="../../basics/htmlCSS/index.html">X3DOM, HTML, CSS and some JavaScript</a>
 		we access a node by it's ID. In order to get those ID's we set the attribute mapDEFToID on true.
 </p>
 
@@ -99,7 +99,7 @@ This allows us to change the deer's nose to a more reddish color by using a java
 	   The positive side effect of using inline is that models will be load when the X3DOM context is ready, which results in an empty
 	   X3DOM context but not an empty page. The user can see and interact with the website while X3DOM loads the model and shows the loading status in the upper left corner of it's canvas.
 	   <p>
-	   However if your model is small, and by small we talking about less than a few thousand triangles, you can include it directly in your html, without using inline. 
+	   However if your model is small, and by small we talking about less than a few thousand triangles, you can include it directly in your HTML page, without using inline. 
 	   </p>
 	   <pre class="prettyprint"><code class="language-html">
     &lt;x3d width='500px' height='400px'&gt; 
@@ -108,16 +108,17 @@ This allows us to change the deer's nose to a more reddish color by using a java
 	&lt;Appearance&gt;
 	&lt;Material diffuseColor='0.6 0.6 0.6' specularColor='0.8 0.8 0.8' shininess='0.145' /&gt;
 	&lt;/Appearance&gt;
-	&lt;IndexedFaceSet solid='false' coordIndex='Your Coords here'&gt; &lt;/IndexedFaceSet&gt;
+	&lt;IndexedFaceSet solid='false' coordIndex='...'&gt; ... &lt;/IndexedFaceSet&gt;
 	&lt;/Shape&gt;
     &lt;/scene&gt; 
     &lt;/x3d&gt;           
         </code></pre>
 		
 		<p>
-		If you copy your X3D model be aware of using closing tags instead of self-closing tags.<br>
-		When you include your model directly your application 
-		doesn't need to run on a server but while the application loads the page will be blank.
+		In this case, however, be aware of using closing tags, instead of self-closing tags.
+        The reason for this is that X3D files are usually using XML encoding, and you cannot directly insert XML content into HTML pages.<br>
+		Including small model data directly can have the advantage that your application doesn't need to run on a Web server,
+        but the Web page will have to be fully loaded (including all model data) before any page content is displayed.
 		</p>
         <p>               
         <a href="#">Back to page top &#10548;</a>

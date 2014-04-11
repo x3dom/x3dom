@@ -14,9 +14,7 @@
 		<Background DEF="WO_World"
 		            groundColor="0.8 0.8 0.8"
 		            skyColor="0.8 0.8 0.8"
-		            />
-		            <Viewpoint position="-1.94639 1.79771 -2.89271" orientation="0.03886 0.99185 0.12133 3.75685"
-                    	zNear="1.68178" zFar="6.53435" description="defaultX3DViewpointNode"></Viewpoint>
+		            />		            
 		<Transform DEF="Sun_TRANSFORM"
 		           translation="0.240168 0.542886 0.457424"
 		           scale="11.598377 11.598377 11.598377"
