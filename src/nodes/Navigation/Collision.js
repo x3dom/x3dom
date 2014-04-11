@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Collision
          * @constructs x3dom.nodeTypes.Collision
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
@@ -54,8 +54,28 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
 
+
             // TODO; add Slots: collideTime, isActive
-        
+            /**
+             * NOT YET IMPLEMENTED. The time of collision.
+             * @var {SFTime} collideTime
+             * @memberof x3dom.nodeTypes.Collision
+             * @initvalue 0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFTime ("collideTime", 0);
+
+            /**
+             * NOT YET IMPLEMENTED. The value of the isActive field indicates the current state of the Collision node.
+             * An isActive TRUE event is generated when a collision occurs. An isActive FALSE event is generated when a collision no longer occurs.
+             * @var {SFBool} isActive
+             * @memberof x3dom.nodeTypes.Collision
+             * @initvalue true
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool ("isActive", true);
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)

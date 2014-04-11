@@ -16,14 +16,16 @@ x3dom.registerNodeType(
         /**
          * Constructor for Color
          * @constructs x3dom.nodeTypes.Color
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DColorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This node defines a set of RGB colours to be used in the fields of another node.
          * Color nodes are only used to specify multiple colours for a single geometric shape, such as colours for the faces or vertices of an IndexedFaceSet.
-         * A Material node is used to specify the overall material parameters of lit geometry.Hint: colors are often controlled by Material instead.
+         * A Material node is used to specify the overall material parameters of lit geometry.
+         * If both a Material node and a Color node are specified for a geometric shape, the colours shall replace the diffuse component of the material.
+         * RGB or RGBA textures take precedence over colours; specifying both an RGB or RGBA texture and a Color node for geometric shape will result in the Color node being ignored.
          */
         function (ctx) {
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
@@ -32,9 +34,10 @@ x3dom.registerNodeType(
             /**
              * The RGB colors.
              * @var {MFColor} color
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.Color
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFColor(ctx, 'color', []);

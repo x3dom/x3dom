@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for Normal
          * @constructs x3dom.nodeTypes.Normal
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Normal is a set of 3D surface-normal vectors Normal values are optional perpendicular directions, used per-polygon or per-vertex for lighting and shading.
@@ -31,6 +31,7 @@ x3dom.registerNodeType(
             /**
              * set of unit-length normal vectors, corresponding to indexed polygons or vertices.
              * @var {MFVec3f} vector
+             * @range [-1, 1]
              * @memberof x3dom.nodeTypes.Normal
              * @initvalue []
              * @field x3dom

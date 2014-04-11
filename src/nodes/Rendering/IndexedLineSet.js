@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedLineSet
          * @constructs x3dom.nodeTypes.IndexedLineSet
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
@@ -78,6 +78,7 @@ x3dom.registerNodeType(
              * Order starts at index 0, commas are optional between sets, use -1 to separate indices for each polyline.
              * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
              * @var {MFInt32} coordIndex
+             * @range [0, inf] or -1
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []
              * @field x3d
@@ -89,6 +90,7 @@ x3dom.registerNodeType(
              * colorIndex indices provide order in which colors are applied.
              * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
              * @var {MFInt32} colorIndex
+             * @range [0, inf] or -1
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []
              * @field x3d

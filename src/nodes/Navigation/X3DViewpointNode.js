@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DViewpointNode
          * @constructs x3dom.nodeTypes.X3DViewpointNode
-         * @x3d x.x
+         * @x3d 3.2
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DBindableNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc A node of node type X3DViewpointNode defines a specific location in the local coordinate system from which the user may view the scene.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);

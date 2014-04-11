@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for NavigationInfo
          * @constructs x3dom.nodeTypes.NavigationInfo
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DNavigationInfoNode
@@ -42,6 +42,7 @@ x3dom.registerNodeType(
             /**
              * defines the navigation type
              * @var {MFString} type
+             * @range {"ANY","WALK","EXAMINE","FLY","LOOKAT","NONE","EXPLORE",...}
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue ["EXAMINE","ANY"]
              * @field x3d
@@ -93,6 +94,7 @@ x3dom.registerNodeType(
              * Hint: keep (avatarSize.CollisionDistance / visibilityLimit) less than 10,000 to avoid aliasing artifacts (i.e. polygon 'tearing').
              * Interchange profile hint: this field may be ignored.
              * @var {SFFloat} visibilityLimit
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 0.0
              * @field x3d
@@ -105,7 +107,7 @@ x3dom.registerNodeType(
              * Warning: default 1 m/s usually seems slow for ordinary navigation.
              * Interchange profile hint: this field may be ignored.
              * @var {SFFloat} speed
-             * @range 0..infinity
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 1.0
              * @field x3d
@@ -117,6 +119,7 @@ x3dom.registerNodeType(
             /**
              * The transitionTime field specifies the duration of any viewpoint transition
              * @var {SFTime} transitionTime
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 1.0
              * @field x3d
@@ -127,7 +130,7 @@ x3dom.registerNodeType(
             /**
              * Specifies the transition mode.
              * @var {MFString} transitionType
-             * @range [LINEAR, TELEPORT, ANIMATE, LINEAR_CONSTVELOCITY]
+             * @range [LINEAR, TELEPORT, ANIMATE, ...]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue ["LINEAR"]
              * @field x3dom

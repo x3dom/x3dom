@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for Inline
          * @constructs x3dom.nodeTypes.Inline
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Networking
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Inline is a Grouping node that can load nodes from another X3D scene via url.

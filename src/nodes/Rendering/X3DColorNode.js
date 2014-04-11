@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DColorNode
          * @constructs x3dom.nodeTypes.X3DColorNode
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for color specifications in X3D.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DColorNode.superClass.call(this, ctx);

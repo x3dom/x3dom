@@ -16,32 +16,36 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DComposedGeometryNode
          * @constructs x3dom.nodeTypes.X3DComposedGeometryNode
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all composed 3D geometry in X3D.
+         * A composed geometry node type defines an abstract type that composes geometry from a set of nodes that define individual components.
+         * Composed geometry may have color, coordinates, normal and texture coordinates supplied.
+         * The rendered output of the combination of these is dependent on the concrete node definition.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * If colorPerVertex is FALSE, colours are applied to each face. If colorPerVertex is true, colours are applied to each vertex.
              * @var {SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'colorPerVertex', true);
 
             /**
-             *
+             * If normalPerVertex is FALSE, colours are applied to each face. If normalPerVertex is true, normals are applied to each vertex.
              * @var {SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
@@ -58,7 +62,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * If the attrib field is not empty it shall contain a list of per-vertex attribute information for programmable shaders.
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
@@ -69,7 +73,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Contains a Coordinate node.
              * @var {SFNode} coord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
@@ -79,7 +83,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
+             * If the normal field is not NULL, it shall contain a Normal node whose normals are applied to the vertices or faces of the X3DComposedGeometryNode in a manner exactly equivalent to that described above for applying colours to vertices/faces (where normalPerVertex corresponds to colorPerVertex and normalIndex corresponds to colorIndex).
+             * If the normal field is NULL, the browser shall automatically generate normals in accordance with the node's definition. If the node does not define a behaviour, the default is to generate an averaged normal for all faces that share that vertex.
              * @var {SFNode} normal
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.Normal
@@ -89,7 +94,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
 
             /**
-             *
+             * If the color field is NULL, the geometry shall be rendered normally using the Material and texture defined in the Appearance node.
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DColorNode
@@ -99,7 +104,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             /**
-             *
+             * If the texCoord field is not NULL, it shall contain a TextureCoordinate node.
              * @var {SFNode} texCoord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode

@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DGeometricPropertyNode
          * @constructs x3dom.nodeTypes.X3DGeometricPropertyNode
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all geometric property node types defined in X3D.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DGeometricPropertyNode.superClass.call(this, ctx);

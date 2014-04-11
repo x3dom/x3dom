@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for Coordinate
          * @constructs x3dom.nodeTypes.Coordinate
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DCoordinateNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Coordinate builds geometry using a set of 3D coordinates.
@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * @var {MFVec3f} point
              * @memberof x3dom.nodeTypes.Coordinate
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFVec3f(ctx, 'point', []);

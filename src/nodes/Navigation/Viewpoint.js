@@ -16,18 +16,24 @@ x3dom.registerNodeType(
         /**
          * Constructor for Viewpoint
          * @constructs x3dom.nodeTypes.Viewpoint
-         * @x3d x.x
+         * @x3d 3.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DViewpointNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Viewpoint provides a specific location and direction where the user may view the scene.
+         * The principalPoint extention allows to set asymmetric frustums.
          */
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Preferred minimum viewing angle from this viewpoint in radians.
+             * Small field of view roughly corresponds to a telephoto lens, large field of view roughly corresponds to a wide-angle lens.
+             * Hint: modifying Viewpoint distance to object may be better for zooming.
+             * Warning: fieldOfView may not be correct for different window sizes and aspect ratios.
+             * Interchange profile hint: this field may be ignored.
              * @var {SFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0.785398

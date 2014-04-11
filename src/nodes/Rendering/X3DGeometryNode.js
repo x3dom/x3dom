@@ -16,18 +16,19 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DGeometryNode
          * @constructs x3dom.nodeTypes.X3DGeometryNode
-         * @x3d x.x
+         * @x3d 3.0
          * @component Rendering
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all geometry in X3D.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies whether backface-culling is used. If solid is TRUE only front-faces are drawn.
              * @var {SFBool} solid
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'solid', true);
 
             /**
-             *
+             * Specifies how front- and backface are computed for a vertex set. Setting ccw to FALSE, swaps the front- and backfaces.
              * @var {SFBool} ccw
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
@@ -45,11 +46,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'ccw', true);
-            // Most geo primitives use geo cache and others might later on,
-            // but one should be able to disable cache per geometry node.
 
             /**
-             *
+             * Most geo primitives use geo cache and others might later on, but one should be able to disable cache per geometry node.
              * @var {SFBool} useGeoCache
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
@@ -60,10 +59,6 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether this geometry should be rendered with or without lighting.
-             */
-
-            /**
-             *
              * @var {SFBool} lit
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true

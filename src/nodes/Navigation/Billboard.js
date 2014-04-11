@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for Billboard
          * @constructs x3dom.nodeTypes.Billboard
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Navigation
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Billboard is a Grouping node that can contain most nodes.
@@ -29,9 +29,6 @@ x3dom.registerNodeType(
          */
         function (ctx) {
             x3dom.nodeTypes.Billboard.superClass.call(this, ctx);
-
-            // When the axisOfRotation field is set to (0, 0, 0),
-            // the special case of viewer-alignment is indicated.
 
             /**
              * axisOfRotation direction is relative to local coordinate system. Hint: axis 0 0 0 always faces viewer.

@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for Anchor
          * @constructs x3dom.nodeTypes.Anchor
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Networking
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Anchor is a Grouping node that can contain most nodes. Clicking Anchored geometry loads content specified by the url field.
@@ -48,6 +48,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFString(ctx, 'parameter', []);
+
+            /**
+             * The description field in the Anchor node specifies a textual description of the Anchor node.
+             * This may be used by browser-specific user interfaces that wish to present users with more detailed information about the Anchor.
+             * @var {SFString} description
+             * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFString(ctx, 'description', "");
         
         },
         {

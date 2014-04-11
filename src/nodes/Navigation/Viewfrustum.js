@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DViewpointNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Viewfrustum node allows to define a camera position and projection utilizing a standard OpenGL projection/modelview pair.
          */
         function (ctx) {
             x3dom.nodeTypes.Viewfrustum.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Camera modelview matrix
              * @var {SFMatrix4f} modelview
              * @memberof x3dom.nodeTypes.Viewfrustum
              * @initvalue 1,0,0,0
@@ -40,7 +41,7 @@ x3dom.registerNodeType(
                 0, 0, 0, 1);
 
             /**
-             *
+             * Camera projection matrix
              * @var {SFMatrix4f} projection
              * @memberof x3dom.nodeTypes.Viewfrustum
              * @initvalue 1,0,0,0

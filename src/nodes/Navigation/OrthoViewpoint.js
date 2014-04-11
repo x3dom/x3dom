@@ -16,58 +16,63 @@ x3dom.registerNodeType(
         /**
          * Constructor for OrthoViewpoint
          * @constructs x3dom.nodeTypes.OrthoViewpoint
-         * @x3d x.x
+         * @x3d 3.2
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DViewpointNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The OrthoViewpoint node defines a viewpoint that provides an orthographic view of the scene.
+         * An orthographic view is one in which all projectors are parallel to the projector from centerOfRotation to position.
          */
         function (ctx) {
             x3dom.nodeTypes.OrthoViewpoint.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The fieldOfView field specifies minimum and maximum extents of the view in units of the local coordinate system
              * @var {MFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue [-1,-1,1,1]
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'fieldOfView', [-1, -1, 1, 1]);
 
             /**
-             *
+             * Position (x, y, z in meters) relative to local coordinate system.
              * @var {SFVec3f} position
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,10
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
 
             /**
-             *
+             * Rotation (axis, angle in radians) of Viewpoint, relative to default -Z axis direction in local coordinate system.
+             * Hint: this is orientation _change_ from default direction (0 0 -1).
+             * Hint: complex rotations can be accomplished axis-by-axis using parent Transforms.
              * @var {SFRotation} orientation
+             * @range [-1, 1] or [-inf, inf]
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,0,1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
 
             /**
-             *
+             * centerOfRotation point relates to NavigationInfo EXAMINE mode.
              * @var {SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
 
             /**
-             *
+             * z-near position; used for clipping
              * @var {SFFloat} zNear
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0.1
@@ -77,7 +82,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'zNear', 0.1);
 
             /**
-             *
+             * z-far position; used for clipping
              * @var {SFFloat} zFar
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 10000

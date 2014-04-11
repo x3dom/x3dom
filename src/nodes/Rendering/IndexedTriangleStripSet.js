@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedTriangleStripSet
          * @constructs x3dom.nodeTypes.IndexedTriangleStripSet
-         * @x3d 3.1
+         * @x3d 3.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposedGeometryNode
@@ -29,8 +29,9 @@ x3dom.registerNodeType(
 
 
             /**
-             * index specifies triangles by connecting Coordinate vertices.
+             * Index specifies triangles by connecting Coordinate vertices.
              * @var {MFInt32} index
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.IndexedTriangleStripSet
              * @initvalue []
              * @field x3d

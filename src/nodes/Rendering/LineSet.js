@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for LineSet
          * @constructs x3dom.nodeTypes.LineSet
-         * @x3d 3.1
+         * @x3d 3.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
@@ -35,10 +35,10 @@ x3dom.registerNodeType(
             /**
              * vertexCount describes how many vertices are used in each polyline from Coordinate field. Coordinates are assigned to each line by taking vertexCount[n] vertices from Coordinate field.
              * @var {MFInt32} vertexCount
+             * @range [2, inf]
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue []
              * @field x3d
-             * @range 2..infinity
              * @instance
              */
             this.addField_MFInt32(ctx, 'vertexCount', []);

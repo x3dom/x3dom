@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for LOD
          * @constructs x3dom.nodeTypes.LOD
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLODNode
@@ -33,10 +33,10 @@ x3dom.registerNodeType(
             /**
              * Camera-to-object distance transitions for each child level, where range values go from near to far. For n range values, you must have n+1 child levels! Hint: can add an empty Group node as nonrendering final child.
              * @var {MFFloat} range
-             * @range 0..infinity
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.LOD
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, "range", []);

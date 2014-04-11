@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for PointSet
          * @constructs x3dom.nodeTypes.PointSet
-         * @x3d 2.0
+         * @x3d 3.0
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
