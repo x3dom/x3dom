@@ -16,38 +16,39 @@ x3dom.registerNodeType(
         /**
          * Constructor for Inline
          * @constructs x3dom.nodeTypes.Inline
-         * @x3d x.x
+         * @x3d 2.0
          * @component Networking
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Inline is a Grouping node that can load nodes from another X3D scene via url.
          */
         function (ctx) {
             x3dom.nodeTypes.Inline.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Each specified URL shall refer to a valid X3D file that contains a list of children nodes, prototypes and routes at the top level. Hint: Strings can have multiple values, so separate each string by quote marks. Warning: strictly match directory and filename capitalization for http links!
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'url', []);
 
             /**
-             *
+             * Specifies whether the X3D file specified by the url field is loaded. Hint: use LoadSensor to detect when loading is complete. TRUE: load immediately (it's also possible to load the URL at a later time by sending a TRUE event to the load field); FALSE: no action is taken (by sending a FALSE event to the load field of a previously loaded Inline, the contents of the Inline will be unloaded from the scene graph)
              * @var {SFBool} load
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'load', true);
 
             /**
-             *
+             * Specifies the namespace of the Inline node.
              * @var {MFString} nameSpaceName
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue []
@@ -57,7 +58,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'nameSpaceName', []);
 
             /**
-             *
+             * Specifies whether the DEF value is used as id when no other id is set.
              * @var {SFBool} mapDEFToID
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue false

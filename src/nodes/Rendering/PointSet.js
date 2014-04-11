@@ -40,11 +40,12 @@ x3dom.registerNodeType(
             this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
+             * If NULL the geometry is rendered using the Material and texture defined in the Appearance node.
+             * If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.PointSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
