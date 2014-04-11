@@ -39,7 +39,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
 
     if (!x3dom.caps.MOBILE) {
         shader =    "attribute vec3 position;\n" +
-                    "attribute vec2 texcoord;\n" +
+                    "attribute float id;\n" +
 					"uniform vec3 bgCenter;\n" +
 					"uniform vec3 bgSize;\n" +
 					"uniform float bgPrecisionMax;\n" +
@@ -64,7 +64,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "   gl_PointSize = 2.0;\n" +
 					"   if (writeShadowIDs > 0.0) {\n" +
                     //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
-                    "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +
+                    "       float ID = id + writeShadowIDs;\n" +
                     //      however, let's ignore this and assume a maximum of 24 bits for all id's
                     "       float h = floor(ID / 256.0);\n" +
                     "       idCoord.x = ID - (h * 256.0);\n" +
@@ -96,7 +96,6 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
     }
     else {
         shader =    "attribute vec3 position;\n" +
-                    "attribute vec2 texcoord;\n" +
                     "attribute float id;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
@@ -112,7 +111,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "    gl_PointSize = 2.0;\n" +
                     "    if (writeShadowIDs > 0.0) {\n" +
                     //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
-                    "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +
+                    "       float ID = id + writeShadowIDs;\n" +
                     //      however, let's ignore this and assume a maximum of 24 bits for all id's
                     "       float h = floor(ID / 256.0);\n" +
                     "       idCoord.x = ID - (h * 256.0);\n" +

@@ -36,7 +36,7 @@ x3dom.shader.PickingIdShader = function(gl)
 x3dom.shader.PickingIdShader.prototype.generateVertexShader = function(gl)
 {
 	var shader =    "attribute vec3 position;\n" +
-                    "attribute vec2 texcoord;\n" +
+                    "attribute float id;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
                     "uniform float bgPrecisionMax;\n" +
@@ -47,7 +47,7 @@ x3dom.shader.PickingIdShader.prototype.generateVertexShader = function(gl)
                     
                     "void main(void) {\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
-					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
+					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
 					"	 }\n" +

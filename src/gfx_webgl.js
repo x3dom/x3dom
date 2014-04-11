@@ -1671,14 +1671,12 @@ x3dom.gfx_webgl = (function () {
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
-
                     //texture coordinate hack for IDs
                     if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
                     {
                         gl.vertexAttribPointer(sp.id,
-                            s_msh._numTexComponents,
-                            s_gl.texCoordType, false,
-                            shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                            1, gl.FLOAT, false,
+                            4, 0);
                         gl.enableVertexAttribArray(sp.id);
                     }
                     else
@@ -2261,8 +2259,8 @@ x3dom.gfx_webgl = (function () {
                 if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
                 {
                     gl.vertexAttribPointer(sp.id,
-                       1, gl.FLOAT, false,
-                       shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                        1, gl.FLOAT, false,
+                       4, 0);
                     gl.enableVertexAttribArray(sp.id);
                 }
                 else

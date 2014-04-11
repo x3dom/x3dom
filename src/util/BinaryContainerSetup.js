@@ -685,7 +685,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         xmlhttp3.onload = function()
         {
-            var i;
+            var i, j;
             var tmp;
 
             if (!shape._webgl)
@@ -714,23 +714,24 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 gl.bindBuffer(gl.ARRAY_BUFFER, idBuffer);
 
                 //due to a current bug, stride is always 0, except for interleaved rendering
-                var texCoordStride = (shape._texCoordStrideOffset[0] === 0) ? 4 : shape._texCoordStrideOffset[0] / 4;
+                var texCoordStride = (shape._texCoordStrideOffset[0] === 0) ? 2 : shape._texCoordStrideOffset[0] / 4;
 
-                var v;
+
+                //Create a buffer for the ids with half size of the texccoord buffer
+                var ids = x3dom.Utils.getArrayBufferView(attribTypeStr, texCoords.length/2);
 
                 //swap x and y, in order to interpret tex coords as FLOAT later on
-                /*for (i = 0; i < texCoords.length; i+=texCoordStride)
+                for (i = 0, j= 0; i < texCoords.length; i+=2, j++)
                 {
-                    v = texCoords[i] + 65536 * texCoords[i+1];
-                    texCoords[i] = v;
-                }   */
+                    ids[j] = texCoords[i+1] * 65536 + texCoords[i];
+                }
 
-                gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+                gl.bufferData(gl.ARRAY_BUFFER, ids, gl.STATIC_DRAW);
 
                 gl.vertexAttribPointer(sp.id,
-                    binGeo._mesh._numTexComponents,
-                    shape._webgl.texCoordType, false,
-                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                    1,
+                    gl.FLOAT, false,
+                    4, 0);
                 gl.enableVertexAttribArray(sp.id);
             }
             else

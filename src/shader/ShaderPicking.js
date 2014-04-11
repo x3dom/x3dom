@@ -66,8 +66,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 
     if (!x3dom.caps.MOBILE) {
         shader =    "attribute vec3 position;\n" +
-                    "attribute vec2 texcoord;\n" +
-                    "attribute vec2 id;\n" +
+                    "attribute float id;\n" +
 					"uniform vec3 bgCenter;\n" +
 					"uniform vec3 bgSize;\n" +
 					"uniform float bgPrecisionMax;\n" +
@@ -96,8 +95,8 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
                     "   vec3 pos = position;\n" +
 
 					"   if (writeShadowIDs > 0.0) {\n" +
-					"	    idCoord = vec2((id.x + writeShadowIDs) / 256.0);\n" +
-    				"       idCoord.x = floor( idCoord.x) / 255.0;\n" +
+					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
+    				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
@@ -125,7 +124,6 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
     }
     else {
         shader =    "attribute vec3 position;\n" +
-                    "attribute vec2 texcoord;\n" +
                     "attribute float id;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
@@ -143,7 +141,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
                     "    gl_PointSize = 2.0;\n" +
                     "    vec3 pos = position;\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
-					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
+					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
 					"	 }\n" +
