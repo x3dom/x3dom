@@ -18,9 +18,10 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.X3DEnvironmentTextureNode
          * @x3d x.x
          * @component CubeMapTexturing
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DTextureNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base type for all node types that specify cubic environment map sources for texture images.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DEnvironmentTextureNode.superClass.call(this, ctx);

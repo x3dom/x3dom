@@ -16,72 +16,74 @@ x3dom.registerNodeType(
         /**
          * Constructor for ComposedCubeMapTexture
          * @constructs x3dom.nodeTypes.ComposedCubeMapTexture
-         * @x3d x.x
+         * @x3d 3.3
          * @component CubeMapTexturing
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DEnvironmentTextureNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ComposedCubeMapTexture node defines a cubic environment map source as an explicit set of
+         * images drawn from individual 2D texture nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.ComposedCubeMapTexture.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Texture for the back of the cubemap
              * @var {SFNode} back
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
-            this.addField_SFNode('back',   x3dom.nodeTypes.Texture);
+            this.addField_SFNode('back',  x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Texture for the front of the cubemap
              * @var {SFNode} front
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('front',  x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Texture for the bottom of the cubemap
              * @var {SFNode} bottom
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('bottom', x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Texture for the top of the cubemap
              * @var {SFNode} top
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('top',    x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Texture for the left side of the cubemap
              * @var {SFNode} left
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('left',   x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Texture for the right side of the cubemap
              * @var {SFNode} right
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('right',  x3dom.nodeTypes.Texture);

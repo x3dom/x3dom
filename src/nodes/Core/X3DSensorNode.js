@@ -21,6 +21,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base type for all sensors.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
