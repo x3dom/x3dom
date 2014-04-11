@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @var {SFVec3f} bboxCenter
              * @memberof x3dom.nodeTypes.X3DBoundedNode
              * @initvalue 0,0,0
-             * @range [-infinity, infinity]
+             * @range [-inf, inf]
              * @field x3d
              * @instance
              */
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @var {SFVec3f} bboxSize
              * @memberof x3dom.nodeTypes.X3DBoundedNode
              * @initvalue -1,-1,-1
-             * @range [0, infinity] or -1
+             * @range [0, inf] or -1
              * @field x3d
              * @instance
              */

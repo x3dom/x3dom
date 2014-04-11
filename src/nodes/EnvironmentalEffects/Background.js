@@ -16,74 +16,25 @@ x3dom.registerNodeType(
         /**
          * Constructor for Background
          * @constructs x3dom.nodeTypes.Background
-         * @x3d x.x
+         * @x3d 3.3
          * @component EnvironmentalEffects
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DBackgroundNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc A background node that uses six static images to compose the backdrop.  For the backUrl,
+         * bottomUrl, frontUrl, leftUrl, rightUrl, topUrl fields, browsers shall support the JPEG and PNG
+         * (see ISO/IEC 15948) image file formats.
          */
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
-
-            var trans = (ctx && ctx.autoGen) ? 1 : 0;
-
-
-            /**
-             *
-             * @var {MFColor} skyColor
-             * @memberof x3dom.nodeTypes.Background
-             * @initvalue [newx3dom.fields.SFColor(0,0,0
-             * @field x3dom
-             * @instance
-             */
-            this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
-
-            /**
-             *
-             * @var {MFFloat} skyAngle
-             * @memberof x3dom.nodeTypes.Background
-             * @initvalue []
-             * @field x3dom
-             * @instance
-             */
-            this.addField_MFFloat(ctx, 'skyAngle', []);
-
-            /**
-             *
-             * @var {MFColor} groundColor
-             * @memberof x3dom.nodeTypes.Background
-             * @initvalue []
-             * @field x3dom
-             * @instance
-             */
-            this.addField_MFColor(ctx, 'groundColor', []);
-
-            /**
-             *
-             * @var {MFFloat} groundAngle
-             * @memberof x3dom.nodeTypes.Background
-             * @initvalue []
-             * @field x3dom
-             * @instance
-             */
-            this.addField_MFFloat(ctx, 'groundAngle', []);
-
-            /**
-             *
-             * @var {SFFloat} transparency
-             * @memberof x3dom.nodeTypes.Background
-             * @initvalue trans
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFFloat(ctx, 'transparency', trans);
 
             /**
              *
              * @var {MFString} backUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
-             * @field x3dom
+             * @range [URI]
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'backUrl', []);
@@ -93,6 +44,7 @@ x3dom.registerNodeType(
              * @var {MFString} bottomUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
+             * @range [URI]
              * @field x3dom
              * @instance
              */
@@ -103,6 +55,7 @@ x3dom.registerNodeType(
              * @var {MFString} frontUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
+             * @range [URI]
              * @field x3dom
              * @instance
              */
@@ -113,6 +66,7 @@ x3dom.registerNodeType(
              * @var {MFString} leftUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
+             * @range [URI]
              * @field x3dom
              * @instance
              */
@@ -123,6 +77,7 @@ x3dom.registerNodeType(
              * @var {MFString} rightUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
+             * @range [URI]
              * @field x3dom
              * @instance
              */
@@ -133,6 +88,7 @@ x3dom.registerNodeType(
              * @var {MFString} topUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
+             * @range [URI]
              * @field x3dom
              * @instance
              */

@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * @var {SFInt32} size
              * @memberof x3dom.nodeTypes.GeneratedCubeMapTexture
              * @initvalue 128
-             * @range (0, infinity)
+             * @range (0, inf)
              * @field x3d
              * @instance
              */

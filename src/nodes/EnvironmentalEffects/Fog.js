@@ -16,46 +16,18 @@ x3dom.registerNodeType(
         /**
          * Constructor for Fog
          * @constructs x3dom.nodeTypes.Fog
-         * @x3d x.x
+         * @x3d 3.3
          * @component EnvironmentalEffects
          * @status experimental
          * @extends x3dom.nodeTypes.X3DFogNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Fog node provides a way to simulate atmospheric effects by blending objects with the colour
+         * specified by the color field based on the distances of the various objects from the viewer. The distances
+         * are calculated in the coordinate space of the Fog node.
          */
         function (ctx) {
             x3dom.nodeTypes.Fog.superClass.call(this, ctx);
 
-
-            /**
-             *
-             * @var {SFColor} color
-             * @memberof x3dom.nodeTypes.Fog
-             * @initvalue 1,1,1
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFColor(ctx, 'color', 1, 1, 1);
-
-            /**
-             *
-             * @var {SFString} fogType
-             * @memberof x3dom.nodeTypes.Fog
-             * @initvalue "LINEAR"
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFString(ctx, 'fogType', "LINEAR");
-
-            /**
-             *
-             * @var {SFFloat} visibilityRange
-             * @memberof x3dom.nodeTypes.Fog
-             * @initvalue 0
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFFloat(ctx, 'visibilityRange', 0);
-        
         },
         {
         }

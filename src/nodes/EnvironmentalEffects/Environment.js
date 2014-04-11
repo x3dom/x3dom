@@ -18,17 +18,16 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Environment
          * @x3d x.x
          * @component EnvironmentalEffects
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DEnvironmentNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Bindable node to setup rendering and culling parameters
          */
         function (ctx) {
             x3dom.nodeTypes.Environment.superClass.call(this, ctx);
 
-            // If TRUE, transparent objects are sorted from back to front (allows explicitly disabling sorting)
-
             /**
-             *
+             * If TRUE, transparent objects are sorted from back to front (allows explicitly disabling sorting)
              * @var {SFBool} sortTrans
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue true
@@ -37,10 +36,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'sortTrans', true);
 
-            // Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
-
             /**
-             *
+             * Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
              * @var {SFBool} shadowExcludeTransparentObjects
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -49,10 +46,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', false);
 
-            // The gamma correction to apply by default, see lighting and gamma tutorial
-
             /**
-             *
+             * The gamma correction to apply by default, see lighting and gamma tutorial
              * @var {SFString} gammaCorrectionDefault
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue "none"
@@ -62,10 +57,9 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'gammaCorrectionDefault', "none"); //"linear");
 
             // boolean flags for feature (de)activation
-            // If TRUE, objects outside the viewing frustum are ignored
 
-            /**
-             *
+           /**
+             * If TRUE, objects outside the viewing frustum are ignored
              * @var {SFBool} frustumCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue true
@@ -74,10 +68,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'frustumCulling', true);
 
-            // If TRUE, objects smaller than the threshold below are ignored
-
             /**
-             *
+             * If TRUE, objects smaller than the threshold below are ignored
              * @var {SFBool} smallFeatureCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -87,7 +79,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
 
             /**
-             *
+             * Objects smaller than the threshold below are ignored
              * @var {SFFloat} smallFeatureThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
@@ -99,7 +91,7 @@ x3dom.registerNodeType(
             // defaults can be >0 since only used upon activation
 
             /**
-             *
+             * If TRUE and occlusion culling supported, objects occluding less than the threshold below are ignored
              * @var {SFBool} occlusionCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -109,10 +101,11 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'occlusionCulling', false);
 
             /**
-             *
+             * Objects occluding less than the threshold below are ignored
              * @var {SFFloat} occlusionVisibilityThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 0.0
+             * @range [0,1]
              * @field x3dom
              * @instance
              */
@@ -121,7 +114,8 @@ x3dom.registerNodeType(
             // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
 
             /**
-             *
+             * If TRUE and occlusion culling supported, only threshold fraction of objects, sorted by their screen
+             * space coverage, are rendered
              * @var {SFBool} lowPriorityCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -131,10 +125,11 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lowPriorityCulling', false);
 
             /**
-             *
+             * Only threshold fraction of objects, sorted by their screen space coverage, are rendered
              * @var {SFFloat} lowPriorityThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
+             * @range [0,1]
              * @field x3dom
              * @instance
              */
@@ -143,7 +138,7 @@ x3dom.registerNodeType(
             // shape tesselation is lowered as long as resulting error is lower than threshold
 
             /**
-             *
+             * If TRUE, shape tesselation is lowered as long as resulting error is lower than threshold
              * @var {SFBool} tessellationDetailCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -153,19 +148,18 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'tessellationDetailCulling', false);
 
             /**
-             *
+             * Shape tesselation is lowered as long as resulting error is lower than threshold
              * @var {SFFloat} tessellationErrorThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 0.0
+             * @range [0,1]
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'tessellationErrorThreshold', 0.0);
 
-            // experimental If true ARC adjusts rendering parameters
-
             /**
-             *
+             * Experimental: If true ARC adjusts rendering parameters
              * @var {SFBool} enableARC
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
@@ -173,23 +167,24 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'enableARC', false);
-            // define frame-rate range for quality-speed trade-off (experimental)
 
             /**
-             *
+             * Experimental: Define minimal target frame-rate for static moments and quality-speed trade-off
              * @var {SFFloat} minFrameRate
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
+             * @range [1,inf]
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
 
             /**
-             *
+             * Experimental: Define maximal target frame-rate for dynamic moments and quality-speed trade-off
              * @var {SFFloat} maxFrameRate
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 62.5
+             * @range [1,inf]
              * @field x3dom
              * @instance
              */
@@ -199,50 +194,55 @@ x3dom.registerNodeType(
             // factors could be in [0, 1] (and not evaluated if -1)
 
             /**
-             *
+             * Experimenal: Factor of user data for controlling speed-performance trade-off
              * @var {SFFloat} userDataFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
+             * @range [0,1] or -1
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'userDataFactor', -1);
 
             /**
-             *
+             * Experimenal: Factor of small feature culling for controlling speed-performance trade-off
              * @var {SFFloat} smallFeatureFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
+             * @range [0,1] or -1
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'smallFeatureFactor', -1);
 
             /**
-             *
+             * Experimenal: Factor of occlusion culling for controlling speed-performance trade-off
              * @var {SFFloat} occlusionVisibilityFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
+             * @range [0,1] or -1
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'occlusionVisibilityFactor', -1);
 
             /**
-             *
+             * Experimenal: Factor of low priority culling for controlling speed-performance trade-off
              * @var {SFFloat} lowPriorityFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
+             * @range [0,1] or -1
              * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'lowPriorityFactor', -1);
 
             /**
-             *
+             * Experimenal: Factor of tesselation error for controlling speed-performance trade-off
              * @var {SFFloat} tessellationErrorFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
+             * @range [0,1] or -1
              * @field x3dom
              * @instance
              */

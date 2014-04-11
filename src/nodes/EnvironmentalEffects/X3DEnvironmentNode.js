@@ -18,9 +18,10 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.X3DEnvironmentNode
          * @x3d x.x
          * @component EnvironmentalEffects
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DBindableNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Base class for environment nodes
          */
         function (ctx) {
             x3dom.nodeTypes.X3DEnvironmentNode.superClass.call(this, ctx);
