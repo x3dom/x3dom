@@ -22,6 +22,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * DEPRECATED: Param element needs to be child of X3D element {@link http://x3dom.org/docs/latest/configuration.html}
          */
         function (ctx) {
             x3dom.nodeTypes.Param.superClass.call(this, ctx);

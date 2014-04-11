@@ -15,10 +15,11 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DNode
          * @constructs x3dom.nodeTypes.X3DNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
          * @status experimental
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base type for all nodes in the X3D system.
          */
         function (ctx) {
             // reference to DOM element
@@ -50,11 +51,11 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Field to add metadata information
              * @var {SFNode} metadata
              * @memberof x3dom.nodeTypes.X3DNode
              * @initvalue x3dom.nodeTypes.X3DMetadataObject
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('metadata', x3dom.nodeTypes.X3DMetadataObject);

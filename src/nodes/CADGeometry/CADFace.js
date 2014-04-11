@@ -17,7 +17,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for CADFace
          * @constructs x3dom.nodeTypes.CADFace
-         * @x3d 3.1
+         * @x3d 3.3
          * @component CADGeometry
          * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode

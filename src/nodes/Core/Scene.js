@@ -22,6 +22,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The scene node wraps the x3d scene
          */
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
@@ -29,7 +30,7 @@ x3dom.registerNodeType(
             // define the experimental picking mode: box, idBuf, idBuf24, idBufId, color, texCoord
 
             /**
-             *
+             * The picking mode for the scene
              * @var {SFString} pickMode
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "idBuf"
@@ -40,7 +41,7 @@ x3dom.registerNodeType(
             // experimental field to switch off picking
 
             /**
-             *
+             * Flag to enable/disable pick pass
              * @var {SFBool} doPickPass
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue true
@@ -52,7 +53,7 @@ x3dom.registerNodeType(
             // another experimental field for shadow DOM remapping
 
             /**
-             *
+             * The url of the shadow object id mapping
              * @var {SFString} shadowObjectIdMapping
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue ""

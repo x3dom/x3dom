@@ -16,11 +16,13 @@ x3dom.registerNodeType(
         /**
          * Constructor for MetadataDouble
          * @constructs x3dom.nodeTypes.MetadataDouble
-         * @x3d x.x
+         * @x3d 3.3
          * @component Core
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DMetadataObject
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The metadata provided by this node is contained in the double-precision floating point numbers of
+         * the value field.
          */
         function (ctx) {
             x3dom.nodeTypes.MetadataDouble.superClass.call(this, ctx);
@@ -31,7 +33,7 @@ x3dom.registerNodeType(
              * @var {MFDouble} value
              * @memberof x3dom.nodeTypes.MetadataDouble
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFDouble(ctx, 'value', []);
