@@ -21,17 +21,22 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DBoundedNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type indicates that concrete node types derived from it contain children nodes
+         * and is the basis for all aggregation.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Grouping nodes have a field that contains a list of children nodes. Each grouping node defines a
+             * coordinate space for its children. This coordinate space is relative to the coordinate space of the node
+             * of which the group node is a child. Such a node is called a parent node. This means that transformations
+             * accumulate down the scene graph hierarchy.
              * @var {MFNode} children
              * @memberof x3dom.nodeTypes.X3DGroupingNode
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
+             * @initvalue X3DChildNode
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
