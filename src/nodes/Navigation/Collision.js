@@ -16,32 +16,40 @@ x3dom.registerNodeType(
         /**
          * Constructor for Collision
          * @constructs x3dom.nodeTypes.Collision
-         * @x3d x.x
+         * @x3d 2.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Collision detects camera-to-object contact using current Viewpoint and NavigationInfo avatarSize.
+         * Collision is a Grouping node that handles collision detection for its children.
+         * Collision can contain a single proxy child node for substitute collision-detection geometry.
+         * Note: proxy geometry is not rendered.
+         * Note: PointSet, IndexedLineSet, LineSet and Text do not trigger collisions.
+         * Hint: improve performance using proxy for simpler contact-calculation geometry.
+         * Hint: NavigationInfo types ''WALK' 'FLY'' support camera-to-object collision detection.
+         * Hint: insert a Shape node before adding geometry or Appearance.
          */
         function (ctx) {
             x3dom.nodeTypes.Collision.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Enables/disables collision detection for children and all descendants. Hint: former name quotecollidequote in VRML 97 specification.
              * @var {SFBool} enabled
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool (ctx, "enabled", true);
 
             /**
-             *
+             * alternate object to be checked for collision, in place of the children of this node.
              * @var {SFNode} proxy
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue x3dom.nodeTypes.X3DGroupingNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);

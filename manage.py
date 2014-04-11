@@ -80,7 +80,7 @@ from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
-from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
+from tools.packages import FULL_PROFILE, CORE_PROFILE, EXTENSIONS, prefix_path
 
 
 PROJECT_ROOT = os.path.dirname(__file__)
@@ -110,14 +110,14 @@ def build(mode='production'):
         packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    print("\nBundling components...")
+    print("\nBundling extensions...")
     nodes_dest = os.path.join(DIST_ROOT, 'components')
 
     if not os.path.exists(nodes_dest):
         os.makedirs(nodes_dest)
         
-    for (component, files) in COMPONENTS:
-        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component)), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
+    for (component, files) in EXTENSIONS:
+        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component + '.js')), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
 
         try:
             """

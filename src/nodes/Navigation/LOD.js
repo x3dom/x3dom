@@ -16,19 +16,24 @@ x3dom.registerNodeType(
         /**
          * Constructor for LOD
          * @constructs x3dom.nodeTypes.LOD
-         * @x3d x.x
+         * @x3d 2.0
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLODNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc LOD (Level Of Detail) uses camera-to-object distance to switch among contained child levels.
+         * (Contained nodes are now called 'children' rather than 'level', for consistent naming among all GroupingNodeType nodes.)
+         * LOD range values go from near to far (as child geometry gets simpler for better performance).
+         * For n range values, you must have n+1 children levels! Only the currently selected children level is rendered, but all levels continue to send/receive events.
          */
         function (ctx) {
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Camera-to-object distance transitions for each child level, where range values go from near to far. For n range values, you must have n+1 child levels! Hint: can add an empty Group node as nonrendering final child.
              * @var {MFFloat} range
+             * @range 0..infinity
              * @memberof x3dom.nodeTypes.LOD
              * @initvalue []
              * @field x3dom
