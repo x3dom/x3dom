@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * Field to add metadata information
              * @var {SFNode} metadata
              * @memberof x3dom.nodeTypes.X3DNode
-             * @initvalue x3dom.nodeTypes.X3DMetadataObject
+             * @initvalue X3DMetadataObject
              * @field x3d
              * @instance
              */
