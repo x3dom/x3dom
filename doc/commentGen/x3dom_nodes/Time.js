@@ -23,7 +23,6 @@ x3dom.registerNodeType(
                 x3dom.debug.logWarning("TimeSensor: No runtime context found!");
 
             this.addField_SFTime(ctx, 'cycleInterval', 1);
-            this.addField_SFBool(ctx, 'enabled', true);
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFTime(ctx, 'startTime', 0);
             this.addField_SFTime(ctx, 'stopTime', 0);
@@ -33,7 +32,6 @@ x3dom.registerNodeType(
             this.addField_SFTime(ctx, 'cycleTime', 0);
             this.addField_SFTime(ctx, 'elapsedTime', 0);
             this.addField_SFFloat(ctx, 'fraction_changed', 0);
-            this.addField_SFBool(ctx, 'isActive', false);
             this.addField_SFBool(ctx, 'isPaused', false);
             this.addField_SFTime(ctx, 'time', 0);
 
