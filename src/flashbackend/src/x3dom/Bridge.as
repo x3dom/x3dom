@@ -223,9 +223,6 @@ package x3dom {
 				case "BinaryGeometry":
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
 					break;
-				case "BitLODGeometry":
-					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
-					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
 					break;
@@ -270,9 +267,6 @@ package x3dom {
 					break;
 				case "BinaryGeometry":
 					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, value );
-					break;
-				case "BitLODGeometry":
-					this._scene.getDrawableObject( uint(value.id) ).shape.setComponents(value);
 					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );

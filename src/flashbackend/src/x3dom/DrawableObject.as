@@ -151,8 +151,6 @@ package x3dom
 					this._shape = new ImageGeometry();
 				} else if(this._type == "BinaryGeometry") {
 					this._shape = new BinaryGeometry();
-				} else if(this._type == "BitLODGeometry")  {
-					this._shape = new BitLODGeometry();
 				} else if(this._type == "Text")  {
 					this._shape = new X3DText();
 				} else {
