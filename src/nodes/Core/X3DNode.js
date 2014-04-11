@@ -222,10 +222,21 @@ x3dom.registerNodeType(
                 // TODO: timestamps and stuff
                 this._vf[field] = msg;  // FIXME; _cf!!!
                 var listeners = this._fieldWatchers[field];
-                var thisp = this;
+
+                var that = this;
                 if (listeners) {
-                    Array.forEach(listeners, function (l) { l.call(thisp, msg); });
+                    Array.forEach(listeners, function (l) { l.call(that, msg); });
                 }
+
+                //for Web-style access to the output data of ROUTES, provide a callback function
+                var eventObject = {
+                    target: that._xmlNode,
+                    type: "onoutputchange",
+                    fieldName: field,
+                    value: msg
+                };
+
+                this.callEvtHandler(eventObject.type, eventObject);
             },
 
             // method for handling field updates
