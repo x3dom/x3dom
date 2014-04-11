@@ -58,7 +58,7 @@
 
         {"group": "COMPONENTS",
             "data": [
-                {"name": "NodeNameSpace", "path": "nodes/NodeNameSpace.js"},
+                {"name": "NodeNameSpace", "path": "NodeNameSpace.js"},
                 {"name": "Core", "filePrefix": "nodes/Core/", "files":[
                     {"file": "X3DNode.js"},
                     {"file": "X3DMetadataObject.js"},

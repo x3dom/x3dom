@@ -53,6 +53,8 @@ x3dom.registerNodeType(
         },
 
         addChild: function (node, containerFieldName) {
+            var i;
+
             if (node) {
                 var field = null;
                 if (containerFieldName) {
@@ -71,8 +73,16 @@ x3dom.registerNodeType(
                 }
                 if (field && field.addLink(node)) {
                     node._parentNodes.push(this);
+
                     this._childNodes.push(node);
                     node.parentAdded(this);
+
+                    for (i = 0; i < this._childNodes.length; ++i)
+                    {
+                        if (this._childNodes[i] != node)
+                            this._childNodes[i].siblingAdded(node);
+                    }
+
                     return true;
                 }
             }
@@ -80,6 +90,9 @@ x3dom.registerNodeType(
         },
 
         removeChild: function (node) {
+            var j;
+            var success = false;
+
             if (node) {
                 for (var fieldName in this._cf) {
                     if (this._cf.hasOwnProperty(fieldName)) {
@@ -91,17 +104,25 @@ x3dom.registerNodeType(
                                     node.parentRemoved(this);
                                 }
                             }
-                            for (var j = this._childNodes.length - 1; j >= 0; j--) {
+                            for (j = this._childNodes.length - 1; j >= 0; j--) {
                                 if (this._childNodes[j] === node) {
                                     this._childNodes.splice(j, 1);
-                                    return true;
+                                    success = true;
+                                    break;
+                                }
+                            }
+
+                            if (success)
+                            {
+                                for (j = this._childNodes.length - 1; j >= 0; j--) {
+                                    this._childNodes[j].siblingRemoved(node);
                                 }
                             }
                         }
                     }
                 }
             }
-            return false;
+            return success;
         },
 
         parentAdded: function(parent) {
@@ -115,6 +136,14 @@ x3dom.registerNodeType(
                     this._childNodes[i].parentRemoved(this);
                 }
             }
+        },
+
+        siblingAdded: function(parent) {
+            // to be overwritten by concrete classes
+        },
+
+        siblingRemoved: function(parent) {
+            // to be overwritten by concrete classes
         },
 
         getCurrentTransform: function () {
@@ -204,10 +233,21 @@ x3dom.registerNodeType(
             // TODO: timestamps and stuff
             this._vf[field] = msg;  // FIXME; _cf!!!
             var listeners = this._fieldWatchers[field];
-            var thisp = this;
+
+            var that = this;
             if (listeners) {
-                Array.forEach(listeners, function (l) { l.call(thisp, msg); });
+                Array.forEach(listeners, function (l) { l.call(that, msg); });
             }
+
+            //for Web-style access to the output data of ROUTES, provide a callback function
+            var eventObject = {
+                target: that._xmlNode,
+                type: "onoutputchange",
+                fieldName: field,
+                value: msg
+            };
+
+            this.callEvtHandler(eventObject.type, eventObject);
         },
 
         // method for handling field updates
@@ -1080,6 +1120,11 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'enabled', true);
+
+            //route-able output fields
+            this.addField_SFBool(ctx, 'isActive', false);
         }
     )
 );

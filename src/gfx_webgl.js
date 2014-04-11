@@ -424,8 +424,7 @@ x3dom.gfx_webgl = (function () {
         }
         else if (!(x3dom.isa(geoNode, x3dom.nodeTypes.Text) ||
                    x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
-                   x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ||
-                   x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry)) &&
+                   x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ) &&
                   (!geoNode || geoNode._mesh._positions[0].length < 1))
         {
             if (x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2 &&
@@ -517,8 +516,7 @@ x3dom.gfx_webgl = (function () {
             dirtyLighting: x3dom.Utils.checkDirtyLighting(viewarea),
             imageGeometry: 0,   // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
             binaryGeometry: 0,  // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
-            popGeometry: 0,     // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
-            bitLODGeometry: 0   // 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG
+            popGeometry: 0     // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
         };
 
         //Set Textures		
@@ -562,10 +560,6 @@ x3dom.gfx_webgl = (function () {
         else if (x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry))
         {
             x3dom.BinaryContainerLoader.setupPopGeo(shape, sp, gl, viewarea, this);
-        }
-        else if (x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry))
-        {
-            x3dom.BinaryContainerLoader.setupBitLODGeo(shape, sp, gl, viewarea, this);
         }
         else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry))
         {
@@ -1242,7 +1236,7 @@ x3dom.gfx_webgl = (function () {
             sp.popGeometry = s_gl.popGeometry;
 
             if (s_gl.coordType != gl.FLOAT) {
-                if (!s_gl.popGeometry && (s_gl.bitLODGeometry || x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
+                if (!s_gl.popGeometry && (x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
                     sp.bgCenter = s_geo.getMin().toGL();
                 }
                 else {
@@ -1354,22 +1348,17 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
+                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0 || s_gl.imageGeometry) {
-                    if (s_gl.bitLODtotalVertexCount !== undefined) {
-                        gl.drawArrays(gl.TRIANGLES, 0, s_gl.bitLODtotalVertexCount);
-                    }
-                    else {
-                        for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
-                            offset += s_geo._vf.vertexCount[v];
-                        }
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
+                    for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
+                        gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {
@@ -1506,7 +1495,7 @@ x3dom.gfx_webgl = (function () {
                                 (x3dom.nodeTypes.Shape.objectID + 2) : 0;
 
             if (s_gl.coordType != gl.FLOAT) {
-                if (!s_gl.popGeometry && (s_gl.bitLODGeometry || x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
+                if (!s_gl.popGeometry && (x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
                     sp.bgCenter = s_geo.getMin().toGL();
                 }
                 else {
@@ -1691,22 +1680,17 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 // render mesh
-                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
+                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0 || s_gl.imageGeometry) {
-                    if (s_gl.bitLODtotalVertexCount !== undefined) {
-                        gl.drawArrays(gl.TRIANGLES, 0, s_gl.bitLODtotalVertexCount);
-                    }
-                    else {
-                        for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
-                            offset += s_geo._vf.vertexCount[v];
-                        }
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
+                    for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
+                        gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {
@@ -1815,7 +1799,7 @@ x3dom.gfx_webgl = (function () {
         var tex = null;
 
         if (s_gl.coordType != gl.FLOAT) {
-            if (!s_gl.popGeometry && (s_gl.bitLODGeometry || x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
+            if (!s_gl.popGeometry && (x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
                 sp.bgCenter = s_geo.getMin().toGL();
             }
             else {
@@ -2287,14 +2271,14 @@ x3dom.gfx_webgl = (function () {
             if (renderMode > 0) {
                 var polyMode = (renderMode == 1) ? gl.POINTS : gl.LINES;
 
-                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
+                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(polyMode, s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0 ||
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 ||
                          s_gl.imageGeometry) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawArrays(polyMode, offset, s_geo._vf.vertexCount[v]);
@@ -2309,22 +2293,17 @@ x3dom.gfx_webgl = (function () {
                 }
             }
             else {
-                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
+                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0 || s_gl.imageGeometry) {
-                    if (s_gl.bitLODtotalVertexCount !== undefined) {
-                        gl.drawArrays(gl.TRIANGLES, 0, s_gl.bitLODtotalVertexCount);
-                    }
-                    else {
-                        for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
-                            offset += s_geo._vf.vertexCount[v];
-                        }
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
+                    for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
+                        gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {
@@ -2390,7 +2369,7 @@ x3dom.gfx_webgl = (function () {
             this.numCoords += s_msh._numCoords;
             this.numFaces  += s_msh._numFaces;
 
-            if (s_gl.binaryGeometry || s_gl.popGeometry || s_gl.bitLODGeometry) {
+            if (s_gl.binaryGeometry || s_gl.popGeometry) {
                 this.numDrawCalls += s_geo._vf.vertexCount.length;
             }
             else if (s_geo.hasIndexOffset()) {
@@ -3759,7 +3738,7 @@ x3dom.gfx_webgl = (function () {
             sp.imageGeometry = s_gl.imageGeometry;
 
             if (s_gl.coordType != gl.FLOAT) {
-                if (s_gl.bitLODGeometry != 0 || s_gl.popGeometry != 0 ||
+                if (s_gl.popGeometry != 0 ||
                     (s_msh._numPosComponents == 4 && x3dom.Utils.isUnsignedType(s_geo._vf.coordType)))
                     sp.bgCenter = s_geo.getMin().toGL();
                 else
@@ -3824,22 +3803,17 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 // draw mesh
-                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0) {
+                if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0 || s_gl.imageGeometry) {
-                    if (s_gl.bitLODtotalVertexCount !== undefined) {
-                        gl.drawArrays(gl.TRIANGLES, 0, s_gl.bitLODtotalVertexCount);
-                    }
-                    else {
-                        for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
-                            offset += s_geo._vf.vertexCount[v];
-                        }
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
+                    for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
+                        gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {

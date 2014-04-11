@@ -245,7 +245,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
           //translate coordinates, where PG_bbMin := floor(bbMin / size) 
           shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * PG_maxBBSize;\n";
         }
-		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
+		else if(properties.REQUIREBBOX) {
           shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
 	
@@ -257,7 +257,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 					shader += "vec3 vertNormal = vec3(position.w / 256.0); \n";
 					shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
 					shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
-				} else if (properties.REQUIREBBOXNOR && !properties.BITLODGEOMETRY) {
+				} else if (properties.REQUIREBBOXNOR) {
 					shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
 				} else {
 					shader += "vec3 vertNormal = vec3(normal.xy, 0.0);\n";
@@ -287,7 +287,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 				if (properties.REQUIREBBOXNOR) {
                     shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
 				}   
-                if (properties.BITLODGEOMETRY || properties.POPGEOMETRY) {                    
+                if (properties.POPGEOMETRY) {
                     shader += "vertNormal = 2.0*vertNormal - 1.0;\n";                    
                 }                
 			}

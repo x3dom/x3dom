@@ -383,7 +383,6 @@ x3dom.gfx_flash = (function () {
             //Check if is ImageGeometry or BinaryGeometry
             var isImageGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry);
             var isBinaryGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry);
-            var isBitLODGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry);
 
             //Check if Appearance is available
             var appearance = shape._cf.appearance.node;
@@ -413,17 +412,6 @@ x3dom.gfx_flash = (function () {
                     bboxCenter: shape._cf.geometry.node.getCenter().toGL(),
                     primType: shape._cf.geometry.node._vf.primType,
                     vertexCount: shape._cf.geometry.node._vf.vertexCount });
-            } else if (isBitLODGeometry) {
-                this.object.setMeshProperties({ id: shape._objectID,
-                    type: "BitLODGeometry",
-                    sortType: sortType,
-                    sortKey: sortKey,
-                    solid: shape.isSolid(),
-                    bboxMin: shape._cf.geometry.node.getMin().toGL(),
-                    bboxMax: shape._cf.geometry.node.getMax().toGL(),
-                    bboxCenter: shape._cf.geometry.node.getCenter().toGL(),
-                    primType: shape._cf.geometry.node._vf.primType,
-                    vertexCount: shape._cf.geometry.node._vf.vertexCount });
             } else {
                 this.object.setMeshProperties({ id: shape._objectID,
                     type: "Default",
@@ -440,12 +428,6 @@ x3dom.gfx_flash = (function () {
                      idx: 0,
                      indices: shape._cf.geometry.node.getIndexTextureURL() } );*/
                 } else if (isBinaryGeometry) {
-                    this.object.setMeshIndices({ id: shape._objectID,
-                        idx: 0,
-                        indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) });
-
-
-                } else if (isBitLODGeometry) {
                     this.object.setMeshIndices({ id: shape._objectID,
                         idx: 0,
                         indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) });
@@ -491,11 +473,6 @@ x3dom.gfx_flash = (function () {
                         normalStrideOffset: shape._normalStrideOffset,
                         texCoordStrideOffset: shape._texCoordStrideOffset,
                         colorStrideOffset: shape._colorStrideOffset });
-                } else if (isBitLODGeometry) {
-                    this.object.setMeshVertices({ id: shape._objectID,
-                        componentURLs: shape._cf.geometry.node.getComponentsURLs(),
-                        componentFormats: shape._cf.geometry.node.getComponentFormats(),
-                        componentAttribs: shape._cf.geometry.node.getComponentAttribs()});
                 } else {
                     for (var i = 0; i < shape._cf.geometry.node._mesh._positions.length; i++) {
                         this.object.setMeshVertices({ id: shape._objectID,
@@ -519,8 +496,6 @@ x3dom.gfx_flash = (function () {
                             idx: 0,
                             normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal) });
                     }
-                } else if (isBitLODGeometry) {
-                    //Nothing won't implement!
                 } else {
                     if (shape._cf.geometry.node._mesh._normals[0].length) {
                         for (var i = 0; i < shape._cf.geometry.node._mesh._normals.length; i++) {
@@ -547,8 +522,6 @@ x3dom.gfx_flash = (function () {
                             colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
                             components: shape._cf.geometry.node._mesh._numColComponents });
                     }
-                } else if (isBitLODGeometry) {
-                    //Nothing won't implement!
                 } else {
                     if (shape._cf.geometry.node._mesh._colors[0].length) {
                         for (var i = 0; i < shape._cf.geometry.node._mesh._colors.length; i++) {
@@ -574,8 +547,6 @@ x3dom.gfx_flash = (function () {
                             idx: 0,
                             texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord) });
                     }
-                } else if (isBitLODGeometry) {
-                    //Nothing, won't implement!
                 } else {
                     if (shape._cf.geometry.node._mesh._texCoords[0].length) {
                         for (var i = 0; i < shape._cf.geometry.node._mesh._texCoords.length; i++) {
