@@ -11,7 +11,7 @@
 // ### Scene ###
 x3dom.registerNodeType(
     "Scene",
-    "Core",
+    "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         
         /**

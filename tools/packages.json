@@ -73,21 +73,21 @@
                     {"file": "X3DBindableNode.js"},
                     {"file": "X3DInfoNode.js"},
                     {"file": "WorldInfo.js"},
-                    {"file": "X3DBoundedNode.js"},
                     {"file": "X3DSensorNode.js"},
                     {"file": "Param.js"}
                 ]},
-                {"name": "Grouping", "files":[
-                    {"file": "nodes/Grouping/X3DGroupingNode.js"},
-                    {"file": "nodes/Grouping/Switch.js"},
-                    {"file": "nodes/Grouping/X3DTransformNode.js"},
-                    {"file": "nodes/Grouping/Transform.js"},
-                    {"file": "nodes/Grouping/MatrixTransform.js"},
-                    {"file": "nodes/Grouping/Group.js"},
-                    {"file": "nodes/Grouping/Block.js"},
-                    {"file": "nodes/Grouping/StaticGroup.js"},
-                    {"file": "nodes/Grouping/RemoteSelectionGroup.js"},
-                    {"file": "nodes/Core/Scene.js"}
+                {"name": "Grouping", "filePrefix": "nodes/Grouping/", "files":[
+                    {"file": "X3DBoundedNode.js"},
+                    {"file": "X3DGroupingNode.js"},
+                    {"file": "Switch.js"},
+                    {"file": "X3DTransformNode.js"},
+                    {"file": "Transform.js"},
+                    {"file": "MatrixTransform.js"},
+                    {"file": "Group.js"},
+                    {"file": "Block.js"},
+                    {"file": "StaticGroup.js"},
+                    {"file": "RemoteSelectionGroup.js"},
+                    {"file": "Scene.js"}
                 ]},
                 {"name": "Bindable", "path": "Bindable.js"},
                 {"name": "Rendering", "filePrefix": "nodes/Rendering/", "files":[
@@ -240,8 +240,6 @@
                     {"file": "BinaryGeometry.js"},
                     {"file": "PopGeometryLevel.js"},
                     {"file": "PopGeometry.js"},
-                    {"file": "BitLODGeoComponent.js"},
-                    {"file": "BitLODGeometry.js"},
                     {"file": "ImageGeometry.js"},
                     {"file": "IndexedFaceSet.js"}
                 ]},
