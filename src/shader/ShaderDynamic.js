@@ -165,6 +165,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
             shader += "uniform float displacementHeight;\n";
             shader += "uniform float displacementAxis;\n";
         }
+        if (properties.MULTIDIFFALPMAP) {
+            shader += "attribute float id;\n";
+            shader += "varying float fragID;\n";
+        }
 	}
 	
 	//Lights & Fog
@@ -409,6 +413,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "fragEyePosition = eyePosition - fragPosition;\n";
 		}
 	}
+
+    //Vertex ID's
+    if (properties.MULTIDIFFALPMAP) {
+        shader += "fragID = id;\n";
+    }
   
 	//Displacement
     if (properties.DISPLACEMENTMAP) {
@@ -495,6 +504,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform float displacementWidth;\n";
             shader += "uniform float displacementHeight;\n";
         }
+        if (properties.MULTIDIFFALPMAP) {
+            shader += "uniform sampler2D multiDiffuseAlphaMap;\n";
+            shader += "uniform float multiDiffuseAlphaWidth;\n";
+            shader += "uniform float multiDiffuseAlphaHeight;\n";
+            shader += "varying float fragID;\n";
+        }
         if(properties.NORMALMAP){
             shader += "uniform sampler2D normalMap;\n";
 
@@ -535,6 +550,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     shader += "vec4 color;\n";
 	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
+
+    if (properties.MULTIDIFFALPMAP) {
+        shader += "vec2 idCoord;\n";
+        shader += "idCoord.x = (mod(fragID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
+        shader += "idCoord.y = (floor(fragID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
+        shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, vec2(idCoord.x, idCoord.y) ).rgba;\n";
+        shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
+        shader += "color.a = diffAlpha.a;\n";
+    }
 			
 	if(properties.VERTEXCOLOR) {
 		if(properties.COLCOMPONENTS === 3){

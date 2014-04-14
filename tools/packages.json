@@ -159,7 +159,8 @@
                 ]},
                 {"name": "Networking", "filePrefix": "nodes/Networking/", "files":[
                     {"file": "Anchor.js"},
-                    {"file": "Inline.js"}
+                    {"file": "Inline.js"},
+                    {"file": "MultiPart.js"}
                 ]},
                 {"name": "EnvironmentalEffects", "filePrefix": "nodes/EnvironmentalEffects/", "files":[
                     {"file": "X3DBackgroundNode.js"},
