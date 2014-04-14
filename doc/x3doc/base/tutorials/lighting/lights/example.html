@@ -16,14 +16,24 @@
          light.setAttribute('on','FALSE');
  }
 
+ function headlight()
+  {
+       var h = document.getElementById("head");
+      if(h.getAttribute('headlight')=='true')
+        h.setAttribute('headlight', 'false');
+      else
+          h.setAttribute('headlight', 'true');
+  }
+
 </script>
 <div id="content">
 <x3d width='500px' height='400px'>
     <scene>
-        <background skyColor="0 0 0"></background>
-        <directionalLight id="directional" direction='0 0 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'>
+        <navigationInfo id="head" headlight='true' type='"EXAMINE"'></navigationInfo>
+        <background  skyColor="0 0 0"></background>
+        <directionalLight id="directional" direction='0 -1 0' on ="TRUE" intensity='2.0' shadowIntensity='0.0'>
         </directionalLight>
-        <PointLight id='point' on='TRUE' intensity='0.9000' ambientIntensity='0.0000' color='0.0 0.6 0.0' location='0 10 0.5 '  attenuation='0 0 0' radius='5.0000'> </PointLight>
+        <PointLight id='point' on='TRUE' intensity='0.9000' ambientIntensity='0.0000' color='0.0 0.6 0.0' location='2 10 0.5 '  attenuation='0 0 0' radius='5.0000'> </PointLight>
         <SpotLight id='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22'></SpotLight>
         <Inline nameSpaceName="light" mapDEFToID="true" url="teapot.x3d"></Inline>
             <Transform translation="0 -2.5 0" rotation="1 0 0 -1.57">
@@ -38,6 +48,7 @@
 <button onclick="lightSwitch('point')">point light</button>
 <button onclick="lightSwitch('spot')">spot light</button>
 <button onclick="lightSwitch('directional')">directional light</button>
+<button onclick="headlight()">headlight</button>
 </div>
 </div>
 </body>

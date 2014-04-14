@@ -53,18 +53,26 @@
 		&lt;PointLight id='point' on='TRUE' intensity='0.9000' color='0.0 0.6 0.0' location='0 10 0.5 ' radius='5.0000' &gt;  &lt;/PointLight&gt; 
 		</code></pre>
 		  
+		  <h2>Head Light</h2>
+		   A head light is a light source which behaves as if it is tied to your view.
+		   
+		   <pre class="prettyprint"><code class="language-html">
+		&lt;navigationInfo id="head" headlight='true' type='"EXAMINE"'&gt;  &lt;/navigationInfo&gt; 
+		</code></pre>
+		   
+		  
 		   <h2>Spot Light</h2>
 		   A spot light is a light source which has a cone of effect like a flashlight.
 		 <pre class="prettyprint"><code class="language-html">
 		&lt;SpotLight id='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22' &gt;  &lt;/SpotLight&gt; 
 		</code></pre>
 		<p>If you want to include lights directly in your x3d file , you need to use "DEF" instead of "id". <br>
-		A scene with all three light sources could look like the example below. You can see a white directional light, a yellowish point light and a blue spot light.</p>
+		A scene with all four light sources could look like the example below. You can see a white directional light, a yellowish point light and a blue spot light.</p>
 		 
 		 <div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">My own X3D-Model in X3DOM.</div>
+                <div class="docuCaption">Lights in X3DOM.</div>
             </div>
         </div> 
 		<p>For further informations about the lights, their attributes and implementation details please read the <a href="http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/lighting.html" target="_blank">x3d specification</a>. </p>
@@ -84,8 +92,10 @@
             
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
-                <li><a href="../../../node/foo.html">FOO</a></li>
-                <li><a href="../../../node/bar.html">BAR</a></li>
+                <li><a href="../../../../../out\author\Lighting/DirectionalLight.html">directional light</a></li>
+                <li><a href="../../../../../out\author\Lighting/PointLight.html">PointLight</a></li>
+				<li><a href="../../../../../out\author\Lighting/SpotLight.html">SpotLight</a></li>
+				<li><a href="../../../../../out/author/Navigation/NavigationInfo.html">NavigationInfo</a></li>
             </ul>
         </div>
 
