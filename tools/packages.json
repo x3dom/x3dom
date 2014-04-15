@@ -252,6 +252,16 @@
                     {"file": "TextureCoordinate3D.js"},
                     {"file": "TextureTransform3D.js"},
                     {"file": "TextureTransformMatrix3D.js"}
+                ]},
+                {"name": "PointingDeviceSensor", "filePrefix": "nodes/pointingDeviceSensor/", "files":[
+                    {"file": "pointingDeviceSensor.js"},
+                    {"file": "X3DPointingDeviceSensorNode.js"},
+                    {"file": "X3DDragSensorNode.js"},
+                    {"file": "X3DTouchSensorNode.js"},
+                    {"file": "TouchSensor.js"},
+                    {"file": "PlaneSensor.js"},
+                    {"file": "SphereSensor.js"},
+                    {"file": "CylinderSensor.js"}
                 ]}
             ]},
 
