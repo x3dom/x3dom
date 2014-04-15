@@ -585,6 +585,18 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFNode('diffuseDisplacementTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             *
+             * @var {SFNode} multiDiffuseAlphaTexture
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFNode('multiDiffuseAlphaTexture', x3dom.nodeTypes.X3DTextureNode);
+
+
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
 
             /**
@@ -753,6 +765,16 @@ x3dom.registerNodeType(
                 }
             },
 
+            getMultiDiffuseAlphaMap: function()
+            {
+                if(this._cf.multiDiffuseAlphaTexture.node) {
+                    this._cf.multiDiffuseAlphaTexture.node._cf.texture.node._type = "multiDiffuseAlphaMap";
+                    return this._cf.multiDiffuseAlphaTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+
             getTextures: function()
             {
                 var textures = [];
@@ -771,6 +793,9 @@ x3dom.registerNodeType(
 
                 var diffuseDisplacement = this.getDiffuseDisplacementMap();
                 if(diffuseDisplacement) textures.push(diffuseDisplacement);
+
+                var multiDiffuseAlpha = this.getMultiDiffuseAlphaMap();
+                if(multiDiffuseAlpha) textures.push(multiDiffuseAlpha);
 
                 return textures;
             }

@@ -702,10 +702,13 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
         property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
         property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
+        property.BINARYGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BinaryGeometry))  ? 1 : 0;
         property.IG_PRECISION     = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
         property.IG_INDEXED       = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
         property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
-        
+        property.VERTEXID         = (property.BINARYGEOMETRY && geometry._vf.idsPerVertex) ? 1 : 0;
+
+
         property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
         property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
         property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -720,6 +723,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
         property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
         property.DIFFPLACEMENTMAP = (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
+        property.MULTIDIFFALPMAP  = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiDiffuseAlphaMap()) ? 1 : 0;
         property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ? 1 : 0;
         property.BLENDING         = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;

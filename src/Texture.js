@@ -188,19 +188,26 @@ x3dom.Texture.prototype.updateTexture = function()
 			}
 		}
 	} else {
-		if (tex._vf.repeatS == false || this.samplerName == "displacementMap") {
+		if (tex._vf.repeatS == false) {
 			this.wrapS = gl.CLAMP_TO_EDGE;
 		}
         else
         {
             this.wrapS = gl.REPEAT;
         }
-		if (tex._vf.repeatT == false || this.samplerName == "displacementMap") {
+		if (tex._vf.repeatT == false) {
 			this.wrapT = gl.CLAMP_TO_EDGE;
 		}
         else
         {
             this.wrapT = gl.REPEAT;
+        }
+
+        if (this.samplerName == "displacementMap" || this.samplerName == "multiDiffuseAlphaMap") {
+            this.wrapS = gl.CLAMP_TO_EDGE;
+            this.wrapT = gl.CLAMP_TO_EDGE;
+            this.minFilter = gl.NEAREST;
+            this.magFilter = gl.NEAREST;
         }
 	}
 

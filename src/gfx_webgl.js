@@ -1900,6 +1900,12 @@ x3dom.gfx_webgl = (function () {
                 sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
                                       (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
             }
+            else if (shader.getMultiDiffuseAlphaMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiDiffuseAlphaMap");
+                sp.multiDiffuseAlphaWidth = tex.texture.width;
+                sp.multiDiffuseAlphaHeight = tex.texture.height;
+
+            }
         }
         else if (mat) {
             sp.diffuseColor = mat._vf.diffuseColor.toGL();
@@ -2757,9 +2763,21 @@ x3dom.gfx_webgl = (function () {
                     for (var c = 0; c < shIds.length; c++) {
                         var shObj = scene._nameSpace.defMap[shIds[c]];
                         // FIXME; bbox test too coarse (+ should include trafo)
-                        if (shObj.doIntersect(line)) {
+                        if (shObj && shObj.doIntersect(line)) {
                             viewarea._pickingInfo.pickObj = shObj;
                             break;
+                        }
+                    }
+                    //Check for other namespaces e.g. Inline/Multipart
+                    for (var n = 0; n<scene._nameSpace.childSpaces.length; n++)
+                    {
+                        for (var c = 0; c < shIds.length; c++) {
+                            var shObj = scene._nameSpace.childSpaces[n].defMap[shIds[c]];
+                            // FIXME; bbox test too coarse (+ should include trafo)
+                            if (shObj && shObj.doIntersect(line)) {
+                                viewarea._pickingInfo.pickObj = shObj;
+                                break;
+                            }
                         }
                     }
                 }

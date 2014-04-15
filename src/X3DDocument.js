@@ -259,7 +259,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in parentNode) {
-				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline') {
+				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
+                    parentNode.tagName.toLowerCase() == 'multipart') {
                     // do nothing
 				}
 				else {
