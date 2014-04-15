@@ -553,8 +553,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     if (properties.MULTIDIFFALPMAP) {
         shader += "vec2 idCoord;\n";
-        shader += "idCoord.x = (mod(fragID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
-        shader += "idCoord.y = (floor(fragID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
+        shader += "float roundedID = floor(fragID+0.5);\n";
+        shader += "idCoord.x = (mod(roundedID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
+        shader += "idCoord.y = (floor(roundedID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
         shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, vec2(idCoord.x, idCoord.y) ).rgba;\n";
         shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
         shader += "color.a = diffAlpha.a;\n";

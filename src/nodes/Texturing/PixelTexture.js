@@ -43,6 +43,36 @@ x3dom.registerNodeType(
                 if (fieldName == "image") {
                     this.invalidateGLObject();
                 }
+            },
+
+            getWidth: function() {
+                return this._vf.image.width;
+            },
+
+            getHeight: function() {
+                return this._vf.image.height;
+            },
+
+            getComponents: function() {
+                return this._vf.image.comp;
+            },
+
+            setPixel: function(x, y, color) {
+                this._vf.image.setPixel(x, y, color);
+                this.invalidateGLObject();
+            },
+
+            getPixel: function(x, y) {
+                return this._vf.image.getPixel(x, y);
+            },
+
+            setPixels: function(pixels) {
+                this._vf.image.setPixels(pixels);
+                this.invalidateGLObject();
+            },
+
+            getPixels: function() {
+                return this._vf.image.getPixels();
             }
         }
     )

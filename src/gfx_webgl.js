@@ -2729,6 +2729,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != objId);
+                viewarea._pickingInfo.lastShadowObjectId = viewarea._pickingInfo.shadowObjectId;
                 viewarea._pickingInfo.shadowObjectId = objId;
                 //x3dom.debug.logInfo(baseID + " + " + objId);
 

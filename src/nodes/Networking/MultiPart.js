@@ -37,6 +37,8 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'urlIDMap', []);
 
             this._idMap = null;
+            this._oldPixels = null;
+
         },
         {
             fieldChanged: function (fieldName)
@@ -66,7 +68,44 @@ x3dom.registerNodeType(
                     this.initDone = true;
                     this.loadIDMap();
                     this.appendAPI();
+                    this.appendEventListeners();
                 }
+            },
+
+            appendEventListeners: function ()
+            {
+                var that = this;
+
+                this._xmlNode._shadowObjectID = -1
+
+                this._xmlNode.addEventListener("mouseout", function (e) {
+                    if (!that._nameSpace.doc._viewarea._isMoving) {
+                        if (e.shadowObjectId == -1) {
+                            e.shadowObjectId = this._shadowObjectID;
+                            this._shadowObjectID = -1;
+                            var event = new CustomEvent("partout", {detail: e});
+                            this.dispatchEvent(event);
+                        }
+                    }
+                }, false);
+
+                this._xmlNode.addEventListener("mousemove", function (e) {
+                    if (!that._nameSpace.doc._viewarea._isMoving) {
+                        if (e.button) {
+                            this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
+                        } else {
+                            if (e.shadowObjectId != this._shadowObjectID) {
+                                var tmp = e.shadowObjectId;
+                                if (this._shadowObjectID != -1) {
+                                    e.shadowObjectId = this._shadowObjectID;
+                                    this.dispatchEvent(new CustomEvent("partout", {detail: e}));
+                                }
+                                this._shadowObjectID = e.shadowObjectId = tmp;
+                                this.dispatchEvent(new CustomEvent("partover", {detail: e}));
+                            }
+                        }
+                    }
+                }, false);
             },
 
             loadIDMap: function ()
@@ -85,9 +124,8 @@ x3dom.registerNodeType(
                     {
                         that._idMap = JSON.parse(this.responseText);
 
-                        that._nameSpace.doc._scene._shadowIdMap = eval("(" + this.response + ")");;
+                        that._nameSpace.doc._scene._shadowIdMap = eval("(" + this.response + ")");
 
-                        that.createMaterial();
                         that.loadInline();
                     };
 
@@ -95,27 +133,44 @@ x3dom.registerNodeType(
                 }
             },
 
-            createMaterial: function ()
+            createImageData: function ()
             {
-                console.log("Create Material");
+                var diffuseColor, transparency, rgba;
+                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var imageData = size + " " + size + " 4";
 
-                var css = document.createElement("CommonSurfaceShader");
-                var sst = document.createElement("SurfaceShaderTexture");
-                sst.setAttribute("containerField", "multiDiffuseAlphaMap");
+                for (var i=0; i<size*size; i++)
+                {
+                    if (i < this._idMap.mapping.length)
+                    {
+                        var appName = this._idMap.mapping[i].appearance;
 
-                var pt = document.createElement("PixelTexture");
-                pt.setAttribute("image", "4 4 4 0xff0000ff 0xff0000ff 0xff0000ff 0xff0000ff" +
-                                              " 0xff0000ff 0xff0000ff 0xff0000ff 0xff0000ff" +
-                                              " 0xff0000ff 0xff0000ff 0xff0000ff 0xff0000ff" +
-                                              " 0xff0000ff 0xff0000ff 0xff0000ff 0xff0000ff");
+                        for (var a=0; a<this._idMap.appearance.length; a++)
+                        {
+                            if (this._idMap.appearance[a].name == appName)
+                            {
+                                diffuseColor = this._idMap.appearance[a].material.diffuseColor;
+                                transparency = this._idMap.appearance[a].material.transparency;
 
-                sst.appendChild(pt);
-                css.appendChild(sst);
+                                rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
+                                imageData += " " + rgba.toUint();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        imageData += " 255";
+                    }
+                }
+
+                return imageData;
             },
 
             replaceMaterials: function (inlScene)
             {
+                var css;
+                var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
                     var shapes = inlScene.getElementsByTagName("Shape");
@@ -133,18 +188,26 @@ x3dom.registerNodeType(
                                 if (materials.length)
                                 {
                                     //Replace Material
-                                    var css = document.createElement("CommonSurfaceShader");
-                                    var sst = document.createElement("SurfaceShaderTexture");
-                                    sst.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                    if (firstMat) {
+                                        firstMat = false;
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("DEF", "MultiMaterial");
 
-                                    var pt = document.createElement("PixelTexture");
-                                    pt.setAttribute("image", "4 4 4 0x0000D9ff 0x0000D9ff 0x0000D9ff 0x0000D9ff" +
-                                        " 0x0000D9ff 0x0000D9ff 0xD98F00ff 0xD98F00ff" +
-                                        " 0xD98F00ff 0xD98F00ff 0xD90000ff 0xD9D9D9ff" +
-                                        " 0xD9D9D9ff 0xD9D9D9ff 0xD9D9D9ff 0x000000ff");
+                                        var sst = document.createElement("SurfaceShaderTexture");
+                                        sst.setAttribute("containerField", "multiDiffuseAlphaTexture");
 
-                                    sst.appendChild(pt);
-                                    css.appendChild(sst);
+                                        var pt = document.createElement("PixelTexture");
+                                        pt.setAttribute("id", "test");
+                                        pt.setAttribute("image", this.createImageData());
+
+                                        sst.appendChild(pt);
+                                        css.appendChild(sst);
+                                    }
+                                    else
+                                    {
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("USE", "MultiMaterial");
+                                    }
                                     materials[0].parentNode.replaceChild(css, materials[0]);
                                 }
                                 else
@@ -154,16 +217,94 @@ x3dom.registerNodeType(
                                 }
                             }
                         }
+                        else
+                        {
+                            //Add Appearance + Material
+                            console.log("Add Appearance + Material");
+                        }
                     }
                 }
             },
 
             appendAPI: function ()
             {
-                var that = this;
-                this._xmlNode.getParts = function ()
+                var multiPart = this;
+                this._xmlNode.getParts = function (selector)
                 {
-                    console.log(that);
+                    var selection = [];
+
+                    for(var i=0; i<selector.length; i++) {
+                        for (var m=0; m<multiPart._idMap.mapping.length; m++) {
+                            if (selector[i].id == multiPart._idMap.mapping[m].name ||
+                                selector[i].app == multiPart._idMap.mapping[m].appearance) {
+                                selection.push(m);
+                            }
+                        }
+                    }
+
+
+                    var Parts = function(ids, colorMap)
+                    {
+                        var parts = this;
+                        this.ids = ids;
+                        this.colorMap = colorMap;
+
+                        /**
+                         *
+                         * @param color
+                         */
+                        this.setColor = function(color) {
+                            var pixels = parts.colorMap.getPixels();
+                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
+
+                            for(var i=0; i<parts.ids.length; i++) {
+                                pixels[parts.ids[i]] = colorRGBA;
+                            }
+
+                            parts.colorMap.setPixels(pixels);
+                        };
+
+
+                        /**
+                         *
+                         * @param transparency
+                         */
+                        this.setTransparency = function(transparency) {
+                            var pixels = parts.colorMap.getPixels();
+
+                            for(var i=0; i<parts.ids.length; i++) {
+                                pixels[parts.ids[i]].a = transparency;
+                            }
+
+                            parts.colorMap.setPixels(pixels);
+                        };
+
+                        /**
+                         *
+                         * @param visibility
+                         */
+                        this.setVisibility = function(visibility) {
+                            var pixels = parts.colorMap.getPixels();
+
+                            if (visibility == false) {
+                                multiPart._oldPixels = parts.colorMap.getPixels();
+                                for(var i=0; i<parts.ids.length; i++) {
+                                    pixels[parts.ids[i]].a = 0;
+                                }
+                            } else {
+                                if (multiPart._oldPixels) {
+                                    for(var i=0; i<parts.ids.length; i++) {
+                                        pixels[parts.ids[i]].a = multiPart._oldPixels[parts.ids[i]].a;
+                                    }
+                                }
+                            }
+
+                            parts.colorMap.setPixels(pixels);
+                        };
+
+                    };
+
+                    return new Parts(selection, multiPart._nameSpace.childSpaces[0].defMap["test"]);
                 }
             },
 

@@ -115,7 +115,15 @@ x3dom.registerNodeType(
                         else {
                             // Texture maybe in MultiTexture or CommonSurfaceShader
                             Array.forEach(shape._parentNodes, function (realShape) {
-                                realShape._dirty.texture = true;
+                                if (x3dom.isa(realShape, x3dom.nodeTypes.X3DShapeNode)) {
+                                    realShape._dirty.texture = true;
+                                } else {
+                                    Array.forEach(realShape._parentNodes, function (realShape2) {
+                                        if (x3dom.isa(realShape2, x3dom.nodeTypes.X3DShapeNode)) {
+                                            realShape2._dirty.texture = true;
+                                        }
+                                    });
+                                }
                             });
                         }
                     });

@@ -223,10 +223,11 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         }
 
         // TODO (?): dynamic update of USE attribute during runtime
-        if (domNode.hasAttribute('USE')) {
-            n = this.defMap[domNode.getAttribute('USE')];
+        if (domNode.hasAttribute('use')) {
+
+            n = this.defMap[domNode.getAttribute('use')];
             if (!n) {
-                var nsName = domNode.getAttribute('USE').split('__');
+                var nsName = domNode.getAttribute('use').split('__');
 
                 if (nsName.length >= 2) {
                     var otherNS = this;
