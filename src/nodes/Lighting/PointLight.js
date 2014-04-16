@@ -55,7 +55,7 @@ x3dom.registerNodeType(
 
             /**
              * A PointLight node illuminates geometry within radius length base units of its location.
-             * Radius is affected by acnestors' transformations.
+             * Radius is affected by ancestors' transformations.
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.PointLight
              * @initvalue 100

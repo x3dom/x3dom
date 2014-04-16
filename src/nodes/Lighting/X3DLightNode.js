@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DLightNode
          * @constructs x3dom.nodeTypes.X3DLightNode
-         * @x3d x.x
+         * @x3d 3.0
          * @component Lighting
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The X3DLightNode abstract node type is the base type from which all node types that serve as light sources are derived.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
@@ -35,51 +36,56 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The ambientIntensity specifies the intensity of the ambient emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
              * @var {SFFloat} ambientIntensity
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'ambientIntensity', 0);
 
             /**
-             *
+             * The color field specifies the spectral colour properties of both the direct and ambient light emission as an RGB value.
              * @var {SFColor} color
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1,1,1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'color', 1, 1, 1);
 
             /**
-             *
+             * The intensity field specifies the brightness of the direct emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
              * @var {SFFloat} intensity
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'intensity', 1);
 
             /**
-             *
+             * Specifies whether the light is global or scoped.
+             * Global lights illuminate all objects that fall within their volume of lighting influence.
+             * Scoped lights only illuminate objects that are in the same transformation hierarchy as the light; i.e., only the children and descendants of its enclosing parent group are illuminated.
              * @var {SFBool} global
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue false
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'global', false);
 
             /**
-             *
+             * The on field specifies whether the light is enabled or disabled.
              * @var {SFBool} on
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'on', true);
@@ -95,8 +101,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shadowIntensity', 0);
 
             /**
-             *
+             * Specifies the resolution of the used shadow map.
              * @var {SFInt32} shadowMapSize
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1024
              * @field x3dom
@@ -125,7 +132,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shadowOffset', 0);
 
             /**
-             *
+             * Specifies the placement of the near plane of the light projection.
+             * Objects that are closer to the light source than the near plane do not cast shadows.
+             * If the zNear value is not set, the near plane is placed automatically.
              * @var {SFFloat} zNear
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue -1
@@ -135,8 +144,11 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'zNear', -1);
 
             /**
-             *
+             * Specifies the placement of the far plane of the light projection.
+             * Objects that are farther away from the light source than the far plane do not cast shadows.
+             * If the zFar value is not set, the far plane is placed automatically.
              * @var {SFFloat} zFar
+             * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue -1
              * @field x3dom
