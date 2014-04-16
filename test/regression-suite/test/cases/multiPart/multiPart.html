@@ -8,13 +8,13 @@
         function partover(e){
             console.log("over: " + e.detail.partID);
             var parts = this.getParts([{id:e.detail.partID}]);
-            parts.setColor("yellow");
+            parts.highlight("yellow");
         }
 
         function partout(e){
             console.log("out: " + e.detail.partID);
             var parts = this.getParts([{id:e.detail.partID}]);
-            parts.setColor("aqua");
+            parts.unhighlight();
         }
 
         function partclick(e){

@@ -179,9 +179,7 @@ x3dom.registerNodeType(
                 {
                     if (i < this._idMap.mapping.length)
                     {
-
                         visibilityData += " 255";
-
                     }
                     else
                     {
@@ -276,7 +274,6 @@ x3dom.registerNodeType(
                         }
                     }
 
-
                     var Parts = function(ids, colorMap, visibilityMap)
                     {
                         var parts = this;
@@ -298,7 +295,6 @@ x3dom.registerNodeType(
 
                             parts.colorMap.setPixels(pixels);
                         };
-
 
                         /**
                          *
@@ -328,6 +324,35 @@ x3dom.registerNodeType(
                             parts.visibilityMap.setPixels(pixels);
                         };
 
+                        /**
+                         *
+                         * @param color
+                         */
+                        this.highlight = function(color) {
+                            multiPart._oldPixels = parts.colorMap.getPixels();
+                            var pixels = parts.colorMap.getPixels();
+                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
+
+                            for(var i=0; i<parts.ids.length; i++) {
+                                pixels[parts.ids[i]] = colorRGBA;
+                            }
+
+                            parts.colorMap.setPixels(pixels);
+                        };
+
+                        /**
+                         *
+                         * @param color
+                         */
+                        this.unhighlight = function() {
+                            if (multiPart._oldPixels) {
+                                var pixels = parts.colorMap.getPixels();
+                                for(var i=0; i<parts.ids.length; i++) {
+                                    pixels[parts.ids[i]] = multiPart._oldPixels[parts.ids[i]];
+                                }
+                                parts.colorMap.setPixels(pixels);
+                            }
+                        };
                     };
 
                     var colorMap = multiPart._nameSpace.childSpaces[0].defMap["test"];
