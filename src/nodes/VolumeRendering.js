@@ -1350,8 +1350,9 @@ x3dom.registerNodeType(
                         "   }\n"; 
                     }else{ //multiple iso values with the contour step size
                         var tmp = this._vf.surfaceValues[0];
-                        var positive_range = [];
+                        var positive_range = [tmp];
                         var negative_range = [];
+                        var range = [];
                         while(tmp+this._vf.contourStepSize <= 1.0){
                             tmp+=this._vf.contourStepSize;
                             positive_range.push(tmp);
@@ -1359,9 +1360,9 @@ x3dom.registerNodeType(
                         tmp = this._vf.surfaceValues[0];
                         while(tmp-this._vf.contourStepSize >= 0.0){
                             tmp-=this._vf.contourStepSize;
-                            positive_range.push(tmp);
+                            negative_range.unshift(tmp);
                         }
-                        var range = Array.concat(negative_range.reverse(), positive_range);
+                        range = negative_range.concat(positive_range);
                         for (var i = 0; i <= range.length - 1; i++) {
                             var s_value = range[i].toPrecision(3);
                             inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n"+
