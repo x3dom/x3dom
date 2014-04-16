@@ -16,22 +16,23 @@ x3dom.registerNodeType(
         /**
          * Constructor for PositionInterpolator
          * @constructs x3dom.nodeTypes.PositionInterpolator
-         * @x3d x.x
+         * @x3d 3.0
          * @component Interpolation
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DInterpolatorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The PositionInterpolator node linearly interpolates among a list of 3D vectors to produce an SFVec3f value_changed event. The keyValue field shall contain exactly as many values as in the key field.
          */
         function (ctx) {
             x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Defines the set of data points, that are used for interpolation.
              * @var {MFVec3f} keyValue
              * @memberof x3dom.nodeTypes.PositionInterpolator
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFVec3f(ctx, 'keyValue', []);

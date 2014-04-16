@@ -16,22 +16,26 @@ x3dom.registerNodeType(
         /**
          * Constructor for ColorInterpolator
          * @constructs x3dom.nodeTypes.ColorInterpolator
-         * @x3d x.x
+         * @x3d 3.0
          * @component Interpolation
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DInterpolatorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ColorInterpolator node interpolates among a list of MFColor key values to produce an SFColor (RGB) value_changed event.
+         * The number of colours in the keyValue field shall be equal to the number of key frames in the key field.
+         * A linear interpolation using the value of set_fraction as input is performed in HSV space.
+         * The results are undefined when interpolating between two consecutive keys with complementary hues.
          */
         function (ctx) {
             x3dom.nodeTypes.ColorInterpolator.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Defines the set of data points, that are used for interpolation.
              * @var {MFColor} keyValue
              * @memberof x3dom.nodeTypes.ColorInterpolator
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFColor(ctx, 'keyValue', []);

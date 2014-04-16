@@ -16,22 +16,24 @@ x3dom.registerNodeType(
         /**
          * Constructor for ScalarInterpolator
          * @constructs x3dom.nodeTypes.ScalarInterpolator
-         * @x3d x.x
+         * @x3d 3.0
          * @component Interpolation
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DInterpolatorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ScalarInterpolator node linearly interpolates among a list of SFFloat values to produce an SFFloat value_changed event.
+         * This interpolator is appropriate for any parameter defined using a single floating point value.
          */
         function (ctx) {
             x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Defines the set of data points, that are used for interpolation.
              * @var {MFFloat} keyValue
              * @memberof x3dom.nodeTypes.ScalarInterpolator
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'keyValue', []);
