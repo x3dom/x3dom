@@ -16,11 +16,19 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DFollowerNode
          * @constructs x3dom.nodeTypes.X3DFollowerNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc An X3DFollowerNode maintains an internal state that consists of a current value and a destination
+         *  value. Both values are of the same data type into which the term [S|M]F<type> evaluatesfor a given
+         *  specialization. It is the 'data type of the node'. In certain cases of usage, the terms input and output fit
+         *  better for destination value and current value, respectively.
+         *  Whenever the current value differs from the destination value, the current value gradually changes until it
+         *  reaches the destination value producing a smooth transition. It generally moves towards the destination
+         *  value but, if a transition triggered by a prevous destination value is still in progress, it may take a
+         *  short while until the movement becomes a movement towards the new destination value.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DFollowerNode.superClass.call(this, ctx);
@@ -36,7 +44,7 @@ x3dom.registerNodeType(
              * @var {SFBool} isActive
              * @memberof x3dom.nodeTypes.X3DFollowerNode
              * @initvalue false
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'isActive', false);

@@ -16,28 +16,33 @@ x3dom.registerNodeType(
         /**
          * Constructor for PositionDamper
          * @constructs x3dom.nodeTypes.PositionDamper
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DDamperNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The PositionDamper animates transitions for 3D vectors. If its value field is routed to a
+         *  translation field of a Transform node that contains an object, then, whenever the destination field receives
+         *  a 3D position, the PositionDamper node moves the object from its current position to the newly set position.
          */
         function (ctx) {
             x3dom.nodeTypes.PositionDamper.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialvalue unless a transition to a
+             *  certain position is to be created right after the scene is loaded or right after the PositionDamper node
+             *  is created dynamically.
              * @var {SFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'initialDestination', 0, 0, 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial position of the object.
              * @var {SFVec3f} initialValue
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
@@ -48,21 +53,21 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The current position value.
              * @var {SFVec3f} value
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'value', 0, 0, 0);
 
             /**
-             *
+             * The target position value.
              * @var {SFVec3f} destination
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'destination', 0, 0, 0);

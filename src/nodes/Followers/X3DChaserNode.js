@@ -16,22 +16,24 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DChaserNode
          * @constructs x3dom.nodeTypes.X3DChaserNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DFollowerNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The X3DChaserNode abstract node type calculates the output on value_changed as a finite impulse
+         *  response (FIR).
          */
         function (ctx) {
             x3dom.nodeTypes.X3DChaserNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Duration of the transition
              * @var {SFTime} duration
              * @memberof x3dom.nodeTypes.X3DChaserNode
              * @initvalue 1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'duration', 1);

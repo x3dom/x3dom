@@ -16,53 +16,59 @@ x3dom.registerNodeType(
         /**
          * Constructor for OrientationChaser
          * @constructs x3dom.nodeTypes.OrientationChaser
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChaserNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The OrientationChaser animates transitions for orientations. If it is routed to a rotation field
+         *  of a Transform node that contains an object, whenever the set_destination field receives an orientation, the
+         *  OrientationChaser node rotates the object from its current orientation to the newly set orientation.
+         *  It creates a smooth transition that ends duration seconds after the last orientation has been received.
          */
         function (ctx) {
             x3dom.nodeTypes.OrientationChaser.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue unless a transition to a
+             *  certain orientation is to be created right after the scene is loaded or right after the
+             *  OrientationChaser node is created dynamically.
              * @var {SFRotation} initialDestination
              * @memberof x3dom.nodeTypes.OrientationChaser
              * @initvalue 0,1,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'initialDestination', 0, 1, 0, 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial orientation of the object.
              * @var {SFRotation} initialValue
              * @memberof x3dom.nodeTypes.OrientationChaser
              * @initvalue 0,1,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
 
 
             /**
-             *
+             * The current orientation value.
              * @var {SFRotation} value
              * @memberof x3dom.nodeTypes.OrientationChaser
              * @initvalue 0,1,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'value', 0, 1, 0, 0);
 
             /**
-             *
+             * The target orientation value.
              * @var {SFRotation} destination
              * @memberof x3dom.nodeTypes.OrientationChaser
              * @initvalue 0,1,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'destination', 0, 1, 0, 0);

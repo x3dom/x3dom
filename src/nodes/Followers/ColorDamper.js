@@ -16,53 +16,64 @@ x3dom.registerNodeType(
         /**
          * Constructor for ColorDamper
          * @constructs x3dom.nodeTypes.ColorDamper
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DDamperNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ColorDamper animates color values. Whenever the it receives a color, the ColorDamper node
+         *  creates a transition from the current color to the newly set color. The transition created approaches the
+         *  newly set position asymptotically during a time period of approximately three to four times the value of
+         *  the field tau depending on the desired accuracy and the value of order. The order field specifies the
+         *  smoothness of the transition.
          */
         function (ctx) {
             x3dom.nodeTypes.ColorDamper.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue unless a transition to a
+             *  certain color is to be created right after the scene is loaded or right after the ColorDamper node is
+             *  created dynamically.
              * @var {SFColor} initialDestination
              * @memberof x3dom.nodeTypes.ColorDamper
              * @initvalue 0.8,0.8,0.8
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'initialDestination', 0.8, 0.8, 0.8);
 
             /**
-             *
+             * The field initialValue can be used to set the initial color.
              * @var {SFColor} initialValue
              * @memberof x3dom.nodeTypes.ColorDamper
              * @initvalue 0.8,0.8,0.8
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'initialValue', 0.8, 0.8, 0.8);
 
 
             /**
-             *
+             * The current color value
              * @var {SFColor} value
              * @memberof x3dom.nodeTypes.ColorDamper
              * @initvalue 0,0,0
+             * @range [0,1]
              * @field x3dom
              * @instance
              */
             this.addField_SFColor(ctx, 'value', 0, 0, 0);
 
             /**
-             *
+             * The target color value
              * @var {SFColor} destination
              * @memberof x3dom.nodeTypes.ColorDamper
              * @initvalue 0,0,0
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'destination', 0, 0, 0);

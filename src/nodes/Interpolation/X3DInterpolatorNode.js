@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DInterpolatorNode
          * @constructs x3dom.nodeTypes.X3DInterpolatorNode
-         * @x3d
+         * @x3d 3.3
          * @component Interpolation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChildNode

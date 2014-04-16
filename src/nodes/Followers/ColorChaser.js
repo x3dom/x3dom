@@ -16,53 +16,63 @@ x3dom.registerNodeType(
         /**
          * Constructor for ColorChaser
          * @constructs x3dom.nodeTypes.ColorChaser
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChaserNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ColorChaser animates transitions for single color values. Whenever the set_destination
+         *  field receives a floating point number, the value_changed creates a transition from its current value to
+         *  the newly set number. It creates a smooth transition that ends duration seconds after the last number has
+         *  been received.
          */
         function (ctx) {
             x3dom.nodeTypes.ColorChaser.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value as initialValue unless a transition to a
+             *  certain value is to be created right after the scene is loaded or right after the ColorChaser node is
+             *  created dynamically.
              * @var {SFColor} initialDestination
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0.8,0.8,0.8
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'initialDestination', 0.8, 0.8, 0.8);
 
             /**
-             *
+             * The field initialValue can be used to set the initial value.
              * @var {SFColor} initialValue
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0.8,0.8,0.8
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'initialValue', 0.8, 0.8, 0.8);
 
 
             /**
-             *
+             * The current color value
              * @var {SFColor} value
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0,0,0
+             * @range [0,1]
              * @field x3dom
              * @instance
              */
             this.addField_SFColor(ctx, 'value', 0, 0, 0);
 
             /**
-             *
+             * The target color value
              * @var {SFColor} destination
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0,0,0
-             * @field x3dom
+             * @range [0,1]
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'destination', 0, 0, 0);

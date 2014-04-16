@@ -16,53 +16,57 @@ x3dom.registerNodeType(
         /**
          * Constructor for PositionDamper2D
          * @constructs x3dom.nodeTypes.PositionDamper2D
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DDamperNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The PositionDamper2D animates transitions for 2D vectors. Whenever the destination field receives
+         * a 2D vector, it creates a transition from its current 2D vector value to the newly set value.
          */
         function (ctx) {
             x3dom.nodeTypes.PositionDamper2D.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue  unless a transition to a
+             *  certain 2D vector value is to be created right after the scene is loaded or right after the
+             *  PositinChaser2D node is created dynamically.
              * @var {SFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.PositionDamper2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial initial value.
              * @var {SFVec2f} initialValue
              * @memberof x3dom.nodeTypes.PositionDamper2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
 
 
             /**
-             *
+             * The current 2D position value.
              * @var {SFVec2f} value
              * @memberof x3dom.nodeTypes.PositionDamper2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'value', 0, 0);
 
             /**
-             *
+             * The target 2D position value.
              * @var {SFVec2f} destination
              * @memberof x3dom.nodeTypes.PositionDamper2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'destination', 0, 0);

@@ -16,53 +16,58 @@ x3dom.registerNodeType(
         /**
          * Constructor for ScalarDamper
          * @constructs x3dom.nodeTypes.ScalarDamper
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DDamperNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ScalarDamper animates transitions for single float values. If the value field is routed to a
+         *  transparency field of a Material node, then, whenever the destination field receives a single float value,
+         *  the ScalarDamper node creates a transition from its current value to the newly set value.
          */
         function (ctx) {
             x3dom.nodeTypes.ScalarDamper.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue unless a transition to a
+             *  certain value is to be created right after the scene is loaded or right after the ScalarDamper node is
+             *  created dynamically.
              * @var {SFFloat} initialDestination
              * @memberof x3dom.nodeTypes.ScalarDamper
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'initialDestination', 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial value of the node.
              * @var {SFFloat} initialValue
              * @memberof x3dom.nodeTypes.ScalarDamper
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'initialValue', 0);
 
 
             /**
-             *
+             * The current value.
              * @var {SFFloat} value
              * @memberof x3dom.nodeTypes.ScalarDamper
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'value', 0);
 
             /**
-             *
+             * The target value.
              * @var {SFFloat} destination
              * @memberof x3dom.nodeTypes.ScalarDamper
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'destination', 0);

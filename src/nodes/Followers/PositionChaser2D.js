@@ -16,53 +16,58 @@ x3dom.registerNodeType(
         /**
          * Constructor for PositionChaser2D
          * @constructs x3dom.nodeTypes.PositionChaser2D
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChaserNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The PositionChaser2D animates transitions for 2D vectors. Whenever its destination field receives
+         *  a 2D vector it creates a transition from its current 2D vector value to the newly set value. It creates a
+         *  smooth transition that ends duration seconds after the last 2D vector has been received.
          */
         function (ctx) {
             x3dom.nodeTypes.PositionChaser2D.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue unless a transition to a
+             *  certain 2D vector value is to be created right after the scene is loaded or right after the
+             *  PositionChaser2D node is created dynamically.
              * @var {SFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial initial value.
              * @var {SFVec2f} initialValue
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
 
 
             /**
-             *
+             * The current 2D position.
              * @var {SFVec2f} value
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'value', 0, 0);
 
             /**
-             *
+             * The target 2D position.
              * @var {SFVec2f} destination
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'destination', 0, 0);

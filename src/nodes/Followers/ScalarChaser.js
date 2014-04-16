@@ -16,53 +16,58 @@ x3dom.registerNodeType(
         /**
          * Constructor for ScalarChaser
          * @constructs x3dom.nodeTypes.ScalarChaser
-         * @x3d x.x
+         * @x3d 3.3
          * @component Followers
          * @status experimental
          * @extends x3dom.nodeTypes.X3DChaserNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ScalarChaser animates transitions for single float values. Whenever the destination field
+         *  receives a floating point number, it creates a transition from its current value to the newly set number.
+         *  It creates a smooth transition that ends duration seconds after the last number has been received.
          */
         function (ctx) {
             x3dom.nodeTypes.ScalarChaser.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The field initialDestination should be set to the same value than initialValue unless a transition to a
+             *  certain value is to be created right after the scene is loaded or right after the ScalarChaser node is
+             *  created dynamically.
              * @var {SFFloat} initialDestination
              * @memberof x3dom.nodeTypes.ScalarChaser
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'initialDestination', 0);
 
             /**
-             *
+             * The field initialValue can be used to set the initial initial value.
              * @var {SFFloat} initialValue
              * @memberof x3dom.nodeTypes.ScalarChaser
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'initialValue', 0);
 
 
             /**
-             *
+             * The current value.
              * @var {SFFloat} value
              * @memberof x3dom.nodeTypes.ScalarChaser
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'value', 0);
 
             /**
-             *
+             * The target value.
              * @var {SFFloat} destination
              * @memberof x3dom.nodeTypes.ScalarChaser
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'destination', 0);
