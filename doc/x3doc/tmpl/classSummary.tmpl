@@ -62,7 +62,7 @@ var title = obj.title;
             </div>
             <?js } ?>
             <?js
-            if (doc.status)
+            if (doc.status && doc.x3d != "x.x")
             {
                 var class = (doc.status == "full")
                 ? "status-full"
