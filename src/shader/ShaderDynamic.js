@@ -567,7 +567,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "idCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
         shader += "idCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
         shader += "vec4 visibility = texture2D( multiVisibilityMap, idCoord );\n";
-        shader += "if (visibility.a < 1.0) discard; \n";
+        shader += "if (visibility.r < 1.0) discard; \n";
     }
 
     if (properties.MULTIDIFFALPMAP) {

@@ -72,7 +72,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "       idCoord.z = floor(h / 256.0);\n" +
                     "       idCoord.y = h - (idCoord.z * 256.0);\n" +
                     "       idCoord = idCoord.zyx / 255.0;\n" +
-                    "       fragID = id + writeShadowIDs;\n" +
+                    "       fragID = id;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
@@ -121,7 +121,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "       idCoord.z = floor(h / 256.0);\n" +
                     "       idCoord.y = h - (idCoord.z * 256.0);\n" +
                     "       idCoord = idCoord.zyx / 255.0;\n" +
-                    "       fragID = id + writeShadowIDs;\n" +
+                    "       fragID = id;\n" +
                     "	 }\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
                     "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
@@ -155,6 +155,7 @@ x3dom.shader.Picking24Shader.prototype.generateFragmentShader = function(gl)
 					"uniform float highBit;\n" +
 					"uniform float lowBit;\n" +
 					"uniform float sceneSize;\n" +
+                    "uniform float visibilityMap;\n" +
                     "uniform float multiVisibilityWidth;\n" +
                     "uniform float multiVisibilityHeight;\n" +
 					"varying vec3 worldCoord;\n" +
@@ -166,7 +167,7 @@ x3dom.shader.Picking24Shader.prototype.generateFragmentShader = function(gl)
 					"    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
     				"       col.gba = idCoord;\n" +
-                    "       if (visibilityMap > 0.1) {\n" +
+                    "       if (visibilityMap > 0.0) {\n" +
                     "           vec2 idTexCoord;\n" +
                     "           float roundedID = floor(fragID+0.5);\n" +
                     "           idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n" +

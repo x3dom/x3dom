@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+    <script>
+        function partover(e){
+            console.log("over: " + e.detail.partID);
+            var parts = this.getParts([{id:e.detail.partID}]);
+            parts.setColor("yellow");
+        }
+
+        function partout(e){
+            console.log("out: " + e.detail.partID);
+            var parts = this.getParts([{id:e.detail.partID}]);
+            parts.setColor("aqua");
+        }
+
+        function partclick(e){
+            console.log("click: " + e.detail.partID);
+        }
+
+        function changeColor()
+        {
+            var multiPart = document.getElementById('multiPart');
+            var parts = multiPart.getParts([{app:"App_0"}, {app:"App_1"}, {app:"App_4"}]);
+
+            parts.setColor("green");
+            parts.setVisibility(true);
+        }
+
+        window.onload = function() {
+            var multiPart = document.getElementById('multiPart');
+            multiPart.onload = function()
+            {
+                var parts = this.getParts([{id:"MYDEF8"}]);
+
+                parts.setColor("red");
+                parts.setVisibility(false);
+
+            };
+
+
+            /*multiPart.onclick = function(e) {
+                console.log(e);
+            };*/
+
+            //document.getElementById('myScene').addEventListener('shadowObjectIdChanged', shadowObjIdChanged, false);
+
+            document.getElementById('multiPart').addEventListener('partclick', partclick, false);
+            document.getElementById('multiPart').addEventListener('partover', partover, false);
+            document.getElementById('multiPart').addEventListener('partout', partout, false);
+
+
+        };
+    </script>
+  </head>
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>  
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+      <scene id="myScene">
+         <MultiPart id="multiPart" url="multiPart.x3d" urlIDMap="multiPart.json"></MultiPart>
+      </scene>
+    </x3d>
+    <button onclick="changeColor();">Change Color</button>
+  </body>
+</html>

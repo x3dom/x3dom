@@ -99,7 +99,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
-                    "       fragID = id + writeShadowIDs;\n" +
+                    "       fragID = id;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
@@ -203,7 +203,7 @@ x3dom.shader.PickingShader.prototype.generateFragmentShader = function(gl)
                 "           idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n" +
                 "           idTexCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n" +
                 "           vec4 visibility = texture2D( multiVisibilityMap, idTexCoord );\n" +
-                "           if (visibility.a < 1.0) discard; \n" +
+                "           if (visibility.r < 1.0) discard; \n" +
                 "       }\n" +
                 "	 }\n" +
                 "    float d = length(worldCoord) / sceneSize;\n" +

@@ -173,14 +173,14 @@ x3dom.registerNodeType(
             createVisibilityData: function ()
             {
                 var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
-                var visibilityData = size + " " + size + " 4";
+                var visibilityData = size + " " + size + " 1";
 
                 for (var i=0; i<size*size; i++)
                 {
                     if (i < this._idMap.mapping.length)
                     {
 
-                        visibilityData += " 4294967295";
+                        visibilityData += " 255";
 
                     }
                     else
@@ -322,7 +322,7 @@ x3dom.registerNodeType(
                             var pixels = parts.visibilityMap.getPixels();
 
                             for(var i=0; i<parts.ids.length; i++) {
-                                pixels[parts.ids[i]].a = (visibility) ? 4294967295 : 0;
+                                pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
                             }
 
                             parts.visibilityMap.setPixels(pixels);

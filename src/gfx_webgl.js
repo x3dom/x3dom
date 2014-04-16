@@ -1494,6 +1494,8 @@ x3dom.gfx_webgl = (function () {
             sp.writeShadowIDs = (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) ?
                                 (x3dom.nodeTypes.Shape.objectID + 2) : 0;
 
+            sp.visibilityMap = 0.0;
+
             if (s_gl.coordType != gl.FLOAT) {
                 if (!s_gl.popGeometry && (x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
                     sp.bgCenter = s_geo.getMin().toGL();
@@ -1567,7 +1569,7 @@ x3dom.gfx_webgl = (function () {
                 var shader = s_app._shader;
                 if(shader && x3dom.isa(s_app._shader, x3dom.nodeTypes.CommonSurfaceShader)) {
                     if (shader.getMultiVisibilityMap()) {
-                        sp.visibilityMap = 1.0
+                        sp.visibilityMap = 1.0;
                         sp.multiVisibilityMap = 0;
                         var visTex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
                         sp.multiVisibilityWidth = visTex.texture.width;
