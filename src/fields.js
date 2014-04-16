@@ -2432,14 +2432,14 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
                 this.array.push( r );
             }
             else if (this.comp === 2) {
-                r = inp >> 24 & 255;
-                g = inp >> 16 & 255;
+                r = inp >> 8 & 255;
+                g = inp & 255;
                 this.array.push( r, g );
             }
             else if (this.comp === 3) {
-                r = inp >> 24 & 255;
-                g = inp >> 16 & 255;
-                b = inp >> 8 & 255;
+                r = inp >> 16 & 255;
+                g = inp >> 8 & 255;
+                b = inp & 255;
                 this.array.push( r, g, b );
             }
             else if (this.comp === 4) {
