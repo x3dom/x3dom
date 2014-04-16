@@ -48,6 +48,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
 					"uniform vec3 from;\n" +
 					"varying vec3 worldCoord;\n" +
 					"varying vec3 idCoord;\n" +
+                    "varying float fragID;\n" +
 					"uniform float writeShadowIDs;\n" +
 					"uniform float imageGeometry;\n" +
 					"uniform vec3 IG_bboxMin;\n" +
@@ -71,6 +72,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "       idCoord.z = floor(h / 256.0);\n" +
                     "       idCoord.y = h - (idCoord.z * 256.0);\n" +
                     "       idCoord = idCoord.zyx / 255.0;\n" +
+                    "       fragID = id + writeShadowIDs;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
@@ -101,6 +103,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "uniform vec3 bgSize;\n" +
                     "uniform float bgPrecisionMax;\n" +
 					"uniform float writeShadowIDs;\n" +
+                    "varying float fragID;\n" +
                     "uniform mat4 modelMatrix;\n" +
                     "uniform mat4 modelViewProjectionMatrix;\n" +
                     "uniform vec3 from;\n" +
@@ -118,6 +121,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "       idCoord.z = floor(h / 256.0);\n" +
                     "       idCoord.y = h - (idCoord.z * 256.0);\n" +
                     "       idCoord = idCoord.zyx / 255.0;\n" +
+                    "       fragID = id + writeShadowIDs;\n" +
                     "	 }\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
                     "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
@@ -151,13 +155,25 @@ x3dom.shader.Picking24Shader.prototype.generateFragmentShader = function(gl)
 					"uniform float highBit;\n" +
 					"uniform float lowBit;\n" +
 					"uniform float sceneSize;\n" +
+                    "uniform float multiVisibilityWidth;\n" +
+                    "uniform float multiVisibilityHeight;\n" +
 					"varying vec3 worldCoord;\n" +
 					"varying vec3 idCoord;\n" +
+                    "varying float fragID;\n" +
+                    "uniform sampler2D multiVisibilityMap;\n" +
 					
 					"void main(void) {\n" +
 					"    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
     				"       col.gba = idCoord;\n" +
+                    "       if (visibilityMap > 0.1) {\n" +
+                    "           vec2 idTexCoord;\n" +
+                    "           float roundedID = floor(fragID+0.5);\n" +
+                    "           idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n" +
+                    "           idTexCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n" +
+                    "           vec4 visibility = texture2D( multiVisibilityMap, idTexCoord );\n" +
+                    "           if (visibility.a < 1.0) discard; \n" +
+                    "       }\n" +
 					"	 }\n" +
 					"    col.r = length(worldCoord) / sceneSize;\n" +
 					"    gl_FragColor = col;\n" +

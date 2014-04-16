@@ -99,7 +99,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
-                    "       fragID = id;\n" +
+                    "       fragID = id + writeShadowIDs;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
