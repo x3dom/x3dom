@@ -596,6 +596,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode('multiDiffuseAlphaTexture', x3dom.nodeTypes.X3DTextureNode);
 
+            /**
+             *
+             * @var {SFNode} multiVisibilityTexture
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFNode('multiVisibilityTexture', x3dom.nodeTypes.X3DTextureNode);
+
 
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
 
@@ -775,6 +785,16 @@ x3dom.registerNodeType(
                 }
             },
 
+            getMultiVisibilityMap: function()
+            {
+                if(this._cf.multiVisibilityTexture.node) {
+                    this._cf.multiVisibilityTexture.node._cf.texture.node._type = "multiVisibilityMap";
+                    return this._cf.multiVisibilityTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+
             getTextures: function()
             {
                 var textures = [];
@@ -796,6 +816,9 @@ x3dom.registerNodeType(
 
                 var multiDiffuseAlpha = this.getMultiDiffuseAlphaMap();
                 if(multiDiffuseAlpha) textures.push(multiDiffuseAlpha);
+
+                var multiVisibility = this.getMultiVisibilityMap();
+                if(multiVisibility) textures.push(multiVisibility);
 
                 return textures;
             }

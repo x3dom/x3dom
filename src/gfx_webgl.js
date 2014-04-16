@@ -1563,6 +1563,24 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
+            else if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) {
+                var shader = s_app._shader;
+                if(shader && x3dom.isa(s_app._shader, x3dom.nodeTypes.CommonSurfaceShader)) {
+                    if (shader.getMultiVisibilityMap()) {
+                        sp.visibilityMap = 1.0
+                        sp.multiVisibilityMap = 0;
+                        var visTex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
+                        sp.multiVisibilityWidth = visTex.texture.width;
+                        sp.multiVisibilityHeight = visTex.texture.height;
+                        gl.activeTexture(gl.TEXTURE0);
+                        gl.bindTexture(gl.TEXTURE_2D, visTex.texture);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                    }
+                }
+            }
 
             if (shape.isSolid()) {
                 this.stateManager.enable(gl.CULL_FACE);
@@ -1900,10 +1918,16 @@ x3dom.gfx_webgl = (function () {
                 sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
                                       (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
             }
-            else if (shader.getMultiDiffuseAlphaMap()) {
+            if (shader.getMultiDiffuseAlphaMap()) {
                 tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiDiffuseAlphaMap");
                 sp.multiDiffuseAlphaWidth = tex.texture.width;
                 sp.multiDiffuseAlphaHeight = tex.texture.height;
+
+            }
+            if (shader.getMultiVisibilityMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
+                sp.multiVisibilityWidth = tex.texture.width;
+                sp.multiVisibilityHeight = tex.texture.height;
 
             }
         }

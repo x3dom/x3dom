@@ -2428,7 +2428,7 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
             var inp = parseInt(mc[i], 10);
 
             if (this.comp === 1) {
-                r = inp >> 24 & 255;
+                r = inp;
                 this.array.push( r );
             }
             else if (this.comp === 2) {

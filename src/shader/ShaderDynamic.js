@@ -165,7 +165,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
             shader += "uniform float displacementHeight;\n";
             shader += "uniform float displacementAxis;\n";
         }
-        if (properties.MULTIDIFFALPMAP) {
+        if (properties.MULTIDIFFALPMAP || properties.MULTIVISMAP) {
             shader += "attribute float id;\n";
             shader += "varying float fragID;\n";
         }
@@ -504,11 +504,18 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform float displacementWidth;\n";
             shader += "uniform float displacementHeight;\n";
         }
+        if (properties.MULTIDIFFALPMAP || properties.MULTIVISMAP) {
+            shader += "varying float fragID;\n";
+        }
         if (properties.MULTIDIFFALPMAP) {
             shader += "uniform sampler2D multiDiffuseAlphaMap;\n";
             shader += "uniform float multiDiffuseAlphaWidth;\n";
             shader += "uniform float multiDiffuseAlphaHeight;\n";
-            shader += "varying float fragID;\n";
+        }
+        if (properties.MULTIVISMAP) {
+            shader += "uniform sampler2D multiVisibilityMap;\n";
+            shader += "uniform float multiVisibilityWidth;\n";
+            shader += "uniform float multiVisibilityHeight;\n";
         }
         if(properties.NORMALMAP){
             shader += "uniform sampler2D normalMap;\n";
@@ -551,14 +558,25 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
 
-    if (properties.MULTIDIFFALPMAP) {
+    if (properties.MULTIVISMAP || properties.MULTIDIFFALPMAP) {
         shader += "vec2 idCoord;\n";
         shader += "float roundedID = floor(fragID+0.5);\n";
+    }
+
+    if (properties.MULTIVISMAP) {
+        shader += "idCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
+        shader += "idCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
+        shader += "vec4 visibility = texture2D( multiVisibilityMap, idCoord );\n";
+        shader += "if (visibility.a < 1.0) discard; \n";
+    }
+
+    if (properties.MULTIDIFFALPMAP) {
         shader += "idCoord.x = (mod(roundedID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
         shader += "idCoord.y = (floor(roundedID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
-        shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, vec2(idCoord.x, idCoord.y) ).rgba;\n";
+        shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, idCoord );\n";
         shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
         shader += "color.a = diffAlpha.a;\n";
+
     }
 			
 	if(properties.VERTEXCOLOR) {

@@ -75,6 +75,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"uniform vec3 from;\n" +
 					"varying vec3 worldCoord;\n" +
 					"varying vec2 idCoord;\n" +
+                    "varying float fragID;\n" +
 					"uniform float writeShadowIDs;\n" +
                     //image geometry
 					"uniform float imageGeometry;\n" +
@@ -98,6 +99,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
+                    "       fragID = id;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
@@ -134,6 +136,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
                     "uniform vec3 from;\n" +
                     "varying vec3 worldCoord;\n" +
                     "varying vec2 idCoord;\n" +
+                    "varying float fragID;\n" +
                     //pop geometry
                     popUniforms +
                     
@@ -144,6 +147,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"	    idCoord = vec2((id + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
     				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
+                    "       fragID = id;\n" +
 					"	 }\n" +
 
                     popDecoder +
@@ -181,13 +185,26 @@ x3dom.shader.PickingShader.prototype.generateFragmentShader = function(gl)
                 "uniform float highBit;\n" +
                 "uniform float lowBit;\n" +
                 "uniform float sceneSize;\n" +
+                "uniform float visibilityMap;\n" +
+                "uniform float multiVisibilityWidth;\n" +
+                "uniform float multiVisibilityHeight;\n" +
                 "varying vec3 worldCoord;\n" +
                 "varying vec2 idCoord;\n" +
+                "varying float fragID;\n" +
+                "uniform sampler2D multiVisibilityMap;\n" +
 
                 "void main(void) {\n" +
                 "    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
                 "    if (writeShadowIDs > 0.0) {\n" +
                 "       col.ba = idCoord;\n" +
+                "       if (visibilityMap > 0.1) {\n" +
+                "           vec2 idTexCoord;\n" +
+                "           float roundedID = floor(fragID+0.5);\n" +
+                "           idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n" +
+                "           idTexCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n" +
+                "           vec4 visibility = texture2D( multiVisibilityMap, idTexCoord );\n" +
+                "           if (visibility.a < 1.0) discard; \n" +
+                "       }\n" +
                 "	 }\n" +
                 "    float d = length(worldCoord) / sceneSize;\n" +
                 "    vec2 comp = fract(d * vec2(256.0, 1.0));\n" +

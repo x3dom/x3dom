@@ -724,6 +724,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
         property.DIFFPLACEMENTMAP = (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
         property.MULTIDIFFALPMAP  = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiDiffuseAlphaMap()) ? 1 : 0;
+        property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
         property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ? 1 : 0;
         property.BLENDING         = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
