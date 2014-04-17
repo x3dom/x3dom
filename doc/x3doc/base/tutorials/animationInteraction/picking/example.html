@@ -5,6 +5,12 @@
     <title>HTML Events on 3D objects</title>
     <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
     <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+    <script>
+        function posInfo(point)
+        {
+            document.getElementById("showInfo").innerHTML= point;
+        }
+    </script>
 </head>
 
 <body>
@@ -14,12 +20,13 @@ Experimental 'onclick' event on 3D objects. <br>
 Just click on one of the objects... The current state only shows what are we aiming at. <br>
 
 
-    <X3D  id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
+    <X3D  id="boxes" showStat="false" showLog="true" x="0px" y="0px" width="500px" height="500px">
         <Scene>
+            <Viewpoint position="-2.25680 3.36560 14.62828" orientation="-0.60104 -0.28053 0.74837 0.40903"></Viewpoint>
             <Group onclick="document.getElementById('bar').setAttribute('translation', event.hitPnt);">
 
                 <Transform DEF="coneTrafo" translation="-4.5 0 0">
-                    <Shape DEF="coneShape">
+                    <Shape DEF="coneShape" onClick="posInfo(event.hitPnt);">
                         <Appearance DEF="coneApp">
                             <Material diffuseColor="0 1 0" specularColor=".5 .5 .5" ></Material>
                         </Appearance>
@@ -28,7 +35,7 @@ Just click on one of the objects... The current state only shows what are we aim
                 </Transform>
 
                 <Transform DEF="boxTrafo" translation='-1.5 0 0'>
-                    <Shape DEF="boxShape">
+                    <Shape DEF="boxShape" onClick="posInfo(event.hitPnt);">
                         <Appearance DEF="boxApp">
                             <Material diffuseColor="1 0 0" specularColor=".5 .5 .5" ></Material>
                         </Appearance>
@@ -41,12 +48,12 @@ Just click on one of the objects... The current state only shows what are we aim
                         <Appearance DEF="sphereApp">
                             <Material diffuseColor="0 0 1" specularColor=".5 .5 .5" ></Material>
                         </Appearance>
-                        <Sphere DEF="sphere" onclick="alert('Blue Sphere picked at position\n' + event.hitPnt);" ></Sphere>
+                        <Sphere DEF="sphere" onClick="posInfo(event.hitPnt);"></Sphere>
                     </Shape>
                 </Transform>
 
                 <Transform DEF="cylinderTrafo" translation="4.5 0 0">
-                    <Shape DEF="cylinderShape">
+                    <Shape DEF="cylinderShape" onClick="posInfo(event.hitPnt);">
                         <Appearance DEF="cylinderApp">
                             <Material diffuseColor="1 1 0" specularColor=".5 .5 .5"></Material>
                         </Appearance>
@@ -69,7 +76,7 @@ Just click on one of the objects... The current state only shows what are we aim
     </X3D>
 
 
-<p> &nbsp; </p>
+<p id="showInfo"> &nbsp; </p>
 
 
 </body>
