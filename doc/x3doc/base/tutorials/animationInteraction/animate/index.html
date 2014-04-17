@@ -33,7 +33,7 @@
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Animate Objects</h1>
+            <h1>Animate Objects with Routes</h1>
         </div>            
         <br>
 		
@@ -78,7 +78,10 @@
 		the same coordinates as the first frame, which will create a proper animation loop. 
 		</p>
 		<p>
-		Now all the preconditions are set and you are ready to define your routes. The first route binds the positionInterpolator to the timeSensor and the second route
+		Now all the preconditions are set and you are ready to define your routes. Although routes are not x3 nodes, they are written as additional tags into the scene. Each route connects an output field of one node to the input field of another node. Every time the output changes, this event is transported over the route and the changed value gets set to the input field. The types of the field have to match exactly, but there is no imperative coding needed to assign the values.
+		All you have to do is to specify the names of start and end node as well as the names of the fields. All connected nodes must be specified before the route statement that uses them. You can use the same output field for multiple routes, but using multiple routes to change the same input field often leads to unpredictable behavior. Events get only passed in the scene if a matching route exists. This allows high frame rates.
+		<br><br>
+		In this tutorial, we need two routes. The first route binds the positionInterpolator to the timeSensor and the second route
 		binds the sphere to the positionInterpolator.
 		</p>
 		<pre class="prettyprint"><code class="language-html">
@@ -86,7 +89,7 @@
 	&lt;Route fromNode="move" fromField ="value_changed" toNode="ball" toField="translation&gt; &lt;/Route&gt;  
         </code></pre>
 		<p>
-		Your animation should now work and you can modify and extend it as you want. 
+		Your animation should now work and you can modify and extend it as you want. If you want to manipulate the output data before sending it to the input field, check out the <a href="../onoutputchange/index.html">next tutorial about the OnOutputChange Event</a>.
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
