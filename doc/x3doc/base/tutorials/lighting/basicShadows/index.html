@@ -45,6 +45,7 @@
         </p>
 
 <h2>Basic shadow settings</h2>
+<p>First you need to set the shadowintensity to value higher than zero.</p>
 <p>One of the most important settings – both regarding the visual quality of the shadows and the performance – is the <span style="background-color: lightgrey">shadowMapSize</span> setting. A shadow map is a texture which captures the scene from a light’s point of view and is the basis for all shadow computations in X3DOM. 
 The size of the shadow map determines the resolution at which shadows are computed. The standard setting of 1024 should achieve good results in most cases, but depending on the situation you might want to change it anyway. In general, a higher shadow map resolution leads to more detailed shadows, but also to a significant drop in performance.</p>
 <p>Another option which has significant impact on the quality of the shadows is shadow map filtering. Filtering makes the edges of the shadows seem smoother. It can be controlled with the shadowFilterSize attribute. A higher filter size increases the amount of blurring that is applied to a shadow map. However, the effectivenes of this technique does not only depend on the filter size, but also on the resolution of the shadow map.
