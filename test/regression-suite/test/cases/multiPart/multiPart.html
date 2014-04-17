@@ -114,7 +114,8 @@
     </scene>
 </x3d>
 <div id="ui" >
-    <h3>Toggle highlighting, visibility and coloring. Select parts by clicking on them.</h3>
+    <h3>Toggle highlighting, visibility and coloring.<br>
+        Select parts by clicking on them.</h3>
     <div>
         <input id="reset" type="button" value="Reset" onclick="reset();">
         <input id="clearSelection" type="button" value="Clear Selection" onclick="clearSelection();">
@@ -131,11 +132,10 @@
         <input id="colorPicker" type="color">
         <input id="setColor" type="button" value="Set Color" onclick="setColor();">
     </div>
-    <p></p>
-    <div>
-        <div class="header" > Current Selection:</div>
-        <textarea id="selectionTA" ></textarea>
-    </div>
+</div>
+<div id="selectionUI">
+    <div class="header" > Current Selection:</div>
+    <textarea id="selectionTA" ></textarea>
 </div>
 </body>
 </html>

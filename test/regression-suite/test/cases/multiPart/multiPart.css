@@ -60,6 +60,13 @@ input:hover
     height: 25px;
 }
 
+#selectionUI
+{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
 .header
 {
     width: 140px;
