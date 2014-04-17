@@ -21,3 +21,57 @@ html, body {
     -moz-user-select: none;
     user-select: none;
 }
+
+#ui
+{
+    position: absolute;
+    left: 10px;}
+
+input
+{
+    width: 140px;
+
+    border: 1px solid #ccc;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    -moz-box-shadow: 2px 2px 3px #666;
+    -webkit-box-shadow: 2px 2px 3px #666;
+    box-shadow: 2px 2px 3px #666;
+    font-size: 13px;
+    padding: 4px 7px;
+    outline: 0;
+    -webkit-appearance: none;
+    background-color: cornflowerblue;
+    margin: 2px;
+
+}
+
+input:hover
+{
+    -moz-box-shadow: 4px 4px 6px #666;
+    -webkit-box-shadow: 4px 4px 6px #666;
+    color: #006400;
+}
+
+#colorPicker
+{
+    width: 124px;
+    height: 25px;
+}
+
+.header
+{
+    width: 140px;
+    background-color:cornflowerblue;
+    text-align: center;
+    margin: 2px;
+}
+
+#selectionTA
+{
+    resize: vertical;
+    height: 500px;
+    width: 134px;
+    margin: 2px;
+}
