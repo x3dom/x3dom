@@ -16,11 +16,16 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimJoint
          * @constructs x3dom.nodeTypes.HAnimJoint
-         * @x3d x.x
+         * @x3d 3.0
          * @component H-Anim
-         * @status experimental
+         * @status not yet implemented
          * @extends x3dom.nodeTypes.Transform
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Each joint in the body is represented by an HAnimJoint node, which is used to define the relationship of each body segment to its immediate parent.
+         * An HAnimJoint may only be a child of another HAnimJoint node or a child within the skeleton field in the case of the HAnimJoint used as a humanoid root (i.e., an HAnimJoint may not be a child of an HAnimSegment).
+         * The HAnimJoint node is also used to store other joint-specific information. In particular, a joint name is provided so that applications can identify each HAnimJoint node at run-time.
+         * The HAnimJoint node may contain hints for inverse-kinematics systems that wish to control the H-Anim figure.
+         * These hints include the upper and lower joint limits, the orientation of the joint limits, and a stiffness/resistance value.
          */
         function (ctx) {
             x3dom.nodeTypes.HAnimJoint.superClass.call(this, ctx);

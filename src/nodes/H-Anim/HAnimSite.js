@@ -16,11 +16,14 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimSite
          * @constructs x3dom.nodeTypes.HAnimSite
-         * @x3d x.x
+         * @x3d 3.0
          * @component H-Anim
-         * @status experimental
+         * @status not yet implemented
          * @extends x3dom.nodeTypes.Transform
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc An HAnimSite node serves three purposes. The first is to define an "end effecter" location that can be used by an inverse kinematics system.
+         * The second is to define an attachment point for accessories such as jewelry and clothing.
+         * The third is to define a location for a virtual camera in the reference frame of an HAnimSegment (such as a view "through the eyes" of the humanoid for use in multi-user worlds).
          */
         function (ctx) {
             x3dom.nodeTypes.HAnimSite.superClass.call(this, ctx);

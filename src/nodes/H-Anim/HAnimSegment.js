@@ -16,11 +16,13 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimSegment
          * @constructs x3dom.nodeTypes.HAnimSegment
-         * @x3d x.x
+         * @x3d 3.0
          * @component H-Anim
-         * @status experimental
+         * @status not yet implemented
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Each body segment is stored in an HAnimSegment node.
+         * The HAnimSegment node is a grouping node that will typically contain either a number of Shape nodes or perhaps Transform nodes that position the body part within its coordinate system.
          */
         function (ctx) {
             x3dom.nodeTypes.HAnimSegment.superClass.call(this, ctx);
