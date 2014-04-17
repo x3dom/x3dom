@@ -16,11 +16,14 @@ x3dom.registerNodeType(
         /**
          * Constructor for StaticGroup
          * @constructs x3dom.nodeTypes.StaticGroup
-         * @x3d x.x
+         * @x3d 3.0
          * @component Grouping
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The StaticGroup node contains children nodes which cannot be modified.
+         * StaticGroup children are guaranteed to not change, send events, receive events or contain any USE references outside the StaticGroup.
+         * This allows the browser to optimize this content for faster rendering and less memory usage.
          */
         function (ctx) {
             x3dom.nodeTypes.StaticGroup.superClass.call(this, ctx);
@@ -29,7 +32,7 @@ x3dom.registerNodeType(
             // X3D representations, as they cannot be accessed after creation time
 
             /**
-             *
+             * Enables debugging.
              * @var {SFBool} debug
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue false
@@ -39,7 +42,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'debug', false);
 
             /**
-             *
+             * Enable debug box volumes.
              * @var {SFBool} showDebugBoxVolumes
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue false
@@ -51,7 +54,7 @@ x3dom.registerNodeType(
             // type of bvh to use, supported are 'jsBIH', 'BIH' and 'OCTREE'
 
             /**
-             *
+             * Defines the type of bvh to use. Supported are 'jsBIH', 'BIH' and 'OCTREE'.
              * @var {SFString} bvhType
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue 'jsBIH'

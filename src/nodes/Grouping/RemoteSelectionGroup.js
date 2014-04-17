@@ -18,7 +18,7 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.RemoteSelectionGroup
          * @x3d x.x
          * @component Grouping
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
@@ -27,74 +27,76 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Defines the address for the WebSocket connection
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue ["ws://localhost:35668/cstreams/0"]
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'url', ["ws://localhost:35668/cstreams/0"]);  // address for WebSocket connection
+            this.addField_MFString(ctx, 'url', ["ws://localhost:35668/cstreams/0"]);
 
             /**
-             *
+             * Defines a list of subsequent id/object pairs.
              * @var {MFString} label
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue []
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
+            this.addField_MFString(ctx, 'label', []);
 
             /**
-             *
+             * Sets the maximum number of items that are rendered.
              * @var {SFInt32} maxRenderedIds
+             * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue -1
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
+            this.addField_SFInt32(ctx, 'maxRenderedIds', -1);
 
             /**
-             *
+             * Sets whether a reconnect is attempted on a connection loss.
              * @var {SFBool} reconnect
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue true
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
+            this.addField_SFBool(ctx, 'reconnect', true);
 
             /**
-             *
+             * Sets the scaling factor to reduce the number of render calls during navigation
              * @var {SFFloat} scaleRenderedIdsOnMove
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue 1.0
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);
 
             /**
-             *
+             * Defines whether culling is used. If culling is disabled the RemoteSelectionGroup works like a normal group.
              * @var {SFBool} enableCulling
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue true
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
+            this.addField_SFBool(ctx, 'enableCulling', true);
 
             /**
-             *
+             * Defines a set of labels to disable nodes. The label must include the prefix.
              * @var {MFString} invisibleNodes
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue []
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
+            this.addField_MFString(ctx, 'invisibleNodes', []);
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket

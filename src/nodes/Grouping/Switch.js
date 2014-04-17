@@ -16,22 +16,26 @@ x3dom.registerNodeType(
         /**
          * Constructor for Switch
          * @constructs x3dom.nodeTypes.Switch
-         * @x3d x.x
+         * @x3d 3.0
          * @component Grouping
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Switch grouping node traverses zero or one of the nodes specified in the children field.
+         * All nodes under a Switch continue to receive and send events regardless of the value of whichChoice.
+         * For example, if an active TimeSensor is contained within an inactive choice of an Switch, the TimeSensor sends events regardless of the Switch's state.
          */
         function (ctx) {
             x3dom.nodeTypes.Switch.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The whichChoice field specifies the index of the child to traverse, with the first child having index 0.
+             * If whichChoice is less than zero or greater than the number of nodes in the children field, nothing is chosen.
              * @var {SFInt32} whichChoice
              * @memberof x3dom.nodeTypes.Switch
              * @initvalue -1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFInt32(ctx, 'whichChoice', -1);
