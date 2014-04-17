@@ -17,42 +17,48 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoLocation
          * @constructs x3dom.nodeTypes.GeoLocation
-         * @x3d x.x
+         * @x3d 3.0
          * @component Geospatial
          * @status experimental
          * @extends x3dom.nodeTypes.X3DTransformNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The GeoLocation node provides the ability to geo-reference any standard X3D model.
+         * That is, to take an ordinary X3D model, contained within the children of the node, and to specify its geospatial location.
+         * This node is a grouping node that can be thought of as a Transform node.
+         * However, the GeoLocation node specifies an absolute location, not a relative one, so content developers should not nest GeoLocation nodes within each other.
          */
         function (ctx) {
             x3dom.nodeTypes.GeoLocation.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The geoSystem field is used to define the spatial reference frame.
              * @var {MFString} geoSystem
+             * @range {["GD", ...], ["UTM", ...], ["GC", ...]},
              * @memberof x3dom.nodeTypes.GeoLocation
              * @initvalue ['GD','WE']
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
 
             /**
-             *
+             * The geometry of the nodes in children is to be specified in units of metres in X3D coordinates relative to the location specified by the geoCoords field.
+             * The geoCoords field can be used to dynamically update the geospatial location of the model.
              * @var {SFVec3d} geoCoords
              * @memberof x3dom.nodeTypes.GeoLocation
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
 
             /**
-             *
+             * The geoOrigin field is used to specify a local coordinate frame for extended precision.
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoLocation
              * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DChildNode);

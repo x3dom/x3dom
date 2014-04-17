@@ -16,18 +16,20 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoCoordinate
          * @constructs x3dom.nodeTypes.GeoCoordinate
-         * @x3d x.x
+         * @x3d 3.0
          * @component Geospatial
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DCoordinateNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The GeoCoordinate node specifies a list of coordinates in a spatial reference frame.
+         * It is used in the coord field of vertex-based geometry nodes including IndexedFaceSet, IndexedLineSet, and PointSet.
          */
         function (ctx) {
             x3dom.nodeTypes.GeoCoordinate.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The point array is used to contain the actual geospatial coordinates and should be provided in a format consistent with that specified for the particular geoSystem.
              * @var {MFVec3f} point
              * @memberof x3dom.nodeTypes.GeoCoordinate
              * @initvalue []
@@ -37,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_MFVec3f(ctx, 'point', []);
 
             /**
-             *
+             * The geoSystem field is used to define the spatial reference frame.
              * @var {MFString} geoSystem
              * @memberof x3dom.nodeTypes.GeoCoordinate
              * @initvalue ['GD','WE']
@@ -47,7 +49,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
 
             /**
-             *
+             * The geoOrigin field is used to specify a local coordinate frame for extended precision.
              * @var {SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoCoordinate
              * @initvalue x3dom.nodeTypes.GeoOrigin
