@@ -266,13 +266,22 @@ x3dom.registerNodeType(
                 var multiPart = this;
                 this._xmlNode.getParts = function (selector)
                 {
+                    var i, m;
                     var selection = []
 
-                    for(var i=0; i<selector.length; i++) {
-                        for (var m=0; m<multiPart._idMap.mapping.length; m++) {
-                            if (selector[i].id == multiPart._idMap.mapping[m].name ||
-                                selector[i].app == multiPart._idMap.mapping[m].appearance) {
-                                selection.push(m);
+                    if (selector == undefined || selector.length == 0) {
+                        for (m=0; m<multiPart._idMap.mapping.length; m++) {
+                            selection.push(m);
+                        }
+                    }
+                    else
+                    {
+                        for (i=0; i<selector.length; i++) {
+                            for (m=0; m<multiPart._idMap.mapping.length; m++) {
+                                if (selector[i].id == multiPart._idMap.mapping[m].name ||
+                                    selector[i].app == multiPart._idMap.mapping[m].appearance) {
+                                    selection.push(m);
+                                }
                             }
                         }
                     }
