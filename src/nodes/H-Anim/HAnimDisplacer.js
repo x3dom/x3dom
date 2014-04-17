@@ -16,11 +16,14 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimDisplacer
          * @constructs x3dom.nodeTypes.HAnimDisplacer
-         * @x3d x.x
+         * @x3d 3.0
          * @component H-Anim
-         * @status experimental
+         * @status not yet implemented
          * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc In some cases, the application may need to be able to identify specific groups of vertices within an HAnimSegment.
+         * It may also require "hints" as to the direction in which each vertex should move. That information is stored in a node called an HAnimDisplacer.
+         * The HAnimDisplacers for a particular HAnimSegment are stored in the displacers field of that HAnimSegment.
          */
         function (ctx) {
             x3dom.nodeTypes.HAnimDisplacer.superClass.call(this, ctx);
