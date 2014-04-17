@@ -38,6 +38,7 @@ x3dom.registerNodeType(
 
             this._idMap = null;
             this._oldPixels = null;
+            this._inlineNamespace = null;
 
         },
         {
@@ -78,11 +79,17 @@ x3dom.registerNodeType(
 
                 this._xmlNode._shadowObjectID = -1
 
+                this._xmlNode.addEventListener("mousedown", function (e) {
+                    if (!that._nameSpace.doc._viewarea._isMoving) {
+                        e.partID = that._idMap.mapping[e.shadowObjectId].name;
+                        this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
+                    }
+                }, false);
+
                 this._xmlNode.addEventListener("mouseout", function (e) {
                     if (!that._nameSpace.doc._viewarea._isMoving) {
                         if (e.shadowObjectId == -1) {
-                            e.shadowObjectId = this._shadowObjectID;
-                            e.partID = that._idMap.mapping[e.shadowObjectId].name;
+                            e.partID = that._idMap.mapping[this._shadowObjectID].name;
                             this._shadowObjectID = -1;
                             var event = new CustomEvent("partout", {detail: e});
                             this.dispatchEvent(event);
@@ -92,20 +99,17 @@ x3dom.registerNodeType(
 
                 this._xmlNode.addEventListener("mousemove", function (e) {
                     if (!that._nameSpace.doc._viewarea._isMoving) {
-                        if (e.button) {
-                            this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
-                        } else {
-                            if (e.shadowObjectId != this._shadowObjectID) {
-                                var tmp = e.shadowObjectId;
-                                if (this._shadowObjectID != -1) {
-                                    e.shadowObjectId = this._shadowObjectID;
-                                    e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                                    this.dispatchEvent(new CustomEvent("partout", {detail: e}));
-                                }
-                                this._shadowObjectID = e.shadowObjectId = tmp;
-                                e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                                this.dispatchEvent(new CustomEvent("partover", {detail: e}));
+                        e.partID = that._idMap.mapping[e.shadowObjectId].name
+                        this.dispatchEvent(new CustomEvent("partmove", {detail: e}));
+                        if (e.shadowObjectId != this._shadowObjectID) {
+                            var tmp = e.shadowObjectId;
+                            if (this._shadowObjectID != -1) {
+                                e.partID = that._idMap.mapping[this._shadowObjectID].name;
+                                this.dispatchEvent(new CustomEvent("partout", {detail: e}));
                             }
+                            this._shadowObjectID = e.shadowObjectId = tmp;
+                            e.partID = that._idMap.mapping[e.shadowObjectId].name;
+                            this.dispatchEvent(new CustomEvent("partover", {detail: e}));
                         }
                     }
                 }, false);
@@ -186,7 +190,6 @@ x3dom.registerNodeType(
                         visibilityData += " 0";
                     }
                 }
-
                 return visibilityData;
             },
 
@@ -220,14 +223,14 @@ x3dom.registerNodeType(
                                         sstDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
 
                                         var ptDA = document.createElement("PixelTexture");
-                                        ptDA.setAttribute("id", "test");
+                                        ptDA.setAttribute("id", "MultiMaterial_ColorMap");
                                         ptDA.setAttribute("image", this.createImageData());
 
                                         var sstV = document.createElement("SurfaceShaderTexture");
                                         sstV.setAttribute("containerField", "multiVisibilityTexture");
 
                                         var ptV = document.createElement("PixelTexture");
-                                        ptV.setAttribute("id", "test2");
+                                        ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
                                         ptV.setAttribute("image", this.createVisibilityData());
 
                                         sstDA.appendChild(ptDA);
@@ -263,7 +266,7 @@ x3dom.registerNodeType(
                 var multiPart = this;
                 this._xmlNode.getParts = function (selector)
                 {
-                    var selection = [];
+                    var selection = []
 
                     for(var i=0; i<selector.length; i++) {
                         for (var m=0; m<multiPart._idMap.mapping.length; m++) {
@@ -355,8 +358,8 @@ x3dom.registerNodeType(
                         };
                     };
 
-                    var colorMap = multiPart._nameSpace.childSpaces[0].defMap["test"];
-                    var visibilityMap = multiPart._nameSpace.childSpaces[0].defMap["test2"];
+                    var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
                     return new Parts(selection, colorMap, visibilityMap);
                 }
             },
@@ -423,25 +426,25 @@ x3dom.registerNodeType(
                         var nsName = (that._vf.nameSpaceName.length != 0) ?
                                       that._vf.nameSpaceName.toString().replace(' ','') : "";
 
-                        nameSpace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
+                        that._inlineNamespace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
 
                         var url = that._vf.url.length ? that._vf.url[0] : "";
 
                         if ((url[0] === '/') || (url.indexOf(":") >= 0))
                         {
-                            nameSpace.setBaseURL(url);
+                            that._inlineNamespace.setBaseURL(url);
                         }
                         else
                         {
-                            nameSpace.setBaseURL(that._nameSpace.baseURL + url);
+                            that._inlineNamespace.setBaseURL(that._nameSpace.baseURL + url);
                         }
 
                         //Replace Material before setupTree()
                         that.replaceMaterials(inlScene);
 
-                        newScene = nameSpace.setupTree(inlScene);
+                        newScene = that._inlineNamespace.setupTree(inlScene);
 
-                        that._nameSpace.addSpace(nameSpace);
+                        that._nameSpace.addSpace(that._inlineNamespace);
 
                         if(that._vf.nameSpaceName.length != 0)
                         {
@@ -507,7 +510,7 @@ x3dom.registerNodeType(
                     }
 
                     newScene = null;
-                    nameSpace = null;
+                    //nameSpace = null;
                     inlScene = null;
                     xml = null;
 

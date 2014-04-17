@@ -1,67 +1,55 @@
 <!DOCTYPE html>
-<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+<html>
   <head>
     <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
     <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+    <link rel="stylesheet" type="text/css" href="multiPart.css">
     <script>
+        window.onload = function() {
+            var multiPart = document.getElementById('multiPart');
+            document.getElementById('multiPart').addEventListener('partmove', partmove, false);
+            document.getElementById('multiPart').addEventListener('partclick', partclick, false);
+            document.getElementById('multiPart').addEventListener('partover', partover, false);
+            document.getElementById('multiPart').addEventListener('partout', partout, false);
+        };
+
         function partover(e){
-            console.log("over: " + e.detail.partID);
+            console.log("[mouseover]: " + e.detail.partID);
             var parts = this.getParts([{id:e.detail.partID}]);
             parts.highlight("yellow");
         }
 
+        function partmove(e){
+            var tooltip = document.getElementById("tooltip");
+            tooltip.innerHTML = e.detail.partID
+            tooltip.style.left = e.detail.layerX + 15 +"px";
+            tooltip.style.top = e.detail.layerY + 15 + "px";;
+            tooltip.style.display = "block";
+        }
+
         function partout(e){
-            console.log("out: " + e.detail.partID);
+            console.log("[mouseout]: " + e.detail.partID);
             var parts = this.getParts([{id:e.detail.partID}]);
             parts.unhighlight();
+
+            if(e.detail.shadowObjectId == -1) {
+                tooltip.style.display = "none";
+            }
         }
 
         function partclick(e){
-            console.log("click: " + e.detail.partID);
+            console.log("[click]: " + e.detail.partID);
+            tooltip.style.display = "none";
         }
-
-        function changeColor()
-        {
-            var multiPart = document.getElementById('multiPart');
-            var parts = multiPart.getParts([{app:"App_0"}, {app:"App_1"}, {app:"App_4"}]);
-
-            parts.setColor("green");
-            parts.setVisibility(true);
-        }
-
-        window.onload = function() {
-            var multiPart = document.getElementById('multiPart');
-            multiPart.onload = function()
-            {
-                var parts = this.getParts([{id:"MYDEF8"}]);
-
-                parts.setColor("red");
-                parts.setVisibility(false);
-
-            };
-
-
-            /*multiPart.onclick = function(e) {
-                console.log(e);
-            };*/
-
-            //document.getElementById('myScene').addEventListener('shadowObjectIdChanged', shadowObjIdChanged, false);
-
-            document.getElementById('multiPart').addEventListener('partclick', partclick, false);
-            document.getElementById('multiPart').addEventListener('partover', partover, false);
-            document.getElementById('multiPart').addEventListener('partout', partout, false);
-
-
-        };
     </script>
   </head>
-  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>  
+  <body>
+    <div id="tooltip">tooltip</div>
     <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene id="myScene">
          <MultiPart id="multiPart" url="multiPart.x3d" urlIDMap="multiPart.json"></MultiPart>
       </scene>
     </x3d>
-    <button onclick="changeColor();">Change Color</button>
   </body>
 </html>
