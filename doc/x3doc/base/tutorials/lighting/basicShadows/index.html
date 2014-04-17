@@ -16,11 +16,11 @@
 </div>
 <div id="header-navbar">
     <a href="http://x3dom.org">x3dom.org</a>
-    >
+    &gt;
     <a href="../../../index.html">documentation</a>    
-    >
+    &gt;
     <a href="../../index.html">Tutorials</a>
-	>
+	&gt;
     <a href="#">Basic Shadows</a>
 </div>
 <div id="main">
@@ -53,6 +53,19 @@ The size of the shadow map determines the resolution at which shadows are comput
  <h2>Cascading</h2>
  <p>Another technique to improve shadow quality which is especially helpful in big scenes is called cascading: the visible area is parted along the z-axis and for each of the created divisions (cascades) shadows are computed independently. The number of cascades to be used can be set with the shadowCascades option. Cascading can be used with directional lights and spot lights, but not with point lights. Be advised that this technique is only effective, if the light covers a relatively big area. 
  Consequently, the main application scenario lies in the usage with a directional light.</p>
+ 
+ 		<p>
+		You can try these options in <a href="example.html">this simple demo scene</a>.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">Shadow demo scene</div>
+            </div>
+        </div> 
+        
+        
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
@@ -62,14 +75,13 @@ The size of the shadow map determines the resolution at which shadows are comput
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
-                <li><a href="lights.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+                <li><a href="shadows.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
             </ul>      
             <br>
             
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
-                <li><a href="../../../node/foo.html">FOO</a></li>
-                <li><a href="../../../node/bar.html">BAR</a></li>
+                <li><a href="../../../author/Lighting/DirectionalLight.html">DirectionalLight</a></li>
             </ul>
         </div>
 
