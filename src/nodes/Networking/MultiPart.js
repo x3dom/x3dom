@@ -39,6 +39,7 @@ x3dom.registerNodeType(
             this._idMap = null;
             this._oldPixels = null;
             this._inlineNamespace = null;
+            this._highlightedParts = [];
 
         },
         {
@@ -302,7 +303,11 @@ x3dom.registerNodeType(
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             for(var i=0; i<parts.ids.length; i++) {
-                                pixels[parts.ids[i]] = colorRGBA;
+                                if (multiPart._highlightedParts[parts.ids[i]]){
+                                    multiPart._highlightedParts[parts.ids[i]] = colorRGBA;
+                                } else {
+                                    pixels[parts.ids[i]] = colorRGBA;
+                                }
                             }
 
                             parts.colorMap.setPixels(pixels);
@@ -316,7 +321,11 @@ x3dom.registerNodeType(
                             var pixels = parts.colorMap.getPixels();
 
                             for(var i=0; i<parts.ids.length; i++) {
-                                pixels[parts.ids[i]].a = transparency;
+                                if (multiPart._highlightedParts[parts.ids[i]]){
+                                    multiPart._highlightedParts[parts.ids[i]].r = transparency;
+                                } else {
+                                    pixels[parts.ids[i]].a = transparency;
+                                }
                             }
 
                             parts.colorMap.setPixels(pixels);
@@ -341,12 +350,14 @@ x3dom.registerNodeType(
                          * @param color
                          */
                         this.highlight = function(color) {
-                            multiPart._oldPixels = parts.colorMap.getPixels();
                             var pixels = parts.colorMap.getPixels();
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             for(var i=0; i<parts.ids.length; i++) {
-                                pixels[parts.ids[i]] = colorRGBA;
+                                if (multiPart._highlightedParts[parts.ids[i]] == undefined) {
+                                    multiPart._highlightedParts[parts.ids[i]] = pixels[parts.ids[i]]
+                                    pixels[parts.ids[i]] = colorRGBA;
+                                }
                             }
 
                             parts.colorMap.setPixels(pixels);
@@ -357,13 +368,14 @@ x3dom.registerNodeType(
                          * @param color
                          */
                         this.unhighlight = function() {
-                            if (multiPart._oldPixels) {
-                                var pixels = parts.colorMap.getPixels();
-                                for(var i=0; i<parts.ids.length; i++) {
-                                    pixels[parts.ids[i]] = multiPart._oldPixels[parts.ids[i]];
+                            var pixels = parts.colorMap.getPixels();
+                            for(var i=0; i<parts.ids.length; i++) {
+                                if (multiPart._highlightedParts[parts.ids[i]]) {
+                                    pixels[parts.ids[i]] = multiPart._highlightedParts[parts.ids[i]];
+                                    multiPart._highlightedParts[parts.ids[i]] = undefined;
                                 }
-                                parts.colorMap.setPixels(pixels);
                             }
+                            parts.colorMap.setPixels(pixels);
                         };
                     };
 

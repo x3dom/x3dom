@@ -38,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'solid', true);
 
             /**
-             * Specifies how front- and backface are computed for a vertex set. Setting ccw to FALSE, swaps the front- and backfaces.
+             * The ccw field defines the ordering of the vertex coordinates of the geometry with respect to user-given or automatically generated normal vectors used in the lighting model equations.
              * @var {SFBool} ccw
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true

@@ -91,8 +91,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'on', true);
 
             /**
-             *
+             * Defines the attenuation of the shadows
              * @var {SFFloat} shadowIntensity
+             * @range [o, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
              * @field x3dom
@@ -112,7 +113,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'shadowMapSize', 1024);
 
             /**
-             *
+             * Sets the smoothness of the shadow umbra.
              * @var {SFInt32} shadowFilterSize
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
@@ -122,7 +123,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'shadowFilterSize', 0);
 
             /**
-             *
+             * Defines the shadow offset for the back projection of the shadow map.
              * @var {SFFloat} shadowOffset
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
@@ -136,11 +137,12 @@ x3dom.registerNodeType(
              * Objects that are closer to the light source than the near plane do not cast shadows.
              * If the zNear value is not set, the near plane is placed automatically.
              * @var {SFFloat} zNear
+             * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue -1
              * @field x3dom
              * @instance
-             */
+             *
             this.addField_SFFloat(ctx, 'zNear', -1);
 
             /**
