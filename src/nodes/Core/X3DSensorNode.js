@@ -26,6 +26,18 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
         
+		
+            /**
+             *
+             * @var {SFBool} enabled
+             * @memberof x3dom.nodeTypes.X3DSensorNode
+             * @initvalue true
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'enabled', true);
+			
+			
         }
     )
 );

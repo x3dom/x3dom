@@ -41,15 +41,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFTime(ctx, 'cycleInterval', 1);
 
-            /**
-             *
-             * @var {SFBool} enabled
-             * @memberof x3dom.nodeTypes.TimeSensor
-             * @initvalue true
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFBool(ctx, 'enabled', true);
 
             /**
              *
