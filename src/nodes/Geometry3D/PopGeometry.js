@@ -297,11 +297,11 @@ x3dom.registerNodeType(
              *
              * @var {SFBool} indexedRendering
              * @memberof x3dom.nodeTypes.PopGeometry
-             * @initvalue false
+             * @initvalue true
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'indexedRendering', false);
+            this.addField_SFBool(ctx, 'indexedRendering', true);
             //ATTENTION: Although it might be supported by aopt,
             //           X3DOM does not accept 16 bit spherical normals yet,
             //           spherical normals are assumed to be 8 bit and get
