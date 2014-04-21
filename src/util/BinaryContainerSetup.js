@@ -19,11 +19,11 @@ x3dom.BinaryContainerLoader = {
         if (glErr) {
             if (glErr == gl.OUT_OF_MEMORY) {
                 this.outOfMemory = true;
-                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry (out of memory).");
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary container (out of memory).");
                 console.error("WebGL: OUT_OF_MEMORY");
             }
             else {
-                x3dom.debug.logError("GL-Error " + glErr + " on loading binary geometry.");
+                x3dom.debug.logError("GL-Error " + glErr + " on loading binary container.");
             }
         }
     }

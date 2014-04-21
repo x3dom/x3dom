@@ -424,7 +424,8 @@ x3dom.gfx_webgl = (function () {
         }
         else if (!(x3dom.isa(geoNode, x3dom.nodeTypes.Text) ||
                    x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
-                   x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ) &&
+                   x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry)    ||
+                   x3dom.isa(geoNode, x3dom.nodeTypes.ExternalGeometry)) &&
                   (!geoNode || geoNode._mesh._positions[0].length < 1))
         {
             if (x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2 &&
@@ -516,7 +517,8 @@ x3dom.gfx_webgl = (function () {
             dirtyLighting: x3dom.Utils.checkDirtyLighting(viewarea),
             imageGeometry: 0,   // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
             binaryGeometry: 0,  // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
-            popGeometry: 0     // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
+            popGeometry: 0,     // 0 : no PG,  1 : indexed PG, -1  : non-indexed PG
+            externalGeometry: 0 // 0 : no EG,  1 : indexed EG, -1 : non-indexed EG
         };
 
         //Set Textures		
