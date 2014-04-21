@@ -211,14 +211,14 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'normalPerVertex', true);
 
             /**
-             *
+             * Flag that specifies whether vertex IDs are given as texture coordinates.
              * @var {SFBool} idsPerVertex
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue false
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'idsPerVertex', false);    /// Experimental flag to decide if IDs are in texCoords
+            this.addField_SFBool(ctx, 'idsPerVertex', false);
 
             // workaround
             this._hasStrideOffset = false;

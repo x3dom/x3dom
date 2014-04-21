@@ -553,7 +553,11 @@ x3dom.gfx_webgl = (function () {
         }
 
         // Binary container geometries need special handling
-        if (x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry))
+        if (x3dom.isa(geoNode, x3dom.nodeTypes.ExternalGeometry))
+        {
+            geoNode.updateRenderData(shape, sp, gl, viewarea, this);
+        }
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry))
         {
             x3dom.BinaryContainerLoader.setupBinGeo(shape, sp, gl, viewarea, this);
         }

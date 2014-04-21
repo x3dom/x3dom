@@ -237,6 +237,7 @@
                     {"file": "Torus.js"},
                     {"file": "Cone.js"},
                     {"file": "Cylinder.js"},
+                    {"file": "ExternalGeometry.js"},
                     {"file": "X3DBinaryContainerGeometryNode.js"},
                     {"file": "BinaryGeometry.js"},
                     {"file": "PopGeometryLevel.js"},

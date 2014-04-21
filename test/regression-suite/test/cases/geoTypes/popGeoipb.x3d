@@ -8,8 +8,8 @@
         <Appearance>
           <Material diffuseColor='0.9 0.9 0.9' shininess='0.5' specularColor='0.1 0.1 0.1'/>
         </Appearance>
-        <PopGeometry DEF='PG_0' vertexCount='2976' primType='"TRIANGLES"' position='0.697000026703 5.11499977112 0' size='21.0948616028 10.3322995377 13.1239404392' attributeStride='12' colorOffset='8' vertexBufferSize='538' indexedRendering='true' sphericalNormals='true' bbMinModF='0.53799174067 0 0.50495049505' bbMaxModF='0.528090705362 0.990099009901 0.49504950495' bbMin='-9.74600028992 0 -6.49700021744' numAnchorVertices='82' tightSize='20.8860015869 10.2299995422 12.9940004349'>
-          <PopGeometryLevel src='popGeoipb/PG_0_level0.bin' numIndices='372' vertexDataBufferOffset='0'/>
+        <PopGeometry DEF='PG_0' vertexCount='2976' primType='"TRIANGLES"' position='0.697000026703 5.11499977112 0' size='21.0948616028 10.3322995377 13.1239404392' attributeStride='12' colorOffset='8' vertexBufferSize='538' sphericalNormals='true' bbMinModF='0.53799174067 0 0.50495049505' bbMaxModF='0.528090705362 0.990099009901 0.49504950495' bbMin='-9.74600028992 0 -6.49700021744' numAnchorVertices='82' tightSize='20.8860015869 10.2299995422 12.9940004349'>
+          <PopGeometryLevel src='popGeoipb/PG_0_level0.bin' numIndices='372'/>
           <PopGeometryLevel src='popGeoipb/PG_0_level1.bin' numIndices='228' vertexDataBufferOffset='189'/>
           <PopGeometryLevel src='popGeoipb/PG_0_level2.bin' numIndices='648' vertexDataBufferOffset='283'/>
           <PopGeometryLevel src='popGeoipb/PG_0_level3.bin' numIndices='648' vertexDataBufferOffset='414'/>

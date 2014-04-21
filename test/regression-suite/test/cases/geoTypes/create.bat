@@ -17,3 +17,4 @@ aopt -i teapot.x3d -K popGeo/: -x popGeo.x3d
 aopt -i teapot.x3d -K popGeoi/:i -x popGeoi.x3d
 aopt -i teapot.x3d -K popGeoip/:ip -x popGeoip.x3d
 aopt -i teapot.x3d -K popGeoipb/:ipb -x popGeoipb.x3d
+aopt -i teapot.x3d -Y "" -x extGeo.x3d

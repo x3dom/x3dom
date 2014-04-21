@@ -9,14 +9,14 @@
           <Material diffuseColor='0.9 0.9 0.9' shininess='0.5' specularColor='0.1 0.1 0.1'/>
         </Appearance>
         <PopGeometry DEF='PG_0' vertexCount='2976' primType='"TRIANGLES"' position='0.697000026703 5.11499977112 0' size='21.0948616028 10.3322995377 13.1239404392' attributeStride='16' normalOffset='8' colorOffset='12' vertexBufferSize='2976' indexedRendering='false' bbMinModF='0.53799174067 0 0.50495049505' bbMaxModF='0.528090705362 0.990099009901 0.49504950495' bbMin='-9.74600028992 0 -6.49700021744' tightSize='20.8860015869 10.2299995422 12.9940004349'>
-          <PopGeometryLevel src='popGeo/PG_0_level0.bin' numIndices='0' vertexDataBufferOffset='0'/>
-          <PopGeometryLevel src='popGeo/PG_0_level1.bin' numIndices='0' vertexDataBufferOffset='72'/>
-          <PopGeometryLevel src='popGeo/PG_0_level2.bin' numIndices='0' vertexDataBufferOffset='300'/>
-          <PopGeometryLevel src='popGeo/PG_0_level3.bin' numIndices='0' vertexDataBufferOffset='936'/>
-          <PopGeometryLevel src='popGeo/PG_0_level4.bin' numIndices='0' vertexDataBufferOffset='1635'/>
-          <PopGeometryLevel src='popGeo/PG_0_level5.bin' numIndices='0' vertexDataBufferOffset='2439'/>
-          <PopGeometryLevel src='popGeo/PG_0_level6.bin' numIndices='0' vertexDataBufferOffset='2916'/>
-          <PopGeometryLevel src='popGeo/PG_0_level7.bin' numIndices='0' vertexDataBufferOffset='2970'/>
+          <PopGeometryLevel src='popGeo/PG_0_level0.bin'/>
+          <PopGeometryLevel src='popGeo/PG_0_level1.bin' vertexDataBufferOffset='72'/>
+          <PopGeometryLevel src='popGeo/PG_0_level2.bin' vertexDataBufferOffset='300'/>
+          <PopGeometryLevel src='popGeo/PG_0_level3.bin' vertexDataBufferOffset='936'/>
+          <PopGeometryLevel src='popGeo/PG_0_level4.bin' vertexDataBufferOffset='1635'/>
+          <PopGeometryLevel src='popGeo/PG_0_level5.bin' vertexDataBufferOffset='2439'/>
+          <PopGeometryLevel src='popGeo/PG_0_level6.bin' vertexDataBufferOffset='2916'/>
+          <PopGeometryLevel src='popGeo/PG_0_level7.bin' vertexDataBufferOffset='2970'/>
         </PopGeometry>
       </Shape>
     </Transform>
