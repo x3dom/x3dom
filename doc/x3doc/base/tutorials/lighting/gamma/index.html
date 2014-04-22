@@ -39,8 +39,21 @@
 		<h2>Short facts</h2>
 		<p>If you know what gamma correction is, you may just want to know that:
 		Lighting in X3DOM can be gamma-correct or not, depending on the Environment node’s gammaCorrectionDefault field.
-		RGB Colors and textures are assumed to be gamma coded
-		Intensities of all sorts are assumed to be linear
+		RGB Colors and textures are assumed to be gamma coded.
+		Intensities of all sorts are assumed to be linear.
+		You can use gamma correction with the "gammaCorrectionDefault" attribute: 
+		<pre class="prettyprint"><code class="language-html">
+    &lt;Environment id="gamma" gammaCorrectionDefault="linear"&gt;&lt;/Environment&gt; 
+        </code></pre>
+		Even with a simple sphere we can see the difference: 
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">gamma correction in action</div>
+            </div>
+        </div>
+		
+		
 		</p>
 		<h2>Slightly longer version</h2>
 		<p>
