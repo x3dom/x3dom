@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DGroupingNode
          * @constructs x3dom.nodeTypes.X3DGroupingNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Grouping
          * @status experimental
          * @extends x3dom.nodeTypes.X3DBoundedObject

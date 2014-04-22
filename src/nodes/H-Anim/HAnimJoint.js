@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimJoint
          * @constructs x3dom.nodeTypes.HAnimJoint
-         * @x3d 3.0
+         * @x3d 3.3
          * @component H-Anim
-         * @status not yet implemented
+         * @status experimental
          * @extends x3dom.nodeTypes.Transform
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Each joint in the body is represented by an HAnimJoint node, which is used to define the relationship of each body segment to its immediate parent.

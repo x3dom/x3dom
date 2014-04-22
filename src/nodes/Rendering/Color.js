@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Color
          * @constructs x3dom.nodeTypes.Color
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Rendering
          * @status full
          * @extends x3dom.nodeTypes.X3DColorNode

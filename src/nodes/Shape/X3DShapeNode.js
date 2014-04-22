@@ -248,9 +248,12 @@ x3dom.registerNodeType(
             {
                 if (this._shaderProperties == null ||
                     this._dirty.shader == true     ||
-                    (this._webgl !== undefined && this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea)) )
+                    (this._webgl !== undefined &&
+                     this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea) ) ||
+                    x3dom.Utils.checkDirtyEnvironment(viewarea, this._shaderProperties) == true)
                 {
                     this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
+
                     this._dirty.shader = false;
                     if (this._webgl !== undefined)
                     {

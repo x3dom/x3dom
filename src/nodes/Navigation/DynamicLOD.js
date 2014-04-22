@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.DynamicLOD
          * @x3d x.x
          * @component Navigation
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DLODNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */

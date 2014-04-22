@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.BinaryGeometry
          * @x3d x.x
          * @component Geometry3D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */

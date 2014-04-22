@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DViewpointNode
          * @constructs x3dom.nodeTypes.X3DViewpointNode
-         * @x3d 3.2
+         * @x3d 3.3
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DBindableNode

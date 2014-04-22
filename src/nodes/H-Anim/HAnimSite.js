@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimSite
          * @constructs x3dom.nodeTypes.HAnimSite
-         * @x3d 3.0
+         * @x3d 3.3
          * @component H-Anim
-         * @status not yet implemented
+         * @status full
          * @extends x3dom.nodeTypes.Transform
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc An HAnimSite node serves three purposes. The first is to define an "end effecter" location that can be used by an inverse kinematics system.

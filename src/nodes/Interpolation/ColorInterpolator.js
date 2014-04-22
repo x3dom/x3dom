@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for ColorInterpolator
          * @constructs x3dom.nodeTypes.ColorInterpolator
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Interpolation
          * @status full
          * @extends x3dom.nodeTypes.X3DInterpolatorNode

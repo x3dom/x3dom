@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DLightNode
          * @constructs x3dom.nodeTypes.X3DLightNode
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Lighting
          * @status full
          * @extends x3dom.nodeTypes.X3DChildNode

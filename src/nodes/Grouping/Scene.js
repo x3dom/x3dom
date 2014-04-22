@@ -19,7 +19,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Scene
          * @x3d x.x
          * @component Core
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The scene node wraps the x3d scene.

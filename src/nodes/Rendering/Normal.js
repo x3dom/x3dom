@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Normal
          * @constructs x3dom.nodeTypes.Normal
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Rendering
          * @status full
          * @extends x3dom.nodeTypes.X3DGeometricPropertyNode

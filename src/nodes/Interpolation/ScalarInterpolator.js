@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for ScalarInterpolator
          * @constructs x3dom.nodeTypes.ScalarInterpolator
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Interpolation
          * @status full
          * @extends x3dom.nodeTypes.X3DInterpolatorNode

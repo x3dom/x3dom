@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Switch
          * @constructs x3dom.nodeTypes.Switch
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Grouping
          * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode

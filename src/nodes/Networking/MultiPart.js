@@ -16,22 +16,21 @@ x3dom.registerNodeType(
         /**
          * Constructor for MultiPart
          * @constructs x3dom.nodeTypes.MultiPart
-         * @x3d 2.0
+         * @x3d x.x
          * @component Networking
-         * @status experimental
          * @extends x3dom.nodeTypes.Inline
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc Inline is a Grouping node that can load nodes from another X3D scene via url.
+         * @classdesc Multipart node
          */
             function (ctx) {
             x3dom.nodeTypes.MultiPart.superClass.call(this, ctx);
 
             /**
-             * Each specified URL shall refer to a valid X3D file that contains a list of children nodes, prototypes and routes at the top level. Hint: Strings can have multiple values, so separate each string by quote marks. Warning: strictly match directory and filename capitalization for http links!
+             * Specifies the url to the IDMap.
              * @var {MFString} urlIDMap
              * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue []
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_MFString(ctx, 'urlIDMap', []);
