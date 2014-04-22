@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.MatrixTransform
          * @x3d x.x
          * @component Grouping
-         * @status full
          * @extends x3dom.nodeTypes.X3DTransformNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The MatrixTransform node is a grouping node that defines a coordinate system for its children that is relative to the coordinate systems of its ancestors.

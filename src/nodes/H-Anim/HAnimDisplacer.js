@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimDisplacer
          * @constructs x3dom.nodeTypes.HAnimDisplacer
-         * @x3d 3.0
+         * @x3d 3.3
          * @component H-Anim
-         * @status not yet implemented
+         * @status full
          * @extends x3dom.nodeTypes.X3DGeometricPropertyNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc In some cases, the application may need to be able to identify specific groups of vertices within an HAnimSegment.

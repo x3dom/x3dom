@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for DirectionalLight
          * @constructs x3dom.nodeTypes.DirectionalLight
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Lighting
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLightNode

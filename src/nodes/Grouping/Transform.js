@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Transform
          * @constructs x3dom.nodeTypes.Transform
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Grouping
          * @status experimental
          * @extends x3dom.nodeTypes.X3DTransformNode

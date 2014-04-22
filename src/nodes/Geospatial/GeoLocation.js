@@ -17,7 +17,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoLocation
          * @constructs x3dom.nodeTypes.GeoLocation
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Geospatial
          * @status experimental
          * @extends x3dom.nodeTypes.X3DTransformNode

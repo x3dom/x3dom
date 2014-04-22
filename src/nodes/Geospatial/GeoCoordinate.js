@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoCoordinate
          * @constructs x3dom.nodeTypes.GeoCoordinate
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Geospatial
          * @status full
          * @extends x3dom.nodeTypes.X3DCoordinateNode

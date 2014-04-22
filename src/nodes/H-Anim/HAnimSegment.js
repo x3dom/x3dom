@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimSegment
          * @constructs x3dom.nodeTypes.HAnimSegment
-         * @x3d 3.0
+         * @x3d 3.3
          * @component H-Anim
-         * @status not yet implemented
+         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Each body segment is stored in an HAnimSegment node.

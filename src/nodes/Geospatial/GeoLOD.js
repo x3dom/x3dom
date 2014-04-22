@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoLOD
          * @constructs x3dom.nodeTypes.GeoLOD
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Geospatial
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLODNode

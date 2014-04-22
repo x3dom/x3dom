@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoMetadata
          * @constructs x3dom.nodeTypes.GeoMetadata
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Geospatial
          * @status full
          * @extends x3dom.nodeTypes.X3DInfoNode

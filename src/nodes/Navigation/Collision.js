@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Collision
          * @constructs x3dom.nodeTypes.Collision
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Navigation
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode

@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for LineSet
          * @constructs x3dom.nodeTypes.LineSet
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Rendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode

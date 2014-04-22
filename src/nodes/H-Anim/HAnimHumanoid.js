@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for HAnimHumanoid
          * @constructs x3dom.nodeTypes.HAnimHumanoid
-         * @x3d 3.0
+         * @x3d 3.3
          * @component H-Anim
-         * @status not yet implemented
+         * @status full
          * @extends x3dom.nodeTypes.Transform
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The HAnimHumanoid node is used to store human-readable data such as author and copyright information, as well as to store references to the HAnimJoint, HAnimSegment, and HAnimSite nodes in addition to serving as a container for the entire humanoid.

@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Billboard
          * @constructs x3dom.nodeTypes.Billboard
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Navigation
          * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode

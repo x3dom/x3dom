@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for Anchor
          * @constructs x3dom.nodeTypes.Anchor
-         * @x3d 3.0
+         * @x3d 3.3
          * @component Networking
          * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode

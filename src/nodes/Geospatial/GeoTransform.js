@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for GeoTransform
          * @constructs x3dom.nodeTypes.GeoTransform
-         * @x3d 3.2
+         * @x3d 3.3
          * @component Geospatial
          * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode

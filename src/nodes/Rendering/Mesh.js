@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Mesh
          * @x3d x.x
          * @component Rendering
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is an experimental WebSG geo node
