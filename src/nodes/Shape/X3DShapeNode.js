@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "X3DShapeNode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DBoundedNode,
+    defineClass(x3dom.nodeTypes.X3DBoundedObject,
         
         /**
          * Constructor for X3DShapeNode
@@ -19,7 +19,7 @@ x3dom.registerNodeType(
          * @x3d x.x
          * @component Shape
          * @status experimental
-         * @extends x3dom.nodeTypes.X3DBoundedNode
+         * @extends x3dom.nodeTypes.X3DBoundedObject
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
         function (ctx) {
