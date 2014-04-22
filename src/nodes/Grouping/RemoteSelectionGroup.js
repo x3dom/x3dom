@@ -18,16 +18,17 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.RemoteSelectionGroup
          * @x3d x.x
          * @component Grouping
-         * @status full
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The RemoteSelectionGroup node uses a WebSocket connection to request the results of a a  side
+         *  culling.
          */
         function (ctx) {
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
 
             /**
-             * Defines the address for the WebSocket connection
+             * The address for the WebSocket connection
              * @var {MFString} url
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue ["ws://localhost:35668/cstreams/0"]

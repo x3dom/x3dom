@@ -6,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Polyline2D ### */
@@ -19,21 +17,24 @@ x3dom.registerNodeType(
         /**
          * Constructor for Polyline2D
          * @constructs x3dom.nodeTypes.Polyline2D
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry2D
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Polyline2D node specifies a series of contiguous line segments in the local 2D coordinate
+         *  system connecting the specified vertices.
          */
         function (ctx) {
             x3dom.nodeTypes.Polyline2D.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The lineSegments field specifies the vertices to be connected.
              * @var {MFVec2f} lineSegments
              * @memberof x3dom.nodeTypes.Polyline2D
              * @initvalue []
+             * @range (-inf, inf)
              * @field x3dom
              * @instance
              */

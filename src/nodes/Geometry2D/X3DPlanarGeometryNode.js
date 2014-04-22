@@ -6,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### X3DPlanarGeometryNode ### */
@@ -21,7 +19,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.X3DPlanarGeometryNode
          * @x3d x.x
          * @component Geometry2D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
