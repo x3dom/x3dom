@@ -35,46 +35,48 @@ x3dom.registerNodeType(
              * Warning: fieldOfView may not be correct for different window sizes and aspect ratios.
              * Interchange profile hint: this field may be ignored.
              * @var {SFFloat} fieldOfView
+             * @range [0, pi]
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0.785398
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
 
             /**
-             *
+             * The position fields of the Viewpoint node specifies a relative location in the local coordinate system. Position is relative to the coordinate system's origin (0,0,0),
              * @var {SFVec3f} position
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0,0,10
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
 
             /**
-             *
+             * The orientation fields of the Viewpoint node specifies relative orientation to the default orientation.
              * @var {SFRotation} orientation
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0,0,0,1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
 
             /**
-             *
+             * The centerOfRotation field specifies a center about which to rotate the user's eyepoint when in EXAMINE mode.
              * @var {SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
 
             /**
-             *
+             * Specifies the near plane.
              * @var {SFFloat} zNear
+             * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue -1
              * @field x3dom
@@ -83,8 +85,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'zNear', -1); //0.1);
 
             /**
-             *
+             * Specifies the far plane.
              * @var {SFFloat} zFar
+             * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.Viewpoint
              * @initvalue -1
              * @field x3dom

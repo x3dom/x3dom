@@ -22,7 +22,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The scene node wraps the x3d scene
+         * @classdesc The scene node wraps the x3d scene.
          */
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
