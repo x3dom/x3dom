@@ -9,8 +9,15 @@
  </head>
  <Scene>
 
-     <Viewpoint position="18.13264 11.54906 20.63481" orientation="-0.34290 0.93937 0.00027 0.77083"></Viewpoint>
-    
+     <Viewpoint position="18.13264 11.54906 20.63481" orientation="-0.34290 0.93937 0.00027 0.77083"
+                zNear="12.19740" zFar="50.26483" description="defaultX3DViewpointNode"></Viewpoint>
+
+     <directionalLight DEF="directional" direction='0 0 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'>
+     </directionalLight>
+     <PointLight DEF='point' on='TRUE' intensity='0.9000' ambientIntensity='0.0000' color='0.0 0.6 0.0' location='0 10 0.5 '  attenuation='0 0 0' radius='5.0000'> </PointLight>
+     <SpotLight DEF='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22'></SpotLight>
+
+
      <Shape>
       <appearance>
           <material DEF="color"
