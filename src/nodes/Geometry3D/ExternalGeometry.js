@@ -36,6 +36,11 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'url',  "");
 
+
+            //initialization of rendering-related X3DOM structures
+            this._mesh._invalidate = false;
+            this._mesh._numCoords  = 0;
+            this._mesh._numFaces   = 0;
         },
         {
             //----------------------------------------------------------------------------------------------------------
@@ -157,25 +162,76 @@ x3dom.registerNodeType(
              */
             _updateRenderDataFromSRC: function(shape, shaderProgram, gl, srcHeaderObj, srcBodyView)
             {
+                var INDEX_BUFFER_IDX    = 0;
+                var POSITION_BUFFER_IDX = 1;
+                var NORMAL_BUFFER_IDX   = 2;
+                var TEXCOORD_BUFFER_IDX = 3;
+                var COLOR_BUFFER_IDX    = 4;
+                var ID_BUFFER_IDX       = 5;
+
                 var indexViews     = srcHeaderObj["accessors"]["indexViews"];
+                var indexViewID, indexView;
                 var meshes         = srcHeaderObj["meshes"];
 
                 //the meta data object is currently unused
                 //var metadataObj = srcHeaderObj["meta"];
 
 
+                //1. create GL buffers for bufferChunks / bufferViews
+
                 //create buffers and GL buffer views, and store their identifiers in a map
                 var viewIDsToGLBufferIDs = {};
 
-                //TODO: distinction between ELEMENT_ARRAY and ARRAY buffers
+                //due to the differentiation between targets ARRAY and ELEMENT_ARRAY, we need to check the usage
+                //of the buffer view objects here first, before uploading them for the matching target
+                var indexViewBufferIDs = {};
+                for (indexViewID in indexViews)
+                {
+                    indexView = indexViews[indexViewID];
+                    indexViewBufferIDs[indexView["bufferView"]] = true;
+                }
+
                 this._createGLBuffersFromSRCChunks(gl,
                                                    srcHeaderObj["bufferChunks"], srcHeaderObj["bufferViews"],
-                                                   srcBodyView, viewIDsToGLBufferIDs);
+                                                   srcBodyView, indexViewBufferIDs, viewIDsToGLBufferIDs);
 
-                //create GL attribute pointers for the vertex attributes
+
+                //2. remember GL index buffer properties, if any
+
+                for (indexViewID in indexViews)
+                {
+                    indexView = indexViews[indexViewID];
+
+                    shape._webgl.buffers[INDEX_BUFFER_IDX] = viewIDsToGLBufferIDs[indexView["bufferView"]];
+
+                    //we currently assume 16 bit index data
+                    shape._webgl.indexType = gl.UNSIGNED_SHORT;
+                }
+
+                if (indexViews.length > 0)
+                {
+                    shape._webgl.externalGeometry =  1; //indexed EG
+                }
+                else
+                {
+                    shape._webgl.externalGeometry = -1; //non-indexed EG
+                }
+
+                //TODO: setup this hints
+                //this._vf.vertexCount[0] = 2342;
+                //this._mesh._numCoords   = 23;
+                //this._mesh._numFaces    = 42;
+
+
+                //3. create GL attribute pointers for the vertex attributes
+
                 this._createGLAttribPointersFromSRCChunks(gl,
                                                           srcHeaderObj["accessors"]["attributeViews"],
                                                           srcBodyView, viewIDsToGLBufferIDs);
+
+
+
+
 
                 var attributes;
 
@@ -198,9 +254,7 @@ x3dom.registerNodeType(
 
                 //...
 
-                //TODO: make it right
-                // 0 : no EG,  1 : indexed EG, -1 : non-indexed EG
-                shape._webgl.externalGeometry = -1;
+
 
                 //notify renderer
                 shape._nameSpace.doc.needRender = true;
@@ -218,120 +272,71 @@ x3dom.registerNodeType(
              * @param {Object} bufferChunksObj - the SRC header's bufferChunks object
              * @param {Object} bufferViewsObj - the SRC header's bufferViews object
              * @param {Uint8Array} srcBodyView - a typed array view on the body of the SRC file
+             * @param {Object} indexViewBufferIDs - an object which holds the IDs of all index data bufferViews
              * @param {Object} viewIDsToGLBufferIDs - map that will be filled with a GL buffer ID for each bufferView ID
              * @private
              */
             _createGLBuffersFromSRCChunks: function(gl, bufferChunksObj, bufferViewsObj, srcBodyView,
-                                                    viewIDsToGLBufferIDs)
+                                                    indexViewBufferIDs, viewIDsToGLBufferIDs)
             {
                 var i;
-                var currentChunkData;
-                var chunkDataList       = [];
-                var chunkIDToChunkIndex = {};
-
                 var bufferView;
-                var chunkList;
-                var coherentChunks;
-                var lastChunkIndex, currentChunkIndex;
+                var chunkIDList;
+                var bufferType;
 
+                var chunk;
                 var newBuffer;
                 var chunkDataView;
                 var currentChunkDataOffset;
 
-                //temporary structure for sorting of chunks
-                var chunkData = function(bufferChunkID, bufferChunkObj)
-                {
-                    this._offset = bufferChunkObj["byteOffset"];
-                    this._length = bufferChunkObj["byteLength"];
-                    this._id     = bufferChunkID;
-                };
-
-                for (var bufferChunkID in bufferChunksObj)
-                {
-                    currentChunkData = new chunkData(bufferChunkID, bufferChunksObj[bufferChunkID]);
-
-                    chunkDataList.push(currentChunkData);
-                }
-
-                //sort chunks by offset, to ensure the same order as in the SRC body
-                chunkDataList.sort(function(a, b){
-                    return a._offset - b._offset;
-                });
-
-                //remember, for each chunk ID, its index in the chunk data list
-                for (i = 0; i < chunkDataList.length; ++i)
-                {
-                    chunkIDToChunkIndex[chunkDataList[i]._id] = i;
-                }
-
-
                 //for each buffer view object, create and fill a GL buffer from its buffer chunks
                 for (var bufferViewID in bufferViewsObj)
                 {
+                    bufferType = (typeof indexViewBufferIDs[bufferViewID] !== 'undefined') ? gl.ELEMENT_ARRAY_BUFFER :
+                                                                                             gl.ARRAY_BUFFER;
+
                     bufferView = bufferViewsObj[bufferViewID];
 
-                    chunkList = bufferView["chunks"];
+                    chunkIDList = bufferView["chunks"];
 
-                    //sort chunks of this buffer view by their occurrence in the SRC body
-                    chunkList.sort(function(a, b){
-                       return chunkIDToChunkIndex[a] - chunkIDToChunkIndex[b];
-                    });
-
-                    //check if the chunks of the buffer are coherent
-                    coherentChunks = true;
-
-                    lastChunkIndex    = -1;
-                    currentChunkIndex = 0;
-
-                    for (i = 0; i < chunkList.length; ++i)
+                    //case 1: single chunk
+                    if (chunkIDList.length == 1)
                     {
-                        currentChunkIndex = chunkIDToChunkIndex[chunkList[i]];
+                        chunk = bufferChunksObj[chunkIDList[0]];
 
-                        if (lastChunkIndex != -1 && Math.abs(currentChunkIndex - lastChunkIndex) > 1)
-                        {
-                            coherentChunks = false;
-                            break;
-                        }
-
-                        lastChunkIndex = currentChunkIndex;
-                    }
-
-                    //TODO: is this distinction of cases, to save some WebGL calls, really worth all the JS effort? :-)
-                    //      let's simply replace it by a check if there is more than one chunk
-                    //case 1: single chunk, or coherent, successive chunks -> single GPU upload
-                    if (coherentChunks)
-                    {
-                        chunkDataView = new Uint8Array(srcBodyView.buffer, chunkList[0]._offset, bufferView["byteLength"]);
+                        chunkDataView = new Uint8Array(srcBodyView.buffer, chunk["byteOffset"], bufferView["byteLength"]);
 
                         newBuffer = gl.createBuffer();
 
-                        gl.bindBuffer(gl.ARRAY_BUFFER, newBuffer);
+                        gl.bindBuffer(bufferType, newBuffer);
 
                         //upload all chunk data to GPU
-                        gl.bufferData(gl.ARRAY_BUFFER, chunkDataView, gl.STATIC_DRAW);
+                        gl.bufferData(bufferType, chunkDataView, gl.STATIC_DRAW);
 
                         viewIDsToGLBufferIDs[bufferViewID] = newBuffer;
                     }
-                    //case 2: multiple chunks, not directly successive -> multiple GPU uploads
+                    //case 2: multiple chunks
                     else
                     {
                         newBuffer = gl.createBuffer();
 
-                        gl.bindBuffer(gl.ARRAY_BUFFER, newBuffer);
+                        gl.bindBuffer(bufferType, newBuffer);
 
                         //reserve GPU memory for all chunks
-                        gl.bufferData(gl.ARRAY_BUFFER, bufferView["byteLength"], gl.STATIC_DRAW);
+                        gl.bufferData(bufferType, bufferView["byteLength"], gl.STATIC_DRAW);
 
                         currentChunkDataOffset = 0;
 
-                        for (i = 0; i < chunkList.length; ++i)
+                        for (i = 0; i < chunkIDList.length; ++i)
                         {
-                            chunkDataView = new Uint8Array(srcBodyView.buffer, chunkList[i]._offset, bufferView["byteLength"]);
+                            chunk = bufferChunksObj[chunkIDList[i]];
+
+                            chunkDataView = new Uint8Array(srcBodyView.buffer, chunk["byteOffset"], bufferView["byteLength"]);
 
                             //upload chunk data to GPU
-                            gl.bufferSubData(gl.ARRAY_BUFFER, currentChunkDataOffset, chunkDataView);
+                            gl.bufferSubData(bufferType, currentChunkDataOffset, chunkDataView);
 
-                            currentChunkDataOffset += chunkList[i]._length;
+                            currentChunkDataOffset += chunk["byteLength"];
                         }
 
                         viewIDsToGLBufferIDs[bufferViewID] = newBuffer;
