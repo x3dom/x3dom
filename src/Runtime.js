@@ -759,7 +759,7 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *    The min and max positions of the node's bounding box.
  */
 x3dom.Runtime.prototype.getBBox = function(domNode) {
-    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedNode"))
+    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject"))
     {
         var vol = domNode._x3domNode.getVolume();
 

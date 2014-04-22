@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "X3DGroupingNode",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DBoundedNode,
+    defineClass(x3dom.nodeTypes.X3DBoundedObject,
         
         /**
          * Constructor for X3DGroupingNode
@@ -19,7 +19,7 @@ x3dom.registerNodeType(
          * @x3d x.x
          * @component Grouping
          * @status experimental
-         * @extends x3dom.nodeTypes.X3DBoundedNode
+         * @extends x3dom.nodeTypes.X3DBoundedObject
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type indicates that concrete node types derived from it contain children nodes
          * and is the basis for all aggregation.

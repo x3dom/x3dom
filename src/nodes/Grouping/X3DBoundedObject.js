@@ -7,15 +7,15 @@
  * Dual licensed under the MIT and GPL
  */
 
-/* ### X3DBoundedNode ### */
+/* ### X3DBoundedObject ### */
 x3dom.registerNodeType(
-    "X3DBoundedNode",
+    "X3DBoundedObject",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         
         /**
-         * Constructor for X3DBoundedNode
-         * @constructs x3dom.nodeTypes.X3DBoundedNode
+         * Constructor for X3DBoundedObject
+         * @constructs x3dom.nodeTypes.X3DBoundedObject
          * @x3d 3.3
          * @component Grouping
          * @status full
@@ -26,13 +26,13 @@ x3dom.registerNodeType(
          * children. This is a hint that may be used for optimization purposes.
          */
         function (ctx) {
-            x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DBoundedObject.superClass.call(this, ctx);
 
 
             /**
              * Flag to enable/disable rendering
              * @var {SFBool} render
-             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue true
              * @field x3dom
              * @instance
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             /**
              * Center of the bounding box
              * @var {SFVec3f} bboxCenter
-             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue 0,0,0
              * @range [-inf, inf]
              * @field x3d
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
             /**
              * Size of the bounding box
              * @var {SFVec3f} bboxSize
-             * @memberof x3dom.nodeTypes.X3DBoundedNode
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue -1,-1,-1
              * @range [0, inf] or -1
              * @field x3d

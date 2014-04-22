@@ -8,95 +8,69 @@
  */
 
 //	### CollidableShape ###
-x3dom.registerNodeType("CollidableShape", "X3DNBodyCollidableNode ", defineClass(x3dom.nodeTypes.X3DNode, 
+x3dom.registerNodeType(
+    "CollidableShape",
+    "RigidBodyPhysics",
+    defineClass(x3dom.nodeTypes.X3DNBodyCollidableNode,
+
         /**
          * Constructor for CollidableShape
          * @constructs x3dom.nodeTypes.CollidableShape
-         * @x3d x.x
-         * @component X3DNBodyCollidableNode 
+         * @x3d 3.3
+         * @component RigidBodyPhysics
          * @status experimental
-         * @extends x3dom.nodeTypes.X3DNode
+         * @extends x3dom.nodeTypes.X3DNBodyCollidableNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The CollidableShape node represents the glue between the collision detection system, the rigid
+         *  body model, and the renderable scene graph. Its job is to take a single piece of geometry wrapped in a Shape
+         *  node and provide a way for the physics model body to move the geometry. In addition, it allows the collision
+         *  detection system to determine the location of the geometry primitives that it uses for collision management.
+         *  When placed under a part of the transformation hierarchy, it can be used to visually represent the movement
+         *  of the object.
          */
         function(ctx){
-    x3dom.nodeTypes.CollidableShape.superClass.call(this, ctx);
+            x3dom.nodeTypes.CollidableShape.superClass.call(this, ctx);
 
-            /**
-             *
-             * @var {SFBool} enabled
-             * @memberof x3dom.nodeTypes.CollidableShape
-             * @initvalue true
-             * @field x3dom
-             * @instance
-             */
-    this.addField_SFBool(ctx, 'enabled', true);
-
-            /**
-             *
-             * @var {SFRotation} rotation
-             * @memberof x3dom.nodeTypes.CollidableShape
-             * @initvalue 0,0,1,0
-             * @field x3dom
-             * @instance
-             */
-    this.addField_SFRotation(ctx, 'rotation', 0,0,1,0);
-
-            /**
-             *
-             * @var {SFVec3f} translation
-             * @memberof x3dom.nodeTypes.CollidableShape
-             * @initvalue 0,0,0
-             * @field x3dom
-             * @instance
-             */
-    this.addField_SFVec3f(ctx, 'translation', 0,0,0);
-
-            /**
-             *
+           /**
+             * Transformation child node.
              * @var {SFNode} transform
              * @memberof x3dom.nodeTypes.CollidableShape
              * @initvalue x3dom.nodeTypes.Transform
              * @field x3dom
              * @instance
              */
-    this.addField_SFNode('transform', x3dom.nodeTypes.Transform);
+            this.addField_SFNode('transform', x3dom.nodeTypes.Transform);
 
             /**
-             *
+             * The shape field uses the geometry proxy for specifying which geometry best represents the collidable
+             * object.
              * @var {SFNode} shape
              * @memberof x3dom.nodeTypes.CollidableShape
              * @initvalue x3dom.nodeTypes.Shape
-             * @field x3dom
+             * @field x3d
              * @instance
              */
-    this.addField_SFNode('shape', x3dom.nodeTypes.Shape);
+            this.addField_SFNode('shape', x3dom.nodeTypes.Shape);
 
-            /**
-             *
-             * @var {MFNode} metadata
-             * @memberof x3dom.nodeTypes.CollidableShape
-             * @initvalue x3dom.nodeTypes.X3DMetadataObject
-             * @field x3dom
-             * @instance
-             */
-    this.addField_MFNode('metadata', x3dom.nodeTypes.X3DMetadataObject);
-
-        },{
-    nodeChanged: function(){
-        if(!this._cf.transform.node){
-            for(var x in this._xmlNode.children){
-                if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.Transform)){
-                    this._cf.transform = this._xmlNode.children[x];
+        },
+        {
+            nodeChanged: function(){
+                if(!this._cf.transform.node){
+                    for(var x in this._xmlNode.children){
+                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.Transform)){
+                            this._cf.transform = this._xmlNode.children[x];
+                        }
+                    }
                 }
+                if(!this._cf.shape.node){
+                    for(var x in this._xmlNode.children){
+                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.Shape)){
+                            this._cf.shape = this._xmlNode.children[x];
+                        }
+                    }
+                }
+                //x3dom.debug.logInfo('CollidableShape: ');
             }
         }
-        if(!this._cf.shape.node){
-            for(var x in this._xmlNode.children){
-                if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.Shape)){
-                    this._cf.shape = this._xmlNode.children[x];
-                }
-            }
-        }
-        x3dom.debug.logInfo('CollidableShape: ');
-    }
-}));
+    )
+);
