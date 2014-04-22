@@ -531,10 +531,20 @@ x3dom.Utils.isUnsignedType = function (str)
 /*****************************************************************************
 * Checks for lighting
 *****************************************************************************/
-x3dom.Utils.checkDirtyLighting = function (viewarea)
+x3dom.Utils.checkDirtyLighting = function(viewarea)
 {
 	return (viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight);
 };
+
+/*****************************************************************************
+ * Checks for environment
+ *****************************************************************************/
+x3dom.Utils.checkDirtyEnvironment = function(viewarea, shaderProperties)
+{
+    var environment = viewarea._scene.getEnvironment();
+
+    return (shaderProperties.GAMMACORRECTION != environment._vf.gammaCorrectionDefault);
+}
 
 /*****************************************************************************
 * Get GL min filter
