@@ -32,7 +32,7 @@ x3dom.registerNodeType(
              * The geoSystem field is used to define the spatial reference frame.
              * @var {MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
-             * @memberof x3dom.nodeTypes.GeoLocation
+             * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue ['GD','WE']
              * @field x3d
              * @instance
@@ -119,7 +119,7 @@ x3dom.registerNodeType(
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
              * @var {SFNode} geoOrigin
-             * @memberof x3dom.nodeTypes.GeoLocation
+             * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3d
              * @instance

@@ -16,59 +16,64 @@ x3dom.registerNodeType(
         /**
          * Constructor for Cylinder
          * @constructs x3dom.nodeTypes.Cylinder
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Cylinder node specifies a capped cylinder centred at (0,0,0) in the local coordinate system and with a central axis oriented along the local Y-axis.
+         * By default, the cylinder is sized at "-1" to "+1" in all three dimensions.
          */
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The radius field specifies the radius of the cylinder.
              * @var {SFFloat} radius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'radius', 1.0);
 
             /**
-             *
+             * The height field specifies the height of the cylinder along the central axis.
              * @var {SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 2.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'height', 2.0);
 
             /**
-             *
+             * The bottom field specifies whether the bottom cap of the cylinder is created.
              * @var {SFBool} bottom
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'bottom', true);
 
             /**
-             *
+             * The top field specifies whether the top cap of the cylinder is created.
              * @var {SFBool} top
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'top', true);
 
             /**
-             *
+             * Specifies the number of faces that are generated to approximate the sides of the cylinder.
              * @var {SFFloat} subdivision
+             * @range [2, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 32
              * @field x3dom
@@ -77,11 +82,11 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             /**
-             *
+             * The side field specifies whether sides of the cylinder are created.
              * @var {SFBool} side
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'side', true);

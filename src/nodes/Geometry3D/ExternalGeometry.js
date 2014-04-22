@@ -19,15 +19,15 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.ExternalGeometry
          * @x3d x.x
          * @component Geometry3D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ExternalGeometry node loads data from a Shape Resource Container (SRC). The used data can be progressively updated during transmission.
          */
          function (ctx) {
             x3dom.nodeTypes.ExternalGeometry.superClass.call(this, ctx);
 
             /**
-             *
+             * Defines the url to the Shape Resource Container. A suffix with a leading # can be used to reference single meshes inside a SRC: "path/to/data.src#mesh0".
              * @var {SFString} url
              * @memberof x3dom.nodeTypes.Geometry3D
              * @initvalue ""

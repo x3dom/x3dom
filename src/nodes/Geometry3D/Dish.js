@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Dish
          * @x3d x.x
          * @component Geometry3D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
@@ -27,37 +26,39 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies the diameter of the base.
              * @var {SFFloat} diameter
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 2
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'diameter', 2); 	//Diameter of base
+            this.addField_SFFloat(ctx, 'diameter', 2);
 
             /**
-             *
+             * Defines the maximum height of the dished surface above the base
              * @var {SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 1
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base (section if < r)
+            this.addField_SFFloat(ctx, 'height', 1);
 
             /**
-             *
+             * Defines the radius of the third semi-principal axes of the ellipsoid
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue this._vf.diameter/2
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'radius', this._vf.diameter / 2);  //Third semi-principal axes of ellipsoid
+            this.addField_SFFloat(ctx, 'radius', this._vf.diameter / 2);
 
             /**
-             *
+             * The bottom field specifies whether the bottom cap of the dish is created.
              * @var {SFBool} bottom
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue true
@@ -67,8 +68,10 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bottom', true);
 
             /**
-             *
+             * Specifies the number of faces that are generated to approximate the sides of the dish.
+             * The first component specifies the number of rings and the second component the number of subdivisions of each ring.
              * @var {SFVec2f} subdivision
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 24,24
              * @field x3dom

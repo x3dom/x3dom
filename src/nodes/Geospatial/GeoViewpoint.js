@@ -32,7 +32,7 @@ x3dom.registerNodeType(
              * The geoSystem field is used to define the spatial reference frame.
              * @var {MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
-             * @memberof x3dom.nodeTypes.GeoTransform
+             * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue ['GD','WE']
              * @field x3d
              * @instance

@@ -16,42 +16,55 @@ x3dom.registerNodeType(
         /**
          * Constructor for ElevationGrid
          * @constructs x3dom.nodeTypes.ElevationGrid
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ElevationGrid node specifies a uniform rectangular grid of varying height in the Y=0 plane of the local coordinate system.
+         * The geometry is described by a scalar array of height values that specify the height of a surface above each point of the grid.
+         * The xDimension and zDimension fields indicate the number of elements of the grid height array in the X and Z directions.
+         * Both xDimension and zDimension shall be greater than or equal to zero.
+         * If either the xDimension or the zDimension is less than two, the ElevationGrid contains no quadrilaterals.
+         * The vertex locations for the rectangles are defined by the height field and the xSpacing and zSpacing fields
          */
         function (ctx) {
             x3dom.nodeTypes.ElevationGrid.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The colorPerVertex field determines whether colours specified in the color field are applied to each vertex or each quadrilateral of the ElevationGrid node.
+             * If colorPerVertex is FALSE and the color field is not NULL, the color field shall specify a node derived from X3DColorNode containing at least (xDimension-1)×(zDimension-1) colours; one for each quadrilateral.
+             * If colorPerVertex is TRUE and the color field is not NULL, the color field shall specify a node derived from X3DColorNode containing at least xDimension × zDimension colours, one for each vertex.
              * @var {SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'colorPerVertex', true);
 
             /**
-             *
+             * The normalPerVertex field determines whether normals are applied to each vertex or each quadrilateral of the ElevationGrid node depending on the value of normalPerVertex.
+             * If normalPerVertex is FALSE and the normal node is not NULL, the normal field shall specify a node derived from X3DNormalNode containing at least (xDimension−1)×(zDimension−1) normals; one for each quadrilateral.
+             * If normalPerVertex is TRUE and the normal field is not NULL, the normal field shall specify a node derived from X3DNormalNode containing at least xDimension × zDimension normals; one for each vertex.
              * @var {SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'normalPerVertex', true);
 
             /**
-             *
+             * The creaseAngle field affects how default normals are generated.
+             * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
+             * Crease angles shall be greater than or equal to 0.0 angle base units.
              * @var {SFFloat} creaseAngle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
@@ -62,88 +75,95 @@ x3dom.registerNodeType(
              * @var {MFNode} attrib
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
             /**
-             *
+             * The normal field specifies per-vertex or per-quadrilateral normals for the ElevationGrid node.
+             * If the normal field is NULL, the browser shall automatically generate normals, using the creaseAngle field to determine if and how normals are smoothed across the surface.
              * @var {SFNode} normal
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.Normal
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
 
             /**
-             *
+             * The color field specifies per-vertex or per-quadrilateral colours for the ElevationGrid node depending on the value of colorPerVertex.
+             * If the color field is NULL, the ElevationGrid node is rendered with the overall attributes of the Shape node enclosing the ElevationGrid node.
              * @var {SFNode} color
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DColorNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             /**
-             *
+             * The texCoord field specifies per-vertex texture coordinates for the ElevationGrid node. If texCoord is NULL, default texture coordinates are applied to the geometry.
              * @var {SFNode} texCoord
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
 
 
             /**
-             *
+             * The height field is an xDimension by zDimension array of scalar values representing the height above the grid for each vertex.
              * @var {MFFloat} height
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'height', []);
 
             /**
-             *
+             * Defines the grid size in x.
              * @var {SFInt32} xDimension
-             * @memberof x3dom.nodeTypes.ElevationGrid
+             * @range [0, inf]
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFInt32(ctx, 'xDimension', 0);
 
             /**
-             *
-             * @var {SFFloat} xSpacing
+             * When the geoSystem is "GD", xSpacing refers to the number of units of longitude in angle base units between adjacent height values.
+             * When the geoSystem is "UTM", xSpacing refers to the number of eastings (length base units) between adjacent height values
+             * @var {SFDouble} xSpacing
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'xSpacing', 1.0);
 
             /**
-             *
+             * Defines the grid size in z.
              * @var {SFInt32} zDimension
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFInt32(ctx, 'zDimension', 0);
 
             /**
-             *
-             * @var {SFFloat} zSpacing
+             * When the geoSystem is "GD", zSpacing refers to the number of units of latitude in angle base units between vertical height values.
+             * When the geoSystem is "UTM", zSpacing refers to the number of northings (length base units) between vertical height values.
+             * @var {SFDouble} zSpacing
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'zSpacing', 1.0);

@@ -16,28 +16,30 @@ x3dom.registerNodeType(
         /**
          * Constructor for Box
          * @constructs x3dom.nodeTypes.Box
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Box node specifies a rectangular parallelepiped box centred at (0, 0, 0) in the local coordinate system and aligned with the local coordinate axes. By default, the box measures 2 units in each dimension, from -1 to +1.
          */
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The size field specifies the extents of the box along the X-, Y-, and Z-axes respectively and each component value shall be greater than zero.
              * @var {SFVec3f} size
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Box
              * @initvalue 2,2,2
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec3f(ctx, 'size', 2, 2, 2);
 
             /**
-             *
+             * Specifies whether helper colors should be used, which will color each vertex with a different color. This will overwrite the color of the corresponding appearance node.
              * @var {SFBool} hasHelperColors
              * @memberof x3dom.nodeTypes.Box
              * @initvalue false

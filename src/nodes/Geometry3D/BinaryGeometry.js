@@ -20,13 +20,14 @@ x3dom.registerNodeType(
          * @component Geometry3D
          * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The BinaryGeometry node can load binary data exported by AOPT.
          */
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The url to the binary file, that contains the index data.
              * @var {SFString} index
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue ""
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'index', "");   // Uint16
 
             /**
-             *
+             * The url to the binary file, that contains the mesh coordinates.
              * @var {SFString} coord
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue ""
@@ -46,7 +47,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'coord', "");   // Float32
 
             /**
-             *
+             * The url to the binary file, that contains the normals.
              * @var {SFString} normal
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue ""
@@ -56,7 +57,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normal', "");
 
             /**
-             *
+             * The url to the binary file, that contains the texture coordinates.
              * @var {SFString} texCoord
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue ""
@@ -66,7 +67,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'texCoord', "");    // THINKABOUTME: add texCoord1, texCoord2, ...?
 
             /**
-             *
+             * The url to the binary file, that contains the colors.
              * @var {SFString} color
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue ""
@@ -99,7 +100,7 @@ x3dom.registerNodeType(
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
 
             /**
-             *
+             * Specifies the byte format of the index data.
              * @var {SFString} indexType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Uint16"
@@ -109,7 +110,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'indexType', "Uint16");
 
             /**
-             *
+             * Specifies the byte format of the coordinates.
              * @var {SFString} coordType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -119,7 +120,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'coordType', "Float32");
 
             /**
-             *
+             * Specifies the byte format of the normals.
              * @var {SFString} normalType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -129,7 +130,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalType', "Float32");
 
             /**
-             *
+             * Specifies the byte format of the texture coordinates.
              * @var {SFString} texCoordType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -139,7 +140,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'texCoordType', "Float32");
 
             /**
-             *
+             * Specifies the byte format of the colors.
              * @var {SFString} colorType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -149,7 +150,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'colorType', "Float32");
 
             /**
-             *
+             * Specifies the byte format of the tangents.
              * @var {SFString} tangentType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -159,7 +160,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'tangentType', "Float32");
 
             /**
-             *
+             * Specifies the byte format of the binormals.
              * @var {SFString} binormalType
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue "Float32"
@@ -170,7 +171,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies whether the normals are encoded as spherical coordinates.
              * @var {SFBool} normalAsSphericalCoordinates
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue false
@@ -180,7 +181,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
 
             /**
-             *
+             * Enables RGBA colors.
              * @var {SFBool} rgbaColors
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue false
@@ -190,8 +191,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'rgbaColors', false);
 
             /**
-             *
+             * Specifies the number of texture coordinates per vertex.
              * @var {SFInt32} numTexCoordComponents
+             * @range [1, inf]
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue 2
              * @field x3dom
@@ -200,7 +202,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
 
             /**
-             *
+             * Specifies whether normals are stored per vertex or per face.
              * @var {SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.BinaryGeometry
              * @initvalue true

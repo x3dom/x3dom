@@ -16,29 +16,33 @@ x3dom.registerNodeType(
         /**
          * Constructor for Cone
          * @constructs x3dom.nodeTypes.Cone
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Cone node specifies a cone which is centred in the local coordinate system and whose central axis is aligned with the local Y-axis.
+         * By default, the cone has a radius of 1.0 at the bottom and a height of 2.0
          */
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The bottomRadius field specifies the radius of the cone's base.
              * @var {SFFloat} bottomRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'bottomRadius', 1.0);
 
             /**
-             *
+             * The topRadius field specifies the radius of the cone at the apex.
              * @var {SFFloat} topRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 0
              * @field x3dom
@@ -47,27 +51,28 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'topRadius', 0);
 
             /**
-             *
+             * The height field specifies the height of the cone from the centre of the base to the apex.
              * @var {SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 2.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'height', 2.0);
 
             /**
-             *
+             * The bottom field specifies whether the bottom cap of the cone is created.
              * @var {SFBool} bottom
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'bottom', true);
 
             /**
-             *
+             * The side field specifies whether sides of the cone are created.
              * @var {SFBool} side
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
@@ -77,7 +82,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'side', true);
 
             /**
-             *
+             * The top field specifies whether the top cap of the cone is created.
              * @var {SFBool} top
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
@@ -87,8 +92,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'top', true);
 
             /**
-             *
+             * Specifies the number of faces that are generated to approximate the sides of the cone.
              * @var {SFFloat} subdivision
+             * @range [2, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 32
              * @field x3dom
