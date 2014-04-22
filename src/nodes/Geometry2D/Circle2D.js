@@ -6,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Circle2D ### */
@@ -19,30 +17,32 @@ x3dom.registerNodeType(
         /**
          * Constructor for Circle2D
          * @constructs x3dom.nodeTypes.Circle2D
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry2D
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Circle2D node specifies a circle centred at (0,0) in the local 2D coordinate system.
          */
         function (ctx) {
             x3dom.nodeTypes.Circle2D.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The radius field specifies the radius of the Circle2D. The value of radius shall be greater than zero.
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.Circle2D
              * @initvalue 1
-             * @field x3dom
+             * @range (0, inf)
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'radius', 1);
 
             /**
-             *
+             * Number of segments the circle is composed of
              * @var {SFFloat} subdivision
-             * @memberof x3dom.nodeTypes.Circle2D
+             * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 32
              * @field x3dom
              * @instance
