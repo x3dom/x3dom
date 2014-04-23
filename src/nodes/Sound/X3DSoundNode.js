@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DSoundNode
          * @constructs x3dom.nodeTypes.X3DSoundNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Sound
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @CLASSDESC This abstract node type is the base for all sound nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DSoundNode.superClass.call(this, ctx);
