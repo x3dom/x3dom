@@ -34,7 +34,7 @@ x3dom.registerNodeType(
             /**
              * The innerRadius field specifies the inner dimension of the Disk2D. The value of innerRadius shall be
              *  greater than or equal to zero and less than or equal to outerRadius.
-             * @var {SFFloat} innerRadius
+             * @var {x3dom.fields.SFFloat} innerRadius
              * @memberof x3dom.nodeTypes.Disk2D
              * @initvalue 0
              * @range [0, inf)
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
             /**
              * The outerRadius field specifies the radius of the outer dimension of the Disk2D. The value of outerRadius
              *  shall be greater than zero.
-             * @var {SFFloat} outerRadius
+             * @var {x3dom.fields.SFFloat} outerRadius
              * @memberof x3dom.nodeTypes.Disk2D
              * @initvalue 1
              * @range [0, inf)
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
 
             /**
              * Number of segments of the disc
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 32
              * @field x3dom

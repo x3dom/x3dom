@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} string
+             * @var {x3dom.fields.MFString} string
              * @memberof x3dom.nodeTypes.Text
              * @initvalue []
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} length
+             * @var {x3dom.fields.MFFloat} length
              * @memberof x3dom.nodeTypes.Text
              * @initvalue []
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} maxExtent
+             * @var {x3dom.fields.SFFloat} maxExtent
              * @memberof x3dom.nodeTypes.Text
              * @initvalue 0.0
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} fontStyle
+             * @var {x3dom.fields.SFNode} fontStyle
              * @memberof x3dom.nodeTypes.Text
              * @initvalue x3dom.nodeTypes.X3DFontStyleNode
              * @field x3dom

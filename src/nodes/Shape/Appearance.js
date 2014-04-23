@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} material
+             * @var {x3dom.fields.SFNode} material
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DMaterialNode
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} texture
+             * @var {x3dom.fields.SFNode} texture
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} textureTransform
+             * @var {x3dom.fields.SFNode} textureTransform
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} lineProperties
+             * @var {x3dom.fields.SFNode} lineProperties
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.LineProperties
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} colorMaskMode
+             * @var {x3dom.fields.SFNode} colorMaskMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.ColorMaskMode
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} blendMode
+             * @var {x3dom.fields.SFNode} blendMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.BlendMode
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} depthMode
+             * @var {x3dom.fields.SFNode} depthMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.DepthMode
              * @field x3dom
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} shaders
+             * @var {x3dom.fields.MFNode} shaders
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DShaderNode
              * @field x3dom
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} sortType
+             * @var {x3dom.fields.SFString} sortType
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue 'auto'
              * @field x3dom
@@ -118,7 +118,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} sortKey
+             * @var {x3dom.fields.SFInt32} sortKey
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue 0
              * @field x3dom

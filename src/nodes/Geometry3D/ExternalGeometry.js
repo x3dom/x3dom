@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the url to the Shape Resource Container. A suffix with a leading # can be used to reference single meshes inside a SRC: "path/to/data.src#mesh0".
-             * @var {SFString} url
+             * @var {x3dom.fields.SFString} url
              * @memberof x3dom.nodeTypes.Geometry3D
              * @initvalue ""
              * @field x3dom

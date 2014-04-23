@@ -31,7 +31,7 @@ x3dom.registerNodeType(
              * The key field contains the list of key times, the keyValue field contains values for the target field, one complete set of values for each key.
              * Interpolator nodes containing no keys in the key field shall not produce any events.
              * However, an input event that replaces an empty key field with one that contains keys will cause the interpolator node to produce events the next time that a set_fraction event is received.
-             * @var {MFFloat} key
+             * @var {x3dom.fields.MFFloat} key
              * @memberof x3dom.nodeTypes.X3DInterpolatorNode
              * @initvalue []
              * @field x3d
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * The set_fraction inputOnly field receives an SFFloat event and causes the interpolator node function to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
-             * @var {SFFloat} set_fraction
+             * @var {x3dom.fields.SFFloat} set_fraction
              * @memberof x3dom.nodeTypes.X3DInterpolatorNode
              * @initvalue 0
              * @field x3d

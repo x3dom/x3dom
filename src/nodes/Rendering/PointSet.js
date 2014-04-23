@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * Coordinate node specifiying the vertices used by the geometry.
-             * @var {SFNode} coord
+             * @var {x3dom.fields.SFNode} coord
              * @memberof x3dom.nodeTypes.PointSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3d
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             /**
              * If NULL the geometry is rendered using the Material and texture defined in the Appearance node.
              * If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.PointSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3d

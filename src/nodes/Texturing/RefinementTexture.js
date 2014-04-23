@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} stamp0
+             * @var {x3dom.fields.SFString} stamp0
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue "gpuii/stamps/0.gif"
              * @field x3dom
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} stamp1
+             * @var {x3dom.fields.SFString} stamp1
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue "gpuii/stamps/1.gif"
              * @field x3dom
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} autoRefinement
+             * @var {x3dom.fields.SFBool} autoRefinement
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue true
              * @field x3dom
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} format
+             * @var {x3dom.fields.SFString} format
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue 'jpg'
              * @field x3dom
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} iterations
+             * @var {x3dom.fields.SFInt32} iterations
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue 7
              * @field x3dom
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} maxLevel
+             * @var {x3dom.fields.SFInt32} maxLevel
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue this._vf.iterations
              * @field x3dom

@@ -31,7 +31,7 @@ x3dom.registerNodeType(
             /**
              * The title field is intended to store the name or title of the world so that browsers can present this to
              * the user (perhaps in the window border).
-             * @var {MFString} info
+             * @var {x3dom.fields.MFString} info
              * @memberof x3dom.nodeTypes.WorldInfo
              * @initvalue []
              * @field x3dom
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             /**
              * Information about the world can be stored in the info field, such as author information, copyright, and
              * usage instructions.
-             * @var {SFString} title
+             * @var {x3dom.fields.SFString} title
              * @memberof x3dom.nodeTypes.WorldInfo
              * @initvalue ""
              * @field x3dom

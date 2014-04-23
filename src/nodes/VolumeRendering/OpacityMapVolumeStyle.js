@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} transferFunction
+             * @var {x3dom.fields.SFNode} transferFunction
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} type
+             * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue "simple"
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} opacityFactor
+             * @var {x3dom.fields.SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue 6.0
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} lightFactor
+             * @var {x3dom.fields.SFFloat} lightFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue 1.2
              * @field x3dom

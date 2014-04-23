@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} backAmbientIntensity
+             * @var {x3dom.fields.SFFloat} backAmbientIntensity
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0.2
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} backDiffuseColor
+             * @var {x3dom.fields.SFColor} backDiffuseColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0.8,0.8,0.8
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} backEmissiveColor
+             * @var {x3dom.fields.SFColor} backEmissiveColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0,0,0
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} backShininess
+             * @var {x3dom.fields.SFFloat} backShininess
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0.2
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} backSpecularColor
+             * @var {x3dom.fields.SFColor} backSpecularColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0,0,0
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} backTransparency
+             * @var {x3dom.fields.SFFloat} backTransparency
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} separateBackColor
+             * @var {x3dom.fields.SFBool} separateBackColor
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue false
              * @field x3dom

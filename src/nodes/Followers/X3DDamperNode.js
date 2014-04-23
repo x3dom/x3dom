@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              *  of an internal filter to reach the value of its input by 63% (1 - 1/e). The remainder after that period
              *  is reduced by 63% during another period of tau seconds provided that the input of the filter does not
              *  change. This behavior can be exposed if order is set to one.
-             * @var {SFTime} tau
+             * @var {x3dom.fields.SFTime} tau
              * @memberof x3dom.nodeTypes.X3DDamperNode
              * @initvalue 0.3
              * @range [0,inf)
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              *  animation only when all filters fall below that limit or are equal to it. If zero is specified for
              *  tolerance, a transition should be stopped only if input and output match exactly for all internal
              *  filters.
-             * @var {SFFloat} tolerance
+             * @var {x3dom.fields.SFFloat} tolerance
              * @memberof x3dom.nodeTypes.X3DDamperNode
              * @initvalue -1
              * @range -1 or [0,inf)
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
 
             /**
              * The order field specifies the smoothness of the transition.
-             * @var {SFInt32} order
+             * @var {x3dom.fields.SFInt32} order
              * @memberof x3dom.nodeTypes.X3DDamperNode
              * @initvalue 3
              * @range [0..5]

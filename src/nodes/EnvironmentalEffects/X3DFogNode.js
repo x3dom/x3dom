@@ -30,7 +30,7 @@ x3dom.registerNodeType(
             /**
              * Objects located outside the visibilityRange from the viewer are drawn with a constant colour of color.
              * Objects very close to the viewer are blended very little with the fog color.
-             * @var {SFColor} color
+             * @var {x3dom.fields.SFColor} color
              * @memberof x3dom.nodeTypes.X3DFogNode
              * @initvalue (1,1,1)
              * @range [0,1]
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * distance. If fogType is "LINEAR", the amount of blending is a linear function of the distance, resulting
              * in a depth cueing effect. If fogType is "EXPONENTIAL," an exponential increase in blending is used,
              * resulting in a more natural fog appearance.
-             * @var {SFString} fogType
+             * @var {x3dom.fields.SFString} fogType
              * @memberof x3dom.nodeTypes.X3DFogNode
              * @initvalue "LINEAR"
              * @range {"LINEAR","EXPONENTIAL"}
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
              * which objects are totally obscured by the fog. A visibilityRange of 0.0 disables the Fog node.
              * The visibilityRange is affected by the scaling transformations of the Fog node's parents; translations
              * and rotations have no affect on visibilityRange.
-             * @var {SFFloat} visibilityRange
+             * @var {x3dom.fields.SFFloat} visibilityRange
              * @memberof x3dom.nodeTypes.X3DFogNode
              * @initvalue 0
              * @range [0, -inf]

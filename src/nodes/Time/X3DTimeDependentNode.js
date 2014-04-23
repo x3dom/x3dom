@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} loop
+             * @var {x3dom.fields.SFBool} loop
              * @memberof x3dom.nodeTypes.X3DTimeDependentNode
              * @initvalue false
              * @field x3dom

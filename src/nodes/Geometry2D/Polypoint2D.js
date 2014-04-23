@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * The points field specifies the vertices to be displayed.
-             * @var {MFVec2f} point
+             * @var {x3dom.fields.MFVec2f} point
              * @memberof x3dom.nodeTypes.Polypoint2D
              * @initvalue []
              * @range (-inf, inf)

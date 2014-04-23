@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The specification of a non-empty value for the name field is required.
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.X3DMetadataObject
              * @initvalue ""
              * @field x3d
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
              * The specification of the reference field is optional. If provided, it identifies the metadata standard
              * or other specification that defines the name field. If the reference field is not provided or is empty,
              * the meaning of the name field is considered implicit to the characters in the string.
-             * @var {SFString} reference
+             * @var {x3dom.fields.SFString} reference
              * @memberof x3dom.nodeTypes.X3DMetadataObject
              * @initvalue ""
              * @field x3d

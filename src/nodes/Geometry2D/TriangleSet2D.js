@@ -31,7 +31,7 @@ x3dom.registerNodeType(
             /**
              * The vertices field specifies the triangles to be displayed. The number of vertices provided shall be
              *  evenly divisible by three.
-             * @var {MFVec2f} vertices
+             * @var {x3dom.fields.MFVec2f} vertices
              * @memberof x3dom.nodeTypes.TriangleSet2D
              * @initvalue []
              * @range (-inf, inf)

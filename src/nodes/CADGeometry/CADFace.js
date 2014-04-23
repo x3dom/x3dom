@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The name field specifies the name of the CADFace.
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.CADFace
              * @initvalue ""
              * @field x3d
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
              * The shape field contains the geometry and appearance for the face or an LOD node containing different
              * detail levels of the shape. If an LOD node is provided, each child of the LOD node shall be a single
              * Shape of varying complexity.
-             * @var {SFNode} shape
+             * @var {x3dom.fields.SFNode} shape
              * @memberof x3dom.nodeTypes.CADFace
              * @initvalue X3DShapeNode
              * @field x3d

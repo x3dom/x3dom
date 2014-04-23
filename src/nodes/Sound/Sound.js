@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} source
+             * @var {x3dom.fields.SFNode} source
              * @memberof x3dom.nodeTypes.Sound
              * @initvalue x3dom.nodeTypes.X3DSoundSourceNode
              * @field x3dom

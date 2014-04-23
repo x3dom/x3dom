@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} maskR
+             * @var {x3dom.fields.SFBool} maskR
              * @memberof x3dom.nodeTypes.ColorMaskMode
              * @initvalue true
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} maskG
+             * @var {x3dom.fields.SFBool} maskG
              * @memberof x3dom.nodeTypes.ColorMaskMode
              * @initvalue true
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} maskB
+             * @var {x3dom.fields.SFBool} maskB
              * @memberof x3dom.nodeTypes.ColorMaskMode
              * @initvalue true
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} maskA
+             * @var {x3dom.fields.SFBool} maskA
              * @memberof x3dom.nodeTypes.ColorMaskMode
              * @initvalue true
              * @field x3dom

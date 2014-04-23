@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Credentials
-             * @var {SFBool} withCredentials
+             * @var {x3dom.fields.SFBool} withCredentials
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue false
              * @field x3d
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * Color of the ground
-             * @var {MFColor} groundColor
+             * @var {x3dom.fields.MFColor} groundColor
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue (0,0,0)
              * @range [0,1]
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
 
             /**
              * Angle of the ground
-             * @var {MFFloat} groundAngle
+             * @var {x3dom.fields.MFFloat} groundAngle
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue []
              * @range [0, pi]
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
 
             /**
              * Color of the sky
-             * @var {MFColor} skyColor
+             * @var {x3dom.fields.MFColor} skyColor
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue (0,0,0)
              * @range [0,1]
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
 
             /**
              * Angle of the sky
-             * @var {MFFloat} skyAngle
+             * @var {x3dom.fields.MFFloat} skyAngle
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue []
              * @range [0, pi]
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
 
             /**
              * Transparency of the background
-             * @var {SFFloat} transparency
+             * @var {x3dom.fields.SFFloat} transparency
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue 0/1
              * @range [0,1]

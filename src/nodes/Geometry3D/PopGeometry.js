@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} tightSize
+             * @var {x3dom.fields.SFVec3f} tightSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
              * @field x3dom
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} maxBBSize
+             * @var {x3dom.fields.SFVec3f} maxBBSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
              * @field x3dom
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} bbMinModF
+             * @var {x3dom.fields.SFVec3f} bbMinModF
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
              * @field x3dom
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} bbMaxModF
+             * @var {x3dom.fields.SFVec3f} bbMaxModF
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} bbMin
+             * @var {x3dom.fields.SFVec3f} bbMin
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
              * @field x3dom
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} bbShiftVec
+             * @var {x3dom.fields.SFVec3f} bbShiftVec
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
              * @field x3dom
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} levels
+             * @var {x3dom.fields.MFNode} levels
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue x3dom.nodeTypes.PopGeometryLevel
              * @field x3dom
@@ -109,7 +109,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} attributeStride
+             * @var {x3dom.fields.SFInt32} attributeStride
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -119,7 +119,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} positionOffset
+             * @var {x3dom.fields.SFInt32} positionOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -129,7 +129,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} normalOffset
+             * @var {x3dom.fields.SFInt32} normalOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -139,7 +139,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} texcoordOffset
+             * @var {x3dom.fields.SFInt32} texcoordOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -149,7 +149,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} colorOffset
+             * @var {x3dom.fields.SFInt32} colorOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -159,7 +159,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} numAnchorVertices
+             * @var {x3dom.fields.SFInt32} numAnchorVertices
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -170,7 +170,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} positionPrecision
+             * @var {x3dom.fields.SFInt32} positionPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 2
              * @field x3dom
@@ -180,7 +180,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} normalPrecision
+             * @var {x3dom.fields.SFInt32} normalPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1
              * @field x3dom
@@ -190,7 +190,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} texcoordPrecision
+             * @var {x3dom.fields.SFInt32} texcoordPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 2
              * @field x3dom
@@ -200,7 +200,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} colorPrecision
+             * @var {x3dom.fields.SFInt32} colorPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1
              * @field x3dom
@@ -211,7 +211,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} minPrecisionLevel
+             * @var {x3dom.fields.SFInt32} minPrecisionLevel
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue -1
              * @field x3dom
@@ -221,7 +221,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} maxPrecisionLevel
+             * @var {x3dom.fields.SFInt32} maxPrecisionLevel
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue -1
              * @field x3dom
@@ -231,7 +231,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} precisionFactor
+             * @var {x3dom.fields.SFFloat} precisionFactor
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1.0
              * @field x3dom
@@ -243,7 +243,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} coordType
+             * @var {x3dom.fields.SFString} coordType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint16"
              * @field x3dom
@@ -253,7 +253,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} normalType
+             * @var {x3dom.fields.SFString} normalType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint8"
              * @field x3dom
@@ -263,7 +263,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} texCoordType
+             * @var {x3dom.fields.SFString} texCoordType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint16"
              * @field x3dom
@@ -273,7 +273,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} colorType
+             * @var {x3dom.fields.SFString} colorType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint8"
              * @field x3dom
@@ -284,7 +284,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} vertexBufferSize
+             * @var {x3dom.fields.SFInt32} vertexBufferSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
              * @field x3dom
@@ -295,7 +295,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} indexedRendering
+             * @var {x3dom.fields.SFBool} indexedRendering
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue true
              * @field x3dom
@@ -309,7 +309,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} sphericalNormals
+             * @var {x3dom.fields.SFBool} sphericalNormals
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue false
              * @field x3dom
@@ -321,7 +321,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} originalVertexCount
+             * @var {x3dom.fields.MFInt32} originalVertexCount
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue [0]
              * @field x3dom

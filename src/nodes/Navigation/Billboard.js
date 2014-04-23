@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
             /**
              * axisOfRotation direction is relative to local coordinate system. Hint: axis 0 0 0 always faces viewer.
-             * @var {SFVec3f} axisOfRotation
+             * @var {x3dom.fields.SFVec3f} axisOfRotation
              * @memberof x3dom.nodeTypes.Billboard
              * @initvalue 0,1,0
              * @field x3d

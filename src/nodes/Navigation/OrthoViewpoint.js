@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The fieldOfView field specifies minimum and maximum extents of the view in units of the local coordinate system
-             * @var {MFFloat} fieldOfView
+             * @var {x3dom.fields.MFFloat} fieldOfView
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue [-1,-1,1,1]
              * @field x3d
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * Position (x, y, z in meters) relative to local coordinate system.
-             * @var {SFVec3f} position
+             * @var {x3dom.fields.SFVec3f} position
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,10
              * @field x3d
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
              * Rotation (axis, angle in radians) of Viewpoint, relative to default -Z axis direction in local coordinate system.
              * Hint: this is orientation _change_ from default direction (0 0 -1).
              * Hint: complex rotations can be accomplished axis-by-axis using parent Transforms.
-             * @var {SFRotation} orientation
+             * @var {x3dom.fields.SFRotation} orientation
              * @range [-1, 1] or [-inf, inf]
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,0,1
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              * centerOfRotation point relates to NavigationInfo EXAMINE mode.
-             * @var {SFVec3f} centerOfRotation
+             * @var {x3dom.fields.SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0,0,0
              * @field x3d
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
 
             /**
              * z-near position; used for clipping
-             * @var {SFFloat} zNear
+             * @var {x3dom.fields.SFFloat} zNear
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 0.1
              * @field x3dom
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
 
             /**
              * z-far position; used for clipping
-             * @var {SFFloat} zFar
+             * @var {x3dom.fields.SFFloat} zFar
              * @memberof x3dom.nodeTypes.OrthoViewpoint
              * @initvalue 10000
              * @field x3dom

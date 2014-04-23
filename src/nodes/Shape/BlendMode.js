@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} srcFactor
+             * @var {x3dom.fields.SFString} srcFactor
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue "src_alpha"
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} destFactor
+             * @var {x3dom.fields.SFString} destFactor
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue "one_minus_src_alpha"
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} color
+             * @var {x3dom.fields.SFColor} color
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue 1,1,1
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} colorTransparency
+             * @var {x3dom.fields.SFFloat} colorTransparency
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue 0
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} alphaFunc
+             * @var {x3dom.fields.SFString} alphaFunc
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue "none"
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} alphaFuncValue
+             * @var {x3dom.fields.SFFloat} alphaFuncValue
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue 0
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} equation
+             * @var {x3dom.fields.SFString} equation
              * @memberof x3dom.nodeTypes.BlendMode
              * @initvalue "none"
              * @field x3dom

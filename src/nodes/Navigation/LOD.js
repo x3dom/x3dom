@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
             /**
              * Camera-to-object distance transitions for each child level, where range values go from near to far. For n range values, you must have n+1 child levels! Hint: can add an empty Group node as nonrendering final child.
-             * @var {MFFloat} range
+             * @var {x3dom.fields.MFFloat} range
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.LOD
              * @initvalue []

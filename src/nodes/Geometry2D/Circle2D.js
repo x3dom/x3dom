@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The radius field specifies the radius of the Circle2D. The value of radius shall be greater than zero.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.Circle2D
              * @initvalue 1
              * @range (0, inf)
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * Number of segments the circle is composed of
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 32
              * @field x3dom

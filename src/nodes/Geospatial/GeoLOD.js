@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
-             * @var {MFString} geoSystem
+             * @var {x3dom.fields.MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue ['GD','WE']
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             /**
              * The rootUrl and rootNode fields provide two different ways to specify the geometry of the root tile.
              * You may use one or the other. The rootNode field lets you include the geometry for the root tile directly within the X3D file.
-             * @var {MFString} rootUrl
+             * @var {x3dom.fields.MFString} rootUrl
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3d
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
             /**
              * When the viewer enters the specified range, this geometry is replaced with the contents of the four children files defined by child1Url through child4Url.
              * The four children files are loaded into memory only when the user is within the specified range. Similarly, these are unloaded from memory when the user leaves this range.
-             * @var {MFString} child1Url
+             * @var {x3dom.fields.MFString} child1Url
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3d
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
             /**
              * When the viewer enters the specified range, this geometry is replaced with the contents of the four children files defined by child1Url through child4Url.
              * The four children files are loaded into memory only when the user is within the specified range. Similarly, these are unloaded from memory when the user leaves this range.
-             * @var {MFString} child2Url
+             * @var {x3dom.fields.MFString} child2Url
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3d
@@ -75,7 +75,7 @@ x3dom.registerNodeType(
             /**
              * When the viewer enters the specified range, this geometry is replaced with the contents of the four children files defined by child1Url through child4Url.
              * The four children files are loaded into memory only when the user is within the specified range. Similarly, these are unloaded from memory when the user leaves this range.
-             * @var {MFString} child3Url
+             * @var {x3dom.fields.MFString} child3Url
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3d
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
             /**
              * When the viewer enters the specified range, this geometry is replaced with the contents of the four children files defined by child1Url through child4Url.
              * The four children files are loaded into memory only when the user is within the specified range. Similarly, these are unloaded from memory when the user leaves this range.
-             * @var {MFString} child4Url
+             * @var {x3dom.fields.MFString} child4Url
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3d
@@ -97,7 +97,7 @@ x3dom.registerNodeType(
 
             /**
              * The level of detail is switched depending upon whether the user is closer or farther than range length base units from the geospatial coordinate center.
-             * @var {SFFloat} range
+             * @var {x3dom.fields.SFFloat} range
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue 10
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} referenceBindableDescription
+             * @var {x3dom.fields.SFString} referenceBindableDescription
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue []
              * @field x3dom
@@ -118,7 +118,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
-             * @var {SFNode} geoOrigin
+             * @var {x3dom.fields.SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3d
@@ -128,7 +128,7 @@ x3dom.registerNodeType(
 
             /**
              * The rootUrl and rootNode fields provide two different ways to specify the geometry of the root tile. The rootUrl field lets you specify a URL for a file that contains the geometry.
-             * @var {SFNode} rootNode
+             * @var {x3dom.fields.SFNode} rootNode
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
@@ -138,7 +138,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} privateChild1Node
+             * @var {x3dom.fields.SFNode} privateChild1Node
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
@@ -148,7 +148,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} privateChild2Node
+             * @var {x3dom.fields.SFNode} privateChild2Node
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
@@ -158,7 +158,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} privateChild3Node
+             * @var {x3dom.fields.SFNode} privateChild3Node
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
@@ -168,7 +168,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} privateChild4Node
+             * @var {x3dom.fields.SFNode} privateChild4Node
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom
@@ -178,7 +178,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} privateRootNode
+             * @var {x3dom.fields.SFNode} privateRootNode
              * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue x3dom.nodeTypes.X3DChildNode
              * @field x3dom

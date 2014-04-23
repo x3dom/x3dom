@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimSite
              * @initvalue ""
              * @field x3dom

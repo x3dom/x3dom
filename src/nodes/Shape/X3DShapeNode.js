@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} isPickable
+             * @var {x3dom.fields.SFBool} isPickable
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue true
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} appearance
+             * @var {x3dom.fields.SFNode} appearance
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue x3dom.nodeTypes.X3DAppearanceNode
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} geometry
+             * @var {x3dom.fields.SFNode} geometry
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue x3dom.nodeTypes.X3DGeometryNode
              * @field x3dom

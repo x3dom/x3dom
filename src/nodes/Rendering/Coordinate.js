@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Contains the 3D coordinates
-             * @var {MFVec3f} point
+             * @var {x3dom.fields.MFVec3f} point
              * @memberof x3dom.nodeTypes.Coordinate
              * @initvalue []
              * @field x3d

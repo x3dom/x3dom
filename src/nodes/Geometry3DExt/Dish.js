@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the diameter of the base.
-             * @var {SFFloat} diameter
+             * @var {x3dom.fields.SFFloat} diameter
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 2
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the maximum height of the dished surface above the base
-             * @var {SFFloat} height
+             * @var {x3dom.fields.SFFloat} height
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 1
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the radius of the third semi-principal axes of the ellipsoid
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue this._vf.diameter/2
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * The bottom field specifies whether the bottom cap of the dish is created.
-             * @var {SFBool} bottom
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue true
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
             /**
              * Specifies the number of faces that are generated to approximate the sides of the dish.
              * The first component specifies the number of rings and the second component the number of subdivisions of each ring.
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Dish
              * @initvalue 24,24

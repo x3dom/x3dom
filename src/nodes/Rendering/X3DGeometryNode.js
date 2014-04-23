@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether backface-culling is used. If solid is TRUE only front-faces are drawn.
-             * @var {SFBool} solid
+             * @var {x3dom.fields.SFBool} solid
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * The ccw field defines the ordering of the vertex coordinates of the geometry with respect to user-given or automatically generated normal vectors used in the lighting model equations.
-             * @var {SFBool} ccw
+             * @var {x3dom.fields.SFBool} ccw
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              * Most geo primitives use geo cache and others might later on, but one should be able to disable cache per geometry node.
-             * @var {SFBool} useGeoCache
+             * @var {x3dom.fields.SFBool} useGeoCache
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether this geometry should be rendered with or without lighting.
-             * @var {SFBool} lit
+             * @var {x3dom.fields.SFBool} lit
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
              * @field x3dom

@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} renderStyle
+             * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} gradients
+             * @var {x3dom.fields.SFNode} gradients
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} surfaceValues
+             * @var {x3dom.fields.MFFloat} surfaceValues
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue [0.0]
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} contourStepSize
+             * @var {x3dom.fields.SFFloat} contourStepSize
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue 0
              * @field x3dom
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} surfaceTolerance
+             * @var {x3dom.fields.SFFloat} surfaceTolerance
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue 0
              * @field x3dom

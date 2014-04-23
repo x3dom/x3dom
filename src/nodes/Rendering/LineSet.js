@@ -34,7 +34,7 @@ x3dom.registerNodeType(
 
             /**
              * vertexCount describes how many vertices are used in each polyline from Coordinate field. Coordinates are assigned to each line by taking vertexCount[n] vertices from Coordinate field.
-             * @var {MFInt32} vertexCount
+             * @var {x3dom.fields.MFInt32} vertexCount
              * @range [2, inf]
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue []
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
 
             /**
              * If the "attrib" field is not empty it shall contain a list of per-vertex attribute information for programmable shaders
-             * @var {MFNode} attrib
+             * @var {x3dom.fields.MFNode} attrib
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3d
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
 
             /**
              * Coordinate node specifiying the vertices used by the geometry.
-             * @var {SFNode} coord
+             * @var {x3dom.fields.SFNode} coord
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3d
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
 
             /**
              * If NULL the geometry is rendered using the Material and texture defined in the Appearance node. If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.LineSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3d

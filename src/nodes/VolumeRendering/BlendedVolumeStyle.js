@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} renderStyle
+             * @var {x3dom.fields.SFNode} renderStyle
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} voxels
+             * @var {x3dom.fields.SFNode} voxels
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DVolumeDataNode
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} weightConstant1
+             * @var {x3dom.fields.SFFloat} weightConstant1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue 0.5
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} weightConstant2
+             * @var {x3dom.fields.SFFloat} weightConstant2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue 0.5
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} weightFunction1
+             * @var {x3dom.fields.SFString} weightFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue "CONSTANT"
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} weightFunction2
+             * @var {x3dom.fields.SFString} weightFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue "CONSTANT"
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} weightTransferFunction1
+             * @var {x3dom.fields.SFNode} weightTransferFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DTexture2DNode
              * @field x3dom
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} weightTransferFunction2
+             * @var {x3dom.fields.SFNode} weightTransferFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DTexture2DNode
              * @field x3dom

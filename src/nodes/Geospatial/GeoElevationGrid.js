@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
-             * @var {MFString} geoSystem
+             * @var {x3dom.fields.MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue ['GD','WE']
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoGridOrigin field specifies the geographic coordinate for the south-west corner (bottom-left) of the dataset.
-             * @var {SFVec3d} geoGridOrigin
+             * @var {x3dom.fields.SFVec3d} geoGridOrigin
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 0,0,0
              * @field x3d
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
             /**
              * The height array contains xDimension × zDimension floating point values that represent elevation above the ellipsoid or the geoid, as appropriate.
              * These values are given in row-major order from west to east, south to north.
-             * @var {MFDouble} height
+             * @var {x3dom.fields.MFDouble} height
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 0,0
              * @field x3d
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
 
             /**
              * The ccw field defines the ordering of the vertex coordinates of the geometry with respect to user-given or automatically generated normal vectors used in the lighting model equations.
-             * @var {SFBool} ccw
+             * @var {x3dom.fields.SFBool} ccw
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue true
              * @field x3d
@@ -75,7 +75,7 @@ x3dom.registerNodeType(
              * The creaseAngle field affects how default normals are generated.
              * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
              * Crease angles shall be greater than or equal to 0.0 angle base units.
-             * @var {SFDouble} creaseAngle
+             * @var {x3dom.fields.SFDouble} creaseAngle
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 0
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the grid size in x.
-             * @var {SFInt32} xDimension
+             * @var {x3dom.fields.SFInt32} xDimension
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 0
@@ -100,7 +100,7 @@ x3dom.registerNodeType(
             /**
              * When the geoSystem is "GD", xSpacing refers to the number of units of longitude in angle base units between adjacent height values.
              * When the geoSystem is "UTM", xSpacing refers to the number of eastings (length base units) between adjacent height values
-             * @var {SFDouble} xSpacing
+             * @var {x3dom.fields.SFDouble} xSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 1.0
@@ -111,7 +111,7 @@ x3dom.registerNodeType(
 
             /**
              * The yScale value can be used to produce a vertical exaggeration of the data when it is displayed. If this value is set greater than 1.0, all heights will appear larger than actual.
-             * @var {SFFloat} yScale
+             * @var {x3dom.fields.SFFloat} yScale
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 1
@@ -122,7 +122,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the grid size in z.
-             * @var {SFInt32} zDimension
+             * @var {x3dom.fields.SFInt32} zDimension
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 0
@@ -134,7 +134,7 @@ x3dom.registerNodeType(
             /**
              * When the geoSystem is "GD", zSpacing refers to the number of units of latitude in angle base units between vertical height values.
              * When the geoSystem is "UTM", zSpacing refers to the number of northings (length base units) between vertical height values.
-             * @var {SFDouble} zSpacing
+             * @var {x3dom.fields.SFDouble} zSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue 1.0
@@ -148,7 +148,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
-             * @var {SFNode} geoOrigin
+             * @var {x3dom.fields.SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue x3dom.nodeTypes.GeoOrigin
              * @field x3d
@@ -158,7 +158,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether this geometry should be rendered with or without lighting.
-             * @var {SFBool} lit
+             * @var {x3dom.fields.SFBool} lit
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue true
              * @field x3dom

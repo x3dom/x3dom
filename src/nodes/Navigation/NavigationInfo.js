@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * Enable/disable directional light that always points in the direction the user is looking.
-             * @var {SFBool} headlight
+             * @var {x3dom.fields.SFBool} headlight
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue true
              * @field x3d
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * defines the navigation type
-             * @var {MFString} type
+             * @var {x3dom.fields.MFString} type
              * @range {"ANY","WALK","EXAMINE","FLY","LOOKAT","NONE","EXPLORE",...}
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue ["EXAMINE","ANY"]
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the view angle and height for helicopter mode and min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
-             * @var {MFFloat} typeParams
+             * @var {x3dom.fields.MFFloat} typeParams
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue [-0.4,60,0.05,2.8]
              * @field x3dom
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
             /**
              * allows restricting examine and turntable navigation, overrides mouse buttons (useful for special viewers)
              * @range [all, pan, zoom, rotate, none]
-             * @var {SFString} explorationMode
+             * @var {x3dom.fields.SFString} explorationMode
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 'all'
              * @field x3dom
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * (c) tallest height viewer can WALK over.
              * Hint: keep (avatarSize.CollisionDistance / visibilityLimit) less then; 10,000 to avoid aliasing artifacts (i.e. polygon 'tearing').
              * Interchange profile hint: this field may be ignored.
-             * @var {MFFloat} avatarSize
+             * @var {x3dom.fields.MFFloat} avatarSize
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue [0.25,1.6,0.75]
              * @field x3d
@@ -93,7 +93,7 @@ x3dom.registerNodeType(
              * Hint: keep visibilityLimit greater than zero.
              * Hint: keep (avatarSize.CollisionDistance / visibilityLimit) less than 10,000 to avoid aliasing artifacts (i.e. polygon 'tearing').
              * Interchange profile hint: this field may be ignored.
-             * @var {SFFloat} visibilityLimit
+             * @var {x3dom.fields.SFFloat} visibilityLimit
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 0.0
@@ -106,7 +106,7 @@ x3dom.registerNodeType(
              * Default rate at which viewer travels through scene, meters/second.
              * Warning: default 1 m/s usually seems slow for ordinary navigation.
              * Interchange profile hint: this field may be ignored.
-             * @var {SFFloat} speed
+             * @var {x3dom.fields.SFFloat} speed
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 1.0
@@ -118,7 +118,7 @@ x3dom.registerNodeType(
 
             /**
              * The transitionTime field specifies the duration of any viewpoint transition
-             * @var {SFTime} transitionTime
+             * @var {x3dom.fields.SFTime} transitionTime
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 1.0
@@ -129,7 +129,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the transition mode.
-             * @var {MFString} transitionType
+             * @var {x3dom.fields.MFString} transitionType
              * @range [LINEAR, TELEPORT, ANIMATE, ...]
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue ["LINEAR"]

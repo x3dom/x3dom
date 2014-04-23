@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * The address for the WebSocket connection
-             * @var {MFString} url
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue ["ws://localhost:35668/cstreams/0"]
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines a list of subsequent id/object pairs.
-             * @var {MFString} label
+             * @var {x3dom.fields.MFString} label
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue []
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              * Sets the maximum number of items that are rendered.
-             * @var {SFInt32} maxRenderedIds
+             * @var {x3dom.fields.SFInt32} maxRenderedIds
              * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue -1
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
             /**
              * Sets whether a reconnect is attempted on a connection loss.
-             * @var {SFBool} reconnect
+             * @var {x3dom.fields.SFBool} reconnect
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue true
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              * Sets the scaling factor to reduce the number of render calls during navigation
-             * @var {SFFloat} scaleRenderedIdsOnMove
+             * @var {x3dom.fields.SFFloat} scaleRenderedIdsOnMove
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue 1.0
@@ -81,7 +81,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines whether culling is used. If culling is disabled the RemoteSelectionGroup works like a normal group.
-             * @var {SFBool} enableCulling
+             * @var {x3dom.fields.SFBool} enableCulling
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue true
              * @field x3dom
@@ -91,7 +91,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines a set of labels to disable nodes. The label must include the prefix.
-             * @var {MFString} invisibleNodes
+             * @var {x3dom.fields.MFString} invisibleNodes
              * @memberof x3dom.nodeTypes.RemoteSelectionGroup
              * @initvalue []
              * @field x3dom

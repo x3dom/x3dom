@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFVec3f} point
+             * @var {x3dom.fields.MFVec3f} point
              * @memberof x3dom.nodeTypes.TextureCoordinate3D
              * @initvalue []
              * @field x3dom

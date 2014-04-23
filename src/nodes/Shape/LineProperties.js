@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} applied
+             * @var {x3dom.fields.SFBool} applied
              * @memberof x3dom.nodeTypes.LineProperties
              * @initvalue true
              * @field x3dom
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} linetype
+             * @var {x3dom.fields.SFInt32} linetype
              * @memberof x3dom.nodeTypes.LineProperties
              * @initvalue 1
              * @field x3dom
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} linewidthScaleFactor
+             * @var {x3dom.fields.SFFloat} linewidthScaleFactor
              * @memberof x3dom.nodeTypes.LineProperties
              * @initvalue 0
              * @field x3dom

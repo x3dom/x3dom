@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} position
+             * @var {x3dom.fields.SFVec3f} position
              * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
              * @initvalue 0,0,0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} size
+             * @var {x3dom.fields.SFVec3f} size
              * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
              * @initvalue 1,1,1
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} vertexCount
+             * @var {x3dom.fields.MFInt32} vertexCount
              * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
              * @initvalue [0]
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} primType
+             * @var {x3dom.fields.MFString} primType
              * @memberof x3dom.nodeTypes.X3DBinaryContainerGeometryNode
              * @initvalue ['TRIANGLES']
              * @field x3dom

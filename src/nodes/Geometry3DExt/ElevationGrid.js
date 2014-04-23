@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * The colorPerVertex field determines whether colours specified in the color field are applied to each vertex or each quadrilateral of the ElevationGrid node.
              * If colorPerVertex is FALSE and the color field is not NULL, the color field shall specify a node derived from X3DColorNode containing at least (xDimension-1)×(zDimension-1) colours; one for each quadrilateral.
              * If colorPerVertex is TRUE and the color field is not NULL, the color field shall specify a node derived from X3DColorNode containing at least xDimension × zDimension colours, one for each vertex.
-             * @var {SFBool} colorPerVertex
+             * @var {x3dom.fields.SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue true
              * @field x3d
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              * The normalPerVertex field determines whether normals are applied to each vertex or each quadrilateral of the ElevationGrid node depending on the value of normalPerVertex.
              * If normalPerVertex is FALSE and the normal node is not NULL, the normal field shall specify a node derived from X3DNormalNode containing at least (xDimension−1)×(zDimension−1) normals; one for each quadrilateral.
              * If normalPerVertex is TRUE and the normal field is not NULL, the normal field shall specify a node derived from X3DNormalNode containing at least xDimension × zDimension normals; one for each vertex.
-             * @var {SFBool} normalPerVertex
+             * @var {x3dom.fields.SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue true
              * @field x3d
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
              * The creaseAngle field affects how default normals are generated.
              * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
              * Crease angles shall be greater than or equal to 0.0 angle base units.
-             * @var {SFFloat} creaseAngle
+             * @var {x3dom.fields.SFFloat} creaseAngle
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 0
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} attrib
+             * @var {x3dom.fields.MFNode} attrib
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3d
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
             /**
              * The normal field specifies per-vertex or per-quadrilateral normals for the ElevationGrid node.
              * If the normal field is NULL, the browser shall automatically generate normals, using the creaseAngle field to determine if and how normals are smoothed across the surface.
-             * @var {SFNode} normal
+             * @var {x3dom.fields.SFNode} normal
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.Normal
              * @field x3d
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
             /**
              * The color field specifies per-vertex or per-quadrilateral colours for the ElevationGrid node depending on the value of colorPerVertex.
              * If the color field is NULL, the ElevationGrid node is rendered with the overall attributes of the Shape node enclosing the ElevationGrid node.
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3d
@@ -104,7 +104,7 @@ x3dom.registerNodeType(
 
             /**
              * The texCoord field specifies per-vertex texture coordinates for the ElevationGrid node. If texCoord is NULL, default texture coordinates are applied to the geometry.
-             * @var {SFNode} texCoord
+             * @var {x3dom.fields.SFNode} texCoord
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
              * @field x3d
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
 
             /**
              * The height field is an xDimension by zDimension array of scalar values representing the height above the grid for each vertex.
-             * @var {MFFloat} height
+             * @var {x3dom.fields.MFFloat} height
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue []
              * @field x3d
@@ -125,7 +125,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the grid size in x.
-             * @var {SFInt32} xDimension
+             * @var {x3dom.fields.SFInt32} xDimension
              * @range [0, inf]
              * @initvalue 0
              * @field x3d
@@ -136,7 +136,7 @@ x3dom.registerNodeType(
             /**
              * When the geoSystem is "GD", xSpacing refers to the number of units of longitude in angle base units between adjacent height values.
              * When the geoSystem is "UTM", xSpacing refers to the number of eastings (length base units) between adjacent height values
-             * @var {SFDouble} xSpacing
+             * @var {x3dom.fields.SFDouble} xSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 1.0
@@ -147,7 +147,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the grid size in z.
-             * @var {SFInt32} zDimension
+             * @var {x3dom.fields.SFInt32} zDimension
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 0
@@ -159,7 +159,7 @@ x3dom.registerNodeType(
             /**
              * When the geoSystem is "GD", zSpacing refers to the number of units of latitude in angle base units between vertical height values.
              * When the geoSystem is "UTM", zSpacing refers to the number of northings (length base units) between vertical height values.
-             * @var {SFDouble} zSpacing
+             * @var {x3dom.fields.SFDouble} zSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
              * @initvalue 1.0

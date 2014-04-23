@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} value
+             * @var {x3dom.fields.MFFloat} value
              * @memberof x3dom.nodeTypes.MetadataFloat
              * @initvalue []
              * @field x3d

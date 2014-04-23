@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} url
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue []
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue true
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} loop
+             * @var {x3dom.fields.SFBool} loop
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue false
              * @field x3dom

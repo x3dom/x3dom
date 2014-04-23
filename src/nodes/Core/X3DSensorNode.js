@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 		
             /**
              *
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DSensorNode
              * @initvalue true
              * @field x3d

@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value than initialvalue unless a transition to a
              *  certain position is to be created right after the scene is loaded or right after the PositionDamper node
              *  is created dynamically.
-             * @var {SFVec3f} initialDestination
+             * @var {x3dom.fields.SFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
              * @field x3d
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial position of the object.
-             * @var {SFVec3f} initialValue
+             * @var {x3dom.fields.SFVec3f} initialValue
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
              * @field x3dom
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
 
             /**
              * The current position value.
-             * @var {SFVec3f} value
+             * @var {x3dom.fields.SFVec3f} value
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
              * @field x3d
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
 
             /**
              * The target position value.
-             * @var {SFVec3f} destination
+             * @var {x3dom.fields.SFVec3f} destination
              * @memberof x3dom.nodeTypes.PositionDamper
              * @initvalue 0,0,0
              * @field x3d

@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} value
+             * @var {x3dom.fields.MFInt32} value
              * @memberof x3dom.nodeTypes.MetadataInteger
              * @initvalue []
              * @field x3dom

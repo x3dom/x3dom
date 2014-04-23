@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} ambientIntensity
+             * @var {x3dom.fields.SFFloat} ambientIntensity
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.2
              * @field x3dom
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} diffuseColor
+             * @var {x3dom.fields.SFColor} diffuseColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.8,0.8,0.8
              * @field x3dom
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} emissiveColor
+             * @var {x3dom.fields.SFColor} emissiveColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
              * @field x3dom
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} shininess
+             * @var {x3dom.fields.SFFloat} shininess
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.2
              * @field x3dom
@@ -67,7 +67,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} specularColor
+             * @var {x3dom.fields.SFColor} specularColor
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
              * @field x3dom
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} transparency
+             * @var {x3dom.fields.SFFloat} transparency
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0
              * @field x3dom

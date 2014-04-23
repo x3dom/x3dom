@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * The radius field specifies the radius of the circle of which the arc is a portion.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 1
              * @range (0, inf)
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
 
             /**
              * The arc extends from the startAngle counterclockwise to the endAngle.
-             * @var {SFFloat} startAngle
+             * @var {x3dom.fields.SFFloat} startAngle
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 0
              * @range [-2 pi, 2pi]
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
 
             /**
              * The arc extends from the startAngle counterclockwise to the endAngle.
-             * @var {SFFloat} endAngle
+             * @var {x3dom.fields.SFFloat} endAngle
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 1.570796
              * @range [-2 pi, 2pi]
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
 
             /**
              * Number of lines into which the arc is subdivided
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 32
              * @field x3dom

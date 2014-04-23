@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              * The forceTransitions field specifies whether browsers are allowed to disregard level distances in order to provide better performance.
-             * @var {SFBool} forceTransitions
+             * @var {x3dom.fields.SFBool} forceTransitions
              * @memberof x3dom.nodeTypes.X3DLODNode
              * @initvalue false
              * @field x3d
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
 
             /**
              * The center field is a translation offset in the local coordinate system that specifies the centre of the LOD node for distance calculations.
-             * @var {SFVec3f} center
+             * @var {x3dom.fields.SFVec3f} center
              * @memberof x3dom.nodeTypes.X3DLODNode
              * @initvalue 0,0,0
              * @field x3d

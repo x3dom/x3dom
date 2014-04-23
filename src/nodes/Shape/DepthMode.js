@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} enableDepthTest
+             * @var {x3dom.fields.SFBool} enableDepthTest
              * @memberof x3dom.nodeTypes.DepthMode
              * @initvalue true
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} depthFunc
+             * @var {x3dom.fields.SFString} depthFunc
              * @memberof x3dom.nodeTypes.DepthMode
              * @initvalue "none"
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} readOnly
+             * @var {x3dom.fields.SFBool} readOnly
              * @memberof x3dom.nodeTypes.DepthMode
              * @initvalue false
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} zNearRange
+             * @var {x3dom.fields.SFFloat} zNearRange
              * @memberof x3dom.nodeTypes.DepthMode
              * @initvalue -1
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} zFarRange
+             * @var {x3dom.fields.SFFloat} zFarRange
              * @memberof x3dom.nodeTypes.DepthMode
              * @initvalue -1
              * @field x3dom

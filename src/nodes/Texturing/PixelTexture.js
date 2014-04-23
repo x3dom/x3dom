@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFImage} image
+             * @var {x3dom.fields.SFImage} image
              * @memberof x3dom.nodeTypes.PixelTexture
              * @initvalue 0,0,0
              * @field x3dom

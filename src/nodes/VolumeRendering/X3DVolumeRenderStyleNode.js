@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @initvalue true
              * @field x3dom

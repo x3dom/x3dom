@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * The direction field specifies the direction vector of the illumination emanating from the light source in the local coordinate system.
-             * @var {SFVec3f} direction
+             * @var {x3dom.fields.SFVec3f} direction
              * @memberof x3dom.nodeTypes.DirectionalLight
              * @initvalue 0,0,-1
              * @field x3dom
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} shadowCascades
+             * @var {x3dom.fields.SFInt32} shadowCascades
              * @memberof x3dom.nodeTypes.DirectionalLight
              * @initvalue 1
              * @field x3dom
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} shadowSplitFactor
+             * @var {x3dom.fields.SFFloat} shadowSplitFactor
              * @memberof x3dom.nodeTypes.DirectionalLight
              * @initvalue 1
              * @field x3dom
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} shadowSplitOffset
+             * @var {x3dom.fields.SFFloat} shadowSplitOffset
              * @memberof x3dom.nodeTypes.DirectionalLight
              * @initvalue 0.1
              * @field x3dom

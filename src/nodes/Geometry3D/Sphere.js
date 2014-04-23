@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.Sphere
              * @initvalue ctx?1:10000
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Sphere
              * @initvalue 24,24
              * @field x3dom

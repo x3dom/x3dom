@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * The name field describes the content of the part.
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.CADPart
              * @initvalue ""
              * @field x3d

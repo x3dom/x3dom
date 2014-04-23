@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue ""
              * @field x3dom
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} displacers
+             * @var {x3dom.fields.MFNode} displacers
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue x3dom.nodeTypes.HAnimDisplacer
              * @field x3dom
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFRotation} limitOrientation
+             * @var {x3dom.fields.SFRotation} limitOrientation
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue 0,0,1,0
              * @field x3dom
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} llimit
+             * @var {x3dom.fields.MFFloat} llimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
              * @field x3dom
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} ulimit
+             * @var {x3dom.fields.MFFloat} ulimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
              * @field x3dom
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} skinCoordIndex
+             * @var {x3dom.fields.MFInt32} skinCoordIndex
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
              * @field x3dom
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} skinCoordWeight
+             * @var {x3dom.fields.MFFloat} skinCoordWeight
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
              * @field x3dom

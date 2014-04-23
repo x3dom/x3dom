@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the back of the cubemap
-             * @var {SFNode} back
+             * @var {x3dom.fields.SFNode} back
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the front of the cubemap
-             * @var {SFNode} front
+             * @var {x3dom.fields.SFNode} front
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the bottom of the cubemap
-             * @var {SFNode} bottom
+             * @var {x3dom.fields.SFNode} bottom
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the top of the cubemap
-             * @var {SFNode} top
+             * @var {x3dom.fields.SFNode} top
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the left side of the cubemap
-             * @var {SFNode} left
+             * @var {x3dom.fields.SFNode} left
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
 
             /**
              * Texture for the right side of the cubemap
-             * @var {SFNode} right
+             * @var {x3dom.fields.SFNode} right
              * @memberof x3dom.nodeTypes.ComposedCubeMapTexture
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3d

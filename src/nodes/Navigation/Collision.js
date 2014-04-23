@@ -36,7 +36,7 @@ x3dom.registerNodeType(
 
             /**
              * Enables/disables collision detection for children and all descendants. Hint: former name quotecollidequote in VRML 97 specification.
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue true
              * @field x3d
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
 
             /**
              * alternate object to be checked for collision, in place of the children of this node.
-             * @var {SFNode} proxy
+             * @var {x3dom.fields.SFNode} proxy
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue x3dom.nodeTypes.X3DGroupingNode
              * @field x3d
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
             // TODO; add Slots: collideTime, isActive
             /**
              * NOT YET IMPLEMENTED. The time of collision.
-             * @var {SFTime} collideTime
+             * @var {x3dom.fields.SFTime} collideTime
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue 0
              * @field x3d
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             /**
              * NOT YET IMPLEMENTED. The value of the isActive field indicates the current state of the Collision node.
              * An isActive TRUE event is generated when a collision occurs. An isActive FALSE event is generated when a collision no longer occurs.
-             * @var {SFBool} isActive
+             * @var {x3dom.fields.SFBool} isActive
              * @memberof x3dom.nodeTypes.Collision
              * @initvalue true
              * @field x3d

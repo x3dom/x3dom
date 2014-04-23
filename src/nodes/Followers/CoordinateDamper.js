@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
              *  certain value is to be created right after the scene is loaded or right after the CoordinateChaser node
              *  is created dynamically.
-             * @var {MFVec3f} initialDestination
+             * @var {x3dom.fields.MFVec3f} initialDestination
              * @memberof x3dom.nodeTypes.CoordinateDamper
              * @initvalue []
              * @field x3d
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial value.
-             * @var {MFVec3f} initialValue
+             * @var {x3dom.fields.MFVec3f} initialValue
              * @memberof x3dom.nodeTypes.CoordinateDamper
              * @initvalue []
              * @field x3d
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
 
             /**
              * The current coordinate value
-             * @var {MFVec3f} value
+             * @var {x3dom.fields.MFVec3f} value
              * @memberof x3dom.nodeTypes.CoordinateDamper
              * @initvalue []
              * @field x3d
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
 
             /**
              * The target coordinate value
-             * @var {MFVec3f} destination
+             * @var {x3dom.fields.MFVec3f} destination
              * @memberof x3dom.nodeTypes.CoordinateDamper
              * @initvalue []
              * @field x3dom

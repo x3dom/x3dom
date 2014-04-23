@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoCenter field specifies, in the spatial reference frame specified by the geoSystem field, the location at which the local coordinate system is centered.
-             * @var {SFVec3d} geoCenter
+             * @var {x3dom.fields.SFVec3d} geoCenter
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue 0,0,0
              * @field x3d
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the rotation component of the transformation.
-             * @var {SFRotation} rotation
+             * @var {x3dom.fields.SFRotation} rotation
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue 0,0,1,0
              * @field x3d
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the scale component of the transformation.
-             * @var {SFVec3f} scale
+             * @var {x3dom.fields.SFVec3f} scale
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue 1,1,1
              * @field x3d
@@ -61,7 +61,7 @@ x3dom.registerNodeType(
             /**
              * The scaleOrientation specifies a rotation of the coordinate system before the scale (to specify scales in arbitrary orientations).
              * The scaleOrientation applies only to the scale operation.
-             * @var {SFRotation} scaleOrientation
+             * @var {x3dom.fields.SFRotation} scaleOrientation
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue 0,0,1,0
              * @field x3d
@@ -71,7 +71,7 @@ x3dom.registerNodeType(
 
             /**
              * The translation field specifies a translation to the coordinate system.
-             * @var {SFVec3f} translation
+             * @var {x3dom.fields.SFVec3f} translation
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue 0,0,0
              * @field x3d
@@ -81,7 +81,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
-             * @var {SFNode} geoOrigin
+             * @var {x3dom.fields.SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue x3dom.nodeTypes.Transform
              * @field x3d
@@ -91,7 +91,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
-             * @var {MFString} geoSystem
+             * @var {x3dom.fields.MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue ['GD','WE']

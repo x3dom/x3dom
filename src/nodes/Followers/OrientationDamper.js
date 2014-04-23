@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
              *  certain orientation is to be created right after the scene is loaded or right after the
              *  OrientationDamper node is created dynamically.
-             * @var {SFRotation} initialDestination
+             * @var {x3dom.fields.SFRotation} initialDestination
              * @memberof x3dom.nodeTypes.OrientationDamper
              * @initvalue 0,1,0,0
              * @field x3d
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial orientation of the object.
-             * @var {SFRotation} initialValue
+             * @var {x3dom.fields.SFRotation} initialValue
              * @memberof x3dom.nodeTypes.OrientationDamper
              * @initvalue 0,1,0,0
              * @field x3d
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              * The current orientation value.
-             * @var {SFRotation} value
+             * @var {x3dom.fields.SFRotation} value
              * @memberof x3dom.nodeTypes.OrientationDamper
              * @initvalue 0,1,0,0
              * @field x3d
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              * The target orientation value
-             * @var {SFRotation} destination
+             * @var {x3dom.fields.SFRotation} destination
              * @memberof x3dom.nodeTypes.OrientationDamper
              * @initvalue 0,1,0,0
              * @field x3d

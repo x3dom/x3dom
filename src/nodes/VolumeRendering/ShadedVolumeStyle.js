@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} material
+             * @var {x3dom.fields.SFNode} material
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DMaterialNode
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} lighting
+             * @var {x3dom.fields.SFBool} lighting
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue false
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} shadows
+             * @var {x3dom.fields.SFBool} shadows
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue false
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} phaseFunction
+             * @var {x3dom.fields.SFString} phaseFunction
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue "Henyey-Greenstein"
              * @field x3dom

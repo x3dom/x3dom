@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.Field
              * @initvalue ""
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} type
+             * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.Field
              * @initvalue ""
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} value
+             * @var {x3dom.fields.SFString} value
              * @memberof x3dom.nodeTypes.Field
              * @initvalue ""
              * @field x3dom

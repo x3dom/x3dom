@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The center field specifies a translation offset from the origin of the local coordinate system (0,0,0).
-             * @var {SFVec3f} center
+             * @var {x3dom.fields.SFVec3f} center
              * @memberof x3dom.nodeTypes.Transform
              * @initvalue 0,0,0
              * @field x3d
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             /**
 
              * The translation field specifies a translation to the coordinate system.
-             * @var {SFVec3f} translation
+             * @var {x3dom.fields.SFVec3f} translation
              * @memberof x3dom.nodeTypes.Transform
              * @initvalue 0,0,0
              * @field x3d
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
 
             /**
              * The rotation field specifies a rotation of the coordinate system.
-             * @var {SFRotation} rotation
+             * @var {x3dom.fields.SFRotation} rotation
              * @memberof x3dom.nodeTypes.Transform
              * @initvalue 0,0,1,0
              * @field x3d
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
             /**
              * The scale field specifies a non-uniform scale of the coordinate system.
              * Scale values may have any value: positive, negative (indicating a reflection), or zero. A value of zero indicates that any child geometry shall not be displayed.
-             * @var {SFVec3f} scale
+             * @var {x3dom.fields.SFVec3f} scale
              * @memberof x3dom.nodeTypes.Transform
              * @initvalue 1,1,1
              * @field x3d
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
             /**
              * The scaleOrientation specifies a rotation of the coordinate system before the scale (to specify scales in arbitrary orientations).
              * The scaleOrientation applies only to the scale operation.
-             * @var {SFRotation} scaleOrientation
+             * @var {x3dom.fields.SFRotation} scaleOrientation
              * @memberof x3dom.nodeTypes.Transform
              * @initvalue 0,0,1,0
              * @field x3d

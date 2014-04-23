@@ -37,7 +37,7 @@ x3dom.registerNodeType(
 
             /**
              * The ambientIntensity specifies the intensity of the ambient emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
-             * @var {SFFloat} ambientIntensity
+             * @var {x3dom.fields.SFFloat} ambientIntensity
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              * The color field specifies the spectral colour properties of both the direct and ambient light emission as an RGB value.
-             * @var {SFColor} color
+             * @var {x3dom.fields.SFColor} color
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1,1,1
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * The intensity field specifies the brightness of the direct emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
-             * @var {SFFloat} intensity
+             * @var {x3dom.fields.SFFloat} intensity
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
              * Specifies whether the light is global or scoped.
              * Global lights illuminate all objects that fall within their volume of lighting influence.
              * Scoped lights only illuminate objects that are in the same transformation hierarchy as the light; i.e., only the children and descendants of its enclosing parent group are illuminated.
-             * @var {SFBool} global
+             * @var {x3dom.fields.SFBool} global
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue false
              * @field x3d
@@ -82,7 +82,7 @@ x3dom.registerNodeType(
 
             /**
              * The on field specifies whether the light is enabled or disabled.
-             * @var {SFBool} on
+             * @var {x3dom.fields.SFBool} on
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue true
              * @field x3d
@@ -92,7 +92,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the attenuation of the shadows
-             * @var {SFFloat} shadowIntensity
+             * @var {x3dom.fields.SFFloat} shadowIntensity
              * @range [o, 1]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the resolution of the used shadow map.
-             * @var {SFInt32} shadowMapSize
+             * @var {x3dom.fields.SFInt32} shadowMapSize
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 1024
@@ -114,7 +114,7 @@ x3dom.registerNodeType(
 
             /**
              * Sets the smoothness of the shadow umbra.
-             * @var {SFInt32} shadowFilterSize
+             * @var {x3dom.fields.SFInt32} shadowFilterSize
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
              * @field x3dom
@@ -124,7 +124,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the shadow offset for the back projection of the shadow map.
-             * @var {SFFloat} shadowOffset
+             * @var {x3dom.fields.SFFloat} shadowOffset
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue 0
              * @field x3dom
@@ -136,7 +136,7 @@ x3dom.registerNodeType(
              * Specifies the placement of the near plane of the light projection.
              * Objects that are closer to the light source than the near plane do not cast shadows.
              * If the zNear value is not set, the near plane is placed automatically.
-             * @var {SFFloat} zNear
+             * @var {x3dom.fields.SFFloat} zNear
              * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue -1
@@ -149,7 +149,7 @@ x3dom.registerNodeType(
              * Specifies the placement of the far plane of the light projection.
              * Objects that are farther away from the light source than the far plane do not cast shadows.
              * If the zFar value is not set, the far plane is placed automatically.
-             * @var {SFFloat} zFar
+             * @var {x3dom.fields.SFFloat} zFar
              * @range -1 or [0, inf]
              * @memberof x3dom.nodeTypes.X3DLightNode
              * @initvalue -1

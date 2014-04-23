@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Size of the entire terrain.
-             * @var {SFVec2f} size
+             * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 2,2
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Subdivision of the regualr geometry. The higher, the finer the geometry.
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 1,1
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              * Center position of the geometry.
-             * @var {SFVec3f} center
+             * @var {x3dom.fields.SFVec3f} center
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 0,0,0
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * Render mode of the mesh.
-             * @var {MFString} primType
+             * @var {x3dom.fields.MFString} primType
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue ['TRIANGLES']
              * @field x3dom

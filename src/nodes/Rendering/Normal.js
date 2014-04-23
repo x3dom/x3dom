@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * set of unit-length normal vectors, corresponding to indexed polygons or vertices.
-             * @var {MFVec3f} vector
+             * @var {x3dom.fields.MFVec3f} vector
              * @range [-1, 1]
              * @memberof x3dom.nodeTypes.Normal
              * @initvalue []

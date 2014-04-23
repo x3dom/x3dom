@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * The RGB colors.
-             * @var {MFColor} color
+             * @var {x3dom.fields.MFColor} color
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.Color
              * @initvalue []

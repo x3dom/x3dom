@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} renderStyle
+             * @var {x3dom.fields.SFNode} renderStyle
              * @memberof x3dom.nodeTypes.VolumeData
              * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @field x3dom

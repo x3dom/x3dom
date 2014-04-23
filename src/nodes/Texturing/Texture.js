@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} hideChildren
+             * @var {x3dom.fields.SFBool} hideChildren
              * @memberof x3dom.nodeTypes.Texture
              * @initvalue true
              * @field x3dom

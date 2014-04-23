@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} size
+             * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 2,2
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 1,1
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} center
+             * @var {x3dom.fields.SFVec3f} center
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 0,0,0
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} primType
+             * @var {x3dom.fields.MFString} primType
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue ['TRIANGLES']
              * @field x3dom

@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} implicitMeshSize
+             * @var {x3dom.fields.SFVec2f} implicitMeshSize
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue 256,256
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} numColorComponents
+             * @var {x3dom.fields.SFInt32} numColorComponents
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue 3
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} numTexCoordComponents
+             * @var {x3dom.fields.SFInt32} numTexCoordComponents
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue 2
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} index
+             * @var {x3dom.fields.SFNode} index
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} coord
+             * @var {x3dom.fields.MFNode} coord
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} normal
+             * @var {x3dom.fields.SFNode} normal
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} texCoord
+             * @var {x3dom.fields.SFNode} texCoord
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom

@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the transformation matrix.
-             * @var {SFMatrix4f} matrix
+             * @var {x3dom.fields.SFMatrix4f} matrix
              * @memberof x3dom.nodeTypes.MatrixTransform
              * @initvalue 1,0,0,0
              * @field x3dom

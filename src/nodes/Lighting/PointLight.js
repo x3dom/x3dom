@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * where r is the distance from the light to the surface being illuminated.
              * The default is no attenuation.
              * An attenuation value of (0, 0, 0) is identical to (1, 0, 0). Attenuation values shall be greater than or equal to zero.
-             * @var {SFVec3f} attenuation
+             * @var {x3dom.fields.SFVec3f} attenuation
              * @memberof x3dom.nodeTypes.PointLight
              * @initvalue 1,0,0
              * @field x3d
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
 
             /**
              * The position of the Light
-             * @var {SFVec3f} location
+             * @var {x3dom.fields.SFVec3f} location
              * @memberof x3dom.nodeTypes.PointLight
              * @initvalue 0,0,0
              * @field x3d
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
             /**
              * A PointLight node illuminates geometry within radius length base units of its location.
              * Radius is affected by ancestors' transformations.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.PointLight
              * @initvalue 100
              * @field x3d

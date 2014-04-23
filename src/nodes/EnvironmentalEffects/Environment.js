@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * If TRUE, transparent objects are sorted from back to front (allows explicitly disabling sorting)
-             * @var {SFBool} sortTrans
+             * @var {x3dom.fields.SFBool} sortTrans
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue true
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              * Transparent objects like glass do not throw much shadow, enable this IR convenience flag with TRUE
-             * @var {SFBool} shadowExcludeTransparentObjects
+             * @var {x3dom.fields.SFBool} shadowExcludeTransparentObjects
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              * The gamma correction to apply by default, see lighting and gamma tutorial
-             * @var {SFString} gammaCorrectionDefault
+             * @var {x3dom.fields.SFString} gammaCorrectionDefault
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue "none"
              * @field x3dom
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
            /**
              * If TRUE, objects outside the viewing frustum are ignored
-             * @var {SFBool} frustumCulling
+             * @var {x3dom.fields.SFBool} frustumCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue true
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              * If TRUE, objects smaller than the threshold below are ignored
-             * @var {SFBool} smallFeatureCulling
+             * @var {x3dom.fields.SFBool} smallFeatureCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
 
             /**
              * Objects smaller than the threshold below are ignored
-             * @var {SFFloat} smallFeatureThreshold
+             * @var {x3dom.fields.SFFloat} smallFeatureThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
              * @field x3dom
@@ -92,7 +92,7 @@ x3dom.registerNodeType(
 
             /**
              * If TRUE and occlusion culling supported, objects occluding less than the threshold below are ignored
-             * @var {SFBool} occlusionCulling
+             * @var {x3dom.fields.SFBool} occlusionCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -102,7 +102,7 @@ x3dom.registerNodeType(
 
             /**
              * Objects occluding less than the threshold below are ignored
-             * @var {SFFloat} occlusionVisibilityThreshold
+             * @var {x3dom.fields.SFFloat} occlusionVisibilityThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 0.0
              * @range [0,1]
@@ -116,7 +116,7 @@ x3dom.registerNodeType(
             /**
              * If TRUE and occlusion culling supported, only threshold fraction of objects, sorted by their screen
              * space coverage, are rendered
-             * @var {SFBool} lowPriorityCulling
+             * @var {x3dom.fields.SFBool} lowPriorityCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -126,7 +126,7 @@ x3dom.registerNodeType(
 
             /**
              * Only threshold fraction of objects, sorted by their screen space coverage, are rendered
-             * @var {SFFloat} lowPriorityThreshold
+             * @var {x3dom.fields.SFFloat} lowPriorityThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
              * @range [0,1]
@@ -139,7 +139,7 @@ x3dom.registerNodeType(
 
             /**
              * If TRUE, shape tesselation is lowered as long as resulting error is lower than threshold
-             * @var {SFBool} tessellationDetailCulling
+             * @var {x3dom.fields.SFBool} tessellationDetailCulling
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -149,7 +149,7 @@ x3dom.registerNodeType(
 
             /**
              * Shape tesselation is lowered as long as resulting error is lower than threshold
-             * @var {SFFloat} tessellationErrorThreshold
+             * @var {x3dom.fields.SFFloat} tessellationErrorThreshold
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 0.0
              * @range [0,1]
@@ -160,7 +160,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimental: If true ARC adjusts rendering parameters
-             * @var {SFBool} enableARC
+             * @var {x3dom.fields.SFBool} enableARC
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue false
              * @field x3dom
@@ -170,7 +170,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimental: Define minimal target frame-rate for static moments and quality-speed trade-off
-             * @var {SFFloat} minFrameRate
+             * @var {x3dom.fields.SFFloat} minFrameRate
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 1.0
              * @range [1,inf]
@@ -181,7 +181,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimental: Define maximal target frame-rate for dynamic moments and quality-speed trade-off
-             * @var {SFFloat} maxFrameRate
+             * @var {x3dom.fields.SFFloat} maxFrameRate
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue 62.5
              * @range [1,inf]
@@ -195,7 +195,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimenal: Factor of user data for controlling speed-performance trade-off
-             * @var {SFFloat} userDataFactor
+             * @var {x3dom.fields.SFFloat} userDataFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
              * @range [0,1] or -1
@@ -206,7 +206,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimenal: Factor of small feature culling for controlling speed-performance trade-off
-             * @var {SFFloat} smallFeatureFactor
+             * @var {x3dom.fields.SFFloat} smallFeatureFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
              * @range [0,1] or -1
@@ -217,7 +217,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimenal: Factor of occlusion culling for controlling speed-performance trade-off
-             * @var {SFFloat} occlusionVisibilityFactor
+             * @var {x3dom.fields.SFFloat} occlusionVisibilityFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
              * @range [0,1] or -1
@@ -228,7 +228,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimenal: Factor of low priority culling for controlling speed-performance trade-off
-             * @var {SFFloat} lowPriorityFactor
+             * @var {x3dom.fields.SFFloat} lowPriorityFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
              * @range [0,1] or -1
@@ -239,7 +239,7 @@ x3dom.registerNodeType(
 
             /**
              * Experimenal: Factor of tesselation error for controlling speed-performance trade-off
-             * @var {SFFloat} tessellationErrorFactor
+             * @var {x3dom.fields.SFFloat} tessellationErrorFactor
              * @memberof x3dom.nodeTypes.Environment
              * @initvalue -1
              * @range [0,1] or -1

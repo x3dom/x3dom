@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the set of data points, that are used for interpolation.
-             * @var {MFFloat} keyValue
+             * @var {x3dom.fields.MFFloat} keyValue
              * @memberof x3dom.nodeTypes.ScalarInterpolator
              * @initvalue []
              * @field x3d

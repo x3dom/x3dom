@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * The size field specifies the extents of the box along the X-, Y-, and Z-axes respectively and each component value shall be greater than zero.
-             * @var {SFVec3f} size
+             * @var {x3dom.fields.SFVec3f} size
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Box
              * @initvalue 2,2,2
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether helper colors should be used, which will color each vertex with a different color. This will overwrite the color of the corresponding appearance node.
-             * @var {SFBool} hasHelperColors
+             * @var {x3dom.fields.SFBool} hasHelperColors
              * @memberof x3dom.nodeTypes.Box
              * @initvalue false
              * @field x3dom

@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
-             * @var {MFString} geoSystem
+             * @var {x3dom.fields.MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
              * @memberof x3dom.nodeTypes.GeoOrigin
              * @initvalue ['GD','WE']
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoCoords field is used to specify a local coordinate frame for extended precision.
-             * @var {SFVec3d} geoCoords
+             * @var {x3dom.fields.SFVec3d} geoCoords
              * @memberof x3dom.nodeTypes.GeoOrigin
              * @initvalue 0,0,0
              * @field x3d
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
             /**
              * The rotateYUp field is used to specify whether coordinates of nodes that use this GeoOrigin are to be rotated such that their up direction is aligned with the X3D Y axis.
              * The default behavior is to not perform this operation.
-             * @var {SFBool} rotateYUp
+             * @var {x3dom.fields.SFBool} rotateYUp
              * @memberof x3dom.nodeTypes.GeoOrigin
              * @initvalue false
              * @field x3d
