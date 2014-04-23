@@ -18,17 +18,18 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Nozzle
          * @x3d x.x
          * @component Geometry3DExt
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This node describes a nozzle shape for a pipe.
          */
         function (ctx) {
             x3dom.nodeTypes.Nozzle.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} nozzleHeight
+             * Defines the height of the nozzle.
+             * @var {x3dom.fields.SFFloat} nozzleHeight
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 0.1
              * @field x3dom
@@ -37,8 +38,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'nozzleHeight', 0.1);
 
             /**
-             *
-             * @var {SFFloat} nozzleRadius
+             * Defines the radius of the nozzle.
+             * @var {x3dom.fields.SFFloat} nozzleRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 0.6
              * @field x3dom
@@ -47,8 +49,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'nozzleRadius', 0.6);
 
             /**
-             *
-             * @var {SFFloat} height
+             * Defines the height of the pipe.
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 1.0
              * @field x3dom
@@ -57,8 +60,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 1.0);
 
             /**
-             *
-             * @var {SFFloat} outerRadius
+             * Defines the outer radius of the pipe.
+             * @var {x3dom.fields.SFFloat} outerRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 0.5
              * @field x3dom
@@ -67,8 +71,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'outerRadius', 0.5);
 
             /**
-             *
-             * @var {SFFloat} innerRadius
+             * Defines the inner radius of the pipe.
+             * @var {x3dom.fields.SFFloat} innerRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 0.4
              * @field x3dom
@@ -77,8 +82,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'innerRadius', 0.4);
 
             /**
-             *
-             * @var {SFFloat} subdivision
+             * Specifies the number of faces that are generated to approximate the sides of the pipe and nozzle.
+             * @var {x3dom.fields.SFFloat} subdivision
+             * @range [2, inf]
              * @memberof x3dom.nodeTypes.Nozzle
              * @initvalue 32
              * @field x3dom
