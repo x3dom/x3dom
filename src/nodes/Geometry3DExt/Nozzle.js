@@ -18,7 +18,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Nozzle
          * @x3d x.x
          * @component Geometry3DExt
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
