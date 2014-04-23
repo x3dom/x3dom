@@ -600,9 +600,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                           "   specular += " + lightCol + " * ads.b;\n";
             }
 
-            shader += "ambient = clamp(ambient, 0.0, 1.0);\n";
-            shader += "diffuse = clamp(diffuse, 0.0, 1.0);\n";
-            shader += "specular = clamp(specular, 0.0, 1.0);\n";
+            shader += "ambient = max(ambient, 0.0);\n";
+            shader += "diffuse = max(diffuse, 0.0);\n";
+            shader += "specular = max(specular, 0.0);\n";
         }
 		
 		//Specularmap
@@ -631,17 +631,17 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "color.a *= texColor.a;\n";
 			}
 			if(properties.BLENDING){
-				shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * color.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*specularColor);\n";
 				if(properties.CUBEMAP) {
 					shader += "color.rgb = mix(color.rgb, texColor.rgb, vec3(0.75));\n";
 				} else {
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 			}else{
-				shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * texColor.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*specularColor);\n";
 			}
 		}else{
-			shader += "color.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * color.rgb + specular*specularColor);\n";
+			shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*specularColor);\n";
 		}
 		
 	} else {
