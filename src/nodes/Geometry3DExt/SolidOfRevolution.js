@@ -21,14 +21,18 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a SolidOfRevolution shape.
          */
         function (ctx) {
             x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The creaseAngle field affects how default normals are generated.
+             * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
+             * Crease angles shall be greater than or equal to 0.0 angle base units.
              * @var {SFFloat} creaseAngle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 0
              * @field x3dom
@@ -37,7 +41,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
 
             /**
-             *
+             * Defines the cross section that is swept around the axis. The cross section is described as an array of 2D vertices.
              * @var {MFVec2f} crossSection
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue []
@@ -47,7 +51,7 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'crossSection', []);
 
             /**
-             *
+             * The subtended angle through which the 2D loop is swept around the x axis.
              * @var {SFFloat} angle
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 2*Math.PI
@@ -57,7 +61,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
 
             /**
-             *
+             *Specifies whether the caps exist.
              * @var {SFBool} caps
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue true
@@ -67,7 +71,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'caps', true);
 
             /**
-             *
+             * Specifies the number of steps that are generated to approximate the shape.
              * @var {SFFloat} subdivision
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 32

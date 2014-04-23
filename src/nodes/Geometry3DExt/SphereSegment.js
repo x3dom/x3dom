@@ -18,16 +18,16 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.SphereSegment
          * @x3d x.x
          * @component Geometry3DExt
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a sphere segment shape.
          */
         function (ctx) {
             x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Defines the radius of the sphere.
              * @var {SFFloat} radius
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'radius', 1);
 
             /**
-             *
+             * Defines an array of longitude values.
              * @var {MFFloat} longitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'longitude', []);
 
             /**
-             *
+             * Defines an array of latitude values.
              * @var {MFFloat} latitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'latitude', []);
 
             /**
-             *
+             * Defines an array of stepSizes.
              * @var {SFVec2f} stepSize
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1,1

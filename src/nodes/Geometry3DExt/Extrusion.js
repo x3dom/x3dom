@@ -62,6 +62,7 @@ x3dom.registerNodeType(
              * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
              * Crease angles shall be greater than or equal to 0.0 angle base units.
              * @var {x3dom.fields.SFFloat} creaseAngle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue 0
              * @field x3d
@@ -97,6 +98,7 @@ x3dom.registerNodeType(
             /**
              * Defines an array of 2D scale values for each extrusion step.
              * @var {x3dom.fields.MFVec2f} scale
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue [(1,1)]
              * @field x3d
@@ -119,6 +121,7 @@ x3dom.registerNodeType(
             /**
              * Convenience field for setting default spine.
              * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue 0
              * @field x3dom
