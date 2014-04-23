@@ -225,11 +225,6 @@ x3dom.registerNodeType(
                     shape._webgl.indexType = gl.UNSIGNED_SHORT;
                 }
 
-                //TODO: setup this hints
-                //this._vf.vertexCount[0] = 2342;
-                //this._mesh._numCoords   = 23;
-                //this._mesh._numFaces    = 42;
-
 
                 //3. remember necessary information to setup GL draw parameters and attribute pointers
 
@@ -239,6 +234,10 @@ x3dom.registerNodeType(
                 shape._webgl.primType    = [];
                 shape._webgl.indexOffset = [];
                 shape._webgl.drawCount   = [];
+
+                //hints for stats display
+                this._mesh._numCoords   = 0;
+                this._mesh._numFaces    = 0;
 
                 for (meshID in meshes)
                 {
@@ -255,6 +254,9 @@ x3dom.registerNodeType(
 
                         shape._webgl.indexOffset[meshIdx] = indexView["byteOffset"];
                         shape._webgl.drawCount[meshIdx]   = indexView["count"];
+
+                        //TODO: add support for LINES and POINTS
+                        this._mesh._numFaces += indexView["count"] / 3;
                     }
                     else
                     {
@@ -283,26 +285,33 @@ x3dom.registerNodeType(
                                 if (mesh["indices"] == "")
                                 {
                                     shape._webgl.drawCount = attributeView["count"];
+                                    //TODO: add support for LINES and POINTS
+                                    this._mesh._numFaces += attributeView["count"] / 3;
                                 }
+                                this._mesh._numCoords += attributeView["count"];
                                 break;
+
                             case "normal":
                                 x3domTypeID      = "normal";
                                 x3domShortTypeID = "Norm";
                                 shape._webgl.buffers[NORMAL_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
                                 break;
+
                             case "texcoord":
                                 x3domTypeID      = "texCoord";
                                 x3domShortTypeID = "Tex";
                                 shape._webgl.buffers[TEXCOORD_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
                                 break;
+
                             case "color":
                                 x3domTypeID      = "color";
                                 x3domShortTypeID = "Col";
                                 shape._webgl.buffers[COLOR_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
                                 break;
+
                             case "id":
                                 x3domTypeID      = "id";
                                 x3domShortTypeID = "Id";
