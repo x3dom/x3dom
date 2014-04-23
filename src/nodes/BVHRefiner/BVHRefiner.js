@@ -11,7 +11,7 @@
 // ### BVHRefiner ###
 x3dom.registerNodeType(
     "BVHRefiner",
-    "Navigation",
+    "BVHRefiner",
     defineClass(x3dom.nodeTypes.X3DLODNode,
         
         /**

@@ -318,11 +318,11 @@
                     {"file": "CADPart.js"},
                     {"file": "CADFace.js"}
                 ]},
-                {"name": "BVHRefiner", "files":[
-                    {"file": "nodes/Geometry3D/Patch.js"},
-                    {"file": "nodes/Navigation/BVHRefiner.js"}
+                {"name": "BVHRefiner", "filePrefix": "nodes/BVHRefiner/", "files":[
+                    {"file": "Patch.js"},
+                    {"file": "BVHRefiner.js"}
                 ]},
-                {"name": "Geometry3DExt", "filePrefix": "nodes/Geometry3D/", "files":[
+                {"name": "Geometry3DExt", "filePrefix": "nodes/Geometry3DExt/", "files":[
                     {"file": "Snout.js"},
                     {"file": "Dish.js"},
                     {"file": "Pyramid.js"},

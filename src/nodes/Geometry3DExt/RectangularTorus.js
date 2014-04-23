@@ -10,7 +10,7 @@
 /* ### RectangularTorus ### */
 x3dom.registerNodeType(
     "RectangularTorus",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**

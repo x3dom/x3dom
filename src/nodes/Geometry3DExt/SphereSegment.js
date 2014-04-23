@@ -10,7 +10,7 @@
 /* ### SphereSegment ### */
 x3dom.registerNodeType(
     "SphereSegment",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**

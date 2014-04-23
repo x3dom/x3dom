@@ -10,7 +10,7 @@
 /* ### Snout ### */
 x3dom.registerNodeType(
     "Snout",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**

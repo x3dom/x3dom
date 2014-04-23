@@ -10,7 +10,7 @@
 /* ### SolidOfRevolution ### */
 x3dom.registerNodeType(
     "SolidOfRevolution",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         
         /**

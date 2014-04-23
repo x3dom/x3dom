@@ -10,7 +10,7 @@
 /* ### Extrusion ### */
 x3dom.registerNodeType(
     "Extrusion",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         
         /**

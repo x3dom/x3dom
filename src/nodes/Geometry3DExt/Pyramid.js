@@ -10,7 +10,7 @@
 /* ### Pyramid ### */
 x3dom.registerNodeType(
     "Pyramid",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**

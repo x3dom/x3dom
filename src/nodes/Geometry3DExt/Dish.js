@@ -10,7 +10,7 @@
 /* ### Dish ### */
 x3dom.registerNodeType(
     "Dish",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**

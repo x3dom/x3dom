@@ -11,7 +11,7 @@
 /* ### Patch ### */
 x3dom.registerNodeType(
     "Patch",
-    "Geometry3D",
+    "BVHRefiner",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
