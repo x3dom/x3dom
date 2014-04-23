@@ -17,7 +17,7 @@ x3dom.registerNodeType(
          * Constructor for Pyramid
          * @constructs x3dom.nodeTypes.Pyramid
          * @x3d x.x
-         * @component Geometry3D
+         * @component Geometry3DExt
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace

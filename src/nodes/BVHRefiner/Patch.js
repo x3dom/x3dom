@@ -18,17 +18,17 @@ x3dom.registerNodeType(
          * Constructor for Patch
          * @constructs x3dom.nodeTypes.Patch
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component BVHRefiner
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Patch node is used by the BVHRefiner.
          */
         function (ctx) {
             x3dom.nodeTypes.Patch.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Size of the entire terrain.
              * @var {SFVec2f} size
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 2,2
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'size', 2, 2);
 
             /**
-             *
+             * Subdivision of the regualr geometry. The higher, the finer the geometry.
              * @var {SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 1,1
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             /**
-             *
+             * Center position of the geometry.
              * @var {SFVec3f} center
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue 0,0,0
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
 
             /**
-             *
+             * Render mode of the mesh.
              * @var {MFString} primType
              * @memberof x3dom.nodeTypes.Patch
              * @initvalue ['TRIANGLES']

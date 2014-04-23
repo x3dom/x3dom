@@ -17,7 +17,7 @@ x3dom.registerNodeType(
          * Constructor for Dish
          * @constructs x3dom.nodeTypes.Dish
          * @x3d x.x
-         * @component Geometry3D
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */

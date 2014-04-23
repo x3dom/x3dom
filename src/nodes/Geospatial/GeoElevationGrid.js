@@ -157,7 +157,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
 
             /**
-             *
+             * Specifies whether this geometry should be rendered with or without lighting.
              * @var {SFBool} lit
              * @memberof x3dom.nodeTypes.GeoElevationGrid
              * @initvalue true

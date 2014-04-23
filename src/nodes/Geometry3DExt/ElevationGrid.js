@@ -17,7 +17,7 @@ x3dom.registerNodeType(
          * Constructor for ElevationGrid
          * @constructs x3dom.nodeTypes.ElevationGrid
          * @x3d 3.3
-         * @component Geometry3D
+         * @component Geometry3DExt
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace

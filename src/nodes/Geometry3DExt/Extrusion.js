@@ -17,7 +17,7 @@ x3dom.registerNodeType(
          * Constructor for Extrusion
          * @constructs x3dom.nodeTypes.Extrusion
          * @x3d x.x
-         * @component Geometry3D
+         * @component Geometry3DExt
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
