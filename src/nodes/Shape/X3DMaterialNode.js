@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DMaterialNode
          * @constructs x3dom.nodeTypes.X3DMaterialNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shape
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DAppearanceChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all Material nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
