@@ -313,7 +313,7 @@ x3dom.registerNodeType(
 
                         shape["_" + x3domTypeID + "StrideOffset"][0] = attributeView["byteStride"];
                         shape["_" + x3domTypeID + "StrideOffset"][1] = attributeView["byteOffset"];
-                        shape._webgl[x3domTypeID + "Type"]            = attributeView["componentType"];
+                        shape._webgl[x3domTypeID + "Type"]           = attributeView["componentType"];
 
                         numComponents = x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType(attributeView["type"]);
                         this._mesh["_num" + x3domShortTypeID + "Components"] = numComponents;
@@ -375,7 +375,7 @@ x3dom.registerNodeType(
 
                         chunkDataView = new Uint8Array(srcBodyView.buffer,
                                                        srcBodyView.byteOffset + chunk["byteOffset"],
-                                                       bufferView["byteLength"]);
+                                                       chunk["byteLength"]);
 
                         newBuffer = gl.createBuffer();
 
@@ -404,7 +404,7 @@ x3dom.registerNodeType(
 
                             chunkDataView = new Uint8Array(srcBodyView.buffer,
                                                            srcBodyView.byteOffset + chunk["byteOffset"],
-                                                           bufferView["byteLength"]);
+                                                           chunk["byteLength"]);
 
                             //upload chunk data to GPU
                             gl.bufferSubData(bufferType, currentChunkDataOffset, chunkDataView);
