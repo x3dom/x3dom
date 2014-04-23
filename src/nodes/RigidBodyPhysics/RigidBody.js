@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Angular damping factor.
-             * @var {SFFloat} angularDampingFactor
+             * @var {x3dom.fields.SFFloat} angularDampingFactor
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0.001
              * @range [0,1]
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
              * The velocity fields are used to provide a constant velocity value to the object every frame. If both
              *  forces and velocity are defined, the velocity is used only on the first frame that the node is active,
              *  and then the forces are applied.
-             * @var {SFVec3f} angularVelocity
+             * @var {x3dom.fields.SFVec3f} angularVelocity
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,0
              * @field x3d
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * The application of damping is controlled through the use of the autoDamp field. When the value is FALSE,
              *  no damping is applied. When the value is TRUE, rotational and translational damping is calculated and
              *  applied.
-             * @var {SFBool} autoDamp
+             * @var {x3dom.fields.SFBool} autoDamp
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue false
              * @field x3d
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
             /**
              * By default, this automatic disabling is turned off. It may be enabled by setting the autoDisable field
              *  to TRUE.
-             * @var {SFBool} autoDisable
+             * @var {x3dom.fields.SFBool} autoDisable
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue false
              * @field x3d
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
 
             /**
              * Center of mass for calculations
-             * @var {SFVec3f} centerOfMass
+             * @var {x3dom.fields.SFVec3f} centerOfMass
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,0
              * @range (-inf, inf)
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableAngularSpeed
+             * @var {x3dom.fields.SFFloat} disableAngularSpeed
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0
              * @range [0,inf)
@@ -100,7 +100,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableLinearSpeed
+             * @var {x3dom.fields.SFFloat} disableLinearSpeed
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0
              * @range [0,inf)
@@ -112,7 +112,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableTime
+             * @var {x3dom.fields.SFFloat} disableTime
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0
              * @range [0,inf)
@@ -125,7 +125,7 @@ x3dom.registerNodeType(
              * The enabled field controls whether the information in this node is submitted to the physics engine for
              *  processing. If the enabled field is set TRUE, the node is submitted to the physics engine. If the
              *  enabled field is set FALSE, the node is not submitted to the physics engine for processing.
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue true
              * @field x3d
@@ -135,7 +135,7 @@ x3dom.registerNodeType(
 
             /**
              * The finiteRotationAxis field specifies a vector around which the object rotates.
-             * @var {SFVec3f} finiteRotationAxis
+             * @var {x3dom.fields.SFVec3f} finiteRotationAxis
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,0
              * @field x3d
@@ -148,7 +148,7 @@ x3dom.registerNodeType(
              *  with this body should take into account that this body does not move. This is useful for representing
              *  objects such as the ground, walls etc that can be collided with, have an effect on other objects, but
              *  are not capable of moving themselves.
-             * @var {SFBool} fixed
+             * @var {x3dom.fields.SFBool} fixed
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue false
              * @field x3d
@@ -159,7 +159,7 @@ x3dom.registerNodeType(
             /**
              * The torques and forces fields define zero or more sets of torque and force values that are applied to the
              *  object every frame. These are continuously applied until reset to zero by the user.
-             * @var {MFVec3f} forces
+             * @var {x3dom.fields.MFVec3f} forces
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue []
              * @field x3d
@@ -171,7 +171,7 @@ x3dom.registerNodeType(
              * The inertia field represents a 3x2 inertia tensor matrix. If the set values are less than six items, the
              *  results are implementation dependent. If the value set is greater than six values, only the first six
              *  values of the array are used.
-             * @var {MFFloat} inertia
+             * @var {x3dom.fields.MFFloat} inertia
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue [1,0,0,0,1,0,0,0,1]
              * @field x3d
@@ -181,7 +181,7 @@ x3dom.registerNodeType(
 
             /**
              * Linear damping factor.
-             * @var {SFFloat} linearDampingFactor
+             * @var {x3dom.fields.SFFloat} linearDampingFactor
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0.001
              * @range [0,1]
@@ -192,7 +192,7 @@ x3dom.registerNodeType(
 
             /**
              * Linear velocity.
-             * @var {SFVec3f} linearVelocity
+             * @var {x3dom.fields.SFVec3f} linearVelocity
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,0
              * @range (-inf, inf)
@@ -204,7 +204,7 @@ x3dom.registerNodeType(
             /**
              * The mass field indicates the mass of the body in mass base units. All bodies shall have a non-zero mass,
              *  with the default value of 1 mass base unit.
-             * @var {SFFloat} mass
+             * @var {x3dom.fields.SFFloat} mass
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 1
              * @range [0,inf)
@@ -217,7 +217,7 @@ x3dom.registerNodeType(
              * The position and orientation fields are used to set the initial conditions of this body's location in
              *  world space. After the initial conditions have been set, these fields are used to report the current
              *  information based on the most recent physics model evaluation.
-             * @var {SFRotation} orientation
+             * @var {x3dom.fields.SFRotation} orientation
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,1,0
              * @range [0,1]
@@ -230,7 +230,7 @@ x3dom.registerNodeType(
              * The position and orientation fields are used to set the initial conditions of this body's location in
              *  world space. After the initial conditions have been set, these fields are used to report the current
              *  information based on the most recent physics model evaluation.
-             * @var {SFVec3f} position
+             * @var {x3dom.fields.SFVec3f} position
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue 0,0,0
              * @range (-inf, inf)
@@ -242,7 +242,7 @@ x3dom.registerNodeType(
             /**
              * The torques and forces fields define zero or more sets of torque and force values that are applied to the
              *  object every frame. These are continuously applied until reset to zero by the user.
-             * @var {MFVec3f} torques
+             * @var {x3dom.fields.MFVec3f} torques
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue []
              * @field x3d
@@ -254,7 +254,7 @@ x3dom.registerNodeType(
              * The useFiniteRotation field is used to influence the way the body's rotation is calculated. In very fast
              *  rotating objects, such as a wheel of a car, an infinitely small time step can cause the modelling to
              *  explode. The default value is to use the faster infinite mode.
-             * @var {SFBool} useFiniteRotation
+             * @var {x3dom.fields.SFBool} useFiniteRotation
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue false
              * @field x3d
@@ -267,7 +267,7 @@ x3dom.registerNodeType(
              *  containing RigidBodyCollection's gravity setting. A value of TRUE indicates that the gravity is used, a
              *  value of FALSE indicates that it is not used. This only applies to this body instance. Contained
              *  sub-bodies shall not be affected by this setting.
-             * @var {SFBool} useGlobalGravity
+             * @var {x3dom.fields.SFBool} useGlobalGravity
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue true
              * @field x3d
@@ -279,7 +279,7 @@ x3dom.registerNodeType(
              * The massDensityModel field is used to describe the geometry type and dimensions used to calculate the
              *  mass density in the physics model. This geometry has no renderable property, other than for defining the
              *  model of the mass density. It is not rendered, nor modified by the physics model.
-             * @var {MFNode} massDensityModel
+             * @var {x3dom.fields.MFNode} massDensityModel
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue x3dom.nodeTypes.Shape
              * @field x3d
@@ -294,7 +294,7 @@ x3dom.registerNodeType(
              *  directly to the physics model as well as collision detection. Collidable nodes have their location set
              *  to the same location as the body instance in which they are located. Their position and location are not
              *  relative to this object, unless otherwise defined.
-             * @var {MFNode} geometry
+             * @var {x3dom.fields.MFNode} geometry
              * @memberof x3dom.nodeTypes.RigidBody
              * @initvalue x3dom.nodeTypes.X3DNBodyCollidableNode
              * @field x3dom

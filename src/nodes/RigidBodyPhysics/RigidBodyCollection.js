@@ -33,7 +33,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFBool} autoDisable
+             * @var {x3dom.fields.SFBool} autoDisable
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue false
              * @field x3d
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              *  more soft each of the constraints being evaluated. A value of zero indicates hard constraints so that
              *  everything is exactly honoured. By combining the errorCorrection and constantForceMix fields, various
              *  effects, such as spring-driven or spongy connections, can be emulated.
-             * @var {SFFloat} constantForceMix
+             * @var {x3dom.fields.SFFloat} constantForceMix
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0.0001
              * @range [0, inf)
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
             /**
              * The contactSurfaceThickness field represents how far bodies may interpenetrate after a collision. This
              *  allows simulation of softer bodies that may deform somewhat during collision. The default value is zero.
-             * @var {SFFloat} contactSurfaceThickness
+             * @var {x3dom.fields.SFFloat} contactSurfaceThickness
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0
              * @range [0, inf)
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableAngularSpeed
+             * @var {x3dom.fields.SFFloat} disableAngularSpeed
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0
              * @range [0, inf)
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableLinearSpeed
+             * @var {x3dom.fields.SFFloat} disableLinearSpeed
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0
              * @range [0, inf)
@@ -96,7 +96,7 @@ x3dom.registerNodeType(
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
              *  calculations and should be considered as at rest.
-             * @var {SFFloat} disableTime
+             * @var {x3dom.fields.SFFloat} disableTime
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0
              * @range [0, inf)
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
             /**
              * The enabled field is used to control whether the physics model for this collection should be run this
              *  frame.
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue true
              * @field x3d
@@ -120,7 +120,7 @@ x3dom.registerNodeType(
              * The errorCorrection field describes how quickly the system should resolve intersection errors due to
              *  floating point inaccuracies. This value ranges between 0 and 1. A value of 0 means no correction at all
              *   while a value of 1 indicates that all errors should be corrected in a single step.
-             * @var {SFFloat} errorCorrection
+             * @var {x3dom.fields.SFFloat} errorCorrection
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0.8
              * @range [0,1]
@@ -133,7 +133,7 @@ x3dom.registerNodeType(
              * The gravity field indicates direction and strength (in acceleration base units) of the local gravity
              *  vector for this collection of bodies. The default gravity is standard earth gravity of 9.8
              *  meters/second2 downwards.
-             * @var {SFVec3f} gravity
+             * @var {x3dom.fields.SFVec3f} gravity
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 0,-9.8,0
              * @field x3d
@@ -148,7 +148,7 @@ x3dom.registerNodeType(
              *  stable the final results are at the cost of increasing evaluation time. Since maintaining real-time
              *  performance is a trade off between accuracy and frame rate, this setting allows the user to control that
              *  trade off to a limited extent.
-             * @var {SFInt32} iterations
+             * @var {x3dom.fields.SFInt32} iterations
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue 1
              * @range [0,inf)
@@ -159,7 +159,7 @@ x3dom.registerNodeType(
 
             /**
              * Maximal correction speed.
-             * @var {SFFloat} maxCorrectionSpeed
+             * @var {x3dom.fields.SFFloat} maxCorrectionSpeed
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue -1
              * @range [0, inf) or -1
@@ -173,7 +173,7 @@ x3dom.registerNodeType(
              *  the user prefers to have very accurate models or fast models. Accuracy comes at a large penalty in both
              *  speed and memory usage, but may not be needed most of the time. The default setting is to optimize for
              *  speed rather than accuracy.
-             * @var {SFBool} preferAccuracy
+             * @var {x3dom.fields.SFBool} preferAccuracy
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue false
              * @field x3d
@@ -184,7 +184,7 @@ x3dom.registerNodeType(
             /**
              * The bodies field contains a collection of the top-level nodes that comprise a set of bodies that should
              *  be evaluated as a single set of interactions.
-             * @var {MFNode} bodies
+             * @var {x3dom.fields.MFNode} bodies
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue x3dom.nodeTypes.RigidBody
              * @field x3d
@@ -197,7 +197,7 @@ x3dom.registerNodeType(
              *  joint is connected between bodies in two different collections, the result is implementation-dependent.
              *  If a joint instance is registered with more than one collection, the results are implementation
              *  dependent. Joints not registered with any collection are not evaluated.
-             * @var {MFNode} joints
+             * @var {x3dom.fields.MFNode} joints
              * @memberof x3dom.nodeTypes.RigidBodyCollection
              * @initvalue x3dom.nodeTypes.X3DRigidJointNode
              * @field x3d

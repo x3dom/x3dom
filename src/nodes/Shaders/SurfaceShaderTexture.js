@@ -18,17 +18,17 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.SurfaceShaderTexture
          * @x3d x.x
          * @component Shaders
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DTextureNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc A texture reference that can be used as a child of SurfaceShader.
          */
         function (ctx) {
             x3dom.nodeTypes.SurfaceShaderTexture.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFInt32} textureCoordinatesId
+             * Texture coordinate channel to use for this texture.
+             * @var {x3dom.fields.SFInt32} textureCoordinatesId
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
              * @initvalue 0
              * @field x3dom
@@ -37,18 +37,21 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'textureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} channelMask
+             * Texture channels to use for this texture in the form of a glsl swizzle (e.g. "rgb", "abgr", "a").
+             *  "DEFAULT" will use the default channels for the slot ("rgb" for colors and normals, "a" for alpha,
+             *  shininess, ...).
+             * @var {x3dom.fields.SFString} channelMask
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
              * @initvalue "DEFAULT"
+             * @range [rgb,abgr,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'channelMask', "DEFAULT");
 
             /**
-             *
-             * @var {SFBool} isSRGB
+             * Whether texture contains sRGB content and need to be linearized (NOT IMPLEMENTED!).
+             * @var {x3dom.fields.SFBool} isSRGB
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
              * @initvalue false
              * @field x3dom
@@ -57,8 +60,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isSRGB', false);
 
             /**
-             *
-             * @var {SFNode} texture
+             * The texture to use.
+             * @var {x3dom.fields.SFNode} texture
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -67,8 +70,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('texture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} textureTransform
+             * An optional texture transform.
+             * @var {x3dom.fields.SFNode} textureTransform
              * @memberof x3dom.nodeTypes.SurfaceShaderTexture
              * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
              * @field x3dom

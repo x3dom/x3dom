@@ -16,32 +16,36 @@ x3dom.registerNodeType(
         /**
          * Constructor for ShaderPart
          * @constructs x3dom.nodeTypes.ShaderPart
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shaders
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ShaderPart node defines the source for a single object to be used by a ComposedShader node.
+         *  The source is not required to be a complete shader for all of the vertex/fragment processing.
          */
         function (ctx) {
             x3dom.nodeTypes.ShaderPart.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {MFString} url
+             * The shader source is read from the URL specified by the url field. When the url field contains no values
+             *  ([]), this object instance is ignored.
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.ShaderPart
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'url', []);
 
             /**
-             *
-             * @var {SFString} type
+             * The type field indicates whether this object shall be compiled as a vertex shader, fragment shader, or
+             *  other future-defined shader type.
+             * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.ShaderPart
              * @initvalue "VERTEX"
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'type', "VERTEX");

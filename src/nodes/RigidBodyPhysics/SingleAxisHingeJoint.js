@@ -32,7 +32,7 @@ x3dom.registerNodeType(
             /**
              * The axis of the hinge is defined to be along the unit vector described in the axis field and centered on
              * the anchorPoint described in world coordinates.
-             * @var {SFVec3f} anchorPoint
+             * @var {x3dom.fields.SFVec3f} anchorPoint
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue 0,0,0
              * @field x3dom
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
             /**
              * The axis of the hinge is defined to be along the unit vector described in the axis field and centered on
              *  the anchorPoint described in world coordinates.
-             * @var {SFVec3f} axis
+             * @var {x3dom.fields.SFVec3f} axis
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue 0,0,0
              * @field x3dom
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * The minAngle and maxAngle fields are used to control the maximum angles through which the hinge is
              *  allowed to travel. A hinge may not travel more than π radians (or the equivalent angle base units) in
              *  either direction from its initial position.
-             * @var {SFFloat} maxAngle
+             * @var {x3dom.fields.SFFloat} maxAngle
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue 90
              * @range [-PI*degToRad, PI*degToRad]
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
              * The minAngle and maxAngle fields are used to control the maximum angles through which the hinge is
              *  allowed to travel. A hinge may not travel more than π radians (or the equivalent angle base units) in
              *  either direction from its initial position.
-             * @var {SFFloat} minAngle
+             * @var {x3dom.fields.SFFloat} minAngle
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue -90
              * @range [-PI*degToRad, PI*degToRad]
@@ -81,7 +81,7 @@ x3dom.registerNodeType(
              * The stopBounce field describes how much the joint should bounce the body back if the joint limit has been
              *  reached or exceeded. A value of zero indicates no bounce at all, and a value of one says that it should
              *  bounce with velocity equal and opposite to the collision velocity of the contact.
-             * @var {SFFloat} stopBounce
+             * @var {x3dom.fields.SFFloat} stopBounce
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue 0
              * @range [0,1]
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
              * The stopErrorCorrection field describes the amount of error correction to be performed in a time step
              *  when the joint reaches the limit. A value of zero means no error correction is to be performed and a
              *  value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stopErrorCorrection
+             * @var {x3dom.fields.SFFloat} stopErrorCorrection
              * @memberof x3dom.nodeTypes.SingleAxisHingeJoint
              * @initvalue 0.8
              * @range [0,1]

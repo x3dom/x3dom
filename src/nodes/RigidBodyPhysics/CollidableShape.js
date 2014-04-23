@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
            /**
              * Transformation child node.
-             * @var {SFNode} transform
+             * @var {x3dom.fields.SFNode} transform
              * @memberof x3dom.nodeTypes.CollidableShape
              * @initvalue x3dom.nodeTypes.Transform
              * @field x3dom
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
             /**
              * The shape field uses the geometry proxy for specifying which geometry best represents the collidable
              * object.
-             * @var {SFNode} shape
+             * @var {x3dom.fields.SFNode} shape
              * @memberof x3dom.nodeTypes.CollidableShape
              * @initvalue x3dom.nodeTypes.Shape
              * @field x3d

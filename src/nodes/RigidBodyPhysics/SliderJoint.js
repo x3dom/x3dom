@@ -30,7 +30,7 @@ x3dom.registerNodeType(
             /**
              * The axis field indicates which axis along which the two bodies will act. The value should represent a
              *  normalized vector.
-             * @var {SFVec3f} axis
+             * @var {x3dom.fields.SFVec3f} axis
              * @memberof x3dom.nodeTypes.SliderJoint
              * @initvalue 0,1,0
              * @field x3d
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             /**
              * If minSeparation is greater than maxSeparation, the stops become ineffective as if the object has no
              *  stops at all.
-             * @var {SFFloat} maxSeparation
+             * @var {x3dom.fields.SFFloat} maxSeparation
              * @memberof x3dom.nodeTypes.SliderJoint
              * @initvalue 1
              * @range [0,inf)
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
             /**
              * If minSeparation is greater than maxSeparation, the stops become ineffective as if the object has no
              *  stops at all.
-             * @var {SFFloat} minSeparation
+             * @var {x3dom.fields.SFFloat} minSeparation
              * @memberof x3dom.nodeTypes.SliderJoint
              * @initvalue 0
              * @range [0,inf)
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * The stopBounce field describes how much the joint should bounce the body back if the joint limit has been
              *  reached or exceeded. A value of zero indicates no bounce at all, and a value of one indicates that it
              *  should bounce with velocity equal and opposite to the collision velocity of the contact.
-             * @var {SFFloat} stopBounce
+             * @var {x3dom.fields.SFFloat} stopBounce
              * @memberof x3dom.nodeTypes.SliderJoint
              * @initvalue 0
              * @range [0,1]
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * The stopErrorCorrection field describes the amount of error correction to be performed in a time step
              *  when the joint reaches the limit. A value of zero means no error correction is to be performed and a
              *   value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stopErrorCorrection
+             * @var {x3dom.fields.SFFloat} stopErrorCorrection
              * @memberof x3dom.nodeTypes.SliderJoint
              * @initvalue 1
              * @range [0,1]

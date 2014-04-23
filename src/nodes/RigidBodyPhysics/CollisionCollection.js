@@ -35,7 +35,7 @@ x3dom.registerNodeType(
             /**
              * The bounce field indicates how bouncy the surface contact is. A value of 0 indicates no bounce at all
              *  while a value of 1 indicates maximum bounce.
-             * @var {SFFloat} bounce
+             * @var {x3dom.fields.SFFloat} bounce
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0
              * @range [0,1]
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
              *  run at the end of this frame. A value of TRUE enables it while a value of FALSE disables it. A
              *  CollisionSensor node watching this collection does not report any outputs for this collection for this
              *  frame if it is not enabled.
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue true
              * @field x3d
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * Friction Coefficients
-             * @var {SFVec2f} frictionCoefficients
+             * @var {x3dom.fields.SFVec2f} frictionCoefficients
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0,0
              * @range [0, inf)
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
              * The minBounceSpeed field indicates the minimum speed, in speed base units, that an object shall have
              *  before an object will bounce. If the object is below this speed, it will not bounce, effectively having
              *  an equivalent value for the bounce field of zero.
-             * @var {SFFloat} minBounceSpeed
+             * @var {x3dom.fields.SFFloat} minBounceSpeed
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0.1
              * @range [0, inf)
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
 
             /**
              * Slip factors
-             * @var {SFVec2f} slipFactors
+             * @var {x3dom.fields.SFVec2f} slipFactors
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0,0
              * @range (-inf, inf)
@@ -95,7 +95,7 @@ x3dom.registerNodeType(
             /**
              * The softnessConstantForceMix value applies a constant force value to make the colliding surfaces appear
              *  to be somewhat soft.
-             * @var {SFFloat} softnessConstantForceMix
+             * @var {x3dom.fields.SFFloat} softnessConstantForceMix
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0.0001
              * @range [0,1]
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
              * The softnessErrorCorrection determines how much of the collision error should be fixed in a set of
              *  evaluations. The value is limited to the range of [0,1]. A value of 0 specifies no error correction
              *  while a value of 1 specifies that all errors should be corrected in a single step.
-             * @var {SFFloat} softnessErrorCorrection
+             * @var {x3dom.fields.SFFloat} softnessErrorCorrection
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0.8
              * @range [0,1]
@@ -120,7 +120,7 @@ x3dom.registerNodeType(
             /**
              * The surfaceSpeed field defines the speed in the two friction directions in speed base units. This is used
              *  to indicate if the contact surface is moving independently of the motion of the bodies.
-             * @var {SFVec2f} surfaceSpeed
+             * @var {x3dom.fields.SFVec2f} surfaceSpeed
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue 0,0
              * @range (-inf, inf)
@@ -132,7 +132,7 @@ x3dom.registerNodeType(
             /**
              * The collidables field can be managed as a single entity for resolution of inter-object collisions with
              *  other groups of collidable objects.
-             * @var {MFNode} collidables
+             * @var {x3dom.fields.MFNode} collidables
              * @memberof x3dom.nodeTypes.CollisionCollection
              * @initvalue x3dom.nodeTypes.X3DNBodyCollidableNode
              * @field x3d

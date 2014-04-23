@@ -18,17 +18,17 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.CommonSurfaceShader
          * @x3d x.x
          * @component Shaders
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DShaderNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Implements the Blinn-Phong BRDF with normal mapping and a perfect specular component.
          */
         function (ctx) {
             x3dom.nodeTypes.CommonSurfaceShader.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFInt32} tangentTextureCoordinatesId
+             * Texture coordinate channel that contains the tangents in u.
+             * @var {x3dom.fields.SFInt32} tangentTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -37,8 +37,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'tangentTextureCoordinatesId', -1);
 
             /**
-             *
-             * @var {SFInt32} binormalTextureCoordinatesId
+             * Texture coordinate channel that contains the tangents in v.
+             * @var {x3dom.fields.SFInt32} binormalTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -47,8 +47,9 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'binormalTextureCoordinatesId', -1);
 
             /**
-             *
-             * @var {SFVec3f} emissiveFactor
+             * The value of emissiveTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} emissiveFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0,0,0
              * @field x3dom
@@ -57,8 +58,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'emissiveFactor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFInt32} emissiveTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} emissiveTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -67,8 +68,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'emissiveTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} emissiveTextureCoordinatesId
+             * Texture coordinate channel to use for emissiveTexture.
+             * @var {x3dom.fields.SFInt32} emissiveTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -77,18 +78,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'emissiveTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} emissiveTextureChannelMask
+             * ChannelMask for emissiveTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} emissiveTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'emissiveTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} ambientFactor
+             * The value of ambientTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} ambientFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0.2,0.2,0.2
              * @field x3dom
@@ -97,8 +100,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'ambientFactor', 0.2, 0.2, 0.2);
 
             /**
-             *
-             * @var {SFInt32} ambientTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} ambientTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -107,8 +110,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'ambientTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} ambientTextureCoordinatesId
+             * Texture coordinate channel to use for ambientTexture.
+             * @var {x3dom.fields.SFInt32} ambientTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -117,18 +120,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'ambientTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} ambientTextureChannelMask
+             * ChannelMask for ambientTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} ambientTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'ambientTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} diffuseFactor
+             * The value of diffuseTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} diffuseFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0.8,0.8,0.8
              * @field x3dom
@@ -137,8 +142,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'diffuseFactor', 0.8, 0.8, 0.8);
 
             /**
-             *
-             * @var {SFInt32} diffuseTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} diffuseTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -147,8 +152,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'diffuseTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} diffuseTextureCoordinatesId
+             * Texture coordinate channel to use for diffuseTexture.
+             * @var {x3dom.fields.SFInt32} diffuseTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -157,18 +162,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'diffuseTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} diffuseTextureChannelMask
+             * ChannelMask for diffuseTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} diffuseTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'diffuseTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} specularFactor
+             * The value of specularTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} specularFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0,0,0
              * @field x3dom
@@ -177,8 +184,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'specularFactor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFInt32} specularTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} specularTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -187,8 +194,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'specularTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} specularTextureCoordinatesId
+             * Texture coordinate channel to use for specularTexture.
+             * @var {x3dom.fields.SFInt32} specularTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -197,18 +204,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'specularTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} specularTextureChannelMask
+             * ChannelMask for specularTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} specularTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'specularTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFFloat} shininessFactor
+             * The value of shininessTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFFloat} shininessFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0.2
              * @field x3dom
@@ -217,8 +226,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shininessFactor', 0.2);
 
             /**
-             *
-             * @var {SFInt32} shininessTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} shininessTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -227,8 +236,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'shininessTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} shininessTextureCoordinatesId
+             * Texture coordinate channel to use for shininessTexture.
+             * @var {x3dom.fields.SFInt32} shininessTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -237,38 +246,43 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'shininessTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} shininessTextureChannelMask
+             * ChannelMask for shininessTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} shininessTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'a'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'shininessTextureChannelMask', 'a');
 
             /**
-             *
-             * @var {SFString} normalFormat
+             * How normals are stored in normalTexture. Currently only "UNORM" (each component packed into a
+             *  [0,1] color channel) is supported.
+             * @var {x3dom.fields.SFString} normalFormat
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'UNORM'
+             * @range [UNORM]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'normalFormat', 'UNORM');
 
             /**
-             *
-             * @var {SFString} normalSpace
+             * Space in which normals in normalTexture are defined. Currently only "TANGENT" (a default tangent space
+             *  normal map) is supported.
+             * @var {x3dom.fields.SFString} normalSpace
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'TANGENT'
+             * @range [TANGENT]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'normalSpace', 'TANGENT');
 
             /**
-             *
-             * @var {SFInt32} normalTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} normalTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -277,8 +291,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} normalTextureCoordinatesId
+             * Texture coordinate channel to use for normalTexture.
+             * @var {x3dom.fields.SFInt32} normalTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -287,18 +301,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} normalTextureChannelMask
+             * ChannelMask for normalTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} normalTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'normalTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} reflectionFactor
+             * The value of reflectionTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} reflectionFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0,0,0
              * @field x3dom
@@ -307,8 +323,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'reflectionFactor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFInt32} reflectionTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} reflectionTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -317,8 +333,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'reflectionTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} reflectionTextureCoordinatesId
+             * Texture coordinate channel to use for reflectionTexture.
+             * @var {x3dom.fields.SFInt32} reflectionTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -327,18 +343,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'reflectionTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} reflectionTextureChannelMask
+             * ChannelMask for reflectionTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} reflectionTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'reflectionTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} transmissionFactor
+             * The value of transmissionTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} transmissionFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0,0,0
              * @field x3dom
@@ -347,8 +365,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'transmissionFactor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFInt32} transmissionTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} transmissionTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -357,8 +375,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'transmissionTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} transmissionTextureCoordinatesId
+             * Texture coordinate channel to use for transmissionTexture.
+             * @var {x3dom.fields.SFInt32} transmissionTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -367,18 +385,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'transmissionTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} transmissionTextureChannelMask
+             * ChannelMask for transmissionTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} transmissionTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'transmissionTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFVec3f} environmentFactor
+             * The value of environmentTexture is multiplied by this value. If no texture is set, the value is used
+             *  directly.
+             * @var {x3dom.fields.SFVec3f} environmentFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 1,1,1
              * @field x3dom
@@ -387,8 +407,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'environmentFactor', 1, 1, 1);
 
             /**
-             *
-             * @var {SFInt32} environmentTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} environmentTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -397,8 +417,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'environmentTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} environmentTextureCoordinatesId
+             * [Currently not used, coordinates are computed in shader.]
+             * @var {x3dom.fields.SFInt32} environmentTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -407,18 +427,19 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'environmentTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} environmentTextureChannelMask
+             * ChannelMask for environmentTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} environmentTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'rgb'
+             * @range [rgb,a,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'environmentTextureChannelMask', 'rgb');
 
             /**
-             *
-             * @var {SFFloat} relativeIndexOfRefraction
+             * Relative IOR for perfect specular component.
+             * @var {x3dom.fields.SFFloat} relativeIndexOfRefraction
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 1
              * @field x3dom
@@ -427,8 +448,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'relativeIndexOfRefraction', 1);
 
             /**
-             *
-             * @var {SFFloat} fresnelBlend
+             * To what degree the Fresnel equation for dielectrics should be used to blend the perfect specular
+             *  reflection and transmission.
+             * @var {x3dom.fields.SFFloat} fresnelBlend
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -437,8 +459,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'fresnelBlend', 0);
 
             /**
-             *
-             * @var {SFString} displacementAxis
+             * Axis along which the vertices are displacement
+             * @var {x3dom.fields.SFString} displacementAxis
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'y'
              * @field x3dom
@@ -447,8 +469,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'displacementAxis', 'y');
 
             /**
-             *
-             * @var {SFFloat} displacementFactor
+             * Factor for the displacement.
+             * @var {x3dom.fields.SFFloat} displacementFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 255.0
              * @field x3dom
@@ -457,8 +479,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'displacementFactor', 255.0);
 
             /**
-             *
-             * @var {SFInt32} displacementTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} displacementTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -467,8 +489,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'displacementTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} displacementTextureCoordinatesId
+             * Texture coordinate channel to use for displacementTexture.
+             * @var {x3dom.fields.SFInt32} displacementTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -477,8 +499,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'displacementTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFNode} emissiveTexture
+             * Texture containing emissive component.
+             * @var {x3dom.fields.SFNode} emissiveTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -487,8 +509,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} ambientTexture
+             * Texture containing ambient component.
+             * @var {x3dom.fields.SFNode} ambientTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -497,8 +519,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('ambientTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} diffuseTexture
+             * Texture containing diffuse component.
+             * @var {x3dom.fields.SFNode} diffuseTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -507,8 +529,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} specularTexture
+             * Texture containing specular component.
+             * @var {x3dom.fields.SFNode} specularTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -517,8 +539,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('specularTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} shininessTexture
+             * Texture containing shininess component.
+             * @var {x3dom.fields.SFNode} shininessTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -527,8 +549,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('shininessTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} normalTexture
+             * Texture containing normal component for normal mapping.
+             * @var {x3dom.fields.SFNode} normalTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -537,8 +559,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} reflectionTexture
+             * Texture containing reflection component.
+             * @var {x3dom.fields.SFNode} reflectionTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -547,8 +569,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} transmissionTexture
+             * Texture containing transmission component.
+             * @var {x3dom.fields.SFNode} transmissionTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -557,8 +579,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} environmentTexture
+             * Cube texture containing the environment for perfect specular reflection and transmission.
+             * @var {x3dom.fields.SFNode} environmentTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -567,8 +589,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('environmentTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} displacementTexture
+             * Texture containing displacement component.
+             * @var {x3dom.fields.SFNode} displacementTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -577,8 +599,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('displacementTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} diffuseDisplacementTexture
+             * Texture containing diffuse displacement component.
+             * @var {x3dom.fields.SFNode} diffuseDisplacementTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -587,8 +609,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('diffuseDisplacementTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} multiDiffuseAlphaTexture
+             * Multi diffuse alpha texture.
+             * @var {x3dom.fields.SFNode} multiDiffuseAlphaTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -597,8 +619,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('multiDiffuseAlphaTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} multiVisibilityTexture
+             * Multi visibility texture.
+             * @var {x3dom.fields.SFNode} multiVisibilityTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom
@@ -610,8 +632,8 @@ x3dom.registerNodeType(
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
 
             /**
-             *
-             * @var {SFVec3f} normalScale
+             * scale to apply to normal sampled from normalTexture
+             * @var {x3dom.fields.SFVec3f} normalScale
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 2,2,2
              * @field x3dom
@@ -620,8 +642,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'normalScale', 2, 2, 2);
 
             /**
-             *
-             * @var {SFVec3f} normalBias
+             * Bias to apply to normal sampled from normalTexture
+             * @var {x3dom.fields.SFVec3f} normalBias
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1,-1,-1
              * @field x3dom
@@ -630,8 +652,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, -1);
 
             /**
-             *
-             * @var {SFFloat} alphaFactor
+             * The value of alphaTexture is multiplied by this value. If no texture is set, the value is used directly.
+             * @var {x3dom.fields.SFFloat} alphaFactor
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 1
              * @field x3dom
@@ -640,8 +662,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'alphaFactor', 1);
 
             /**
-             *
-             * @var {SFBool} invertAlphaTexture
+             * If true, (1-sampledValue) is used as alpha. If false the sampled value is used.
+             * @var {x3dom.fields.SFBool} invertAlphaTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue false
              * @field x3dom
@@ -650,8 +672,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'invertAlphaTexture', false);
 
             /**
-             *
-             * @var {SFInt32} alphaTextureId
+             * The texture unit.
+             * @var {x3dom.fields.SFInt32} alphaTextureId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue -1
              * @field x3dom
@@ -660,8 +682,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'alphaTextureId', -1);
 
             /**
-             *
-             * @var {SFInt32} alphaTextureCoordinatesId
+             * Texture coordinate channel to use for alphaTexture.
+             * @var {x3dom.fields.SFInt32} alphaTextureCoordinatesId
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 0
              * @field x3dom
@@ -670,18 +692,19 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'alphaTextureCoordinatesId', 0);
 
             /**
-             *
-             * @var {SFString} alphaTextureChannelMask
+             * ChannelMask for alphaTexture in the form of a glsl swizzle (e.g. "rgb", "a").
+             * @var {x3dom.fields.SFString} alphaTextureChannelMask
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'a'
+             * @range [a,rgb,..]
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'alphaTextureChannelMask', 'a');
 
             /**
-             *
-             * @var {SFNode} alphaTexture
+             * Texture containing alpha component.
+             * @var {x3dom.fields.SFNode} alphaTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue x3dom.nodeTypes.X3DTextureNode
              * @field x3dom

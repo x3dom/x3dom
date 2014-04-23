@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
             /**
              * Anchor of the joint.
-             * @var {SFVec3f} anchorPoint
+             * @var {x3dom.fields.SFVec3f} anchorPoint
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
             /**
              * The vectors specified by the axis1 and axis2 fields shall be perpendicular. If not, the interactions are
              *  undefined.
-             * @var {SFVec3f} axis1
+             * @var {x3dom.fields.SFVec3f} axis1
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
             /**
              * The vectors specified by the axis1 and axis2 fields shall be perpendicular. If not, the interactions are
              *  undefined.
-             * @var {SFVec3f} axis2
+             * @var {x3dom.fields.SFVec3f} axis2
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -67,7 +67,7 @@ x3dom.registerNodeType(
              *  if the joint limit has been reached or exceeded. A value of zero indicates no bounce at all, and a value
              *  of one indicates that it should bounce with velocity equal and opposite to the collision velocity of the
              *  contact.
-             * @var {SFFloat} stop1Bounce
+             * @var {x3dom.fields.SFFloat} stop1Bounce
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0
              * @range [0,1]
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
              * The stop error correction fields describe the amount of error correction to be performed in a time step
              *  when the joint reaches the limit on the corresponding axis. A value of zero means no error correction is
              *  to be performed and a value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stop1ErrorCorrection
+             * @var {x3dom.fields.SFFloat} stop1ErrorCorrection
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0.8
              * @range [0,1]
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
              *  if the joint limit has been reached or exceeded. A value of zero indicates no bounce at all, and a value
              *  of one indicates that it should bounce with velocity equal and opposite to the collision velocity of the
              *  contact.
-             * @var {SFFloat} stop2Bounce
+             * @var {x3dom.fields.SFFloat} stop2Bounce
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0
              * @range [0,1]
@@ -107,7 +107,7 @@ x3dom.registerNodeType(
              * The stop error correction fields describe the amount of error correction to be performed in a time step
              *  when the joint reaches the limit on the corresponding axis. A value of zero means no error correction is
              *  to be performed and a value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stop2ErrorCorrection
+             * @var {x3dom.fields.SFFloat} stop2ErrorCorrection
              * @memberof x3dom.nodeTypes.UniversalJoint
              * @initvalue 0.8
              * @range [0,1]
