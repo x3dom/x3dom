@@ -1361,10 +1361,28 @@ x3dom.gfx_webgl = (function () {
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
+                else if (s_gl.binaryGeometry   < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
+                    }
+                }
+                //ExternalGeometry: indexed rendering (shadow pass)
+                else if (s_gl.externalGeometry == 1)
+                {
+                    v_n = s_gl.drawCount.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
+                    }
+                }
+                //ExternalGeometry: non-indexed rendering (shadow pass)
+                else if (s_gl.externalGeometry == -1)
+                {
+                    v_n = s_gl.drawCount.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {
@@ -1646,7 +1664,6 @@ x3dom.gfx_webgl = (function () {
                 this.updatePopState(drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps);
             }
 
-
             for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
                 var q6 = 6 * q;
                 var v, v_n, offset;
@@ -1717,6 +1734,24 @@ x3dom.gfx_webgl = (function () {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
+                    }
+                }
+                //ExternalGeometry: indexed rendering (picking pass)
+                else if (s_gl.externalGeometry == 1)
+                {
+                    v_n = s_gl.drawCount.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
+                    }
+                }
+                //ExternalGeometry: non-indexed rendering (picking pass)
+                else if (s_gl.externalGeometry == -1)
+                {
+                    v_n = s_gl.drawCount.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {
@@ -2232,7 +2267,7 @@ x3dom.gfx_webgl = (function () {
 
         // render object
         var v, v_n, offset;
-        
+
         for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
             var q6 = 6 * q;
 
@@ -2316,11 +2351,28 @@ x3dom.gfx_webgl = (function () {
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
-                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 ||
-                         s_gl.imageGeometry) {
+                else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawArrays(polyMode, offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
+                    }
+                }
+                //ExternalGeometry: indexed rendering (standard pass, POINTS or LINES)
+                else if (s_gl.externalGeometry == 1)
+                {
+                    v_n = s_gl.primType.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawElements(polyMode, s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
+                    }
+                }
+                //ExternalGeometry: non-indexed rendering (standard pass, POINTS or LINES)
+                else if (s_gl.externalGeometry == -1)
+                {
+                    v_n = s_gl.primType.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawArrays(polyMode, 0, s_gl.drawCount[v]);
                     }
                 }
                 else if (s_gl.indexes[q].length == 0) {
@@ -2342,6 +2394,24 @@ x3dom.gfx_webgl = (function () {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
                         gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
+                    }
+                }
+                //ExternalGeometry: indexed rendering (standard pass)
+                else if (s_gl.externalGeometry == 1)
+                {
+                    v_n = s_gl.primType.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
+                    }
+                }
+                //ExternalGeometry: non-indexed rendering (standard pass)
+                else if (s_gl.externalGeometry == -1)
+                {
+                    v_n = s_gl.primType.length;
+                    for (v = 0; v < v_n; v++)
+                    {
+                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
                     }
                 }
                 else if (s_geo.hasIndexOffset()) {

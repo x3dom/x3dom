@@ -96,18 +96,18 @@ x3dom.registerNodeType(
                     shape._webgl.internalDownloadCount  = 0;
                     shape._nameSpace.doc.downloadCount  = 0;
 
-                    var responseUint32 = new Uint32Array(xhr.response);
+                    var responseBeginUint32 = new Uint32Array(xhr.response, 0, 12);
 
                     var srcHeaderSize, srcBodySize, srcBodyOffset;
                     var srcHeaderView, srcBodyView;
 
                     var srcHeaderObj;
 
-                    if (xhr.status == 200 && responseUint32.length >= 3) {
+                    if (xhr.status == 200 && responseBeginUint32.length >= 3) {
 
-                        srcHeaderSize = responseUint32[2];
+                        srcHeaderSize = responseBeginUint32[2];
                         srcBodyOffset = srcHeaderSize + 12;
-                        srcBodySize   = responseUint32.buffer.byteLength - srcBodyOffset;
+                        srcBodySize   = xhr.response.byteLength - srcBodyOffset;
 
                         if (srcHeaderSize > 0 &&  srcBodySize >= 0)
                         {
@@ -169,9 +169,20 @@ x3dom.registerNodeType(
                 var COLOR_BUFFER_IDX    = 4;
                 var ID_BUFFER_IDX       = 5;
 
-                var indexViews     = srcHeaderObj["accessors"]["indexViews"];
+                var MAX_NUM_BUFFERS_PER_DRAW = 6;
+
+                var indexViews = srcHeaderObj["accessors"]["indexViews"];
                 var indexViewID, indexView;
-                var meshes         = srcHeaderObj["meshes"];
+
+                var attributeViews = srcHeaderObj["accessors"]["attributeViews"];
+                var attributes;
+                var attributeID, attributeView;
+                var x3domTypeID, x3domShortTypeID, numComponents;
+
+                var meshes = srcHeaderObj["meshes"];
+                var mesh, meshID;
+                var meshIdx, bufferOffset;
+
 
                 //the meta data object is currently unused
                 //var metadataObj = srcHeaderObj["meta"];
@@ -205,16 +216,13 @@ x3dom.registerNodeType(
                     shape._webgl.buffers[INDEX_BUFFER_IDX] = viewIDsToGLBufferIDs[indexView["bufferView"]];
 
                     //we currently assume 16 bit index data
+                    if (indexView["componentType"] != gl.UNSIGNED_SHORT)
+                    {
+                        x3dom.debug.logWarning("SRC index componentType " + indexView["componentType"] +
+                                               " is not UNSIGNED_SHORT. " +
+                                               "Ignoring given value and assuming UNSIGNED_SHORT indices.");
+                    }
                     shape._webgl.indexType = gl.UNSIGNED_SHORT;
-                }
-
-                if (indexViews.length > 0)
-                {
-                    shape._webgl.externalGeometry =  1; //indexed EG
-                }
-                else
-                {
-                    shape._webgl.externalGeometry = -1; //non-indexed EG
                 }
 
                 //TODO: setup this hints
@@ -223,40 +231,101 @@ x3dom.registerNodeType(
                 //this._mesh._numFaces    = 42;
 
 
-                //3. create GL attribute pointers for the vertex attributes
+                //3. remember necessary information to setup GL draw parameters and attribute pointers
 
-                this._createGLAttribPointersFromSRCChunks(gl,
-                                                          srcHeaderObj["accessors"]["attributeViews"],
-                                                          srcBodyView, viewIDsToGLBufferIDs);
+                meshIdx      = 0;
+                bufferOffset = 0;
 
+                shape._webgl.primType    = [];
+                shape._webgl.indexOffset = [];
+                shape._webgl.drawCount   = [];
 
-
-
-
-                var attributes;
-
-                var mesh;
-                var attribute;
-
-                for (var meshID in meshes)
+                for (meshID in meshes)
                 {
                     mesh = meshes[meshID];
 
+                    //setup indices, if any
+                    indexViewID = mesh["indices"];
+                    //TODO: allow the renderer to switch between indexed and non-indexed rendering, for one extGeo
+                    if (indexViewID != "")
+                    {
+                        shape._webgl.externalGeometry =  1; //indexed EG
+
+                        indexView = indexViews[indexViewID];
+
+                        shape._webgl.indexOffset[meshIdx] = indexView["byteOffset"];
+                        shape._webgl.drawCount[meshIdx]   = indexView["count"];
+                    }
+                    else
+                    {
+                        shape._webgl.externalGeometry = -1; //non-indexed EG
+                    }
+
+                    //setup primType
+                    shape._webgl.primType[meshIdx] = mesh["primitive"];
+
+                    //setup attributes
                     attributes = mesh["attributes"];
 
-                    for (var attributeKey in attributes)
+                    for (attributeID in attributes)
                     {
-                        attribute = attributes[attributeKey];
+                        attributeView = attributeViews[attributes[attributeID]];
 
-                        //...
+                        //the current renderer does not support generic vertex attributes, so simply look for useable cases
+                        switch (attributeID)
+                        {
+                            case "position":
+                                x3domTypeID      = "coord";
+                                x3domShortTypeID = "Pos";
+                                shape._webgl.buffers[POSITION_BUFFER_IDX + bufferOffset] =
+                                    viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                //for non-indexed rendering, we assume that all attributes have the same count
+                                if (mesh["indices"] == "")
+                                {
+                                    shape._webgl.drawCount = attributeView["count"];
+                                }
+                                break;
+                            case "normal":
+                                x3domTypeID      = "normal";
+                                x3domShortTypeID = "Norm";
+                                shape._webgl.buffers[NORMAL_BUFFER_IDX + bufferOffset] =
+                                    viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                break;
+                            case "texcoord":
+                                x3domTypeID      = "texCoord";
+                                x3domShortTypeID = "Tex";
+                                shape._webgl.buffers[TEXCOORD_BUFFER_IDX + bufferOffset] =
+                                    viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                break;
+                            case "color":
+                                x3domTypeID      = "color";
+                                x3domShortTypeID = "Col";
+                                shape._webgl.buffers[COLOR_BUFFER_IDX + bufferOffset] =
+                                    viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                break;
+                            case "id":
+                                x3domTypeID      = "id";
+                                x3domShortTypeID = "Id";
+                                shape._webgl.buffers[ID_BUFFER_IDX + bufferOffset] =
+                                    viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                break;
+                        };
+
+                        shape["_" + x3domTypeID + "StrideOffset"][0] = attributeView["byteStride"];
+                        shape["_" + x3domTypeID + "StrideOffset"][1] = attributeView["byteOffset"];
+                        shape._webgl[x3domTypeID + "Type"]            = attributeView["componentType"];
+
+                        numComponents = x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType(attributeView["type"]);
+                        this._mesh["_num" + x3domShortTypeID + "Components"] = numComponents;
                     }
+
+                    ++meshIdx;
+                    bufferOffset += MAX_NUM_BUFFERS_PER_DRAW;
                 }
 
-                //...
 
+                //4. notify renderer
 
-
-                //notify renderer
                 shape._nameSpace.doc.needRender = true;
 
                 x3dom.BinaryContainerLoader.checkError(gl);
@@ -304,7 +373,9 @@ x3dom.registerNodeType(
                     {
                         chunk = bufferChunksObj[chunkIDList[0]];
 
-                        chunkDataView = new Uint8Array(srcBodyView.buffer, chunk["byteOffset"], bufferView["byteLength"]);
+                        chunkDataView = new Uint8Array(srcBodyView.buffer,
+                                                       srcBodyView.byteOffset + chunk["byteOffset"],
+                                                       bufferView["byteLength"]);
 
                         newBuffer = gl.createBuffer();
 
@@ -331,7 +402,9 @@ x3dom.registerNodeType(
                         {
                             chunk = bufferChunksObj[chunkIDList[i]];
 
-                            chunkDataView = new Uint8Array(srcBodyView.buffer, chunk["byteOffset"], bufferView["byteLength"]);
+                            chunkDataView = new Uint8Array(srcBodyView.buffer,
+                                                           srcBodyView.byteOffset + chunk["byteOffset"],
+                                                           bufferView["byteLength"]);
 
                             //upload chunk data to GPU
                             gl.bufferSubData(bufferType, currentChunkDataOffset, chunkDataView);
@@ -343,21 +416,6 @@ x3dom.registerNodeType(
                     }
                 }
             },
-
-            //----------------------------------------------------------------------------------------------------------
-
-            /**
-             * Helper function, creating WebGL vertex attribute pointers from the given SRC data.
-             *
-             * @param {Object} gl - WebGL context
-             * @param {Object} attributeViewsObj - the SRC header's attributeViews object
-             * @param viewIDsToGLBufferIDs - map that contains a GL buffer ID for each bufferView ID
-             * @private
-             */
-            _createGLAttribPointersFromSRCChunks: function(gl, attributeViewsObj, viewIDsToGLBufferIDs)
-            {
-                //...
-            }
 
             //----------------------------------------------------------------------------------------------------------
 
@@ -387,3 +445,35 @@ x3dom.registerNodeType(
         }
     )
 );
+
+
+//----------------------------------------------------------------------------------------------------------------------
+// PUBLIC STATIC FUNCTIONS
+//----------------------------------------------------------------------------------------------------------------------
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------------
+// PRIVATE STATIC FUNCTIONS
+//----------------------------------------------------------------------------------------------------------------------
+
+/**
+ *
+ * @param {STRING} type - accessor type, must be "SCALAR", "VEC2", "VEC3" or "VEC4"
+ * @private
+ */
+x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType = function(type)
+{
+    switch (type)
+    {
+        case "SCALAR": return 1;
+        case "VEC2":   return 2;
+        case "VEC3":   return 3;
+        case "VEC4":   return 4;
+        default:       return 0;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
