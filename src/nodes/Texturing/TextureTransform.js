@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} center
+             * @var {x3dom.fields.SFVec2f} center
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0,0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} rotation
+             * @var {x3dom.fields.SFFloat} rotation
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} scale
+             * @var {x3dom.fields.SFVec2f} scale
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 1,1
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} translation
+             * @var {x3dom.fields.SFVec2f} translation
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0,0
              * @field x3dom

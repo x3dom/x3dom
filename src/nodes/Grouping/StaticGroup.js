@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * Enables debugging.
-             * @var {SFBool} debug
+             * @var {x3dom.fields.SFBool} debug
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue false
              * @field x3dom
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
 
             /**
              * Enable debug box volumes.
-             * @var {SFBool} showDebugBoxVolumes
+             * @var {x3dom.fields.SFBool} showDebugBoxVolumes
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue false
              * @field x3dom
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the type of bvh to use. Supported are 'jsBIH', 'BIH' and 'OCTREE'.
-             * @var {SFString} bvhType
+             * @var {x3dom.fields.SFString} bvhType
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue 'jsBIH'
              * @field x3dom
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} maxObjectsPerNode
+             * @var {x3dom.fields.SFInt32} maxObjectsPerNode
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue 1
              * @field x3dom
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} maxDepth
+             * @var {x3dom.fields.SFInt32} maxDepth
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue -1
              * @field x3dom
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} minRelativeBBoxSize
+             * @var {x3dom.fields.SFFloat} minRelativeBBoxSize
              * @memberof x3dom.nodeTypes.StaticGroup
              * @initvalue 0.01
              * @field x3dom

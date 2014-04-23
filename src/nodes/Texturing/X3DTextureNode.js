@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} origChannelCount
+             * @var {x3dom.fields.SFInt32} origChannelCount
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue 0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} url
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue []
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} repeatS
+             * @var {x3dom.fields.SFBool} repeatS
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} repeatT
+             * @var {x3dom.fields.SFBool} repeatT
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} scale
+             * @var {x3dom.fields.SFBool} scale
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} withCredentials
+             * @var {x3dom.fields.SFBool} withCredentials
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue false
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} textureProperties
+             * @var {x3dom.fields.SFNode} textureProperties
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue x3dom.nodeTypes.TextureProperties
              * @field x3dom

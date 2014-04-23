@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} innerRadius
+             * @var {x3dom.fields.SFFloat} innerRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 0.5
              * @field x3dom
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} outerRadius
+             * @var {x3dom.fields.SFFloat} outerRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 1.0
              * @field x3dom
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} angle
+             * @var {x3dom.fields.SFFloat} angle
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue twoPi
              * @field x3dom
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} caps
+             * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue true
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 24,24
              * @field x3dom
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} insideOutsideRadius
+             * @var {x3dom.fields.SFBool} insideOutsideRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue false
              * @field x3dom

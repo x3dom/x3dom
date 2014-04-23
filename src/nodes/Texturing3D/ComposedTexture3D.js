@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} texture
+             * @var {x3dom.fields.MFNode} texture
              * @memberof x3dom.nodeTypes.ComposedTexture3D
              * @initvalue x3dom.nodeTypes.X3DTexture3DNode
              * @field x3dom

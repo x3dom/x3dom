@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * The lineSegments field specifies the vertices to be connected.
-             * @var {MFVec2f} lineSegments
+             * @var {x3dom.fields.MFVec2f} lineSegments
              * @memberof x3dom.nodeTypes.Polyline2D
              * @initvalue []
              * @range (-inf, inf)

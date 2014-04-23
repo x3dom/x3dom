@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFMatrix4f} matrix
+             * @var {x3dom.fields.SFMatrix4f} matrix
              * @memberof x3dom.nodeTypes.TextureTransformMatrix3D
              * @initvalue 1,0,0,0
              * @field x3dom

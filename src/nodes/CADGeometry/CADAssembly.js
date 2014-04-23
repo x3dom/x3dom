@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The name field documents the name of this CAD structure.
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.CADAssembly
              * @initvalue ""
              * @field x3d

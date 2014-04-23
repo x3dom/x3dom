@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} parallelColor
+             * @var {x3dom.fields.SFColor} parallelColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 0,0,0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} orthogonalColor
+             * @var {x3dom.fields.SFColor} orthogonalColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 1,1,1
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} colorSteps
+             * @var {x3dom.fields.SFInt32} colorSteps
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 4
              * @field x3dom

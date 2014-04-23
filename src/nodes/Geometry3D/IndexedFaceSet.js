@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} creaseAngle
+             * @var {x3dom.fields.SFFloat} creaseAngle
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue 0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} convex
+             * @var {x3dom.fields.SFBool} convex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue true
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} coordIndex
+             * @var {x3dom.fields.MFInt32} coordIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} normalIndex
+             * @var {x3dom.fields.MFInt32} normalIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
              * @field x3dom
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} colorIndex
+             * @var {x3dom.fields.MFInt32} colorIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
              * @field x3dom
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} texCoordIndex
+             * @var {x3dom.fields.MFInt32} texCoordIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
              * @field x3dom

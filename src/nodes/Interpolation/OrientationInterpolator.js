@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * Defines the set of data points, that are used for interpolation.
              * If two consecutive keyValue values exist such that the arc length between them is greater than π, the interpolation will take place on the arc complement.
              * For example, the interpolation between the orientations (0, 1, 0, 0) and (0, 1, 0, 5.0) is equivalent to the rotation between the orientations (0, 1, 0, 2π) and (0, 1, 0, 5.0).
-             * @var {MFRotation} keyValue
+             * @var {x3dom.fields.MFRotation} keyValue
              * @memberof x3dom.nodeTypes.OrientationInterpolator
              * @initvalue []
              * @field x3d

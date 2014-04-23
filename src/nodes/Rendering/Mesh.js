@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} primType
+             * @var {x3dom.fields.SFString} primType
              * @memberof x3dom.nodeTypes.Mesh
              * @initvalue "triangle"
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} index
+             * @var {x3dom.fields.MFInt32} index
              * @memberof x3dom.nodeTypes.Mesh
              * @initvalue []
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} vertexAttributes
+             * @var {x3dom.fields.MFNode} vertexAttributes
              * @memberof x3dom.nodeTypes.Mesh
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom

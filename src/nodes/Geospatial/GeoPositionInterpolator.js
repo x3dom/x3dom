@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
-             * @var {MFString} geoSystem
+             * @var {x3dom.fields.MFString} geoSystem
              * @range {["GD", ...], ["UTM", ...], ["GC", ...]}
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
              * @initvalue ['GD','WE']
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * The keyValue array is used to contain the actual coordinates and should be provided in a format consistent with that specified for the particular geoSystem.
-             * @var {MFVec3d} keyValue
+             * @var {x3dom.fields.MFVec3d} keyValue
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
              * @initvalue []
              * @field x3d
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
-             * @var {SFNode} geoOrigin
+             * @var {x3dom.fields.SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
              * @initvalue x3dom.nodeTypes.X3DInterpolatorNode
              * @field x3d

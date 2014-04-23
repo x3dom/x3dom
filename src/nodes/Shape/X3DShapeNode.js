@@ -16,19 +16,20 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DShapeNode
          * @constructs x3dom.nodeTypes.X3DShapeNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shape
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DBoundedObject
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the base node type for all Shape nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFBool} isPickable
+             * Defines whether the shape is pickable.
+             * @var {x3dom.fields.SFBool} isPickable
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue true
              * @field x3dom
@@ -37,8 +38,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isPickable', true);
 
             /**
-             *
-             * @var {SFNode} appearance
+             * Holds the appearance node.
+             * @var {x3dom.fields.SFNode} appearance
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue x3dom.nodeTypes.X3DAppearanceNode
              * @field x3dom
@@ -47,8 +48,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
 
             /**
-             *
-             * @var {SFNode} geometry
+             * Holds the geometry node.
+             * @var {x3dom.fields.SFNode} geometry
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue x3dom.nodeTypes.X3DGeometryNode
              * @field x3dom

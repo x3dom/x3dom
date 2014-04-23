@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} nameSpaceName
+             * @var {x3dom.fields.MFString} nameSpaceName
              * @memberof x3dom.nodeTypes.Block
              * @initvalue []
              * @field x3dom

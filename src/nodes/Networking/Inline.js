@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Each specified URL shall refer to a valid X3D file that contains a list of children nodes, prototypes and routes at the top level. Hint: Strings can have multiple values, so separate each string by quote marks. Warning: strictly match directory and filename capitalization for http links!
-             * @var {MFString} url
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue []
              * @field x3d
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether the X3D file specified by the url field is loaded. Hint: use LoadSensor to detect when loading is complete. TRUE: load immediately (it's also possible to load the URL at a later time by sending a TRUE event to the load field); FALSE: no action is taken (by sending a FALSE event to the load field of a previously loaded Inline, the contents of the Inline will be unloaded from the scene graph)
-             * @var {SFBool} load
+             * @var {x3dom.fields.SFBool} load
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue true
              * @field x3d
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the namespace of the Inline node.
-             * @var {MFString} nameSpaceName
+             * @var {x3dom.fields.MFString} nameSpaceName
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue []
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether the DEF value is used as id when no other id is set.
-             * @var {SFBool} mapDEFToID
+             * @var {x3dom.fields.SFBool} mapDEFToID
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue false
              * @field x3dom

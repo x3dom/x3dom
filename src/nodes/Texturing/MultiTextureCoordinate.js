@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} texCoord
+             * @var {x3dom.fields.MFNode} texCoord
              * @memberof x3dom.nodeTypes.MultiTextureCoordinate
              * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
              * @field x3dom

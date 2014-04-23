@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Duration of the transition
-             * @var {SFTime} duration
+             * @var {x3dom.fields.SFTime} duration
              * @memberof x3dom.nodeTypes.X3DChaserNode
              * @initvalue 1
              * @field x3d

@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} anisotropicDegree
+             * @var {x3dom.fields.SFFloat} anisotropicDegree
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue 1.0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColorRGBA} borderColor
+             * @var {x3dom.fields.SFColorRGBA} borderColor
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue 0,0,0,0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} borderWidth
+             * @var {x3dom.fields.SFInt32} borderWidth
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue 0
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} boundaryModeS
+             * @var {x3dom.fields.SFString} boundaryModeS
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "REPEAT"
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} boundaryModeT
+             * @var {x3dom.fields.SFString} boundaryModeT
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "REPEAT"
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} boundaryModeR
+             * @var {x3dom.fields.SFString} boundaryModeR
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "REPEAT"
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} magnificationFilter
+             * @var {x3dom.fields.SFString} magnificationFilter
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "FASTEST"
              * @field x3dom
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} minificationFilter
+             * @var {x3dom.fields.SFString} minificationFilter
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "FASTEST"
              * @field x3dom
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} textureCompression
+             * @var {x3dom.fields.SFString} textureCompression
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue "FASTEST"
              * @field x3dom
@@ -118,7 +118,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} texturePriority
+             * @var {x3dom.fields.SFFloat} texturePriority
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue 0
              * @field x3dom
@@ -128,7 +128,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} generateMipMaps
+             * @var {x3dom.fields.SFBool} generateMipMaps
              * @memberof x3dom.nodeTypes.TextureProperties
              * @initvalue false
              * @field x3dom

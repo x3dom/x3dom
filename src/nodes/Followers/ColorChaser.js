@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value as initialValue unless a transition to a
              *  certain value is to be created right after the scene is loaded or right after the ColorChaser node is
              *  created dynamically.
-             * @var {SFColor} initialDestination
+             * @var {x3dom.fields.SFColor} initialDestination
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0.8,0.8,0.8
              * @range [0,1]
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial value.
-             * @var {SFColor} initialValue
+             * @var {x3dom.fields.SFColor} initialValue
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0.8,0.8,0.8
              * @range [0,1]
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
 
             /**
              * The current color value
-             * @var {SFColor} value
+             * @var {x3dom.fields.SFColor} value
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0,0,0
              * @range [0,1]
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              * The target color value
-             * @var {SFColor} destination
+             * @var {x3dom.fields.SFColor} destination
              * @memberof x3dom.nodeTypes.ColorChaser
              * @initvalue 0,0,0
              * @range [0,1]

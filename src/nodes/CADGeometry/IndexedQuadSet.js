@@ -31,7 +31,7 @@ x3dom.registerNodeType(
             /**
              * IndexedQuadSet uses the indices in its index field to specify the vertices of each
              * quad from the coord field.
-             * @var {MFInt32} index
+             * @var {x3dom.fields.MFInt32} index
              * @memberof x3dom.nodeTypes.IndexedQuadSet
              * @initvalue []
              * @field x3d

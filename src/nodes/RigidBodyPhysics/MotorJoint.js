@@ -31,7 +31,7 @@ x3dom.registerNodeType(
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
              *  motor axis when in user-calculated mode.
-             * @var {SFFloat} axis1Angle
+             * @var {x3dom.fields.SFFloat} axis1Angle
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [-pi, pi]
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
 
             /**
              * Torque on axis 1.
-             * @var {SFFloat} axis1Torque
+             * @var {x3dom.fields.SFFloat} axis1Torque
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range (-inf, inf)
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
              *  motor axis when in user-calculated mode.
-             * @var {SFFloat} axis2Angle
+             * @var {x3dom.fields.SFFloat} axis2Angle
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [-pi, pi]
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
 
             /**
              * Torque on axis 2.
-             * @var {SFFloat} axis2Torque
+             * @var {x3dom.fields.SFFloat} axis2Torque
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range (-inf, inf)
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
              *  motor axis when in user-calculated mode.
-             * @var {SFFloat} axis3Angle
+             * @var {x3dom.fields.SFFloat} axis3Angle
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [-pi, pi]
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              * Torque on axis 3.
-             * @var {SFFloat} axis3Torque
+             * @var {x3dom.fields.SFFloat} axis3Torque
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range (-inf, inf)
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
 
             /**
              * The currently enabled axis.
-             * @var {SFInt32} enabledAxes
+             * @var {x3dom.fields.SFInt32} enabledAxes
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 1
              * @range [0,3]
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
-             * @var {SFVec3f} motor1Axis
+             * @var {x3dom.fields.SFVec3f} motor1Axis
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -120,7 +120,7 @@ x3dom.registerNodeType(
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
-             * @var {SFVec3f} motor2Axis
+             * @var {x3dom.fields.SFVec3f} motor2Axis
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -130,7 +130,7 @@ x3dom.registerNodeType(
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
-             * @var {SFVec3f} motor3Axis
+             * @var {x3dom.fields.SFVec3f} motor3Axis
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
              *  if the joint limit has been reached or exceeded. A value of zero indicates no bounce at all, and a value
              *  of one says that it should bounce with velocity equal and opposite to the collision velocity of the
              *  contact.
-             * @var {SFFloat} stop1Bounce
+             * @var {x3dom.fields.SFFloat} stop1Bounce
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [0,1]
@@ -156,7 +156,7 @@ x3dom.registerNodeType(
              * The stop error correction fields describe the amount of error correction to be performed in a time step
              *  when the joint reaches the limit on the corresponding axis. A value of zero means no error correction is
              *  to be performed and a value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stop1ErrorCorrection
+             * @var {x3dom.fields.SFFloat} stop1ErrorCorrection
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0.8
              * @range [0,1]
@@ -170,7 +170,7 @@ x3dom.registerNodeType(
              *  if the joint limit has been reached or exceeded. A value of zero indicates no bounce at all, and a value
              *  of one says that it should bounce with velocity equal and opposite to the collision velocity of the
              *  contact.
-             * @var {SFFloat} stop2Bounce
+             * @var {x3dom.fields.SFFloat} stop2Bounce
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [0,1]
@@ -183,7 +183,7 @@ x3dom.registerNodeType(
              * The stop error correction fields describe the amount of error correction to be performed in a time step
              *  when the joint reaches the limit on the corresponding axis. A value of zero means no error correction is
              *  to be performed and a value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stop2ErrorCorrection
+             * @var {x3dom.fields.SFFloat} stop2ErrorCorrection
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0.8
              * @range [0,1]
@@ -197,7 +197,7 @@ x3dom.registerNodeType(
              *  if the joint limit has been reached or exceeded. A value of zero indicates no bounce at all, and a value
              *  of one says that it should bounce with velocity equal and opposite to the collision velocity of the
              *  contact.
-             * @var {SFFloat} stop3Bounce
+             * @var {x3dom.fields.SFFloat} stop3Bounce
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0
              * @range [0,1]
@@ -210,7 +210,7 @@ x3dom.registerNodeType(
              * The stop error correction fields describe the amount of error correction to be performed in a time step
              *  when the joint reaches the limit on the corresponding axis. A value of zero means no error correction is
              *  to be performed and a value of one means all error should be corrected in a single step.
-             * @var {SFFloat} stop3ErrorCorrection
+             * @var {x3dom.fields.SFFloat} stop3ErrorCorrection
              * @memberof x3dom.nodeTypes.MotorJoint
              * @initvalue 0.8
              * @range [0,1]

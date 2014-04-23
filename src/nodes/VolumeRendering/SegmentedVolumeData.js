@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} renderStyle
+             * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} segmentIdentifiers
+             * @var {x3dom.fields.SFNode} segmentIdentifiers
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} numberOfMaxSegments
+             * @var {x3dom.fields.SFFloat} numberOfMaxSegments
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue 10.0
              * @field x3dom

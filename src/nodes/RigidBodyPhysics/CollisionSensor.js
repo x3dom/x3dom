@@ -32,7 +32,7 @@ x3dom.registerNodeType(
             /**
              * The collider field specifies the nodes and spaces that are to be included in collision detection
              *  computations.
-             * @var {SFNode} collider
+             * @var {x3dom.fields.SFNode} collider
              * @memberof x3dom.nodeTypes.CollisionSensor
              * @initvalue x3dom.nodeTypes.CollisionCollection
              * @field x3d

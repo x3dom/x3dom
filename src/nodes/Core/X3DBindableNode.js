@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * Pushes/pops the node on/from the top of the bindable stack
-             * @var {SFBool} bind
+             * @var {x3dom.fields.SFBool} bind
              * @memberof x3dom.nodeTypes.X3DBindableNode
              * @initvalue false
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Description of the bindable node
-             * @var {SFString} description
+             * @var {x3dom.fields.SFString} description
              * @memberof x3dom.nodeTypes.X3DBindableNode
              * @initvalue ""
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} isActive
+             * @var {x3dom.fields.SFBool} isActive
              * @memberof x3dom.nodeTypes.X3DBindableNode
              * @initvalue false
              * @field x3dom

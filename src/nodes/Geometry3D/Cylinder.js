@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The radius field specifies the radius of the cylinder.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 1.0
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * The height field specifies the height of the cylinder along the central axis.
-             * @var {SFFloat} height
+             * @var {x3dom.fields.SFFloat} height
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 2.0
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              * The bottom field specifies whether the bottom cap of the cylinder is created.
-             * @var {SFBool} bottom
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
              * @field x3d
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
 
             /**
              * The top field specifies whether the top cap of the cylinder is created.
-             * @var {SFBool} top
+             * @var {x3dom.fields.SFBool} top
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
              * @field x3d
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the number of faces that are generated to approximate the sides of the cylinder.
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @range [2, inf]
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue 32
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
 
             /**
              * The side field specifies whether sides of the cylinder are created.
-             * @var {SFBool} side
+             * @var {x3dom.fields.SFBool} side
              * @memberof x3dom.nodeTypes.Cylinder
              * @initvalue true
              * @field x3d

@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} intensityThreshold
+             * @var {x3dom.fields.SFFloat} intensityThreshold
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
              * @initvalue 0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} type
+             * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
              * @initvalue "MAX"
              * @field x3dom

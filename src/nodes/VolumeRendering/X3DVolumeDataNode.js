@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} dimensions
+             * @var {x3dom.fields.SFVec3f} dimensions
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
              * @initvalue 1,1,1
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} voxels
+             * @var {x3dom.fields.SFNode} voxels
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom

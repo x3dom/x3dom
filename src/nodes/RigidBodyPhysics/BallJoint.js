@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              * The common anchor point.
-             * @var {SFVec3f} anchorPoint
+             * @var {x3dom.fields.SFVec3f} anchorPoint
              * @memberof x3dom.nodeTypes.BallJoint
              * @initvalue 0,0,0
              * @field x3d

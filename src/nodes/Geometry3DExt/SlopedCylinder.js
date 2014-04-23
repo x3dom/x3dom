@@ -10,25 +10,26 @@
 /* ### SlopedCylinder ### */
 x3dom.registerNodeType(
     "SlopedCylinder",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
          * Constructor for SlopedCylinder
          * @constructs x3dom.nodeTypes.SlopedCylinder
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a sloped cylinder shape
          */
         function (ctx) {
             x3dom.nodeTypes.SlopedCylinder.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} radius
+             * Defines the radius of the sloped cylinder.
+             * @var {x3dom.fields.SFFloat} radius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 1.0
              * @field x3dom
@@ -37,8 +38,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'radius', 1.0);
 
             /**
-             *
-             * @var {SFFloat} height
+             * Defines the height of the sloped cylinder
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 2.0
              * @field x3dom
@@ -47,8 +49,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 2.0);
 
             /**
-             *
-             * @var {SFBool} bottom
+             * Defines whether the bottom exists.
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue true
              * @field x3dom
@@ -57,8 +59,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bottom', true);
 
             /**
-             *
-             * @var {SFBool} top
+             * Defines whether the top exists.
+             * @var {x3dom.fields.SFBool} top
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue true
              * @field x3dom
@@ -67,8 +69,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'top', true);
 
             /**
-             *
-             * @var {SFFloat} xtshear
+             * Defines the shear for the top in x direction.
+             * @var {x3dom.fields.SFFloat} xtshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.26179
              * @field x3dom
@@ -77,8 +79,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'xtshear', 0.26179);
 
             /**
-             *
-             * @var {SFFloat} ytshear
+             * Defines the shear for the top in y direction.
+             * @var {x3dom.fields.SFFloat} ytshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.0
              * @field x3dom
@@ -87,8 +89,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'ytshear', 0.0);
 
             /**
-             *
-             * @var {SFFloat} xbshear
+             * Defines the shear for the bottom in x direction.
+             * @var {x3dom.fields.SFFloat} xbshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.26179
              * @field x3dom
@@ -97,8 +99,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'xbshear', 0.26179);
 
             /**
-             *
-             * @var {SFFloat} ybshear
+             * Defines the shear for the bottom in y direction.
+             * @var {x3dom.fields.SFFloat} ybshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.0
              * @field x3dom
@@ -107,8 +109,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'ybshear', 0.0);
 
             /**
-             *
-             * @var {SFFloat} subdivision
+             * Specifies the number of faces that are generated to approximate the cylinder.
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 32
              * @field x3dom

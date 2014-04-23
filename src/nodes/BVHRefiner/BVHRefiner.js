@@ -11,24 +11,25 @@
 // ### BVHRefiner ###
 x3dom.registerNodeType(
     "BVHRefiner",
-    "Navigation",
+    "BVHRefiner",
     defineClass(x3dom.nodeTypes.X3DLODNode,
         
         /**
          * Constructor for BVHRefiner
          * @constructs x3dom.nodeTypes.BVHRefiner
          * @x3d x.x
-         * @component Navigation
+         * @component BVHRefiner
          * @extends x3dom.nodeTypes.X3DLODNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The node handles wmts conform datasets like e.g. terrain-data, city-data, point-clouds etc.
          */
         function (ctx) {
             x3dom.nodeTypes.BVHRefiner.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} factor
+             * Parameter to influence refinement behaviour. The higher, the better the performance but quality gets more worse.
+             * @var {x3dom.fields.SFFloat} factor
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1.0
              * @field x3dom
@@ -37,8 +38,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'factor', 1.0);
 
             /**
-             *
-             * @var {SFInt32} maxDepth
+             * Maximum refinement depth of dataset.
+             * @var {x3dom.fields.SFInt32} maxDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 3
              * @field x3dom
@@ -47,8 +48,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'maxDepth', 3);
 
             /**
-             *
-             * @var {SFInt32} minDepth
+             * Minimum depth that should be rendered.
+             * @var {x3dom.fields.SFInt32} minDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 0
              * @field x3dom
@@ -57,8 +58,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'minDepth', 0);
 
             /**
-             *
-             * @var {SFInt32} smoothLoading
+             * Factor to reduce loading speed to get interactive framerates during interaction.
+             * @var {x3dom.fields.SFInt32} smoothLoading
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1
              * @field x3dom
@@ -67,8 +68,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'smoothLoading', 1);
 
             /**
-             *
-             * @var {SFInt32} interactionDepth
+             * Depth that should be rendered during interaction.
+             * @var {x3dom.fields.SFInt32} interactionDepth
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue this._vf.maxDepth
              * @field x3dom
@@ -77,8 +78,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'interactionDepth', this._vf.maxDepth);
 
             /**
-             *
-             * @var {SFVec2f} size
+             * Size of the geometry in case of using terrain datasets.
+             * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1,1
              * @field x3dom
@@ -88,8 +89,8 @@ x3dom.registerNodeType(
             // TODO: delete if octree will be deleted
 
             /**
-             *
-             * @var {SFVec3f} octSize
+             * Size of octree dataset.
+             * @var {x3dom.fields.SFVec3f} octSize
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1,1,1
              * @field x3dom
@@ -98,8 +99,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'octSize', 1, 1, 1);
 
             /**
-             *
-             * @var {SFVec2f} subdivision
+             * Subdivision of datasets in case of terrain to define the quality of the rendered dataset.
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1,1
              * @field x3dom
@@ -108,8 +109,8 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             /**
-             *
-             * @var {SFString} url
+             * Url to the dataset.
+             * @var {x3dom.fields.SFString} url
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue ""
              * @field x3dom
@@ -118,8 +119,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'url', "");
 
             /**
-             *
-             * @var {SFString} elevationUrl
+             * Url to the elevation dataset in case of terrain.
+             * @var {x3dom.fields.SFString} elevationUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue ""
              * @field x3dom
@@ -128,8 +129,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'elevationUrl', "");
 
             /**
-             *
-             * @var {SFString} textureUrl
+             * Url to the surface texture dataset in case of terrain.
+             * @var {x3dom.fields.SFString} textureUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue ""
              * @field x3dom
@@ -138,8 +139,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureUrl', "");
 
             /**
-             *
-             * @var {SFString} normalUrl
+             * Url to the normal dataset in case of terrain.
+             * @var {x3dom.fields.SFString} normalUrl
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue ""
              * @field x3dom
@@ -148,8 +149,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalUrl', "");
 
             /**
-             *
-             * @var {SFString} mode
+             * Defines if 2d dataset or 3d dataset is utilized.
+             * @var {x3dom.fields.SFString} mode
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue "3d"
              * @field x3dom
@@ -158,8 +159,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'mode', "3d");
 
             /**
-             *
-             * @var {SFString} subMode
+             * Defines the structure of the dataset that should be exploited.
+             * @var {x3dom.fields.SFString} subMode
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue "wmts"
              * @field x3dom
@@ -168,8 +169,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'subMode', "wmts");
 
             /**
-             *
-             * @var {SFString} elevationFormat
+             * Image format of the images in elevation dataset.
+             * @var {x3dom.fields.SFString} elevationFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue "png"
              * @field x3dom
@@ -178,8 +179,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'elevationFormat', "png");
 
             /**
-             *
-             * @var {SFString} textureFormat
+             * Image format of surface texture dataset.
+             * @var {x3dom.fields.SFString} textureFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue "png"
              * @field x3dom
@@ -188,8 +189,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureFormat', "png");
 
             /**
-             *
-             * @var {SFString} normalFormat
+             * Image format of normal texture dataset.
+             * @var {x3dom.fields.SFString} normalFormat
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue "png"
              * @field x3dom
@@ -198,8 +199,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalFormat', "png");
 
             /**
-             *
-             * @var {SFFloat} maxElevation
+             * Maximum elevation that is defined through color white in elevation dataset images.
+             * @var {x3dom.fields.SFFloat} maxElevation
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 1.0
              * @field x3dom
@@ -208,8 +209,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
 
             /**
-             *
-             * @var {SFBool} useNormals
+             * Should be true if a normal dataset is required.
+             * @var {x3dom.fields.SFBool} useNormals
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue true
              * @field x3dom
@@ -218,19 +219,18 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'useNormals', true);
 
             /**
-             *
-             * @var {SFBool} lit
+             * Specifies whether this geometry should be rendered with or without lighting.
+             * @var {x3dom.fields.SFBool} lit
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue true
              * @field x3dom
              * @instance
              */
             this.addField_SFBool(ctx, 'lit', true);
-            // count of elements on next level
 
             /**
-             *
-             * @var {SFInt32} bvhCount
+             * Defines the count of divisions that should be produced. Creates dynamic datastructure for pot counts.
+             * @var {x3dom.fields.SFInt32} bvhCount
              * @memberof x3dom.nodeTypes.BVHRefiner
              * @initvalue 8
              * @field x3dom

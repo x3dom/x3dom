@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * Flag to enable/disable rendering
-             * @var {SFBool} render
+             * @var {x3dom.fields.SFBool} render
              * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue true
              * @field x3dom
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * Center of the bounding box
-             * @var {SFVec3f} bboxCenter
+             * @var {x3dom.fields.SFVec3f} bboxCenter
              * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue 0,0,0
              * @range [-inf, inf]
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              * Size of the bounding box
-             * @var {SFVec3f} bboxSize
+             * @var {x3dom.fields.SFVec3f} bboxSize
              * @memberof x3dom.nodeTypes.X3DBoundedObject
              * @initvalue -1,-1,-1
              * @range [0, inf] or -1

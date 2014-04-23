@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} loop
+             * @var {x3dom.fields.SFBool} loop
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue false
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} speed
+             * @var {x3dom.fields.SFFloat} speed
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 1.0
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFTime} pauseTime
+             * @var {x3dom.fields.SFTime} pauseTime
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 0
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} pitch
+             * @var {x3dom.fields.SFFloat} pitch
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 1.0
              * @field x3dom
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFTime} resumeTime
+             * @var {x3dom.fields.SFTime} resumeTime
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 0
              * @field x3dom
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFTime} startTime
+             * @var {x3dom.fields.SFTime} startTime
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 0
              * @field x3dom
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFTime} stopTime
+             * @var {x3dom.fields.SFTime} stopTime
              * @memberof x3dom.nodeTypes.MovieTexture
              * @initvalue 0
              * @field x3dom

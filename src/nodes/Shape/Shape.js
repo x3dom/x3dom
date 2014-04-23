@@ -16,11 +16,14 @@ x3dom.registerNodeType(
         /**
          * Constructor for Shape
          * @constructs x3dom.nodeTypes.Shape
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shape
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DShapeNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Shape node has two fields, appearance and geometry, that are used to create rendered objects in the world.
+         * The appearance field contains an Appearance node that specifies the visual attributes (e.g., material and texture) to be applied to the geometry.
+         * The geometry field contains a geometry node. The specified geometry node is rendered with the specified appearance nodes applied.
          */
         function (ctx) {
             x3dom.nodeTypes.Shape.superClass.call(this, ctx);

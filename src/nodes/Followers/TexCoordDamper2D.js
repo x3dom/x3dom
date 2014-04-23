@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
              *  certain 2D vector value is to be created right after the scene is loaded or right after the
              *  CoordinateDamper node is created dynamically.
-             * @var {MFVec2f} initialDestination
+             * @var {x3dom.fields.MFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
              * @initvalue []
              * @field x3d
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial value of value_changed.
-             * @var {MFVec2f} initialValue
+             * @var {x3dom.fields.MFVec2f} initialValue
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
              * @initvalue []
              * @field x3d
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
 
             /**
              * The current value.
-             * @var {MFVec2f} value
+             * @var {x3dom.fields.MFVec2f} value
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
              * @initvalue []
              * @field x3d
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
 
             /**
              * The target value.
-             * @var {MFVec2f} destination
+             * @var {x3dom.fields.MFVec2f} destination
              * @memberof x3dom.nodeTypes.TexCoordDamper2D
              * @initvalue []
              * @field x3d

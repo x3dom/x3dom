@@ -16,102 +16,107 @@ x3dom.registerNodeType(
         /**
          * Constructor for FontStyle
          * @constructs x3dom.nodeTypes.FontStyle
-         * @x3d x.x
+         * @x3d 3.3
          * @component Text
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DFontStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The FontStyle node defines the size, family, and style used for Text nodes, as well as the direction of the text strings and any language-specific rendering techniques used for non-English text.
          */
         function (ctx) {
             x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {MFString} family
+             * Defines the text family.
+             * @var {x3dom.fields.MFString} family
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue ['SERIF']
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'family', ['SERIF']);
 
             /**
-             *
-             * @var {SFBool} horizontal
+             * Specifies whether the text is shown horizontally or vertically.
+             * @var {x3dom.fields.SFBool} horizontal
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'horizontal', true);
 
             /**
-             *
-             * @var {MFString} justify
+             * Specifies where the text is anchored.
+             * @var {x3dom.fields.MFString} justify
+             * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue ['BEGIN']
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'justify', ['BEGIN']);
 
             /**
-             *
-             * @var {SFString} language
+             * The language field specifies the context of the language for the text string in the form of a language and a country in which that language is used.
+             * @var {x3dom.fields.SFString} language
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'language', "");
 
             /**
-             *
-             * @var {SFBool} leftToRight
+             * Specifies whether the text is shown from left to right or from right to left.
+             * @var {x3dom.fields.SFBool} leftToRight
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'leftToRight', true);
 
             /**
-             *
-             * @var {SFFloat} size
+             * Sets the size of the text.
+             * @var {x3dom.fields.SFFloat} size
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'size', 1.0);
 
             /**
-             *
-             * @var {SFFloat} spacing
+             * Sets the spacing between lines of text, relative to the text size.
+             * @var {x3dom.fields.SFFloat} spacing
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue 1.0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'spacing', 1.0);
 
             /**
-             *
-             * @var {SFString} style
+             * Sets the text style.
+             * @var {x3dom.fields.SFString} style
+             * @range ["PLAIN","BOLD","ITALIC","BOLDITALIC",""]
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue "PLAIN"
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'style', "PLAIN");
 
             /**
-             *
-             * @var {SFBool} topToBottom
+             * Specifies whether the text flows from top to bottom or from bottom to top.
+             * @var {x3dom.fields.SFBool} topToBottom
              * @memberof x3dom.nodeTypes.FontStyle
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'topToBottom', true);

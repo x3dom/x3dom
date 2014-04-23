@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} mode
+             * @var {x3dom.fields.SFString} mode
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
              * @initvalue "SPHERE"
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFFloat} parameter
+             * @var {x3dom.fields.MFFloat} parameter
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
              * @initvalue []
              * @field x3dom

@@ -16,19 +16,22 @@ x3dom.registerNodeType(
         /**
          * Constructor for Sound
          * @constructs x3dom.nodeTypes.Sound
-         * @x3d x.x
+         * @x3d 3.3
          * @component Sound
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSoundNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Sound node specifies the spatial presentation of a sound in a X3D scene.
          */
         function (ctx) {
             x3dom.nodeTypes.Sound.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFNode} source
+             * The source field specifies the sound source for the Sound node. If the source field is not specified, the Sound node will not emit audio.
+             * The source field shall specify either an AudioClip node or a MovieTexture node.
+             * If a MovieTexture node is specified as the sound source, the MovieTexture shall refer to a movie format that supports sound.
+             * @var {x3dom.fields.SFNode} source
              * @memberof x3dom.nodeTypes.Sound
              * @initvalue x3dom.nodeTypes.X3DSoundSourceNode
              * @field x3dom

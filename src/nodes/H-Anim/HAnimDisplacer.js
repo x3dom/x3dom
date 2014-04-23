@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimDisplacer
              * @initvalue ""
              * @field x3dom
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} weight
+             * @var {x3dom.fields.SFFloat} weight
              * @memberof x3dom.nodeTypes.HAnimDisplacer
              * @initvalue 0
              * @field x3dom
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} coordIndex
+             * @var {x3dom.fields.MFInt32} coordIndex
              * @memberof x3dom.nodeTypes.HAnimDisplacer
              * @initvalue []
              * @field x3dom
@@ -61,7 +61,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFVec3f} displacements
+             * @var {x3dom.fields.MFVec3f} displacements
              * @memberof x3dom.nodeTypes.HAnimDisplacer
              * @initvalue []
              * @field x3dom

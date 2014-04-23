@@ -16,32 +16,35 @@ x3dom.registerNodeType(
         /**
          * Constructor for ComposedShader
          * @constructs x3dom.nodeTypes.ComposedShader
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shaders
          * @status experimental
          * @extends x3dom.nodeTypes.X3DShaderNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ComposedShader node defines a shader where the individual source files are not individually
+         *  programmable. All access to the shading capabilities is defined through a single interface that applies to
+         *  all parts.
          */
         function (ctx) {
             x3dom.nodeTypes.ComposedShader.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {MFNode} fields
+             * Contains all fields of shader parts.
+             * @var {x3dom.fields.MFNode} fields
              * @memberof x3dom.nodeTypes.ComposedShader
              * @initvalue x3dom.nodeTypes.Field
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('fields', x3dom.nodeTypes.Field);
 
             /**
-             *
-             * @var {MFNode} parts
+             * List of shader parts.
+             * @var {x3dom.fields.MFNode} parts
              * @memberof x3dom.nodeTypes.ComposedShader
              * @initvalue x3dom.nodeTypes.ShaderPart
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('parts', x3dom.nodeTypes.ShaderPart);

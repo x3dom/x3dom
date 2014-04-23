@@ -16,48 +16,62 @@ x3dom.registerNodeType(
         /**
          * Constructor for Material
          * @constructs x3dom.nodeTypes.Material
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shape
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DMaterialNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Material node specifies surface material properties for associated geometry nodes and is used by the X3D lighting equations during rendering.
+         * All of the fields in the Material node range from 0.0 to 1.0.
          */
         function (ctx) {
             x3dom.nodeTypes.Material.superClass.call(this, ctx);
 
             /**
-             *
-             * @var {SFFloat} ambientIntensity
+             * The ambientIntensity field specifies how much ambient light from light sources this surface shall reflect.
+             * Ambient light is omnidirectional and depends only on the number of light sources, not their positions with respect to the surface.
+             * Ambient colour is calculated as ambientIntensity × diffuseColor.
+             * @var {x3dom.fields.SFFloat} ambientIntensity
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.2
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'ambientIntensity', 0.2);
 
             /**
-             *
-             * @var {SFColor} diffuseColor
+             * The diffuseColor field reflects all X3D light sources depending on the angle of the surface with respect to the light source.
+             * The more directly the surface faces the light, the more diffuse light reflects.
+             * The emissiveColor field models "glowing" objects.
+             * This can be useful for displaying pre-lit models (where the light energy of the room is computed explicitly), or for displaying scientific data.
+             * @var {x3dom.fields.SFColor} diffuseColor
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.8,0.8,0.8
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
 
             /**
-             *
-             * @var {SFColor} emissiveColor
+             * The emissiveColor field models "glowing" objects.
+             * This can be useful for displaying pre-lit models (where the light energy of the room is computed explicitly), or for displaying scientific data.
+             * @var {x3dom.fields.SFColor} emissiveColor
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'emissiveColor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFFloat} shininess
+             * The specularColor and shininess fields determine the specular highlights (e.g., the shiny spots on an apple).
+             * When the angle from the light to the surface is close to the angle from the surface to the viewer, the specularColor is added to the diffuse and ambient colour calculations.
+             * Lower shininess values produce soft glows, while higher values result in sharper, smaller highlights.
+             * @var {x3dom.fields.SFFloat} shininess
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.2
              * @field x3dom
@@ -66,8 +80,11 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shininess', 0.2);
 
             /**
-             *
-             * @var {SFColor} specularColor
+             * The specularColor and shininess fields determine the specular highlights (e.g., the shiny spots on an apple).
+             * When the angle from the light to the surface is close to the angle from the surface to the viewer, the specularColor is added to the diffuse and ambient colour calculations.
+             * Lower shininess values produce soft glows, while higher values result in sharper, smaller highlights.
+             * @var {x3dom.fields.SFColor} specularColor
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
              * @field x3dom
@@ -76,8 +93,9 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
 
             /**
-             *
-             * @var {SFFloat} transparency
+             * The transparency field specifies how "clear" an object is, with 1.0 being completely transparent, and 0.0 completely opaque.
+             * @var {x3dom.fields.SFFloat} transparency
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0
              * @field x3dom

@@ -32,7 +32,7 @@ x3dom.registerNodeType(
             /**
              * The whichChoice field specifies the index of the child to traverse, with the first child having index 0.
              * If whichChoice is less than zero or greater than the number of nodes in the children field, nothing is chosen.
-             * @var {SFInt32} whichChoice
+             * @var {x3dom.fields.SFInt32} whichChoice
              * @memberof x3dom.nodeTypes.Switch
              * @initvalue -1
              * @field x3d

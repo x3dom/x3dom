@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * Whether Color node is applied per vertex (true) or per polygon (false).
-             * @var {SFBool} colorPerVertex
+             * @var {x3dom.fields.SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue true
              * @field x3d
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
 
             /**
              * If the "attrib" field is not empty it shall contain a list of per-vertex attribute information for programmable shaders
-             * @var {MFNode} attrib
+             * @var {x3dom.fields.MFNode} attrib
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3d
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
 
             /**
              * Coordinate node specifiying the vertices used by the geometry.
-             * @var {SFNode} coord
+             * @var {x3dom.fields.SFNode} coord
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3d
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
 
             /**
              * If NULL the geometry is rendered using the Material and texture defined in the Appearance node. If not NULL the field shall contain a Color node whose colours are applied depending on the value of "colorPerVertex".
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3d
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
              * coordIndex indices provide order in which coordinates are applied.
              * Order starts at index 0, commas are optional between sets, use -1 to separate indices for each polyline.
              * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
-             * @var {MFInt32} coordIndex
+             * @var {x3dom.fields.MFInt32} coordIndex
              * @range [0, inf] or -1
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
             /**
              * colorIndex indices provide order in which colors are applied.
              * Hint: if rendering Coordinate points originally defined for an IndexedFaceSet, index values may need to repeat initial each initial vertex to close the polygons.
-             * @var {MFInt32} colorIndex
+             * @var {x3dom.fields.MFInt32} colorIndex
              * @range [0, inf] or -1
              * @memberof x3dom.nodeTypes.IndexedLineSet
              * @initvalue []

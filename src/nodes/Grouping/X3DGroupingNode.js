@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * coordinate space for its children. This coordinate space is relative to the coordinate space of the node
              * of which the group node is a child. Such a node is called a parent node. This means that transformations
              * accumulate down the scene graph hierarchy.
-             * @var {MFNode} children
+             * @var {x3dom.fields.MFNode} children
              * @memberof x3dom.nodeTypes.X3DGroupingNode
              * @initvalue X3DChildNode
              * @field x3d

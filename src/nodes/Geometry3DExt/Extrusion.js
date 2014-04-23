@@ -10,68 +10,72 @@
 /* ### Extrusion ### */
 x3dom.registerNodeType(
     "Extrusion",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         
         /**
          * Constructor for Extrusion
          * @constructs x3dom.nodeTypes.Extrusion
-         * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @x3d 3.3
+         * @component Geometry3DExt
+         * @status full
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Extrusion node specifies geometric shapes based on a two dimensional cross-section extruded along a three dimensional spine in the local coordinate system. The cross-section can be scaled and rotated at each spine point to produce a wide variety of shapes.
          */
         function (ctx) {
             x3dom.nodeTypes.Extrusion.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFBool} beginCap
+             * Specifies whether the beginCap should exist.
+             * @var {x3dom.fields.SFBool} beginCap
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'beginCap', true);
 
             /**
-             *
-             * @var {SFBool} endCap
+             * Specifies whether the endCap should exist.
+             * @var {x3dom.fields.SFBool} endCap
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'endCap', true);
 
             /**
-             *
-             * @var {SFBool} convex
+             * The convex field indicates whether all polygons in the shape are convex.
+             * @var {x3dom.fields.SFBool} convex
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue true
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'convex', true);
 
             /**
-             *
-             * @var {SFFloat} creaseAngle
+             * The creaseAngle field affects how default normals are generated.
+             * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
+             * Crease angles shall be greater than or equal to 0.0 angle base units.
+             * @var {x3dom.fields.SFFloat} creaseAngle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
 
             /**
-             *
-             * @var {MFVec2f} crossSection
+             * Describes the cross section as a 2D piecewise linear curve (series of connected vertices).
+             * @var {x3dom.fields.MFVec2f} crossSection
              * @memberof x3dom.nodeTypes.Extrusion
-             * @initvalue [newx3dom.fields.SFVec2f(1,1
-             * @field x3dom
+             * @initvalue [(1,1), (1, -1), (-1, -1), (-1, 1), (1, 1)]
+             * @field x3d
              * @instance
              */
             this.addField_MFVec2f(ctx, 'crossSection', [ new x3dom.fields.SFVec2f(1, 1),
@@ -82,31 +86,32 @@ x3dom.registerNodeType(
             ]);
 
             /**
-             *
-             * @var {MFRotation} orientation
+             * Defines an array of orientations for each extrusion step.
+             * @var {x3dom.fields.MFRotation} orientation
              * @memberof x3dom.nodeTypes.Extrusion
-             * @initvalue [newx3dom.fields.Quaternion(0,0,0,1
-             * @field x3dom
+             * @initvalue [(0,0,0,1)]
+             * @field x3d
              * @instance
              */
             this.addField_MFRotation(ctx, 'orientation', [ new x3dom.fields.Quaternion(0, 0, 0, 1) ]);
 
             /**
-             *
-             * @var {MFVec2f} scale
+             * Defines an array of 2D scale values for each extrusion step.
+             * @var {x3dom.fields.MFVec2f} scale
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
-             * @initvalue [newx3dom.fields.SFVec2f(1,1
-             * @field x3dom
+             * @initvalue [(1,1)]
+             * @field x3d
              * @instance
              */
             this.addField_MFVec2f(ctx, 'scale', [ new x3dom.fields.SFVec2f(1, 1) ]);
 
             /**
-             *
-             * @var {MFVec3f} spine
+             * Describes the spine as a 3D piecewise linear curve (series of conntected vertices).
+             * @var {x3dom.fields.MFVec3f} spine
              * @memberof x3dom.nodeTypes.Extrusion
-             * @initvalue [newx3dom.fields.SFVec3f(0,0,0
-             * @field x3dom
+             * @initvalue [(0,0,0)]
+             * @field x3d
              * @instance
              */
             this.addField_MFVec3f(ctx, 'spine', [ new x3dom.fields.SFVec3f(0, 0, 0),
@@ -114,14 +119,15 @@ x3dom.registerNodeType(
             ]);
 
             /**
-             *
-             * @var {SFFloat} height
+             * Convenience field for setting default spine.
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Extrusion
              * @initvalue 0
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'height', 0); // convenience field for setting default spine
+            this.addField_SFFloat(ctx, 'height', 0);
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm

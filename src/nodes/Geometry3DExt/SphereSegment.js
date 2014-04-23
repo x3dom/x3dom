@@ -10,25 +10,25 @@
 /* ### SphereSegment ### */
 x3dom.registerNodeType(
     "SphereSegment",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
          * Constructor for SphereSegment
          * @constructs x3dom.nodeTypes.SphereSegment
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a sphere segment shape.
          */
         function (ctx) {
             x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} radius
+             * Defines the radius of the sphere.
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1
              * @field x3dom
@@ -37,8 +37,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'radius', 1);
 
             /**
-             *
-             * @var {MFFloat} longitude
+             * Defines an array of longitude values.
+             * @var {x3dom.fields.MFFloat} longitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
              * @field x3dom
@@ -47,8 +47,8 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'longitude', []);
 
             /**
-             *
-             * @var {MFFloat} latitude
+             * Defines an array of latitude values.
+             * @var {x3dom.fields.MFFloat} latitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
              * @field x3dom
@@ -57,8 +57,8 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'latitude', []);
 
             /**
-             *
-             * @var {SFVec2f} stepSize
+             * Defines an array of stepSizes.
+             * @var {x3dom.fields.SFVec2f} stepSize
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1,1
              * @field x3dom

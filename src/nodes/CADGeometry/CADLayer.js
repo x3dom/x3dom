@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * The name field describes the content of the layer.
-             * @var {SFString} name
+             * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.CADLayer
              * @initvalue ""
              * @field x3d

@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * Anchor point of the joint
-             * @var {SFVec3f} anchorPoint
+             * @var {x3dom.fields.SFVec3f} anchorPoint
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * Axis 1 is specified relative to the first body (specified by the body1 field).
-             * @var {SFVec3f} axis1
+             * @var {x3dom.fields.SFVec3f} axis1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
 
             /**
              * Axis 2 is specified relative to the second body (specified by the body2 field).
-             * @var {SFVec3f} axis2
+             * @var {x3dom.fields.SFVec3f} axis2
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0,0,0
              * @field x3d
@@ -61,7 +61,7 @@ x3dom.registerNodeType(
 
             /**
              * Desired angular velocity for the first axis.
-             * @var {SFFloat} desiredAngularVelocity1
+             * @var {x3dom.fields.SFFloat} desiredAngularVelocity1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range (-inf,inf)
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 
             /**
              * Desired angular velocity for the second axis.
-             * @var {SFFloat} desiredAngularVelocity2
+             * @var {x3dom.fields.SFFloat} desiredAngularVelocity2
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range (-inf,inf)
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
              * The minAngle1 and maxAngle1 fields are used to control the maximum angles through which the hinge is
              *  allowed to travel. A hinge may not travel more than π radians (or the equivalent angle base units) in
              *  either direction from its initial position.
-             * @var {SFFloat} maxAngle1
+             * @var {x3dom.fields.SFFloat} maxAngle1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 90
              * @field x3d
@@ -97,7 +97,7 @@ x3dom.registerNodeType(
              * The minAngle1 and maxAngle1 fields are used to control the maximum angles through which the hinge is
              *  allowed to travel. A hinge may not travel more than π radians (or the equivalent angle base units) in
              *  either direction from its initial position.
-             * @var {SFFloat} minAngle1
+             * @var {x3dom.fields.SFFloat} minAngle1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue -90
              * @range [-pi * radToDeg, pi * radToDeg]
@@ -109,7 +109,7 @@ x3dom.registerNodeType(
             /**
              * The maxTorque1 field defines the maximum amount of torque that the motor can apply on axis 1 in order to
              *  achieve the desired desiredAngularVelocity1 value.
-             * @var {SFFloat} maxTorque1
+             * @var {x3dom.fields.SFFloat} maxTorque1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range (-inf, inf)
@@ -121,7 +121,7 @@ x3dom.registerNodeType(
             /**
              * The maxTorque2 field defines the maximum amount of torque that the motor can apply on axis 1 in order to
              *  achieve the desired desiredAngularVelocity2 value.
-             * @var {SFFloat} maxTorque2
+             * @var {x3dom.fields.SFFloat} maxTorque2
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range (-inf, inf)
@@ -134,7 +134,7 @@ x3dom.registerNodeType(
              * The stopBounce1 field is used to set how bouncy the minimum and maximum angle stops are for axis 1. A
              *  value of zero means they are not bouncy while a value of 1 means maximum bounciness (full reflection of
              *  force arriving at the stop).
-             * @var {SFFloat} stopBounce1
+             * @var {x3dom.fields.SFFloat} stopBounce1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range [0,1]
@@ -146,7 +146,7 @@ x3dom.registerNodeType(
             /**
              * The stopConstantForceMix1 and suspensionForce fields can be used to apply damping to the calculations by
              *  violating the normal constraints by applying a small, constant force to those calculations.
-             * @var {SFFloat} stopConstantForceMix1
+             * @var {x3dom.fields.SFFloat} stopConstantForceMix1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0.001
              * @range [0,inf]
@@ -158,7 +158,7 @@ x3dom.registerNodeType(
             /**
              * The stopErrorCorrection1 and suspensionErrorCorrection fields describe how quickly the system should
              *  resolve intersection errors due to floating point inaccuracies.
-             * @var {SFFloat} stopErrorCorrection1
+             * @var {x3dom.fields.SFFloat} stopErrorCorrection1
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0.8
              * @range [0,1]
@@ -170,7 +170,7 @@ x3dom.registerNodeType(
             /**
              * The stopErrorCorrection1 and suspensionErrorCorrection fields describe how quickly the system should
              *  resolve intersection errors due to floating point inaccuracies.
-             * @var {SFFloat} suspensionErrorCorrection
+             * @var {x3dom.fields.SFFloat} suspensionErrorCorrection
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0.8
              * @range [0,1]
@@ -182,7 +182,7 @@ x3dom.registerNodeType(
             /**
              * The stopConstantForceMix1 and suspensionForce fields can be used to apply damping to the calculations by
              *  violating the normal constraints by applying a small, constant force to those calculations.
-             * @var {SFFloat} suspensionForce
+             * @var {x3dom.fields.SFFloat} suspensionForce
              * @memberof x3dom.nodeTypes.DoubleAxisHingeJoint
              * @initvalue 0
              * @range [0,inf)

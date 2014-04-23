@@ -40,8 +40,8 @@ x3dom.registerNodeType(
 
 
             /**
-             *
-             * @var {SFBool} isActive
+             * isActive shows if the sensor is active
+             * @var {x3dom.fields.SFBool} isActive
              * @memberof x3dom.nodeTypes.X3DFollowerNode
              * @initvalue false
              * @field x3d

@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
             /**
              * If colorPerVertex is FALSE, colours are applied to each face. If colorPerVertex is true, colours are applied to each vertex.
-             * @var {SFBool} colorPerVertex
+             * @var {x3dom.fields.SFBool} colorPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue true
              * @field x3d
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
 
             /**
              * If normalPerVertex is FALSE, colours are applied to each face. If normalPerVertex is true, normals are applied to each vertex.
-             * @var {SFBool} normalPerVertex
+             * @var {x3dom.fields.SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue true
              * @field x3d
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} normalUpdateMode
+             * @var {x3dom.fields.SFString} normalUpdateMode
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue 'fast'
              * @field x3dom
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              * If the attrib field is not empty it shall contain a list of per-vertex attribute information for programmable shaders.
-             * @var {MFNode} attrib
+             * @var {x3dom.fields.MFNode} attrib
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
              * @field x3dom
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
 
             /**
              * Contains a Coordinate node.
-             * @var {SFNode} coord
+             * @var {x3dom.fields.SFNode} coord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
              * @field x3dom
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
             /**
              * If the normal field is not NULL, it shall contain a Normal node whose normals are applied to the vertices or faces of the X3DComposedGeometryNode in a manner exactly equivalent to that described above for applying colours to vertices/faces (where normalPerVertex corresponds to colorPerVertex and normalIndex corresponds to colorIndex).
              * If the normal field is NULL, the browser shall automatically generate normals in accordance with the node's definition. If the node does not define a behaviour, the default is to generate an averaged normal for all faces that share that vertex.
-             * @var {SFNode} normal
+             * @var {x3dom.fields.SFNode} normal
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.Normal
              * @field x3dom
@@ -95,7 +95,7 @@ x3dom.registerNodeType(
 
             /**
              * If the color field is NULL, the geometry shall be rendered normally using the Material and texture defined in the Appearance node.
-             * @var {SFNode} color
+             * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DColorNode
              * @field x3dom
@@ -105,7 +105,7 @@ x3dom.registerNodeType(
 
             /**
              * If the texCoord field is not NULL, it shall contain a TextureCoordinate node.
-             * @var {SFNode} texCoord
+             * @var {x3dom.fields.SFNode} texCoord
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
              * @field x3dom

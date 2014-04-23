@@ -10,91 +10,96 @@
 /* ### Pyramid ### */
 x3dom.registerNodeType(
     "Pyramid",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
          * Constructor for Pyramid
          * @constructs x3dom.nodeTypes.Pyramid
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a pyramid shape.
          */
         function (ctx) {
             x3dom.nodeTypes.Pyramid.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} xbottom
+             * Defines the bottom length in x direction.
+             * @var {x3dom.fields.SFFloat} xbottom
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 1
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xbottom', 1);	//Dimension of bottom parallel to X-axis
+            this.addField_SFFloat(ctx, 'xbottom', 1);
 
             /**
-             *
-             * @var {SFFloat} ybottom
+             * Defines the bottom length in y direction.
+             * @var {x3dom.fields.SFFloat} ybottom
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 1
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ybottom', 1);	//Dimension of bottom parallel to Y-axis
+            this.addField_SFFloat(ctx, 'ybottom', 1);
 
             /**
-             *
-             * @var {SFFloat} xtop
+             * Defines the top length in x direction.
+             * @var {x3dom.fields.SFFloat} xtop
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 0.5
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xtop', 0.5);		//Dimension of top parallel to X-axis
+            this.addField_SFFloat(ctx, 'xtop', 0.5);
 
             /**
-             *
-             * @var {SFFloat} ytop
+             * Defines the top length in y direction.
+             * @var {x3dom.fields.SFFloat} ytop
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 0.5
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ytop', 0.5);		//Dimension of top parallel to Y-axis
+            this.addField_SFFloat(ctx, 'ytop', 0.5);
 
             /**
-             *
-             * @var {SFFloat} height
+             * Defines the Distance between the bottom and the top faces.
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 1
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'height', 1);	//Height between top and bottom surface
+            this.addField_SFFloat(ctx, 'height', 1);
 
             /**
-             *
-             * @var {SFFloat} xoff
+             * Defines the displacement along the x axis.
+             * @var {x3dom.fields.SFFloat} xoff
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 0.25
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xoff', 0.25);		//Displacement of axes along X-axis
+            this.addField_SFFloat(ctx, 'xoff', 0.25);
 
             /**
-             *
-             * @var {SFFloat} yoff
+             * Defines the displacement along the y axis.
+             * @var {x3dom.fields.SFFloat} yoff
              * @memberof x3dom.nodeTypes.Pyramid
              * @initvalue 0.25
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'yoff', 0.25);		//Displacement of axes along Y-axis
+            this.addField_SFFloat(ctx, 'yoff', 0.25);
 
             var xTop = this._vf.xtop / 2;
             var yTop = this._vf.ytop / 2;

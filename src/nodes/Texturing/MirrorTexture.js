@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} viewpoint
+             * @var {x3dom.fields.SFNode} viewpoint
              * @memberof x3dom.nodeTypes.MirrorTexture
              * @initvalue x3dom.nodeTypes.X3DViewpointNode
              * @field x3dom
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} background
+             * @var {x3dom.fields.SFNode} background
              * @memberof x3dom.nodeTypes.MirrorTexture
              * @initvalue x3dom.nodeTypes.X3DBackgroundNode
              * @field x3dom
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} viewOffset
+             * @var {x3dom.fields.SFVec3f} viewOffset
              * @memberof x3dom.nodeTypes.MirrorTexture
              * @initvalue 0,0,0
              * @field x3dom
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} mirrorScale
+             * @var {x3dom.fields.SFFloat} mirrorScale
              * @memberof x3dom.nodeTypes.MirrorTexture
              * @initvalue 1.0
              * @field x3dom

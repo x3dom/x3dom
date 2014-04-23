@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} originLine
+             * @var {x3dom.fields.SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 1.0,1.0,0.0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} finalLine
+             * @var {x3dom.fields.SFVec3f} finalLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.0,1.0,0.0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} positionLine
+             * @var {x3dom.fields.SFFloat} positionLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.2
              * @field x3dom

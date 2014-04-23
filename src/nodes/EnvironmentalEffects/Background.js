@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} backUrl
+             * @var {x3dom.fields.MFString} backUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} bottomUrl
+             * @var {x3dom.fields.MFString} bottomUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} frontUrl
+             * @var {x3dom.fields.MFString} frontUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} leftUrl
+             * @var {x3dom.fields.MFString} leftUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} rightUrl
+             * @var {x3dom.fields.MFString} rightUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFString} topUrl
+             * @var {x3dom.fields.MFString} topUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
              * @range [URI]

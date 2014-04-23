@@ -10,25 +10,26 @@
 /* ### RectangularTorus ### */
 x3dom.registerNodeType(
     "RectangularTorus",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
          * Constructor for RectangularTorus
          * @constructs x3dom.nodeTypes.RectangularTorus
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a rectangular torus shape.
          */
         function (ctx) {
             x3dom.nodeTypes.RectangularTorus.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} innerRadius
+             * Defines the inner radius of the torus.
+             * @var {x3dom.fields.SFFloat} innerRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 0.5
              * @field x3dom
@@ -37,8 +38,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'innerRadius', 0.5); //Inside radius
 
             /**
-             *
-             * @var {SFFloat} outerRadius
+             * Defines the outer radius of the torus.
+             * @var {x3dom.fields.SFFloat} outerRadius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 1
              * @field x3dom
@@ -47,8 +49,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'outerRadius', 1);	//Outside radius
 
             /**
-             *
-             * @var {SFFloat} height
+             * Defines the height of the torus.
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 1
              * @field x3dom
@@ -57,8 +60,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 1);	    //Height of rectangular section
 
             /**
-             *
-             * @var {SFFloat} angle
+             * Defines the length of the torus as angle. 2 * PI is a full torus.
+             * @var {x3dom.fields.SFFloat} angle
+             * @range [0, 2*pi]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 2*Math.PI
              * @field x3dom
@@ -67,8 +71,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'angle', 2 * Math.PI);	//Subtended angle
 
             /**
-             *
-             * @var {SFBool} caps
+             * Specifies whether the side caps exist.
+             * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue true
              * @field x3dom
@@ -77,8 +81,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'caps', true);        //Show side caps
 
             /**
-             *
-             * @var {SFFloat} subdivision
+             * Specifies the number of rings that are generated to approximate the torus.
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 32
              * @field x3dom

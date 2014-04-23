@@ -16,19 +16,20 @@ x3dom.registerNodeType(
         /**
          * Constructor for AudioClip
          * @constructs x3dom.nodeTypes.AudioClip
-         * @x3d x.x
+         * @x3d 3.3
          * @component Sound
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSoundSourceNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc An AudioClip node specifies audio data that can be referenced by Sound nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {MFString} url
+             * The url field specifies the URL from which the sound is loaded.
+             * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue []
              * @field x3dom
@@ -37,8 +38,8 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
 
             /**
-             *
-             * @var {SFBool} enabled
+             * Specifies whether the clip is enabled.
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue true
              * @field x3dom
@@ -47,8 +48,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'enabled', true);
 
             /**
-             *
-             * @var {SFBool} loop
+             * Specifies whether the clip loops when finished.
+             * @var {x3dom.fields.SFBool} loop
              * @memberof x3dom.nodeTypes.AudioClip
              * @initvalue false
              * @field x3dom

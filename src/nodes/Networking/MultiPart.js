@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the url to the IDMap.
-             * @var {MFString} urlIDMap
+             * @var {x3dom.fields.MFString} urlIDMap
              * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue []
              * @field x3dom

@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} edgeColor
+             * @var {x3dom.fields.SFColor} edgeColor
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
              * @initvalue 0,0,0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} gradientThreshold
+             * @var {x3dom.fields.SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
              * @initvalue 0.4
              * @field x3dom

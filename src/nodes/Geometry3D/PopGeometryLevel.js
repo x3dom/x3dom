@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} src
+             * @var {x3dom.fields.SFString} src
              * @memberof x3dom.nodeTypes.PopGeometryLevel
              * @initvalue ""
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} numIndices
+             * @var {x3dom.fields.SFInt32} numIndices
              * @memberof x3dom.nodeTypes.PopGeometryLevel
              * @initvalue 0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} vertexDataBufferOffset
+             * @var {x3dom.fields.SFInt32} vertexDataBufferOffset
              * @memberof x3dom.nodeTypes.PopGeometryLevel
              * @initvalue 0
              * @field x3dom

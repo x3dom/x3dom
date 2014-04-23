@@ -10,55 +10,58 @@
 /* ### Snout ### */
 x3dom.registerNodeType(
     "Snout",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         
         /**
          * Constructor for Snout
          * @constructs x3dom.nodeTypes.Snout
          * @x3d x.x
-         * @component Geometry3D
-         * @status experimental
+         * @component Geometry3DExt
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a snout shape
          */
         function (ctx) {
             x3dom.nodeTypes.Snout.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} dbottom
+             * Defines the diameter of the bottom surface.
+             * @var {x3dom.fields.SFFloat} dbottom
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 1.0
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'dbottom', 1.0); // Diameter of bottom surface
+            this.addField_SFFloat(ctx, 'dbottom', 1.0);
 
             /**
-             *
-             * @var {SFFloat} dtop
+             * Defines the diameter of the top surface.
+             * @var {x3dom.fields.SFFloat} dtop
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 0.5
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'dtop', 0.5);    // Diameter of top surface
+            this.addField_SFFloat(ctx, 'dtop', 0.5);
 
             /**
-             *
-             * @var {SFFloat} height
+             * Defines the perpendicular distance between surfaces.
+             * @var {x3dom.fields.SFFloat} height
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 1.0
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'height', 1.0);  // Perpendicular distance between surfaces
+            this.addField_SFFloat(ctx, 'height', 1.0);
 
             /**
-             *
-             * @var {SFFloat} xoff
+             * Defines the displacement in x direction.
+             * @var {x3dom.fields.SFFloat} xoff
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 0.25
              * @field x3dom
@@ -67,8 +70,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'xoff', 0.25);   // Displacement of axes along X-axis
 
             /**
-             *
-             * @var {SFFloat} yoff
+             * Defines the displacement in y direction.
+             * @var {x3dom.fields.SFFloat} yoff
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 0.25
              * @field x3dom
@@ -77,8 +80,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'yoff', 0.25);   // Displacement of axes along Y-axis
 
             /**
-             *
-             * @var {SFBool} bottom
+             * Specifies whether the bottom exists.
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue true
              * @field x3dom
@@ -87,8 +90,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bottom', true);
 
             /**
-             *
-             * @var {SFBool} top
+             * Specifies whether the bottom exists.
+             * @var {x3dom.fields.SFBool} top
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue true
              * @field x3dom
@@ -97,8 +100,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'top', true);
 
             /**
-             *
-             * @var {SFFloat} subdivision
+             * Specifies the number of faces that are generated to approximate the snout.
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.Snout
              * @initvalue 32
              * @field x3dom

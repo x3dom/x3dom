@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The picking mode for the scene
-             * @var {SFString} pickMode
+             * @var {x3dom.fields.SFString} pickMode
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "idBuf"
              * @field x3dom
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * Flag to enable/disable pick pass
-             * @var {SFBool} doPickPass
+             * @var {x3dom.fields.SFBool} doPickPass
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue true
              * @field x3dom
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
 
             /**
              * The url of the shadow object id mapping
-             * @var {SFString} shadowObjectIdMapping
+             * @var {x3dom.fields.SFString} shadowObjectIdMapping
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue ""
              * @field x3dom

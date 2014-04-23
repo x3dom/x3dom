@@ -27,7 +27,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} subScale
+             * @var {x3dom.fields.SFFloat} subScale
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue 0.5
              * @field x3dom
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} size
+             * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue 2,2
              * @field x3dom
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue 1,1
              * @field x3dom
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} root
+             * @var {x3dom.fields.SFNode} root
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue x3dom.nodeTypes.X3DShapeNode
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} urlHead
+             * @var {x3dom.fields.SFString} urlHead
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue "http://r"
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} urlCenter
+             * @var {x3dom.fields.SFString} urlCenter
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue ".ortho.tiles.virtualearth.net/tiles/h"
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} urlTail
+             * @var {x3dom.fields.SFString} urlTail
              * @memberof x3dom.nodeTypes.DynamicLOD
              * @initvalue ".png?g=-1"
              * @field x3dom

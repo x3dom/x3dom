@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} coolColor
+             * @var {x3dom.fields.SFColor} coolColor
              * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
              * @initvalue 0,0,1
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFColor} warmColor
+             * @var {x3dom.fields.SFColor} warmColor
              * @memberof x3dom.nodeTypes.ToneMappedVolumeStyle
              * @initvalue 1,1,0
              * @field x3dom

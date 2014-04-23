@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * Camera modelview matrix
-             * @var {SFMatrix4f} modelview
+             * @var {x3dom.fields.SFMatrix4f} modelview
              * @memberof x3dom.nodeTypes.Viewfrustum
              * @initvalue 1,0,0,0
              * @field x3dom
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * Camera projection matrix
-             * @var {SFMatrix4f} projection
+             * @var {x3dom.fields.SFMatrix4f} projection
              * @memberof x3dom.nodeTypes.Viewfrustum
              * @initvalue 1,0,0,0
              * @field x3dom

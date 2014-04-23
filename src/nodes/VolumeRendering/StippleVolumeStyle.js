@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} distanceFactor
+             * @var {x3dom.fields.SFFloat} distanceFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} interiorFactor
+             * @var {x3dom.fields.SFFloat} interiorFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} lightingFactor
+             * @var {x3dom.fields.SFFloat} lightingFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} gradientThreshold
+             * @var {x3dom.fields.SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 0.4
              * @field x3dom
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} gradientRetainedOpacity
+             * @var {x3dom.fields.SFFloat} gradientRetainedOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} gradientBoundaryOpacity
+             * @var {x3dom.fields.SFFloat} gradientBoundaryOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 0
              * @field x3dom
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} gradientOpacityFactor
+             * @var {x3dom.fields.SFFloat} gradientOpacityFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteRetainedOpacity
+             * @var {x3dom.fields.SFFloat} silhouetteRetainedOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteBoundaryOpacity
+             * @var {x3dom.fields.SFFloat} silhouetteBoundaryOpacity
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 0
              * @field x3dom
@@ -118,7 +118,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteOpacityFactor
+             * @var {x3dom.fields.SFFloat} silhouetteOpacityFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -128,7 +128,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} resolutionFactor
+             * @var {x3dom.fields.SFFloat} resolutionFactor
              * @memberof x3dom.nodeTypes.StippleVolumeStyle
              * @initvalue 1
              * @field x3dom

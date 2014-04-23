@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
              *  certain 2D vector value is to be created right after the scene is loaded or right after the
              *  PositionChaser2D node is created dynamically.
-             * @var {SFVec2f} initialDestination
+             * @var {x3dom.fields.SFVec2f} initialDestination
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
              * @field x3d
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
 
             /**
              * The field initialValue can be used to set the initial initial value.
-             * @var {SFVec2f} initialValue
+             * @var {x3dom.fields.SFVec2f} initialValue
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
              * @field x3d
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
 
             /**
              * The current 2D position.
-             * @var {SFVec2f} value
+             * @var {x3dom.fields.SFVec2f} value
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
              * @field x3d
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
 
             /**
              * The target 2D position.
-             * @var {SFVec2f} destination
+             * @var {x3dom.fields.SFVec2f} destination
              * @memberof x3dom.nodeTypes.PositionChaser2D
              * @initvalue 0,0
              * @field x3d

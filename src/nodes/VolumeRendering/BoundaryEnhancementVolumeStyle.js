@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} retainedOpacity
+             * @var {x3dom.fields.SFFloat} retainedOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} boundaryOpacity
+             * @var {x3dom.fields.SFFloat} boundaryOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} opacityFactor
+             * @var {x3dom.fields.SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 1
              * @field x3dom

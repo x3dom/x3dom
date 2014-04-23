@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * Index specifies triangles by connecting Coordinate vertices.
-             * @var {MFInt32} index
+             * @var {x3dom.fields.MFInt32} index
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.IndexedTriangleStripSet
              * @initvalue []

@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the set of data points, that are used for interpolation.
-             * @var {MFColor} keyValue
+             * @var {x3dom.fields.MFColor} keyValue
              * @memberof x3dom.nodeTypes.ColorInterpolator
              * @initvalue []
              * @field x3d

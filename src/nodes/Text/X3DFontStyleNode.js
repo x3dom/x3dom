@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DFontStyleNode
          * @constructs x3dom.nodeTypes.X3DFontStyleNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Text
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base node type for all font style nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DFontStyleNode.superClass.call(this, ctx);

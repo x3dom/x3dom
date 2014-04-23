@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} surfaceNormals
+             * @var {x3dom.fields.SFNode} surfaceNormals
              * @memberof x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @initvalue x3dom.nodeTypes.X3DTexture3DNode
              * @field x3dom

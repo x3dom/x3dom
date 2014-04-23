@@ -30,7 +30,7 @@ x3dom.registerNodeType(
             /**
              * The enabled field is used to specify whether a collidable object is eligible for collision detection
              *  interactions.
-             * @var {SFBool} enabled
+             * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DNBodyCollidableNode
              * @initvalue true
              * @field x3d
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
 
             /**
              * The rotation field defines rotation about the body's center that the collidable node occupies.
-             * @var {SFRotation} rotation
+             * @var {x3dom.fields.SFRotation} rotation
              * @memberof x3dom.nodeTypes.X3DNBodyCollidableNode
              * @initvalue 0,0,1,0
              * @range [0,1]
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
              * The translation field defines an offset from the body's center that the collidable node occupies. This
              *  can be used to place the collidable geometry in a different location relative to the actual rigid body
              *  that has the physics model being applied.
-             * @var {SFVec3f} translation
+             * @var {x3dom.fields.SFVec3f} translation
              * @memberof x3dom.nodeTypes.X3DNBodyCollidableNode
              * @initvalue 0,0,0
              * @range (-inf, inf)

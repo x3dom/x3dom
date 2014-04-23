@@ -16,59 +16,64 @@ x3dom.registerNodeType(
         /**
          * Constructor for Appearance
          * @constructs x3dom.nodeTypes.Appearance
-         * @x3d x.x
+         * @x3d 3.3
          * @component Shape
          * @status experimental
          * @extends x3dom.nodeTypes.X3DAppearanceNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Appearance node specifies the visual properties of geometry.
+         * The value for each of the fields in this node may be NULL.
+         * However, if the field is non-NULL, it shall contain one node of the appropriate type.
          */
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFNode} material
+             * The material field, if specified, shall contain a Material node.
+             * If the material field is NULL or unspecified, lighting is off (all lights are ignored during rendering of the object that references this Appearance) and the unlit object colour is (1, 1, 1).
+             * @var {x3dom.fields.SFNode} material
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DMaterialNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
 
             /**
-             *
-             * @var {SFNode} texture
+             * The texture field, if specified, shall contain one of the various types of texture nodes (see 18 Texturing component).
+             * If the texture node is NULL or the texture field is unspecified, the object that references this Appearance is not textured.
+             * @var {x3dom.fields.SFNode} texture
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
-             * @var {SFNode} textureTransform
+             * The textureTransform field, if specified, shall contain a TextureTransform node. If the textureTransform is NULL or unspecified, the textureTransform field has no effect.
+             * @var {x3dom.fields.SFNode} textureTransform
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DTextureTransformNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
 
             /**
-             *
-             * @var {SFNode} lineProperties
+             * The lineProperties field, if specified, shall contain a LineProperties node. If lineProperties is NULL or unspecified, the lineProperties field has no effect.
+             * @var {x3dom.fields.SFNode} lineProperties
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.LineProperties
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFNode('lineProperties', x3dom.nodeTypes.LineProperties);
 
             /**
-             *
-             * @var {SFNode} colorMaskMode
+             * Holds a ColorMaskMode node.
+             * @var {x3dom.fields.SFNode} colorMaskMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.ColorMaskMode
              * @field x3dom
@@ -77,8 +82,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('colorMaskMode', x3dom.nodeTypes.ColorMaskMode);
 
             /**
-             *
-             * @var {SFNode} blendMode
+             * Holds the  BlendMode node, that is needed for correct transparency.
+             * @var {x3dom.fields.SFNode} blendMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.BlendMode
              * @field x3dom
@@ -87,8 +92,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
 
             /**
-             *
-             * @var {SFNode} depthMode
+             * Holds the depthMode node.
+             * @var {x3dom.fields.SFNode} depthMode
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.DepthMode
              * @field x3dom
@@ -97,8 +102,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
 
             /**
-             *
-             * @var {MFNode} shaders
+             * Contains ProgramShader (Cg) or ComposedShader (GLSL).
+             * @var {x3dom.fields.MFNode} shaders
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue x3dom.nodeTypes.X3DShaderNode
              * @field x3dom
@@ -107,8 +112,9 @@ x3dom.registerNodeType(
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
 
             /**
-             *
-             * @var {SFString} sortType
+             * Defines the shape type for sorting.
+             * @var {x3dom.fields.SFString} sortType
+             * @range [auto, transparent, opaque]
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue 'auto'
              * @field x3dom
@@ -117,8 +123,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'sortType', 'auto');      // [auto, transparent, opaque]
 
             /**
-             *
-             * @var {SFInt32} sortKey
+             * Change render order manually.
+             * @var {x3dom.fields.SFInt32} sortKey
              * @memberof x3dom.nodeTypes.Appearance
              * @initvalue 0
              * @field x3dom

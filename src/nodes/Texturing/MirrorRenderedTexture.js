@@ -29,7 +29,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFVec3f} viewOffset
+             * @var {x3dom.fields.SFVec3f} viewOffset
              * @memberof x3dom.nodeTypes.MirrorRenderedTexture
              * @initvalue 0,0,0
              * @field x3dom

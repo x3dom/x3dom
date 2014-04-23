@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The size field indicates the resolution of the generated images in number of pixels per side.
-             * @var {SFInt32} size
+             * @var {x3dom.fields.SFInt32} size
              * @memberof x3dom.nodeTypes.GeneratedCubeMapTexture
              * @initvalue 128
              * @range (0, inf)
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * "NEXT_FRAME_ONLY", it is an instruction to render the texture at the end of this frame, and then not
              * render it again. In this case, the update frame indicator is set to this frame; at the start of the next
              * frame, the update value shall be automatically set back to "NONE" to indicate that the rendering has already taken place.
-             * @var {SFString} update
+             * @var {x3dom.fields.SFString} update
              * @memberof x3dom.nodeTypes.GeneratedCubeMapTexture
              * @initvalue 'NONE'
              * @field x3d

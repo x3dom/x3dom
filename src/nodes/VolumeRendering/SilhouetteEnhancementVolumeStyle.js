@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteBoundaryOpacity
+             * @var {x3dom.fields.SFFloat} silhouetteBoundaryOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteRetainedOpacity
+             * @var {x3dom.fields.SFFloat} silhouetteRetainedOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 1
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} silhouetteSharpness
+             * @var {x3dom.fields.SFFloat} silhouetteSharpness
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 0.5
              * @field x3dom

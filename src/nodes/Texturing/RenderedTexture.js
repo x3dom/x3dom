@@ -36,7 +36,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} viewpoint
+             * @var {x3dom.fields.SFNode} viewpoint
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DViewpointNode
              * @field x3dom
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} background
+             * @var {x3dom.fields.SFNode} background
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DBackgroundNode
              * @field x3dom
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} fog
+             * @var {x3dom.fields.SFNode} fog
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DFogNode
              * @field x3dom
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFNode} scene
+             * @var {x3dom.fields.SFNode} scene
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DNode
              * @field x3dom
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} excludeNodes
+             * @var {x3dom.fields.MFNode} excludeNodes
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DNode
              * @field x3dom
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFInt32} dimensions
+             * @var {x3dom.fields.MFInt32} dimensions
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue [128,128,4]
              * @field x3dom
@@ -96,7 +96,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} update
+             * @var {x3dom.fields.SFString} update
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 'NONE'
              * @field x3dom
@@ -107,7 +107,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} showNormals
+             * @var {x3dom.fields.SFBool} showNormals
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue false
              * @field x3dom
@@ -117,7 +117,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFString} stereoMode
+             * @var {x3dom.fields.SFString} stereoMode
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 'NONE'
              * @field x3dom
@@ -127,7 +127,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFFloat} interpupillaryDistance
+             * @var {x3dom.fields.SFFloat} interpupillaryDistance
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 0.064
              * @field x3dom

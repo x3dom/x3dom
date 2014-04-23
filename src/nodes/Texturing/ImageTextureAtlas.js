@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} numberOfSlices
+             * @var {x3dom.fields.SFInt32} numberOfSlices
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
              * @initvalue 0
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} slicesOverX
+             * @var {x3dom.fields.SFInt32} slicesOverX
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
              * @initvalue 0
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFInt32} slicesOverY
+             * @var {x3dom.fields.SFInt32} slicesOverY
              * @memberof x3dom.nodeTypes.ImageTextureAtlas
              * @initvalue 0
              * @field x3dom

@@ -33,7 +33,7 @@ x3dom.registerNodeType(
             /**
              * The size field specifies the extents of the box along the X-, and Y-axes respectively and each component
              *  value shall be greater than zero.
-             * @var {SFVec2f} size
+             * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.Rectangle2D
              * @initvalue 2,2
              * @range (0, inf)
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
 
             /**
              * Number of segments of the rectangle
-             * @var {SFVec2f} subdivision
+             * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Rectangle2D
              * @initvalue 1,1
              * @field x3dom

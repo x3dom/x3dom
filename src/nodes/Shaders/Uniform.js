@@ -18,9 +18,9 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Uniform
          * @x3d x.x
          * @component Shaders
-         * @status experimental
          * @extends x3dom.nodeTypes.Field
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Node representing a uniform.
          */
         function (ctx) {
             x3dom.nodeTypes.Uniform.superClass.call(this, ctx);

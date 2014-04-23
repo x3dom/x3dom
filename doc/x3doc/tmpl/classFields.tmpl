@@ -28,14 +28,22 @@
                 var type = ( f.type && f.type.names && f.type.names.length )
                             ? f.type.names[0] : null;
 
-                type = (type != null ? self.linkFromContextTo(type, false, type) : "" );
+                var typeSplit = type.split('.');
+
+                type = (type != null ? self.linkFromContextTo(type, false, typeSplit[typeSplit.length-1]) : "" );
                 ?>
 
                 <?js= type ?>
             </span>
 
             <span class="cell">
-                <?js= (f.initvalue ? f.initvalue : '') ?>
+                <?js if(f.initvalue)
+                {
+                    var fullInit = f.initvalue.split('.');
+                    var defVal = self.linkFromContextTo( f.initvalue, false, fullInit[fullInit.length-1]);
+                ?>
+                <?js= defVal ?></a>
+                <?js } ?>
             </span>
 			
             <span class="cell"><?js= (f.range ? f.range : '') ?></span>

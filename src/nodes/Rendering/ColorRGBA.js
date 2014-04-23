@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
             /**
              * The set of RGBA colors
-             * @var {MFColorRGBA} color
+             * @var {x3dom.fields.MFColorRGBA} color
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.ColorRGBA
              * @initvalue []

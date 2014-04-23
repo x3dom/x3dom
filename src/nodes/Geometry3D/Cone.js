@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             /**
              * The bottomRadius field specifies the radius of the cone's base.
-             * @var {SFFloat} bottomRadius
+             * @var {x3dom.fields.SFFloat} bottomRadius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 1.0
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             /**
              * The topRadius field specifies the radius of the cone at the apex.
-             * @var {SFFloat} topRadius
+             * @var {x3dom.fields.SFFloat} topRadius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 0
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
 
             /**
              * The height field specifies the height of the cone from the centre of the base to the apex.
-             * @var {SFFloat} height
+             * @var {x3dom.fields.SFFloat} height
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 2.0
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              * The bottom field specifies whether the bottom cap of the cone is created.
-             * @var {SFBool} bottom
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
              * @field x3d
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
 
             /**
              * The side field specifies whether sides of the cone are created.
-             * @var {SFBool} side
+             * @var {x3dom.fields.SFBool} side
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
              * @field x3dom
@@ -83,7 +83,7 @@ x3dom.registerNodeType(
 
             /**
              * The top field specifies whether the top cap of the cone is created.
-             * @var {SFBool} top
+             * @var {x3dom.fields.SFBool} top
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue true
              * @field x3dom
@@ -93,7 +93,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the number of faces that are generated to approximate the sides of the cone.
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @range [2, inf]
              * @memberof x3dom.nodeTypes.Cone
              * @initvalue 32

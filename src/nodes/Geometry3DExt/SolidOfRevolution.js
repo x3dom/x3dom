@@ -10,25 +10,29 @@
 /* ### SolidOfRevolution ### */
 x3dom.registerNodeType(
     "SolidOfRevolution",
-    "Geometry3D",
+    "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         
         /**
          * Constructor for SolidOfRevolution
          * @constructs x3dom.nodeTypes.SolidOfRevolution
          * @x3d x.x
-         * @component Geometry3D
+         * @component Geometry3DExt
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc Describes a SolidOfRevolution shape.
          */
         function (ctx) {
             x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
 
 
             /**
-             *
-             * @var {SFFloat} creaseAngle
+             * The creaseAngle field affects how default normals are generated.
+             * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
+             * Crease angles shall be greater than or equal to 0.0 angle base units.
+             * @var {x3dom.fields.SFFloat} creaseAngle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 0
              * @field x3dom
@@ -37,8 +41,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
 
             /**
-             *
-             * @var {MFVec2f} crossSection
+             * Defines the cross section that is swept around the axis. The cross section is described as an array of 2D vertices.
+             * @var {x3dom.fields.MFVec2f} crossSection
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue []
              * @field x3dom
@@ -47,8 +51,9 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'crossSection', []);
 
             /**
-             *
-             * @var {SFFloat} angle
+             * The subtended angle through which the 2D loop is swept around the x axis.
+             * @var {x3dom.fields.SFFloat} angle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 2*Math.PI
              * @field x3dom
@@ -57,8 +62,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
 
             /**
-             *
-             * @var {SFBool} caps
+             *Specifies whether the caps exist.
+             * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue true
              * @field x3dom
@@ -67,8 +72,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'caps', true);
 
             /**
-             *
-             * @var {SFFloat} subdivision
+             * Specifies the number of steps that are generated to approximate the shape.
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 32
              * @field x3dom

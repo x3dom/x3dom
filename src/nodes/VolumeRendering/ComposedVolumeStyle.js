@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {SFBool} ordered
+             * @var {x3dom.fields.SFBool} ordered
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
              * @initvalue false
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              *
-             * @var {MFNode} renderStyle
+             * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
              * @field x3dom

@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the set of data points, that are used for interpolation.
-             * @var {MFVec3f} keyValue
+             * @var {x3dom.fields.MFVec3f} keyValue
              * @memberof x3dom.nodeTypes.CoordinateInterpolator
              * @initvalue []
              * @field x3d
