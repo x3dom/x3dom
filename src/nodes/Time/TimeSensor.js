@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for TimeSensor
          * @constructs x3dom.nodeTypes.TimeSensor
-         * @x3d x.x
+         * @x3d 3.3
          * @component Time
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DSensorNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc TimeSensor nodes generate events as time passes.
          */
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
@@ -32,123 +33,126 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The "cycle" of a TimeSensor node lasts for cycleInterval seconds. The value of cycleInterval shall be greater than zero.
              * @var {x3dom.fields.SFTime} cycleInterval
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'cycleInterval', 1);
 
 
             /**
-             *
+             * Specifies whether the timer cycle loops.
              * @var {x3dom.fields.SFBool} loop
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue false
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'loop', false);
 
             /**
-             *
+             * Sets the startTime for the cycle.
              * @var {x3dom.fields.SFTime} startTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'startTime', 0);
 
             /**
-             *
+             * Sets a time for the timer to stop.
              * @var {x3dom.fields.SFTime} stopTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'stopTime', 0);
 
             /**
-             *
+             * Sets a time for the timer to pause.
              * @var {x3dom.fields.SFTime} pauseTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'pauseTime', 0);
 
             /**
-             *
+             * Sets a time for the timer to resume from pause.
              * @var {x3dom.fields.SFTime} resumeTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'resumeTime', 0);
 
 
             /**
-             *
+             * A cycleTime outputOnly field can be used for synchronization purposes such as sound with animation.
+             * The value of a cycleTime event will be equal to the time at the beginning of the current cycle. A cycleTime event is generated at the beginning of every cycle, including the cycle starting at startTime.
+             * The first cycleTime event for a TimeSensor node can be used as an alarm (single pulse at a specified time).
              * @var {x3dom.fields.SFTime} cycleTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'cycleTime', 0);
 
             /**
-             *
+             * The elapsedTime outputOnly field delivers the current elapsed time since the TimeSensor was activated and running, cumulative in seconds and not counting any time while in a paused state.
              * @var {x3dom.fields.SFTime} elapsedTime
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'elapsedTime', 0);
 
             /**
-             *
+             * fraction_changed events output a floating point value in the closed interval [0, 1]. At startTime the value of fraction_changed is 0. After startTime, the value of fraction_changed in any cycle will progress through the range (0.0, 1.0].
              * @var {x3dom.fields.SFFloat} fraction_changed
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'fraction_changed', 0);
 
             /**
-             *
+             * Outputs whether the timer is active.
              * @var {x3dom.fields.SFBool} isActive
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue false
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'isActive', false);
 
             /**
-             *
+             * Outputs whether the timer is paused.
              * @var {x3dom.fields.SFBool} isPaused
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue false
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFBool(ctx, 'isPaused', false);
 
             /**
-             *
+             * The time event sends the absolute time for a given tick of the TimeSensor node.
              * @var {x3dom.fields.SFTime} time
              * @memberof x3dom.nodeTypes.TimeSensor
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFTime(ctx, 'time', 0);
