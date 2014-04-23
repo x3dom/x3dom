@@ -77,7 +77,7 @@
                     {"file": "Param.js"}
                 ]},
                 {"name": "Grouping", "filePrefix": "nodes/Grouping/", "files":[
-                    {"file": "X3DBoundedNode.js"},
+                    {"file": "X3DBoundedObject.js"},
                     {"file": "X3DGroupingNode.js"},
                     {"file": "Switch.js"},
                     {"file": "X3DTransformNode.js"},

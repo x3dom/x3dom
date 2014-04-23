@@ -21,7 +21,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DRigidJointNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * classdesc The DoubleAxisHingeJoint node represents a joint that has two independent axes that are located
+         * @classdesc The DoubleAxisHingeJoint node represents a joint that has two independent axes that are located
          *  around a common anchor point. Axis 1 is specified relative to the first body (specified by the body1 field)
          *  and axis 2 is specified relative to the second body (specified by the body2 field). Axis 1 can have limits
          *  and a motor, axis 2 can only have a motor.
