@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the radius of the sloped cylinder.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 1.0
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the height of the sloped cylinder
-             * @var {SFFloat} height
+             * @var {x3dom.fields.SFFloat} height
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 2.0
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines whether the bottom exists.
-             * @var {SFBool} bottom
+             * @var {x3dom.fields.SFBool} bottom
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue true
              * @field x3dom
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines whether the top exists.
-             * @var {SFBool} top
+             * @var {x3dom.fields.SFBool} top
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue true
              * @field x3dom
@@ -70,7 +70,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the shear for the top in x direction.
-             * @var {SFFloat} xtshear
+             * @var {x3dom.fields.SFFloat} xtshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.26179
              * @field x3dom
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the shear for the top in y direction.
-             * @var {SFFloat} ytshear
+             * @var {x3dom.fields.SFFloat} ytshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.0
              * @field x3dom
@@ -90,7 +90,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the shear for the bottom in x direction.
-             * @var {SFFloat} xbshear
+             * @var {x3dom.fields.SFFloat} xbshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.26179
              * @field x3dom
@@ -100,7 +100,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the shear for the bottom in y direction.
-             * @var {SFFloat} ybshear
+             * @var {x3dom.fields.SFFloat} ybshear
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 0.0
              * @field x3dom
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the number of faces that are generated to approximate the cylinder.
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.SlopedCylinder
              * @initvalue 32
              * @field x3dom

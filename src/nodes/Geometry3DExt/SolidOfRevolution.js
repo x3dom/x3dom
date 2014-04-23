@@ -31,7 +31,7 @@ x3dom.registerNodeType(
              * The creaseAngle field affects how default normals are generated.
              * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
              * Crease angles shall be greater than or equal to 0.0 angle base units.
-             * @var {SFFloat} creaseAngle
+             * @var {x3dom.fields.SFFloat} creaseAngle
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 0
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the cross section that is swept around the axis. The cross section is described as an array of 2D vertices.
-             * @var {MFVec2f} crossSection
+             * @var {x3dom.fields.MFVec2f} crossSection
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue []
              * @field x3dom
@@ -52,7 +52,8 @@ x3dom.registerNodeType(
 
             /**
              * The subtended angle through which the 2D loop is swept around the x axis.
-             * @var {SFFloat} angle
+             * @var {x3dom.fields.SFFloat} angle
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 2*Math.PI
              * @field x3dom
@@ -62,7 +63,7 @@ x3dom.registerNodeType(
 
             /**
              *Specifies whether the caps exist.
-             * @var {SFBool} caps
+             * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue true
              * @field x3dom
@@ -72,7 +73,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the number of steps that are generated to approximate the shape.
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.SolidOfRevolution
              * @initvalue 32
              * @field x3dom

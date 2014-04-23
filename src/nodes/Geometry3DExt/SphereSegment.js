@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the radius of the sphere.
-             * @var {SFFloat} radius
+             * @var {x3dom.fields.SFFloat} radius
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1
              * @field x3dom
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines an array of longitude values.
-             * @var {MFFloat} longitude
+             * @var {x3dom.fields.MFFloat} longitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
              * @field x3dom
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines an array of latitude values.
-             * @var {MFFloat} latitude
+             * @var {x3dom.fields.MFFloat} latitude
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue []
              * @field x3dom
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines an array of stepSizes.
-             * @var {SFVec2f} stepSize
+             * @var {x3dom.fields.SFVec2f} stepSize
              * @memberof x3dom.nodeTypes.SphereSegment
              * @initvalue 1,1
              * @field x3dom

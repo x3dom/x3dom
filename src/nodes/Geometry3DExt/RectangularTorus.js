@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the inner radius of the torus.
-             * @var {SFFloat} innerRadius
+             * @var {x3dom.fields.SFFloat} innerRadius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 0.5
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the outer radius of the torus.
-             * @var {SFFloat} outerRadius
+             * @var {x3dom.fields.SFFloat} outerRadius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 1
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the height of the torus.
-             * @var {SFFloat} height
+             * @var {x3dom.fields.SFFloat} height
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 1
@@ -61,7 +61,7 @@ x3dom.registerNodeType(
 
             /**
              * Defines the length of the torus as angle. 2 * PI is a full torus.
-             * @var {SFFloat} angle
+             * @var {x3dom.fields.SFFloat} angle
              * @range [0, 2*pi]
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 2*Math.PI
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies whether the side caps exist.
-             * @var {SFBool} caps
+             * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue true
              * @field x3dom
@@ -82,7 +82,7 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the number of rings that are generated to approximate the torus.
-             * @var {SFFloat} subdivision
+             * @var {x3dom.fields.SFFloat} subdivision
              * @memberof x3dom.nodeTypes.RectangularTorus
              * @initvalue 32
              * @field x3dom
