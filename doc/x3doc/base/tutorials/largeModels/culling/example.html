@@ -45,6 +45,8 @@
     <div style="margin-left: 550px">
         <h2>FPS: <div id="fps"></div></h2>
         <br><br><br>
+        <h2>Drawcalls: <div id="dc"></div></h2>
+        <br>
         <b>View frustum culling</b><br>
         <input type="button" id="frustumCulling" value="Activate" onclick="frustumCulling = !frustumCulling; this.value = (frustumCulling ? 'Deactivate' : 'Activate' ); changeSetting('frustumCulling', frustumCulling);"/>
         <br><br><br>
@@ -205,6 +207,9 @@
         {
             var fpsDiv = document.getElementById('fps');
             fpsDiv.innerHTML = runtime.fps.toFixed(2);
+
+            var drawcalls = document.getElementById('dc');
+            drawcalls.innerHTML = runtime.states.infos['#DRAWS:'].toFixed(2);
         }
 
     }
