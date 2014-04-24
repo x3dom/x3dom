@@ -284,7 +284,7 @@ var ResultsPublisher = function()
                     else if(resultId != -1)
                     {
                         //if no comparison
-                        if(entry.status != 'success' && entry.status != 'failed' && entry.status != 'error')
+                        if(entry.status != 'success' && entry.status != 'failed' && (entry.status != 'error' || !entry.data.type))
                         {
 
                         }
