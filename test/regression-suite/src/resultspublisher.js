@@ -239,7 +239,7 @@ var ResultsPublisher = function()
                 anyNewFail = anyNewFail || that.newFail[profile.name][0][nf];
             }
             notify = notify || anyNewFail;
-            var successString = success?"success":anyNewFail[0]?"failed":"broken";
+            var successString = success?"success":anyNewFail?"failed":"broken";
             content += "<tr>";
             content += "<td><img src='../img/" + profile.name + "_icon.png'/></td>";
             content += "<td class='"+successString+"'><a href='" + profilePage + "'>"+profile.statistics.passed+" / "+(profile.statistics.passed + profile.statistics.failed)+" passed</a></td>";
