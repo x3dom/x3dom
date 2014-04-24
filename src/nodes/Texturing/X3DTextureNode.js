@@ -16,28 +16,30 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DTextureNode
          * @constructs x3dom.nodeTypes.X3DTextureNode
-         * @x3d x.x
+         * @x3d 3.3
          * @component Texturing
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DAppearanceChildNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This abstract node type is the base type for all node types which specify sources for texture images.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies the channel count of the texture. 0 means the system should figure out the count automatically.
              * @var {x3dom.fields.SFInt32} origChannelCount
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue 0
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'origChannelCount', 0); // 0 means the system should figure out the count
+            this.addField_SFInt32(ctx, 'origChannelCount', 0);
 
             /**
-             *
+             * Sets the url to a resource.
              * @var {x3dom.fields.MFString} url
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue []
@@ -47,7 +49,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
 
             /**
-             *
+             * Specifies whether the texture is repeated in s direction.
              * @var {x3dom.fields.SFBool} repeatS
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
@@ -57,7 +59,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatS', true);
 
             /**
-             *
+             * Specifies whether the texture is repeated in t direction.
              * @var {x3dom.fields.SFBool} repeatT
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
@@ -67,7 +69,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatT', true);
 
             /**
-             *
+             * Specifies whether the texture is scaled to the next highest power of two. (Needed, when texture repeat is enabled and texture size is non power of two)
              * @var {x3dom.fields.SFBool} scale
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue true
@@ -77,7 +79,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'scale', true);
 
             /**
-             *
+             * Credentials.
              * @var {x3dom.fields.SFBool} withCredentials
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue false
@@ -87,7 +89,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'withCredentials', false);
 
             /**
-             *
+             * Sets a TextureProperty node.
              * @var {x3dom.fields.SFNode} textureProperties
              * @memberof x3dom.nodeTypes.X3DTextureNode
              * @initvalue x3dom.nodeTypes.TextureProperties

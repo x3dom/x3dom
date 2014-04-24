@@ -22,13 +22,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DTextureNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc (Abstract) class for 2D Textures.
          */
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies whether the children are shown or hidden outside the texture.
              * @var {x3dom.fields.SFBool} hideChildren
              * @memberof x3dom.nodeTypes.Texture
              * @initvalue true

@@ -16,32 +16,33 @@ x3dom.registerNodeType(
         /**
          * Constructor for TextureCoordinateGenerator
          * @constructs x3dom.nodeTypes.TextureCoordinateGenerator
-         * @x3d x.x
+         * @x3d 3.3
          * @component Texturing
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DTextureCoordinateNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc TextureCoordinateGenerator supports the automatic generation of texture coordinates for geometric shapes.
          */
         function (ctx) {
             x3dom.nodeTypes.TextureCoordinateGenerator.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The mode field describes the algorithm used to compute texture coordinates.
              * @var {x3dom.fields.SFString} mode
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
              * @initvalue "SPHERE"
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'mode', "SPHERE");
 
             /**
-             *
+             * Specify the parameters. These are mode dependent.
              * @var {x3dom.fields.MFFloat} parameter
              * @memberof x3dom.nodeTypes.TextureCoordinateGenerator
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'parameter', []);

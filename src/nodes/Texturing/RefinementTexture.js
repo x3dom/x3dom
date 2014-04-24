@@ -18,17 +18,14 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.RefinementTexture
          * @x3d x.x
          * @component Texturing
-         * @status experimental
          * @extends x3dom.nodeTypes.RenderedTexture
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
         function (ctx) {
             x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
 
-            // Specify first stamp texture
-
             /**
-             *
+             * Specifies the first stamp texture.
              * @var {x3dom.fields.SFString} stamp0
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue "gpuii/stamps/0.gif"
@@ -36,10 +33,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString(ctx, 'stamp0', "gpuii/stamps/0.gif");
-            // Specifiy second stamp texture
 
             /**
-             *
+             * Specifies the second stamp texture.
              * @var {x3dom.fields.SFString} stamp1
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue "gpuii/stamps/1.gif"
@@ -47,10 +43,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString(ctx, 'stamp1', "gpuii/stamps/1.gif");
-            // Defines if texture refinement should be managed by another component
 
             /**
-             *
+             * Defines whether texture refinement should be managed by another component.
              * @var {x3dom.fields.SFBool} autoRefinement
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue true
@@ -58,10 +53,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'autoRefinement', true);
-            // Format of the images of the dataset that should be loaded
 
             /**
-             *
+             * Specifies the image format of the dataset.
              * @var {x3dom.fields.SFString} format
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue 'jpg'
@@ -69,10 +63,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString(ctx, 'format', 'jpg');
-            // Maximum level that should be loaded (if GSM smaller than on DSL6000)
 
             /**
-             *
+             * Maximum level that should be loaded (if GSM is smaller than on DSL6000)
              * @var {x3dom.fields.SFInt32} iterations
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue 7
@@ -80,10 +73,9 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'iterations', 7);
-            // Maximum level that should be loaded (if GSM smaller than on DSL6000)
 
             /**
-             *
+             * Maximum level that should be loaded (if GSM is smaller than on DSL6000)
              * @var {x3dom.fields.SFInt32} maxLevel
              * @memberof x3dom.nodeTypes.RefinementTexture
              * @initvalue this._vf.iterations

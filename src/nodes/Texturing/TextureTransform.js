@@ -16,52 +16,55 @@ x3dom.registerNodeType(
         /**
          * Constructor for TextureTransform
          * @constructs x3dom.nodeTypes.TextureTransform
-         * @x3d x.x
+         * @x3d 3.3
          * @component Texturing
-         * @status experimental
+         * @status full
          * @extends x3dom.nodeTypes.X3DTextureTransformNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The TextureTransform node defines a 2D transformation that is applied to texture coordinates. This node affects the way textures coordinates are applied to the geometric surface. The transformation consists of (in order):
+         * a translation; a rotation about the centre point; a non-uniform scale about the centre point.
          */
         function (ctx) {
             x3dom.nodeTypes.TextureTransform.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The center field specifies a translation offset in texture coordinate space about which the rotation and scale fields are applied.
              * @var {x3dom.fields.SFVec2f} center
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'center', 0, 0);
 
             /**
-             *
+             * The rotation field specifies a rotation in angle base units of the texture coordinates about the center point after the scale has been applied.
+             * A positive rotation value makes the texture coordinates rotate counterclockwise about the centre, thereby rotating the appearance of the texture itself clockwise.
              * @var {x3dom.fields.SFFloat} rotation
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'rotation', 0);
 
             /**
-             *
+             * The scale field specifies a scaling factor in S and T of the texture coordinates about the center point.
              * @var {x3dom.fields.SFVec2f} scale
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 1,1
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'scale', 1, 1);
 
             /**
-             *
+             * The translation field specifies a translation of the texture coordinates.
              * @var {x3dom.fields.SFVec2f} translation
              * @memberof x3dom.nodeTypes.TextureTransform
              * @initvalue 0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFVec2f(ctx, 'translation', 0, 0);
