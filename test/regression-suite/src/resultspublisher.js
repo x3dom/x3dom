@@ -227,6 +227,7 @@ var ResultsPublisher = function()
         var pageStart = "<html><head><title>x3dom Testing Overview</title>"+that.tableStyle+"</head><body><h1>Regression Test Results</h1><h3>"+that.getDateString()+"</h3>";
         pageStart += "<table><tr><th>Browser</th><th>Test-Results</th><th>Timeline</th></tr>";
         var content = "";
+        var notify = false;
         for(var i in that.overviewData.profiles)
         {
             var profile = that.overviewData.profiles[i];
@@ -237,6 +238,7 @@ var ResultsPublisher = function()
             {
                 anyNewFail = anyNewFail || that.newFail[profile.name][0][nf];
             }
+            notify = notify || anyNewFail;
             var successString = success?"success":anyNewFail[0]?"failed":"broken";
             content += "<tr>";
             content += "<td><img src='../img/" + profile.name + "_icon.png'/></td>";
@@ -250,6 +252,11 @@ var ResultsPublisher = function()
 
         console.log("publishing overview: "+path);
         fw.writeFile(path, pageStart+content+pageEnd, callback);
+        if(notify && fs.existsSync("notify.js"))
+        {
+            var notificationService = require("../notify.js");
+            notificationService.notify();
+        }
     }
 
     this.createTimelinePage = function(profile, callback)
