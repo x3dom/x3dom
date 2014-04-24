@@ -19,7 +19,6 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.MirrorRenderedTexture
          * @x3d x.x
          * @component Texturing
-         * @status experimental
          * @extends x3dom.nodeTypes.RenderedTexture
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */

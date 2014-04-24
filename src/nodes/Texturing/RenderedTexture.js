@@ -18,9 +18,11 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.RenderedTexture
          * @x3d x.x
          * @component Texturing
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DTextureNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This extension provides the ability to dynamically render a partial scenegraph to an offscreen texture that can then be used on the geometry of a node.
+         * This can be used in many different ways such as creating mirror effects, inputs to shaders etc.
+         * The purpose of this component is to provide for extended visual effects, but not the complete form of offscreen rendering and buffers that would be available to lower-level rendering APIs.
          */
         function (ctx) {
             x3dom.nodeTypes.RenderedTexture.superClass.call(this, ctx);
@@ -35,7 +37,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies the viewpoint that is used to render the texture content.
              * @var {x3dom.fields.SFNode} viewpoint
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DViewpointNode
@@ -45,7 +47,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
 
             /**
-             *
+             * Sets a background texture.
              * @var {x3dom.fields.SFNode} background
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DBackgroundNode
@@ -55,7 +57,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
 
             /**
-             *
+             * Sets a fog node.
              * @var {x3dom.fields.SFNode} fog
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DFogNode
@@ -65,7 +67,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);    //TODO
 
             /**
-             *
+             * Sets a separate, potentially independent, subscene. If unset, the same scene is used.
              * @var {x3dom.fields.SFNode} scene
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DNode
@@ -75,7 +77,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
 
             /**
-             *
+             * Defines a list of sibling nodes that should be ignored.
              * @var {x3dom.fields.MFNode} excludeNodes
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue x3dom.nodeTypes.X3DNode
@@ -85,28 +87,30 @@ x3dom.registerNodeType(
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
 
             /**
-             *
+             * Sets the width, height, color components (and number of MRTs).
              * @var {x3dom.fields.MFInt32} dimensions
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue [128,128,4]
              * @field x3dom
              * @instance
              */
-            this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);    // w, h, color components (and numMRTs)
+            this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
 
             /**
-             *
+             * Specifies when the texture is updated.
              * @var {x3dom.fields.SFString} update
+             * @range ["NONE", "NEXT_FRAME_ONLY", "ALWAYS"]
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 'NONE'
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            this.addField_SFString(ctx, 'update', 'NONE');
 
 
             /**
-             *
+             *Specifies whether normals are shown.
              * @var {x3dom.fields.SFBool} showNormals
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue false
@@ -116,17 +120,18 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'showNormals', false);
 
             /**
-             *
+             * Sets render information for stereo rendering.
              * @var {x3dom.fields.SFString} stereoMode
+             * @range ["NONE","LEFT_EYE","RIGHT_EYE"]
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 'NONE'
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'stereoMode', 'NONE');     // ("NONE"|"LEFT_EYE"|"RIGHT_EYE")
+            this.addField_SFString(ctx, 'stereoMode', 'NONE');
 
             /**
-             *
+             * Sets the eye distance for stereo rendering.
              * @var {x3dom.fields.SFFloat} interpupillaryDistance
              * @memberof x3dom.nodeTypes.RenderedTexture
              * @initvalue 0.064
