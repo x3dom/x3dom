@@ -454,9 +454,9 @@ x3dom.Texture.prototype.updateText = function()
 		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
-	
-	text_canvas.width = maxWidth;
-	text_canvas.height = textHeight * paragraph.length; 
+	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
+	text_canvas.width = maxWidth * canvas_scale;
+	text_canvas.height = textHeight * paragraph.length * canvas_scale;
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
