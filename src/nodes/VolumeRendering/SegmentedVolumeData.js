@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeDataNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The SegmentedVolumeData node specifies a segmented volume data set. Each segment can be rendered with a different volume rendering style.
          */
         function (ctx) {
             x3dom.nodeTypes.SegmentedVolumeData.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The renderStyle field contains a list of composable render styles nodes to be used on the segmented volume data.
              * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
@@ -39,7 +40,7 @@ x3dom.registerNodeType(
             //this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
 
             /**
-             *
+             * The segmentIdentifiers field is an ImageTextureAtlas node of the same dimensions of the volume data. The segment identifiers are used to map each segment with a volume rendering style. 
              * @var {x3dom.fields.SFNode} segmentIdentifiers
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue x3dom.nodeTypes.Texture
@@ -49,7 +50,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * Specifies the number of segments on the volume data. It is used to correctly match each segment identifier to an index of the renderStyle list.
              * @var {x3dom.fields.SFFloat} numberOfMaxSegments
              * @memberof x3dom.nodeTypes.SegmentedVolumeData
              * @initvalue 10.0

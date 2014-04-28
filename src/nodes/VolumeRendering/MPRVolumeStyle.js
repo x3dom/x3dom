@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The MPRVolumeStyle node renders a multiplanar reconstruction of the assocciated volume data.
          */
         function (ctx) {
             x3dom.nodeTypes.MPRVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The originalLine field specify 
              * @var {x3dom.fields.SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 1.0,1.0,0.0
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'originLine', 1.0, 1.0, 0.0);
 
             /**
-             *
+             * 
              * @var {x3dom.fields.SFVec3f} finalLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.0,1.0,0.0
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'finalLine', 0.0, 1.0, 0.0);
 
             /**
-             *
+             * The positionLine field specifies the position along the line where the slice plane is rendered.
              * @var {x3dom.fields.SFFloat} positionLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.2

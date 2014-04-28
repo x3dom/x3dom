@@ -21,13 +21,16 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The SilhouetteEnhancementVolumeStyle node specifies that silhouettes of the assocciated volume data are going to be enhanced.
+         * Voxels opacity are modified based on their normals orientation relative to the view direction. When the orientation is perpendicular towards the view directions
+         * voxels are darkened, whereas it is parallel towards the view directions the opacity is not enhanced.
          */
         function (ctx) {
             x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The silhouetteBoundaryOpacity field is a factor to specify the amount of silhouette enhancement to use.
              * @var {x3dom.fields.SFFloat} silhouetteBoundaryOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 0
@@ -37,7 +40,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
 
             /**
-             *
+             * The silhouetteRetainedOpacity field is a factor to specify the amount of original opacity to retain.
              * @var {x3dom.fields.SFFloat} silhouetteRetainedOpacity
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 1
@@ -47,7 +50,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'silhouetteRetainedOpacity', 1);
 
             /**
-             *
+             * The silhouetteSharpness field is an exponent factor to specify the silhouette sharpness.
              * @var {x3dom.fields.SFFloat} silhouetteSharpness
              * @memberof x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle
              * @initvalue 0.5

@@ -21,13 +21,15 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * The EdgeEnhancementVolumeStyle node specifies that the edges of the assocciated volume data shall be enhanced.
+         * The edge enhancement is performed by changing the color of the edges to the specified one.
          */
         function (ctx) {
             x3dom.nodeTypes.EdgeEnhancementVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The edgeColor field specifies the color to be used for the edge enhacement.
              * @var {x3dom.fields.SFColor} edgeColor
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
              * @initvalue 0,0,0
@@ -37,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'edgeColor', 0, 0, 0);
 
             /**
-             *
+             * The gradientThreshold field is used to adjust the egdge detection.
              * @var {x3dom.fields.SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
              * @initvalue 0.4

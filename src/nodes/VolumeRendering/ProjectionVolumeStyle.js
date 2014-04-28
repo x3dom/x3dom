@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ProjectionVolumeStyle node generates an output color based on the voxel data values traversed by a ray following view direction. 
          */
         function (ctx) {
             x3dom.nodeTypes.ProjectionVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The intensityThreshold field is used to define a local maximum or minimum value along the ray traversal. It is ignored on the AVERAGE intensity projection.
              * @var {x3dom.fields.SFFloat} intensityThreshold
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
              * @initvalue 0
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'intensityThreshold', 0);
 
             /**
-             *
+             * The type field specifies the type of intensity projection to be used. It can be MAX, MIN or AVERAGE.
              * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.ProjectionVolumeStyle
              * @initvalue "MAX"
