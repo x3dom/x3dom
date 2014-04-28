@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
 
             /**
-             * The texture field, if specified, shall contain one of the various types of texture nodes (see 18 Texturing component).
+             * The texture field, if specified, shall contain a texture nodes.
              * If the texture node is NULL or the texture field is unspecified, the object that references this Appearance is not textured.
              * @var {x3dom.fields.SFNode} texture
              * @memberof x3dom.nodeTypes.Appearance
@@ -120,7 +120,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'sortType', 'auto');      // [auto, transparent, opaque]
+            this.addField_SFString(ctx, 'sortType', 'auto');
 
             /**
              * Change render order manually.
@@ -130,7 +130,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'sortKey', 0);             // Change render order manually
+            this.addField_SFInt32(ctx, 'sortKey', 0);
 
             // shortcut to shader program
             this._shader = null;

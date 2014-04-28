@@ -16,18 +16,21 @@ x3dom.registerNodeType(
         /**
          * Constructor for IndexedFaceSet
          * @constructs x3dom.nodeTypes.IndexedFaceSet
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposedGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * The IndexedFaceSet node represents a 3D shape formed by constructing faces (polygons) from vertices listed in the coord field.
          */
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The creaseAngle field affects how default normals are generated.
+             * If the angle between the geometric normals of two adjacent faces is less than the crease angle, normals shall be calculated so that the faces are shaded smoothly across the edge; otherwise, normals shall be calculated so that a lighting discontinuity across the edge is produced.
+             * Crease angles shall be greater than or equal to 0.0 angle base units.
              * @var {x3dom.fields.SFFloat} creaseAngle
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue 0
@@ -37,7 +40,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
 
             /**
-             *
+             * The convex field indicates whether all polygons in the shape are convex (TRUE).
+             * A polygon is convex if it is planar, does not intersect itself, and all of the interior angles at its vertices are less than 180 degrees.
              * @var {x3dom.fields.SFBool} convex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue true
@@ -48,7 +52,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The index data for the coord data.
              * @var {x3dom.fields.MFInt32} coordIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
@@ -58,7 +62,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'coordIndex', []);
 
             /**
-             *
+             * The index data for the normal data.
              * @var {x3dom.fields.MFInt32} normalIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
@@ -68,7 +72,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'normalIndex', []);
 
             /**
-             *
+             * The index data for the color data.
              * @var {x3dom.fields.MFInt32} colorIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []
@@ -78,7 +82,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'colorIndex', []);
 
             /**
-             *
+             * The index data for the texcoord data.
              * @var {x3dom.fields.MFInt32} texCoordIndex
              * @memberof x3dom.nodeTypes.IndexedFaceSet
              * @initvalue []

@@ -21,6 +21,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Torus node specifies a torus shape centred at (0, 0, 0) in the local coordinate system.
          */
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
@@ -29,7 +30,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies the inner radius of the torus.
              * @var {x3dom.fields.SFFloat} innerRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 0.5
@@ -39,7 +40,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'innerRadius', 0.5);
 
             /**
-             *
+             * Specifies the outer radius of the torus.
              * @var {x3dom.fields.SFFloat} outerRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 1.0
@@ -49,8 +50,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'outerRadius', 1.0);
 
             /**
-             *
+             * Specifies the size of the torus as an angle.
              * @var {x3dom.fields.SFFloat} angle
+             * @range [0, 2*pi]
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue twoPi
              * @field x3dom
@@ -59,7 +61,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'angle', twoPi);
 
             /**
-             *
+             * Specifies whether the torus ends are closed with caps (when angle is smaller than a full circle).
              * @var {x3dom.fields.SFBool} caps
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue true
@@ -69,7 +71,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'caps', true);
 
             /**
-             *
+             * Specifies the number of faces that are generated to approximate the torus.
              * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue 24,24
@@ -79,14 +81,14 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 
             /**
-             *
+             * Use a different interpretation mode for the inside and outside radius.
              * @var {x3dom.fields.SFBool} insideOutsideRadius
              * @memberof x3dom.nodeTypes.Torus
              * @initvalue false
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'insideOutsideRadius', false);    // use other radius/orientation behavior
+            this.addField_SFBool(ctx, 'insideOutsideRadius', false);
 
             // assure that angle in [0, 2 * PI]
             if (this._vf.angle < 0)

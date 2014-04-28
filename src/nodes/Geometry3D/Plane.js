@@ -18,16 +18,16 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.Plane
          * @x3d x.x
          * @component Geometry3D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @class The plane node describes a plane shape that extents in x and y direction.
          */
         function (ctx) {
             x3dom.nodeTypes.Plane.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The edge lengths of the plane.
              * @var {x3dom.fields.SFVec2f} size
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 2,2
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'size', 2, 2);
 
             /**
-             *
+             * Defines the number of single elements that are generated to represent the plane.
              * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 1,1
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             /**
-             *
+             * Defines the center point in the local coordinate system.
              * @var {x3dom.fields.SFVec3f} center
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue 0,0,0
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
 
             /**
-             *
+             * Specifies the primitive type that is used to build the plane.
              * @var {x3dom.fields.MFString} primType
              * @memberof x3dom.nodeTypes.Plane
              * @initvalue ['TRIANGLES']

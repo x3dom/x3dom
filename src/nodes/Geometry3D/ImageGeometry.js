@@ -18,9 +18,9 @@ x3dom.registerNodeType(
          * @constructs x3dom.nodeTypes.ImageGeometry
          * @x3d x.x
          * @component Geometry3D
-         * @status experimental
          * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The image geometry node loads data stored in an image file.
          */
         function (ctx) {
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
 
             /**
-             *
+             * Specifies the number of color components.
              * @var {x3dom.fields.SFInt32} numColorComponents
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue 3
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'numColorComponents', 3);
 
             /**
-             *
+             * Specifies the number of texture coordinate components.
              * @var {x3dom.fields.SFInt32} numTexCoordComponents
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue 2
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies the image file that contains the index data.
              * @var {x3dom.fields.SFNode} index
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
+             * Specifies the image file that contains the coord data.
              * @var {x3dom.fields.MFNode} coord
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
+             * Specifies the image file that contains the normal data.
              * @var {x3dom.fields.SFNode} normal
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
+             * Specifies the image file that contains the texcoord data.
              * @var {x3dom.fields.SFNode} texCoord
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             *
+             * Specifies the image file that contains the color data.
              * @var {x3dom.fields.SFNode} color
              * @memberof x3dom.nodeTypes.ImageGeometry
              * @initvalue x3dom.nodeTypes.X3DTextureNode

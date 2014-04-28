@@ -16,11 +16,12 @@ x3dom.registerNodeType(
         /**
          * Constructor for Sphere
          * @constructs x3dom.nodeTypes.Sphere
-         * @x3d x.x
+         * @x3d 3.3
          * @component Geometry3D
          * @status experimental
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Sphere node specifies a sphere centred at (0, 0, 0) in the local coordinate system.
          */
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
@@ -28,17 +29,18 @@ x3dom.registerNodeType(
             // sky box background creates sphere with r = 10000
 
             /**
-             *
+             * The radius field specifies the radius of the sphere.
              * @var {x3dom.fields.SFFloat} radius
+             * @range [0, inf]
              * @memberof x3dom.nodeTypes.Sphere
              * @initvalue ctx?1:10000
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'radius', ctx ? 1 : 10000);
 
             /**
-             *
+             * Specifies the number of faces that are generated to approximate the surface of the sphere.
              * @var {x3dom.fields.SFVec2f} subdivision
              * @memberof x3dom.nodeTypes.Sphere
              * @initvalue 24,24
