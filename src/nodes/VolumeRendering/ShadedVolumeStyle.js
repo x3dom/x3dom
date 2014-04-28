@@ -22,6 +22,7 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The ShadedVolumeStyle node applies the Blinn-Phong illumination model to the assocciated volume data.
+         * The light and fog parameters are obtained from the parent Appearence node.
          */
         function (ctx) {
             x3dom.nodeTypes.ShadedVolumeStyle.superClass.call(this, ctx);
