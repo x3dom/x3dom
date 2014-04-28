@@ -299,7 +299,6 @@ x3dom.registerNodeType(
                     }
 
                     this._backupCycleInterval = this._vf.cycleInterval;
-                    this._updateCycleStopTime();
                 }
                 else if (fieldName == "loop") {
                     this._updateCycleStopTime();
