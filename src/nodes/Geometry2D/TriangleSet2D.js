@@ -40,6 +40,13 @@ x3dom.registerNodeType(
              */
             this.addField_MFVec2f(ctx, 'vertices', []);
 
+            
+            var x = 0, y = 0;
+            if (this._vf.vertices.length) {
+                x = this._vf.vertices[0].x;
+                y = this._vf.vertices[0].y;
+            }
+
             var geoCacheID = 'TriangleSet2D_' + x + '-' + y;
 
             if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {

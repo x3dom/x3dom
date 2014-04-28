@@ -199,7 +199,7 @@ function CompareValue(){
                 "testName"   : getName(context.test.url)
             };
             that.context.result.details.push(
-                (distance != 0) ? new ts.SuccessDetail(detail) : new ts.FailureDetail(detail)
+                (distance < referenceValue * that.context.config.settings.misMatchPercentage) ? new ts.SuccessDetail(detail) : new ts.FailureDetail(detail)
             );
             that.context.finishedCallback();
         }, function(err)
