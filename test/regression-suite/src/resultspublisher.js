@@ -125,7 +125,8 @@ var ResultsPublisher = function()
         for(var d in result.details)
         {
             var detail = result.details[d];
-            var image = result.testName + "_" + detail.screenshotId + ".png";
+            console.log("detail" + Object.keys(detail.data));
+            var image = result.testName + "_" + detail.data.screenshotId + ".png";
             var difftag = "<a target='_blank' href='diff/" + image + "'><img width = '200px' height = '150px' src='diff/" + image + "'/></a>";
             var imagetag = "<a target='_blank' href='" + image + "'><img width = '200px' height = '150px' src='" + image + "'/></a>";
             var reftag = "<a target='_blank' href='../../"+globals.referencePath + image + "'><img width = '200px' height = '150px' src='../../"+globals.referencePath + image + "'/></a>";

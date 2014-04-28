@@ -1,20 +1,10 @@
 // load all x3dom JS files
 (function() {
 
-var pathes = [
-    "../../",
-	"../",		// examples
-    "../../../x3dom/",
-    "../../../../x3dom/",
-    "../../../../"
-];
-
 var packages = "tools/packages.json";
 var fallback_path = "http://www.x3dom.org/x3dom/";
-var i = 0;
-
-if (i < pathes.length)
-    send_xhr(pathes[i++]);
+var maxDepth = 6;
+send_xhr("../");
 
 function send_xhr(path){
     var xhr = new XMLHttpRequest();
@@ -35,8 +25,22 @@ function send_xhr(path){
 
                 for(group in data.grouplist){
                     for(p in data.grouplist[group].data){
-                        document.write("<script src=\"" + path + "src/" + 
-						data.grouplist[group].data[p].path + "\"></script>");
+                    	relativePath = data.grouplist[group].data[p].path
+                    	//Single file?
+                    	if(data.grouplist[group].data[p].type == "file")
+                    	{
+                    		document.write("<script src=\"" + path + "src/" + relativePath + "\"></script>");
+                    	}
+                    	//Folder?
+                    	else
+                    	{
+                    		 for(f in data.grouplist[group].data[p].files)
+                    		 {
+                    			 filePath = data.grouplist[group].data[p].files[f].path
+                         		 document.write("<script src=\"" + path + "src/" + filePath + "\"></script>");
+                    		 }
+                    		
+                    	}
                     }
                 }
 
@@ -44,8 +48,8 @@ function send_xhr(path){
                 document.write("<script src=\""+ path + "test/functional/media/js/tests.js\"></script>");
             } else {
                 //console.error('xhr status is not 200 on: ' + path);
-				if (i < pathes.length) {
-					send_xhr(pathes[i++]);
+                if (maxDepth-- > 0) {
+                    send_xhr(path + "../");
 				}
 				else {
                     console.warn('FALLBACK to x3dom.org base path');

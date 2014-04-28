@@ -109,6 +109,7 @@ x3dom.Texture = function (gl, doc, cache, node) {
 x3dom.Texture.dashVideoScriptFile = "dash.all.js";
 x3dom.Texture.loadDashVideos = [];
 x3dom.Texture.textNum = 0;
+x3dom.Texture.clampFontSize = false;
 
 
 x3dom.Texture.prototype.update = function()
@@ -418,7 +419,10 @@ x3dom.Texture.prototype.updateText = function()
 		font_language 	= fontStyleNode._vf.language;
 
         if (font_size < 0.1) font_size = 0.1;
-        if (font_size > 2.3) font_size = 2.3;
+        if(x3dom.Texture.clampFontSize && font_size > 2.3)
+        {
+            font_size = 2.3;
+        }
 	}
 	
 	var textX, textY;

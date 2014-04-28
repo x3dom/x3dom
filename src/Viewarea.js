@@ -1548,14 +1548,15 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
             var zoomAmount = d * (dx + dy) / this._height;
 
-        /*
+        // FIXME: very experimental HACK to switch between both versions (clamp to CoR and CoR translation)
+        if (navi._vf.typeParams.length >= 5 && navi._vf.typeParams[4] != 0) {
             // maintain minimum distance to prevent orientation flips
             var newDist = Math.min(zoomAmount, lastDirL - 0.01);
 
             // move along viewing ray, scaled with zoom factor
             this._from = this._from.addScaled(lastDir, newDist);
-        */
-
+        }
+        else {
             // add z offset to look-at position, alternatively clamp
             var diff = zoomAmount - lastDirL + 0.01;
             if (diff >= 0) {
@@ -1565,6 +1566,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
             // move along viewing ray, scaled with zoom factor
             this._from = this._from.addScaled(lastDir, zoomAmount);
+        }
 
             // update camera matrix with lookAt() and invert again
             this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
