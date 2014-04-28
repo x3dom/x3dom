@@ -47,10 +47,8 @@
             var vVecNor = vPos.subtract(mirrorPos);            
             
             //compute distance between viewer and mirror
-            var viewDist = vVecNor.length();            
-            
-            vVecNor     = vVecNor.normalize();    
-           
+            var viewDist = vVecNor.length(); 
+            vVecNor      = vVecNor.normalize(); 
             
             //reflect view vector on mirror normal
             var reflect = mirrorNormal.multiply(2 * vVecNor.dot(mirrorNormal)).subtract(vVecNor);
@@ -58,8 +56,9 @@
             //update mirror's camera settings
             var mirrorEyeOffset = reflect.multiply(viewDist);
             var mirrorEye = mirrorPos.subtract(mirrorEyeOffset);           
-            var vMatMirr  = makeLookAt(mirrorEye, mirrorPos, defaultUpVec);
             
+            //setup view matrix
+            var vMatMirr  = makeLookAt(mirrorEye, mirrorEye.add(mirrorNormal), defaultUpVec);            
             mv._x3domNode._viewMatrix = vMatMirr;          
             
             //setup perspective frustum parameters (left, right, bottom, top, near, far)
@@ -68,23 +67,13 @@
             var near  =  mirrorNormal.dot(mirrorEyeOffset);
             var left  =  mirrorRight.dot(mirrorEyeOffset) - sH;
             var right =  mirrorRight.dot(mirrorEyeOffset) + sH;
-            var bottom =  mirrorUp.dot(mirrorEyeOffset) - sH;
-            var top    =  mirrorUp.dot(mirrorEyeOffset) + sH;
+            var bottom =  mirrorUp.dot(mirrorEyeOffset)   - sH;
+            var top    =  mirrorUp.dot(mirrorEyeOffset)   + sH;
                         
             var pMatMirr  = x3dom.fields.SFMatrix4f.perspectiveFrustum( left, right, 
                                                                         bottom, top,       
-                                                                        near,    10000.0         );
+                                                                        near,    10000.0);
             mv._x3domNode._projMatrix = pMatMirr;
-            
-            x3dom.debug.logInfo("*******************");
-            x3dom.debug.logInfo("VVEC:"  + vVecNor);
-            x3dom.debug.logInfo("VDIS: " + viewDist);
-            x3dom.debug.logInfo("REFL: " + reflect);
-            x3dom.debug.logInfo("VPOS: " + vPos);
-            x3dom.debug.logInfo("MPOS: " + mirrorPos);
-            x3dom.debug.logInfo("MEYE: " + mirrorEye);
-            x3dom.debug.logInfo("REFL * VDIS: " + reflect.multiply(viewDist));
-            x3dom.debug.logInfo("*******************");      
         };
         
         document.onload = function(){
@@ -94,60 +83,68 @@
     </script>
 </head>
 <body>
-	<h1>RenderedTexture and Mirror Effects</h1>
+	<h1>Mirror Effect with RenderedTexture</h1>
     
-	<div class="group">
-        <X3D id='myX3DWorld' showStat='false' showLog='true' width='800px' height='600px'>
+	<div style="width:100%; height:800px;">
+        <X3D id='myX3DWorld' style="width:100%; height:100%;">
           <Scene DEF='scene'>
-            <Viewpoint id='view1' position='0 0 12'></Viewpoint>
-            <!--Background id='back' 
-                backUrl="media/texture/generic/ocean_3_back.jpg"
-                bottomUrl="media/texture/generic/ocean_3_bottom.jpg"
-                frontUrl="media/texture/generic/ocean_3_front.jpg"
-                leftUrl="media/texture/generic/ocean_3_left.jpg"
-                rightUrl="media/texture/generic/ocean_3_right.jpg"
-                topUrl="media/texture/generic/ocean_3_top.jpg"
-                skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82' 
-                groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1'
-            ></Background-->
+            <Viewpoint id='view1' position="20.85148 2.26663 27.32183" orientation="-0.21193 0.97725 0.00820 0.69814"></Viewpoint>
+            
             <Background skyColor='1 1 1' groundColor='1 1 1'></Background>
+            
             <group DEF='MIRROR_SCENE'>
-                <DirectionalLight direction="0.7 0.2 -0.5" ></DirectionalLight>
-                <DirectionalLight shadowIntensity='1' shadowMapSize='1024' direction='0.0 -1.0 0.0' ></DirectionalLight>
-                 
-                <Transform translation='0 -16 0' rotation='1 0 0 -1.57'>
-                    <Shape>
-                        <Appearance>
-                            <ImageTexture repeatS='true' repeatT='true' url='"media/texture/generic/grass.jpg"'></ImageTexture>
-                             <texturetransform scale="20 20"></texturetransform>
-                        </Appearance>
-                        <Plane size='1000 1000'></Plane>
-                    </Shape>
-                </Transform>
+                <NavigationInfo headLight="false" ></NavigationInfo>
+                <DirectionalLight direction=' 0.7  0.2 -0.5' intensity='0.85' color='1 1 1'></DirectionalLight>
+                <DirectionalLight direction='-0.7 -0.2  0.5' intensity='0.6'  color='1 1 0.8'></DirectionalLight>
+                                       
+                <Transform translation='0 -8 8' > 
                 
-                <Transform DEF='trans1' translation='-2 2 0'>
-                  <Shape DEF='GEO'>
-                    <Appearance>
-                      <ImageTexture repeatS='false' repeatT='false' url='"media/texture/generic/crate.gif"'></ImageTexture>
-                    </Appearance>
-                    <Box ></Box>
-                  </Shape>
-                </Transform>
-                <Transform DEF='trans2' translation='2 2 0'>
-                  <Shape USE='GEO'></Shape>
-                </Transform>
-                <Transform DEF='trans3' translation='-2 -2 0'>
-                  <Shape USE='GEO'></Shape>
-                </Transform>
-                <Transform DEF='trans4' translation='2 -2 0'>
-                   <Shape DEF='GEO'>
-                    <Appearance><Material></Material></Appearance>
-                    <Box ></Box>
-                  </Shape>
-                </Transform>
+                    <transform DEF='Ground'>
+                        <shape DEF='SP_3'>
+                        <appearance DEF='_03_-_Default'>
+                          <imageTexture url='"media/texture/building/ground.jpg"'></imageTexture>
+                        </appearance>
+                        <binaryGeometry DEF='Ground_0-GEOMETRY' solid='true' vertexCount='4' primType='"TRIANGLESTRIP"' size='50 0 50' index='binGeoBuilding/Ground_0-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Ground_0-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Ground_0-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        </transform>
+                        <transform DEF='Building' translation='1.7027 0.905127 -0.364374'>
+                        <shape DEF='SP_4'>
+                        <appearance DEF='_02_-_Default'>
+                          <imageTexture url='"media/texture/building/building.png"'></imageTexture>
+                        </appearance>
+                        <binaryGeometry DEF='Building_0-GEOMETRY' solid='false' vertexCount='15062 87477' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.70269489288 2.45732712746 0.364373683929' size='24.8268699646 6.68882608414 14.8100013733' coord='binGeoBuilding/Building_0-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_0-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_7'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_1-GEOMETRY' solid='false' vertexCount='1322 11937' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.70269489288 2.44684505463 0.362128734589' size='24.8268699646 6.7097902298 14.6059093475' index='binGeoBuilding/Building_1-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_1-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_1-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_0'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_2-GEOMETRY' solid='false' vertexCount='595 6036' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.94029140472 2.24684500694 0.214373588562' size='24.3516769409 6.30979013443 14.3099994659' index='binGeoBuilding/Building_2-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_2-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_2-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_2'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_3-GEOMETRY' solid='false' vertexCount='320 363' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.60769557953 1.8018450737 0.0456223487854' size='24.6368675232 5.41979026794 13.39249897' index='binGeoBuilding/Building_3-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_3-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_3-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_5'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_4-GEOMETRY' solid='false' vertexCount='980 11733' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.35274505615 1.83184552193 0.164373874664' size='24.1269683838 5.4797911644 13.2100000381' index='binGeoBuilding/Building_4-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_4-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_4-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_6'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_5-GEOMETRY' solid='false' vertexCount='218 1836' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.290195465088 1.831594944 1.55937314034' size='22.0018692017 5.47929000854 10.329000473' index='binGeoBuilding/Building_5-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_5-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_5-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                        <shape DEF='SP_1'>
+                        <appearance USE='_02_-_Default'></appearance>
+                        <binaryGeometry DEF='Building_6-GEOMETRY' solid='false' vertexCount='120 1029' primType='"TRIANGLESTRIP" "TRIANGLES"' position='4.07137012482 0.48423999548 -0.235626220703' size='6.06500005722 2.16499996185 12.4099998474' index='binGeoBuilding/Building_6-GEOMETRY_indexBinary.bin' coord='binGeoBuilding/Building_6-GEOMETRY_coordNormalBinary.bin+8' texCoord='binGeoBuilding/Building_6-GEOMETRY_texCoordBinary.bin+4' coordType='Uint16' texCoordType='Uint16' normalAsSphericalCoordinates='true'></binaryGeometry>
+                        </shape>
+                    </transform>
+                
+                </transform>
+                 
             </group>
             <Transform DEF='mirrorTrans' translation='2 0 -12'>
-                <Transform translation='0.0 0.0 -0.5' scale='7.0 7.0 0.2'>
+                <Transform translation='0.0 0.0 -0.3' scale='7.0 7.0 0.2'>
                     <Shape>
                         <Appearance><Material diffuseColor='0.8 0.75 0.6'></Material></Appearance>
                         <Box></Box>
@@ -168,49 +165,13 @@
                       </Group>
                     </RenderedTexture>
                   </Appearance>
-                </Shape>
-             
-            <!-- Mirror coordinate system visualization for debugging and illustration purposes -->
-            <!--Transform rotation='0 1 0 3.1415'-->
-                <Group>                             
-                    <Shape isPickable="false" DEF="AXIS_LINE_X">
-                        <IndexedLineSet index="0 1 -1">
-                            <Coordinate point="0 0 0, 15 0 0" color="1 0 0, 1 0 0"></Coordinate>
-                        </IndexedLineSet>
-                        <Appearance DEF='Red'>
-                            <Material diffuseColor="0 0 0" emissiveColor='1 0 0'></Material>                                                
-                        </Appearance>
-                    </Shape>                
-                    <Shape isPickable="false" DEF="AXIS_LINE_Y">
-                        <IndexedLineSet index="0 1 -1" >
-                            <Coordinate point="0 0 0, 0 15 0" color="0 0 1, 0 0 1"></Coordinate>
-                        </IndexedLineSet>
-                        <Appearance DEF='Green'>
-                            <Material diffuseColor="0 0 0" emissiveColor='0 1 0'></Material>                        
-                        </Appearance>
-                    </Shape>                
-                    <Shape isPickable="false" DEF="AXIS_LINE_Z">                
-                        <IndexedLineSet index="0 1 -1">
-                            <Coordinate point="0 0 0, 0 0 15" color="0 1 0, 0 1 0"></Coordinate>
-                        </IndexedLineSet>
-                        <Appearance DEF='Blue'>
-                            <Material diffuseColor="0 0 0" emissiveColor='0 0 1'></Material>                        
-                        </Appearance>
-                    </Shape>
-                </Group>
-            <!--/Transform-->
-            
+                </Shape>  
             </Transform>
-            <NavigationInfo headLight="false" ></NavigationInfo>
-            <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1'></TimeSensor>
-            <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='0 1 1 0 0 1 1 1.57 0 1 1 3.14 0 1 1 4.71 0 1 1 6.28'></OrientationInterpolator>
-            <OrientationInterpolator DEF='oiMirror' key='0 0.25 0.5 0.75 1' keyValue='0 1 0 0  0 1 0 1.0  0 1 0 0  0 1 0 -1.0  0 1 0 0'></OrientationInterpolator>
-            <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oi' toField='set_fraction'></ROUTE>
+                        
+            <TimeSensor DEF='ts' cycleInterval='20' loop='true' startTime='0'></TimeSensor>
+            <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='1 0 0 0  0 1 0 1  0 1 0 -1  1 0 0 0  1 0 0 0.5  1 0 0 -0.5  1 0 0 0'></OrientationInterpolator>
+            <OrientationInterpolator DEF='oiMirror' key='0 0.15 0.3 0.45 0.6 0.75 0.9 1' keyValue='0 1 0 0  0 1 0 0.8  0 1 0 0  0 1 0 -0.8  0 1 0 0  1 0 0 0.35  1 0 0 -0.35  1 0 0 0'></OrientationInterpolator>
             <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oiMirror' toField='set_fraction'></ROUTE>
-            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans4' toField='set_rotation'></ROUTE>
-            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans3' toField='set_rotation'></ROUTE>
-            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans2' toField='set_rotation'></ROUTE>
-            <ROUTE fromNode='oi' fromField='value_changed' toNode='trans1' toField='set_rotation'></ROUTE>
             <ROUTE fromNode='oiMirror' fromField='value_changed' toNode='mirrorTrans' toField='set_rotation'></ROUTE>            
           </Scene>
         </X3D>
