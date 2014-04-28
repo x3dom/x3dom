@@ -41,9 +41,6 @@
                             }
                         }
                     }
-
-                    //this is only for tests
-                    document.write("<script src=\""+ basePath + "test/functional/media/js/tests.js\"></script>");
                 } else {
                     //console.error('xhr status is not 200 on: ' + path);
                     if (maxDepth-- > 0) {
