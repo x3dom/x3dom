@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeDataNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The VolumeData node specifies a non-segmented volume data to be rendered with a volume rendering style.
          */
         function (ctx) {
             x3dom.nodeTypes.VolumeData.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies the render style to be applied on the volume data.
              * @var {x3dom.fields.SFNode} renderStyle
              * @memberof x3dom.nodeTypes.VolumeData
              * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode

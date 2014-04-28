@@ -21,13 +21,15 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * The OpacityMapVolumeStyle node specifies that the associated volume data is going to be rendered using a transfer function.
+         * The original opacity is mapped to a function stored as a texture (transfer function).
          */
         function (ctx) {
             x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The transferFunction field is a texture that is going to be used to map each voxel value to a specific color output.
              * @var {x3dom.fields.SFNode} transferFunction
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue x3dom.nodeTypes.Texture
@@ -37,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
 
             /**
-             *
+             * NYI!!
              * @var {x3dom.fields.SFString} type
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue "simple"
@@ -47,7 +49,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'type', "simple");
 
             /**
-             *
+             * The opacityFactor field is a factor to specify the amount of opacity to be considered on each sampled point along the ray traversal.
              * @var {x3dom.fields.SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue 6.0
@@ -57,7 +59,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'opacityFactor', 6.0);
 
             /**
-             *
+             * The lightFactor field is a factor to specify the amount of global light to be considered on each sampled point along the ray traversal.
              * @var {x3dom.fields.SFFloat} lightFactor
              * @memberof x3dom.nodeTypes.OpacityMapVolumeStyle
              * @initvalue 1.2

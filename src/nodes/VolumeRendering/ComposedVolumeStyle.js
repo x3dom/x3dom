@@ -21,23 +21,25 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ComposedVolumeStyle node is used to compose multiple rendering styles into the a single-rendering pass.
+         * The styles are applied in the same order they are defined on the scene tree.
          */
         function (ctx) {
             x3dom.nodeTypes.ComposedVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * 
              * @var {x3dom.fields.SFBool} ordered
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
              * @initvalue false
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'ordered', false);
+            //this.addField_SFBool(ctx, 'ordered', false);
 
             /**
-             *
+             * The renderStyle field contains a list of composable render styles nodes to be used on the associated volume data.
              * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ComposedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode

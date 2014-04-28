@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeDataNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ISOSurfaceVolumeData node specifies one or more surfaces to be extracted from the volume data.
          */
         function (ctx) {
             x3dom.nodeTypes.ISOSurfaceVolumeData.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The renderStyle field contains a list of volume render style nodes to be used on each isosurface.
              * @var {x3dom.fields.MFNode} renderStyle
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeRenderStyleNode);
 
             /**
-             *
+             * The gradients field allows to provide the normals of the volume data. It takes an ImageTextureAtlas of the same dimensions of the volume data. If it is not provided, it is computed on the fly.
              * @var {x3dom.fields.SFNode} gradients
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.Texture
@@ -48,7 +49,7 @@ x3dom.registerNodeType(
             //this.addField_SFNode('gradients', x3dom.nodeTypes.X3DTexture3DNode);
 
             /**
-             *
+             * The surfaceValues field is a list containing the surface values to be extracted. One or multiple isovalues can be declared.
              * @var {x3dom.fields.MFFloat} surfaceValues
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue [0.0]
@@ -58,7 +59,8 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'surfaceValues', [0.0]);
 
             /**
-             *
+             * The countourStepSize field specifies an step size to render isosurfaces that are multiples of an initial isovalue.
+             * When this field is non-zero a single isovalue must be defined on the surfaceValues field.
              * @var {x3dom.fields.SFFloat} contourStepSize
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue 0
@@ -68,7 +70,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'contourStepSize', 0);
 
             /**
-             *
+             * The surfaceTolerance field is a threshold to adjust the boundary of the isosurface.
              * @var {x3dom.fields.SFFloat} surfaceTolerance
              * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
              * @initvalue 0
