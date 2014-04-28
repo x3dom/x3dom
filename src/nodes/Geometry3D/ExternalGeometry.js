@@ -426,6 +426,37 @@ x3dom.registerNodeType(
                 }
             },
 
+            /**
+             * Returns the node's local volume
+             * @returns {x3dom.fields.BoxVolume} the local, axis-aligned bounding volume
+             */
+            getVolume: function()
+            {
+                var vol = this._mesh._vol;
+                var shapeNode;
+
+                if (!vol.isValid())
+                {
+                    //an ExternalGeometry node must _always_ be a child of (at least) one shape node
+                    //for multiple Shape nodes using a single ExternalGeometry node,
+                    //we assume that either all of them, or no one have specified a bounding volume
+                    shapeNode = this._parentNodes[0];
+
+                    if (typeof shapeNode._vf["bboxCenter"] != 'undefined' &&
+                        typeof shapeNode._vf["bboxSize"]   != 'undefined'   )
+                    {
+                        vol.setBoundsByCenterSize(shapeNode._vf["bboxCenter"], shapeNode._vf["bboxSize"]);
+                    }
+                    //if no bbox information was specified for the Shape node, use information from the SRC header
+                    else
+                    {
+                        //TODO: implement
+                    }
+                }
+
+                return vol;
+            },
+
             //----------------------------------------------------------------------------------------------------------
 
             /*nodeChanged: function()
