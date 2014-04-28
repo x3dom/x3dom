@@ -44,9 +44,8 @@
 
     <div style="margin-left: 550px">
         <h2>FPS: <div id="fps"></div></h2>
-        <br><br><br>
         <h2>Drawcalls: <div id="dc"></div></h2>
-        <br>
+        <br><br><br>
         <b>View frustum culling</b><br>
         <input type="button" id="frustumCulling" value="Activate" onclick="frustumCulling = !frustumCulling; this.value = (frustumCulling ? 'Deactivate' : 'Activate' ); changeSetting('frustumCulling', frustumCulling);"/>
         <br><br><br>
@@ -68,7 +67,7 @@
             var scene = document.getElementById("scene");
 
             var scale = 50000;
-            numInstances = 10;
+            numInstances = 8;
 
             for(var i = 0; i < 5; ++i)
             {
