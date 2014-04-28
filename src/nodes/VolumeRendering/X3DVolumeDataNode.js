@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DShapeNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc (Abstract) class for volume data. 
          */
         function (ctx) {
             x3dom.nodeTypes.X3DVolumeDataNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies the size of of the bounding box for the volume data.
              * @var {x3dom.fields.SFVec3f} dimensions
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
              * @initvalue 1,1,1
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'dimensions', 1, 1, 1);
 
             /**
-             *
+             * The voxels field is an ImageTextureAtlas node containing the volume data.
              * @var {x3dom.fields.SFNode} voxels
              * @memberof x3dom.nodeTypes.X3DVolumeDataNode
              * @initvalue x3dom.nodeTypes.Texture

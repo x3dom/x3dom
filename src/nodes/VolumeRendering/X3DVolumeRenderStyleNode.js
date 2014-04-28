@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc (Abstract) class for volume rendering styles.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DVolumeRenderStyleNode.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies wheter the render style is enabled or disabled.
              * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @initvalue true
