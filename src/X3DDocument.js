@@ -263,7 +263,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					var parent = parentNode._x3domNode;
 					
 					if (parent && parent._nameSpace && (child instanceof Element)) {
-                        removeX3DOMBackendGraph(child);    // not really necessary...
+                        //removeX3DOMBackendGraph(child);    // not really necessary...
 
                         var newNode = parent._nameSpace.setupTree(child);
 
