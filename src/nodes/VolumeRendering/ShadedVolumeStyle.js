@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ShadedVolumeStyle node applies the Blinn-Phong illumination model to the assocciated volume data.
          */
         function (ctx) {
             x3dom.nodeTypes.ShadedVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The material field allows to specify a Material node to be used on the assocciated volume data. 
              * @var {x3dom.fields.SFNode} material
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DMaterialNode
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
 
             /**
-             *
+             * NYI!!
              * @var {x3dom.fields.SFBool} lighting
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue false
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lighting', false);
 
             /**
-             *
+             * NYI!!
              * @var {x3dom.fields.SFBool} shadows
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue false
@@ -57,7 +58,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'shadows', false);
 
             /**
-             *
+             * NYI!!
              * @var {x3dom.fields.SFString} phaseFunction
              * @memberof x3dom.nodeTypes.ShadedVolumeStyle
              * @initvalue "Henyey-Greenstein"

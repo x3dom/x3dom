@@ -28,7 +28,7 @@ x3dom.registerNodeType(
 
 
             /**
-             * Specifies wheter the render style is enabled or disabled.
+             * Specifies whether the render style is enabled or disabled.
              * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @initvalue true

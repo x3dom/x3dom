@@ -21,13 +21,14 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The BlendedVolumeStyle node allows to blend the parent volume data with a second specified volume data using a weight function. 
          */
         function (ctx) {
             x3dom.nodeTypes.BlendedVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * Specifies the render style to be applied on the volume data to be blended.
              * @var {x3dom.fields.SFNode} renderStyle
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
 
             /**
-             *
+             * The voxels field is an ImageTextureAtlas node containing the volume data to be blended.
              * @var {x3dom.fields.SFNode} voxels
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DVolumeDataNode
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('voxels', x3dom.nodeTypes.X3DVolumeDataNode);
 
             /**
-             *
+             * The weightConstant1 field specifies a constant weight value to be use on the parent volume data.
              * @var {x3dom.fields.SFFloat} weightConstant1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue 0.5
@@ -57,7 +58,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'weightConstant1', 0.5);
 
             /**
-             *
+             * The weightConstant2 field specifies a constant weight value to be use on the volume data to be blended.
              * @var {x3dom.fields.SFFloat} weightConstant2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue 0.5
@@ -67,7 +68,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'weightConstant2', 0.5);
 
             /**
-             *
+             * The weightFunction1 field specifies the type of the weight function to be use on the parent volume data.
              * @var {x3dom.fields.SFString} weightFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue "CONSTANT"
@@ -77,7 +78,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'weightFunction1', "CONSTANT");
 
             /**
-             *
+             * The weightFunction2 field specifies the type of weight function to be use on the volume data to be blended.
              * @var {x3dom.fields.SFString} weightFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue "CONSTANT"
@@ -87,7 +88,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'weightFunction2', "CONSTANT");
 
             /**
-             *
+             * The weightTransferFunction1 field is a 2D texture that maps each opacity value to a weight value, that will be used on the parent volume data.
              * @var {x3dom.fields.SFNode} weightTransferFunction1
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DTexture2DNode
@@ -97,7 +98,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('weightTransferFunction1', x3dom.nodeTypes.X3DTexture2DNode);
 
             /**
-             *
+             * The weightTransferFunction2 field is a 2D texture that maps each opacity value to a weight value, that will be used on the volume data to be blended.
              * @var {x3dom.fields.SFNode} weightTransferFunction2
              * @memberof x3dom.nodeTypes.BlendedVolumeStyle
              * @initvalue x3dom.nodeTypes.X3DTexture2DNode

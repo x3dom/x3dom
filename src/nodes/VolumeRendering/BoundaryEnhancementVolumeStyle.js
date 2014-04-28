@@ -21,13 +21,15 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The BoundaryEnhancementVolumeStyle node specifies that the boundaries of the volume data shall be enhanced. The rendering is performed based on the gradient magnitude.
+         * Areas where density varies are made more visible than areas of constant density.
          */
         function (ctx) {
             x3dom.nodeTypes.BoundaryEnhancementVolumeStyle.superClass.call(this, ctx);
 
 
             /**
-             *
+             * The retainedOpacity field specifies the amount of original opacity to retain.
              * @var {x3dom.fields.SFFloat} retainedOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 1
@@ -37,7 +39,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'retainedOpacity', 1);
 
             /**
-             *
+             * The boundaryOpacity field specifies the amount of boundary enhancement to use.
              * @var {x3dom.fields.SFFloat} boundaryOpacity
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 0
@@ -47,7 +49,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'boundaryOpacity', 0);
 
             /**
-             *
+             * The opacityFactor field is an exponent factor that specifies the slope of the opacity curve to highlight the boundary.
              * @var {x3dom.fields.SFFloat} opacityFactor
              * @memberof x3dom.nodeTypes.BoundaryEnhancementVolumeStyle
              * @initvalue 1
