@@ -105,7 +105,8 @@
                     {"file": "Normal.js"},
                     {"file": "X3DColorNode.js"},
                     {"file": "Color.js"},
-                    {"file": "ColorRGBA.js"}
+                    {"file": "ColorRGBA.js"},
+                    {"file": "ParticleSet.js"}
                 ]},
                 {"name": "Shape", "filePrefix": "nodes/Shape/", "files":[
                     {"file": "X3DAppearanceNode.js"},
