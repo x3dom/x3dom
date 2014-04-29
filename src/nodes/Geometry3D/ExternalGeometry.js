@@ -213,8 +213,6 @@ x3dom.registerNodeType(
                 {
                     indexView = indexViews[indexViewID];
 
-                    shape._webgl.buffers[INDEX_BUFFER_IDX] = viewIDsToGLBufferIDs[indexView["bufferView"]];
-
                     //we currently assume 16 bit index data
                     if (indexView["componentType"] != gl.UNSIGNED_SHORT)
                     {
@@ -254,6 +252,9 @@ x3dom.registerNodeType(
 
                         shape._webgl.indexOffset[meshIdx] = indexView["byteOffset"];
                         shape._webgl.drawCount[meshIdx]   = indexView["count"];
+
+                        shape._webgl.buffers[INDEX_BUFFER_IDX + bufferOffset] =
+                            viewIDsToGLBufferIDs[indexView["bufferView"]];
 
                         //TODO: add support for LINES and POINTS
                         this._mesh._numFaces += indexView["count"] / 3;

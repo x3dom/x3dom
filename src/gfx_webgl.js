@@ -1333,13 +1333,20 @@ x3dom.gfx_webgl = (function () {
                 this.updatePopState(drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps);
             }
 
-
-            //== end== code stolen from picking pass
-            for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
+            var q_n;
+            if (s_gl.externalGeometry != 0)
+            {
+                q_n = s_gl.primType.length;
+            }
+            else
+            {
+                q_n = s_gl.positions.length;
+            }
+            for (var q = 0; q < q_n; q++) {
                 var q6 = 6 * q;
                 var v, v_n, offset;
 
-                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
+                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q] || s_gl.externalGeometry != 0)) )
                     continue;
 
                 // set buffers
@@ -1370,20 +1377,12 @@ x3dom.gfx_webgl = (function () {
                 //ExternalGeometry: indexed rendering (shadow pass)
                 else if (s_gl.externalGeometry == 1)
                 {
-                    v_n = s_gl.drawCount.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
-                    }
+                    gl.drawElements(s_gl.primType[q], s_gl.drawCount[q], s_gl.indexType, s_gl.indexOffset[q]);
                 }
                 //ExternalGeometry: non-indexed rendering (shadow pass)
                 else if (s_gl.externalGeometry == -1)
                 {
-                    v_n = s_gl.drawCount.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
-                    }
+                    gl.drawArrays(s_gl.primType[q], 0, s_gl.drawCount[q]);
                 }
                 else if (s_geo.hasIndexOffset()) {
                     var indOff = shape.tessellationProperties();
@@ -1664,11 +1663,20 @@ x3dom.gfx_webgl = (function () {
                 this.updatePopState(drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps);
             }
 
-            for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
+            var q_n;
+            if (s_gl.externalGeometry != 0)
+            {
+                q_n = s_gl.primType.length;
+            }
+            else
+            {
+                q_n = s_gl.positions.length;
+            }
+            for (var q = 0; q < q_n; q++) {
                 var q6 = 6 * q;
                 var v, v_n, offset;
 
-                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
+                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q] || s_gl.externalGeometry != 0)) )
                     continue;
 
                 // set buffers
@@ -1739,20 +1747,12 @@ x3dom.gfx_webgl = (function () {
                 //ExternalGeometry: indexed rendering (picking pass)
                 else if (s_gl.externalGeometry == 1)
                 {
-                    v_n = s_gl.drawCount.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
-                    }
+                    gl.drawElements(s_gl.primType[q], s_gl.drawCount[q], s_gl.indexType, s_gl.indexOffset[q]);
                 }
                 //ExternalGeometry: non-indexed rendering (picking pass)
                 else if (s_gl.externalGeometry == -1)
                 {
-                    v_n = s_gl.drawCount.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
-                    }
+                    gl.drawArrays(s_gl.primType[q], 0, s_gl.drawCount[q]);
                 }
                 else if (s_geo.hasIndexOffset()) {
                     var indOff = shape.tessellationProperties();
@@ -2266,12 +2266,21 @@ x3dom.gfx_webgl = (function () {
         }
 
         // render object
-        var v, v_n, offset;
+        var v, v_n, offset, q_n;
 
-        for (var q = 0, q_n = s_gl.positions.length; q < q_n; q++) {
+        if (s_gl.externalGeometry != 0)
+        {
+            q_n = s_gl.primType.length;
+        }
+        else
+        {
+            q_n = s_gl.positions.length;
+        }
+
+        for (var q = 0; q < q_n; q++) {
             var q6 = 6 * q;
 
-            if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
+            if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q] || s_gl.externalGeometry != 0)) )
                 continue;
 
             if (s_gl.buffers[q6]) {
@@ -2360,20 +2369,12 @@ x3dom.gfx_webgl = (function () {
                 //ExternalGeometry: indexed rendering (standard pass, POINTS or LINES)
                 else if (s_gl.externalGeometry == 1)
                 {
-                    v_n = s_gl.primType.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawElements(polyMode, s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
-                    }
+                    gl.drawElements(polyMode, s_gl.drawCount[q], s_gl.indexType, s_gl.indexOffset[q]);
                 }
                 //ExternalGeometry: non-indexed rendering (standard pass, POINTS or LINES)
                 else if (s_gl.externalGeometry == -1)
                 {
-                    v_n = s_gl.primType.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawArrays(polyMode, 0, s_gl.drawCount[v]);
-                    }
+                    gl.drawArrays(polyMode, 0, s_gl.drawCount[q]);
                 }
                 else if (s_gl.indexes[q].length == 0) {
                     gl.drawArrays(polyMode, 0, s_gl.positions[q].length / 3);
@@ -2399,20 +2400,12 @@ x3dom.gfx_webgl = (function () {
                 //ExternalGeometry: indexed rendering (standard pass)
                 else if (s_gl.externalGeometry == 1)
                 {
-                    v_n = s_gl.primType.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawElements(s_gl.primType[v], s_gl.drawCount[v], s_gl.indexType, s_gl.indexOffset[v]);
-                    }
+                    gl.drawElements(s_gl.primType[q], s_gl.drawCount[q], s_gl.indexType, s_gl.indexOffset[q]);
                 }
                 //ExternalGeometry: non-indexed rendering (standard pass)
                 else if (s_gl.externalGeometry == -1)
                 {
-                    v_n = s_gl.primType.length;
-                    for (v = 0; v < v_n; v++)
-                    {
-                        gl.drawArrays(s_gl.primType[v], 0, s_gl.drawCount[v]);
-                    }
+                    gl.drawArrays(s_gl.primType[q], 0, s_gl.drawCount[q]);
                 }
                 else if (s_geo.hasIndexOffset()) {
                     // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
