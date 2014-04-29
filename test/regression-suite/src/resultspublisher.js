@@ -275,8 +275,14 @@ var ResultsPublisher = function()
             {
                 for (var row = -1; row < db.data.length; row++)
                 {
+                    var empty = false;
                     var result = db.data[Math.max(0, row)].results[Math.max(0, resultId)];
-                    var entry = result.details[detail];
+                    empty = empty || !result;
+                    if (!empty)
+                    {
+                        var entry = result.details[detail];
+                        empty = empty || !entry;
+                    }
                     if(resultId == -1 && detail == 0) //headline
                     {
                         if(row == -1)
@@ -291,7 +297,7 @@ var ResultsPublisher = function()
                     else if(resultId != -1)
                     {
                         //if no comparison
-                        if(entry.status != 'success' && entry.status != 'failed' && (entry.status != 'error' || !entry.data.type))
+                        if(!empty && entry.status != 'success' && entry.status != 'failed' && (entry.status != 'error' || !entry.data.type))
                         {
 
                         }
@@ -301,27 +307,35 @@ var ResultsPublisher = function()
                         }
                         else
                         {
-
-                            if(!newFail[row])
+                            if(empty)
                             {
-                                newFail[row] = [];
-                            }
-                            if(row < db.data.length - 1) //if not last row
-                            {
-                                newFail[row].push(db.data[row+1].results[resultId].details[detail].status == "success" && entry.status != "success");
+                                body += "<td>N/A</td>";
                             }
                             else
                             {
-                                newFail[row].push(false);
+                                if(!newFail[row])
+                                {
+                                    newFail[row] = [];
+                                }
+                                if(row < db.data.length - 1) //if not last row
+                                {
+                                    newFail[row].push(db.data[row+1].results[resultId].details[detail].status == "success" && entry.status != "success");
+                                }
+                                else
+                                {
+                                    newFail[row].push(false);
+                                }
+
+                                var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
+                                var link = profile.name + "_" + db.data[row].time + ".html#" + result.testName;
+                                body += "<td class='" + successString + "'><a href='" + link + "'>" + successString + "</a></td>";
                             }
 
-                            var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
-                            var link = profile.name + "_" + db.data[row].time + ".html#" + result.testName;
-                            body += "<td class='" + successString + "'><a href='" + link + "'>" + successString + "</a></td>";
-                            if(row == db.data.length-1)//last row
-                            {
-                                body += "</tr><tr>";
-                            }
+
+                        }
+                        if(row == db.data.length-1)//last row
+                        {
+                            body += "</tr><tr>";
                         }
                     }
                 }

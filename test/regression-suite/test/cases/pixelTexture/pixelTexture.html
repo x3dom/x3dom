@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+      <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>Pixel texture</title>
+      <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+  </head>
+  <body>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='pt' 
+         showStat='false' showLog='false' width='800px' height='600px'>
+      <Scene DEF='scene'>
+        <Viewpoint position="3.52874 4.29762 8.31135" orientation="-0.76134 0.64614 0.05349 0.59052" zNear="5.92154" zFar="15.11769" description="defaultX3DViewpointNode"></Viewpoint>
+        <Transform DEF='trans'>
+          <Shape>
+            <Appearance>
+              <!--<PixelTexture DEF='testImage' image='2 2 3 0xff0000 0x00ff00 0x0000ff 0xffffff'/>-->
+              <!--<PixelTexture DEF='testImage' image='2 2 3 16711680 65280 255 16777215'/>-->
+              <!--<PixelTexture DEF='testImage' image='2 2 4 -16776961 16711935 65535 -1'/>-->
+              <PixelTexture DEF='testImage' image='2 2 4 0xff0000ff 0x00ff00ff 0x0000ffff 0xffff00ff'>
+                  <TextureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
+                                     magnificationFilter='NEAREST' minificationFilter='NEAREST'
+                                     generateMipMaps='false' id='texProps'>
+                  </TextureProperties>
+              </PixelTexture>
+            </Appearance>
+            <Box size='3 3 3'></Box>
+          </Shape>
+        </Transform>
+      </Scene>
+    </X3D>
+  </body>
+</html>

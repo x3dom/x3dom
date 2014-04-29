@@ -33,41 +33,7 @@
                     <ImageTexture containerField="right" url="./ocean_3_right.jpg"></ImageTexture>
                     <ImageTexture containerField="top" url="./ocean_3_top.jpg"></ImageTexture>
                 </ComposedCubeMapTexture>
-                
-                <ComposedShader DEF='ComposedShader'>
-                  <field name='cube' type='SFInt32' value='0'></field>
 
-                  <ShaderPart type='VERTEX'>
-
-                        attribute vec3 position;
-                        attribute vec3 normal;
-                        uniform mat4 modelViewProjectionMatrix;
-                        varying vec3 fragNormal;
-
-                        void main()
-                        {
-                            fragNormal = normal;
-                            gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
-                        }
-
-                  </ShaderPart>
-                  <ShaderPart type='FRAGMENT'>
-
-                        #ifdef GL_ES
-                          precision highp float;
-                        #endif
-
-                        uniform samplerCube cube;
-                        varying vec3 fragNormal;
-
-                        void main()
-                        {
-                            vec3 normal = normalize(fragNormal);
-                            gl_FragColor = textureCube(cube, normal);
-                        }
-
-                  </ShaderPart>
-                </ComposedShader>
             </Appearance>
             <Sphere solid="false" ></Sphere>
           </Shape>
