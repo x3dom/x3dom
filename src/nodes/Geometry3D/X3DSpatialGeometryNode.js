@@ -21,6 +21,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc This is the abstract node for spatial geometry nodes.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DSpatialGeometryNode.superClass.call(this, ctx);

@@ -96,12 +96,11 @@ process.argv.forEach(function(val, index, array){
             console.log("Running in conservative mode");
             globals.screenshotDelay = 5000;
         }
-        if(val == '-n' || val == '--no-aa')
-        {
-
-            console.log("Using reference folder: test/reference-no-aa");
-            globals.referencePath = "test/reference-no-aa/";
-        }
+//        if(val == '-n' || val == '--no-aa')
+//        {
+//            console.log("Using reference folder: test/reference-no-aa");
+//            globals.referencePath = "test/reference-no-aa/";
+//        }
         if(val == '-t' || val == '--testing-only')
         {
             globals.testOnly = true;

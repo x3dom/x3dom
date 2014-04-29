@@ -44,6 +44,13 @@
                             {
                                 "x3d"       :   "x3d"
                             }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
                         }
                     ]
             },
@@ -762,6 +769,112 @@
                                 "command"       :   "change();"
                             }
                         },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/composedShader/composedShader.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/lod/lod.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "changeVP();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/normalGen/normalGen.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/pixelTexture/pixelTexture.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/points/points.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/materialTest/materialTest.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoPrimExt/geoPrimExt.html",
+                "steps" :
+                    [
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
