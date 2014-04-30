@@ -16,11 +16,11 @@
 </div>
 <div id="header-navbar">
     <a href="http://x3dom.org">x3dom.org</a>
-    >
+    &gt;
     <a href="../../../index.html">documentation</a>    
-    >
+    &gt;
     <a href="../../index.html">Tutorials</a>
-	>
+	&gt;
     <a href="#">Navigation</a>
 </div>
 <div id="main">
@@ -38,13 +38,44 @@
              </div>       
                     
         <p> X3DOM provides some generic interaction and navigation methods. Interactive objects will be handled by HTML-like events. Navigation can be user-defined or controlled by specific predefined modes.
-		<br>
-		Currently X3DOM supports the following interactive navigation modes: Examine, Walk, Fly, Look-at, Look-around
+		<br /><br />
+		Currently X3DOM supports the following interactive navigation modes: Examine, Walk, Fly, Look-at, Look-around, Turntable,
 		Game and Helicopter.
-		<br>
+		<br /><br />
 		Non-Interactive movement encompasses the functionality of: Resetting a view, showing all or upright the view.
-		<br>
+		</p>
 		
+		
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">Explore navigation modes in <a href="example.html">this interactive example</a></div>
+            </div>
+        </div> 
+		
+		
+<h2>Changing navigation mode with Javascript</h2>
+
+<p>
+Of course you can switch modes not only by pressing the shortcuts/hotkeys but also with Javascript. The current mode is set as param <i>type</i> to the <i>NavigationInfo</i> node.
+</p>
+		<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+        &lt;navigationInfo type='"walk" "any"' id="navType"&gt;&lt;/navigationInfo&gt;
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+
+<p>
+Type can be a single mode or also hold an array containing additional fallback modes if the favored mode is not available. You can change the value by setting a new <i>type</i> to this node.
+</p>
+
+<pre class="prettyprint"><code class="language-javascript">
+	document.getElementById('navType').setAttribute("type", currentMode);
+	
+</code></pre>		
 	
 <h2>Interactive camera</h2>
 <h3>Examine</h3>
@@ -54,7 +85,6 @@
 <th>Function</th>
 <th>Mouse Button</th>
 </tr>
-</thead>
 <tbody>
 <tr><td>Rotate</td>
 <td>Left / Left + Shift</td>
@@ -141,12 +171,36 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
+<h3>Turntable</h3>
+<p>The allowed interactions are the same as in examine mode. With the third and fourth value of the typeParams-Parameter you can set the minimal and maximal vertical rotation angle. Accepted values are between 0 and PI, starting from +Y (0) down to -Y (PI).
+</p>
+<table border='1' width='350px' style="border-collapse:collapse">
+<tr>
+<th>Function</th>
+<th>Mouse Button</th>
+</tr>
+<tbody>
+<tr><td>Rotate</td>
+<td>Left / Left + Shift</td>
+</tr>
+<tr><td>Pan</td>
+<td>Mid / Left + Ctrl</td>
+</tr>
+<tr><td>Zoom</td>
+<td>Right / Wheel / Left + Alt</td>
+</tr>
+<tr><td>Set center of rotation</td>
+<td>Double-click left</td>
+</tr>
+</tbody>
+</table>
+
 <h3>Game</h3>
 <p>Activate this mode by pressing the "g" key. To look around (rotate view) move the mouse.</p>
 <table border='1' width='350px' style="border-collapse:collapse">
 <thead>
 <tr><th >Function</th>
-<th>Mouse Button</th>
+<th>Key</th>
 </tr>
 </thead>
 <tbody>
