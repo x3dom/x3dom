@@ -2348,7 +2348,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             // TODO: implement surface with additional wireframe render mode (independent from poly mode)
-            var renderMode = viewarea.getRenderMode();
+            var indOff, renderMode = viewarea.getRenderMode();
 
             if (renderMode > 0) {
                 var polyMode = (renderMode == 1) ? gl.POINTS : gl.LINES;
@@ -2375,6 +2375,15 @@ x3dom.gfx_webgl = (function () {
                 else if (s_gl.externalGeometry == -1)
                 {
                     gl.drawArrays(polyMode, 0, s_gl.drawCount[q]);
+                }
+                else if (s_geo.hasIndexOffset()) {
+                    // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
+                    // and Patch geometry from external BVHRefiner component
+                    indOff = shape.tessellationProperties();
+                    for (v = 0, v_n = indOff.length; v < v_n; v++) {
+                        gl.drawElements(polyMode, indOff[v].count, s_gl.indexType,
+                            indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
+                    }
                 }
                 else if (s_gl.indexes[q].length == 0) {
                     gl.drawArrays(polyMode, 0, s_gl.positions[q].length / 3);
@@ -2410,7 +2419,7 @@ x3dom.gfx_webgl = (function () {
                 else if (s_geo.hasIndexOffset()) {
                     // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
                     // and Patch geometry from external BVHRefiner component
-                    var indOff = shape.tessellationProperties();
+                    indOff = shape.tessellationProperties();
                     for (v = 0, v_n = indOff.length; v < v_n; v++) {
                         gl.drawElements(s_gl.primType, indOff[v].count, s_gl.indexType,
                             indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));

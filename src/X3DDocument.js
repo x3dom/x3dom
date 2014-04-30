@@ -170,7 +170,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 }
             }
 
-            if (nameSpace) {
+            //do not remove node from namespace if it was only "USE"d
+            if (nameSpace && ! domNode.getAttribute('use'))
+            {
                 nameSpace.removeNode(node._DEF);
             }
             node._xmlNode = null;
