@@ -15,7 +15,7 @@
         ],
     "settings" :
     {
-        "misMatchPercentage" : "1"
+        "misMatchPercentage" : "0.15"
     },
     "tests" :
         [
@@ -36,13 +36,6 @@
                             {
                                 "x3d"       :   "x3d",
                                 "command"   :   "document.getElementById('trans').setAttribute('translation', '0 -3 0');document.getElementById('mat1').setAttribute('diffuseColor', '0.2 0 0.7');"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
                             }
                         },
                         {
