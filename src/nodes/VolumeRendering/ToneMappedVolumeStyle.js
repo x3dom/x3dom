@@ -144,7 +144,8 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                //return " value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                return "";
             },
 
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){

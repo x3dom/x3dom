@@ -238,6 +238,7 @@ x3dom.registerNodeType(
                     "      break;\n"+
                     "  }\n"+
                     "   gl_FragColor = accum;\n"+
+                    //"   gl_FragColor = vec4(backColor.rgb,1.0);\n"+
                     "}";
                 return shaderLoop;
             }

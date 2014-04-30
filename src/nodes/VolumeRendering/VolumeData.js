@@ -41,8 +41,9 @@ x3dom.registerNodeType(
             this.vrcRenderTexture = new x3dom.nodeTypes.RenderedTexture(ctx);
             this.vrcVolumeTexture = null;
 
+            this.vrcBackCubeTransform = new x3dom.nodeTypes.Transform();
             this.vrcBackCubeShape = new x3dom.nodeTypes.Shape(ctx);
-            this.vrcBackCubeAppearance = new x3dom.nodeTypes.Appearance();
+            this.vrcBackCubeAppearance = new x3dom.nodeTypes.Appearance(ctx);
             this.vrcBackCubeGeometry = new x3dom.nodeTypes.Box(ctx);
             this.vrcBackCubeShader = new x3dom.nodeTypes.ComposedShader(ctx);
             this.vrcBackCubeShaderVertex = new x3dom.nodeTypes.ShaderPart(ctx);
@@ -64,10 +65,9 @@ x3dom.registerNodeType(
                 // therefore, try to mimic depth-first parsing scheme
                 if (!this._cf.appearance.node)
                 {
-                    var that = this;
                     var i;
 
-                    this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+                    this.addChild(new x3dom.nodeTypes.Appearance());
 
                     // second texture, ray direction and length
                     this.vrcBackCubeShaderVertex._vf.type = 'vertex';
@@ -111,7 +111,6 @@ x3dom.registerNodeType(
                     this.vrcRenderTexture._vf.repeatS = false;
                     this.vrcRenderTexture._vf.repeatT = false;
                     this.vrcRenderTexture._nameSpace = this._nameSpace;
-                    this._textureID++;
 
                     this.vrcBackCubeGeometry._vf.size = new x3dom.fields.SFVec3f(
                         this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
@@ -126,14 +125,19 @@ x3dom.registerNodeType(
                     this.vrcBackCubeShape.addChild(this.vrcBackCubeAppearance);
                     this.vrcBackCubeAppearance.nodeChanged();
 
-                    this.vrcRenderTexture.addChild(this.vrcBackCubeShape, 'scene');
+                    //this.vrcBackCubeTransform._vf.translation = new x3dom.fields.SFVec3f(0,0,0);
+                    //this.vrcBackCubeTransform.fieldChanged("translation");
+
+                    //this.vrcBackCubeTransform.addChild(this.vrcBackCubeShape);
+                    //this.vrcBackCubeShape.nodeChanged();
+
+                    this.vrcRenderTexture.addChild(this.vrcBackCubeShape);
                     this.vrcBackCubeShape.nodeChanged();
 
                     // create shortcut to volume data set
                     this.vrcVolumeTexture = this._cf.voxels.node;
                     this.vrcVolumeTexture._vf.repeatS = false;
                     this.vrcVolumeTexture._vf.repeatT = false;
-                    this._textureID++;
                     this.vrcMultiTexture._nameSpace = this._nameSpace;
 
                     this.vrcMultiTexture.addChild(this.vrcRenderTexture, 'texture');
@@ -173,11 +177,11 @@ x3dom.registerNodeType(
 
                     this.vrcFrontCubeShaderFieldBackCoord._vf.name = 'uBackCoord';
                     this.vrcFrontCubeShaderFieldBackCoord._vf.type = 'SFInt32';
-                    this.vrcFrontCubeShaderFieldBackCoord._vf.value = 0;
+                    this.vrcFrontCubeShaderFieldBackCoord._vf.value = this._textureID++;
 
                     this.vrcFrontCubeShaderFieldVolData._vf.name = 'uVolData';
                     this.vrcFrontCubeShaderFieldVolData._vf.type = 'SFInt32';
-                    this.vrcFrontCubeShaderFieldVolData._vf.value = 1;
+                    this.vrcFrontCubeShaderFieldVolData._vf.value = this._textureID++;
 
                     this.vrcFrontCubeShaderFieldOffset._vf.name = 'offset';
                     this.vrcFrontCubeShaderFieldOffset._vf.type = 'SFVec3f';
@@ -192,18 +196,18 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldOffset, 'fields');
 
                     //Take volume texture size for the ComposableRenderStyles offset parameter
-                    this.offsetInterval = window.setInterval((function(aTex) {
+                    this.offsetInterval = window.setInterval((function(aTex, obj) {
                         return function() {
                             x3dom.debug.logInfo('[VolumeRendering][VolumeData] Looking for Volume Texture size...');
-                            var s = that.getTextureSize(aTex);
+                            var s = obj.getTextureSize(aTex);
                             if(s.valid){
-                                clearInterval(that.offsetInterval);
-                                that.vrcFrontCubeShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/s.w, 1.0/s.h, 1.0/aTex._vf.numberOfSlices);
-                                that.vrcFrontCubeShader.nodeChanged();
+                                clearInterval(obj.offsetInterval);
+                                obj.vrcFrontCubeShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/s.w, 1.0/s.h, 1.0/aTex._vf.numberOfSlices);
+                                obj.vrcFrontCubeShader.nodeChanged();
                                 x3dom.debug.logInfo('[VolumeRendering][VolumeData] Volume Texture size obtained');
                             }
                         }
-                    })(this.vrcVolumeTexture), 1000);
+                    })(this.vrcVolumeTexture, this), 1000);
 
                     var ShaderUniforms = this._cf.renderStyle.node.uniforms();
                     for (i = 0; i<ShaderUniforms.length; i++)
