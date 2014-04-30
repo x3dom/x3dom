@@ -110,7 +110,6 @@ x3dom.registerNodeType(
 
             // special stuff...
             this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
-        
         },
         {
             fieldChanged: function (fieldName) {
@@ -128,6 +127,11 @@ x3dom.registerNodeType(
                     // FIXME; call parent.fieldChanged();
                     this.bind(this._vf.bind);
                 }
+            },
+
+            setProjectionMatrix: function(matrix)
+            {
+                this._projMatrix = matrix;
             },
 
             getCenterOfRotation: function() {

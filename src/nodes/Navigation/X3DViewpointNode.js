@@ -88,9 +88,27 @@ x3dom.registerNodeType(
                 return 1.57079633;
             },
 
+            /**
+             * Sets the (local) view matrix
+             * @param newView
+             */
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
                 this._viewMatrix = newView.mult(mat);
+            },
+
+            /**
+             * Sets an absolute view matrix in world coordinates
+             * @param newView
+             */
+            setViewAbsolute: function(newView)
+            {
+                this._viewMatrix = newView
+            },
+
+            setProjectionMatrix: function(matrix)
+            {
+
             },
 
             resetView: function() {
