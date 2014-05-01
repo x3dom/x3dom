@@ -45,11 +45,13 @@
         {"path": "shader/ShaderShadow.js", "type": "file"},
         {"path": "shader/ShaderShadowRendering.js", "type": "file"},
         {"path": "shader/ShaderBlur.js", "type": "file"},
-        {"path": "shader/ShaderTextureRefinement.js", "type": "file"}
+        {"path": "shader/ShaderTextureRefinement.js", "type": "file"},
+	{"path": "shader/ShaderSSAO.js", "type": "file"}
     ]},
 
     {"group": "GFX",
      "data": [
+	{"path": "SSAO.js", "type": "file"},
         {"path": "gfx_webgl.js", "type": "file"},
         {"path": "gfx_flash.js", "type": "file"}
     ]},
