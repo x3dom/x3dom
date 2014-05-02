@@ -107,10 +107,7 @@
 		
 		<p>
 		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you wan't to know more about what's going on in your application right now.
-		<br><br>
-		If you want to pick detailed information like color oder textures instead, proceed with the <a href="pickingBuffer/index.html">next tutorial</a>, where you will learn to use the picking buffer explicitly.
 		</p>
-		
 		
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
@@ -118,6 +115,20 @@
                 <div class="docuCaption">Object picking example</div>
             </div>
         </div> 
+		
+		<p>
+		If you want to pick detailed information like color oder textures instead, you have to choose the picking buffer explicitly. The default mode is <i>idBuf</i>. He is used implicitly if you not specify another mode.
+		</p>
+		<pre class="prettyprint"><code class="language-html">
+	&lt;Scene pickMode="idBuf"&gt;
+        </code></pre>
+		
+		<p>
+		This picking buffer holds specific information for every point to click on. Since it has only a limited size, you have to choose which information you need. The modes are: <i>idBuf, color, texCord</i> and <i>box</i>. 
+		The resulting data can always be found in the attribute <i>event.hitPnt</i>. You can either another pickMode as attribute to the <i>Scene</i> or switch between the using the hotkey "p".
+		</p>
+		
+
         
         <p>               
         <a href="#">Back to page top &#10548;</a>
@@ -135,7 +146,9 @@
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
 				<li><a href="../../../author/Grouping/Group.html">Group</a></li>
-
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
 				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
             </ul>
         </div>
