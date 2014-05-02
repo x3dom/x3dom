@@ -16,11 +16,11 @@
 </div>
 <div id="header-navbar">
     <a href="http://x3dom.org">x3dom.org</a>
-    >
+    &gt;
     <a href="../../../index.html">documentation</a>    
-    >
+    &gt;
     <a href="../../index.html">Tutorials</a>
-	>
+	&gt;
     <a href="#">Picking Objects</a>
 </div>
 <div id="main">
@@ -40,20 +40,85 @@
         <p>
 		This tutorial will show you how to pick objects in X3DOM or trigger events by clicking on objects. 
         </p>
-		
-		To trigger events by clicking on objects you can use the <a href="http://www.w3schools.com/js/default.asp" target="_blank">JavaScript</a> "onClick()" event.
-		We used this in a <a href="../../basics/htmlCSS/index.html" target="_blank">previous tutorial</a> about X3DOM with HTML, CSS and JavaScript. Here is a short reminder: 
+        
+        <p>
+        Each X3DOM node can have an <i>onclick</i> attribute providing a callback function. Every time you click into the scene, collision tests are made using rays and a special buffer. If a collision is detected, the callback function of that node is called. 
+        </p>
+        
+        <p>
+        Given a typical X3DOM scene, you can add a function as <i>onclick</i> attribute to a single shape. We already used this in a <a href="../../basics/htmlCSS/index.html" target="_blank">previous tutorial</a> about X3DOM with HTML, CSS and JavaScript. Here is a short reminder: 
 		<pre class="prettyprint"><code class="language-html">
 	&lt;shape onclick="alert("You clicked me");"&gt; &lt;/shape&gt; 
-        </code></pre>    
+        </code></pre>
+        
+            
 		<p>
-		If you need the exact position with event.hitPnt: 
-		<pre class="prettyprint"><code class="language-html">
-		&lt;shape onclick="alert("You clicked me here"+ event.hitPnt);"&gt; &lt;/shape&gt; 
-		</code></pre>
-		Of course you can always open the log window by pressing "d"-key in a X3DOM application. 
+		Instead of just attaching this to a single shape, you can also add it to a whole group. This will cause the function call every time a member of this group is clicked. An argument named <i>event</i> will be provided, containing a lot of informations about the collision that occurred.
 		</p>
-		       
+		 
+		<pre class="prettyprint"><code class="language-html">
+	&lt;group onclick="handleGroupClick(event)"&gt; 
+		</code></pre>
+		
+		<p>
+		In your callback function, you can for example get the exact collision point with <i>event.hitPnt</i>.
+		</p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+   	//Handle click on any group member
+   	function handleGroupClick(event)
+   	{
+   		//Mark hitting point
+   		$('#marker').attr('translation', event.hitPnt);
+   		
+   		//Display coordinates of hitting point (rounded)
+   		var coordinates = event.hitPnt;
+   		$('#coordX').html(coordinates[0]);
+   		$('#coordY').html(coordinates[1]);
+   		$('#coordZ').html(coordinates[2]);
+   	}
+		</code></pre>
+		
+		<p>
+		There are various ways to attach the callback function to a node. Another way is to use Javascript:
+		<p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+    	//Handle click on a shape
+    	function handleSingleClick(shape) {
+    		$('#lastClickedObject').html($(shape).attr("def"));
+    	}
+        
+        $(document).ready(function(){
+        	//Add a onclick callback to every shape
+        	$("shape").each(function() {
+        		$(this).attr("onclick", "handleSingleClick(this)");
+        	});
+        });
+		</code></pre>
+		
+		<p>
+		<b>Caveat:</b> The call of the onclick function is handled by x3dom by directly calling the callback function. No page-wide onclick events are thrown, so attaching a listener to this object won't work. Thus do not use 
+		<code>$("#myBox").on("click", doSomething(event))</code>
+		but
+		<code>$("#myBox").attr("onclick", "doSomething(event)")</code>
+		instead.
+		</p>
+		
+		<p>
+		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you wan't to know more about what's going on in your application right now.
+		<br><br>
+		If you want to pick detailed information like color oder textures instead, proceed with the <a href="pickingBuffer/index.html">next tutorial</a>, where you will learn to use the picking buffer explicitly.
+		</p>
+		
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">Object picking example</div>
+            </div>
+        </div> 
+        
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
@@ -69,8 +134,9 @@
             
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
+				<li><a href="../../../author/Grouping/Group.html">Group</a></li>
 
-                <li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
             </ul>
         </div>
 
