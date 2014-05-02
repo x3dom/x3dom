@@ -42,18 +42,18 @@
         </p>
         
         <p>
-        Each X3DOM node can have an <i>onclick</i> attribute providing a callback function. Every time you click into the scene, collision tests are made using rays and a special buffer. If a collision is detected, the callback function of that node is called. 
+        Each X3DOM node can have an <i>onclick</i> attribute providing a callback function. Every time you click into the scene, intersection tests are made using rays and a special buffer. If an intersection is detected, the event handler(s) of that node is/are called. 
         </p>
         
         <p>
-        Given a typical X3DOM scene, you can add a function as <i>onclick</i> attribute to a single shape. We already used this in a <a href="../../basics/htmlCSS/index.html" target="_blank">previous tutorial</a> about X3DOM with HTML, CSS and JavaScript. Here is a short reminder: 
+        Given a typical X3DOM scene, you can add a function as <i>onclick</i> attribute (or as onclick property respectively) to a single shape. We already used this in a <a href="../../basics/htmlCSS/index.html" target="_blank">previous tutorial</a> about X3DOM with HTML, CSS and JavaScript. Here is a short reminder: 
 		<pre class="prettyprint"><code class="language-html">
 	&lt;shape onclick="alert("You clicked me");"&gt; &lt;/shape&gt; 
         </code></pre>
         
             
 		<p>
-		Instead of just attaching this to a single shape, you can also add it to a whole group. This will cause the function call every time a member of this group is clicked. An argument named <i>event</i> will be provided, containing a lot of informations about the collision that occurred.
+		Instead of just attaching this to a single shape, you can also add it to a whole group. This will cause the function call every time a member of this group is clicked. An argument named <i>event</i> will be provided, containing a lot of informations about the ray-object intersection that occurred.
 		</p>
 		 
 		<pre class="prettyprint"><code class="language-html">
@@ -61,7 +61,7 @@
 		</code></pre>
 		
 		<p>
-		In your callback function, you can for example get the exact collision point with <i>event.hitPnt</i>.
+		In your callback function, you can for example get the exact intersection point with <i>event.hitPnt</i>.
 		</p>
 		
 		<pre class="prettyprint"><code class="language-javascript">
@@ -80,7 +80,7 @@
 		</code></pre>
 		
 		<p>
-		There are various ways to attach the callback function to a node. Another way is to use Javascript:
+		There are various ways to attach the callback function to a node. Another way is to use jQuery:
 		<p>
 		
 		<pre class="prettyprint"><code class="language-javascript">
@@ -98,15 +98,31 @@
 		</code></pre>
 		
 		<p>
-		<b>Caveat:</b> The call of the onclick function is handled by x3dom by directly calling the callback function. No page-wide onclick events are thrown, so attaching a listener to this object won't work. Thus do not use 
+		<b>Caveat:</b> The call of the onclick function is handled by x3dom by directly calling the callback function, since the addEventListener method needed to be overwritten. No page-wide onclick events are thrown, so attaching a listener to this object is only possible <b>after</b>. In this case, do not use 
 		<code>$("#myBox").on("click", doSomething(event))</code>
 		but
 		<code>$("#myBox").attr("onclick", "doSomething(event)")</code>
-		instead.
+		instead. Alternatively, wait until the page is fully loaded and the <code>document.onload</code> event was fired.
 		</p>
+        
+        <p>
+        If you prefer pure JavaScript you can of course work with the standard event handler methods. However, there is still the caveat that <code>addEventListener</code> only works after the X3DOM engine has been initialized (i.e., on document.onload).
+        
+        <pre class="prettyprint"><code class="language-javascript">
+        document.onload = function() {
+            // Handle mouseover event on a shape
+            var myShape = document.getElementById('TestShape');
+            myShape.addEventListener('mouseover', function(event) {
+                    // Do something nice whenever mouse is over object
+                }, false);
+        };
+        </code></pre>
+        
+        As can be seen in this example, the other UI standard events (onmouseover, onmousemove, onmouseout, onmousedown, onmouseup) are possible, too.
+        </p>
 		
 		<p>
-		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you wan't to know more about what's going on in your application right now.
+		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you want to know more about what's going on in your application right now.
 		</p>
 		
 		<div style="text-align:center;">
@@ -117,15 +133,15 @@
         </div> 
 		
 		<p>
-		If you want to pick detailed information like color oder textures instead, you have to choose the picking buffer explicitly. The default mode is <i>idBuf</i>. He is used implicitly if you not specify another mode.
+		If you want to pick detailed information like color or textures instead, you have to choose the picking buffer explicitly. The default mode is <i>idBuf</i>. It is used implicitly if you do not specify another mode.
 		</p>
 		<pre class="prettyprint"><code class="language-html">
 	&lt;Scene pickMode="idBuf"&gt;
         </code></pre>
 		
 		<p>
-		This picking buffer holds specific information for every point to click on. Since it has only a limited size, you have to choose which information you need. The modes are: <i>idBuf, color, texCord</i> and <i>box</i>. 
-		The resulting data can always be found in the attribute <i>event.hitPnt</i>. You can either another pickMode as attribute to the <i>Scene</i> or switch between the using the hotkey "p".
+		This picking buffer holds specific information for every point to click on. Since it has only a limited size, you have to choose which information you need. The modes are: <i>idBuf, color, texCoord</i> and <i>box</i>. 
+		The resulting data can always be found in the attribute <i>event.hitPnt</i>. You can either use another pickMode as attribute to the <i>Scene</i> or switch between them using the hotkey "p".
 		</p>
 		
 
