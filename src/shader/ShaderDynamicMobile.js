@@ -395,9 +395,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
                           "   specular += " + lightCol + " * ads.b;\n";
             }
 
-            shader += "ambient = clamp(ambient, 0.0, 1.0);\n";
-            shader += "diffuse = clamp(diffuse, 0.0, 1.0);\n";
-            shader += "specular = clamp(specular, 0.0, 1.0);\n";
+            shader += "ambient = max(ambient, 0.0);\n";
+            shader += "diffuse = max(diffuse, 0.0);\n";
+            shader += "specular = max(specular, 0.0);\n";
         }
 		
 		//Textures & blending
@@ -407,7 +407,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragColor.rgb = (emissiveColor + specular*specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		} else {
-			shader += "fragColor.rgb = (emissiveColor + clamp(ambient + diffuse, 0.0, 1.0) * rgb + specular*specularColor);\n";
+			shader += "fragColor.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * rgb + specular*specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		}
 	} else {
@@ -513,7 +513,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 				shader += "color.a *= texColor.a;\n";
 			}
 		} else {
-			shader += "color.rgb += clamp(fragAmbient + fragDiffuse, 0.0, 1.0) * texColor.rgb;\n";
+			shader += "color.rgb += max(fragAmbient + fragDiffuse, 0.0) * texColor.rgb;\n";
 			shader += "color.a *= texColor.a;\n";
 		}
 	} 
