@@ -2531,7 +2531,7 @@ x3dom.fields.SFImage.prototype.getPixel = function(x, y) {
         return new x3dom.fields.SFColorRGBA(this.array[startIdx] / 255,
                                             this.array[startIdx+1] / 255,
                                             this.array[startIdx+2] / 255,
-                                            this.array[startIdx+3]) / 255;
+                                            this.array[startIdx+3] / 255);
     }
 };
 
