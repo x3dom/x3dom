@@ -266,7 +266,7 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
     var view = from.subtract(at).normalize();
-    var right = up.normalize().cross(view);
+    var right = up.normalize().cross(view).normalize();
 
     // check if zero vector, i.e. linearly dependent
     if (right.dot(right) < x3dom.fields.Eps) {
@@ -274,7 +274,7 @@ x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
         return x3dom.fields.SFMatrix4f.translation(from);
     }
 
-    var newUp = view.cross(right.normalize()).normalize();
+    var newUp = view.cross(right).normalize();
 
     var tmp = x3dom.fields.SFMatrix4f.identity();
     tmp.setValue(right, newUp, view, from);
