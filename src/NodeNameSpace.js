@@ -223,11 +223,15 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         }
 
         // TODO (?): dynamic update of USE attribute during runtime
-        if (domNode.hasAttribute('use')) {
+        if (domNode.hasAttribute('USE') || domNode.hasAttribute('use'))
+        {
+            //fix usage of lowercase 'use'
+            if (!domNode.hasAttribute('USE'))
+                domNode.setAttribute(('USE',domNode.getAttribute('use')));
 
-            n = this.defMap[domNode.getAttribute('use')];
+            n = this.defMap[domNode.getAttribute('USE')];
             if (!n) {
-                var nsName = domNode.getAttribute('use').split('__');
+                var nsName = domNode.getAttribute('USE').split('__');
 
                 if (nsName.length >= 2) {
                     var otherNS = this;
