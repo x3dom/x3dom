@@ -95,7 +95,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     if (this.backend == 'flash') {
         this.backend = 'flash';
-        his.canvas = this._createFlashObject(x3dElem);
+        this.canvas = this._createFlashObject(x3dElem);
         if (this.canvas != null) {
             this.canvas.parent = this;
             this.gl = this._initFlashContext(this.canvas, this.flash_renderType);
