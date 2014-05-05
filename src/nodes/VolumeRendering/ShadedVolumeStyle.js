@@ -181,40 +181,40 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function(){
                 var uniformText = "uniform bool uLightning;\n"+
-                    "uniform bool uShadows;\n"+
-                    //Fog uniforms
-                    "uniform float fogRange;\n"+
-                    "uniform vec3 fogColor;\n"+
-                    "uniform float fogType;\n"+
-                    "uniform bool uEnableShaded;\n";
+                "uniform bool uShadows;\n"+
+                //Fog uniforms
+                "uniform float fogRange;\n"+
+                "uniform vec3 fogColor;\n"+
+                "uniform float fogType;\n"+
+                "uniform bool uEnableShaded;\n";
                 //Material uniforms
                 if(this._cf.material.node){
                     uniformText += "uniform vec3  diffuseColor;\n" +
-                        "uniform vec3  specularColor;\n" +
-                        "uniform vec3  emissiveColor;\n" +
-                        "uniform float shininess;\n" +
-                        "uniform float transparency;\n" +
-                        "uniform float ambientIntensity;\n";
+                    "uniform vec3  specularColor;\n" +
+                    "uniform vec3  emissiveColor;\n" +
+                    "uniform float shininess;\n" +
+                    "uniform float transparency;\n" +
+                    "uniform float ambientIntensity;\n";
                 }
                 return uniformText;
             },
 
             styleShaderText: function(){
                 var styleText = "float computeFogInterpolant(float distanceFromPoint)\n"+
-                    "{\n"+
-                    "  if (distanceFromPoint > fogRange){\n"+
-                    "    return 0.0;\n"+
-                    "  }else if (fogType == 0.0){\n"+
-                    "    return clamp((fogRange-distanceFromPoint) / fogRange, 0.0, 1.0);\n"+
-                    "  }else{\n"+
-                    "    return clamp(exp(-distanceFromPoint / (fogRange-distanceFromPoint)), 0.0, 1.0);\n"+
-                    "  }\n"+
-                    "}\n";
+                "{\n"+
+                "  if (distanceFromPoint > fogRange){\n"+
+                "    return 0.0;\n"+
+                "  }else if (fogType == 0.0){\n"+
+                "    return clamp((fogRange-distanceFromPoint) / fogRange, 0.0, 1.0);\n"+
+                "  }else{\n"+
+                "    return clamp(exp(-distanceFromPoint / (fogRange-distanceFromPoint)), 0.0, 1.0);\n"+
+                "  }\n"+
+                "}\n";
                 return styleText;
             },
 
             lightEquationShaderText: function(){
-                return "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
+                return "void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
                     "in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
                     "in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
                     "inout vec3 specular)\n" +
@@ -250,14 +250,14 @@ x3dom.registerNodeType(
                     "       ambient += lColor * ambientFactor * attentuation * spot;\n" +
                     "       diffuse += lColor * diffuseFactor * attentuation * spot;\n" +
                     "       specular += lColor * specularFactor * attentuation * spot;\n" +
-                    "   }\n"+
+                    "   }\n"+  
                     "}\n"
             },
 
             inlineStyleShaderText: function(){
                 var inlineText = "    float fogFactor = 1.0;\n"+
                     "    if(uEnableShaded){\n"+
-                    "       fogFactor = computeFogInterpolant(length(cam_pos-pos));\n"+
+                    "       fogFactor = computeFogInterpolant(length(cam_pos-ray_pos));\n"+
                     "    }\n";
                 return inlineText;
             },
@@ -267,26 +267,13 @@ x3dom.registerNodeType(
                 if(this._vf.lighting == true){
                     if(this._cf.material.node){
                         shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(emissiveColor + ambient*value.rgb + diffuse*diffuseColor*value.rgb + specular*specularColor);\n"+
-                            "      value.a = value.a*(1.0-transparency);\n";
+                        "      value.a = value.a*(1.0-transparency);\n";
                     }else{
                         shaderText += "      value.rgb = (fogColor*(1.0-fogFactor))+fogFactor*(ambient*value.rgb + diffuse*value.rgb + specular);\n";
                     }
                 }
                 shaderText += "    }\n";
                 return shaderText;
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )

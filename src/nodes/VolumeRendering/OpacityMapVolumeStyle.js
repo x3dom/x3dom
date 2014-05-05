@@ -90,7 +90,7 @@ x3dom.registerNodeType(
 
             uniforms: function() {
                 var unis = [];
-
+                
                 if (this._cf.transferFunction.node) {
                     //Lookup for the parent VolumeData
                     var volumeDataParent = this._parentNodes[0];
@@ -138,42 +138,23 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function() {
                 var uniformsText = "uniform float uOpacityFactor;\n"+
-                    "uniform float uLightFactor;\n"+
-                    "uniform bool uEnableOpacityMap;\n";
+                "uniform float uLightFactor;\n"+
+                "uniform bool uEnableOpacityMap;\n";
                 if (this._cf.transferFunction.node) {
-                    uniformsText += "uniform sampler2D uTransferFunction;\n";
+                        uniformsText += "uniform sampler2D uTransferFunction;\n";
                 }
                 return uniformsText;
             },
 
             inlineStyleShaderText: function(){
                 var shaderText = "    if(uEnableOpacityMap){\n"+
-                    "       opacityFactor = uOpacityFactor;\n"+
-                    "       lightFactor = uLightFactor;\n";
+                "       opacityFactor = uOpacityFactor;\n"+
+                "       lightFactor = uLightFactor;\n";
                 if (this._cf.transferFunction.node){
-                    shaderText += "     value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
+                        shaderText += "     value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;
-            },
-
-            lightAssigment: function(){
-                var inlineText = "  if(uEnableOpacityMap){\n"+
-                    "         value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"+
-                    "   }\n";
-                return inlineText;
-            },
-
-            fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )

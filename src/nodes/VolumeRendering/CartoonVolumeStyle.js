@@ -139,103 +139,86 @@ x3dom.registerNodeType(
 
             styleShaderText: function(){
                 return "//Convert RGBA color to HSVA\n"+
-                    "vec4 rgba2hsva(vec4 rgba){\n"+
-                    "   float zat, izen;\n"+
-                    "   float R = rgba.r, G = rgba.g, B = rgba.b;\n"+
-                    "   float minim = min(R, min(G, B)), maxim = max(R, max(G, B));\n"+
-                    "   float delta = maxim-minim;\n"+
-                    "   if(minim == maxim){\n"+
-                    "       return vec4(0.0, 0.0, maxim, rgba.a);\n"+
-                    "   }else{\n"+
-                    "       zat = (R == maxim) ? G - B : ((G == maxim) ? B - R : R - G);\n"+
-                    "       izen = (R == maxim) ? ((G<B) ? 6.0 : 0.0) : ((G == maxim) ? 2.0 : 4.0);\n"+
-                    "        return vec4((zat/delta + izen)/6.0, delta/maxim, maxim, rgba.a);\n"+
-                    "    }\n"+
-                    "}\n"+
-                    "\n"+
-                    "//Convert RGB color to HSV\n"+
-                    "vec3 rgb2hsv(vec3 rgb){\n"+
-                    "    return rgba2hsva(vec4(rgb, 1.0)).rgb;\n"+
-                    "}\n"+
-                    "\n"+
-                    "//Convert HSVA color to RGBA\n"+
-                    "vec4 hsva2rgba(vec4 hsva){\n"+
-                    "   float r, g, b;\n"+
-                    "   float h=hsva.x, s=hsva.y, v=hsva.z;\n"+
-                    "   float i = floor(h * 6.0);\n"+
-                    "   float f = h * 6.0 - i;\n"+
-                    "   float p = v * (1.0 - s);\n"+
-                    "   float q = v * (1.0 - f * s);\n"+
-                    "   float t = v * (1.0 - (1.0 - f) * s);\n"+
-                    "   i = mod(i,6.0);\n"+
-                    "   if( i == 6.0 || i == 0.0 ) r = v, g = t, b = p;\n"+
-                    "   else if( i == 1.0) r = q, g = v, b = p;\n"+
-                    "   else if( i == 2.0) r = p, g = v, b = t;\n"+
-                    "   else if( i == 3.0) r = p, g = q, b = v;\n"+
-                    "   else if( i == 4.0) r = t, g = p, b = v;\n"+
-                    "   else if( i == 5.0) r = v, g = p, b = q;\n"+
-                    "   return vec4(r,g,b,hsva.w);\n"+
-                    "}\n"+
-                    "\n"+
-                    "//Convert HSV color to RGB\n"+
-                    "vec3 hsv2rgb(vec3 hsv){\n"+
-                    "   return hsva2rgba(vec4(hsv, 1.0)).rgb;\n"+
-                    "}\n"+
-                    "void getCartoonStyle(inout vec4 outputColor, vec3 orthogonalColor, vec3 parallelColor, int colorSteps, vec3 surfNormal, vec3 V)\n"+
-                    "{\n"+
-                    "   if(colorSteps > 0 && colorSteps <= 64){\n"+
-                    "       float cos_angle = dot(surfNormal, V);\n"+
-                    "       if(cos_angle <= 0.0){\n"+
-                    "           outputColor.rgb = parallelColor.rgb;\n"+
-                    "       }else{\n"+
-                    "           if(cos_angle < 1.0){\n"+
-                    "               float range_size = pi_half / float(colorSteps);\n"+
-                    "               float interval = floor(cos_angle / range_size);\n"+
-                    "               float ang = interval * range_size;\n"+
-                    "               if(interval >= float(colorSteps))\n"+
-                    "                   interval = float(colorSteps) - 1.0;\n"+
-                    "               outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, ang));\n"+
-                    "           }else{\n"+
-                    "               outputColor.rgb = orthogonalColor.rgb;\n"+
-                    "           }\n"+
-                    "       }\n"+
-                    "   }else{\n"+
-                    "       outputColor.a = 0.0; //No color steps as input parameter\n"+
-                    "   }\n"+
-                    "}\n"+
-                    "\n";
+                "vec4 rgba2hsva(vec4 rgba){\n"+
+                "   float zat, izen;\n"+
+                "   float R = rgba.r, G = rgba.g, B = rgba.b;\n"+
+                "   float minim = min(R, min(G, B)), maxim = max(R, max(G, B));\n"+
+                "   float delta = maxim-minim;\n"+
+                "   if(minim == maxim){\n"+
+                "       return vec4(0.0, 0.0, maxim, rgba.a);\n"+
+                "   }else{\n"+
+                "       zat = (R == maxim) ? G - B : ((G == maxim) ? B - R : R - G);\n"+ 
+                "       izen = (R == maxim) ? ((G<B) ? 6.0 : 0.0) : ((G == maxim) ? 2.0 : 4.0);\n"+ 
+                "        return vec4((zat/delta + izen)/6.0, delta/maxim, maxim, rgba.a);\n"+ 
+                "    }\n"+
+                "}\n"+
+                "\n"+
+                "//Convert RGB color to HSV\n"+
+                "vec3 rgb2hsv(vec3 rgb){\n"+
+                "    return rgba2hsva(vec4(rgb, 1.0)).rgb;\n"+
+                "}\n"+
+                "\n"+
+                "//Convert HSVA color to RGBA\n"+
+                "vec4 hsva2rgba(vec4 hsva){\n"+
+                "   float r, g, b;\n"+
+                "   float h=hsva.x, s=hsva.y, v=hsva.z;\n"+
+                "   float i = floor(h * 6.0);\n"+
+                "   float f = h * 6.0 - i;\n"+
+                "   float p = v * (1.0 - s);\n"+
+                "   float q = v * (1.0 - f * s);\n"+
+                "   float t = v * (1.0 - (1.0 - f) * s);\n"+
+                "   i = mod(i,6.0);\n"+
+                "   if( i == 6.0 || i == 0.0 ) r = v, g = t, b = p;\n"+
+                "   else if( i == 1.0) r = q, g = v, b = p;\n"+
+                "   else if( i == 2.0) r = p, g = v, b = t;\n"+
+                "   else if( i == 3.0) r = p, g = q, b = v;\n"+
+                "   else if( i == 4.0) r = t, g = p, b = v;\n"+
+                "   else if( i == 5.0) r = v, g = p, b = q;\n"+
+                "   return vec4(r,g,b,hsva.w);\n"+
+                "}\n"+
+                "\n"+
+                "//Convert HSV color to RGB\n"+
+                "vec3 hsv2rgb(vec3 hsv){\n"+
+                "   return hsva2rgba(vec4(hsv, 1.0)).rgb;\n"+
+                "}\n"+
+                "void getCartoonStyle(inout vec4 outputColor, vec3 orthogonalColor, vec3 parallelColor, int colorSteps, vec3 surfNormal, vec3 V)\n"+
+                "{\n"+
+                "   if(colorSteps > 0 && colorSteps <= 64){\n"+
+                "       float cos_angle = dot(surfNormal, V);\n"+
+                "       if(cos_angle <= 0.0){\n"+
+                "           outputColor.rgb = parallelColor.rgb;\n"+
+                "       }else{\n"+
+                "           if(cos_angle < 1.0){\n"+
+                "               float range_size = pi_half / float(colorSteps);\n"+
+                "               float interval = floor(cos_angle / range_size);\n"+
+                "               float ang = interval * range_size;\n"+
+                "               if(interval >= float(colorSteps))\n"+
+                "                   interval = float(colorSteps) - 1.0;\n"+
+                "               outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, ang));\n"+
+                "           }else{\n"+
+                "               outputColor.rgb = orthogonalColor.rgb;\n"+
+                "           }\n"+
+                "       }\n"+
+                "   }else{\n"+
+                "       outputColor.a = 0.0; //No color steps as input parameter\n"+
+                "   }\n"+
+                "}\n"+
+                "\n";
             },
 
             styleUniformsShaderText: function(){
                 return "uniform vec3 uParallelColor;\n"+
-                    "uniform vec3 uOrthogonalColor;\n"+
-                    "uniform int uColorSteps;\n"+
-                    "uniform bool uEnableCartoon;\n"+
-                    "const float pi_half = "+ (Math.PI/2.0).toPrecision(5) +";\n";
+                "uniform vec3 uOrthogonalColor;\n"+
+                "uniform int uColorSteps;\n"+
+                "uniform bool uEnableCartoon;\n"+
+                "const float pi_half = "+ (Math.PI/2.0).toPrecision(5) +";\n";
             },
 
             inlineStyleShaderText: function(){
                 var inlineText = "  if(uEnableCartoon){\n"+
-                    "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad.xyz, normalize(dir));\n"+
-                    "  }\n";
+                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad.xyz, normalize(dir));\n"+
+                "  }\n";   
                 return inlineText;
-            },
-
-            lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )

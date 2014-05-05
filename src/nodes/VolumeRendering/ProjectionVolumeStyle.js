@@ -71,93 +71,93 @@ x3dom.registerNodeType(
                 unis.push(this.uniformIntensityThreshold);
 
                 /*this.uniformType._vf.name = 'uType';
-                 this.uniformType._vf.type = 'SFInt32';
-                 this.uniformType._vf.value = type_map[this._vf.type.toLowerCase()];
-                 unis.push(this.uniformType);*/
+                this.uniformType._vf.type = 'SFInt32';
+                this.uniformType._vf.value = type_map[this._vf.type.toLowerCase()];
+                unis.push(this.uniformType);*/
 
                 return unis;
             },
 
             styleUniformsShaderText: function(){
-                return "uniform int uType;\nuniform float uIntensityThreshold;\n";
+                return "uniform int uType;\n"+
+                "uniform float uIntensityThreshold;\n";
             },
 
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.texture3DFunctionShaderText+
-                    "void main()\n"+
-                    "{\n"+
-                    "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
-                    "  texC = 0.5*texC + 0.5;\n"+
-                    "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
-                    "  vec3 dir = backColor.rgb - vertexColor.rgb;\n"+
-                    "  vec3 pos = vertexColor;\n"+
-                    "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
-                    "  vec4 color  = vec4(0.0);\n";
+                var shader = 
+                this._parentNodes[0].fragmentPreamble+
+                this._parentNodes[0].defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this._parentNodes[0].texture3DFunctionShaderText+
+                "void main()\n"+
+                "{\n"+
+                "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
+                "  cam_pos = cam_pos/dimensions+0.5;\n"+
+                "  vec3 dir = normalize(pos.xyz-cam_pos);\n"+
+                "  vec3 ray_pos = pos.xyz;\n"+
+                "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
+                "  vec4 color  = vec4(0.0);\n";
                 if (this._vf.type.toLowerCase() === "max") {
                     shader += "vec2 previous_value = vec2(0.0);\n";
                 }else {
                     shader += "vec2 previous_value = vec2(1.0);\n";
                 }
                 shader +=
-                    "  float cont = 0.0;\n"+
-                    "  vec3 step = dir/Steps;\n"+
-                    "  const float lightFactor = 1.3;\n"+
-                    "  const float opacityFactor = 3.0;\n"+
-                    "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
-                    "  {\n"+
-                    "    value = cTexture3D(uVolData,pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
-                    "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n"+
-                    "    //Process the volume sample\n"+
-                    "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
-                    "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
-                    "    accum.a += (1.0-accum.a)*sample.a;\n";
+                "  float cont = 0.0;\n"+
+                "  vec3 step_size = dir/Steps;\n"+
+                "  const float lightFactor = 1.3;\n"+
+                "  const float opacityFactor = 3.0;\n"+
+                "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
+                "  {\n"+
+                "    value = cTexture3D(uVolData,ray_pos,numberOfSlices,slicesOverX,slicesOverY);\n"+
+                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n"+
+                "    //Process the volume sample\n"+
+                "    sample.a = value.a * opacityFactor * (1.0/Steps);\n"+
+                "    sample.rgb = value.rgb * sample.a * lightFactor;\n"+
+                "    accum.a += (1.0-accum.a)*sample.a;\n";
                 if(this._vf.enabled){
                     switch (this._vf.type.toLowerCase()) {
-                        case "max":
-                            shader += "if(value.r > uIntensityThreshold && value.r <= previous_value.x){\n"+
-                                "   break;\n"+
-                                "}\n"+
-                                "color.rgb = vec3(max(value.r, previous_value.x));\n"+
-                                "color.a = (value.r > previous_value.x) ? accum.a : previous_value.y;\n";
-                            break;
-                        case "min":
-                            shader += "if(value.r < uIntensityThreshold && value.r >= previous_value.x){\n"+
-                                "   break;\n"+
-                                "}\n"+
-                                "color.rgb = vec3(min(value.r, previous_value.x));\n"+
-                                "color.a = (value.r < previous_value.x) ? accum.a : previous_value.y;\n";
-                            break;
-                        case "average":
-                            shader+= "color.rgb += (1.0 - accum.a) * sample.rgb;\n"+
-                                "color.a = accum.a;\n";
-                            break;
+                    case "max":
+                        shader += "if(value.r > uIntensityThreshold && value.r <= previous_value.x){\n"+
+                        "   break;\n"+
+                        "}\n"+
+                        "color.rgb = vec3(max(value.r, previous_value.x));\n"+
+                        "color.a = (value.r > previous_value.x) ? accum.a : previous_value.y;\n";
+                        break;
+                    case "min":
+                        shader += "if(value.r < uIntensityThreshold && value.r >= previous_value.x){\n"+
+                        "   break;\n"+
+                        "}\n"+
+                        "color.rgb = vec3(min(value.r, previous_value.x));\n"+
+                        "color.a = (value.r < previous_value.x) ? accum.a : previous_value.y;\n";
+                        break;
+                    case "average":
+                        shader+= "color.rgb += (1.0 - accum.a) * sample.rgb;\n"+
+                        "color.a = accum.a;\n";
+                        break;
                     }
                 }
-                shader +=
-                    "    //update the previous value and keeping the accumulated alpha\n"+
-                    "    previous_value.x = color.r;\n"+
-                    "    previous_value.y = accum.a;\n"+
-                    "    //advance the current position\n"+
-                    "    pos.xyz += step;\n"+
-                    "    //break if the position is greater than <1, 1, 1>\n"+
-                    "    if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || accum.a>=1.0){\n";
+                shader += 
+                "    //update the previous value and keeping the accumulated alpha\n"+
+                "    previous_value.x = color.r;\n"+
+                "    previous_value.y = accum.a;\n"+
+                "    //advance the current position\n"+
+                "    ray_pos.xyz += step_size;\n"+
+                "    //break if the position is greater than <1, 1, 1>\n"+
+                "    if(ray_pos.x > 1.0 || ray_pos.y > 1.0 || ray_pos.z > 1.0 || ray_pos.x <= 0.0 || ray_pos.y <= 0.0 || ray_pos.z <= 0.0 || accum.a>=1.0){\n";
                 if(this._vf.type.toLowerCase() == "average" && this._vf.enabled){
                     shader += "     if((i > 0.0) && (i < Steps-1.0)){\n"+
-                        "color.rgb = color.rgb/i;\n"+
-                        "}\n";
+                    "color.rgb = color.rgb/i;\n"+
+                    "}\n";
                 }
                 shader+=
-                    "      break;\n"+
-                    "    }\n"+
-                    " }\n"+
-                    " gl_FragColor = color;\n"+
-                    "}";
+                "      break;\n"+
+                "    }\n"+
+                " }\n"+
+                " gl_FragColor = color;\n"+
+                "}";
                 return shader;
             }
         }

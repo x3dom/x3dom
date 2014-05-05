@@ -145,34 +145,17 @@ x3dom.registerNodeType(
 
             styleShaderText: function(){
                 return "void silhouetteEnhancement(inout vec4 orig_color, vec4 normal, vec3 V)\n"+
-                    "{\n"+
-                    "   orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
-                    "}\n"+
-                    "\n";
+                "{\n"+
+                "   orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
+                "}\n"+
+                "\n";
             },
 
             inlineStyleShaderText: function(){
                 var inlineText = "  if(uEnableSilhouette){\n"+
-                    "       silhouetteEnhancement(value, grad, normalize(dir));\n"+
-                    "   }\n";
+                "       silhouetteEnhancement(value, grad, normalize(dir));\n"+
+                "   }\n";
                 return inlineText;
-            },
-
-            lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )

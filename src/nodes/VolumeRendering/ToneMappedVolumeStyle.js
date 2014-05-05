@@ -117,27 +117,27 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function(){
                 return "uniform vec3 uCoolColor;\n"+
-                    "uniform vec3 uWarmColor;\n"+
-                    "uniform bool uEnableToneMapped;\n";
+                "uniform vec3 uWarmColor;\n"+
+                "uniform bool uEnableToneMapped;\n";
             },
 
             styleShaderText: function(){
                 var styleText = "void toneMapped(inout vec4 original_color, inout vec3 accum_color, vec3 surfNormal, vec3 lightDir)\n"+
-                    "{\n"+
-                    "   float color_factor = (1.0 + dot(lightDir, surfNormal))*0.5;\n"+
-                    "   accum_color += mix(uCoolColor, uWarmColor, color_factor);\n"+
-                    "   original_color.rgb = accum_color;\n"+
-                    "}\n";
+                "{\n"+
+                "   float color_factor = (1.0 + dot(lightDir, surfNormal))*0.5;\n"+
+                "   accum_color += mix(uCoolColor, uWarmColor, color_factor);\n"+
+                "   original_color.rgb = accum_color;\n"+
+                "}\n";
                 return styleText;
             },
 
             inlineStyleShaderText: function(){
                 var shaderText = "    if(uEnableToneMapped){\n"+
-                    "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
-                    "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
+                "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
+                "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - positionE.xyz) : -light"+l+"_Direction;\n"+
-                        "       toneMapped(value, toneColor, gradEye.xyz, L);\n";
+                    "       toneMapped(value, toneColor, gradEye.xyz, L);\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;
@@ -146,19 +146,6 @@ x3dom.registerNodeType(
             lightAssigment: function(){
                 //return " value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
                 return "";
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )
