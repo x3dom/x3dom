@@ -15,7 +15,7 @@
         ],
     "settings" :
     {
-        "misMatchPercentage" : "0.15"
+        "misMatchPercentage" : "0.52"
     },
     "tests" :
         [
