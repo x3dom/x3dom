@@ -43,8 +43,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
      */
     this._current_dim = [0, 0];
 
-    x3dom.caps.BACKEND = this.backend;
-
     // for FPS measurements
     this.fps_t0 = new Date().getTime();
     this.lastTimeFPSWasTaken = 0;
@@ -127,7 +125,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         }
     }
 
-
+    x3dom.caps.BACKEND = this.backend;
 
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
 
