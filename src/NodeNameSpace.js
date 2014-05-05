@@ -226,8 +226,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         if (domNode.hasAttribute('USE') || domNode.hasAttribute('use'))
         {
             //fix usage of lowercase 'use'
-            if (!domNode.hasAttribute('USE'))
-                domNode.setAttribute(('USE',domNode.getAttribute('use')));
+            if (!domNode.hasAttribute('USE')) {
+                domNode.setAttribute('USE', domNode.getAttribute('use'));
+            }
 
             n = this.defMap[domNode.getAttribute('USE')];
             if (!n) {
