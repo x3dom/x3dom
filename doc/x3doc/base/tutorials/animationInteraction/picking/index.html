@@ -29,7 +29,7 @@
         
         <div>
             <div class="simpleButton" style="float:left;"><a href="../transformations/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../../lighting/lights/index.html" style="float:right;">Next Section &#8680;</a></div>
+            <div class="simpleButton" style="float:right;"><a href="../pickingBuffer/index.html" style="float:right;">Next Section &#8680;</a></div>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
@@ -107,6 +107,7 @@
         
         <p>
         If you prefer pure JavaScript you can of course work with the standard event handler methods. However, there is still the caveat that <code>addEventListener</code> only works after the X3DOM engine has been initialized (i.e., on document.onload).
+        </p>
         
         <pre class="prettyprint"><code class="language-javascript">
         document.onload = function() {
@@ -118,11 +119,14 @@
         };
         </code></pre>
         
-        As can be seen in this example, the other UI standard events (onmouseover, onmousemove, onmouseout, onmousedown, onmouseup) are possible, too.
+        <p>
+        As can be seen in this example, the other UI standard events (<i>onmouseover, onmousemove, onmouseout, onmousedown, onmouseup</i>) are possible, too.
         </p>
 		
 		<p>
 		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you want to know more about what's going on in your application right now.
+		<br><br>
+		If you want to pick detailed information like color or textures instead, read the <a href="../pickingBuffer/index.html">next tutorial about explicitly choosing a picking buffer</a>.
 		</p>
 		
 		<div style="text-align:center;">
@@ -131,19 +135,6 @@
                 <div class="docuCaption">Object picking example</div>
             </div>
         </div> 
-		
-		<p>
-		If you want to pick detailed information like color or textures instead, you have to choose the picking buffer explicitly. The default mode is <i>idBuf</i>. It is used implicitly if you do not specify another mode.
-		</p>
-		<pre class="prettyprint"><code class="language-html">
-	&lt;Scene pickMode="idBuf"&gt;
-        </code></pre>
-		
-		<p>
-		This picking buffer holds specific information for every point to click on. Since it has only a limited size, you have to choose which information you need. The modes are: <i>idBuf, color, texCoord</i> and <i>box</i>. 
-		The resulting data can always be found in the attribute <i>event.hitPnt</i>. You can either use another pickMode as attribute to the <i>Scene</i> or switch between them using the hotkey "p".
-		</p>
-		
 
         
         <p>               
