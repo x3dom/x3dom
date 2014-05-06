@@ -1,10 +1,14 @@
 /** @namespace x3dom.nodeTypes */
 /*
- * X3DOM JavaScript Library
- * http://www.x3dom.org
+ * MEDX3DOM JavaScript Library
+ * http://medx3dom.org
  *
- * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * Dual licensed under the MIT and GPL
+ * (C)2011 Vicomtech Research Center,
+ *         Donostia - San Sebastian
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * http://www.x3dom.org
  */
 
 /* ### ComposedVolumeStyle ### */
@@ -89,7 +93,7 @@ x3dom.registerNodeType(
                             texs = texs.concat(texture);
                         }
                     });
-
+                   
                 }
                 return texs;
             },
@@ -136,8 +140,8 @@ x3dom.registerNodeType(
                     inlineText += this._cf.renderStyle.nodes[i].inlineStyleShaderText();
                 }
                 /*if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                 inlineText += this._cf.renderStyle.nodes[0].lightAssigment();
-                 }*/
+                    inlineText += this._cf.renderStyle.nodes[0].lightAssigment();
+                }*/
                 return inlineText;
             },
 
@@ -158,22 +162,6 @@ x3dom.registerNodeType(
 
             lightEquationShaderText: function(){
                 return this._cf.renderStyle.nodes[0].lightEquationShaderText();
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY, offset){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText();
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    //Only from the first render style
-                    shader += this.lightEquationShaderText();
-                }
-                shader += this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
-                return shader;
             }
         }
     )

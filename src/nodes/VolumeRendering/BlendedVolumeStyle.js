@@ -1,10 +1,14 @@
 /** @namespace x3dom.nodeTypes */
 /*
- * X3DOM JavaScript Library
- * http://www.x3dom.org
+ * MEDX3DOM JavaScript Library
+ * http://medx3dom.org
  *
- * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * Dual licensed under the MIT and GPL
+ * (C)2011 Vicomtech Research Center,
+ *         Donostia - San Sebastian
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * http://www.x3dom.org
  */
 
 /* ### BlendedVolumeStyle ### */
@@ -183,7 +187,7 @@ x3dom.registerNodeType(
                     Array.forEach(renderStyleUniforms, function(uni){
                         uni._vf.name = uni._vf.name.replace(/uSurfaceNormals/, "uBlendSurfaceNormals")
                     });
-                    unis = unis.concat(renderStyleUniforms);
+                    unis = unis.concat(renderStyleUniforms);       
                 }
                 return unis;
             },
@@ -211,7 +215,7 @@ x3dom.registerNodeType(
                 //Also add the render style textures
                 if (this._cf.renderStyle.node) {
                     var renderStyleTextures = this._cf.renderStyle.node.textures();
-                    texs = texs.concat(renderStyleTextures);
+                    texs = texs.concat(renderStyleTextures);       
                 }
                 return texs;
             },
@@ -220,8 +224,8 @@ x3dom.registerNodeType(
                 var initialValues = "";
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     initialValues += "  vec3 ambientBlend = vec3(0.0, 0.0, 0.0);\n"+
-                        "  vec3 diffuseBlend = vec3(0.0, 0.0, 0.0);\n"+
-                        "  vec3 specularBlend = vec3(0.0, 0.0, 0.0);\n";
+                    "  vec3 diffuseBlend = vec3(0.0, 0.0, 0.0);\n"+
+                    "  vec3 specularBlend = vec3(0.0, 0.0, 0.0);\n";
                 }
                 return initialValues;
             },
@@ -230,19 +234,19 @@ x3dom.registerNodeType(
                 var uniformsText = "uniform float uWeightConstantA;\n"+
                     "uniform float uWeightConstantB;\n"+
                     "uniform sampler2D uBlendSurfaceNormals;\n";
-                if(this._cf.voxels.node){
-                    uniformsText += "uniform sampler2D uVolBlendData;\n";
-                }
-                if(this._cf.weightTransferFunction1.node){
-                    uniformsText += "uniform sampler2D uWeightTransferFunctionA;\n";
-                }
-                if(this._cf.weightTransferFunction2.node){
-                    uniformsText += "uniform sampler2D uWeightTransferFunctionB;\n";
-                }
-                //Also add the render style uniforms
-                if(this._cf.renderStyle.node) {
-                    uniformsText += this._cf.renderStyle.node.styleUniformsShaderText();
-                }
+                    if(this._cf.voxels.node){
+                        uniformsText += "uniform sampler2D uVolBlendData;\n";
+                    }
+                    if(this._cf.weightTransferFunction1.node){
+                        uniformsText += "uniform sampler2D uWeightTransferFunctionA;\n";
+                    }
+                    if(this._cf.weightTransferFunction2.node){
+                        uniformsText += "uniform sampler2D uWeightTransferFunctionB;\n";
+                    }
+                    //Also add the render style uniforms
+                    if(this._cf.renderStyle.node) {
+                        uniformsText += this._cf.renderStyle.node.styleUniformsShaderText();
+                    }
                 return uniformsText;
             },
 
@@ -258,28 +262,28 @@ x3dom.registerNodeType(
                 var nSlices = this._cf.voxels.node._vf.numberOfSlices.toPrecision(5);
                 var xSlices = this._cf.voxels.node._vf.slicesOverX.toPrecision(5);
                 var ySlices = this._cf.voxels.node._vf.slicesOverY.toPrecision(5);
-                var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData,pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n"+
-                    "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n";
+                var inlineText = "    vec4 blendValue = cTexture3D(uVolBlendData, ray_pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n"+
+                "    blendValue = vec4(blendValue.rgb,(0.299*blendValue.r)+(0.587*blendValue.g)+(0.114*blendValue.b));\n";
                 if(this._cf.renderStyle.node && this._cf.renderStyle.node._cf.surfaceNormals.node){
-                    inlineText += "    vec4 blendGradEye = getNormalFromTexture(uBlendSurfaceNormals, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                    inlineText += "    vec4 blendGradEye = getNormalFromTexture(uBlendSurfaceNormals, ray_pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }else{
-                    inlineText += "    vec4 blendGradEye = getNormalOnTheFly(uVolBlendData, pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
+                    inlineText += "    vec4 blendGradEye = getNormalOnTheFly(uVolBlendData, ray_pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }
                 if (x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    inlineText += "    vec4 blendGrad = vec4((modelViewMatrixInverse * vec4(blendGradEye.xyz, 0.0)).xyz, blendGradEye.a);\n";
+                        inlineText += "    vec4 blendGrad = vec4((modelViewMatrixInverse * vec4(blendGradEye.xyz, 0.0)).xyz, blendGradEye.a);\n";
                 }
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     inlineText += "    lighting(light"+l+"_Type, " +
-                        "light"+l+"_Location, " +
-                        "light"+l+"_Direction, " +
-                        "light"+l+"_Color, " +
-                        "light"+l+"_Attenuation, " +
-                        "light"+l+"_Radius, " +
-                        "light"+l+"_Intensity, " +
-                        "light"+l+"_AmbientIntensity, " +
-                        "light"+l+"_BeamWidth, " +
-                        "light"+l+"_CutOffAngle, " +
-                        "blendGradEye.xyz, -positionE.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    "light"+l+"_Color, " + 
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " + 
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "blendGradEye.xyz, -positionE.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
                 }
                 if(this._cf.renderStyle.node){
                     var tempText = this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
@@ -341,25 +345,12 @@ x3dom.registerNodeType(
                     inlineText += "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
                 }
                 inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
-                    "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
+                "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
                 return inlineText;
             },
 
             lightAssigment: function(){
                 return ""; //previously computed, empty string
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
-                return shader;
             }
         }
     )

@@ -1,10 +1,14 @@
 /** @namespace x3dom.nodeTypes */
 /*
- * X3DOM JavaScript Library
- * http://www.x3dom.org
+ * MEDX3DOM JavaScript Library
+ * http://medx3dom.org
  *
- * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * Dual licensed under the MIT and GPL
+ * (C)2011 Vicomtech Research Center,
+ *         Donostia - San Sebastian
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * http://www.x3dom.org
  */
 
 /* ### EdgeEnhancementVolumeStyle ### */
@@ -119,38 +123,21 @@ x3dom.registerNodeType(
 
             styleShaderText: function(){
                 return "void edgeEnhancement(inout vec4 originalColor, vec4 gradient, vec3 V)\n"+
-                    "{\n"+
-                    "   if(gradient.w > 0.001){\n"+
-                    "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
-                    "       if (angle_dif<=cos(uGradientThreshold)){\n"+
-                    "           originalColor.rgb = mix(uEdgeColor, originalColor.rgb, angle_dif);\n"+
-                    "       }\n"+
-                    "   }\n"+
-                    "}\n";
+                "{\n"+
+                "   if(gradient.w > 0.001){\n"+
+                "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
+                "       if (angle_dif<=cos(uGradientThreshold)){\n"+
+                "           originalColor.rgb = mix(uEdgeColor, originalColor.rgb, angle_dif);\n"+
+                "       }\n"+
+                "   }\n"+
+                "}\n";
             },
 
             inlineStyleShaderText: function(){
                 var inlineText = "   if(uEnableEdge){\n"+
-                    "       edgeEnhancement(value, grad, normalize(dir));\n"+
-                    "   }\n";
+                "       edgeEnhancement(value, grad, normalize(dir));\n"+
+                "   }\n";
                 return inlineText;
-            },
-
-            lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
-            },
-
-            fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment());
-                return shader;
             }
         }
     )
