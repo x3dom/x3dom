@@ -53,10 +53,10 @@ if (typeof x3dom === "undefined")
  */
 x3dom.fields = {};
 
-/// shortcut for convenience
+/** shortcut for convenience and speedup */
 var VecMath = x3dom.fields;
 
-// Epsilon
+/** Epsilon */
 x3dom.fields.Eps = 0.000001;
 
 
@@ -66,7 +66,7 @@ x3dom.fields.Eps = 0.000001;
 
 ///////////////////////////////////////////////////////////////////////////////
 /**
- * Constructor. You must either speficy all argument values or no argument. In the latter case, an identity matrix will be created.
+ * Constructor. You must either specify all argument values or no argument. In the latter case, an identity matrix will be created.
  *
  * @class Represents a 4x4 matrix in row major format.
  * @param {Number} [_00=1] - value at [0,0]
@@ -142,7 +142,7 @@ x3dom.fields.SFMatrix4f.prototype.e3 = function () {
 
 /**
  * Returns a copy of the argument matrix.
- * @param {x3dom.fields.SFMatrix4f} m - the matrix to copy
+ * @param {x3dom.fields.SFMatrix4f} that - the matrix to copy
  * @returns {x3dom.fields.SFMatrix4f} the copy
  */
 x3dom.fields.SFMatrix4f.copy = function(that) {
@@ -152,6 +152,14 @@ x3dom.fields.SFMatrix4f.copy = function(that) {
         that._20, that._21, that._22, that._23,
         that._30, that._31, that._32, that._33
     );
+};
+
+/**
+ * Returns a copy of the matrix.
+ * @returns {x3dom.fields.SFMatrix4f} the copy
+ */
+x3dom.fields.SFMatrix4f.prototype.copy = function() {
+    return x3dom.fields.SFMatrix4f.copy(this);
 };
 
 /**
@@ -257,11 +265,11 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
 };
 
 /**
- * Returns a new view matrix, using the given "look at" parameters.
+ * Returns a new camera matrix, using the given "look at" parameters.
  * @param {x3dom.fields.SFVec3f} from - eye point
- * @param {x3dom.fields.SFVec3f} from - focus ("look at") point
- * @param {x3dom.fields.SFVec3f} from - up vector
- * @returns {x3dom.fields.SFMatrix4f} the new view matrix
+ * @param {x3dom.fields.SFVec3f} at - focus ("look at") point
+ * @param {x3dom.fields.SFVec3f} up - up vector
+ * @returns {x3dom.fields.SFMatrix4f} the new camera matrix
  */
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
@@ -354,14 +362,6 @@ x3dom.fields.SFMatrix4f.ortho = function(left, right, bottom, top, near, far, as
 };
 
 /**
- * Returns a copy of the matrix.
- * @returns {x3dom.fields.SFMatrix4f} the copy
- */
-x3dom.fields.SFMatrix4f.prototype.copy = function() {
-    return x3dom.fields.SFMatrix4f.copy(this);
-};
-
-/**
  * Sets the translation components of a homogenous transform matrix.
  * @param {x3dom.fields.SFVec3f} vec - the translation vector
  */
@@ -430,7 +430,7 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
 };
 
 /**
- * Creates a new matrix from a X3D-conformant string representation of rotation (using euler angles)
+ * Creates a new matrix from a X3D-conformant string representation
  * @param {String} str - string to parse
  * @return {x3dom.fields.SFMatrix4f} the new rotation matrix
  */
@@ -477,7 +477,7 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
 
 /**
  * Returns the result of multiplying this matrix with the given one, using "post-multiplication" / "right multiply".
- * @param {x3dom.fields.SFMatrix4f} m - matrix to multiply with this one
+ * @param {x3dom.fields.SFMatrix4f} that - matrix to multiply with this one
  * @return {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
@@ -502,7 +502,8 @@ x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
 };
 
 /**
- * Transforms a given 3D point, using this matrix as a homogenous transform matrix.
+ * Transforms a given 3D point, using this matrix as a homogenous transform matrix
+ * (ignores projection part of matrix for speedup in standard cases).
  * @param {x3dom.fields.SFVec3f} vec - point to transform
  * @return {x3dom.fields.SFVec3f} resulting point
  */
@@ -528,12 +529,12 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
 };
 
 /**
- * Transforms a given 3D point, using this matrix as a transform matrix.
+ * Transforms a given 3D point, using this matrix as a transform matrix
+ * (also includes projection part of matrix - required for e.g. modelview-projection matrix).
  * The resulting point is normalized by a w component.
  * @param {x3dom.fields.SFVec3f} vec - point to transform
  * @return {x3dom.fields.SFVec3f} resulting point
  */
-    //TODO: understand better what this does and update documentation (or remove function, if not useful)
 x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
     if (w) { w = 1.0 / w; }
@@ -586,7 +587,7 @@ x3dom.fields.SFMatrix4f.prototype.multiply = function (s) {
 
 /**
  * Returns the result of adding the given matrix to this matrix.
- * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @param {x3dom.fields.SFMatrix4f} that - the other matrix
  * @return {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.add = function (that) {
@@ -600,7 +601,7 @@ x3dom.fields.SFMatrix4f.prototype.add = function (that) {
 
 /**
  * Returns the result of adding the given matrix to this matrix, using an additional scale factor for the argument matrix.
- * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @param {x3dom.fields.SFMatrix4f} that - the other matrix
  * @param {Number} s - the scale factor
  * @return {x3dom.fields.SFMatrix4f} resulting matrix
  */
@@ -614,8 +615,8 @@ x3dom.fields.SFMatrix4f.prototype.addScaled = function (that, s) {
 };
 
 /**
- * Fills the values of this matrix with the values of the another one.
- * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * Fills the values of this matrix with the values of the other one.
+ * @param {x3dom.fields.SFMatrix4f} that - the other matrix
  */
 x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
     this._00 = that._00; this._01 = that._01; this._02 = that._02; this._03 = that._03;
@@ -631,7 +632,6 @@ x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
  * @param {x3dom.fields.SFVec3f} v3             - third column vector
  * @param {x3dom.fields.SFVec3f} [v4=undefined] - fourth column vector
  */
-    //TODO: rename
 x3dom.fields.SFMatrix4f.prototype.setValue = function (v1, v2, v3, v4) {
     this._00 = v1.x; this._01 = v2.x; this._02 = v3.x;
     this._10 = v1.y; this._11 = v2.y; this._12 = v3.y;
@@ -713,9 +713,9 @@ x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
 
 /**
  * Returns the largest absolute value of all entries in the matrix.
+ * This is only a helper for calculating log and not the usual Infinity-norm for matrices.
  * @returns {Number} the largest absolute value
  */
-    //TODO: understand, possibly rename
 x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     var t = 0, m = 0;
 
@@ -851,7 +851,7 @@ x3dom.fields.SFMatrix4f.prototype.adjointT_3x3 = function () {
 
 /**
  * Checks whether this matrix equals another matrix.
- * @param {x3dom.fields.SFMatrix4f} m - the other matrix
+ * @param {x3dom.fields.SFMatrix4f} that - the other matrix
  * @returns {Boolean}
  */
 x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
@@ -875,10 +875,8 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
  * @param {x3dom.fields.Quaternion} rotation         - quaternion to be filled with the rotation values
  * @param {x3dom.fields.SFVec3f} scaleFactor         - 3D vector to be filled with the scale factors
  * @param {x3dom.fields.Quaternion} scaleOrientation - rotation (quaternion) to be applied before scaling
- * @param {x3dom.fields.Quaternion} scaleOrientation - rotation (quaternion) to be applied before scaling
  * @param {x3dom.fields.SFVec3f} [center=undefined]  - center point for rotation and scaling, if not origin
  */
-//TODO: check if these are really the correct types...
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 				        translation, rotation, scaleFactor, scaleOrientation, center) 
 {
@@ -900,8 +898,16 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 	scaleFactor.setValues(scaleFactor.multiply(flip));
 };
 
-//helper function
-//TODO: make this an inner function of "getTransform?"
+/**
+ * Computes the decomposition of the given 4x4 affine matrix M as M = T F R SO S SO^t,
+ * where T is a translation matrix, F is +/- I (a reflection), R is a rotation matrix,
+ * SO is a rotation matrix and S is a (nonuniform) scale matrix.
+ * @param {x3dom.fields.SFVec3f} t     - 3D vector to be filled with the translation values
+ * @param {x3dom.fields.Quaternion} r  - quaternion to be filled with the rotation values
+ * @param {x3dom.fields.SFVec3f} s     - 3D vector to be filled with the scale factors
+ * @param {x3dom.fields.Quaternion} so - rotation (quaternion) to be applied before scaling
+ * @returns {Number} signum of determinant of the transposed adjoint upper 3x3 matrix
+ */
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
 {
 	var A = x3dom.fields.SFMatrix4f.copy(this);
@@ -945,7 +951,6 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
  * @param {x3dom.fields.SFMatrix4f} S - first resulting matrix
  * @returns {Number} determinant of the transposed adjoint upper 3x3 matrix
  */
-    //TODO: revise (parameter namings etc.), document
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
     var TOL = 0.000000000001;
@@ -1019,7 +1024,6 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
  * @param {x3dom.fields.SFMatrix4f} SO - resulting matrix
  * @param {x3dom.fields.SFVec3f} k - resulting vector
  */
-    //TODO: revise (parameter namings etc.), document
 x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
 {
     var next = [1, 2, 0];
@@ -1095,7 +1099,7 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
 
 /**
  * Computes the logarithm of this matrix, assuming that its determinant is greater than zero.
- * @returns {Number}
+ * @returns {x3dom.fields.SFMatrix4f} log of matrix
  */
 x3dom.fields.SFMatrix4f.prototype.log = function () {
     var maxiter = 12;
@@ -1149,7 +1153,7 @@ x3dom.fields.SFMatrix4f.prototype.log = function () {
 
 /**
  * Computes the exponential of this matrix.
- * @returns {Number}
+ * @returns {x3dom.fields.SFMatrix4f} exp of matrix
  */
 x3dom.fields.SFMatrix4f.prototype.exp = function () {
     var q = 6;
@@ -1205,9 +1209,8 @@ x3dom.fields.SFMatrix4f.prototype.exp = function () {
  * @param {Number} c1 - value of m at (2,0)
  * @param {Number} c2 - value of m at (2,1)
  * @param {Number} c3 - value of m at (2,2)
- * @returns {Number}
+ * @returns {Number} determinant
  */
-//TODO: move this helper function into "det"?
 x3dom.fields.SFMatrix4f.prototype.det3 = function (a1, a2, a3, b1, b2, b3, c1, c2, c3) {
     return ((a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
             (a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1));
@@ -1215,7 +1218,7 @@ x3dom.fields.SFMatrix4f.prototype.det3 = function (a1, a2, a3, b1, b2, b3, c1, c
 
 /**
  * Computes the determinant of this matrix.
- * @returns {Number}
+ * @returns {Number} determinant
  */
 x3dom.fields.SFMatrix4f.prototype.det = function () {
     var a1 = this._00;
@@ -1367,11 +1370,10 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
  * by commas and given in column-major order.
  * @param {String} str - the string representation
  */
-    //TODO: where does this "matrix" prefix (or whatever= come from?
-    //      it seems to have an influence whether the result should be transposed
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
     var needTranspose = false;
     var val = /matrix.*\((.+)\)/;
+    // check if matrix is set via CSS string
     if (val.exec(str)) {
         str = RegExp.$1;
         needTranspose = true;
@@ -2468,13 +2470,14 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
     
     var len, i;
     for (i=3; i<n; i++) {
+        var r, g, b, a;
+
         if (!mc[i].substr) {
             continue;
         }
         
         if (mc[i].substr(1,1).toLowerCase() !== "x") {
             // Maybe optimize by directly parsing value!
-            var r, g, b, a;
             var inp = parseInt(mc[i], 10);
 
             if (this.comp === 1) {
@@ -2503,7 +2506,6 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
         else if (mc[i].substr(1,1).toLowerCase() === "x") {
             mc[i] = mc[i].substr(2);
             len = mc[i].length;
-            var r, g, b, a;
             
             if (len === c2) {
                 if (this.comp === 1) {
@@ -3274,9 +3276,7 @@ x3dom.fields.Line = function(pos, dir)
 
     this.pos = x3dom.fields.SFVec3f.copy(pos);
     this.dir = x3dom.fields.SFVec3f.copy(dir);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
+};
 
 /**
  * For a given point, this function returns the closest point on this line.
@@ -3291,14 +3291,12 @@ x3dom.fields.Line.prototype.closestPoint = function(p)
     var projDist = distVec.dot(this.dir);
 
     return this.pos.add(this.dir.multiply(projDist));
-}
-
-//----------------------------------------------------------------------------------------------------------------------
+};
 
 /**
  * For a given point, this function returns the distance to the closest point on this line.
  * @param p {x3dom.fields.SFVec3f} - the point
- * @returns {Double} the distance to the closest point
+ * @returns {Number} the distance to the closest point
  */
 x3dom.fields.Line.prototype.shortestDistance = function(p)
 {
@@ -3309,7 +3307,7 @@ x3dom.fields.Line.prototype.shortestDistance = function(p)
 
     //subtract the projected distance vector, to obtain the part that is orthogonal to this line
     return distVec.subtract(this.dir.multiply(projDist)).length();
-}
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -3344,13 +3342,9 @@ x3dom.fields.Ray = function(pos, dir)
     this.dist = Number.MAX_VALUE;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
-
 x3dom.fields.Ray.prototype.toString = function () {
     return 'Ray: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
 };
-
-//----------------------------------------------------------------------------------------------------------------------
 
 /**
  * Intersects this ray with a plane, defined by the given anchor point and normal.
@@ -3378,9 +3372,7 @@ x3dom.fields.Ray.prototype.intersectPlane = function(p, n)
     }
 
     return result;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
+};
 
 /** intersect line with box volume given by low and high */
 x3dom.fields.Ray.prototype.intersect = function(low, high)
