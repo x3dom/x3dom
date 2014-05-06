@@ -1,10 +1,14 @@
 /** @namespace x3dom.nodeTypes */
 /*
- * X3DOM JavaScript Library
- * http://www.x3dom.org
+ * MEDX3DOM JavaScript Library
+ * http://medx3dom.org
  *
- * (C)2009 Fraunhofer IGD, Darmstadt, Germany
- * Dual licensed under the MIT and GPL
+ * (C)2011 Vicomtech Research Center,
+ *         Donostia - San Sebastian
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * http://www.x3dom.org
  */
 
 /* ### MPRVolumeStyle ### */
@@ -64,7 +68,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function(fieldName) {
-                switch(fieldName){
+                 switch(fieldName){
                     case 'positionLine':
                         this.uniformFloatPosition._vf.value = this._vf.positionLine;
                         this.uniformFloatPosition.fieldChanged("value");
@@ -97,7 +101,7 @@ x3dom.registerNodeType(
                 this.uniformFloatPosition._vf.type = 'SFFloat';
                 this.uniformFloatPosition._vf.value = this._vf.positionLine;
                 unis.push(this.uniformFloatPosition);
-
+  
                 return unis;
             },
 
@@ -106,29 +110,28 @@ x3dom.registerNodeType(
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
-                var shader =
-                    this.preamble+
-                    this.defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.texture3DFunctionShaderText+
-                    "void main()\n"+
-                    "{\n"+
-                    "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
-                    "  texC = 0.5*texC + 0.5;\n"+
-                    "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
-                    "  vec3 dir =  backColor.xyz -vertexColor.xyz;\n"+
-                    "  vec3 normalPlane = finalLine-originLine;\n"+
-                    "  vec3 pointLine = normalPlane*positionLine+originLine;\n"+
-                    "  float d = dot(pointLine-vertexColor.xyz,normalPlane)/dot(dir,normalPlane);\n"+
-                    "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
-                    "  vec3 pos = d*dir+vertexColor.rgb;\n"+
-                    "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
-                    "    color = vec4(cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb,1.0);\n"+
-                    "  }\n"+
-                    "  gl_FragColor = color;\n"+
-                    "}";
+                var shader = 
+                this._parentNodes[0].fragmentPreamble+
+                this._parentNodes[0].defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
+                this.styleUniformsShaderText()+
+                this._parentNodes[0].texture3DFunctionShaderText+
+                "void main()\n"+
+                "{\n"+
+                "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
+                "  cam_pos = cam_pos/dimensions+0.5;\n"+
+                "  vec3 dir = normalize(pos.xyz-cam_pos);\n"+
+                "  vec3 normalPlane = finalLine-originLine;\n"+
+                "  vec3 pointLine = normalPlane*positionLine+originLine;\n"+
+                "  float d = dot(pointLine-pos.xyz,normalPlane)/dot(dir,normalPlane);\n"+
+                "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
+                "  vec3 pos = d*dir+pos.rgb;\n"+
+                "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
+                "    color = vec4(cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb,1.0);\n"+
+                "  }\n"+
+                "  gl_FragColor = color;\n"+
+                "}";
                 return shader;
             }
-        }
+         }
     )
 );
