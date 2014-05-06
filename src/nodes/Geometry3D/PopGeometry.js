@@ -21,14 +21,13 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DBinaryContainerGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The PopGeometry node provides a first, experimental implementation of the POP Buffer algorithm for progressive streaming of triangular mesh data.
          */
         function (ctx) {
             x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
 
-            //@todo: remove this
-
             /**
-             *
+             * The size of the bounding box of this geometry, as it is used for culling.
              * @var {x3dom.fields.SFVec3f} tightSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
@@ -39,7 +38,8 @@ x3dom.registerNodeType(
             //@todo: add this on export
 
             /**
-             *
+             * The size of the bounding box used to quantize data in this geometry,
+             * which is usually the largest bounding box of all sub-meshes of a given mesh.
              * @var {x3dom.fields.SFVec3f} maxBBSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
@@ -49,7 +49,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f (ctx, 'maxBBSize',  1, 1, 1);
 
             /**
-             *
+             * The minimum coordinates of the bounding box, in a normalized range between [0,1],
+             * and given modulo maxBBSize.
              * @var {x3dom.fields.SFVec3f} bbMinModF
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
@@ -59,7 +60,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
 
             /**
-             *
+             * The maximum coordinates of the bounding box, in a normalized range between [0,1],
+             * and given modulo maxBBSize.
              * @var {x3dom.fields.SFVec3f} bbMaxModF
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1,1,1
@@ -69,7 +71,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
 
             /**
-             *
+             * Minimum coordinates of the bounding box, in object coordinates.
              * @var {x3dom.fields.SFVec3f} bbMin
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
@@ -79,7 +81,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
 
             /**
-             *
+             * Field for internal use.
              * @var {x3dom.fields.SFVec3f} bbShiftVec
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0,0,0
@@ -97,7 +99,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Number of levels of this pop geometry.
              * @var {x3dom.fields.MFNode} levels
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue x3dom.nodeTypes.PopGeometryLevel
@@ -108,7 +110,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Stride of all (interleaved) attributes, given in bytes.
              * @var {x3dom.fields.SFInt32} attributeStride
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -118,7 +120,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'attributeStride',   0);
 
             /**
-             *
+             * Offset, given in bytes, for the position attribute inside the interleaved attribute array.
              * @var {x3dom.fields.SFInt32} positionOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -128,7 +130,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'positionOffset',    0);
 
             /**
-             *
+             * Offset, given in bytes, for the normal attribute inside the interleaved attribute array.
              * @var {x3dom.fields.SFInt32} normalOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -138,7 +140,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalOffset',      0);
 
             /**
-             *
+             * Offset, given in bytes, for the texture coordinate attribute inside the interleaved attribute array.
              * @var {x3dom.fields.SFInt32} texcoordOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -148,7 +150,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'texcoordOffset',    0);
 
             /**
-             *
+             * Offset, given in bytes, for the color attribute inside the interleaved attribute array.
              * @var {x3dom.fields.SFInt32} colorOffset
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -158,7 +160,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'colorOffset',       0);
 
             /**
-             *
+             * Number of anchor vertices (can be 0).
+             * Anchor vertices are used to keep some vertices on the bordes between sub-meshes fixed during refinement.
              * @var {x3dom.fields.SFInt32} numAnchorVertices
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -169,7 +172,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Precision, given in bytes, for the components of the position attribute.
              * @var {x3dom.fields.SFInt32} positionPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 2
@@ -179,7 +182,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
 
             /**
-             *
+             * Precision, given in bytes, for the components of the normal attribute.
              * @var {x3dom.fields.SFInt32} normalPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1
@@ -189,7 +192,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
 
             /**
-             *
+             * Precision, given in bytes, for the components of the texture coordinate attribute.
              * @var {x3dom.fields.SFInt32} texcoordPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 2
@@ -199,7 +202,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
 
             /**
-             *
+             * Precision, given in bytes, for the components of the color attribute.
              * @var {x3dom.fields.SFInt32} colorPrecision
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1
@@ -210,7 +213,8 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Minimum precision level of this PopGeometry node.
+             * This can be used to clamp displayed precision - if the value is -1, no clamping takes place.
              * @var {x3dom.fields.SFInt32} minPrecisionLevel
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue -1
@@ -220,7 +224,8 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'minPrecisionLevel', -1);
 
             /**
-             *
+             * Maximum precision level of this PopGeometry node.
+             * This can be used to clamp displayed precision - if the value is -1, no clamping takes place.
              * @var {x3dom.fields.SFInt32} maxPrecisionLevel
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue -1
@@ -230,7 +235,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'maxPrecisionLevel', -1);
 
             /**
-             *
+             * Additional precision multiplication factor, for tuning the displayed precision.
              * @var {x3dom.fields.SFFloat} precisionFactor
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 1.0
@@ -242,7 +247,7 @@ x3dom.registerNodeType(
             //those four fields are read by the x3dom renderer
 
             /**
-             *
+             * Field for internal use by the X3DOM renderer.
              * @var {x3dom.fields.SFString} coordType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint16"
@@ -252,7 +257,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'coordType',    "Uint16");
 
             /**
-             *
+             * Field for internal use by the X3DOM renderer.
              * @var {x3dom.fields.SFString} normalType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint8"
@@ -262,7 +267,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalType',   "Uint8");
 
             /**
-             *
+             * Field for internal use by the X3DOM renderer.
              * @var {x3dom.fields.SFString} texCoordType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint16"
@@ -272,7 +277,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
 
             /**
-             *
+             * Field for internal use by the X3DOM renderer.
              * @var {x3dom.fields.SFString} colorType
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue "Uint8"
@@ -283,7 +288,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Size of the vertex buffer, used to pre-allocate the buffer before downloading data.
              * @var {x3dom.fields.SFInt32} vertexBufferSize
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue 0
@@ -294,7 +299,7 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Specifies whether this PopGeometry was encoded for indexed rendering.
              * @var {x3dom.fields.SFBool} indexedRendering
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue true
@@ -308,7 +313,7 @@ x3dom.registerNodeType(
             //           encoded as the 4th 16 bit position component
 
             /**
-             *
+             * Specifies whether this PopGeometry was encoded for rendering with spherical normals.
              * @var {x3dom.fields.SFBool} sphericalNormals
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue false
@@ -320,7 +325,7 @@ x3dom.registerNodeType(
             //needed as we manipulate vertexCount during loading
 
             /**
-             *
+             * Vertex count at the highest possible level of precision.
              * @var {x3dom.fields.MFInt32} originalVertexCount
              * @memberof x3dom.nodeTypes.PopGeometry
              * @initvalue [0]

@@ -211,8 +211,6 @@
                     {"file": "TextureCoordinate.js"},
                     {"file": "TextureCoordinateGenerator.js"},
                     {"file": "MultiTextureCoordinate.js"},
-                    {"file": "MirrorRenderedTexture.js"},
-                    {"file": "MirrorTexture.js"},
                     {"file": "ImageTextureAtlas.js"}
                 ]},
                 {"name": "CubeMapTexturing", "filePrefix": "nodes/CubeMapTexturing/", "files":[
