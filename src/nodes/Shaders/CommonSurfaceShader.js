@@ -721,8 +721,13 @@ x3dom.registerNodeType(
             getDiffuseMap: function()
             {
                 if(this._cf.diffuseTexture.node) {
-                    this._cf.diffuseTexture.node._cf.texture.node._type = "diffuseMap";
-                    return this._cf.diffuseTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.diffuseTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.diffuseTexture.node._cf.texture.node._type = "diffuseMap";
+                        return this._cf.diffuseTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.diffuseTexture.node._type = "diffuseMap";
+                        return this._cf.diffuseTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -731,8 +736,13 @@ x3dom.registerNodeType(
             getNormalMap: function()
             {
                 if(this._cf.normalTexture.node) {
-                    this._cf.normalTexture.node._cf.texture.node._type = "normalMap";
-                    return this._cf.normalTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.normalTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.normalTexture.node._cf.texture.node._type = "normalMap";
+                        return this._cf.normalTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.normalTexture.node._type = "normalMap";
+                        return this._cf.normalTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -741,8 +751,13 @@ x3dom.registerNodeType(
             getAmbientMap: function()
             {
                 if(this._cf.ambientTexture.node) {
-                    this._cf.ambientTexture.node._cf.texture.node._type = "ambientMap";
-                    return this._cf.ambientTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.ambientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.ambientTexture.node._cf.texture.node._type = "ambientMap";
+                        return this._cf.ambientTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.ambientTexture.node._type = "ambientMap";
+                        return this._cf.ambientTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -751,8 +766,13 @@ x3dom.registerNodeType(
             getSpecularMap: function()
             {
                 if(this._cf.specularTexture.node) {
-                    this._cf.specularTexture.node._cf.texture.node._type = "specularMap";
-                    return this._cf.specularTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.specularTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.specularTexture.node._cf.texture.node._type = "specularMap";
+                        return this._cf.specularTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.specularTexture.node._type = "specularMap";
+                        return this._cf.specularTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -761,8 +781,13 @@ x3dom.registerNodeType(
             getShininessMap: function()
             {
                 if(this._cf.shininessTexture.node) {
-                    this._cf.shininessTexture.node._cf.texture.node._type = "shininessMap";
-                    return this._cf.shininessTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.shininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.shininessTexture.node._cf.texture.node._type = "shininessMap";
+                        return this._cf.shininessTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.shininessTexture.node._type = "shininessMap";
+                        return this._cf.shininessTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -771,8 +796,13 @@ x3dom.registerNodeType(
             getAlphaMap: function()
             {
                 if(this._cf.alphaTexture.node) {
-                    this._cf.alphaTexture.node._cf.texture.node._type = "alphaMap";
-                    return this._cf.alphaTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.alphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.alphaTexture.node._cf.texture.node._type = "alphaMap";
+                        return this._cf.alphaTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.alphaTexture.node._type = "alphaMap";
+                        return this._cf.alphaTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -781,8 +811,13 @@ x3dom.registerNodeType(
             getDisplacementMap: function()
             {
                 if(this._cf.displacementTexture.node) {
-                    this._cf.displacementTexture.node._cf.texture.node._type = "displacementMap";
-                    return this._cf.displacementTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.displacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.displacementTexture.node._cf.texture.node._type = "displacementMap";
+                        return this._cf.displacementTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.displacementTexture.node._type = "displacementMap";
+                        return this._cf.displacementTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -791,8 +826,13 @@ x3dom.registerNodeType(
             getDiffuseDisplacementMap: function()
             {
                 if(this._cf.diffuseDisplacementTexture.node) {
-                    this._cf.diffuseDisplacementTexture.node._cf.texture.node._type = "diffuseDisplacementMap";
-                    return this._cf.diffuseDisplacementTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.diffuseDisplacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.diffuseDisplacementTexture.node._cf.texture.node._type = "diffuseDisplacementMap";
+                        return this._cf.diffuseDisplacementTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.diffuseDisplacementTexture.node._type = "diffuseDisplacementMap";
+                        return this._cf.diffuseDisplacementTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -801,8 +841,13 @@ x3dom.registerNodeType(
             getMultiDiffuseAlphaMap: function()
             {
                 if(this._cf.multiDiffuseAlphaTexture.node) {
-                    this._cf.multiDiffuseAlphaTexture.node._cf.texture.node._type = "multiDiffuseAlphaMap";
-                    return this._cf.multiDiffuseAlphaTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.multiDiffuseAlphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.multiDiffuseAlphaTexture.node._cf.texture.node._type = "multiDiffuseAlphaMap";
+                        return this._cf.multiDiffuseAlphaTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.multiDiffuseAlphaTexture.node._type = "multiDiffuseAlphaMap";
+                        return this._cf.multiDiffuseAlphaTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -811,8 +856,13 @@ x3dom.registerNodeType(
             getMultiVisibilityMap: function()
             {
                 if(this._cf.multiVisibilityTexture.node) {
-                    this._cf.multiVisibilityTexture.node._cf.texture.node._type = "multiVisibilityMap";
-                    return this._cf.multiVisibilityTexture.node._cf.texture.node;
+                    if (x3dom.isa(this._cf.multiVisibilityTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.multiVisibilityTexture.node._cf.texture.node._type = "multiVisibilityMap";
+                        return this._cf.multiVisibilityTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.multiVisibilityTexture.node._type = "multiVisibilityMap";
+                        return this._cf.multiVisibilityTexture.node;
+                    }
                 } else {
                     return null;
                 }
@@ -830,6 +880,9 @@ x3dom.registerNodeType(
 
                 var spec = this.getSpecularMap();
                 if(spec) textures.push(spec);
+
+                var shin = this.getShininessMap();
+                if(shin) textures.push(shin);
 
                 var displacement = this.getDisplacementMap();
                 if(displacement) textures.push(displacement);

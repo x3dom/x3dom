@@ -389,7 +389,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
                           "light"+l+"_AmbientIntensity, " +
                           "light"+l+"_BeamWidth, " +
                           "light"+l+"_CutOffAngle, " +
-                          "normalMV, eye);\n";
+                          "normalMV, eye, shininess);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";

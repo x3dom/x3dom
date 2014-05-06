@@ -494,6 +494,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
 		}
+        if(properties.SHINMAP){
+            shader += "uniform sampler2D shininessMap;\n";
+        }
         if (properties.DISPLACEMENTMAP) {
           shader += "uniform sampler2D displacementMap;\n";
           shader += "uniform float displacementWidth;\n";
@@ -593,6 +596,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
 		shader += "vec3 eye 	  = -fragPosition;\n";
+        shader += "float shin     = shininess;\n";
 		
 		//Normalmap
 		if(properties.NORMALMAP){
@@ -613,6 +617,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                 shader += "normal.x = -normal.x;\n";
             }
 		}
+
+        if(properties.SHINMAP){
+            shader += "shin = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+        }
 		
 		//Solid
 		if(!properties.SOLID) {
@@ -637,7 +645,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                                     "light"+l+"_AmbientIntensity, " +
                                     "light"+l+"_BeamWidth, " +
                                     "light"+l+"_CutOffAngle, " +
-                                    "normal, eye);\n";
+                                    "normal, eye, shin);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";

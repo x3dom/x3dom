@@ -281,7 +281,7 @@ x3dom.shader.light = function(numLights) {
 	
 	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V)\n" +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -311,7 +311,7 @@ x3dom.shader.light = function(numLights) {
 					
 					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
-					"   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
+					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
                     "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +
 					//"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
 					//"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
