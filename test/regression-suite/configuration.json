@@ -876,6 +876,67 @@
                             }
                         }
                     ]
+            },
+            {
+                "url"   : "/test/cases/displacementMapping/displacementMapping.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/volrenOpacity/volrenOpacity.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "201",
+                                "y"     :   "389"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/volrenProjection/volrenProjection.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/renderTexMirror/renderTexMirror.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
             }
         ]
 }
