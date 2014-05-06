@@ -356,6 +356,8 @@ x3dom.registerNodeType(
 
                                 }
                             }
+                            if(this._vf.ccw == false)
+                                linklist.invert();
 
                             linklist_indices = x3dom.EarClipping.getIndexes(linklist);
 
@@ -389,6 +391,9 @@ x3dom.registerNodeType(
                                             (p0.crossSection.y - minTexU_z)/diffTexU_z);
                                 }
                             }
+
+                            if(this._vf.ccw == false)
+                                linklist.invert();
 
                             linklist_indices = x3dom.EarClipping.getIndexes(linklist);
 
