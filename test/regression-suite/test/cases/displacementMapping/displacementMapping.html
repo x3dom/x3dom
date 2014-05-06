@@ -1,0 +1,33 @@
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Common Surface Shader 03</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+
+<body>
+<X3D showStat='false' showLog='false' x='0px' y='0px' width='800px' height='600px'>
+    <Scene>
+        <NavigationInfo headLight='true'></NavigationInfo>
+        <PointLight location="0 0 300" radius='0' intensity='1.5'></PointLight>
+        <Viewpoint position="778.18945 -86.07794 514.73941" orientation="0.47026 0.40503 0.78410 1.74156"></Viewpoint>
+        <Transform>
+            <Shape>
+                <Appearance>
+                    <CommonSurfaceShader diffuseFactor='1.000 1.000 1.000' specularFactor='0.250 0.250 0.250' shininessFactor='0.2' alphaFactor='1.000' displacementAxis='z' displacementFactor='150'>
+                        <SurfaceShaderTexture containerField='diffuseTexture' >
+                            <ImageTexture url='./RGB_Diffuse.png'></ImageTexture>
+                        </SurfaceShaderTexture>
+                        <SurfaceShaderTexture containerField='displacementTexture' >
+                            <ImageTexture url='./RGB_Displacement.png'></ImageTexture>
+                        </SurfaceShaderTexture>
+                    </CommonSurfaceShader>
+                </Appearance>
+                <Plane size='512 512' subdivision='200 200'></Plane>
+            </Shape>
+        </Transform>
+    </Scene>
+</X3D>
+</body>
+</html>
