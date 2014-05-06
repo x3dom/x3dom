@@ -354,6 +354,14 @@ x3dom.fields.SFMatrix4f.ortho = function(left, right, bottom, top, near, far, as
 };
 
 /**
+ * Returns a copy of the matrix.
+ * @returns {x3dom.fields.SFMatrix4f} the copy
+ */
+x3dom.fields.SFMatrix4f.prototype.copy = function() {
+    return x3dom.fields.SFMatrix4f.copy(this);
+};
+
+/**
  * Sets the translation components of a homogenous transform matrix.
  * @param {x3dom.fields.SFVec3f} vec - the translation vector
  */
@@ -1422,6 +1430,10 @@ x3dom.fields.SFVec2f.parse = function (str) {
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
 };
 
+x3dom.fields.SFVec2f.prototype.copy = function() {
+    return x3dom.fields.SFVec2f.copy(this);
+};
+
 x3dom.fields.SFVec2f.prototype.setValues = function (that) {
     this.x = that.x;
     this.y = that.y;
@@ -1542,6 +1554,10 @@ x3dom.fields.SFVec3f.parse = function (str) {
         var c = x3dom.fields.SFColor.colorParse(str);
         return new x3dom.fields.SFVec3f(c.r, c.g, c.b);
     }
+};
+
+x3dom.fields.SFVec3f.prototype.copy = function() {
+    return x3dom.fields.SFVec3f.copy(this);
 };
 
 x3dom.fields.SFVec3f.prototype.setValues = function (that) {
@@ -1668,6 +1684,11 @@ x3dom.fields.SFVec4f.copy = function(v) {
     return new x3dom.fields.SFVec4f(v.x, v.y, v.z, v.w);
 };
 
+
+x3dom.fields.SFVec4f.prototype.copy = function() {
+    return x3dom.fields.SFVec4f(this);
+};
+
 x3dom.fields.SFVec4f.parse = function (str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
     return new x3dom.fields.SFVec4f(+m[1], +m[2], +m[3], +m[4]);
@@ -1730,7 +1751,7 @@ x3dom.fields.Quaternion.parseAxisAngle = function (str) {
 
 x3dom.fields.Quaternion.axisAngle = function (axis, a) {
     var t = axis.length();
-    
+
     if (t > x3dom.fields.Eps)
     {
         var s = Math.sin(a/2) / t;
@@ -1741,6 +1762,10 @@ x3dom.fields.Quaternion.axisAngle = function (axis, a) {
     {
         return new x3dom.fields.Quaternion(0, 0, 0, 1);
     }
+};
+
+x3dom.fields.Quaternion.prototype.copy = function() {
+    return x3dom.fields.Quaternion(this);
 };
 
 x3dom.fields.Quaternion.prototype.toMatrix = function () {
@@ -2062,6 +2087,14 @@ x3dom.fields.SFColor.parse = function(str) {
     }
 };
 
+x3dom.fields.SFColor.copy = function(that) {
+    return new x3dom.fields.SFColor(that.r, that.g, that.b);
+};
+
+x3dom.fields.SFColor.prototype.copy = function() {
+    return x3dom.fields.SFColor.copy(this);
+};
+
 x3dom.fields.SFColor.prototype.setHSV = function (h, s, v) {
     x3dom.debug.logWarning("SFColor.setHSV() NYI");
 };
@@ -2229,6 +2262,14 @@ x3dom.fields.SFColorRGBA.parse = function(str) {
     }
 };
 
+x3dom.fields.SFColorRGBA.copy = function(that) {
+    return new x3dom.fields.SFColorRGBA(that.r, that.g, that.b, that.a);
+};
+
+x3dom.fields.SFColorRGBA.prototype.copy = function() {
+    return x3dom.fields.SFColorRGBA.copy(this);
+};
+
 x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
     this.r = color.r;
     this.g = color.g;
@@ -2394,6 +2435,15 @@ x3dom.fields.SFImage.parse = function(str) {
     var img = new x3dom.fields.SFImage();
     img.setValueByStr(str);
     return img;
+};
+
+x3dom.fields.SFImage.copy = function(that) {
+    //array gets copied in the constructor
+    return new x3dom.fields.SFImage(that.width, that.height, that.comp, that.array);
+};
+
+x3dom.fields.SFImage.prototype.copy = function() {
+    return x3dom.fields.SFImage.copy(this);
 };
 
 x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
@@ -2635,6 +2685,12 @@ x3dom.fields.MFColor = function(colorArray) {
     }
 };
 
+x3dom.fields.MFColor.copy = function(colorArray) {
+    var destination = new x3dom.fields.MFColor();
+    colorArray.map( function(v) { destination.push(v.copy()); }, this );
+    return destination;
+};
+
 x3dom.fields.MFColor.prototype = x3dom.extend([]);
 
 x3dom.fields.MFColor.parse = function(str) {
@@ -2645,6 +2701,10 @@ x3dom.fields.MFColor.parse = function(str) {
     }
     
     return new x3dom.fields.MFColor( colors );
+};
+
+x3dom.fields.MFColor.prototype.copy = function() {
+    return x3dom.fields.MFColor.copy(this);
 };
 
 x3dom.fields.MFColor.prototype.setValueByStr = function(str) {
@@ -2679,6 +2739,12 @@ x3dom.fields.MFColorRGBA = function(colorArray) {
     }
 };
 
+x3dom.fields.MFColorRGBA.copy = function(colorArray) {
+    var destination = new x3dom.fields.MFColorRGBA();
+    colorArray.map( function(v) { destination.push(v.copy()); }, this );
+    return destination;
+};
+
 x3dom.fields.MFColorRGBA.prototype = x3dom.extend([]);
 
 x3dom.fields.MFColorRGBA.parse = function(str) {
@@ -2689,6 +2755,10 @@ x3dom.fields.MFColorRGBA.parse = function(str) {
     }
     
     return new x3dom.fields.MFColorRGBA( colors );
+};
+
+x3dom.fields.MFColorRGBA.prototype.copy = function() {
+    return x3dom.fields.MFColorRGBA.copy(this);
 };
 
 x3dom.fields.MFColorRGBA.prototype.setValueByStr = function(str) {
@@ -2725,6 +2795,16 @@ x3dom.fields.MFRotation = function(rotArray) {
 };
 
 x3dom.fields.MFRotation.prototype = x3dom.extend([]);
+
+x3dom.fields.MFRotation.copy = function(rotationArray) {
+    var destination = new x3dom.fields.MFRotation();
+    rotationArray.map( function(v) { destination.push(v.copy()); }, this );
+    return destination;
+};
+
+x3dom.fields.MFRotation.prototype.copy = function() {
+    return x3dom.fields.MFRotation.copy(this);
+};
 
 x3dom.fields.MFRotation.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
@@ -2775,7 +2855,7 @@ x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
 
 x3dom.fields.MFVec3f.copy = function(vec3Array) {
     var destination = new x3dom.fields.MFVec3f();
-    vec3Array.map( function(v) { destination.push(x3dom.fields.SFVec3f.copy(v)); }, this );
+    vec3Array.map( function(v) { destination.push(v.copy()); }, this );
     return destination;
 };
 
@@ -2787,6 +2867,12 @@ x3dom.fields.MFVec3f.parse = function(str) {
     }
     
     return new x3dom.fields.MFVec3f( vecs );    
+};
+
+x3dom.fields.MFVec3f.prototype.copy = function(vec3Array) {
+    var destination = new x3dom.fields.MFVec3f();
+    vec3Array.map( function(v) { destination.push(v.copy()); }, this );
+    return destination;
 };
 
 x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
@@ -2823,6 +2909,12 @@ x3dom.fields.MFVec2f = function(vec2Array) {
 
 x3dom.fields.MFVec2f.prototype = x3dom.extend([]);
 
+x3dom.fields.MFVec2f.copy = function(vec2Array) {
+    var destination = new x3dom.fields.MFVec2f();
+    vec2Array.map( function(v) { destination.push(v.copy()); }, this );
+    return destination;
+};
+
 x3dom.fields.MFVec2f.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
@@ -2831,6 +2923,10 @@ x3dom.fields.MFVec2f.parse = function(str) {
     }
 
     return new x3dom.fields.MFVec2f( vecs );    
+};
+
+x3dom.fields.MFVec2f.prototype.copy = function() {
+    return x3dom.fields.MFVec2f.copy(this);
 };
 
 x3dom.fields.MFVec2f.prototype.setValueByStr = function(str) {
@@ -2866,6 +2962,12 @@ x3dom.fields.MFInt32 = function(array) {
 
 x3dom.fields.MFInt32.prototype = x3dom.extend([]);
 
+x3dom.fields.MFInt32.copy = function(intArray) {
+    var destination = new x3dom.fields.MFInt32();
+    intArray.map( function(v) { destination.push(v); }, this );
+    return destination;
+};
+
 x3dom.fields.MFInt32.parse = function(str) {
     var mc = str.match(/([+\-]?\d+\s*){1},?\s*/g);
     var vals = [];
@@ -2874,6 +2976,10 @@ x3dom.fields.MFInt32.parse = function(str) {
     }
     
     return new x3dom.fields.MFInt32( vals );
+};
+
+x3dom.fields.MFInt32.prototype.copy = function() {
+    return x3dom.fields.MFInt32.copy(this);
 };
 
 x3dom.fields.MFInt32.prototype.setValueByStr = function(str) {
@@ -2908,6 +3014,12 @@ x3dom.fields.MFFloat = function(array) {
 
 x3dom.fields.MFFloat.prototype = x3dom.extend([]);
 
+x3dom.fields.MFFloat.copy = function(floatArray) {
+    var destination = new x3dom.fields.MFFloat();
+    floatArray.map( function(v) { destination.push(v); }, this );
+    return destination;
+};
+
 x3dom.fields.MFFloat.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vals = [];
@@ -2916,6 +3028,10 @@ x3dom.fields.MFFloat.parse = function(str) {
     }
     
     return new x3dom.fields.MFFloat( vals );    
+};
+
+x3dom.fields.MFFloat.prototype.copy = function() {
+    return x3dom.fields.MFFloat.copy(this);
 };
 
 x3dom.fields.MFFloat.prototype.setValueByStr = function(str) {
@@ -2950,6 +3066,12 @@ x3dom.fields.MFBoolean = function(array) {
 
 x3dom.fields.MFBoolean.prototype = x3dom.extend([]);
 
+x3dom.fields.MFBoolean.copy = function(boolArray) {
+    var destination = new x3dom.fields.MFBoolean();
+    boolArray.map( function(v) { destination.push(v); }, this );
+    return destination;
+};
+
 x3dom.fields.MFBoolean.parse = function(str) {
     var mc = str.match(/(true|false|1|0)/ig);
     var vals = [];
@@ -2958,6 +3080,10 @@ x3dom.fields.MFBoolean.parse = function(str) {
     }
 
     return new x3dom.fields.MFBoolean( vals );
+};
+
+x3dom.fields.MFBoolean.prototype.copy = function() {
+    return x3dom.fields.MFBoolean.copy(this);
 };
 
 x3dom.fields.MFBoolean.prototype.setValueByStr = function(str) {
@@ -2992,6 +3118,12 @@ x3dom.fields.MFString = function(strArray) {
 
 x3dom.fields.MFString.prototype = x3dom.extend([]);
 
+x3dom.fields.MFString.copy = function(stringArray) {
+    var destination = new x3dom.fields.MFString();
+    stringArray.map( function(v) { destination.push(v); }, this );
+    return destination;
+};
+
 x3dom.fields.MFString.parse = function(str) {
     var arr = [];
     // ignore leading whitespace?
@@ -3008,6 +3140,10 @@ x3dom.fields.MFString.parse = function(str) {
         arr.push(str);
     }
     return new x3dom.fields.MFString( arr );
+};
+
+x3dom.fields.MFString.prototype.copy = function() {
+    return x3dom.fields.MFString.copy(this);
 };
 
 x3dom.fields.MFString.prototype.setValueByStr = function(str) {

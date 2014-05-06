@@ -111,7 +111,6 @@ x3dom.setElementAttribute = function(attrName, newVal)
     }
 };
 
-
 /**
  * Returns the value of the field with the given name.
  * The value is returned as an object of the corresponding field type.
@@ -121,10 +120,7 @@ x3dom.setElementAttribute = function(attrName, newVal)
 x3dom.getFieldValue = function(fieldName)
 {
     var x3dNode = this._x3domNode;
-
-    //TODO: implement
-
-    return null;
+    return x3dNode._vf[fieldName].copy();
 };
 
 
@@ -135,12 +131,11 @@ x3dom.getFieldValue = function(fieldName)
  * @param {String} fieldName  - the name of the field where the value should be set
  * @param {String} fieldvalue - the new field value
  */
-x3dom.setFieldValue = function(fieldName, fieldvalue)
-{
+x3dom.setFieldValue = function(fieldName, fieldvalue) {
     var x3dNode = this._x3domNode;
 
-    //TODO: implement
-};
+    x3dNode._vf[fieldName] = fieldvalue.copy();
+}
 
 
 /**
@@ -280,6 +275,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             //attach X3DOM's custom field interface functions
             domNode.requestFieldRef = x3dom.requestFieldRef;
             domNode.releaseFieldRef = x3dom.releaseFieldRef;
+            domNode.getFieldValue = x3dom.getFieldValue;
+            domNode.setFieldValue = x3dom.setFieldValue;
 
             // find the NodeType for the given dom-node
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
