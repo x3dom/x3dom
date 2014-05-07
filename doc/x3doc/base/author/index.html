@@ -45,8 +45,8 @@
                 <ul>
                     <li><a href="#getAttribute">&#10152; getAttribute</a></li>
                     <li><a href="#setAttribute">&#10152; setAttribute</a></li>
-                    <li><a href="#getField">&#10152; getField</a></li>                    
-                    <li><a href="#setField">&#10152; setField</a></li>
+                    <li><a href="#getFieldValue">&#10152; getFieldValue</a></li>
+                    <li><a href="#setFieldValue">&#10152; setFieldValue</a></li>
                     <li><a href="#requestFieldRef">&#10152; requestFieldRef</a></li>
                     <li><a href="#releaseFieldRed">&#10152; releaseFieldRed</a></li>
                 </ul>
@@ -212,7 +212,7 @@
             
             <br>
             
-            <h3>Using <code>getField</code> and <code>setField</code></h3>
+            <h3>Using <code>getFieldValue</code> and <code>setFieldValue</code></h3>
             <p>
             If you are interested in manipulating the value of a field in a more sophisticated way than just giving it a fixed value in a string representation,
             for example because you want to change a single coordinate value or a single channel of a color, you might find the standard DOM methods a bit inconvenient.
@@ -223,27 +223,27 @@
             </p>
             
             <pre class="prettyprint"><code class="language-js">
-    var myColor = document.getElementById('myMaterial').getField('diffuseColor');
+    var myColor = document.getElementById('myMaterial').getFieldValue('diffuseColor');
     myColor.r = 1.0;    //the myColor object is of type 'SFColor', so we can directly set RGB values 
-    document.getElementById('myMaterial').setField('diffuseColor', myColor);
+    document.getElementById('myMaterial').setFieldValue('diffuseColor', myColor);
             </code></pre>
             
             <p>
-            The X3DOM <code>getField</code> and <code>setField</code> methods, which are available on all X3DOM nodes, are defined as follows:
+            The X3DOM <code>getFieldValue</code> and <code>setFieldValue</code> methods, which are available on all X3DOM nodes, are defined as follows:
             </p>
             
             <!--- GET FIELD --->
             <dl class="method-container">
                 <dt>
                     <h4 class="name method-container-header">
-                        getField
+                        getFieldValue
                         <span class="signature">
                         (fieldname)
                         </span>
                         <span class="type-signature">
                         &#8594 FIELDTYPE
                         </span>
-                      <a name="getField" class="upwardsLink" href="#">&#10548;</a>
+                      <a name="getFieldValue" class="upwardsLink" href="#">&#10548;</a>
                     </h4>                  
                 </dt>
                 <dd>
@@ -279,11 +279,11 @@
             <dl class="method-container">
                 <dt>
                     <h4 class="name method-container-header">
-                        setField
+                        setFieldValue
                         <span class="signature">
                         (fieldname, fieldvalue)
                         </span>
-                        <a name="setField" class="upwardsLink" href="#">&#10548;</a>                      
+                        <a name="setFieldValue" class="upwardsLink" href="#">&#10548;</a>
                     </h4>                  
                 </dt>
                 <dd>

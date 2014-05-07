@@ -146,6 +146,10 @@ for (var i = 650; i < 730; ++i)
 }
 colorNode.setFieldValue("color", colorArray);
 </pre></code>
+
+        Note, however, that <code>getFieldValue</code> and <code>setFieldValue</code> create copies of the fields and
+        therefore are significantly slower for large amounts of data.
+
         <h2>Available Variables:</h2>
         <table border="">
             <tr>
