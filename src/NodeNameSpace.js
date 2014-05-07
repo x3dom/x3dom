@@ -120,7 +120,12 @@ x3dom.setElementAttribute = function(attrName, newVal)
 x3dom.getFieldValue = function(fieldName)
 {
     var x3dNode = this._x3domNode;
-    return x3dNode._vf[fieldName].copy();
+
+    if (x3dNode && x3dNode._vf[fieldName]) {
+        return x3dNode._vf[fieldName].copy();
+    }
+
+    return null;
 };
 
 
@@ -133,8 +138,11 @@ x3dom.getFieldValue = function(fieldName)
  */
 x3dom.setFieldValue = function(fieldName, fieldvalue) {
     var x3dNode = this._x3domNode;
-
-    x3dNode._vf[fieldName] = fieldvalue.copy();
+    if (x3dNode && x3dNode._vf[fieldName]) {
+        x3dNode._vf[fieldName] = fieldvalue.copy();
+        x3dNode.fieldChanged(fieldName);
+        x3dNode._nameSpace.doc.needRender = true;
+    }
 }
 
 
