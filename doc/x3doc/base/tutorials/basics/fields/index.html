@@ -73,15 +73,15 @@ This is helpful especially when you want to change only a single value of that f
 </p>
 <h2>getField and setField </h2>
 <p>
-The getField method returs the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
+The getField method returns the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
 without cast it first. Corresponding works the setField method, which takes the fieldname as a string (because it really is one) and the fieldvalue
 as an object of the field type. 
 </p>
 
 <pre class="prettyprint"><code class="language-js">
-   var myColor = document.getElementById('color').getField('diffuseColor');
+   var myColor = document.getElementById('color').getFieldValue('diffuseColor');
     myColor.r = 1.0;    //the myColor object is of type 'SFColor', so we can directly set RGB values 
-    document.getElementById('color').setField('diffuseColor', myColor);
+    document.getElementById('color').setFieldValue('diffuseColor', myColor);
 	
 </code></pre>
 <p>

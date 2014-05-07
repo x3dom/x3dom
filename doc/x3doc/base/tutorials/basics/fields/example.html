@@ -127,14 +127,26 @@
 var colorFieldObj = colorNode.requestFieldRef("color");
 for (var i = 650; i < 730; ++i)
 {
-    colorFieldObj[i].r = 1.0;
+   colorFieldObj[i].r = 1.0;
    colorFieldObj[i].g = 0.0;
    colorFieldObj[i].b = 0.0;
 }
 colorNode.releaseFieldRef("color");
         </pre></code>
-        
-        <h2>Available Variables:</h2>      
+
+        The equivalent code for <code>getFieldValue</code> and <code>setFieldValue</code> looks like this:
+
+        <code><pre>
+var colorArray = colorNode.getFieldValue("color");
+for (var i = 650; i < 730; ++i)
+{
+   colorArray[i].r = 1.0;
+   colorArray[i].g = 0.0;
+   colorArray[i].b = 0.0;
+}
+colorNode.setFieldValue("color", colorArray);
+</pre></code>
+        <h2>Available Variables:</h2>
         <table border="">
             <tr>
                 <th>Name</th>
