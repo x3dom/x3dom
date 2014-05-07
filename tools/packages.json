@@ -46,6 +46,7 @@
                 {"path": "shader/ShaderBackgroundCubeTexture.js"},
                 {"path": "shader/ShaderShadow.js"},
                 {"path": "shader/ShaderShadowRendering.js"},
+                {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"}
             ]},
 
