@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'gammaCorrectionDefault', "none"); //"linear");
+            this.addField_SFString(ctx, 'gammaCorrectionDefault', "linear");
 
             // boolean flags for feature (de)activation
 
@@ -285,7 +285,7 @@ x3dom.registerNodeType(
                         return field;
                     }
                     else {
-                        x3dom.debug.logWarning(field + " gammaCorrectionDefault may only be linear, fastLinear, or none (default)");
+                        x3dom.debug.logWarning(field + " gammaCorrectionDefault may only be linear (default), fastLinear, or none");
                         return that._validGammaCorrectionTypes[0];
                     }
                 };
