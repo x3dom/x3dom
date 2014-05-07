@@ -21,7 +21,7 @@
     >
     <a href="../../index.html">Tutorials</a>
 	>
-    <a href="#">Access Field Nodes</a>
+    <a href="#">Access Node Fields</a>
 </div>
 <div id="main">
 
@@ -71,22 +71,22 @@ This color object gets converted to a string in order to compare it with another
 That seems a bit odd, doesn't it? Luckily X3DOM provides a more sophisticated way to manipulating values. 
 This is helpful especially when you want to change only a single value of that field, like a single channel of a color. 
 </p>
-<h2>getField and setField </h2>
+<h2>getFieldValue and setFieldValue </h2>
 <p>
-The getField method returs the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
-without cast it first. Corresponding works the setField method, which takes the fieldname as a string (because it really is one) and the fieldvalue
+The getFieldValue method returns the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
+without cast it first. Corresponding works the setFieldValue method, which takes the fieldname as a string (because it really is one) and the fieldvalue
 as an object of the field type. 
 </p>
 
 <pre class="prettyprint"><code class="language-js">
-   var myColor = document.getElementById('color').getField('diffuseColor');
+   var myColor = document.getElementById('color').getFieldValue('diffuseColor');
     myColor.r = 1.0;    //the myColor object is of type 'SFColor', so we can directly set RGB values 
-    document.getElementById('color').setField('diffuseColor', myColor);
+    document.getElementById('color').setFieldValue('diffuseColor', myColor);
 	
 </code></pre>
 <p>
 Be aware that the returning value is only a copy of the field object. For the most use cases this is perfectly fine, but getting objects by value
-always involves copy operations which can slow down your application if field values are frequently changed. Frequently" means about something around 60 times a second.
+always involves copy operations which can slow down your application if field values are frequently changed. "Frequently" means something about 60 times per second.
 Or if your field value is a large array of values. For those cases X3DOM has a requestFieldRef() method, which returns the original object by reference. 
 </p>
 <h2>requestFieldRef and releaseFieldRef</h2>
