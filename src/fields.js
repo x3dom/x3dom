@@ -2440,8 +2440,12 @@ x3dom.fields.SFImage.parse = function(str) {
 };
 
 x3dom.fields.SFImage.copy = function(that) {
-    //array gets copied in the constructor
-    return new x3dom.fields.SFImage(that.width, that.height, that.comp, that.array);
+    var destination = new x3dom.fields.SFImage();
+    destination.width = that.width;
+    destination.height = that.height;
+    destination.comp = that.comp;
+    destination.setPixels(that.array);
+    return destination;
 };
 
 x3dom.fields.SFImage.prototype.copy = function() {
