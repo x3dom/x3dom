@@ -2875,10 +2875,9 @@ x3dom.fields.MFVec3f.parse = function(str) {
     return new x3dom.fields.MFVec3f( vecs );    
 };
 
-x3dom.fields.MFVec3f.prototype.copy = function(vec3Array) {
-    var destination = new x3dom.fields.MFVec3f();
-    vec3Array.map( function(v) { destination.push(v.copy()); }, this );
-    return destination;
+x3dom.fields.MFVec3f.prototype.copy = function()
+{
+    x3dom.fields.MFVec3f.copy(this);
 };
 
 x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
