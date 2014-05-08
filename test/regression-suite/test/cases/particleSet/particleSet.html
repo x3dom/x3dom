@@ -22,7 +22,12 @@
 	document.onload = function()
 	{
 		var ps = document.getElementById("ps");
-        ps.setAttribute("mode","test");
+        ps.setAttribute("mode","testSA");
+        ps.setFieldValue("mode","testSFV");
+
+        var ref = ps.requestFieldRef("mode");
+        ref = "testFR";
+        ps.releaseFieldRef("mode");
 
 	}
 </script>
