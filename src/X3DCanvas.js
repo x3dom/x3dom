@@ -773,7 +773,7 @@ x3dom.X3DCanvas.prototype._initContext = function(canvas, forbidMobileShaders, f
  * @param {Object} renderType - the renderType for the Flash backend
  */
 x3dom.X3DCanvas.prototype._initFlashContext = function(canvas, renderType) {
-    x3dom.debug.logInfo("Initializing X3DObject for [" + object.id + "]");
+    x3dom.debug.logInfo("Initializing X3DObject for [" + canvas.id + "]");
     return x3dom.gfx_flash(canvas, renderType);
 };
 
