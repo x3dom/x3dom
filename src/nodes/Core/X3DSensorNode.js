@@ -28,7 +28,7 @@ x3dom.registerNodeType(
         
 		
             /**
-             *
+             * Specifies whether this sensor is enabled. A disabled sensor does not produce any output.
              * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.X3DSensorNode
              * @initvalue true

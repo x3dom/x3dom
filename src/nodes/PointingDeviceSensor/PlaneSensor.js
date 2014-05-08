@@ -1,3 +1,12 @@
+/** @namespace x3dom.nodeTypes */
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
+
 /**
  * The plane sensor node translates drag gestures, performed with a pointing device like a mouse,
  * into 3D transformations.
@@ -9,6 +18,18 @@ x3dom.registerNodeType(
     "PointingDeviceSensor",
     defineClass(x3dom.nodeTypes.X3DDragSensorNode,
 
+        /**
+         * Constructor for PlaneSensor
+         * @constructs x3dom.nodeTypes.PlaneSensor
+         * @x3d 3.3
+         * @component PointingDeviceSensor
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DDragSensorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc PlaneSensor converts pointing device motion into 2D translation, parallel to the local Z=0 plane.
+         * Hint: You can constrain translation output to one axis by setting the respective minPosition and  maxPosition
+         * members to equal values for that axis.
+         */
         function (ctx)
         {
             x3dom.nodeTypes.PlaneSensor.superClass.call(this, ctx);
@@ -16,12 +37,53 @@ x3dom.registerNodeType(
             //---------------------------------------
             // FIELDS
             //---------------------------------------
-
+            /**
+             * The local sensor coordinate system is created by additionally applying the axisRotation field value to
+             * the local coordinate system of the sensor node.
+             * @var {x3dom.fields.SFRotation} axisRotation
+             * @memberof x3dom.nodeTypes.PlaneSensor
+             * @initvalue  0,0,1,0
+             * @field x3d
+             * @instance
+             */
             this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
 
+
+            /**
+             * The minPosition and maxPosition fields allow to constrain the 2D output of the plane sensor, along each
+             * 2D component. If the value of a component in maxPosition is smaller than the value of a component in
+             * minPosition, output is not constrained along the corresponding direction.
+             * @var {x3dom.fields.SFVec2f} minPosition
+             * @memberof x3dom.nodeTypes.PlaneSensor
+             * @initvalue  0,0
+             * @field x3d
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'minPosition',  0,  0);
+
+
+            /**
+             * The minPosition and maxPosition fields allow to constrain the 2D output of the plane sensor, along each
+             * 2D component. If the value of a component in maxPosition is smaller than the value of a component in
+             * minPosition, output is not constrained along the corresponding direction.
+             * @var {x3dom.fields.SFVec2f} maxPosition
+             * @memberof x3dom.nodeTypes.PlaneSensor
+             * @initvalue  -1,-1
+             * @field x3d
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'maxPosition', -1, -1);
 
+
+            /**
+             * Offset value that is incorporated into the translation output of the sensor.
+             * This value is automatically updated if the value of the autoOffset field is 'true'.
+             * @var {x3dom.fields.SFVec3f} offset
+             * @memberof x3dom.nodeTypes.PlaneSensor
+             * @initvalue 0,0,0
+             * @field x3d
+             * @instance
+             */
             this.addField_SFVec3f(ctx, 'offset', 0, 0, 0);
 
             //route-able output fields

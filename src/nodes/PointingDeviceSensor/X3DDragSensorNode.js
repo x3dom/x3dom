@@ -1,13 +1,31 @@
+/** @namespace x3dom.nodeTypes */
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
+
 /**
  * The abstract drag sensor node class serves as a base class for all drag-style pointing device sensors.
  */
-
 
 x3dom.registerNodeType(
     "X3DDragSensorNode",
     "PointingDeviceSensor",
     defineClass(x3dom.nodeTypes.X3DPointingDeviceSensorNode,
 
+        /**
+         * Constructor for X3DDragSensorNode
+         * @constructs x3dom.nodeTypes.X3DDragSensorNode
+         * @x3d 3.3
+         * @component PointingDeviceSensor
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DPointingDeviceSensorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc An abstract base class for all sensors that are processing drag gestures of the pointer.
+         */
         function (ctx)
         {
             x3dom.nodeTypes.X3DDragSensorNode.superClass.call(this, ctx);
@@ -16,6 +34,14 @@ x3dom.registerNodeType(
             // FIELDS
             //---------------------------------------
 
+            /**
+             * Determines whether offset values from previous drag gestures are remembered / accumulated.
+             * @var {x3dom.fields.SFBool} autoOffset
+             * @memberof x3dom.nodeTypes.X3DDragSensorNode
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
             this.addField_SFBool(ctx, 'autoOffset', false);
 
             //route-able output fields
@@ -29,14 +55,14 @@ x3dom.registerNodeType(
             //TODO: revise if those are still needed
             /**
              * Last mouse position in x direction.
-             * @type {Double}
+             * @var {Double} _lastX
              * @private
              */
             this._lastX = -1;
 
             /**
              * Last mouse position in y direction.
-             * @type {Double}
+             * @var {Double} _lastY
              * @private
              */
             this._lastY = -1;
