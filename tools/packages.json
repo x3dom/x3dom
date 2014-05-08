@@ -15,6 +15,7 @@
                 {"path": "util/StateManager.js"},
                 {"path": "util/BinaryContainerSetup.js"},
                 {"path": "util/DrawableCollection.js"},
+				{"path": "util/Moveable.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -24,7 +25,8 @@
                 {"path": "MatrixMixer.js"},
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
-                {"path": "fields.js"}
+                {"path": "fields.js"},		
+                {"path": "Docs.js"}
             ]},
 
         {"group": "SHADER",
@@ -354,9 +356,7 @@
                     {"file": "UniversalJoint.js"},
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
-                ]},
-                {"name": "Moveable", "path": "util/Moveable.js"},
-                {"name": "Docs", "path": "Docs.js"}
+                ]}                
             ]}
     ]
 }
