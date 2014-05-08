@@ -255,7 +255,6 @@
                     {"file": "TextureTransformMatrix3D.js"}
                 ]},
                 {"name": "PointingDeviceSensor", "filePrefix": "nodes/PointingDeviceSensor/", "files":[
-                    {"file": "PointingDeviceSensor.js"},
                     {"file": "X3DPointingDeviceSensorNode.js"},
                     {"file": "X3DDragSensorNode.js"},
                     {"file": "X3DTouchSensorNode.js"},
