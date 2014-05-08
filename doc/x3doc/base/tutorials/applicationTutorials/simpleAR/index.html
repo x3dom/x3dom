@@ -21,7 +21,7 @@
     &gt;
     <a href="../../index.html">Tutorials</a>
 	&gt;
-    <a href="#">Virtual catalogue</a>
+    <a href="#">simple AR</a>
 </div>
 <div id="main">
 
@@ -33,40 +33,89 @@
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>The Virtual Catalogue</h1>
+            <h1>A simple augmented reality application</h1>
         </div>            
         <br>
 		
         <p>
-		In this tutorial you will learn how build a simple catalogue for 3D Models with X3DOM. It is assumed that all 3d models are inside of different x3d-files that can be loaded separately.
+		Augmented reality (AR) is the integration of digital information with live video or the user's environment in real time. 
+		In this tutorial you will learn how build a simple AR Application with X3DOM. The goal is to render a 3D-Model on top of a marker filmed by a web-cam. 
+		In order to keep it simple we will use the <a href="https://github.com/kig/JSARToolKit">JSARToolKit</a> and to access the webCam we use the navigator.getUserMedia() method. It is only available in HTML 5, so if you are not sure
+		if your browser is supporting it properly you can test <a href="http://html5test.com/">here</a>.
         </p>
 		<p>
-		First we build a table containing preview images for all catalogue items and references to the matching x3d files.
+		To get started you need a webcam, <a href="https://github.com/kig/JSARToolKit">the JSARToolKit</a> and X3DOM of course. <br>
+		Please create an empty html page, a js file and if you want a css stylesheet. If you have no clue what that means you might want to visit <a href="http://www.w3schools.com/" target="blank"> w3scools</a> or our <a href="../../../index.html" target="blank">earlier tutorials</a>. 
+		The index.html file should look similar to the following code and need a  &lt;video&gt; tag to show our video.
 		</p>
-		
 		<pre class="prettyprint"><code class="language-html">
-	&lt;table id="demo_table" class="gallery"&gt;
-	  &lt;tr&gt;
-	    &lt;td file="dcm1.x3d"&gt;&lt;img src="dcm1.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
-	    &lt;td file="dcm2.x3d"&gt;&lt;img src="dcm2.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
-	    &lt;td file="dcm3.x3d"&gt;&lt;img src="dcm3.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
-	  &lt;/tr&gt;
-	&lt;/table&gt;    
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+   &lt;title&gt;&lt;/title&gt;
+   &lt;script src="script.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;div id="video-container"&gt;
+      &lt;video id="video" width="500" autoplay&gt;&lt;/video&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+		</code></pre>
+		<p>Make sure to not forget to set autoplay in the video tag. In order to keep our code simple we use a prefix to get the usermedia. </p>
+		<pre class="prettyprint"><code class="language-js">
+// Normalize the various vendor prefixed versions of getUserMedia.
+    navigator.getUserMedia = (navigator.getUserMedia ||navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||navigator.msGetUserMedia);
+// get the video element
+var vid = document.getElementById('video');
+ if (navigator.getUserMedia) {
+        // Request the camera.
+        navigator.getUserMedia(
+            { video: true,audio: false},
+            // Success Callback
+            function(localMediaStream) {
+            // Create a url from the stream and use it as source for the video
+                vid.src = URL.createObjectURL(localMediaStream);;
+            },
+            // Error Callback
+            function(err) {
+                // error occurred
+                console.log("there was an wild error");
+            });
+    } else {
+        alert('Seems like your browser has no usermedia support');
+    }
         </code></pre>
-		
-		Next we have to add a x3d context with a scene that will contain the loaded files. 
-		If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html">at the basic tutorials</a> first.
-		Inside of the shape we add an <i>Inline</i> node, which loads an external x3d file and displays it inside the current scene. The address of the file is specified with the <i>url</i> field.
-		
-		 <pre class="prettyprint"><code class="language-html">
-	&lt;x3d width='500px' height='400px'&gt;
-	    &lt;scene id="mainScene"&gt;
-			&lt;Inline id="inlineBox" nameSpaceName="dcm" url="dcm1.x3d" /&gt;
-	    &lt;/scene&gt;
-	&lt;/x3d&gt;
-	      </code></pre>
 		<p>
-		There is only one thing left to do now: Register a function, that handles clicks on the catalogue entry and changes the url of the Inline node:
+		If you open your index.html from a (local) server you will see your web-stream directly after you granted the access to your cam.
+		<br>
+		The next step is rendering the video to a canvas and getting the JSARToolkit to work. 
+		The Toolkit takes the picture from a canvas and returns a list of the found AR markers and their transformation matrices.
+		Later we will take those to transform and position our model on the screen. If you loop this routine you got AR Tracking.
+		</p>
+		<p>
+		To draw the video on a canvas we add a canvas in the html file, a listener in javaScript and hide the video.
+		</p>
+		<pre class="prettyprint"><code class="language-html">
+    &lt;div id="video-container"&gt;
+	&ltcanvas id="c" width="320" height="240"&gt;&lt;/canvas&gt;
+      &lt;video id="video" width="320" height="240" autoplay hidden&gt;&lt;/video&gt;
+    &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+		</code></pre>
+		
+		 <pre class="prettyprint"><code class="language-js">
+//add as global fields 
+var c=document.getElementById("c"); //get your canvas
+ctx=c.getContext('2d');		//get the context
+vid.addEventListener('play',function() {var i=window.setInterval(function() {ctx.drawImage(v,0, 0, 320, 240)},20);},false); //add the listener 
+
+</code></pre>
+		<p>
+		Be careful with the video and canvas settings if you accidentally stretch the video the tag recognition may not work as intended.<br>
+		
 		</p>
 
 
