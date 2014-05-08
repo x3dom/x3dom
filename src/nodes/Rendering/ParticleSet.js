@@ -125,6 +125,13 @@ x3dom.registerNodeType(
             getVolume: function() {
             },
 
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName == 'mode')
+                {
+                    console.log("mode has been changed");
+                }
+            },
 
             getCenter: function() {
             },
