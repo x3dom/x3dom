@@ -50,6 +50,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     this.doc = null;
 
+    //try to determine behavior of certain DOMNodeInsertedEvent:
+    //IE11 dispatches one event for each node in an inserted subtree, other browsers use a single event per subtree
+    x3dom.caps.DOMNodeInsertedEvent_perSubtree = (navigator.userAgent.indexOf('MSIE') != -1 ||
+                                                  navigator.userAgent.indexOf('Trident')) ? true : false;
+
     // allow listening for (size) changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
 
