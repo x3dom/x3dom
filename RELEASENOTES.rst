@@ -3,6 +3,117 @@
 Release notes
 =============
 
+Version 1.6
+-----------
+Most important Changes:
+
+* A completely new documentation portal, available via the link from www.x3dom.org and directly via doc.x3dom.org
+  * Extensive node API documentation resources, including detailed information about all nodes and fields
+  * A lot of great, new tutorials, along with a brand-new "Getting Started" guide
+
+* A first version of the new x3dom examples portal, available at examples.x3dom.org
+  * All former examples from the x3dom repository can now be found at this central example page
+  * A fresh re-design of the examples page will be available in the near future
+
+* Automated nightly testing suite for improved stability and qualitiy assurance, available at testing.x3dom.org
+  * Testing for Chrome and Firefox (Windows 8)
+  * Regression test suite, based on script result evaluation and explicit screenshot comparisons
+  * Automation and documentation (timeline) for testing process
+
+* New DOM field interface for more efficient field access, using getFieldValue / setFieldValue and requestFieldRef / releaseFieldRef (documentation: doc.x3dom.org/author/index.html)
+
+* New onoutputchange event, for easy handling of ROUTE output in JavaScript
+  * can be installed on any node
+  * tutorial available at doc.x3dom.org/tutorials/animationInteraction/onoutputchange/index.html
+
+* Gamma-correct lighting by default
+  * Example and tutorial at doc.x3dom.org/tutorials/lighting/gamma/index.html
+
+* A new TURNTABLE mode for more intuitive user interaction
+  * Example and tutorial available at doc.x3dom.org/tutorials/animationInteraction/navigation/index.html
+
+* First version of the pointingDeviceSensor component, including PlaneSensor, TouchSensor and CylinderSensor
+  * Example and tutorial available at doc.x3dom.org/tutorials/animationInteraction/navigation/index.html
+
+* First version of a new, long-lasting Shape Resource Container and ExternalGeometry node
+  * documentation of progress available www.x3dom.org/src/
+  * will be enriched with new features for compression and streaming during development of X3DOM 2.0
+  * will replace ImageGeometry, BinaryGeometry and POPGeometry in X3DOM 2.0
+
+* Instead of permanently linking to the dev version, from now on, we recommend to always use the latest stable release, which is available via the following links:
+  *  www.x3dom.org/download/x3dom.js
+  *  www.x3dom.org/x3dom/release/x3dom.js
+
+* We have continued our efforts to support IE 11, rendering X3DOM content with WebGL.
+  While there are still some issues, some of them caused by non-IE conformant HTML pages in general (also including some of our examples), X3DOM’s IE 11 support is constantly improving.
+
+
+New Components:
+++++++++++++++++++++++
+* H-Anim
+* PointingDeviceSensors
+* RigidBodyPhysics
+
+New Nodes:
+++++++++++++++++++++++
+* LineSet
+* MetadataBoolean
+* MultiPart
+* ExternalGeometry
+
+Removed Nodes:
+++++++++++++++++++++++
+* BitLODGeometry
+
+Fixes and Improvements:
+++++++++++++++++++++++
+* fixed projection matrix bugs
+* added shootRay functionality
+* added restriction for examine/turntable navigation mode behaviour
+* fixed start/end angle bug for Arc2d
+* improved debugging possibilities by defining getters
+* fixed memory leaks
+* fixed adding/removing of background nodes at runtime
+* fixed transparency updates
+* fixed broken field update for concave IndexedFaceSets
+* fixed shader field update when no DOM node is available
+* fix to allow lower case attributes in inlined files
+* fixed lower case field name support
+* added Extrusion node with texture mapping
+* added (multiple) mpeg dash in x3dom movie texture
+* updates of volume rendering component including composable styles
+* fixed several bugs in flash backend
+* extended fitObject/All functionality
+* implemented gamma-correct rendering
+* several shader fixes
+* added geosystem UTM/GC support
+* basic IE11 WebGL support
+* added support for Geolocation node as a transform
+* added param to force flash for all IE versions
+* added flag to disable culling for LOD-like nodes
+* fixed texture clamp/repeat
+* allowing setAttribute for lower case field names
+* added lit field for geometries
+* added new field interfaces get/setFieldValue request/releaseFieldRef
+* fixed setAttribute on currently bound viewpoint
+* removed over aggressive light clamping for multiple lights
+* fixed problems with aspect ratio
+* fixed flash download path bug
+* fixed reloading if x3d already initialized
+* added ping-pong path
+* added callbacks for all listeners to expect global mouserelease
+* improved dragging functionality
+* added orthographic zooming
+* renamed X3DBoundedNode to X3DBoundedObject
+* lots of cleanup
+* added mipmapping for RenderedTexture
+* added grab cursor
+* fixed removal of original node from namespace when USEd instance was deleted
+* fixed TimeSensor looping bug
+* fixed USE case sensitivity
+* fixed AudioClip automatic playback
+
+
 Version 1.5.1
 -------------
 Maintenance release, with lot of bug fixes. Recommended upgrade for 1.5
