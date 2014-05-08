@@ -1,9 +1,28 @@
+/** @namespace x3dom.nodeTypes */
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ */
 
 x3dom.registerNodeType(
     "CylinderSensor",
     "PointingDeviceSensor",
     defineClass(x3dom.nodeTypes.X3DDragSensorNode,
 
+        /**
+         * Constructor for CylinderSensor
+         * @constructs x3dom.nodeTypes.CylinderSensor
+         * @x3d 3.3
+         * @component PointingDeviceSensor
+         * @status experimental
+         * @extends x3dom.nodeTypes.X3DDragSensorNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The CylinderSensor node converts pointer motion (for example, from a mouse) into rotation values,
+         * using an invisible cylinder of infinite height, aligned with local Y-axis.
+         */
         function (ctx)
         {
             x3dom.nodeTypes.CylinderSensor.superClass.call(this, ctx);
@@ -11,14 +30,73 @@ x3dom.registerNodeType(
             //---------------------------------------
             // FIELDS
             //---------------------------------------
+            /**
+             * Offset value, in radians, that is incorporated into the rotation output of the sensor.
+             * This value is automatically updated if the value of the autoOffset field is 'true'.
+             * @var {x3dom.fields.SFFloat} offset
+             * @memberof x3dom.nodeTypes.CylinderSensor
+             * @initvalue 0
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'offset', 0);
 
-            this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
 
+            /**
+             * The local sensor coordinate system is created by additionally applying the axisRotation field value to
+             * the local coordinate system of the sensor node.
+             * @var {x3dom.fields.SFRotation} axisRotation
+             * @memberof x3dom.nodeTypes.CylinderSensor
+             * @initvalue  0,1,0,0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFRotation(ctx, 'axisRotation', 0, 1, 0, 0);
+
+
+            /**
+             * Specifies whether the virtual cylinder's lateral surface or end-cap disks of virtual-geometry sensor are
+             * used for manipulation: If the vertical acute angle between the vector from the viewer to the point of
+             * intersection with the sensor geometry and the local Y axis of the cylinder is greater than or equal to
+             * the value of this field, the sensor uses a virtual cylinder to compute rotation output.
+             * Otherwise, if the angle is smaller than the value of this field, the sensor uses a virtual disk instead.
+             * This value of this field is specified in radians.
+             *
+             * ATTENTION: The value of this field is currently ignored.
+             * The cylinder sensor will always operate in cylinder mode.
+             *
+             * @var {x3dom.fields.SFFloat} axisRotation
+             * @memberof x3dom.nodeTypes.CylinderSensor
+             * @initvalue  pi/2
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'diskAngle', 0.262); //this is the official default value, PI/12
 
+
+            /**
+             * The minAngle and maxAngle fields, given in radians, allow to constrain the rotation output of the
+             * cylinder sensor.
+             * If the value of maxAngle is smaller than the value of minAngle, output is not constrained.
+             * @var {x3dom.fields.SFFloat} axisRotation
+             * @memberof x3dom.nodeTypes.CylinderSensor
+             * @initvalue  0
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'minAngle', 0);
 
+
+            /**
+             * The minAngle and maxAngle fields, given in radians, allow to constrain the rotation output of the
+             * cylinder sensor.
+             * If the value of maxAngle is smaller than the value of minAngle, output is not constrained.
+             * @var {x3dom.fields.SFFloat} axisRotation
+             * @memberof x3dom.nodeTypes.CylinderSensor
+             * @initvalue  -1
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'maxAngle', -1);
 
             //route-able output fields
