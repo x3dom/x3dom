@@ -59,13 +59,21 @@
         Within this tutorial, you will learn how to use your own shader programs inside an X3DOM scene.            
         The standard X3D way to integrate shader programs into X3D scenes, which is also implemented by X3DOm, is the <i>ComposedShader</i> node.
         There are already some existing documentation resources about this standard X3D node, for instance in the <a href='http://doc.instantreality.org/tutorial/shader-programs/'>InstantReality tutorials</a>.
-        We will now focus on X3DOM-specific aspects - the most important point is clearly to know which shader variables are available for your shader programs.
+        When it comes to using custom shaders in X3DOM, the most important point is clearly to know which shader variables are available for your shader programs.
         The <a href='#shaderVariableTable'>table</a> on the bottom of this tutorial page lists all of them.
         </p>
         <p>
-        The following example snippets illustrate some vertex and fragment shader code, which realizes a simple cool-warm shading (aka gooch shading).
+        The example file from this tutorial illustrate some vertex and fragment shader code, which realizes a simple cool-warm shading (aka gooch shading).
+        In this example, we have used a <i>directionalLight</i> node to illuminate the scene, and we receive the direction inside the shader with the variable
+        <i>light0_Direction</i>. Please check the example file to see how it works - you can also use it as a base for developing your own shader code.
         </p>
-        <p>        
+        <p>    
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">An object illuminated using custom shader code inside the HTML page.</div>
+            </div>
+        </div>        
         </p>
         
         <p>
@@ -292,14 +300,13 @@
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
-                <li><a href="HelloX3DOM.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+                <li><a href="customShader.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
             </ul>      
             <br>
             
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
-                <li><a href="../../../node/foo.html">FOO</a></li>
-                <li><a href="../../../node/bar.html">BAR</a></li>
+                 <li><a href="../../../author/Shaders/CommonSurfaceShader.html">ComposedShader</a></li>
             </ul>
         </div>
 

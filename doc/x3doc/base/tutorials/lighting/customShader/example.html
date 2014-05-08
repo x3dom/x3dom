@@ -1,0 +1,113 @@
+<html style="padding:0;margin:0;border:0;">
+<head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Custom Shaders in X3DOM</title>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+
+    <script type="text/javascript" src="http://x3dom.org/download/x3dom.js"></script>
+    <style>
+        .labelOverlay
+        {
+            position:fixed;
+            padding:8px;
+            margin:16px;
+            background:#888888;
+            background: linear-gradient(#BBBBBB, #888888); 
+            border-radius:8px;
+            border:2px solid #EEEEEE;            
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);            
+            font-weight:bold;
+            color:white;            
+            z-index:20000;
+        }        
+        .x3domContext
+        {
+            border: none;
+            background:#888888;
+            background: linear-gradient(#777777, #333333); 
+        }
+    </style>
+</head>
+<body style="padding:0;margin:0;border:0;">
+<h1 class="labelOverlay">Custom Shader in X3DOM</h1>
+
+<div id="content">
+    <X3D class="x3domContext" id='myX3DWorld' style="width:100%;height:100%">
+        <Scene DEF='scene'>        
+            <Viewpoint position="-8.42290 15.73788 -10.66557" orientation="0.05836 0.97123 0.23089 3.75572"
+                        center of Rotation="-0.7744881307526139 9.43342307801316 -0.3701745772662157" zNear="0.01" zFar="10000"></Viewpoint>
+            <navigationInfo headlight='false'></navigationInfo>
+            <directionalLight direction='0.7 0.7 0'></directionalLight>
+            <MatrixTransform DEF='Head_2:123-151;0,Parts' matrix='1 2.97004e-14 -1.00427e-06 0 1.00427e-06 2.30825e-13 1 0 2.97006e-14 -1 2.30825e-13 0 1.95226 6.91883 3.52749 1'>
+                <Shape>
+                  <Appearance>
+                      <ComposedShader>                        
+                        <ShaderPart type='VERTEX'>
+                            attribute vec3 position;
+                            attribute vec3 normal;
+                            
+                            uniform mat4 modelViewMatrix;
+                            uniform mat4 modelViewMatrixInverse;
+                            uniform mat4 modelViewProjectionMatrix;
+                            uniform mat4 normalMatrix;
+                           
+                            varying vec3 fragNormal;
+                            varying vec3 fragEyeVector;
+                            varying vec2 fragTexCoord;
+                            
+                            void main()
+                            {
+                                fragEyeVector = -(modelViewMatrix * vec4(position, 0.0)).xyz;                                 
+                                fragNormal    = (normalMatrix * vec4(normal, 0.0)).xyz;                                
+                                
+                                gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                            }
+                        </ShaderPart>                
+                        <ShaderPart type='FRAGMENT'>
+                           #ifdef GL_FRAGMENT_PRECISION_HIGH
+                              precision highp float;
+                            #else
+                              precision mediump float;
+                            #endif
+                            
+                            uniform vec3 light0_Direction;
+                            
+                            varying vec3 fragNormal;
+                            varying vec3 fragEyeVector; 
+                            
+                            vec3 base = vec3(0.7);                  
+                            vec3 cool = vec3(0.0, 0.0, 1.0);
+                            vec3 warm = vec3(1.0, 1.0, 0.0);
+                            float goochAlpha = 0.25;
+                            float goochBeta  = 0.5;         
+
+                            void main()
+                            {
+                                vec3 normal = normalize(fragNormal);
+                                vec3 eye    = normalize(fragEyeVector);                            
+                                vec3 rVec   = reflect(eye, normal);
+
+                                float spec = pow(max(0.0, dot(light0_Direction, rVec)), 27.0);     
+                                
+                                float diff = dot(-light0_Direction, normal);
+                                diff       = (1.0 + diff) * 0.5;                     
+                                vec3 col   = diff * (cool + goochAlpha * base) + (1.0 - diff) *  (warm + goochBeta * base);
+                                
+                                col += vec3(spec);
+                                
+                                gl_FragColor = vec4(col, 1.0);
+                            }
+                        </ShaderPart>
+                    </ComposedShader>
+
+                  </Appearance>
+                  <BinaryGeometry vertexCount='8555 96' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT153861120_indexBinary.bin' coord='binGeo/AOPT153861120_coordBinary.bin' normal='binGeo/AOPT153861120_normalBinary.bin'/>
+                </Shape>
+            </MatrixTransform>   
+        </Scene>
+    </X3D>
+</div>
+</body>
+</html>        
+    
