@@ -139,11 +139,20 @@ x3dom.getFieldValue = function(fieldName)
 x3dom.setFieldValue = function(fieldName, fieldvalue) {
     var x3dNode = this._x3domNode;
     if (x3dNode && x3dNode._vf[fieldName]) {
-        x3dNode._vf[fieldName] = fieldvalue.copy();
+
+        // SF/MF object types are cloned based on a copy function
+        if(fieldvalue instanceof Object && 'copy' in fieldvalue)
+        {
+            x3dNode._vf[fieldName] = fieldvalue.copy();
+        }
+        //f.i. SFString SFBool aren't objects
+        else
+            x3dNode._vf[fieldName] = fieldvalue;
+
         x3dNode.fieldChanged(fieldName);
         x3dNode._nameSpace.doc.needRender = true;
     }
-}
+};
 
 
 /**

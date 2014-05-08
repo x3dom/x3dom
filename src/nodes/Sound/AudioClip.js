@@ -57,6 +57,7 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'loop', false);
 
+            this._preventAutoPlay = true;
             this._audio = null;
         
         },
@@ -64,7 +65,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 this._audio = document.createElement('audio');
-                this._audio.setAttribute('autobuffer', 'true');
+                //this._audio.setAttribute('preload', 'none');
                 //this._audio.setAttribute('autoplay', 'true');
                 if(navigator.appName != "Microsoft Internet Explorer") {
                     document.body.appendChild(this._audio);
@@ -97,8 +98,19 @@ x3dom.registerNodeType(
                     }
                 };
 
+
+                var preventAutoPlay = function()
+                {
+                    if(that._preventAutoPlay)
+                    {
+                        that._audio.pause();
+                        that._preventAutoPlay = false;
+                    }
+                };
+
                 this._audio.addEventListener("canplaythrough", startAudio, true);
                 this._audio.addEventListener("ended", audioDone, true);
+                this._audio.addEventListener("play", preventAutoPlay, true);
             },
 
             fieldChanged: function(fieldName)

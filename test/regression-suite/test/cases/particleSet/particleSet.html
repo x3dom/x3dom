@@ -13,10 +13,23 @@
                 <Appearance>
                     <Material diffusecolor="0 1 0.2" ></Material>
                 </Appearance>
-                <ParticleSet ></ParticleSet>
+                <ParticleSet id="ps"></ParticleSet>
             </Shape>
         </Transform>
     </scene>
 </x3d>
+<script>
+	document.onload = function()
+	{
+		var ps = document.getElementById("ps");
+        ps.setAttribute("mode","testSA");
+        ps.setFieldValue("mode","testSFV");
+
+        var ref = ps.requestFieldRef("mode");
+        ref = "testFR";
+        ps.releaseFieldRef("mode");
+
+	}
+</script>
 </body>
 </html>

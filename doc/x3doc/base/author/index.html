@@ -48,7 +48,7 @@
                     <li><a href="#getFieldValue">&#10152; getFieldValue</a></li>
                     <li><a href="#setFieldValue">&#10152; setFieldValue</a></li>
                     <li><a href="#requestFieldRef">&#10152; requestFieldRef</a></li>
-                    <li><a href="#releaseFieldRed">&#10152; releaseFieldRed</a></li>
+                    <li><a href="#releaseFieldRef">&#10152; releaseFieldRef</a></li>
                 </ul>
         </div>
     </div>
@@ -323,7 +323,7 @@
             
             <br>
             
-            <h3>Using <code>requestFieldRef</code> and <code>releaseFieldRed</code></h3>
+            <h3>Using <code>requestFieldRef</code> and <code>releaseFieldRef</code></h3>
             <p>
             If you want to manipulate specific field values in a more convenient way, the <code>getField</code> and <code>setField</code> methods already do a good job.
             However, <code>getField</code> will always return field object <i>by value</i>, which means you will get a copy of the corresponding field object that X3DOM uses internally.
@@ -348,7 +348,7 @@
             X3DOM's output. Still, there might be cases where your changes have to be internally processed by X3DOM before they finally take place in the rendered result.
             X3DOM might, for example, need to update some values on the GPU after you changed a certain field in your application.
             In order to do so, X3DOM also needs a notification that you have finished your changes to the internal field object, so it can process the changes properly.
-            To do so, you will have to call the <code>releaseFieldRed</code> method. You can think of this process as of "borrowing" the object, manipulating it and giving it back to X3DOM.
+            To do so, you will have to call the <code>releaseFieldRef</code> method. You can think of this process as of "borrowing" the object, manipulating it and giving it back to X3DOM.
             For example, imagine you have an array of colors provided as <code>color</code> multi value field of type <code>MFColor</code> by the <code>Color</code> node.
             To change the red channel of the entry at index 23 you do the following:
             </p>
@@ -356,11 +356,11 @@
             <pre class="prettyprint"><code class="language-js">
     var myColorArray = document.getElementById('myColorNode').requestFieldRef('color');
     myColorArray[23].r = 1.0;    //the myColorArray object is of type 'MFColor', and it is the same object that is internally used by X3DOM
-    document.getElementById('myColorNode').releaseFieldRed('color');
+    document.getElementById('myColorNode').releaseFieldRef('color');
             </code></pre>
             
             <p>
-            The X3DOM <code>requestFieldRef</code> and <code>releaseFieldRed</code> methods, which are available on all X3DOM nodes, are defined as follows:
+            The X3DOM <code>requestFieldRef</code> and <code>releaseFieldRef</code> methods, which are available on all X3DOM nodes, are defined as follows:
             </p>
             
             <!--- REQUEST FIELDREF --->
@@ -381,7 +381,7 @@
                     <div class="description">
                       Returns the field object of the field with the given name.
                       The returned object is no copy, but instead a reference to X3DOM's internal field object.
-                      Changes to this object should be committed using the <code>releaseFieldRed</code> function.
+                      Changes to this object should be committed using the <code>releaseFieldRef</code> function.
                     </div>
                     <br>
                     <h5>Parameters:</h5> 
@@ -411,11 +411,11 @@
             <dl class="method-container">
                 <dt>
                     <h4 class="name method-container-header">
-                        releaseFieldRed
+                        releaseFieldRef
                         <span class="signature">
                         (fieldname)
                         </span>
-                        <a name="releaseFieldRed" class="upwardsLink" href="#">&#10548;</a>                      
+                        <a name="releaseFieldRef" class="upwardsLink" href="#">&#10548;</a>
                     </h4>                  
                 </dt>
                 <dd>
