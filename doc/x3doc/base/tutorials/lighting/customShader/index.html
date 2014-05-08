@@ -2,9 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>X3DOM Documentation: Tutorials</title>    
+    <title>X3DOM Documentation: Tutorials</title>        
     <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+    
+    <style>
+        params
+        {
+            margin: 0;
+            padding: 0;
+            display:inline-block;
+            border-radius:5px;
+            border: 1px solid #aaaaaa;                        
+        }
+        .params table > :first-child > tr:first-of-type > :first-child { border-radius: 5px 0 0 0 }
+        .params table > :first-child > tr:first-of-type > :last-child { border-radius: 0 5px 0 0 }
+        .params table > :last-child > tr:last-of-type > :first-child { border-radius: 0 0 0 5px }
+        .params table > :last-child > tr:last-of-type > :last-child { border-radius: 0 0 5px 0 }
+        .params table { border-collapse: collapse; }
+        .params th { background: #dddddd; }
+        .params td, th { padding:8px 12px; background: #eeeeee; }
+    </style>
 </head>
 
 <body>
@@ -21,7 +39,7 @@
     >
     <a href="../../index.html">Tutorials</a>
 	>
-    <a href="#">Custom Shader</a>
+    <a href="#">Using Custom Shaders</a>
 </div>
 <div id="main">
 
@@ -33,12 +51,236 @@
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Custom Shader</h1>
+            <h1>Using Custom Shaders</h1>            
         </div>            
         <br>
 		
         <p>
-		This tutorial has not been added yet.
+        Within this tutorial, you will learn how to use your own shader programs inside an X3DOM scene.            
+        The standard X3D way to integrate shader programs into X3D scenes, which is also implemented by X3DOm, is the <i>ComposedShader</i> node.
+        There are already some existing documentation resources about this standard X3D node, for instance in the <a href='http://doc.instantreality.org/tutorial/shader-programs/'>InstantReality tutorials</a>.
+        We will now focus on X3DOM-specific aspects - the most important point is clearly to know which shader variables are available for your shader programs.
+        The <a href='#shaderVariableTable'>table</a> on the bottom of this tutorial page lists all of them.
+        </p>
+        <p>
+        The following example snippets illustrate some vertex and fragment shader code, which realizes a simple cool-warm shading (aka gooch shading).
+        </p>
+        <p>        
+        </p>
+        
+        <p>
+        <h2 id='shaderVariableTable'>Shader Variables</h2>
+        <div class='params'>
+            <table>
+              <tr><th>Type</th><th>Name</th><th class="last">Comment</th></tr>              
+              <tr>                
+                <td>attribute vec3</td>
+                <td>position</td>
+                <td>vec4 if normals embedded</td>
+              </tr>
+              <tr>                
+                <td>attribute vec3</td>
+                <td>normal</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td >attribute vec3</td>
+                <td>texcoord</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>attribute vec3</td>
+                <td>color</span></td></td>
+                <td>vec4 for ColorRGBA</td>
+              </tr>
+              <tr>                
+                <td >attribute vec2</td>
+                <td>tangent</td>
+                <td>from FloatVertexAttribute</td>
+              </tr>
+              <tr>                
+                <td>attribute vec3</td>
+                <td>binormal</td>
+                <td>from FloatVertexAttribute</td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>viewMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>viewMatrixInverse</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>projectionMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>normalMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>modelViewMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>modelViewMatrixInverse</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>modelViewProjectionMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>worldMatrix</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>worldInverseTranspose</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform mat4</td>
+                <td>texTrafoMatrix</td>
+                <td>texture coordinate transform matrix</td>
+              </tr>
+              <tr>
+                <td>uniform sampler2D</td>
+                <td>diffuseMap</td>
+                <td>from CommonSurfaceShader</td>
+              </tr>
+              <tr>                
+                <td>uniform sampler2D</td>
+                <td>normalMap</td>
+                <td>from CommonSurfaceShader</td>
+              </tr>
+              <tr>                
+                <td>uniform sampler2D</td>
+                <td>specularMap</td>
+                <td>from CommonSurfaceShader</td>
+              </tr>
+              <tr>                
+                <td>uniform sampler2D</td>
+                <td>cubeMap</td>
+                <td>from ComposedCubeMap</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>diffuseColor</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>specularColor</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>emissiveColor</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>shininess</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>transparency</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>ambientIntensity</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_On</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_Type</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>light0_Location</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>light0_Direction</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>light0_Color</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>light0_Attenuation</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_Radius</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_Intensity</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_AmbientIntensity</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_BeamWidth</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_CutOffAngle</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform float</td>
+                <td>light0_ShadowIntensity</td>
+                <td>same for light1, light2, etc.</td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>fogColor</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>fogType</td>
+                <td></td>
+              </tr>
+              <tr>                
+                <td>uniform vec3</td>
+                <td>fogRange</td>
+                <td></td>
+              </tr>
+            </table>
+        </div>
+    
         </p>
 		       
         <p>               
