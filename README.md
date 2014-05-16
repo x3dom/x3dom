@@ -119,8 +119,6 @@ to drop, re-arrange, merge, and reword commits, e.g.:
 There's always the [x3dom-dev][] mailinglist.
 
 
-More information can be found here: http://x3dom.org/docs/latest/internals/
-
 [x3dom-users]:   https://lists.sourceforge.net/lists/listinfo/x3dom-users
 [x3dom-dev]:     https://lists.sourceforge.net/lists/listinfo/x3dom-developers
 [GPL 3]:         http://www.gnu.org/copyleft/gpl.html
