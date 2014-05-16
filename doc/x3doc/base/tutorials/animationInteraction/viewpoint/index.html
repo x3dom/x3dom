@@ -58,17 +58,17 @@
 		A scene can contain as many viewpoint as you want, but only one can be active.  To activate a viewport you just set "set_bind" to true. The camera will be automatically animated between the views. 
 		</p>
 		<pre class="prettyprint"><code class="language-html">
-    &lt;x3d width="600" height="600"&gt;
-    &lt;scene DEF='scene'&gt;
+    &lt;X3D width="600" height="600"&gt;
+      &lt;Scene DEF='scene'&gt;
         &lt;Viewpoint id="front" position="-0.07427 0.95329 -2.79608" orientation="-0.01451 0.99989 0.00319 3.15833" description="camera"&gt;&lt;/Viewpoint&gt;
         &lt;Viewpoint id="right" position="-2.43383 1.07351 -1.28700" orientation="-0.00318 -0.99950 -0.03159 2.06609" description="camera"&gt;&lt;/Viewpoint&gt;
-          &lt;Transform&gt;
-            &lt;Inline url="deer.x3d">&lt;/Inline&gt;
+        &lt;Transform&gt;
+          &lt;Inline url="deer.x3d">&lt;/Inline&gt;
         &lt;/Transform&gt;
-    &lt;/scene&gt;
-&lt;/x3d&gt;
-    &lt;button  onclick="document.getElementById('right').setAttribute('set_bind','true');"Right&lt;/button&gt;
-    &lt;button onclick="document.getElementById('front').setAttribute('set_bind','true');" Left &lt;/button&gt;
+      &lt;/Scene&gt;
+    &lt;/X3D&gt;
+    &lt;button onclick="document.getElementById('right').setAttribute('set_bind','true');"&gt;Right&lt;/button&gt;
+    &lt;button onclick="document.getElementById('front').setAttribute('set_bind','true');"&gt;Left &lt;/button&gt;
         </code></pre>
 		<p>
 		Another way is to manipulate the position and orientation values of a viewpoint directly, I wouldn't recommend it, but in that case the camera will not be animated.  
