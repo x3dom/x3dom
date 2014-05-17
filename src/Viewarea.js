@@ -1782,11 +1782,11 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 var zoomAmount = d * (dx + dy) / this._height;
                 
                 // FIXME: very experimental HACK to switch between both versions (clamp to CoR and CoR translation)
-                if (navi._vf.typeParams.length >= 5 && navi._vf.typeParams[4] != 0)
+                if (navi._vf.typeParams.length >= 5 && navi._vf.typeParams[4] > 0)
                 {
-                    // maintain minimum distance to prevent orientation flips
-                    var newDist = Math.min(zoomAmount, lastDirL - 0.01);
-        
+                    // maintain minimum distance (value given in typeParams[4]) to prevent orientation flips
+                    var newDist = Math.min(zoomAmount, lastDirL - navi._vf.typeParams[4]);
+
                     // move along viewing ray, scaled with zoom factor
                     this._from = this._from.addScaled(lastDir, newDist);
                 }

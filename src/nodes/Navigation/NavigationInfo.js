@@ -233,7 +233,7 @@ x3dom.registerNodeType(
                 var minAngle = (length >= 3) ? this._vf.typeParams[2] : x3dom.fields.Eps;
                 var maxAngle = (length >= 4) ? this._vf.typeParams[3] : Math.PI - x3dom.fields.Eps;
 
-                // experimental HACK to switch between clamp to CoR (params[4]!=0) and CoR translation in turntable mode
+                // experimental HACK to switch between clamp to CoR (params[4]>0) and CoR translation in turntable mode
                var params = [theta, height, minAngle, maxAngle];
                if (length >= 5)
                {
