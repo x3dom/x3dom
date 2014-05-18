@@ -712,7 +712,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			}
 		} else if(!properties.VERTEXCOLOR && !properties.POINTLINE2D){
 			shader += "color.rgb += emissiveColor;\n";
-		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D){
+		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D && !properties.MULTIDIFFALPMAP){
 			shader += "color.rgb = emissiveColor;\n";
 		}
 	}

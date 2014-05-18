@@ -36,7 +36,6 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'urlIDMap', []);
 
             this._idMap = null;
-            this._oldPixels = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
 
@@ -209,6 +208,10 @@ x3dom.registerNodeType(
                         {
                             for (var a = 0; a < appearances.length; a++)
                             {
+                                //Remove DEF/USE
+                                appearances[a].removeAttribute("DEF");
+                                appearances[a].removeAttribute("USE");
+
                                 var materials = appearances[a].getElementsByTagName("Material");
 
                                 if (materials.length)
@@ -219,36 +222,54 @@ x3dom.registerNodeType(
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("DEF", "MultiMaterial");
 
-                                        var sstDA = document.createElement("SurfaceShaderTexture");
-                                        sstDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
-
                                         var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
                                         ptDA.setAttribute("image", this.createImageData());
 
-                                        var sstV = document.createElement("SurfaceShaderTexture");
-                                        sstV.setAttribute("containerField", "multiVisibilityTexture");
-
                                         var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
                                         ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
                                         ptV.setAttribute("image", this.createVisibilityData());
 
-                                        sstDA.appendChild(ptDA);
-                                        sstV.appendChild(ptV);
-                                        css.appendChild(sstDA);
-                                        css.appendChild(sstV);
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
                                     }
                                     else
                                     {
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("USE", "MultiMaterial");
                                     }
-                                    materials[0].parentNode.replaceChild(css, materials[0]);
+                                    appearances[a].replaceChild(css, materials[0]);
                                 }
                                 else
                                 {
                                     //Add Material
-                                    console.log("Add Material");
+                                    if (firstMat) {
+                                        firstMat = false;
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("DEF", "MultiMaterial");
+
+                                        var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                        ptDA.setAttribute("id", "MultiMaterial_ColorMap");
+                                        ptDA.setAttribute("image", this.createImageData());
+
+                                        var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
+                                        ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
+                                        ptV.setAttribute("image", this.createVisibilityData());
+
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
+                                    }
+                                    else
+                                    {
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("USE", "MultiMaterial");
+                                    }
+
+                                    appearances[a].appendChild(css);
                                 }
                             }
                         }
@@ -269,7 +290,7 @@ x3dom.registerNodeType(
                     var i, m;
                     var selection = []
 
-                    if (selector == undefined || selector.length == 0) {
+                    if (selector == undefined) {
                         for (m=0; m<multiPart._idMap.mapping.length; m++) {
                             selection.push(m);
                         }
@@ -300,6 +321,11 @@ x3dom.registerNodeType(
                         this.setColor = function(color) {
 
                             var i, x, y;
+
+                            if (color.split(" ").length == 3) {
+                                color += " 1";
+                            }
+
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             if (ids.length && ids.length > 1) //Multi select
@@ -342,9 +368,9 @@ x3dom.registerNodeType(
 
                                 for(i=0; i<parts.ids.length; i++) {
                                     if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]].a = transparency;
+                                        multiPart._highlightedParts[parts.ids[i]].a = 1.0 - transparency;
                                     } else {
-                                        pixels[parts.ids[i]].a = transparency;
+                                        pixels[parts.ids[i]].a = 1.0 - transparency;
                                     }
                                 }
 
@@ -353,14 +379,14 @@ x3dom.registerNodeType(
                             else //Single select
                             {
                                 if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]].a = transparency;
+                                    multiPart._highlightedParts[parts.ids[0]].a = 1.0 - transparency;
                                 } else {
                                     x = parts.ids[0] % parts.colorMap.getWidth();
                                     y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
 
                                     var pixel = parts.colorMap.getPixel(x, y);
 
-                                    pixel.a = transparency;
+                                    pixel.a = 1.0 - transparency;
 
                                     parts.colorMap.setPixel(x, y, pixel);
                                 }
@@ -405,6 +431,11 @@ x3dom.registerNodeType(
                         this.highlight = function(color) {
 
                             var i, x, y;
+
+                            if (color.split(" ").length == 3) {
+                                color += " 1";
+                            }
+
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             if (ids.length && ids.length > 1) //Multi select
