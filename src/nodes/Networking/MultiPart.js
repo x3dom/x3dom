@@ -38,6 +38,7 @@ x3dom.registerNodeType(
             this._idMap = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
+            this._idOffset = 0;
 
         },
         {
@@ -142,7 +143,7 @@ x3dom.registerNodeType(
             createImageData: function ()
             {
                 var diffuseColor, transparency, rgba;
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
                 var imageData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
@@ -175,7 +176,7 @@ x3dom.registerNodeType(
 
             createVisibilityData: function ()
             {
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
                 var visibilityData = size + " " + size + " 1";
 
                 for (var i=0; i<size*size; i++)

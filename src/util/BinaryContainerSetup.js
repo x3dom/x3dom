@@ -481,6 +481,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             if (geoNode._vf.texCoord.length > 0)
             {
+                console.log("YUPPIE");
+
                 shape._webgl.buffers[3] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -713,12 +715,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, idBuffer);
 
-                //due to a current bug, stride is always 0, except for interleaved rendering
-                var texCoordStride = (shape._texCoordStrideOffset[0] === 0) ? 2 : shape._texCoordStrideOffset[0] / 4;
-
-
                 //Create a buffer for the ids with half size of the texccoord buffer
-                var ids = x3dom.Utils.getArrayBufferView(attribTypeStr, texCoords.length/2);
+                var ids = x3dom.Utils.getArrayBufferView("Float32", texCoords.length/2);
 
                 //swap x and y, in order to interpret tex coords as FLOAT later on
                 for (i = 0, j= 0; i < texCoords.length; i+=2, j++)
