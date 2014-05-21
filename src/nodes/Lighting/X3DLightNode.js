@@ -142,7 +142,7 @@ x3dom.registerNodeType(
              * @initvalue -1
              * @field x3dom
              * @instance
-             *
+             */
             this.addField_SFFloat(ctx, 'zNear', -1);
 
             /**
