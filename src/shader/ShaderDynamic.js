@@ -717,12 +717,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 	}
 	
-	//Fog
-	if(properties.FOG){
-		shader += "float f0 = calcFog(fragEyePosition);\n";
-		shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
-	}
-	
 	//Kill pixel
 	if(properties.TEXT) {
 		shader += "if (color.a <= 0.5) discard;\n";
@@ -732,7 +726,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     //Output the gamma encoded result.
     shader += "color = clamp(color, 0.0, 1.0);\n";
-    shader += "gl_FragColor = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
+    shader += "color = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
+	
+	//Fog
+	if(properties.FOG){
+		shader += "float f0 = calcFog(fragEyePosition);\n";
+		shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
+	}
+	
+    shader += "gl_FragColor = color;\n";
 	
 	//End Of Shader
 	shader += "}\n";
