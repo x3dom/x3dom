@@ -38,6 +38,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isPickable', true);
 
             /**
+             * Holds the id offset for MultiPart picking.
+             * @var {x3dom.fields.SFInt32} isPickable
+             * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'idOffset', 0);
+
+            /**
              * Holds the appearance node.
              * @var {x3dom.fields.SFNode} appearance
              * @memberof x3dom.nodeTypes.X3DShapeNode

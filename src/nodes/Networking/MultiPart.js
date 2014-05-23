@@ -35,10 +35,23 @@ x3dom.registerNodeType(
              */
             this.addField_MFString(ctx, 'urlIDMap', []);
 
+            /**
+             * Defines whether the shape is pickable.
+             * @var {x3dom.fields.SFBool} isPickable
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'isPickable', true);
+
             this._idMap = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
-            this._idOffset = 0;
+            this._minId = 0;
+            this._maxId = 0;
+            this._lastId = -1;
+            this._lastButton = 0;
 
         },
         {
@@ -69,50 +82,72 @@ x3dom.registerNodeType(
                     this.initDone = true;
                     this.loadIDMap();
                     this.appendAPI();
-                    this.appendEventListeners();
+                    //this.appendEventListeners();
                 }
             },
 
-            appendEventListeners: function ()
+            handleEvents: function(e)
             {
-                var that = this;
+                if (e.pickedId != -1)
+                {
+                    e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
 
-                this._xmlNode._shadowObjectID = -1
+                    //fire mousemove event
+                    e.type = "mousemove";
+                    this.callEvtHandler("onmousemove", e);
 
-                this._xmlNode.addEventListener("mousedown", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                        this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
+                    //fire mousemove event
+                    e.type = "mouseover";
+                    this.callEvtHandler("onmouseover", e);
+
+                    //fire click event
+                    if (e.button && e.button != this._lastButton) {
+                        e.type = "click";
+                        this.callEvtHandler("onclick", e);
+                        this._lastButton = e.button;
                     }
-                }, false);
 
-                this._xmlNode.addEventListener("mouseout", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        if (e.shadowObjectId == -1) {
-                            e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                            this._shadowObjectID = -1;
-                            var event = new CustomEvent("partout", {detail: e});
-                            this.dispatchEvent(event);
+                    //if some mouse button is down fire mousedown event
+                    if (e.button) {
+                        e.type = "mousedown";
+                        this.callEvtHandler("onmousedown", e);
+                        this._lastButton = e.button;
+                    }
+
+                    //if some mouse button is up fire mouseup event
+                    if (this._lastButton != 0 && e.button == 0) {
+                        e.type = "mouseup";
+                        this.callEvtHandler("onmouseup", e);
+                        this._lastButton = 0;
+                    }
+
+                    //If the picked id has changed we enter+leave a part
+                    if (e.pickedId != this._lastId)
+                    {
+                        if (this._lastId != -1) {
+                            e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                            e.type = "mouseleave";
+                            this.callEvtHandler("onmouseleave", e);
                         }
-                    }
-                }, false);
 
-                this._xmlNode.addEventListener("mousemove", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name
-                        this.dispatchEvent(new CustomEvent("partmove", {detail: e}));
-                        if (e.shadowObjectId != this._shadowObjectID) {
-                            var tmp = e.shadowObjectId;
-                            if (this._shadowObjectID != -1) {
-                                e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                                this.dispatchEvent(new CustomEvent("partout", {detail: e}));
-                            }
-                            this._shadowObjectID = e.shadowObjectId = tmp;
-                            e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                            this.dispatchEvent(new CustomEvent("partover", {detail: e}));
-                        }
+                        e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+                        e.type = "mouseenter";
+                        this.callEvtHandler("onmouseenter", e);
+                        this._lastId = e.pickedId;
                     }
-                }, false);
+
+                    this._lastId = e.pickedId;
+                }
+                else if (this._lastId != -1)
+                {
+                    e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                    e.type = "mouseout";
+                    this.callEvtHandler("onmouseout", e);
+                    e.type = "mouseleave";
+                    this.callEvtHandler("onmouseleave", e);
+                    this._lastId = -1;
+                }
+
             },
 
             loadIDMap: function ()
@@ -131,7 +166,18 @@ x3dom.registerNodeType(
                     {
                         that._idMap = JSON.parse(this.responseText);
 
-                        that._nameSpace.doc._scene._shadowIdMap = eval("(" + this.response + ")");
+                        //Check if the MultiPart map already initialized
+                        if (that._nameSpace.doc._scene._multiPartMap == null) {
+                            that._nameSpace.doc._scene._multiPartMap = {numberOfIds: 0, multiParts: []};
+                        }
+
+                        //Set the ID range this MultiPart is holding
+                        that._minId = that._nameSpace.doc._scene._multiPartMap.numberOfIds;
+                        that._maxId = that._minId + that._idMap.numberOfIDs - 1;
+
+                        //Update the MultiPart map
+                        that._nameSpace.doc._scene._multiPartMap.numberOfIds += that._idMap.numberOfIDs;
+                        that._nameSpace.doc._scene._multiPartMap.multiParts.push(that);
 
                         that.loadInline();
                     };
@@ -203,6 +249,9 @@ x3dom.registerNodeType(
 
                     for (var s=0; s<shapes.length; s++)
                     {
+                        shapes[s].setAttribute("idOffset", this._minId);
+                        shapes[s].setAttribute("isPickable", this._vf.isPickable);
+
                         var appearances = shapes[s].getElementsByTagName("Appearance");
 
                         if (appearances.length)

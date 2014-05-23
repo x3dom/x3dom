@@ -1515,7 +1515,7 @@ x3dom.gfx_webgl = (function () {
 
             // Set IDs perVertex switch
             sp.writeShadowIDs = (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) ?
-                                (x3dom.nodeTypes.Shape.objectID + 2) : 0;
+                                (shape._vf.idOffset + x3dom.nodeTypes.Shape.objectID + 2) : 0;
 
             sp.visibilityMap = 0.0;
 
@@ -2832,6 +2832,39 @@ x3dom.gfx_webgl = (function () {
                     hitObject = viewarea._pickingInfo.pickObj._xmlNode;
                 }
 
+
+                //Check if there are MultiParts
+                if (scene._multiPartMap) {
+
+                    //Find related MultiPart
+                    for (var mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                    {
+                        var multiPart = scene._multiPartMap.multiParts[mp];
+                        if (objId >= multiPart._minId && objId <= multiPart._maxId)
+                        {
+                            hitObject = multiPart._xmlNode;
+
+                            event = {
+                                target: multiPart._xmlNode,
+                                button: button, mouseup: ((buttonState >>> 8) > 0),
+                                layerX: x, layerY: y,
+                                pickedId: objId,
+                                worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
+                                normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
+                                hitPnt: pickPos.toGL(),
+                                hitObject: hitObject,
+                                cancelBubble: false,
+                                stopPropagation: function () { this.cancelBubble = true; },
+                                preventDefault:  function () { this.cancelBubble = true; }
+                            };
+
+                            multiPart.handleEvents(event);
+
+                            break;
+                        }
+                    }
+                }
+
                 shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != objId);
                 viewarea._pickingInfo.lastShadowObjectId = viewarea._pickingInfo.shadowObjectId;
                 viewarea._pickingInfo.shadowObjectId = objId;
@@ -2888,6 +2921,29 @@ x3dom.gfx_webgl = (function () {
                 }
             }
             else {
+                //Check if there are MultiParts
+                if (scene._multiPartMap) {
+
+                    //Find related MultiPart
+                    for (var mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                    {
+                        var multiPart = scene._multiPartMap.multiParts[mp];
+
+                        event = {
+                            target: multiPart._xmlNode,
+                            button: button, mouseup: ((buttonState >>> 8) > 0),
+                            layerX: x, layerY: y,
+                            pickedId: -1,
+                            cancelBubble: false,
+                            stopPropagation: function () { this.cancelBubble = true; },
+                            preventDefault:  function () { this.cancelBubble = true; }
+                        };
+
+                        multiPart.handleEvents(event);
+                    }
+                }
+
+
                 shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != -1);
                 viewarea._pickingInfo.shadowObjectId = -1;     // nothing hit
 
