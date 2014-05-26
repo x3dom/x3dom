@@ -12,12 +12,15 @@
 
         window.onload = function() {
             multiPart = document.getElementById('multiPart');
-            document.getElementById('multiPart').addEventListener('mouseenter', handleMouseEnter, false);
-            document.getElementById('multiPart').addEventListener('mouseleave', handleMouseLeave, false);
-            document.getElementById('multiPart').addEventListener('mousemove', handleMouseMove, false);
-            document.getElementById('multiPart').addEventListener('click', handleClick, false);
-            //document.getElementById('multiPart').addEventListener('mouseout', handleMouseOut, false);
+            multiPart.addEventListener('load', handleLoad, false);
         };
+        
+        function handleLoad() {
+            multiPart.addEventListener('mouseenter', handleMouseEnter, false);
+            multiPart.addEventListener('mouseleave', handleMouseLeave, false);
+            multiPart.addEventListener('mousemove', handleMouseMove, false);
+            multiPart.addEventListener('click', handleClick, false);
+        }
 
         function handleMouseEnter(e){
             //console.log("[mouseover]: " + e.detail.partID);
@@ -47,17 +50,6 @@
                 selection.push(e.partID);
 
             updateTextArea();
-        }
-
-
-        function getSelection()
-        {
-            var sel = [];
-            for(var key in selection)
-            {
-                sel.push({id:selection[key]});
-            }
-            return sel;
         }
 
         function highlight()

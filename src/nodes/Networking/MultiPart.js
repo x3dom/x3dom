@@ -83,7 +83,7 @@ x3dom.registerNodeType(
                 if (!this.initDone) {
                     this.initDone = true;
                     this.loadIDMap();
-                    this.appendAPI();
+                    //this.appendAPI();
                     //this.appendEventListeners();
                 }
             },
@@ -709,6 +709,7 @@ x3dom.registerNodeType(
                             }, 1000 );
                         }
 
+                        that.appendAPI();
                         that.fireEvents("load");
                     }
 
