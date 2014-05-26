@@ -52,6 +52,8 @@ x3dom.registerNodeType(
             this._maxId = 0;
             this._lastId = -1;
             this._lastButton = 0;
+            this._identifierToShapeId = [];
+            this._identifierToAppId = [];
 
         },
         {
@@ -154,6 +156,8 @@ x3dom.registerNodeType(
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
+                    var i;
+
                     var that = this;
 
                     var idMapURI = this._nameSpace.getURL(this._vf.urlIDMap[0]);
@@ -179,6 +183,27 @@ x3dom.registerNodeType(
                         that._nameSpace.doc._scene._multiPartMap.numberOfIds += that._idMap.numberOfIDs;
                         that._nameSpace.doc._scene._multiPartMap.multiParts.push(that);
 
+                        //prepare internal shape map
+                        for (i=0; i<that._idMap.mapping.length; i++)
+                        {
+                            if (!that._identifierToShapeId[that._idMap.mapping[i].name]) {
+                                that._identifierToShapeId[that._idMap.mapping[i].name] = [];
+                            }
+
+                            if (!that._identifierToShapeId[that._idMap.mapping[i].appearance]) {
+                                that._identifierToShapeId[that._idMap.mapping[i].appearance] = [];
+                            }
+
+                            that._identifierToShapeId[that._idMap.mapping[i].name].push(i);
+                            that._identifierToShapeId[that._idMap.mapping[i].appearance].push(i);
+                        }
+
+                        //prepare internal appearance map
+                        for (i=0; i<that._idMap.appearance.length; i++)
+                        {
+                            that._identifierToAppId[that._idMap.appearance[i].name] = i;
+                        }
+
                         that.loadInline();
                     };
 
@@ -197,19 +222,14 @@ x3dom.registerNodeType(
                     if (i < this._idMap.mapping.length)
                     {
                         var appName = this._idMap.mapping[i].appearance;
+                        var appID = this._identifierToAppId[appName];
 
-                        for (var a=0; a<this._idMap.appearance.length; a++)
-                        {
-                            if (this._idMap.appearance[a].name == appName)
-                            {
-                                diffuseColor = this._idMap.appearance[a].material.diffuseColor;
-                                transparency = this._idMap.appearance[a].material.transparency;
+                        diffuseColor = this._idMap.appearance[appID].material.diffuseColor;
+                        transparency = this._idMap.appearance[appID].material.transparency;
 
-                                rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
-                                imageData += " " + rgba.toUint();
-                            }
-                        }
+                        imageData += " " + rgba.toUint();
                     }
                     else
                     {
@@ -338,21 +358,16 @@ x3dom.registerNodeType(
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;
-                    var selection = []
+                    var selection = [];
 
                     if (selector == undefined) {
                         for (m=0; m<multiPart._idMap.mapping.length; m++) {
                             selection.push(m);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         for (i=0; i<selector.length; i++) {
-                            for (m=0; m<multiPart._idMap.mapping.length; m++) {
-                                if (selector[i].id == multiPart._idMap.mapping[m].name ||
-                                    selector[i].app == multiPart._idMap.mapping[m].appearance) {
-                                    selection.push(m);
-                                }
+                            if (multiPart._identifierToShapeId[selector[i]]) {
+                                selection = selection.concat(multiPart._identifierToShapeId[selector[i]]);
                             }
                         }
                     }

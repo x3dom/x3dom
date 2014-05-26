@@ -12,20 +12,20 @@
 
         window.onload = function() {
             multiPart = document.getElementById('multiPart');
-            document.getElementById('multiPart').addEventListener('mouseenter', handleMouveEnter, false);
-            document.getElementById('multiPart').addEventListener('mouseleave', handleMouveLeave, false);
-            document.getElementById('multiPart').addEventListener('mousemove', handleMouveMove, false);
+            document.getElementById('multiPart').addEventListener('mouseenter', handleMouseEnter, false);
+            document.getElementById('multiPart').addEventListener('mouseleave', handleMouseLeave, false);
+            document.getElementById('multiPart').addEventListener('mousemove', handleMouseMove, false);
             document.getElementById('multiPart').addEventListener('click', handleClick, false);
-            document.getElementById('multiPart').addEventListener('mouseout', handleMouveOut, false);
+            //document.getElementById('multiPart').addEventListener('mouseout', handleMouseOut, false);
         };
 
-        function handleMouveEnter(e){
+        function handleMouseEnter(e){
             //console.log("[mouseover]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.partID}]);
+            var parts = this.getParts([e.partID]);
             parts.highlight("yellow");
         }
 
-        function handleMouveMove(e){
+        function handleMouseMove(e){
             var tooltip = document.getElementById("tooltip");
             tooltip.innerHTML = e.partID
             tooltip.style.left = e.layerX + 15 +"px";
@@ -33,9 +33,9 @@
             tooltip.style.display = "block";
         }
 
-        function handleMouveLeave(e){
+        function handleMouseLeave(e){
             //console.log("[mouseout]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.partID}]);
+            var parts = this.getParts([e.partID]);
             parts.unhighlight();         
             tooltip.style.display = "none";
         }
@@ -62,26 +62,26 @@
 
         function highlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.highlight("yellow");
         }
 
         function unhighlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.unhighlight();
         }
 
         function setVisibility(flag)
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setVisibility(flag);
         }
 
         function setColor()
         {
             var color = document.getElementById("colorPicker").value;
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setColor(color);
         }
 
