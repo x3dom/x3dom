@@ -48,6 +48,18 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'doPickPass', true);
+            
+            // experimental field to switch off picking during moving and animating
+
+            /**
+             * Flag to disable pick pass during moving and animating  
+             * @var {x3dom.fields.SFBool} pickOnNav
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'pickOnNav', false);
 
             // another experimental field for shadow DOM remapping
 
