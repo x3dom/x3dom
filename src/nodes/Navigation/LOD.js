@@ -49,22 +49,15 @@ x3dom.registerNodeType(
             {
                 var i=0, n=this._childNodes.length;
 
-                var vol = this.getVolume();
-
-                var min = x3dom.fields.SFVec3f.MAX();
-                var max = x3dom.fields.SFVec3f.MIN();
-                vol.getBounds(min, max);
-
                 var mat_view = drawableCollection.viewMatrix;
 
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
 
-                //var mat_view_model = mat_view.mult(transform);
+                //transform eye point to the LOD node's local coordinate system
                 this._eye = transform.inverse().multMatrixPnt(center);
 
-                var mid = max.add(min).multiply(0.5).add(this._vf.center);
-                var len = mid.subtract(this._eye).length();
+                var len = this._vf.center.subtract(this._eye).length();
 
                 //calculate range check for viewer distance d (with range in local coordinates)
                 //N+1 children nodes for N range values (L0, if d < R0, ... Ln-1, if d >= Rn-1)
