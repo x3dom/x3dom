@@ -12,78 +12,68 @@
 
         window.onload = function() {
             multiPart = document.getElementById('multiPart');
-            document.getElementById('multiPart').addEventListener('partmove', partmove, false);
-            document.getElementById('multiPart').addEventListener('partclick', partclick, false);
-            document.getElementById('multiPart').addEventListener('partover', partover, false);
-            document.getElementById('multiPart').addEventListener('partout', partout, false);
+            multiPart.addEventListener('load', handleLoad, false);
         };
+        
+        function handleLoad() {
+            multiPart.addEventListener('mouseenter', handleMouseEnter, false);
+            multiPart.addEventListener('mouseleave', handleMouseLeave, false);
+            multiPart.addEventListener('mousemove', handleMouseMove, false);
+            multiPart.addEventListener('click', handleClick, false);
+        }
 
-        function partover(e){
+        function handleMouseEnter(e){
             //console.log("[mouseover]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.detail.partID}]);
+            var parts = this.getParts([e.partID]);
             parts.highlight("yellow");
         }
 
-        function partmove(e){
+        function handleMouseMove(e){
             var tooltip = document.getElementById("tooltip");
-            tooltip.innerHTML = e.detail.partID
-            tooltip.style.left = e.detail.layerX + 15 +"px";
-            tooltip.style.top = e.detail.layerY + 15 + "px";
+            tooltip.innerHTML = e.partID
+            tooltip.style.left = e.layerX + 15 +"px";
+            tooltip.style.top = e.layerY + 15 + "px";
             tooltip.style.display = "block";
         }
 
-        function partout(e){
+        function handleMouseLeave(e){
             //console.log("[mouseout]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.detail.partID}]);
-            parts.unhighlight();
-
-            if(e.detail.shadowObjectId == -1) {
-                tooltip.style.display = "none";
-            }
+            var parts = this.getParts([e.partID]);
+            parts.unhighlight();         
+            tooltip.style.display = "none";
         }
 
-        function partclick(e){
+        function handleClick(e){
             //console.log("[click]: " + e.detail.partID);
             tooltip.style.display = "none";
-            if(selection.indexOf(e.detail.partID) == -1)
-                selection.push(e.detail.partID);
+            if(selection.indexOf(e.partID) == -1)
+                selection.push(e.partID);
 
             updateTextArea();
         }
 
-
-        function getSelection()
-        {
-            var sel = [];
-            for(var key in selection)
-            {
-                sel.push({id:selection[key]});
-            }
-            return sel;
-        }
-
         function highlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.highlight("yellow");
         }
 
         function unhighlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.unhighlight();
         }
 
         function setVisibility(flag)
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setVisibility(flag);
         }
 
         function setColor()
         {
             var color = document.getElementById("colorPicker").value;
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setColor(color);
         }
 

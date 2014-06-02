@@ -10,7 +10,7 @@ Getting started
 ---------------
 Please have a look at the official documentation in order to get started:
 
-http://x3dom.org/docs/dev/
+http://doc.x3dom.org
 
 
 Need help?
@@ -22,9 +22,7 @@ quick answers to many questions.
 
 If you decide to post to the mailing list or forum, please include as much
 info as possible and describe your problem and what you tried already
-succinctly. Also read the "Troubleshooting" section and the
-"How To Ask Questions" in order to increase the likelihood of receiving an
-answer that actually helps you (http://x3dom.org/docs/dev/troubleshooting.html).
+succinctly.
 
 
 Mailing List
@@ -120,8 +118,6 @@ to drop, re-arrange, merge, and reword commits, e.g.:
 
 There's always the [x3dom-dev][] mailinglist.
 
-
-More information can be found here: http://x3dom.org/docs/latest/internals/
 
 [x3dom-users]:   https://lists.sourceforge.net/lists/listinfo/x3dom-users
 [x3dom-dev]:     https://lists.sourceforge.net/lists/listinfo/x3dom-developers

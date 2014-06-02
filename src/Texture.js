@@ -257,13 +257,18 @@ x3dom.Texture.prototype.updateTexture = function()
         this.texture.height = tex._vf.image.height;
         this.texture.ready = true;
 		
-		var pixelArr = tex._vf.image.toGL();
+		var pixelArr = tex._vf.image.array;//.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
-		
-		while (pixelArr.length < pixelArrfont_size) {
-			pixelArr.push(0);
-		}
-		
+
+        if (pixelArr.length < pixelArrfont_size)
+        {
+            var pixelArr = tex._vf.image.toGL();
+
+            while (pixelArr.length < pixelArrfont_size) {
+                pixelArr.push(0);
+            }
+        }
+
 		var pixels = new Uint8Array(pixelArr);
 		
 		gl.bindTexture(this.type, this.texture);

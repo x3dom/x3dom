@@ -712,15 +712,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			}
 		} else if(!properties.VERTEXCOLOR && !properties.POINTLINE2D){
 			shader += "color.rgb += emissiveColor;\n";
-		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D){
+		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D && !properties.MULTIDIFFALPMAP){
 			shader += "color.rgb = emissiveColor;\n";
 		}
-	}
-	
-	//Fog
-	if(properties.FOG){
-		shader += "float f0 = calcFog(fragEyePosition);\n";
-		shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
 	}
 	
 	//Kill pixel
@@ -732,7 +726,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     //Output the gamma encoded result.
     shader += "color = clamp(color, 0.0, 1.0);\n";
-    shader += "gl_FragColor = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
+    shader += "color = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
+	
+	//Fog
+	if(properties.FOG){
+		shader += "float f0 = calcFog(fragEyePosition);\n";
+		shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
+	}
+	
+    shader += "gl_FragColor = color;\n";
 	
 	//End Of Shader
 	shader += "}\n";

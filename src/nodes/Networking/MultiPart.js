@@ -35,10 +35,25 @@ x3dom.registerNodeType(
              */
             this.addField_MFString(ctx, 'urlIDMap', []);
 
+            /**
+             * Defines whether the shape is pickable.
+             * @var {x3dom.fields.SFBool} isPickable
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'isPickable', true);
+
             this._idMap = null;
-            this._oldPixels = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
+            this._minId = 0;
+            this._maxId = 0;
+            this._lastId = -1;
+            this._lastButton = 0;
+            this._identifierToShapeId = [];
+            this._identifierToAppId = [];
 
         },
         {
@@ -68,57 +83,81 @@ x3dom.registerNodeType(
                 if (!this.initDone) {
                     this.initDone = true;
                     this.loadIDMap();
-                    this.appendAPI();
-                    this.appendEventListeners();
+                    //this.appendAPI();
+                    //this.appendEventListeners();
                 }
             },
 
-            appendEventListeners: function ()
+            handleEvents: function(e)
             {
-                var that = this;
+                if (e.pickedId != -1)
+                {
+                    e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
 
-                this._xmlNode._shadowObjectID = -1
+                    //fire mousemove event
+                    e.type = "mousemove";
+                    this.callEvtHandler("onmousemove", e);
 
-                this._xmlNode.addEventListener("mousedown", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                        this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
+                    //fire mousemove event
+                    e.type = "mouseover";
+                    this.callEvtHandler("onmouseover", e);
+
+                    //fire click event
+                    if (e.button && e.button != this._lastButton) {
+                        e.type = "click";
+                        this.callEvtHandler("onclick", e);
+                        this._lastButton = e.button;
                     }
-                }, false);
 
-                this._xmlNode.addEventListener("mouseout", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        if (e.shadowObjectId == -1) {
-                            e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                            this._shadowObjectID = -1;
-                            var event = new CustomEvent("partout", {detail: e});
-                            this.dispatchEvent(event);
+                    //if some mouse button is down fire mousedown event
+                    if (e.button) {
+                        e.type = "mousedown";
+                        this.callEvtHandler("onmousedown", e);
+                        this._lastButton = e.button;
+                    }
+
+                    //if some mouse button is up fire mouseup event
+                    if (this._lastButton != 0 && e.button == 0) {
+                        e.type = "mouseup";
+                        this.callEvtHandler("onmouseup", e);
+                        this._lastButton = 0;
+                    }
+
+                    //If the picked id has changed we enter+leave a part
+                    if (e.pickedId != this._lastId)
+                    {
+                        if (this._lastId != -1) {
+                            e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                            e.type = "mouseleave";
+                            this.callEvtHandler("onmouseleave", e);
                         }
-                    }
-                }, false);
 
-                this._xmlNode.addEventListener("mousemove", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name
-                        this.dispatchEvent(new CustomEvent("partmove", {detail: e}));
-                        if (e.shadowObjectId != this._shadowObjectID) {
-                            var tmp = e.shadowObjectId;
-                            if (this._shadowObjectID != -1) {
-                                e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                                this.dispatchEvent(new CustomEvent("partout", {detail: e}));
-                            }
-                            this._shadowObjectID = e.shadowObjectId = tmp;
-                            e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                            this.dispatchEvent(new CustomEvent("partover", {detail: e}));
-                        }
+                        e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+                        e.type = "mouseenter";
+                        this.callEvtHandler("onmouseenter", e);
+                        this._lastId = e.pickedId;
                     }
-                }, false);
+
+                    this._lastId = e.pickedId;
+                }
+                else if (this._lastId != -1)
+                {
+                    e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                    e.type = "mouseout";
+                    this.callEvtHandler("onmouseout", e);
+                    e.type = "mouseleave";
+                    this.callEvtHandler("onmouseleave", e);
+                    this._lastId = -1;
+                }
+
             },
 
             loadIDMap: function ()
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
+                    var i;
+
                     var that = this;
 
                     var idMapURI = this._nameSpace.getURL(this._vf.urlIDMap[0]);
@@ -131,7 +170,39 @@ x3dom.registerNodeType(
                     {
                         that._idMap = JSON.parse(this.responseText);
 
-                        that._nameSpace.doc._scene._shadowIdMap = eval("(" + this.response + ")");
+                        //Check if the MultiPart map already initialized
+                        if (that._nameSpace.doc._scene._multiPartMap == null) {
+                            that._nameSpace.doc._scene._multiPartMap = {numberOfIds: 0, multiParts: []};
+                        }
+
+                        //Set the ID range this MultiPart is holding
+                        that._minId = that._nameSpace.doc._scene._multiPartMap.numberOfIds;
+                        that._maxId = that._minId + that._idMap.numberOfIDs - 1;
+
+                        //Update the MultiPart map
+                        that._nameSpace.doc._scene._multiPartMap.numberOfIds += that._idMap.numberOfIDs;
+                        that._nameSpace.doc._scene._multiPartMap.multiParts.push(that);
+
+                        //prepare internal shape map
+                        for (i=0; i<that._idMap.mapping.length; i++)
+                        {
+                            if (!that._identifierToShapeId[that._idMap.mapping[i].name]) {
+                                that._identifierToShapeId[that._idMap.mapping[i].name] = [];
+                            }
+
+                            if (!that._identifierToShapeId[that._idMap.mapping[i].appearance]) {
+                                that._identifierToShapeId[that._idMap.mapping[i].appearance] = [];
+                            }
+
+                            that._identifierToShapeId[that._idMap.mapping[i].name].push(i);
+                            that._identifierToShapeId[that._idMap.mapping[i].appearance].push(i);
+                        }
+
+                        //prepare internal appearance map
+                        for (i=0; i<that._idMap.appearance.length; i++)
+                        {
+                            that._identifierToAppId[that._idMap.appearance[i].name] = i;
+                        }
 
                         that.loadInline();
                     };
@@ -143,7 +214,7 @@ x3dom.registerNodeType(
             createImageData: function ()
             {
                 var diffuseColor, transparency, rgba;
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
                 var imageData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
@@ -151,19 +222,14 @@ x3dom.registerNodeType(
                     if (i < this._idMap.mapping.length)
                     {
                         var appName = this._idMap.mapping[i].appearance;
+                        var appID = this._identifierToAppId[appName];
 
-                        for (var a=0; a<this._idMap.appearance.length; a++)
-                        {
-                            if (this._idMap.appearance[a].name == appName)
-                            {
-                                diffuseColor = this._idMap.appearance[a].material.diffuseColor;
-                                transparency = this._idMap.appearance[a].material.transparency;
+                        diffuseColor = this._idMap.appearance[appID].material.diffuseColor;
+                        transparency = this._idMap.appearance[appID].material.transparency;
 
-                                rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
-                                imageData += " " + rgba.toUint();
-                            }
-                        }
+                        imageData += " " + rgba.toUint();
                     }
                     else
                     {
@@ -176,7 +242,7 @@ x3dom.registerNodeType(
 
             createVisibilityData: function ()
             {
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
                 var visibilityData = size + " " + size + " 1";
 
                 for (var i=0; i<size*size; i++)
@@ -203,12 +269,19 @@ x3dom.registerNodeType(
 
                     for (var s=0; s<shapes.length; s++)
                     {
+                        shapes[s].setAttribute("idOffset", this._minId);
+                        shapes[s].setAttribute("isPickable", this._vf.isPickable);
+
                         var appearances = shapes[s].getElementsByTagName("Appearance");
 
                         if (appearances.length)
                         {
                             for (var a = 0; a < appearances.length; a++)
                             {
+                                //Remove DEF/USE
+                                appearances[a].removeAttribute("DEF");
+                                appearances[a].removeAttribute("USE");
+
                                 var materials = appearances[a].getElementsByTagName("Material");
 
                                 if (materials.length)
@@ -219,36 +292,54 @@ x3dom.registerNodeType(
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("DEF", "MultiMaterial");
 
-                                        var sstDA = document.createElement("SurfaceShaderTexture");
-                                        sstDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
-
                                         var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
                                         ptDA.setAttribute("image", this.createImageData());
 
-                                        var sstV = document.createElement("SurfaceShaderTexture");
-                                        sstV.setAttribute("containerField", "multiVisibilityTexture");
-
                                         var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
                                         ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
                                         ptV.setAttribute("image", this.createVisibilityData());
 
-                                        sstDA.appendChild(ptDA);
-                                        sstV.appendChild(ptV);
-                                        css.appendChild(sstDA);
-                                        css.appendChild(sstV);
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
                                     }
                                     else
                                     {
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("USE", "MultiMaterial");
                                     }
-                                    materials[0].parentNode.replaceChild(css, materials[0]);
+                                    appearances[a].replaceChild(css, materials[0]);
                                 }
                                 else
                                 {
                                     //Add Material
-                                    console.log("Add Material");
+                                    if (firstMat) {
+                                        firstMat = false;
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("DEF", "MultiMaterial");
+
+                                        var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                        ptDA.setAttribute("id", "MultiMaterial_ColorMap");
+                                        ptDA.setAttribute("image", this.createImageData());
+
+                                        var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
+                                        ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
+                                        ptV.setAttribute("image", this.createVisibilityData());
+
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
+                                    }
+                                    else
+                                    {
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("USE", "MultiMaterial");
+                                    }
+
+                                    appearances[a].appendChild(css);
                                 }
                             }
                         }
@@ -267,21 +358,16 @@ x3dom.registerNodeType(
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;
-                    var selection = []
+                    var selection = [];
 
-                    if (selector == undefined || selector.length == 0) {
+                    if (selector == undefined) {
                         for (m=0; m<multiPart._idMap.mapping.length; m++) {
                             selection.push(m);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         for (i=0; i<selector.length; i++) {
-                            for (m=0; m<multiPart._idMap.mapping.length; m++) {
-                                if (selector[i].id == multiPart._idMap.mapping[m].name ||
-                                    selector[i].app == multiPart._idMap.mapping[m].appearance) {
-                                    selection.push(m);
-                                }
+                            if (multiPart._identifierToShapeId[selector[i]]) {
+                                selection = selection.concat(multiPart._identifierToShapeId[selector[i]]);
                             }
                         }
                     }
@@ -300,6 +386,11 @@ x3dom.registerNodeType(
                         this.setColor = function(color) {
 
                             var i, x, y;
+
+                            if (color.split(" ").length == 3) {
+                                color += " 1";
+                            }
+
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             if (ids.length && ids.length > 1) //Multi select
@@ -342,9 +433,9 @@ x3dom.registerNodeType(
 
                                 for(i=0; i<parts.ids.length; i++) {
                                     if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]].a = transparency;
+                                        multiPart._highlightedParts[parts.ids[i]].a = 1.0 - transparency;
                                     } else {
-                                        pixels[parts.ids[i]].a = transparency;
+                                        pixels[parts.ids[i]].a = 1.0 - transparency;
                                     }
                                 }
 
@@ -353,14 +444,14 @@ x3dom.registerNodeType(
                             else //Single select
                             {
                                 if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]].a = transparency;
+                                    multiPart._highlightedParts[parts.ids[0]].a = 1.0 - transparency;
                                 } else {
                                     x = parts.ids[0] % parts.colorMap.getWidth();
                                     y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
 
                                     var pixel = parts.colorMap.getPixel(x, y);
 
-                                    pixel.a = transparency;
+                                    pixel.a = 1.0 - transparency;
 
                                     parts.colorMap.setPixel(x, y, pixel);
                                 }
@@ -405,6 +496,11 @@ x3dom.registerNodeType(
                         this.highlight = function(color) {
 
                             var i, x, y;
+
+                            if (color.split(" ").length == 3) {
+                                color += " 1";
+                            }
+
                             var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
 
                             if (ids.length && ids.length > 1) //Multi select
@@ -613,6 +709,7 @@ x3dom.registerNodeType(
                             }, 1000 );
                         }
 
+                        that.appendAPI();
                         that.fireEvents("load");
                     }
 
