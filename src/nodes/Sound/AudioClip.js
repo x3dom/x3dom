@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool(ctx, 'enabled', false);
 
             /**
              * Specifies whether the clip loops when finished.
@@ -57,60 +57,68 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'loop', false);
 
-            this._preventAutoPlay = true;
-            this._audio = null;
-        
+            this._audio = document.createElement('audio');
+            //this._audio.setAttribute('preload', 'none');
+            //this._audio.setAttribute('autoplay', 'true');
+            if(navigator.appName != "Microsoft Internet Explorer") {
+                document.body.appendChild(this._audio);
+            }
+
+            this._sources = [];
+
         },
         {
             nodeChanged: function()
             {
-                this._audio = document.createElement('audio');
-                //this._audio.setAttribute('preload', 'none');
-                //this._audio.setAttribute('autoplay', 'true');
-                if(navigator.appName != "Microsoft Internet Explorer") {
-                    document.body.appendChild(this._audio);
-                }
-
-                for (var i=0; i<this._vf.url.length; i++)
+                this._createSources = function()
                 {
-                    var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
-                    x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
-                    var src = document.createElement('source');
-                    src.setAttribute('src', audioUrl);
-                    this._audio.appendChild(src);
-                }
+                    this._sources = [];
+                    for (var i=0; i<this._vf.url.length; i++)
+                    {
+                        var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
+                        x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
+                        var src = document.createElement('source');
+                        src.setAttribute('src', audioUrl);
+                        this._sources.push(src);
+                        this._audio.appendChild(src);
+                    }
+                };
 
                 var that = this;
 
-                var startAudio = function()
+                this._startAudio = function()
                 {
-                    if (that._vf.enabled === true)
+                    that._audio.loop = that._vf.loop ? "loop" : "";
+                    if(that._vf.enabled === true)
                     {
                         that._audio.play();
                     }
                 };
 
-                var audioDone = function()
+                this._stopAudio = function()
+                {
+                    that._audio.pause();
+                };
+
+                this._audioEnded = function()
                 {
                     if (that._vf.enabled === true && that._vf.loop === true)
                     {
-                        that._audio.play();
+                        that._startAudio();
                     }
                 };
 
-
-                var preventAutoPlay = function()
+                var log = function(e)
                 {
-                    if(that._preventAutoPlay)
-                    {
-                        that._audio.pause();
-                        that._preventAutoPlay = false;
-                    }
+                    x3dom.debug.logWarning("MediaEvent error:"+e);
                 };
 
-                this._audio.addEventListener("canplaythrough", startAudio, true);
-                this._audio.addEventListener("ended", audioDone, true);
-                this._audio.addEventListener("play", preventAutoPlay, true);
+                this._audio.addEventListener("canplaythrough", this._startAudio, true);
+                this._audio.addEventListener("ended", this._audioEnded, true);
+                this._audio.addEventListener("error", log, true);
+                this._audio.addEventListener("pause", this._audioEnded, true);
+
+                this._createSources();
             },
 
             fieldChanged: function(fieldName)
@@ -119,23 +127,20 @@ x3dom.registerNodeType(
                 {
                     if (this._vf.enabled === true)
                     {
-                        this._audio.play();
+                        this._startAudio();
                     }
                     else
                     {
-                        this._audio.pause();
+                        this._stopAudio();
                     }
                 }
                 else if (fieldName === "loop")
                 {
-                    if (this._vf.enabled === true && this._vf.loop === true)
-                    {
-                        this._audio.play();
-                    }
+                    //this._audio.loop = this._vf.loop;
                 }
                 else if (fieldName === "url")
                 {
-                    this._audio.pause();
+                    this._stopAudio();
                     while (this._audio.hasChildNodes())
                     {
                         this._audio.removeChild(this._audio.firstChild);
