@@ -44,6 +44,27 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'isPickable', true);
+            
+            /**
+             * Defines the shape type for sorting.
+             * @var {x3dom.fields.SFString} sortType
+             * @range [auto, transparent, opaque]
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 'auto'
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'sortType', 'auto');
+
+            /**
+             * Change render order manually.
+             * @var {x3dom.fields.SFInt32} sortKey
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'sortKey', 0);
 
             this._idMap = null;
             this._inlineNamespace = null;
@@ -273,7 +294,7 @@ x3dom.registerNodeType(
                         shapes[s].setAttribute("isPickable", this._vf.isPickable);
 
                         var appearances = shapes[s].getElementsByTagName("Appearance");
-
+                        
                         if (appearances.length)
                         {
                             for (var a = 0; a < appearances.length; a++)
@@ -281,6 +302,9 @@ x3dom.registerNodeType(
                                 //Remove DEF/USE
                                 appearances[a].removeAttribute("DEF");
                                 appearances[a].removeAttribute("USE");
+                                
+                                appearances[a].setAttribute("sortType", this._vf.sortType);
+                                appearances[a].setAttribute("sortKey", this._vf.sortKey);
 
                                 var materials = appearances[a].getElementsByTagName("Material");
 
