@@ -66,6 +66,17 @@ x3dom.registerNodeType(
              */
             this.addField_SFInt32(ctx, 'sortKey', 0);
 
+            /**
+             * Set the initial visibility.
+             * @var {x3dom.fields.SFInt32} initialVisibility
+             * @range [auto, visible, invisible]
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 'auto'
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'initialVisibility', 'auto');
+
             this._idMap = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
@@ -75,6 +86,7 @@ x3dom.registerNodeType(
             this._lastButton = 0;
             this._identifierToShapeId = [];
             this._identifierToAppId = [];
+            this._visiblePartsPerShape = [];
 
         },
         {
@@ -177,7 +189,7 @@ x3dom.registerNodeType(
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
-                    var i;
+                    var i, j;
 
                     var that = this;
 
@@ -217,6 +229,7 @@ x3dom.registerNodeType(
 
                             that._identifierToShapeId[that._idMap.mapping[i].name].push(i);
                             that._identifierToShapeId[that._idMap.mapping[i].appearance].push(i);
+
                         }
 
                         //prepare internal appearance map
@@ -232,11 +245,11 @@ x3dom.registerNodeType(
                 }
             },
 
-            createImageData: function ()
+            createColorData: function ()
             {
                 var diffuseColor, transparency, rgba;
                 var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
-                var imageData = size + " " + size + " 4";
+                var colorData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
                 {
@@ -250,27 +263,67 @@ x3dom.registerNodeType(
 
                         rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
-                        imageData += " " + rgba.toUint();
+                        colorData += " " + rgba.toUint();
                     }
                     else
                     {
-                        imageData += " 255";
+                        colorData += " 255";
                     }
                 }
 
-                return imageData;
+                return colorData;
             },
 
             createVisibilityData: function ()
             {
+                var i, j;
                 var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
                 var visibilityData = size + " " + size + " 1";
 
-                for (var i=0; i<size*size; i++)
+                for (i=0; i<size*size; i++)
                 {
                     if (i < this._idMap.mapping.length)
                     {
-                        visibilityData += " 255";
+                        if (this._vf.initialVisibility == 'auto')
+                        {
+                            //TODO get the Data from JSON
+                            visibilityData += " 255";
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].val++;
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+                        else if (this._vf.initialVisibility == 'visible')
+                        {
+                            visibilityData += " 255";
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].val++;
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+                        else if (this._vf.initialVisibility == 'invisible')
+                        {
+                            visibilityData += " 0";
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+
                     }
                     else
                     {
@@ -282,14 +335,24 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css;
+                var css, defName, colorData, visibilityData;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
+                    colorData = this.createColorData();
+                    visibilityData = this.createVisibilityData();
+
                     var shapes = inlScene.getElementsByTagName("Shape");
 
                     for (var s=0; s<shapes.length; s++)
                     {
+                        defName = shapes[s].getAttribute("DEF");
+
+                        if(this._visiblePartsPerShape[defName].val == 0)
+                        {
+                            shapes[s].setAttribute("render", "false");
+                        }
+
                         shapes[s].setAttribute("idOffset", this._minId);
                         shapes[s].setAttribute("isPickable", this._vf.isPickable);
 
@@ -319,12 +382,12 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", this.createImageData());
+                                        ptDA.setAttribute("image", colorData);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
                                         ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
-                                        ptV.setAttribute("image", this.createVisibilityData());
+                                        ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
                                         css.appendChild(ptV);
@@ -488,14 +551,35 @@ x3dom.registerNodeType(
                          */
                         this.setVisibility = function(visibility) {
 
-                            var i, x, y;
+                            var i, j, x, y, usage, visibleCount;
 
                             if (ids.length && ids.length > 1) //Multi select
                             {
                                 var pixels = parts.visibilityMap.getPixels();
 
                                 for(i=0; i<parts.ids.length; i++) {
-                                    pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
+                                    if (pixels[parts.ids[i]].r != visibility) {
+                                        pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
+
+                                        //get used shapes
+                                        usage = multiPart._idMap.mapping[parts.ids[i]].usage;
+
+                                        //Change the shapes render flag
+                                        for (j = 0; j < usage.length; j++) {
+                                            visibleCount = multiPart._visiblePartsPerShape[usage[j]];
+                                            if (visibility && visibleCount.val < visibleCount.max) {
+                                                visibleCount.val++;
+                                            } else if (!visibility && visibleCount.val > 0) {
+                                                visibleCount.val--;
+                                            }
+                                            
+                                            if (visibleCount.val) {
+                                                multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
+                                            } else {
+                                                multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
+                                            }
+                                        }
+                                    }
                                 }
 
                                 parts.visibilityMap.setPixels(pixels);
@@ -507,7 +591,28 @@ x3dom.registerNodeType(
 
                                 var pixel = parts.visibilityMap.getPixel(x, y);
 
-                                pixel.r = (visibility) ? 1 : 0;
+                                if (pixel.r != visibility) {
+                                    pixel.r = (visibility) ? 1 : 0;
+
+                                    //get used shapes
+                                    usage = multiPart._idMap.mapping[parts.ids[0]].usage;
+
+                                    //Change the shapes render flag
+                                    for (j = 0; j < usage.length; j++) {
+                                        visibleCount = multiPart._visiblePartsPerShape[usage[j]];
+                                        if (visibility && visibleCount.val < visibleCount.max) {
+                                            visibleCount.val++;
+                                        } else if (!visibility && visibleCount.val > 0) {
+                                            visibleCount.val--;
+                                        }
+
+                                        if (visibleCount.val) {
+                                            multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
+                                        } else {
+                                            multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
+                                        }
+                                    }
+                                }
 
                                 parts.visibilityMap.setPixel(x, y, pixel);
                             }
