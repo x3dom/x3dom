@@ -59,8 +59,20 @@ x3dom.registerNodeType(
             },
 
             setPixel: function(x, y, color) {
-                this._vf.image.setPixel(x, y, color);
-                this.invalidateGLObject();
+                if (this._x3domTexture) {
+                    this._x3domTexture.setPixel(x, y, [
+                        color.r*255,
+                        color.g*255,
+                        color.b*255,
+                        color.a*255 ] );
+                    this._vf.image.setPixel(x, y, color);
+                }
+                else
+                {
+                    this._vf.image.setPixel(x, y, color);
+                    this.invalidateGLObject();
+                }
+
             },
 
             getPixel: function(x, y) {

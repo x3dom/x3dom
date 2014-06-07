@@ -248,7 +248,7 @@ x3dom.registerNodeType(
             createColorData: function ()
             {
                 var diffuseColor, transparency, rgba;
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
+                var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
                 var colorData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
@@ -277,7 +277,7 @@ x3dom.registerNodeType(
             createVisibilityData: function ()
             {
                 var i, j;
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.ceil(Math.sqrt(this._idMap.numberOfIDs)));
+                var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
                 var visibilityData = size + " " + size + " 1";
 
                 for (i=0; i<size*size; i++)
@@ -335,7 +335,7 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css, defName, colorData, visibilityData;
+                var css, shapeDEF, colorData, visibilityData;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
@@ -346,9 +346,9 @@ x3dom.registerNodeType(
 
                     for (var s=0; s<shapes.length; s++)
                     {
-                        defName = shapes[s].getAttribute("DEF");
+                        shapeDEF = shapes[s].getAttribute("DEF");
 
-                        if(this._visiblePartsPerShape[defName].val == 0)
+                        if(this._visiblePartsPerShape[shapeDEF].val == 0)
                         {
                             shapes[s].setAttribute("render", "false");
                         }
@@ -410,12 +410,12 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", this.createImageData());
+                                        ptDA.setAttribute("image", colorData);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
                                         ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
-                                        ptV.setAttribute("image", this.createVisibilityData());
+                                        ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
                                         css.appendChild(ptV);
@@ -572,7 +572,7 @@ x3dom.registerNodeType(
                                             } else if (!visibility && visibleCount.val > 0) {
                                                 visibleCount.val--;
                                             }
-                                            
+
                                             if (visibleCount.val) {
                                                 multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
                                             } else {
@@ -711,16 +711,28 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 
-                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
-                        that.count++;
-                        var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
-                        x3dom.debug.logInfo('Statuscode ' + xhr.status + ' and send new request in ' + refreshTime + ' sec.');
-
-                        window.setTimeout(function() {
+                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding) {
+                        if (that.count < that.numRetries)
+                        {
+                            that.count++;
+                            var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+                            x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                'Next request in ' + refreshTime + ' seconds');
+                      
+                            window.setTimeout(function() {
+                                that._nameSpace.doc.downloadCount -= 1;
+                                that.loadInline();
+                            }, refreshTime * 1000);
+                            return xhr;
+                        }
+                        else
+                        {
+                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                 'No Retries left');
                             that._nameSpace.doc.downloadCount -= 1;
-                            that.loadInline();
-                        }, refreshTime * 1000);
-                        return xhr;
+                            that.count = 0;
+                            return xhr;
+                        }
                     }
                     else if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that.fireEvents("error");

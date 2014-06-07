@@ -29,6 +29,19 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentia
 };
 
 /**
+ * Returns a Texture 2D
+ */
+x3dom.Cache.prototype.getTexture2DByDEF = function (gl, def) {
+    var textureIdentifier = def;
+
+    if (this.textures[textureIdentifier] === undefined) {
+        this.textures[textureIdentifier] = gl.createTexture();
+    }
+
+    return this.textures[textureIdentifier];
+};
+
+/**
  * Returns a Cube Texture
  */
 x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, withCredentials, scale, genMipMaps) {
