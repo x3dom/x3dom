@@ -1691,7 +1691,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         var d, vec, cor, mat = null;
         var alpha, beta;
 
-        buttonState = ((navRestrict & buttonState) != buttonState) ? navRestrict : buttonState;
+        buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
 
         if (navType === "examine")
         {
