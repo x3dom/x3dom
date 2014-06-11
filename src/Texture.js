@@ -271,7 +271,7 @@ x3dom.Texture.prototype.updateTexture = function()
 	{
 		if (this.texture == null) {
             if (this.node._DEF) {
-                this.texture = this.cache.getTexture2DByDEF(gl, this.node._DEF);
+                this.texture = this.cache.getTexture2DByDEF(gl, this.node._nameSpace, this.node._DEF);
             } else {
                 this.texture = gl.createTexture();
             }

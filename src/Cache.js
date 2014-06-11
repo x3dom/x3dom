@@ -31,8 +31,8 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentia
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2DByDEF = function (gl, def) {
-    var textureIdentifier = def;
+x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
+    var textureIdentifier = nameSpace.name + "_" + def;
 
     if (this.textures[textureIdentifier] === undefined) {
         this.textures[textureIdentifier] = gl.createTexture();

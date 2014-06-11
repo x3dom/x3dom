@@ -771,8 +771,10 @@ x3dom.registerNodeType(
 
                     if (inlScene)
                     {
+                        var nsDefault = "ns" + that._nameSpace.childSpaces.length;
+                        
                         var nsName = (that._vf.nameSpaceName.length != 0) ?
-                                      that._vf.nameSpaceName.toString().replace(' ','') : "";
+                                      that._vf.nameSpaceName.toString().replace(' ','') : nsDefault;
 
                         that._inlineNamespace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
 
