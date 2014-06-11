@@ -341,7 +341,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (binGeo._vf.index.length > 0)
     {
         var xmlhttp0 = new XMLHttpRequest();
-        xmlhttp0.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.index)), true);
+        xmlhttp0.open("GET", shape._nameSpace.getURL(binGeo._vf.index), true);
         xmlhttp0.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
@@ -415,7 +415,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (binGeo._hasStrideOffset && binGeo._vf.coord.length > 0)
     {
         var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.coord)), true);
+        xmlhttp.open("GET", shape._nameSpace.getURL(binGeo._vf.coord), true);
         xmlhttp.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
@@ -525,7 +525,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (!binGeo._hasStrideOffset && binGeo._vf.coord.length > 0)
     {
         var xmlhttp1 = new XMLHttpRequest();
-        xmlhttp1.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.coord)), true);
+        xmlhttp1.open("GET", shape._nameSpace.getURL(binGeo._vf.coord), true);
         xmlhttp1.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
@@ -621,7 +621,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (!binGeo._hasStrideOffset && binGeo._vf.normal.length > 0)
     {
         var xmlhttp2 = new XMLHttpRequest();
-        xmlhttp2.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.normal)), true);
+        xmlhttp2.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
         xmlhttp2.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
@@ -678,7 +678,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (!binGeo._hasStrideOffset && binGeo._vf.texCoord.length > 0)
     {
         var xmlhttp3 = new XMLHttpRequest();
-        xmlhttp3.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.texCoord)), true);
+        xmlhttp3.open("GET", shape._nameSpace.getURL(binGeo._vf.texCoord), true);
         xmlhttp3.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
@@ -767,7 +767,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     if (!binGeo._hasStrideOffset && binGeo._vf.color.length > 0)
     {
         var xmlhttp4 = new XMLHttpRequest();
-        xmlhttp4.open("GET", encodeURI(shape._nameSpace.getURL(binGeo._vf.color)), true);
+        xmlhttp4.open("GET", shape._nameSpace.getURL(binGeo._vf.color), true);
         xmlhttp4.responseType = "arraybuffer";
 
         shape._nameSpace.doc.downloadCount += 1;
