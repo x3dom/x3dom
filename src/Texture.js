@@ -139,6 +139,8 @@ x3dom.Texture.prototype.setPixel = function(x, y, pixel)
     gl.texSubImage2D(this.type, 0, x, y, 1, 1, this.format, gl.UNSIGNED_BYTE, pixels);
 
     gl.bindTexture(this.type, null);
+    
+    this.doc.needRender = true;
 };
 
 x3dom.Texture.prototype.updateTexture = function()

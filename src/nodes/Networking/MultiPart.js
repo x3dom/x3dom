@@ -692,7 +692,11 @@ x3dom.registerNodeType(
 
                     var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
                     var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
-                    return new Parts(selection, colorMap, visibilityMap);
+                    if ( selection.length == 0) {
+                        return null;
+                    } else {
+                        return new Parts(selection, colorMap, visibilityMap);
+                    }
                 }
             },
 
