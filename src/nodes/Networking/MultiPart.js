@@ -49,12 +49,22 @@ x3dom.registerNodeType(
              * Defines the shape type for sorting.
              * @var {x3dom.fields.SFString} sortType
              * @range [auto, transparent, opaque]
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 'auto'
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'sortType', 'auto');
+
+            /**
+             * Specifies whether backface-culling is used. If solid is TRUE only front-faces are drawn.
+             * @var {x3dom.fields.SFBool} solid
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'solid', true);
 
             /**
              * Change render order manually.
@@ -293,6 +303,14 @@ x3dom.registerNodeType(
                         shapes[s].setAttribute("idOffset", this._minId);
                         shapes[s].setAttribute("isPickable", this._vf.isPickable);
 
+                        var geometries = shapes[s].getElementsByTagName("BinaryGeometry");
+
+                        if (geometries && geometries.length) {
+                            for (var g = 0; g < geometries.length; g++) {
+                                geometries[g].setAttribute("solid", this._vf.solid);
+                            }
+                        }
+
                         var appearances = shapes[s].getElementsByTagName("Appearance");
                         
                         if (appearances.length)
@@ -379,6 +397,18 @@ x3dom.registerNodeType(
             appendAPI: function ()
             {
                 var multiPart = this;
+
+                this._xmlNode.getIdList = function ()
+                {
+                    var i, ids = [];
+
+                    for (i=0; i<multiPart._idMap.mapping.length; i++) {
+                        ids.push( multiPart._idMap.mapping[i].name );
+                    }
+
+                    return ids;
+                };
+
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;
