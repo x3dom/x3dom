@@ -158,16 +158,28 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 
-                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
-                        that.count++;
-                        var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
-                        x3dom.debug.logInfo('Statuscode ' + xhr.status + ' and send new request in ' + refreshTime + ' sec.');
-
-                        window.setTimeout(function() {
+                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding) {
+                        if (that.count < that.numRetries)
+                        {
+                            that.count++;
+                            var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+                            x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                'Next request in ' + refreshTime + ' seconds');
+                      
+                            window.setTimeout(function() {
+                                that._nameSpace.doc.downloadCount -= 1;
+                                that.loadInline();
+                            }, refreshTime * 1000);
+                            return xhr;
+                        }
+                        else
+                        {
+                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                 'No Retries left');
                             that._nameSpace.doc.downloadCount -= 1;
-                            that.loadInline();
-                        }, refreshTime * 1000);
-                        return xhr;
+                            that.count = 0;
+                            return xhr;
+                        }
                     }
                     else if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that.fireEvents("error");

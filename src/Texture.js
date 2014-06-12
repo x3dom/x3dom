@@ -65,6 +65,8 @@ x3dom.Texture = function (gl, doc, cache, node) {
     var tex = this.node;
     var suffix = "mpd";
 
+    this.node._x3domTexture = this;
+
     if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
         // for dash we are lazy and check only the first url
         if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) {
@@ -122,6 +124,23 @@ x3dom.Texture.prototype.update = function()
 	{
 		this.updateTexture();
 	}
+};
+
+x3dom.Texture.prototype.setPixel = function(x, y, pixel)
+{
+    var gl  = this.gl;
+
+    var pixels = new Uint8Array(pixel);
+
+    gl.bindTexture(this.type, this.texture);
+
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+    gl.texSubImage2D(this.type, 0, x, y, 1, 1, this.format, gl.UNSIGNED_BYTE, pixels);
+
+    gl.bindTexture(this.type, null);
+    
+    this.doc.needRender = true;
 };
 
 x3dom.Texture.prototype.updateTexture = function()
@@ -251,7 +270,11 @@ x3dom.Texture.prototype.updateTexture = function()
 	else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
 	{
 		if (this.texture == null) {
-			this.texture = gl.createTexture()
+            if (this.node._DEF) {
+                this.texture = this.cache.getTexture2DByDEF(gl, this.node._nameSpace, this.node._DEF);
+            } else {
+                this.texture = gl.createTexture();
+            }
 		}
         this.texture.width  = tex._vf.image.width;
         this.texture.height = tex._vf.image.height;
