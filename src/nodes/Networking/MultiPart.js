@@ -133,64 +133,70 @@ x3dom.registerNodeType(
 
             handleEvents: function(e)
             {
-                if (e.pickedId != -1)
-                {
-                    e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+                if( this._inlineNamespace ) {
+                    var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
 
-                    //fire mousemove event
-                    e.type = "mousemove";
-                    this.callEvtHandler("onmousemove", e);
+                    if (e.pickedId != -1) {
+                        e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                        e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
 
-                    //fire mousemove event
-                    e.type = "mouseover";
-                    this.callEvtHandler("onmouseover", e);
+                        //fire mousemove event
+                        e.type = "mousemove";
+                        this.callEvtHandler("onmousemove", e);
 
-                    //fire click event
-                    if (e.button && e.button != this._lastButton) {
-                        e.type = "click";
-                        this.callEvtHandler("onclick", e);
-                        this._lastButton = e.button;
-                    }
+                        //fire mousemove event
+                        e.type = "mouseover";
+                        this.callEvtHandler("onmouseover", e);
 
-                    //if some mouse button is down fire mousedown event
-                    if (e.button) {
-                        e.type = "mousedown";
-                        this.callEvtHandler("onmousedown", e);
-                        this._lastButton = e.button;
-                    }
-
-                    //if some mouse button is up fire mouseup event
-                    if (this._lastButton != 0 && e.button == 0) {
-                        e.type = "mouseup";
-                        this.callEvtHandler("onmouseup", e);
-                        this._lastButton = 0;
-                    }
-
-                    //If the picked id has changed we enter+leave a part
-                    if (e.pickedId != this._lastId)
-                    {
-                        if (this._lastId != -1) {
-                            e.partID = this._idMap.mapping[this._lastId - this._minId].name;
-                            e.type = "mouseleave";
-                            this.callEvtHandler("onmouseleave", e);
+                        //fire click event
+                        if (e.button && e.button != this._lastButton) {
+                            e.type = "click";
+                            this.callEvtHandler("onclick", e);
+                            this._lastButton = e.button;
                         }
 
-                        e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
-                        e.type = "mouseenter";
-                        this.callEvtHandler("onmouseenter", e);
+                        //if some mouse button is down fire mousedown event
+                        if (e.button) {
+                            e.type = "mousedown";
+                            this.callEvtHandler("onmousedown", e);
+                            this._lastButton = e.button;
+                        }
+
+                        //if some mouse button is up fire mouseup event
+                        if (this._lastButton != 0 && e.button == 0) {
+                            e.type = "mouseup";
+                            this.callEvtHandler("onmouseup", e);
+                            this._lastButton = 0;
+                        }
+
+                        //If the picked id has changed we enter+leave a part
+                        if (e.pickedId != this._lastId) {
+                            if (this._lastId != -1) {
+                                e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                                e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                                e.type = "mouseleave";
+                                this.callEvtHandler("onmouseleave", e);
+                            }
+
+                            e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                            e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+                            e.type = "mouseenter";
+                            this.callEvtHandler("onmouseenter", e);
+                            this._lastId = e.pickedId;
+                        }
+
                         this._lastId = e.pickedId;
                     }
-
-                    this._lastId = e.pickedId;
-                }
-                else if (this._lastId != -1)
-                {
-                    e.partID = this._idMap.mapping[this._lastId - this._minId].name;
-                    e.type = "mouseout";
-                    this.callEvtHandler("onmouseout", e);
-                    e.type = "mouseleave";
-                    this.callEvtHandler("onmouseleave", e);
-                    this._lastId = -1;
+                    else if (this._lastId != -1) {
+                        e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                        e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                        e.type = "mouseout";
+                        this.callEvtHandler("onmouseout", e);
+                        e.type = "mouseleave";
+                        this.callEvtHandler("onmouseleave", e);
+                        this._lastId = -1;
+                    }
                 }
 
             },
@@ -489,243 +495,13 @@ x3dom.registerNodeType(
                         }
                     }
 
-                    var Parts = function(ids, colorMap, visibilityMap)
-                    {
-                        var parts = this;
-                        this.ids = ids;
-                        this.colorMap = colorMap;
-                        this.visibilityMap = visibilityMap;
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.setColor = function(color) {
-
-                            var i, x, y;
-
-                            if (color.split(" ").length == 3) {
-                                color += " 1";
-                            }
-
-                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]] = colorRGBA;
-                                    } else {
-                                        pixels[parts.ids[i]] = colorRGBA;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]] = colorRGBA;
-                                } else {
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    parts.colorMap.setPixel(x, y, colorRGBA);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param transparency
-                         */
-                        this.setTransparency = function(transparency) {
-
-                            var i, x, y;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]].a = 1.0 - transparency;
-                                    } else {
-                                        pixels[parts.ids[i]].a = 1.0 - transparency;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]].a = 1.0 - transparency;
-                                } else {
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-
-                                    var pixel = parts.colorMap.getPixel(x, y);
-
-                                    pixel.a = 1.0 - transparency;
-
-                                    parts.colorMap.setPixel(x, y, pixel);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param visibility
-                         */
-                        this.setVisibility = function(visibility) {
-
-                            var i, j, x, y, usage, visibleCount;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.visibilityMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (pixels[parts.ids[i]].r != visibility) {
-                                        pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
-
-                                        //get used shapes
-                                        usage = multiPart._idMap.mapping[parts.ids[i]].usage;
-
-                                        //Change the shapes render flag
-                                        for (j = 0; j < usage.length; j++) {
-                                            visibleCount = multiPart._visiblePartsPerShape[usage[j]];
-                                            if (visibility && visibleCount.val < visibleCount.max) {
-                                                visibleCount.val++;
-                                            } else if (!visibility && visibleCount.val > 0) {
-                                                visibleCount.val--;
-                                            }
-
-                                            if (visibleCount.val) {
-                                                multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
-                                            } else {
-                                                multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                parts.visibilityMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                x = parts.ids[0] % parts.colorMap.getWidth();
-                                y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-
-                                var pixel = parts.visibilityMap.getPixel(x, y);
-
-                                if (pixel.r != visibility) {
-                                    pixel.r = (visibility) ? 1 : 0;
-
-                                    //get used shapes
-                                    usage = multiPart._idMap.mapping[parts.ids[0]].usage;
-
-                                    //Change the shapes render flag
-                                    for (j = 0; j < usage.length; j++) {
-                                        visibleCount = multiPart._visiblePartsPerShape[usage[j]];
-                                        if (visibility && visibleCount.val < visibleCount.max) {
-                                            visibleCount.val++;
-                                        } else if (!visibility && visibleCount.val > 0) {
-                                            visibleCount.val--;
-                                        }
-
-                                        if (visibleCount.val) {
-                                            multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
-                                        } else {
-                                            multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
-                                        }
-                                    }
-                                }
-
-                                parts.visibilityMap.setPixel(x, y, pixel);
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.highlight = function(color) {
-
-                            var i, x, y;
-
-                            if (color.split(" ").length == 3) {
-                                color += " 1";
-                            }
-
-                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]] == undefined) {
-                                        multiPart._highlightedParts[parts.ids[i]] = pixels[parts.ids[i]]
-                                        pixels[parts.ids[i]] = colorRGBA;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]] == undefined){
-
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    multiPart._highlightedParts[parts.ids[0]] = parts.colorMap.getPixel(x, y);
-                                    parts.colorMap.setPixel(x, y, colorRGBA);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.unhighlight = function() {
-
-                            var i, x, y;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]) {
-                                        pixels[parts.ids[i]] = multiPart._highlightedParts[parts.ids[i]];
-                                        multiPart._highlightedParts[parts.ids[i]] = undefined;
-                                    }
-                                }
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]) {
-
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    var pixel = multiPart._highlightedParts[parts.ids[0]];
-                                    multiPart._highlightedParts[parts.ids[0]] = undefined;
-                                    parts.colorMap.setPixel(x, y, pixel);
-                                }
-                            }
-                        };
-                    };
-
                     var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
                     var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
+
                     if ( selection.length == 0) {
                         return null;
                     } else {
-                        return new Parts(selection, colorMap, visibilityMap);
+                        return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
                     }
                 }
             },

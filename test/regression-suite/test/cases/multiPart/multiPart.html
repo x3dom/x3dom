@@ -18,14 +18,14 @@
         function handleLoad() {
             multiPart.addEventListener('mouseenter', handleMouseEnter, false);
             multiPart.addEventListener('mouseleave', handleMouseLeave, false);
+            multiPart.addEventListener('mouseout', handleMouseLeave, false);
             multiPart.addEventListener('mousemove', handleMouseMove, false);
             multiPart.addEventListener('click', handleClick, false);
         }
 
         function handleMouseEnter(e){
             //console.log("[mouseover]: " + e.detail.partID);
-            var parts = this.getParts([e.partID]);
-            parts.highlight("yellow");
+            e.part.highlight("yellow");
         }
 
         function handleMouseMove(e){
@@ -38,8 +38,7 @@
 
         function handleMouseLeave(e){
             //console.log("[mouseout]: " + e.detail.partID);
-            var parts = this.getParts([e.partID]);
-            parts.unhighlight();         
+            e.part.unhighlight();
             tooltip.style.display = "none";
         }
 
