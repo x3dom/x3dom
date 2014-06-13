@@ -2862,8 +2862,20 @@ x3dom.gfx_webgl = (function () {
                                 };
 
                                 multiPart.handleEvents(event);
+                            }
+                            else
+                            {
+                                event = {
+                                    target: multiPart._xmlNode,
+                                    button: button, mouseup: ((buttonState >>> 8) > 0),
+                                    layerX: x, layerY: y,
+                                    pickedId: -1,
+                                    cancelBubble: false,
+                                    stopPropagation: function () { this.cancelBubble = true; },
+                                    preventDefault:  function () { this.cancelBubble = true; }
+                                };
 
-                                break;
+                                multiPart.handleEvents(event);
                             }
                         }
                     }
