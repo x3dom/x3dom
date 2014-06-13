@@ -94,9 +94,11 @@ x3dom.registerNodeType(
             this._maxId = 0;
             this._lastId = -1;
             this._lastButton = 0;
-            this._identifierToShapeId = [];
+            this._identifierToPartId = [];
             this._identifierToAppId = [];
             this._visiblePartsPerShape = [];
+            this._partVolume = [];
+            this._partVisibility = [];
 
         },
         {
@@ -126,9 +128,29 @@ x3dom.registerNodeType(
                 if (!this.initDone) {
                     this.initDone = true;
                     this.loadIDMap();
-                    //this.appendAPI();
-                    //this.appendEventListeners();
                 }
+            },
+            
+            getVolume: function ()
+            {
+                var vol = this._graph.volume;
+
+                if (!this.volumeValid() && this._vf.render)
+                {
+                    for (var i=0; i<this._partVisibility.length; i++)
+                    {
+                        // render could be undefined, but undefined != true
+                        if (!this._partVisibility[i])
+                            continue;
+
+                        var childVol = this._partVolume[i];
+
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
+                    }
+                };
+
+                return vol;
             },
 
             handleEvents: function(e)
@@ -205,7 +227,7 @@ x3dom.registerNodeType(
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
-                    var i, j;
+                    var i, min, max;
 
                     var that = this;
 
@@ -235,16 +257,23 @@ x3dom.registerNodeType(
                         //prepare internal shape map
                         for (i=0; i<that._idMap.mapping.length; i++)
                         {
-                            if (!that._identifierToShapeId[that._idMap.mapping[i].name]) {
-                                that._identifierToShapeId[that._idMap.mapping[i].name] = [];
+                            if (!that._identifierToPartId[that._idMap.mapping[i].name]) {
+                                that._identifierToPartId[that._idMap.mapping[i].name] = [];
                             }
 
-                            if (!that._identifierToShapeId[that._idMap.mapping[i].appearance]) {
-                                that._identifierToShapeId[that._idMap.mapping[i].appearance] = [];
+                            if (!that._identifierToPartId[that._idMap.mapping[i].appearance]) {
+                                that._identifierToPartId[that._idMap.mapping[i].appearance] = [];
                             }
 
-                            that._identifierToShapeId[that._idMap.mapping[i].name].push(i);
-                            that._identifierToShapeId[that._idMap.mapping[i].appearance].push(i);
+                            that._identifierToPartId[that._idMap.mapping[i].name].push(i);
+                            that._identifierToPartId[that._idMap.mapping[i].appearance].push(i);
+
+                            if (!that._partVolume[i]) {
+                                var min = x3dom.fields.SFVec3f.parse(that._idMap.mapping[i].min);
+                                var max = x3dom.fields.SFVec3f.parse(that._idMap.mapping[i].max);
+
+                                that._partVolume[i] = new x3dom.fields.BoxVolume(min, max);
+                            }
 
                         }
 
@@ -305,6 +334,10 @@ x3dom.registerNodeType(
                             //TODO get the Data from JSON
                             visibilityData += " 255";
 
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = true;
+                            }
+
                             for (j=0; j<this._idMap.mapping[i].usage.length; j++)
                             {
                                 if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
@@ -318,6 +351,10 @@ x3dom.registerNodeType(
                         {
                             visibilityData += " 255";
 
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = true;
+                            }
+
                             for (j=0; j<this._idMap.mapping[i].usage.length; j++)
                             {
                                 if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
@@ -330,6 +367,10 @@ x3dom.registerNodeType(
                         else if (this._vf.initialVisibility == 'invisible')
                         {
                             visibilityData += " 0";
+
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = false;
+                            }
 
                             for (j=0; j<this._idMap.mapping[i].usage.length; j++)
                             {
@@ -489,8 +530,8 @@ x3dom.registerNodeType(
                         }
                     } else {
                         for (i=0; i<selector.length; i++) {
-                            if (multiPart._identifierToShapeId[selector[i]]) {
-                                selection = selection.concat(multiPart._identifierToShapeId[selector[i]]);
+                            if (multiPart._identifierToPartId[selector[i]]) {
+                                selection = selection.concat(multiPart._identifierToPartId[selector[i]]);
                             }
                         }
                     }
@@ -503,7 +544,29 @@ x3dom.registerNodeType(
                     } else {
                         return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
                     }
-                }
+                };
+                
+                this._xmlNode.fitPart = function (id, updateCenterOfRotation)
+                {
+                    var shapeID = multiPart._identifierToPartId[id];
+                
+                    if (shapeID)
+                    {
+                        if (updateCenterOfRotation === undefined) {
+                            updateCenterOfRotation = true;
+                        }
+                        
+                        var min = multiPart._partVolume[shapeID].min;
+                        var max = multiPart._partVolume[shapeID].max;
+
+                        var mat = multiPart.getCurrentTransform();
+
+                        min = mat.multMatrixPnt(min);
+                        max = mat.multMatrixPnt(max);
+                         
+                        multiPart._nameSpace.doc._viewarea.fit(min, max, updateCenterOfRotation);
+                    }
+                };
             },
 
             loadInline: function ()

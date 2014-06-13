@@ -92,6 +92,16 @@
             document.getElementById('selectionTA').innerHTML = selection.join('\n');
         }
 
+        function fitAll()
+        {
+            document.getElementById('x3dElement').runtime.fitAll();
+        }
+
+        function showAll()
+        {
+            document.getElementById('x3dElement').runtime.showAll();
+        }
+
 
     </script>
 </head>
@@ -120,6 +130,10 @@
     <div>
         <input id="colorPicker" type="color">
         <input id="setColor" type="button" value="Set Color" onclick="setColor();">
+    </div>
+    <div>
+        <input id="fitAll" type="button"  value="Fit All" onclick="fitAll();">
+        <input id="showAll" type="button"  value="Show All" onclick="showAll();">
     </div>
 </div>
 <div id="selectionUI">

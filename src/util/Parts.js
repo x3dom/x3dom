@@ -106,15 +106,54 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
      */
     this.setVisibility = function(visibility) {
 
-        var i, j, x, y, usage, visibleCount;
+        var i, j, x, y, usage, visibleCount, visibilityAsInt;
 
-        if (ids.length && ids.length > 1) //Multi select
+        if (!(ids.length && ids.length > 1)) {
+            x = parts.ids[0] % parts.colorMap.getWidth();
+            y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
+
+            var pixel = parts.visibilityMap.getPixel(x, y);
+
+            visibilityAsInt = (visibility) ? 1 : 0;
+
+            if (pixel.r != visibilityAsInt) {
+                pixel.r = visibilityAsInt;
+
+                //get used shapes
+                usage = this.multiPart._idMap.mapping[parts.ids[0]].usage;
+
+                //Change the shapes render flag
+                for (j = 0; j < usage.length; j++) {
+                    visibleCount = this.multiPart._visiblePartsPerShape[usage[j]];
+                    if (visibility && visibleCount.val < visibleCount.max) {
+                        visibleCount.val++;
+                    } else if (!visibility && visibleCount.val > 0) {
+                        visibleCount.val--;
+                    }
+
+                    if (visibleCount.val) {
+                        this.multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
+                    } else {
+                        this.multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
+                    }
+                }
+            }
+
+            parts.visibilityMap.setPixel(x, y, pixel);
+            this.multiPart.invalidateVolume();
+        }
+        else
         {
             var pixels = parts.visibilityMap.getPixels();
 
-            for(i=0; i<parts.ids.length; i++) {
-                if (pixels[parts.ids[i]].r != visibility) {
-                    pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
+            for (i = 0; i < parts.ids.length; i++) {
+
+                visibilityAsInt = (visibility) ? 1 : 0;
+
+                if (pixels[parts.ids[i]].r != visibilityAsInt) {
+                    pixels[parts.ids[i]].r = visibilityAsInt;
+
+                    this.multiPart._partVisibility[parts.ids[i]] = visibility;
 
                     //get used shapes
                     usage = this.multiPart._idMap.mapping[parts.ids[i]].usage;
@@ -138,38 +177,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
 
             parts.visibilityMap.setPixels(pixels);
-        }
-        else //Single select
-        {
-            x = parts.ids[0] % parts.colorMap.getWidth();
-            y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-
-            var pixel = parts.visibilityMap.getPixel(x, y);
-
-            if (pixel.r != visibility) {
-                pixel.r = (visibility) ? 1 : 0;
-
-                //get used shapes
-                usage = this.multiPart._idMap.mapping[parts.ids[0]].usage;
-
-                //Change the shapes render flag
-                for (j = 0; j < usage.length; j++) {
-                    visibleCount = this.multiPart._visiblePartsPerShape[usage[j]];
-                    if (visibility && visibleCount.val < visibleCount.max) {
-                        visibleCount.val++;
-                    } else if (!visibility && visibleCount.val > 0) {
-                        visibleCount.val--;
-                    }
-
-                    if (visibleCount.val) {
-                        this.multiPart._inlineNamespace.defMap[usage[j]]._vf.render = true;
-                    } else {
-                        this.multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
-                    }
-                }
-            }
-
-            parts.visibilityMap.setPixel(x, y, pixel);
+            this.multiPart.invalidateVolume();
         }
     };
 
