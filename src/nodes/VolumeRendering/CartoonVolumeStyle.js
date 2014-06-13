@@ -185,10 +185,11 @@ x3dom.registerNodeType(
                 "vec3 hsv2rgb(vec3 hsv){\n"+
                 "   return hsva2rgba(vec4(hsv, 1.0)).rgb;\n"+
                 "}\n"+
-                "void getCartoonStyle(inout vec4 outputColor, vec3 orthogonalColor, vec3 parallelColor, int colorSteps, vec3 surfNormal, vec3 V)\n"+
+                "void getCartoonStyle(inout vec4 outputColor, vec3 orthogonalColor, vec3 parallelColor, int colorSteps, vec4 surfNormal, vec3 V)\n"+
                 "{\n"+
                 "   if(colorSteps > 0 && colorSteps <= 64){\n"+
-                "       float cos_angle = dot(surfNormal, V);\n"+
+                "       if(surfNormal.w > 0.05){\n"+
+                "       float cos_angle = dot(surfNormal.xyz, V);\n"+
                 "       if(cos_angle <= 0.0){\n"+
                 "           outputColor.rgb = parallelColor.rgb;\n"+
                 "       }else{\n"+
@@ -204,7 +205,8 @@ x3dom.registerNodeType(
                 "           }\n"+
                 "       }\n"+
                 "   }else{\n"+
-                "       outputColor.a = 0.0; //No color steps as input parameter\n"+
+                "       outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, 0.5));\n"+
+                "   }\n"+
                 "   }\n"+
                 "}\n"+
                 "\n";
@@ -220,7 +222,7 @@ x3dom.registerNodeType(
 
             inlineStyleShaderText: function(){
                 var inlineText = "  if(uEnableCartoon){\n"+
-                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad.xyz, normalize(dir));\n"+
+                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor), rgb2hsv(uParallelColor), uColorSteps, grad, normalize(dir));\n"+
                 "  }\n";   
                 return inlineText;
             }

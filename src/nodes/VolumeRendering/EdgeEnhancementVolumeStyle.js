@@ -124,7 +124,7 @@ x3dom.registerNodeType(
             styleShaderText: function(){
                 return "void edgeEnhancement(inout vec4 originalColor, vec4 gradient, vec3 V)\n"+
                 "{\n"+
-                "   if(gradient.w > 0.001){\n"+
+                "   if(gradient.w > 0.05){\n"+
                 "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
                 "       if (angle_dif<=cos(uGradientThreshold)){\n"+
                 "           originalColor.rgb = mix(uEdgeColor, originalColor.rgb, angle_dif);\n"+
