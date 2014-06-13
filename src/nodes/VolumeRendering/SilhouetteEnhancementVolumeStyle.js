@@ -150,7 +150,9 @@ x3dom.registerNodeType(
             styleShaderText: function(){
                 return "void silhouetteEnhancement(inout vec4 orig_color, vec4 normal, vec3 V)\n"+
                 "{\n"+
-                "   orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
+                "   if(normal.w > 0.05){\n"+
+                "       orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
+                "   }\n"+
                 "}\n"+
                 "\n";
             },
