@@ -69,6 +69,7 @@ x3dom.registerNodeType(
 
             this._objectID = 0;
             this._shaderProperties = null;
+            this._clipPlanes = [];
 
             // in WebGL-based renderer a clean-up function is attached
             this._cleanupGLObjects = null;
@@ -95,8 +96,9 @@ x3dom.registerNodeType(
         
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
+
                 // attention, in contrast to other collectDrawableObjects()
                 // this one has boolean return type to better work with RSG
                 var graphState = this.graphState();
@@ -114,6 +116,13 @@ x3dom.registerNodeType(
 
                 if (singlePath && !this._graph.globalMatrix)
                     this._graph.globalMatrix = transform;
+
+                if (this._clipPlanes.length != clipPlanes.length)
+                {
+                    this._dirty.shader = true;
+                }
+
+                this._clipPlanes = clipPlanes;
 
                 drawableCollection.addShape(this, transform, graphState);
 

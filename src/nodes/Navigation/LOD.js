@@ -73,7 +73,7 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
             },
 

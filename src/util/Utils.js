@@ -752,6 +752,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.IMAGEGEOMETRY && geometry.getColorTexture()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+        property.CLIPPLANES       = shape._clipPlanes.length;
         
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 	}

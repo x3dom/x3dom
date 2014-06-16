@@ -52,6 +52,49 @@ x3dom.shader.fog = function() {
 };
 
 /*******************************************************************************
+ * Clipplane
+ ********************************************************************************/
+x3dom.shader.clipPlanes = function(numClipPlanes) {
+    var shaderPart = "", c;
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += 	"uniform vec4 clipPlane"+c+"_Plane;\n";
+        shaderPart += 	"uniform float clipPlane"+c+"_CappingStrength;\n";
+        shaderPart += 	"uniform vec3 clipPlane"+c+"_CappingColor;\n";
+    }
+
+    shaderPart += "vec3 calculateClipPlanes() {\n";
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
+        shaderPart += "    float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
+    }
+
+    shaderPart += "    if( ";
+
+    for(c=0; c<numClipPlanes; c++) {
+        if(c!=0) {
+            shaderPart += " || ";
+        }
+        shaderPart += "dist" + c + " < 0.0" ;
+    }
+
+    shaderPart += " ) ";
+    shaderPart += "{ discard; }\n";
+
+    for (c = 0; c < numClipPlanes; c++) {
+        shaderPart += "    if( abs(dist" + c + ") < clipPlane" + c + "_CappingStrength ) ";
+        shaderPart += "{ return clipPlane" + c + "_CappingColor; }\n";
+    }
+
+    shaderPart += "    return vec3(-1.0, -1.0, -1.0);\n";
+
+    shaderPart += "}\n";
+
+    return shaderPart;
+};
+
+/*******************************************************************************
 * Gamma correction support: initial declaration
 ********************************************************************************/
 x3dom.shader.gammaCorrectionDecl = function(properties) {

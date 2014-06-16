@@ -611,6 +611,15 @@ x3dom.registerNodeType(
                 this._vfFieldTypes[name] = "SFVec3f";
             },
 
+            addField_SFVec4f: function (ctx, name, x, y, z) {
+                this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
+                    x3dom.fields.SFVec4f.parse(ctx.xmlNode.getAttribute(name)) :
+                    new x3dom.fields.SFVec4f(x, y, z);
+
+                if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+                this._vfFieldTypes[name] = "SFVec4f";
+            },
+
             addField_SFVec3d: function(ctx, name, x, y, z) {
                 this.addField_SFVec3f(ctx, name, x, y, z);
                 this._vfFieldTypes[name] = "SFVec3d";

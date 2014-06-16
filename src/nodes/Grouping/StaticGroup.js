@@ -109,7 +109,7 @@ x3dom.registerNodeType(
                 return this._vf.maxDepth;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -157,7 +157,7 @@ x3dom.registerNodeType(
                     for (i=0; i<n; i++) {
                         if ( (cnode = this._childNodes[i]) ) {
                             //this is only used to collect all drawables once
-                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask);
+                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                         }
                     }
                     this.drawableCollection.concat();

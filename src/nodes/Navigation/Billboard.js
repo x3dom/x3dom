@@ -46,7 +46,7 @@ x3dom.registerNodeType(
         
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -126,7 +126,7 @@ x3dom.registerNodeType(
                 {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }
                 }
             }

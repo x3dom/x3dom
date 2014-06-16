@@ -123,7 +123,7 @@ x3dom.registerNodeType(
                 this._nameSpace.doc.needRender = true;
             },
 
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 var root = this._cf.root.node;
 
@@ -204,12 +204,12 @@ x3dom.registerNodeType(
                     }
                     else {
                         for (l=1; l<this._childNodes.length; l++) {
-                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                         }
                     }
                 }
                 else {
-                    root.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    root.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 }
             },
 

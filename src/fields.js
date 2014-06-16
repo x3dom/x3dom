@@ -545,6 +545,31 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     );
 };
 
+
+/**
+ * Transforms a given 3D point, using this matrix as a transform matrix
+ * (also includes projection part of matrix - required for e.g. modelview-projection matrix).
+ * The resulting point is normalized by a w component.
+ * @param {x3dom.fields.SFVec4f} vec - plane to transform
+ * @return {x3dom.fields.SFVec4f} resulting plane
+ */
+x3dom.fields.SFMatrix4f.prototype.multMatrixPlane = function (plane) {
+
+    var normal = new x3dom.fields.SFVec3f(plane.x, plane.y, plane.z);
+
+    var memberPnt = normal.multiply(-plane.w);
+
+    memberPnt = this.multMatrixPnt(memberPnt);
+
+    var invTranspose = this.inverse().transpose();
+
+    normal = invTranspose.multMatrixVec(normal);
+
+    var d = -normal.dot(memberPnt);
+
+    return new x3dom.fields.SFVec4f(normal.x, normal.y, normal.z, d);
+};
+
 /**
  * Returns a transposed version of this matrix.
  * @return {x3dom.fields.SFMatrix4f} resulting matrix

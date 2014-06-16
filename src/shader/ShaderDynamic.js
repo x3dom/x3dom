@@ -172,9 +172,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
 	
 	//Lights & Fog
-	if(properties.LIGHTS || properties.FOG){
+	if(properties.LIGHTS || properties.FOG || properties.CLIPPLANES){
 		shader += "uniform vec3 eyePosition;\n";
-		shader += "varying vec3 fragPosition;\n";
+		shader += "varying vec4 fragPosition;\n";
 		if(properties.FOG) {
 			shader += "varying vec3 fragEyePosition;\n";
 		}
@@ -407,10 +407,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
 	
 	//Lights & Fog
-	if(properties.LIGHTS || properties.FOG){    
-		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;\n";
+	if(properties.LIGHTS || properties.FOG || properties.CLIPPLANES){
+		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0));\n";
 		if (properties.FOG) {
-			shader += "fragEyePosition = eyePosition - fragPosition;\n";
+			shader += "fragEyePosition = eyePosition - fragPosition.xyz;\n";
 		}
 	}
 
@@ -468,6 +468,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Default Matrices
 	shader += "uniform mat4 modelMatrix;\n";
     shader += "uniform mat4 modelViewMatrix;\n";
+    shader += "uniform mat4 viewMatrixInverse;\n";
 	
 	//Material
 	shader += x3dom.shader.material();
@@ -480,6 +481,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "varying vec4 fragColor;  \n";
 		}
 	}
+
+    if(properties.CUBEMAP || properties.CLIPPLANES)
+    {
+        shader += "uniform mat4 modelViewMatrixInverse;\n";
+    }
 	
 	//Textures
 	if(properties.TEXTURED || properties.CSSHADER) {
@@ -489,7 +495,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		} else if(properties.CUBEMAP) {
 			shader += "uniform samplerCube cubeMap;\n";
 			shader += "varying vec3 fragViewDir;\n";
-			shader += "uniform mat4 modelViewMatrixInverse;\n";
+
 		}
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
@@ -537,13 +543,22 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	if(properties.FOG) {
 		shader += x3dom.shader.fog();
 	}
-	
+
+    if(properties.LIGHTS || properties.CLIPPLANES)
+    {
+        shader += "varying vec4 fragPosition;\n";
+    }
+
 	//Lights
 	if(properties.LIGHTS) {
 		shader += "varying vec3 fragNormal;\n";
-    shader += "varying vec3 fragPosition;\n";
+
 		shader += x3dom.shader.light(properties.LIGHTS);
 	}
+
+    if(properties.CLIPPLANES) {
+        shader += x3dom.shader.clipPlanes(properties.CLIPPLANES);
+    }
 
     // Declare gamma correction for color computation (see property "GAMMACORRECTION")
     shader += x3dom.shader.gammaCorrectionDecl(properties);
@@ -553,6 +568,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
+
+
+    if(properties.CLIPPLANES)
+    {
+        shader += "vec3 cappingColor = calculateClipPlanes();\n";
+    }
 	
 	//Init color. In the fragment shader we are treating color linear by
     //gamma-adjusting actively before doing lighting computations. At the end
@@ -595,7 +616,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
-		shader += "vec3 eye 	  = -fragPosition;\n";
+		shader += "vec3 eye 	  = -fragPosition.xyz;\n";
         shader += "float shin     = shininess;\n";
 		
 		//Normalmap
@@ -603,7 +624,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "vec3 n = normalize( fragNormal );\n";
 
             if (x3dom.caps.STD_DERIVATIVES) {
-                shader += "normal = perturb_normal( n, fragPosition, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
+                shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
             } else {
                 shader += "vec3 t = normalize( fragTangent );\n";
                 shader += "vec3 b = normalize( fragBinormal );\n";
@@ -716,6 +737,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "color.rgb = emissiveColor;\n";
 		}
 	}
+
+    if(properties.CLIPPLANES)
+    {
+        shader += "if (cappingColor.r != -1.0) {\n";
+        shader += "    color.rgb = cappingColor;\n";
+        shader += "}\n";
+    }
 	
 	//Kill pixel
 	if(properties.TEXT) {

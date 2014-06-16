@@ -78,7 +78,7 @@ x3dom.registerNodeType(
             this.addField_SFBool ("isActive", true);
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -106,7 +106,7 @@ x3dom.registerNodeType(
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
                     if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }
                 }
             }

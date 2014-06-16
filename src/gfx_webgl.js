@@ -2085,6 +2085,19 @@ x3dom.gfx_webgl = (function () {
             sp['light' + numLights + '_ShadowIntensity'] = 0.0;
         }
 
+        //===========================================================================
+        // Set ClipPlanes
+        //===========================================================================
+        if (shape._clipPlanes) {
+            for (var cp = 0; cp < shape._clipPlanes.length; cp++) {
+                var clip_trafo = shape._clipPlanes[cp].getCurrentTransform();
+
+                sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(shape._clipPlanes[cp]._vf.plane).toGL();
+                sp['clipPlane' + cp + '_CappingStrength'] = shape._clipPlanes[cp]._vf.cappingStrength;
+                sp['clipPlane' + cp + '_CappingColor'] = shape._clipPlanes[cp]._vf.cappingColor.toGL();
+            }
+        }
+
 
         //===========================================================================
         // Set DepthMode
@@ -2212,15 +2225,19 @@ x3dom.gfx_webgl = (function () {
 
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 
+        if (isUserDefinedShader || shape._clipPlanes && shape._clipPlanes.length)
+        {
+            sp.viewMatrixInverse = mat_view.inverse().toGL();
+        }
+
         // only calculate on "request" (maybe of interest for users)
         if (isUserDefinedShader) {
             sp.projectionMatrix = mat_proj.toGL();
 
             sp.worldMatrix = transform.toGL();
             sp.worldInverseTranspose = transform.inverse().transpose().toGL();
-            sp.viewMatrixInverse = mat_view.inverse().toGL();
-        }
 
+        }
 
         //PopGeometry: adapt LOD and set shader variables
         if (s_gl.popGeometry) {
@@ -3411,7 +3428,7 @@ x3dom.gfx_webgl = (function () {
 
             x3dom.Utils.startMeasure('traverse');
 
-            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false, 0);
+            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false, 0, []);
 
             var traverseTime = x3dom.Utils.stopMeasure('traverse');
             this.x3dElem.runtime.addMeasurement('TRAVERSE', traverseTime);
@@ -3847,7 +3864,7 @@ x3dom.gfx_webgl = (function () {
             locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
             locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(),
-                                            locScene.drawableCollection, true, false, 0);
+                                            locScene.drawableCollection, true, false, 0, []);
 
             locScene.drawableCollection.sort();
 

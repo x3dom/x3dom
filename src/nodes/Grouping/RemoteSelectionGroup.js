@@ -324,7 +324,7 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -358,7 +358,7 @@ x3dom.registerNodeType(
                             var needCleanup = true;
 
                             if (this._visibleList[i] && cnt < n &&
-                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask))
+                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes))
                             {
                                 this._createTime[i] = ts;
                                 cnt++;
@@ -388,7 +388,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                             this._createTime[obj.pos] = ts;
                         }
                         else

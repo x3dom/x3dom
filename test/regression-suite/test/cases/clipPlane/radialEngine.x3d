@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <Scene DEF='scene'>
+    <MatrixTransform matrix='0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 0 1'>
+      <MatrixTransform>
+        <MetadataString containerField='metadata' name='_JT_name' value='"Radial_Engine"'/>
+        <Group>
+          <MatrixTransform matrix='-0.971342 -0.237686 1.83581e-016 0 0.237686 -0.971342 -4.49219e-017 0 1.88997e-016 -4.19082e-031 1 0 16.6552 21.3616 179.387 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Cam:;0,Radial-Engine"'/>
+            <Shape DEF='SP_1'>
+              <Appearance>
+                <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+              </Appearance>
+              <BinaryGeometry DEF='BG_1' solid='false' vertexCount='3259 66' primType='"TRIANGLESTRIP" "TRIANGLES"' position='21.2552185059 16.7907409668 15.875' size='302.534851074 302.534881592 31.75' index='binGeo/BG_1_indexBinary.bin' coord='binGeo/BG_1_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+            </Shape>
+          </MatrixTransform>
+          <MatrixTransform matrix='-0.34202 0.939693 0 0 -0.939693 -0.34202 0 0 0 0 1 0 -138.076 -134.305 157.163 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Cam_Gear_Mid:;0,Radial-Engine"'/>
+            <Shape DEF='SP_0'>
+              <Appearance>
+                <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+              </Appearance>
+              <BinaryGeometry DEF='BG_0' solid='false' vertexCount='2537 21' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-29.1738128662 -136.284667969 15.875' size='119.917144775 119.781326294 31.75' index='binGeo/BG_0_indexBinary.bin' coord='binGeo/BG_0_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+            </Shape>
+          </MatrixTransform>
+          <MatrixTransform matrix='1 0 0 0 0 1 0 0 0 0 1 0 47.6285 -800.423 -141.754 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Rod_Sub:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform matrix='-0.668551 0.743667 1.05182e-015 0 -0.743667 -0.668551 6.51792e-016 0 1.18791e-015 -3.46445e-016 1 0 -2.49202 696.787 141.754 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Slave:;0,Radial-Engine"'/>
+                <Shape DEF='SP_2'>
+                  <Appearance>
+                    <Material diffuseColor='0.0595 0.187 0.85' shininess='0.75' specularColor='0.056 0.176 0.8'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_2' solid='false' vertexCount='827 9' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-1.95093727112 103.140609741 0' size='38.0999984741 292.049194336 50.7999992371' index='binGeo/BG_2_indexBinary.bin' coord='binGeo/BG_2_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Asy:;0,Radial-Engine"'/>
+                <Group>
+                  <MatrixTransform matrix='-0.433884 -0.900969 1.74915e-016 0 0.900969 -0.433884 -1.33115e-015 0 1.27522e-015 -4.1997e-016 1 0 -148.768 536.534 141.754 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"piston:;0,Radial-Engine"'/>
+                    <Shape DEF='SP_3'>
+                      <Appearance>
+                        <Material diffuseColor='0 0.425 0.425' shininess='0.75' specularColor='0 0.4 0.4'/>
+                      </Appearance>
+                      <BinaryGeometry DEF='BG_3' solid='false' vertexCount='2735 33' primType='"TRIANGLESTRIP" "TRIANGLES"' position='9.6114692688 -23.3732376099 0.000236511230469' size='134.697769165 152.399993896 152.399505615' index='binGeo/BG_3_indexBinary.bin' coord='binGeo/BG_3_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                    </Shape>
+                    <Shape DEF='SP_4'>
+                      <Appearance>
+                        <Material diffuseColor='0 0 0.85' shininess='0.75' specularColor='0 0 0.8'/>
+                      </Appearance>
+                      <BinaryGeometry DEF='BG_4' solid='false' vertexCount='1107 15' primType='"TRIANGLESTRIP" "TRIANGLES"' position='3.71075439453 -23.3732376099 0' size='105.703666687 152.399993896 152.287231445' index='binGeo/BG_4_indexBinary.bin' coord='binGeo/BG_4_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                    </Shape>
+                  </MatrixTransform>
+                  <MatrixTransform matrix='0.982966 -0.18379 -2.57956e-015 0 0.18379 0.982966 8.02811e-016 0 2.38807e-015 -1.26323e-015 1 0 71.6498 579.824 208.429 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"Pistion_Pin:;0,Radial-Engine"'/>
+                    <Shape DEF='SP_5'>
+                      <Appearance>
+                        <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+                      </Appearance>
+                      <BinaryGeometry DEF='BG_5' solid='false' vertexCount='212' primType='"TRIANGLESTRIP"' position='-232.77432251 -82.5284957886 -66.6750030518' size='25.4000091553 25.3812103271 133.350006104' index='binGeo/BG_5_indexBinary.bin' coord='binGeo/BG_5_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                    </Shape>
+                  </MatrixTransform>
+                </Group>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.978224 -0.207552 -1.23397e-015 0 0.207552 0.978224 9.24202e-017 0 1.18792e-015 -3.46522e-016 1 0 261.399 743.714 170.329 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Pin:;0,Radial-Engine"'/>
+                <Shape DEF='SP_6'>
+                  <Appearance>
+                    <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_6' solid='false' vertexCount='208' primType='"TRIANGLESTRIP"' position='-232.77432251 -82.5284957886 -28.5750007629' size='25.4000091553 25.3812103271 57.1500015259' index='binGeo/BG_6_indexBinary.bin' coord='binGeo/BG_6_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform matrix='1 0 0 0 0 1 0 0 0 0 1 0 294.19 -548.03 -187.442 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Rod_Sub:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Asy:;0,Radial-Engine"'/>
+                <Group>
+                  <MatrixTransform matrix='0.433884 -0.900969 -8.3896e-016 0 0.900969 0.433884 -1.03615e-015 0 1.29755e-015 -3.06308e-016 1 0 -117.64 235.291 187.442 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"piston:;0,Radial-Engine"'/>
+                    <Shape USE='SP_3'/>
+                  </MatrixTransform>
+                  <MatrixTransform matrix='0.986826 -0.161782 -2.57879e-015 0 0.161782 0.986826 7.17259e-016 0 2.42878e-015 -1.12501e-015 1 0 106.861 263.74 254.117 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"Pistion_Pin:;0,Radial-Engine"'/>
+                    <Shape USE='SP_5'/>
+                  </MatrixTransform>
+                </Group>
+              </MatrixTransform>
+              <MatrixTransform matrix='-0.978807 -0.204785 1.09183e-015 0 0.204785 -0.978807 -5.82515e-016 0 1.18798e-015 -3.46579e-016 1 0 -185.235 444.81 187.442 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Slave:;0,Radial-Engine"'/>
+                <Shape USE='SP_2'/>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.966251 -0.257601 -1.23707e-015 0 0.257601 0.966251 2.85483e-017 0 1.18796e-015 -3.46255e-016 1 0 57.9641 488.355 216.017 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Pin:;0,Radial-Engine"'/>
+                <Shape USE='SP_6'/>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform matrix='1 0 0 0 0 1 0 0 0 0 1 0 298.791 -240.451 -228.45 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Rod_Sub:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Asy:;0,Radial-Engine"'/>
+                <Group>
+                  <MatrixTransform matrix='0.974928 -0.222521 -1.21201e-015 0 0.222521 0.974928 -4.59575e-017 0 1.19185e-015 -2.24893e-016 1 0 83.6251 177.141 228.45 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"piston:;0,Radial-Engine"'/>
+                    <Shape USE='SP_3'/>
+                  </MatrixTransform>
+                  <MatrixTransform matrix='0.993104 -0.117233 -2.45883e-015 0 0.117233 0.993104 7.0806e-016 0 2.35887e-015 -9.91435e-016 1 0 324.886 207.742 295.125 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"Pistion_Pin:;0,Radial-Engine"'/>
+                    <Shape USE='SP_5'/>
+                  </MatrixTransform>
+                </Group>
+              </MatrixTransform>
+              <MatrixTransform matrix='-0.172338 -0.985038 -1.36421e-016 0 0.985038 -0.172338 -1.22987e-015 0 1.18796e-015 -3.46332e-016 1 0 -142.98 190.81 228.45 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Slave:;0,Radial-Engine"'/>
+                <Shape USE='SP_2'/>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.990428 -0.138027 -1.22436e-015 0 0.138027 0.990428 1.79176e-016 0 1.18791e-015 -3.46456e-016 1 0 75.7799 246.455 257.025 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Pin:;0,Radial-Engine"'/>
+                <Shape USE='SP_6'/>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Rod_Sub:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Asy:;0,Radial-Engine"'/>
+                <Group>
+                  <MatrixTransform matrix='0.781832 0.62349 -6.65901e-016 0 -0.62349 0.781832 8.95972e-016 0 1.07925e-015 -2.85317e-016 1 0 254.063 232.504 2.21767e-014 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"piston:;0,Radial-Engine"'/>
+                    <Shape USE='SP_3'/>
+                  </MatrixTransform>
+                  <MatrixTransform matrix='0.999327 -0.0366712 -2.33761e-015 0 0.0366712 0.999327 8.69792e-016 0 2.30414e-015 -9.5493e-016 1 0 508.785 291.76 66.675 1'>
+                    <MetadataString containerField='metadata' name='_JT_name' value='"Pistion_Pin:;0,Radial-Engine"'/>
+                    <Shape USE='SP_5'/>
+                  </MatrixTransform>
+                </Group>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.796853 -0.604174 -1.15574e-015 0 0.604174 0.796853 -4.41461e-016 0 1.18767e-015 -3.46487e-016 1 0 135.658 33.2647 9.66777e-014 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Slave:;0,Radial-Engine"'/>
+                <Shape USE='SP_2'/>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.997076 0.0764131 -1.15799e-015 0 -0.0764131 0.997076 4.36531e-016 0 1.18796e-015 -3.4677e-016 1 0 345.468 115.496 28.575 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Pin:;0,Radial-Engine"'/>
+                <Shape USE='SP_6'/>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Piston_Asy:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform matrix='2.22045e-016 1 3.54038e-016 0 -1 2.22045e-016 1.15458e-015 0 1.15458e-015 -3.54038e-016 1 0 -23.3732 277.496 1.3413e-013 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"piston:;0,Radial-Engine"'/>
+                <Shape USE='SP_3'/>
+              </MatrixTransform>
+              <MatrixTransform matrix='0.991022 -0.133702 -2.44014e-015 0 0.133702 0.991022 8.2105e-016 0 2.30846e-015 -1.13993e-015 1 0 241.719 333.923 66.675 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Pistion_Pin:;0,Radial-Engine"'/>
+                <Shape USE='SP_5'/>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform matrix='0.974237 0.225526 -1.0792e-015 0 -0.225526 0.974237 6.06323e-016 0 1.18814e-015 -3.47314e-016 1 0 56.3756 62.4534 -5.58794e-006 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Rod_Main:;0,Radial-Engine"'/>
+            <Shape DEF='SP_7'>
+              <Appearance>
+                <Material diffuseColor='0.0595 0.187 0.85' shininess='0.75' specularColor='0.056 0.176 0.8'/>
+              </Appearance>
+              <BinaryGeometry DEF='BG_7' solid='false' vertexCount='2341 9' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-5.12593841553 37.2940673828 0' size='152.399993896 419.027038574 69.8499984741' index='binGeo/BG_7_indexBinary.bin' coord='binGeo/BG_7_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+            </Shape>
+          </MatrixTransform>
+          <MatrixTransform matrix='1 0 0 0 0 1 0 0 0 0 1 0 39.04 489.189 -158.626 1'>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Crank_Asy:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform matrix='-0.34202 -0.939693 8.16682e-017 0 0.939693 -0.34202 -1.23472e-015 0 1.18819e-015 -3.45556e-016 1 0 9.28201 -500.994 179.264 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Crank_Rear:;0,Radial-Engine"'/>
+                <Shape DEF='SP_12'>
+                  <Appearance>
+                    <Material diffuseColor='0.0595 0.0425 0.85' shininess='0.75' specularColor='0.056 0.04 0.8'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_12' solid='false' vertexCount='813 6' primType='"TRIANGLESTRIP" "TRIANGLES"' position='5.43402099609 -49.4454193115 -134.9375' size='265.33404541 279.399993896 381' index='binGeo/BG_12_indexBinary.bin' coord='binGeo/BG_12_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform matrix='-0.34202 -0.939693 8.07134e-017 0 0.939693 -0.34202 -1.23476e-015 0 1.1879e-015 -3.46468e-016 1 0 16.3855 -605.979 75.226 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Crank_Front:;0,Radial-Engine"'/>
+                <Shape DEF='SP_13'>
+                  <Appearance>
+                    <Material diffuseColor='0.0595 0.0425 0.85' shininess='0.75' specularColor='0.056 0.04 0.8'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_13' solid='false' vertexCount='892 3' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-90.7901000977 -92.0274658203 293.729614258' size='265.33404541 279.399993896 350.808563232' index='binGeo/BG_13_indexBinary.bin' coord='binGeo/BG_13_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform matrix='-0.34202 -0.939693 -1.0122e-015 0 0.939693 -0.34202 4.04559e-016 0 -7.26354e-016 -8.1279e-016 1 0 -29.0735 -523.863 315.776 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Cam_Gear:;0,Radial-Engine"'/>
+                <Shape DEF='SP_9'>
+                  <Appearance>
+                    <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_9' solid='false' vertexCount='1949 18' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-29.1738128662 -21.1848754883 9.52499961853' size='119.664352417 119.543304443 19.0499992371' index='binGeo/BG_9_indexBinary.bin' coord='binGeo/BG_9_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform matrix='-0.939693 0.34202 -9.50594e-016 0 -0.34202 -0.939693 8.07245e-017 0 -8.65657e-016 4.00978e-016 1 0 -39.04 -489.189 491.86 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Prop:;0,Main"'/>
+                <Shape DEF='SP_10'>
+                  <Appearance>
+                    <Material diffuseColor='0.85 0.2805 0' shininess='0.75' specularColor='0.8 0.264 0'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_10' solid='false' vertexCount='2554 42' primType='"TRIANGLESTRIP" "TRIANGLES"' size='1600 172.466506958 97.4876785278' index='binGeo/BG_10_indexBinary.bin' coord='binGeo/BG_10_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+          <MatrixTransform>
+            <MetadataString containerField='metadata' name='_JT_name' value='"Case_Assy:;0,Radial-Engine"'/>
+            <Group>
+              <MatrixTransform>
+                <MetadataString containerField='metadata' name='_JT_name' value='"case:;0,Radial-Engine"'/>
+                <Shape DEF='SP_8'>
+                  <Appearance>
+                    <Material diffuseColor='0.6375 0.6375 0.6375' shininess='0.75' specularColor='0.6 0.6 0.6'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_8' solid='false' vertexCount='7647 177' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 -8.27577209473 2.38125610352' size='485.301269531 473.751525879 309.5625' index='binGeo/BG_8_indexBinary.bin' coord='binGeo/BG_8_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform matrix='1 0 0 0 0 1 0 0 0 0 1 0 120.846 161.849 -1.68015e-012 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"cylinder:;0,Radial-Engine"'/>
+                <Shape DEF='SP_14'>
+                  <Appearance>
+                    <Material diffuseColor='0.85 0.85 0.85' shininess='0.75' specularColor='0.8 0.8 0.8'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_14' solid='false' vertexCount='26417 573' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-120.845397949 -162.471801758 0' size='929.42199707 915.64453125 253.812057495' index='binGeo/BG_14_indexBinary.bin' coord='binGeo/BG_14_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+              <MatrixTransform matrix='4.05231e-013 0 -1 0 0 1 0 0 1 -0 4.05231e-013 0 -5.80903e-011 135.597 192.103 1'>
+                <MetadataString containerField='metadata' name='_JT_name' value='"Cam_Cover:;0,Radial-Engine"'/>
+                <Shape DEF='SP_11'>
+                  <Appearance>
+                    <Material diffuseColor='0.595 0.595 0.595' shininess='0.75' specularColor='0.56 0.56 0.56'/>
+                  </Appearance>
+                  <BinaryGeometry DEF='BG_11' solid='false' vertexCount='4134 81' primType='"TRIANGLESTRIP" "TRIANGLES"' position='3.9783782959 -135.596862793 0' size='122.250198364 444.5 444.171112061' index='binGeo/BG_11_indexBinary.bin' coord='binGeo/BG_11_coordNormalBinary.bin+8' coordType='Uint16' normalAsSphericalCoordinates='true'/>
+                </Shape>
+              </MatrixTransform>
+            </Group>
+          </MatrixTransform>
+        </Group>
+      </MatrixTransform>
+    </MatrixTransform>
+  </Scene>
+</X3D>

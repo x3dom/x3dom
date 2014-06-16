@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>clipplane</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <script type="text/javascript" src="clipplane.js"></script>
+    <link rel="stylesheet" type="text/css" href="clipplane.css">
+    <script>
+        var runtime = null, clipScope = null, scene = null, clipPlanes = [];
+
+        initialize = function() {
+            runtime = document.getElementById("x3d").runtime;
+            scene = document.getElementById( "scene" );
+            clipScope = document.getElementById( "clipScope" );
+        };
+
+        function changeAxis ( elm, id, axis )
+        {
+            clipPlanes[ id ].Axis( axis );
+            document.getElementById( "slider_" + id ).value = "0.5";
+
+            document.getElementById( "btnX_" + id ).className = "";
+            document.getElementById( "btnY_" + id ).className = "";
+            document.getElementById( "btnZ_" + id ).className = "";
+
+            elm.className = "active";
+        }
+
+        function changeClipping ( elm, id, clipping )
+        {
+            clipPlanes[ id ].Clipping( clipping );
+
+            document.getElementById( "btnNear_" + id ).className = "";
+            document.getElementById( "btnFar_" + id ).className = "";
+
+            elm.className = "active";
+        }
+
+        function moveClipPlane(id, value)
+        {
+            clipPlanes[ id ].Move( value );
+        }
+
+        function addClipPlane()
+        {
+            addMenu();
+            clipPlanes.push( new ClipPlane(clipScope, scene, runtime) );
+        }
+
+        function addMenu()
+        {
+            var div = document.createElement("div");
+            div.setAttribute("class", "clipPlaneMenu");
+
+            var slider = document.createElement("input");
+            slider.setAttribute("id", "slider_" +clipPlanes.length.toString());
+            slider.setAttribute("data-id", clipPlanes.length.toString());
+            slider.setAttribute("type", "range");
+            slider.setAttribute("min", "0");
+            slider.setAttribute("max", "1");
+            slider.setAttribute("value", "0.5");
+            slider.setAttribute("step", "0.01");
+            slider.onchange = function() {
+                moveClipPlane(this.dataset.id, this.value);
+            };
+
+            var btnX = document.createElement("button");
+            btnX.setAttribute("id", "btnX_" +clipPlanes.length.toString());
+            btnX.setAttribute("data-id", clipPlanes.length.toString());
+            btnX.setAttribute("type", "button");
+            btnX.setAttribute("class", "active");
+            btnX.innerHTML = "X";
+            btnX.onclick = function() {
+                changeAxis(this, this.dataset.id, 'X');
+            };
+
+            var btnY = document.createElement("button");
+            btnY.setAttribute("id", "btnY_" +clipPlanes.length.toString());
+            btnY.setAttribute("data-id", clipPlanes.length.toString());
+            btnY.setAttribute("type", "button");
+            btnY.innerHTML = "Y";
+            btnY.onclick = function() {
+                changeAxis(this, this.dataset.id, 'Y');
+            };
+
+            var btnZ = document.createElement("button");
+            btnZ.setAttribute("id", "btnZ_" +clipPlanes.length.toString());
+            btnZ.setAttribute("data-id", clipPlanes.length.toString());
+            btnZ.setAttribute("type", "button");
+            btnZ.innerHTML = "Z";
+            btnZ.onclick = function() {
+                changeAxis(this, this.dataset.id, 'Z');
+            };
+
+            var btnNear = document.createElement("button");
+            btnNear.setAttribute("id", "btnNear_" +clipPlanes.length.toString());
+            btnNear.setAttribute("data-id", clipPlanes.length.toString());
+            btnNear.setAttribute("type", "button");
+            btnNear.setAttribute("class", "active");
+            btnNear.innerHTML = "NEAR";
+            btnNear.onclick = function() {
+                changeClipping(this, this.dataset.id, -1);
+            };
+
+            var btnFar = document.createElement("button");
+            btnFar.setAttribute("id", "btnFar_" +clipPlanes.length.toString());
+            btnFar.setAttribute("data-id", clipPlanes.length.toString());
+            btnFar.setAttribute("type", "button");
+            btnFar.innerHTML = "FAR";
+            btnFar.onclick = function() {
+                changeClipping(this, this.dataset.id, 1);
+            };
+
+            div.appendChild(slider);
+            div.appendChild(btnX);
+            div.appendChild(btnY);
+            div.appendChild(btnZ);
+            div.appendChild(btnNear);
+            div.appendChild(btnFar);
+
+            document.getElementById("sideMenu").appendChild(div);
+        }
+    </script>
+</head>
+
+<body onload="initialize();">
+    <X3D id="x3d">
+        <Scene id="scene" experimentalClipPlanes="true">
+            <Viewpoint position="1.11255 0.30231 1.39884" orientation="-0.27505 0.95696 0.09264 0.55979" ></Viewpoint>
+            <Transform id="clipScope">
+                <Inline url="radialEngine.x3d" solid="false"></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+    <div id="sideMenu" >
+        <Button type="button" onclick="addClipPlane();">ADD CLIPPLANE</Button>
+    </div>
+</body>
+</html>

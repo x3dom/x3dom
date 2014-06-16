@@ -70,7 +70,7 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -96,7 +96,7 @@ x3dom.registerNodeType(
                 }
 
                 if ( (cnode = this._childNodes[this._vf.whichChoice]) ) {
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 }
             },
 
