@@ -70,7 +70,7 @@ x3dom.registerNodeType(
                     if (that._vf.url.length && that._vf.url[0].indexOf('\n') == -1)
                     {
                         var xhr = new XMLHttpRequest();
-                        xhr.open("GET", encodeURI(that._nameSpace.getURL(that._vf.url[0])), false);
+                        xhr.open("GET", that._nameSpace.getURL(that._vf.url[0]), false);
                         xhr.onload = function() {
                             that._vf.url = new x3dom.fields.MFString( [] );
                             that._vf.url.push(xhr.response);
