@@ -81,14 +81,14 @@ x3dom.registerNodeType(
                 //post request
                 xhr = new XMLHttpRequest();
 
-                xhr.open("GET", encodeURI(this._vf['url']), true);
+                xhr.open("GET", this._vf['url'], true);
 
                 xhr.responseType = "arraybuffer";
 
                 xhr.send(null);
 
                 xhr.onerror = function() {
-                    x3dom.debug.logError("Unable to load SRC data from URL \"" + encodeURI(that._vf['url']) + "\"");
+                    x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
                 };
 
                 //TODO: currently, we assume that the referenced file is always an SRC file
@@ -131,13 +131,13 @@ x3dom.registerNodeType(
                         else
                         {
                             x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
-                                                 encodeURI(that._vf['url']) + "\"");
+                                                 that._vf['url'] + "\"");
                             return;
                         }
                     }
                     else
                     {
-                        x3dom.debug.logError("Unable to load SRC data from URL \"" + encodeURI(that._vf['url']) + "\"");
+                        x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
                     }
                 };
             } ,
