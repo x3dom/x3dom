@@ -56,7 +56,7 @@ x3dom.registerNodeType(
             this.uniformFloatGradientThreshold = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DSurfaceNormals = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformBoolEdgeEnable = new x3dom.nodeTypes.Uniform(ctx);
-        
+            
         },
         {
             fieldChanged: function(fieldName){
@@ -71,33 +71,25 @@ x3dom.registerNodeType(
 
             uniforms: function(){
                 var unis = [];
+                
                 if (this._cf.surfaceNormals.node) {
-                    //Lookup for the parent VolumeData
-                    var volumeDataParent = this._parentNodes[0];
-                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                        volumeDataParent = volumeDataParent._parentNodes[0];
-                    }
-                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][EdgeEnhancementVolumeStyle] Not VolumeData parent found!");
-                        volumeDataParent = null;
-                    }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
+                    this.uniformSampler2DSurfaceNormals._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
-                this.uniformColorEdgeColor._vf.name = 'uEdgeColor';
+                this.uniformColorEdgeColor._vf.name = 'uEdgeColor'+this._styleID;
                 this.uniformColorEdgeColor._vf.type = 'SFColor';
                 this.uniformColorEdgeColor._vf.value = this._vf.edgeColor;
                 unis.push(this.uniformColorEdgeColor);
 
-                this.uniformFloatGradientThreshold._vf.name = 'uGradientThreshold';
+                this.uniformFloatGradientThreshold._vf.name = 'uGradientThreshold'+this._styleID;
                 this.uniformFloatGradientThreshold._vf.type = 'SFFloat';
                 this.uniformFloatGradientThreshold._vf.value = this._vf.gradientThreshold;
                 unis.push(this.uniformFloatGradientThreshold);
 
-                this.uniformBoolEdgeEnable._vf.name = 'uEnableEdge';
+                this.uniformBoolEdgeEnable._vf.name = 'uEnableEdge'+this._styleID;
                 this.uniformBoolEdgeEnable._vf.type = 'SFBool';
                 this.uniformBoolEdgeEnable._vf.value = this._vf.enabled;
                 unis.push(this.uniformBoolEdgeEnable);
@@ -116,26 +108,30 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform vec3 uEdgeColor;\n"+
-                    "uniform float uGradientThreshold;\n"+
-                    "uniform bool uEnableEdge;\n";
+                return "uniform vec3 uEdgeColor"+this._styleID+";\n"+
+                    "uniform float uGradientThreshold"+this._styleID+";\n"+
+                    "uniform bool uEnableEdge"+this._styleID+";\n";
             },
 
             styleShaderText: function(){
-                return "void edgeEnhancement(inout vec4 originalColor, vec4 gradient, vec3 V)\n"+
-                "{\n"+
-                "   if(gradient.w > 0.05){\n"+
-                "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
-                "       if (angle_dif<=cos(uGradientThreshold)){\n"+
-                "           originalColor.rgb = mix(uEdgeColor, originalColor.rgb, angle_dif);\n"+
-                "       }\n"+
-                "   }\n"+
-                "}\n";
+                if (this._first){
+                    return "void edgeEnhancement(inout vec4 originalColor, in vec4 gradient, in vec3 V, in vec3 edgeColor, in float gradientT)\n"+
+                    "{\n"+
+                    "   if(gradient.w > 0.05){\n"+
+                    "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
+                    "       if (angle_dif <= cos(gradientT)){\n"+
+                    "           originalColor.rgb = mix(edgeColor, originalColor.rgb, angle_dif);\n"+
+                    "       }\n"+
+                    "   }\n"+
+                    "}\n";
+                }else{
+                    return "";
+                }
             },
 
             inlineStyleShaderText: function(){
-                var inlineText = "   if(uEnableEdge){\n"+
-                "       edgeEnhancement(value, grad, normalize(dir));\n"+
+                var inlineText = "   if(uEnableEdge"+this._styleID+"){\n"+
+                "       edgeEnhancement(value, grad, normalize(dir), uEdgeColor"+this._styleID+", uGradientThreshold"+this._styleID+");\n"+
                 "   }\n";
                 return inlineText;
             }

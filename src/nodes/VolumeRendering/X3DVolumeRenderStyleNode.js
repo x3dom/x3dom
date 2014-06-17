@@ -40,9 +40,44 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'enabled', true);
-        
+
+            //Private parameters
+            this._styleID = 0; //To differentiate between style instances
+            this._first = false; //To know if it is the first style being applied
+            this._volumeDataParent = null; //Shortcut to the parent volume data
         },
         {
+            nodeChanged: function () {
+                if(!this._styleID) {
+                    this._styleID = ++x3dom.nodeTypes.X3DVolumeRenderStyleNode.styleID;
+                }
+            },
+
+            updateProperties: function(volumeData) { //FIXME: This property must be called before obtaining the shader pieces from the volume data node.
+                //Update the first and parent volume data parameters of the child nodes
+                if (this._cf.renderStyle) {
+                    if (this._cf.renderStyle.nodes) {
+                        for (var i=0; i<this._cf.renderStyle.nodes.length; i++){
+                            if(this._cf.renderStyle.nodes[i].updateProperties != undefined){
+                                this._cf.renderStyle.nodes[i].updateProperties(volumeData);
+                            }
+                        }
+                    }else if(this._cf.renderStyle.node){
+                        this._cf.renderStyle.node.updateProperties(volumeData);
+                    }
+                }
+                
+                this._volumeDataParent = volumeData;
+
+                //Update first property, to know it is the first time the style is being applied
+                if(this._volumeDataParent._styleList.indexOf(this.typeName()) != -1){
+                    this._first = false;
+                }else{
+                    this._first = true;
+                    this._volumeDataParent._styleList.push(this.typeName());
+                }
+            },
+
             initializeValues: function(){
                 return ""; // overwritten
             },
@@ -60,7 +95,22 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                return "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"; // overwritten
+                var shaderText = "";
+                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                    shaderText += "    lighting(light"+l+"_Type, " +
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    "light"+l+"_Color, " + 
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " + 
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "gradEye.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
+                }
+                shaderText += "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"; // overwritten
+                return shaderText;
             },
 
             // default light equation to be overwritten by concrete render style
@@ -106,3 +156,6 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/** Static class ID counter (needed to allow duplicate styles) */
+x3dom.nodeTypes.X3DVolumeRenderStyleNode.styleID = 0;

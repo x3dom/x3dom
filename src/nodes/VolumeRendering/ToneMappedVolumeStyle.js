@@ -75,32 +75,23 @@ x3dom.registerNodeType(
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
-                    //Lookup for the parent VolumeData
-                    var volumeDataParent = this._parentNodes[0];
-                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                        volumeDataParent = volumeDataParent._parentNodes[0];
-                    }
-                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][ToneMappedVolumeStyle] Not VolumeData parent found!");
-                        volumeDataParent = null;
-                    }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
+                    this.uniformSampler2DSurfaceNormals._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
-                this.uniformCoolColor._vf.name = 'uCoolColor';
+                this.uniformCoolColor._vf.name = 'uCoolColor'+this._styleID;
                 this.uniformCoolColor._vf.type = 'SFColor';
                 this.uniformCoolColor._vf.value = this._vf.coolColor;
                 unis.push(this.uniformCoolColor);
 
-                this.uniformWarmColor._vf.name = 'uWarmColor';
+                this.uniformWarmColor._vf.name = 'uWarmColor'+this._styleID;
                 this.uniformWarmColor._vf.type = 'SFColor';
                 this.uniformWarmColor._vf.value = this._vf.warmColor;
                 unis.push(this.uniformWarmColor);
 
-                this.uniformBoolEnableToneMapped._vf.name = 'uEnableToneMapped';
+                this.uniformBoolEnableToneMapped._vf.name = 'uEnableToneMapped'+this._styleID;
                 this.uniformBoolEnableToneMapped._vf.type = 'SFBool';
                 this.uniformBoolEnableToneMapped._vf.value = this._vf.enabled;
                 unis.push(this.uniformBoolEnableToneMapped);
@@ -120,33 +111,36 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform vec3 uCoolColor;\n"+
-                "uniform vec3 uWarmColor;\n"+
-                "uniform bool uEnableToneMapped;\n";
+                return "uniform vec3 uCoolColor"+this._styleID+";\n"+
+                "uniform vec3 uWarmColor"+this._styleID+";\n"+
+                "uniform bool uEnableToneMapped"+this._styleID+";\n";
             },
 
             styleShaderText: function(){
-                var styleText = "void toneMapped(inout vec4 original_color, inout vec3 accum_color, vec4 surfNormal, vec3 lightDir)\n"+
-                "{\n"+
-                "   if(surfNormal.w > 0.02){\n"+
-                "       float color_factor = (1.0 + dot(lightDir, surfNormal.xyz))*0.5;\n"+
-                "       accum_color += mix(uCoolColor, uWarmColor, color_factor);\n"+
-                "       original_color.rgb = accum_color;\n"+
-                "   }else{\n"+
-                "       accum_color += mix(uCoolColor, uWarmColor, 0.5);\n"+
-                "       original_color.rgb = accum_color;\n"+
-                "   }\n"+
-                "}\n";
-                return styleText;
+                if (this._first){
+                    return "void toneMapped(inout vec4 original_color, inout vec3 accum_color, in vec4 surfNormal, in vec3 lightDir, in vec3 cColor, in vec3 wColor)\n"+
+                    "{\n"+
+                    "   if(surfNormal.w > 0.02){\n"+
+                    "       float color_factor = (1.0 + dot(lightDir, surfNormal.xyz))*0.5;\n"+
+                    "       accum_color += mix(cColor, wColor, color_factor);\n"+
+                    "       original_color.rgb = accum_color;\n"+
+                    "   }else{\n"+
+                    "       accum_color += mix(cColor, wColor, 0.5);\n"+
+                    "       original_color.rgb = accum_color;\n"+
+                    "   }\n"+
+                    "}\n";
+                }else{
+                    return "";
+                }
             },
 
             inlineStyleShaderText: function(){
-                var shaderText = "    if(uEnableToneMapped){\n"+
+                var shaderText = "    if(uEnableToneMapped"+this._styleID+"){\n"+
                 "       vec3 toneColor = vec3(0.0, 0.0, 0.0);\n"+
                 "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - positionE.xyz) : -light"+l+"_Direction;\n"+
-                    "       toneMapped(value, toneColor, gradEye.xyzw, L);\n";
+                    "       toneMapped(value, toneColor, gradEye.xyzw, L, uCoolColor"+this._styleID+", uWarmColor"+this._styleID+");\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;

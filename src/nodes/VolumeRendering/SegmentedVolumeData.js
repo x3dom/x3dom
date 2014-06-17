@@ -200,18 +200,7 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                var isBlendedStyle = false;
-                //Check if there is a blendedStyle, not to use lightAssigment
-                Array.forEach(this._cf.renderStyle.nodes, function(style){
-                    if(x3dom.isa(style, x3dom.nodeTypes.BlendedVolumeStyle)){
-                        isBlendedStyle = true;
-                    }
-                });
-                if(!isBlendedStyle){
-                    return this._cf.renderStyle.nodes[0].lightAssigment();
-                }else{
-                    return "";
-                }
+                return this._cf.renderStyle.nodes[0].lightAssigment();
             },
 
             lightEquationShaderText: function(){ //TODO: ligth equation per segment
@@ -247,6 +236,11 @@ x3dom.registerNodeType(
                     this._cf.appearance.node.addChild(this.vrcMultiTexture);
                     this.vrcMultiTexture.nodeChanged();
                     
+                    //Update child node properties
+                    for (var i = 0; i < this._cf.renderStyle.nodes.length; i++) {
+                        this._cf.renderStyle.nodes[i].updateProperties(this);
+                    }
+
                     // here goes the volume shader
                     this.vrcSinglePassShaderVertex._vf.type = 'vertex';
                     this.vrcSinglePassShaderVertex._vf.url[0] = this.vertexShaderText();
