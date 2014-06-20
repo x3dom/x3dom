@@ -46,7 +46,8 @@
         {"path": "shader/ShaderShadowRendering.js", "type": "file"},
         {"path": "shader/ShaderBlur.js", "type": "file"},
         {"path": "shader/ShaderTextureRefinement.js", "type": "file"},
-	{"path": "shader/ShaderSSAO.js", "type": "file"}
+	{"path": "shader/ShaderSSAO.js", "type": "file"},
+	{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
     ]},
 
     {"group": "GFX",

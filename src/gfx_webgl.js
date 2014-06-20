@@ -3278,6 +3278,11 @@ x3dom.gfx_webgl = (function () {
         
         
         x3dom.SSAO.renderSSAO(this.stateManager, gl, scene, this.canvas);
+        //probably need to bind other fbo for it
+        //gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        //this.renderNormals(gl, scene, scene._webgl.normalShader, mat_view, mat_scene);
+        //Problem with normals: 1) not guaranteed to be available for every Mesh 2) Shader doesn't look like it supports every type of geometry (pop, image-geom)
+        
 
         // if _visDbgBuf then show helper buffers in foreground for debugging
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
