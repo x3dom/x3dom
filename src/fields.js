@@ -1564,7 +1564,7 @@ x3dom.fields.SFVec3f.copy = function(v) {
 };
 
 x3dom.fields.SFVec3f.MIN = function() {
-    return new x3dom.fields.SFVec3f(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+    return new x3dom.fields.SFVec3f(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
 };
 
 x3dom.fields.SFVec3f.MAX = function() {
