@@ -1544,11 +1544,11 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 };
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
-{
-    if (this._doc.properties.getProperty('disableDoubleClick', 'false') === 'true') {
+{	
+	if (this._doc._x3dElem.getAttribute('disableDoubleClick', 'false') === 'true') {
         return;
     }
-    
+	
     var navi = this._scene.getNavigationInfo();
     
     if (navi.getType() == "none") {
