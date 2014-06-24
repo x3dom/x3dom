@@ -15,7 +15,7 @@
 x3dom.registerNodeType(
     "MPRVolumeStyle",
     "VolumeRendering",
-    defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+    defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
         
         /**
          * Constructor for MPRVolumeStyle
@@ -23,7 +23,7 @@ x3dom.registerNodeType(
          * @x3d x.x
          * @component VolumeRendering
          * @status experimental
-         * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
+         * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The MPRVolumeStyle node renders a multiplanar reconstruction of the assocciated volume data.
          */
@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
 
             /**
-             * The originalLine field specify 
+             * The originLine field specifies the base line of the slice plane 
              * @var {x3dom.fields.SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 1.0,1.0,0.0
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'originLine', 1.0, 1.0, 0.0);
 
             /**
-             * 
+             * The finalLine field specifies the second line to calculate the normal plane
              * @var {x3dom.fields.SFVec3f} finalLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.0,1.0,0.0
@@ -89,12 +89,12 @@ x3dom.registerNodeType(
 
                 this.uniformVec3fOriginLine._vf.name = 'originLine';
                 this.uniformVec3fOriginLine._vf.type = 'SFVec3f';
-                this.uniformVec3fOriginLine._vf.value = this._vf.originLine.toString();
+                this.uniformVec3fOriginLine._vf.value = this._vf.originLine;
                 unis.push(this.uniformVec3fOriginLine);
 
                 this.uniformVec3fFinalLine._vf.name = 'finalLine';
                 this.uniformVec3fFinalLine._vf.type = 'SFVec3f';
-                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine.toString();
+                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine;
                 unis.push(this.uniformVec3fFinalLine);
 
                 this.uniformFloatPosition._vf.name = 'positionLine';
