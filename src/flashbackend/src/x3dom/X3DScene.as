@@ -64,6 +64,12 @@
 		 */
 		private var _drawableObjects:Array = new Array();
 		
+		/**
+		 * Fog parameters
+		 */
+		private var _fogColor:Array = null;
+		private var _fogVisRange:Number = -1.0;	// Initialized as negative, meaning it's invalid
+		private var _fogType:Number = -1.0;		// -1.0 for none, 0.0 for linear, 1.0 for exponnential 	
 		
 		//For Picking
 		private var _min:Vector3D = new Vector3D();
@@ -330,6 +336,53 @@
 			return this._drawableObjects;
 		}
 
+		/**
+		 * @private
+		 */
+		public function get fogColor() : Array
+		{
+			return _fogColor;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogColor(val:Array) : void
+		{
+			_fogColor = val;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get fogVisRange() : Number
+		{
+			return _fogVisRange;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogVisRange(val:Number) : void
+		{
+			_fogVisRange = val;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get fogType() : Number
+		{
+			return _fogType;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogType(val:Number) : void
+		{
+			_fogType = val;
+		}		
 	}
 	
 }
