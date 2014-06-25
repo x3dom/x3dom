@@ -58,6 +58,8 @@ package x3dom
 			
 			//_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
 			
+			var mvMatNormals : Matrix3D = new Matrix3D();
+
 			//Iterate all objects for rendering
 			for(var i:uint; i<numDrawableObjects; i++)
 			{
@@ -96,6 +98,10 @@ package x3dom
 					this._mvpMatrix.append(this._scene.viewMatrix);
 					this._mvpMatrix.append(this._scene.projectionMatrix);
 					
+					//Build normal transformation matrix.
+					mvMatNormals.copyFrom(this._mvInvMatrix);
+					mvMatNormals.transpose();
+
 					if(shape.solid) {
 						this._context3D.setCulling(Context3DTriangleFace.FRONT);
 					} else {
@@ -107,6 +113,9 @@ package x3dom
 					
 					//Associate MV-Matrix
 					this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  4, this._mvMatrix, true );
+					
+					// MV-Matrix for normals
+					_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  10, mvMatNormals, true );
 					
 					if(lights.length && shape.material != null)
 					{
