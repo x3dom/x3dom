@@ -41,12 +41,14 @@ x3dom.shader.PickingTexcoordShader.prototype.generateVertexShader = function(gl)
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
                     "uniform float bgPrecisionMax;\n" +
+                    "uniform float bgPrecisionTexMax;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
 					"" +
 					"void main(void) {\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
 					"    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
-					"    fragColor = vec3(abs(texcoord.x), abs(texcoord.y), 0.0);\n" +
+                    "    vec2 texCoord = texcoord  / bgPrecisionTexMax;\n" +
+					"    fragColor = vec3(abs(texCoord.x), abs(texCoord.y), 0.0);\n" +
 					"}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);

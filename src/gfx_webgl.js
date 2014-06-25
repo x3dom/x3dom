@@ -1534,11 +1534,17 @@ x3dom.gfx_webgl = (function () {
                 sp.bgSize = bgSize;
                 sp.bgPrecisionMax = 1;
             }
+
             if (s_gl.colorType != gl.FLOAT) {
                 sp.bgPrecisionColMax = s_geo.getPrecisionMax('colorType');
+            } else {
+                sp.bgPrecisionColMax = 1.0;
             }
+
             if (s_gl.texCoordType != gl.FLOAT) {
                 sp.bgPrecisionTexMax = s_geo.getPrecisionMax('texCoordType');
+            } else {
+                sp.bgPrecisionTexMax = 1.0;
             }
 
             if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE)  // FIXME: mobile errors

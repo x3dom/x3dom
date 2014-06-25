@@ -39,11 +39,16 @@ x3dom.shader.PickingColorShader.prototype.generateVertexShader = function(gl)
 					"attribute vec3 color;\n" +
 					"varying vec3 fragColor;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
+                    "uniform vec3 bgCenter;\n" +
+                    "uniform vec3 bgSize;\n" +
+                    "uniform float bgPrecisionMax;\n" +
+                    "uniform float bgPrecisionColMax;\n" +
 					"\n" +
 					"void main(void) {\n" +
-					"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+                    "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
+                    "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
 					"    gl_PointSize = 2.0;\n" + 
-					"    fragColor = color;\n" +
+					"    fragColor = color / bgPrecisionColMax;\n" +
 					"}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
