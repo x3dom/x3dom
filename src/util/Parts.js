@@ -119,6 +119,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             if (pixel.r != visibilityAsInt) {
                 pixel.r = visibilityAsInt;
 
+                this.multiPart._partVisibility[parts.ids[0]] = visibility;
+                
                 //get used shapes
                 usage = this.multiPart._idMap.mapping[parts.ids[0]].usage;
 

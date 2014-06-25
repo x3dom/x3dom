@@ -3622,6 +3622,8 @@ x3dom.fields.BoxVolume.prototype.getRadialVec = function()
 x3dom.fields.BoxVolume.prototype.invalidate = function()
 {
     this.valid = false;
+    this.min = new x3dom.fields.SFVec3f(0, 0, 0);
+    this.max = new x3dom.fields.SFVec3f(0, 0, 0);
 };
 
 x3dom.fields.BoxVolume.prototype.isValid = function()

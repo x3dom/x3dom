@@ -139,7 +139,6 @@ x3dom.registerNodeType(
                 {
                     for (var i=0; i<this._partVisibility.length; i++)
                     {
-                        // render could be undefined, but undefined != true
                         if (!this._partVisibility[i])
                             continue;
 
@@ -149,7 +148,7 @@ x3dom.registerNodeType(
                             vol.extendBounds(childVol.min, childVol.max);
                     }
                 };
-
+                
                 return vol;
             },
 
@@ -403,9 +402,11 @@ x3dom.registerNodeType(
 
                     for (var s=0; s<shapes.length; s++)
                     {
-                        shapeDEF = shapes[s].getAttribute("DEF");
+                        shapeDEF = shapes[s].getAttribute("DEF") ||
+                                   shapes[s].getAttribute("def");
 
-                        if(this._visiblePartsPerShape[shapeDEF].val == 0)
+                        if(shapeDEF && this._visiblePartsPerShape[shapeDEF] && 
+                           this._visiblePartsPerShape[shapeDEF].val == 0)
                         {
                             shapes[s].setAttribute("render", "false");
                         }
@@ -556,8 +557,8 @@ x3dom.registerNodeType(
                             updateCenterOfRotation = true;
                         }
                         
-                        var min = multiPart._partVolume[shapeID].min;
-                        var max = multiPart._partVolume[shapeID].max;
+                        var min = multiPart._partVolume[shapeID[0]].min;
+                        var max = multiPart._partVolume[shapeID[0]].max;
 
                         var mat = multiPart.getCurrentTransform();
 
