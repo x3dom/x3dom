@@ -391,7 +391,7 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css, shapeDEF, colorData, visibilityData;
+                var css, shapeDEF, colorData, visibilityData, appearance;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
@@ -498,8 +498,36 @@ x3dom.registerNodeType(
                         }
                         else
                         {
-                            //Add Appearance + Material
-                            console.log("Add Appearance + Material");
+                            //Add Appearance
+                            appearance = document.createElement("Appearance");
+                            
+                            //Add Material
+                            if (firstMat) {
+                                firstMat = false;
+                                css = document.createElement("CommonSurfaceShader");
+                                css.setAttribute("DEF", "MultiMaterial");
+
+                                var ptDA = document.createElement("PixelTexture");
+                                ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                ptDA.setAttribute("id", "MultiMaterial_ColorMap");
+                                ptDA.setAttribute("image", colorData);
+
+                                var ptV = document.createElement("PixelTexture");
+                                ptV.setAttribute("containerField", "multiVisibilityTexture");
+                                ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
+                                ptV.setAttribute("image", visibilityData);
+
+                                css.appendChild(ptDA);
+                                css.appendChild(ptV);
+                            }
+                            else
+                            {
+                                css = document.createElement("CommonSurfaceShader");
+                                css.setAttribute("USE", "MultiMaterial");
+                            }
+
+                            appearance.appendChild(css);
+                            geometries[g].appendChild(appearance);
                         }
                     }
                 }

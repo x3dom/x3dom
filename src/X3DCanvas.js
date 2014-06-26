@@ -307,6 +307,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
                 this.parent.doc.needRender = true;
+                this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, 0, 0);
 
                 evt.preventDefault();
                 evt.stopPropagation();
@@ -321,6 +322,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
                 this.parent.doc.needRender = true;
+                this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, 0, 0);
 
                 evt.preventDefault();
                 evt.stopPropagation();
