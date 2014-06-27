@@ -439,7 +439,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     if (properties.IS_PARTICLE) {
         shader += "projFragPos = gl_Position;\n";
         // TODO; relate size to real scene bbox!!!!!!!!!
-        shader += "float distToCam = 20.0 - clamp(length( (modelViewMatrix * vec4(vertPosition, 1.0)).xyz ) / 50.0, 1.0, 19.0);\n";
+        shader += "float distToCam = 10.0 - clamp(length( (modelViewMatrix * vec4(vertPosition, 1.0)).xyz ) / 50.0, 1.0, 9.0);\n";
 
         //Set point size
         shader += "gl_PointSize = distToCam * particleSize.x;\n";
@@ -751,14 +751,18 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
             if (properties.IS_PARTICLE) {
                 shader += "vec3 projFragPosNorm = (projFragPos.xyz / projFragPos.w + 1.0) / 2.0;\n";
-                shader += "vec2 normFragPosPx = projFragPosNorm.xy * canvasSize;\n";
-                shader += "vec2 pxPosDir = (gl_FragCoord.xy - normFragPosPx) / fragParticleSize;\n";
-                shader += "pxPosDist = length(pxPosDir);\n";
+                shader += "projFragPosNorm.xy = projFragPosNorm.xy * canvasSize;\n";
+                shader += "vec2 pxPosDir = (gl_FragCoord.xy - projFragPosNorm.xy) / fragParticleSize;\n";
+                shader += "pxPosDist = 2.0 * length(pxPosDir);\n";
 
-                shader += "texCoord = (pxPosDir + 1.0) / 2.0;\n";
+                shader += "texCoord = (pxPosDir.xy + 1.0) / 2.0;\n";
+                shader += "vec4 texColor = texture2D(diffuseMap, texCoord);\n";
+                shader += "color.a = 1.0 - pxPosDist;\n";
             }
-			shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
-			shader += "color.a = texColor.a;\n";
+            else {
+                shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
+                shader += "color.a = texColor.a;\n";
+            }
 			if(properties.BLENDING || properties.IS_PARTICLE){
 				shader += "color.rgb += emissiveColor.rgb;\n";
 				shader += "color.rgb *= texColor.rgb;\n";
@@ -797,7 +801,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	}
 
     if (properties.IS_PARTICLE) {
-        shader += "if (pxPosDist > 0.5) discard; else \n";
+        shader += "if (pxPosDist > 1.0) discard; else \n";
     }
 
     shader += "gl_FragColor = color;\n";

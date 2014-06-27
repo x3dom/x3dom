@@ -2301,6 +2301,12 @@ x3dom.gfx_webgl = (function () {
 
         // render object
         var v, v_n, offset, q_n;
+        var isParticleSet = false;
+
+        if (x3dom.isa(s_geo, x3dom.nodeTypes.ParticleSet)) {
+            isParticleSet = true;
+            sp.canvasSize = [viewarea._width, viewarea._height];
+        }
 
         if (s_gl.externalGeometry != 0)
         {
@@ -2318,6 +2324,40 @@ x3dom.gfx_webgl = (function () {
                 continue;
 
             if (s_gl.buffers[q6]) {
+                if (isParticleSet && s_geo.drawOrder() != "any") {  // sort
+                    var indexArray, zPos = [];
+                    var pnts = s_geo._cf.coord.node.getPoints();
+                    var pn = (pnts.length == s_gl.indexes[q].length) ? s_gl.indexes[q].length : 0;
+
+                    for (var i=0; i<pn; i++) {
+                        var center = model_view.multMatrixPnt(pnts[i]);
+                        zPos.push([i, center.z]);
+                    }
+
+                    if (s_geo.drawOrder() == "backtofront")
+                        zPos.sort(function(a, b) { return a[1] - b[1]; });
+                    else
+                        zPos.sort(function(b, a) { return a[1] - b[1]; });
+
+                    for (i=0; i<pn; i++) {
+                        shape._webgl.indexes[q][i] = zPos[i][0];
+                    }
+
+                    if (x3dom.caps.INDEX_UINT && (pn > 65535)) {
+                        indexArray = new Uint32Array(shape._webgl.indexes[q]);
+                        shape._webgl.indexType = gl.UNSIGNED_INT;
+                    }
+                    else {
+                        indexArray = new Uint16Array(shape._webgl.indexes[q]);
+                        shape._webgl.indexType = gl.UNSIGNED_SHORT;
+                    }
+
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
+                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STREAM_DRAW);
+
+                    indexArray = null;
+                }
+
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
             }
 
@@ -2362,13 +2402,11 @@ x3dom.gfx_webgl = (function () {
                         1, gl.FLOAT, false, 4, 0);
                     gl.enableVertexAttribArray(sp.id);
                 }
-                else if (x3dom.isa(s_geo, x3dom.nodeTypes.ParticleSet))
+                else if (isParticleSet)
                 {
                     gl.vertexAttribPointer(sp.particleSize,
                         3, gl.FLOAT, false, 0, 0);
                     gl.enableVertexAttribArray(sp.particleSize);
-
-                    sp.canvasSize = [viewarea._width, viewarea._height];
                 }
             }
             if (s_gl.popGeometry != 0 && s_gl.buffers[q6 + 5]) {

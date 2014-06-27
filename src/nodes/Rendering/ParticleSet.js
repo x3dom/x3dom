@@ -13,7 +13,7 @@
 x3dom.registerNodeType(
     "ParticleSet",
     "Rendering",
-    defineClass(x3dom.nodeTypes.PointSet, //X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.PointSet,
 
         /**
          * Constructor for ParticleSet
@@ -21,7 +21,7 @@ x3dom.registerNodeType(
          * @x3d x.x
          * @component Rendering
          * @status experimental
-         * @extends x3dom.nodeTypes.X3DGeometryNode
+         * @extends x3dom.nodeTypes.PointSet
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The ParticleSet is a geometry node used in combination with a ParticleSystem node.
          *  Attention: So far this is only a stub.
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'mode', 'ViewDirQuads');
+            this.addField_SFString(ctx, 'mode', 'ViewDirQuads'); // NOT YET SUPPORTED
 
             /**
              * Defines the drawing order for the particles. Possible values: "Any" - The order is undefined.
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            //this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
              * Stores a Coordinate node containing the second coordinates of the particles.
@@ -72,7 +72,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('secCoord', x3dom.nodeTypes.X3DCoordinateNode);
+            //this.addField_SFNode('secCoord', x3dom.nodeTypes.X3DCoordinateNode); // NOT YET SUPPORTED!
 
             /**
              * Stores a Color node containing the colors of the particles.
@@ -92,7 +92,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+            this.addField_SFNode('normal', x3dom.nodeTypes.Normal); // NOT YET SUPPORTED
 
             /**
              * An MFVec3f field containing the sizes of the particles.
@@ -119,11 +119,15 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFFloat(ctx, 'textureZ', []);
+            this.addField_MFFloat(ctx, 'textureZ', []); // NOT YET SUPPORTED!
 
-            this._mesh._primType = 'POINTS';    // THINKABOUTME; gen tris or render points?
+            this._mesh._primType = 'POINTS';    // THINKABOUTME; what's better, gen tris or render points?
         },
         {
+            drawOrder: function() {
+                return this._vf.drawOrder.toLowerCase();
+            },
+
             nodeChanged: function()
             {
                 var coordNode = this._cf.coord.node;
@@ -148,10 +152,18 @@ x3dom.registerNodeType(
                     normals = normalNode._vf.vector;
                 }
 
+                var indices = this._vf.index.toGL();
+                if (indices.length == 0 && this.drawOrder() != "any") {
+                    // generate indices since also used for sorting
+                    for (var i=0, n=positions.length; i<n; i++) {
+                        indices[i] = i;
+                    }
+                }
+
                 this._mesh._numColComponents = numColComponents;
                 this._mesh._lit = false;
 
-                this._mesh._indices[0] = this._vf.index.toGL();
+                this._mesh._indices[0] = indices;
                 this._mesh._positions[0] = positions.toGL();
                 this._mesh._colors[0] = colors.toGL();
                 this._mesh._normals[0] = normals.toGL();
@@ -165,8 +177,9 @@ x3dom.registerNodeType(
             {
                 var pnts = null;
 
-                if(fieldName == 'mode')
+                if(fieldName == 'index')
                 {
+                    this._mesh._indices[0] = this._vf.index.toGL();
                 }
                 else if (fieldName == "coord")
                 {
