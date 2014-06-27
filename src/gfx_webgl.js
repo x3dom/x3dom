@@ -665,6 +665,17 @@ x3dom.gfx_webgl = (function () {
 
                     colors = null;
                 }
+                if (sp.particleSize !== undefined) {
+                    var sizeArr = geoNode._vf.size.toGL();
+
+                    if (sizeArr.length) {
+                        var sizeBuffer = gl.createBuffer();
+                        shape._webgl.buffers[q6 + 5] = sizeBuffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, sizeBuffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizeArr), gl.STATIC_DRAW);
+                    }
+                }
             }
 
             // TODO; FIXME; handle geometry with split mesh that has dynamic fields!
@@ -2341,25 +2352,23 @@ x3dom.gfx_webgl = (function () {
                     shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.color);
             }
-            if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
+            if ((sp.id !== undefined || sp.particleSize !== undefined) && s_gl.buffers[q6 + 5]) {
                 gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
 
                 //texture coordinate hack for IDs
-                if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
+                if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex == true)
                 {
                     gl.vertexAttribPointer(sp.id,
-                        1, gl.FLOAT, false,
-                       4, 0);
+                        1, gl.FLOAT, false, 4, 0);
                     gl.enableVertexAttribArray(sp.id);
                 }
-                else
+                else if (x3dom.isa(s_geo, x3dom.nodeTypes.ParticleSet))
                 {
-                    /*
-                    gl.vertexAttribPointer(sp.id,
-                        1, gl.FLOAT, false,
-                        shape._idStrideOffset[0], shape._idStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.id);
-                    */
+                    gl.vertexAttribPointer(sp.particleSize,
+                        3, gl.FLOAT, false, 0, 0);
+                    gl.enableVertexAttribArray(sp.particleSize);
+
+                    sp.canvasSize = [viewarea._width, viewarea._height];
                 }
             }
             if (s_gl.popGeometry != 0 && s_gl.buffers[q6 + 5]) {
@@ -2468,8 +2477,11 @@ x3dom.gfx_webgl = (function () {
             if (sp.color !== undefined) {
                 gl.disableVertexAttribArray(sp.color);
             }
-            if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
-                gl.disableVertexAttribArray(sp.id);
+            if (s_gl.buffers[q6 + 5]) {
+                if (sp.id !== undefined)
+                    gl.disableVertexAttribArray(sp.id);
+                else if (sp.particleSize !== undefined)
+                    gl.disableVertexAttribArray(sp.particleSize);
             }
             if (s_gl.popGeometry != 0 && sp.PG_vertexID !== undefined) {
                 gl.disableVertexAttribArray(sp.PG_vertexID);    // mimic gl_VertexID
@@ -2862,10 +2874,12 @@ x3dom.gfx_webgl = (function () {
 
                     //Check if there are MultiParts
                     if (scene._multiPartMap) {
+                        var mp, multiPart;
+
                         //Find related MultiPart
-                        for (var mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                        for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
                         {
-                            var multiPart = scene._multiPartMap.multiParts[mp];
+                            multiPart = scene._multiPartMap.multiParts[mp];
                             if (objId >= multiPart._minId && objId <= multiPart._maxId)
                             {
                                 hitObject = multiPart._xmlNode;
@@ -2932,23 +2946,25 @@ x3dom.gfx_webgl = (function () {
                     if (scene._shadowIdMap && scene._shadowIdMap.mapping &&
                         objId < scene._shadowIdMap.mapping.length) {
                         var shIds = scene._shadowIdMap.mapping[objId].usage;
+                        var n, c, shObj;
+
                         if (!line) {
                             line = viewarea.calcViewRay(x, y, cctowc);
                         }
                         // find corresponding dom tree object
-                        for (var c = 0; c < shIds.length; c++) {
-                            var shObj = scene._nameSpace.defMap[shIds[c]];
+                        for (c = 0; c < shIds.length; c++) {
+                            shObj = scene._nameSpace.defMap[shIds[c]];
                             // FIXME; bbox test too coarse (+ should include trafo)
                             if (shObj && shObj.doIntersect(line)) {
                                 viewarea._pickingInfo.pickObj = shObj;
                                 break;
                             }
                         }
-                        //Check for other namespaces e.g. Inline/Multipart
-                        for (var n = 0; n<scene._nameSpace.childSpaces.length; n++)
+                        //Check for other namespaces e.g. Inline/Multipart (FIXME; check recursively)
+                        for (n = 0; n<scene._nameSpace.childSpaces.length; n++)
                         {
-                            for (var c = 0; c < shIds.length; c++) {
-                                var shObj = scene._nameSpace.childSpaces[n].defMap[shIds[c]];
+                            for (c = 0; c < shIds.length; c++) {
+                                shObj = scene._nameSpace.childSpaces[n].defMap[shIds[c]];
                                 // FIXME; bbox test too coarse (+ should include trafo)
                                 if (shObj && shObj.doIntersect(line)) {
                                     viewarea._pickingInfo.pickObj = shObj;
@@ -2963,9 +2979,9 @@ x3dom.gfx_webgl = (function () {
                     if (scene._multiPartMap) {
 
                         //Find related MultiPart
-                        for (var mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                        for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
                         {
-                            var multiPart = scene._multiPartMap.multiParts[mp];
+                            multiPart = scene._multiPartMap.multiParts[mp];
 
                             event = {
                                 target: multiPart._xmlNode,

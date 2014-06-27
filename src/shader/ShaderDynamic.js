@@ -127,7 +127,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(!properties.SPHEREMAPPING) {
 			if(properties.IMAGEGEOMETRY) {
 				shader += "uniform sampler2D IG_texCoords;\n";
-			} else {
+			} else if (!properties.IS_PARTICLE) {
 				shader += "attribute vec2 texcoord;\n";
 			}
 		}
@@ -152,10 +152,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "uniform mat4 viewMatrix;\n";
 		}
         if (properties.DISPLACEMENTMAP) {
-          shader += "uniform sampler2D displacementMap;\n";
-          shader += "uniform float displacementFactor;\n";
-          shader += "uniform float displacementWidth;\n";
-          shader += "uniform float displacementHeight;\n";
+            shader += "uniform sampler2D displacementMap;\n";
+            shader += "uniform float displacementFactor;\n";
+            shader += "uniform float displacementWidth;\n";
+            shader += "uniform float displacementHeight;\n";
             shader += "uniform float displacementAxis;\n";
         }
         if (properties.DIFFPLACEMENTMAP) {
@@ -168,6 +168,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
         if (properties.MULTIDIFFALPMAP || properties.MULTIVISMAP) {
             shader += "attribute float id;\n";
             shader += "varying float fragID;\n";
+        }
+        if (properties.IS_PARTICLE) {
+            shader += "attribute vec3 particleSize;\n";
+            shader += "varying vec4 projFragPos;\n";
+            shader += "varying float fragParticleSize;\n";
         }
 	}
 	
@@ -201,9 +206,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
-	
-	//Set point size
-	shader += "gl_PointSize = 2.0;\n";	
   
 	/*******************************************************************************
 	* Start of special Geometry switch
@@ -321,7 +323,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 		
 		//TexCoords
-		if( (properties.TEXTURED || properties.CSSHADER) && !properties.SPHEREMAPPING) {
+        if (properties.IS_PARTICLE) {
+            shader += "vec2 vertTexCoord = vec2(0.5, 0.5);\n";
+        }
+		else if( (properties.TEXTURED || properties.CSSHADER) && !properties.SPHEREMAPPING) {
 			shader += "vec2 vertTexCoord = texcoord;\n";
 			if(properties.REQUIREBBOXTEX) {
 				shader += "vertTexCoord = vertTexCoord / bgPrecisionTexMax;\n";
@@ -430,6 +435,19 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
   
   //Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
+
+    if (properties.IS_PARTICLE) {
+        shader += "projFragPos = gl_Position;\n";
+        // TODO; relate size to real scene bbox!!!!!!!!!
+        shader += "float distToCam = 20.0 - clamp(length( (modelViewMatrix * vec4(vertPosition, 1.0)).xyz ) / 50.0, 1.0, 19.0);\n";
+
+        //Set point size
+        shader += "gl_PointSize = distToCam * particleSize.x;\n";
+        shader += "fragParticleSize = gl_PointSize;\n";
+    }
+    else {
+        shader += "gl_PointSize = 2.0;\n";
+    }
   
 	//END OF SHADER
 	shader += "}\n";
@@ -451,10 +469,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
  */
 x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	/*var shader = "#ifdef GL_ES\n" +
-    			 "  precision highp float;\n" +
-    			 "#endif\n\n";*/
-    
   var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
   shader += " precision highp float;\n";
   shader += "#else\n";
@@ -560,6 +574,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += x3dom.shader.clipPlanes(properties.CLIPPLANES);
     }
 
+    if (properties.IS_PARTICLE) {
+        shader += "varying vec4 projFragPos;\n";
+        shader += "varying float fragParticleSize;\n";
+
+        shader += "uniform vec2 canvasSize;\n";
+    }
+
     // Declare gamma correction for color computation (see property "GAMMACORRECTION")
     shader += x3dom.shader.gammaCorrectionDecl(properties);
  
@@ -610,6 +631,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "color = " + x3dom.shader.decodeGamma(properties, "fragColor") + ";\n";
 		}
 	}
+
+    if (properties.IS_PARTICLE) {
+        shader += "float pxPosDist;\n";   // assure variable is declared for all cases
+    }
 	
 	if(properties.LIGHTS) {
 		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
@@ -722,10 +747,19 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		
 		if(properties.TEXTURED || properties.DIFFUSEMAP){
-			shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+            shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+
+            if (properties.IS_PARTICLE) {
+                shader += "vec3 projFragPosNorm = (projFragPos.xyz / projFragPos.w + 1.0) / 2.0;\n";
+                shader += "vec2 normFragPosPx = projFragPosNorm.xy * canvasSize;\n";
+                shader += "vec2 pxPosDir = (gl_FragCoord.xy - normFragPosPx) / fragParticleSize;\n";
+                shader += "pxPosDist = length(pxPosDir);\n";
+
+                shader += "texCoord = (pxPosDir + 1.0) / 2.0;\n";
+            }
 			shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 			shader += "color.a = texColor.a;\n";
-			if(properties.BLENDING){
+			if(properties.BLENDING || properties.IS_PARTICLE){
 				shader += "color.rgb += emissiveColor.rgb;\n";
 				shader += "color.rgb *= texColor.rgb;\n";
 			} else {
@@ -761,7 +795,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "float f0 = calcFog(fragEyePosition);\n";
 		shader += "color.rgb = fogColor * (1.0-f0) + f0 * (color.rgb);\n";
 	}
-	
+
+    if (properties.IS_PARTICLE) {
+        shader += "if (pxPosDist > 0.5) discard; else \n";
+    }
+
     shader += "gl_FragColor = color;\n";
 	
 	//End Of Shader
