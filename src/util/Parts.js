@@ -60,6 +60,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
+	
+	/**
+     *
+     * @param color
+     */
+    this.resetColor = function() {
+
+        var i, x, y, colorRGBA;
+		
+        if (ids.length && ids.length > 1) //Multi select
+        {
+            var pixels = parts.colorMap.getPixels();
+
+            for(i=0; i<parts.ids.length; i++) {
+				colorRGBA = this.multiPart._originalColor[parts.ids[i]];
+			
+                if (this.multiPart._highlightedParts[parts.ids[i]]){
+                    this.multiPart._highlightedParts[parts.ids[i]] = colorRGBA;
+                } else {
+                    pixels[parts.ids[i]] = colorRGBA;
+                }
+            }
+
+            parts.colorMap.setPixels(pixels);
+        }
+        else //Single select
+        {
+			colorRGBA = this.multiPart._originalColor[parts.ids[0]];
+            if (this.multiPart._highlightedParts[parts.ids[0]]){
+                this.multiPart._highlightedParts[parts.ids[0]] = colorRGBA;
+            } else {
+                x = parts.ids[0] % parts.colorMap.getWidth();
+                y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
+                parts.colorMap.setPixel(x, y, colorRGBA);
+            }
+        }
+    };
 
     /**
      *

@@ -99,6 +99,7 @@ x3dom.registerNodeType(
             this._visiblePartsPerShape = [];
             this._partVolume = [];
             this._partVisibility = [];
+			this._originalColor = [];
 
         },
         {
@@ -308,6 +309,8 @@ x3dom.registerNodeType(
                         rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
                         colorData += " " + rgba.toUint();
+						
+						this._originalColor[i] = rgba;
                     }
                     else
                     {
