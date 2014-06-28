@@ -147,16 +147,18 @@ x3dom.registerNodeType(
 
             lightAssigment: function(){
                 var isBlendedStyle = false;
+                var blendedLightAssigmentText;
                 //Check if there is a blendedStyle, not to use lightAssigment
                 Array.forEach(this._cf.renderStyle.nodes, function(style){
                     if(x3dom.isa(style, x3dom.nodeTypes.BlendedVolumeStyle)){
                         isBlendedStyle = true;
+                        blendedLightAssigmentText = style.lightAssigment();
                     }
                 });
                 if(!isBlendedStyle){
                     return this._cf.renderStyle.nodes[0].lightAssigment();
                 }else{
-                    return "";
+                    return this._cf.renderStyle.nodes[0].lightAssigment()+blendedLightAssigmentText;
                 }
             },
 

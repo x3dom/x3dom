@@ -56,6 +56,8 @@ x3dom.registerNodeType(
 
             //Neccesary for counting the textures which are added on each style, number of textures can be variable
             this._textureID = 0;
+            this._first = true;
+            this._styleList = [];
             this.normalTextureProvided = false;
             this.fragmentPreamble = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                             "  precision highp float;\n" +
@@ -169,7 +171,7 @@ x3dom.registerNodeType(
 
             normalFunctionShaderText: function(){
                 return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
-                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
+                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-vec4(1.0,1.0,0.9,1.0));\n"+ //FIXME: blue chanel needs enhancement
                 "   n.a = length(n.xyz);\n"+
                 "   n.xyz = normalize(n.xyz);\n"+
                 "   return n;\n"+
@@ -182,7 +184,7 @@ x3dom.registerNodeType(
                 "   float v3 = cTexture3D(sampler, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
                 "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                 "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0);\n"+
+                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0)+vec3(0.0, 0.0, 0.1);\n"+ //FIXME: z drection needs enhancement
                 "   return vec4(normalize(grad), length(grad));\n"+
                 "}\n"+
                 "\n";
@@ -228,19 +230,6 @@ x3dom.registerNodeType(
                     shaderLoop += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }
                 shaderLoop += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
-                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    shaderLoop += "    lighting(light"+l+"_Type, " +
-                    "light"+l+"_Location, " +
-                    "light"+l+"_Direction, " +
-                    "light"+l+"_Color, " + 
-                    "light"+l+"_Attenuation, " +
-                    "light"+l+"_Radius, " +
-                    "light"+l+"_Intensity, " + 
-                    "light"+l+"_AmbientIntensity, " +
-                    "light"+l+"_BeamWidth, " +
-                    "light"+l+"_CutOffAngle, " +
-                    "gradEye.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
-                }
                 shaderLoop += inlineShaderText;
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     shaderLoop += inlineLightAssigment;
@@ -260,7 +249,7 @@ x3dom.registerNodeType(
                 //Early ray termination and Break if the position is greater than <1, 1, 1>
                 "    if(accum.a >= 1.0 || ray_pos.x < 0.0 || ray_pos.y < 0.0 || ray_pos.z < 0.0 || ray_pos.x > 1.0 || ray_pos.y > 1.0 || ray_pos.z > 1.0)\n"+
                 "      break;\n"+
-                "  }\n"+
+                "    }\n"+
                 "  }\n"+
                 "  gl_FragColor = accum;\n"+
                 "}";

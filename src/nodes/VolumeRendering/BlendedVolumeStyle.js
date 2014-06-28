@@ -141,32 +141,22 @@ x3dom.registerNodeType(
             uniforms: function(){
                 var unis = [];
                 if (this._cf.voxels.node || this._cf.weightTransferFunction1.node || this._cf.weightTransferFunction2.node) {
-                    //Lookup for the parent VolumeData
-                    var volumeDataParent = this._parentNodes[0];
-                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                        volumeDataParent = volumeDataParent._parentNodes[0];
-                    }
-                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][BlendVolumeStyle] Not VolumeData parent found!");
-                        volumeDataParent = null;
-                    }
-
                     this.uniformSampler2DVoxels._vf.name = 'uVolBlendData';
                     this.uniformSampler2DVoxels._vf.type = 'SFInt32';
-                    this.uniformSampler2DVoxels._vf.value = volumeDataParent._textureID++;
+                    this.uniformSampler2DVoxels._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DVoxels);
 
                     if(this._cf.weightTransferFunction1.node){
                         this.uniformSampler2DWeightTransferFunction1._vf.name = 'uWeightTransferFunctionA';
                         this.uniformSampler2DWeightTransferFunction1._vf.type = 'SFInt32';
-                        this.uniformSampler2DWeightTransferFunction1._vf.value = volumeDataParent._textureID++;
+                        this.uniformSampler2DWeightTransferFunction1._vf.value = this._volumeDataParent._textureID++;
                         unis.push(this.uniformSampler2DWeightTransferFunction1);
                     }
 
                     if(this._cf.weightTransferFunction2.node){
                         this.uniformSampler2DWeightTransferFunction2._vf.name = 'uWeightTransferFunctionB';
                         this.uniformSampler2DWeightTransferFunction2._vf.type = 'SFInt32';
-                        this.uniformSampler2DWeightTransferFunction2._vf.value = volumeDataParent._textureID++;
+                        this.uniformSampler2DWeightTransferFunction2._vf.value = this._volumeDataParent._textureID++;
                         unis.push(this.uniformSampler2DWeightTransferFunction2);
                     }
                 }
@@ -269,22 +259,7 @@ x3dom.registerNodeType(
                 }else{
                     inlineText += "    vec4 blendGradEye = getNormalOnTheFly(uVolBlendData, ray_pos, "+ nSlices +", "+ xSlices +", "+ ySlices +");\n";
                 }
-                if (x3dom.nodeTypes.X3DLightNode.lightID>0){
-                        inlineText += "    vec4 blendGrad = vec4((modelViewMatrixInverse * vec4(blendGradEye.xyz, 0.0)).xyz, blendGradEye.a);\n";
-                }
-                for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
-                    inlineText += "    lighting(light"+l+"_Type, " +
-                    "light"+l+"_Location, " +
-                    "light"+l+"_Direction, " +
-                    "light"+l+"_Color, " + 
-                    "light"+l+"_Attenuation, " +
-                    "light"+l+"_Radius, " +
-                    "light"+l+"_Intensity, " + 
-                    "light"+l+"_AmbientIntensity, " +
-                    "light"+l+"_BeamWidth, " +
-                    "light"+l+"_CutOffAngle, " +
-                    "blendGradEye.xyz, -positionE.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
-                }
+                inlineText += "    vec4 blendGrad = vec4((modelViewMatrixInverse * vec4(blendGradEye.xyz, 0.0)).xyz, blendGradEye.a);\n";
                 if(this._cf.renderStyle.node){
                     var tempText = this._cf.renderStyle.node.inlineStyleShaderText().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
                     inlineText += tempText.replace(/ambient/gm, "ambientBlend").replace(/diffuse/gm, "diffuseBlend").replace(/specular/gm, "specularBlend");
@@ -341,16 +316,39 @@ x3dom.registerNodeType(
                         }
                         break;
                 }
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                    inlineText += "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n";
+                if(x3dom.nodeTypes.X3DLightNode.lightID == 0){
+                    inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
+                    "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
                 }
-                inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
-                "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
                 return inlineText;
             },
 
             lightAssigment: function(){
-                return ""; //previously computed, empty string
+                var inlineText = "";
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                    if(this._cf.renderStyle.node){
+                        var tempText = this._cf.renderStyle.node.lightAssigment().replace(/value/gm, "blendValue").replace(/grad/gm, "blendGrad");
+                        inlineText += tempText.replace(/ambient/gm, "ambientBlend").replace(/diffuse/gm, "diffuseBlend").replace(/specular/gm, "specularBlend");
+                    }else{
+                        for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
+                            inlineText += "    lighting(light"+l+"_Type, " +
+                            "light"+l+"_Location, " +
+                            "light"+l+"_Direction, " +
+                            "light"+l+"_Color, " + 
+                            "light"+l+"_Attenuation, " +
+                            "light"+l+"_Radius, " +
+                            "light"+l+"_Intensity, " + 
+                            "light"+l+"_AmbientIntensity, " +
+                            "light"+l+"_BeamWidth, " +
+                            "light"+l+"_CutOffAngle, " +
+                            "blendGradEye.xyz, -positionE.xyz, ambientBlend, diffuseBlend, specularBlend);\n";
+                        }
+                        inlineText += "    blendValue.rgb = ambientBlend*blendValue.rgb + diffuseBlend*blendValue.rgb + specularBlend;\n";
+                    }
+                }
+                inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
+                "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
+                return inlineText; //previously computed, empty string
             }
         }
     )

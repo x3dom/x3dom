@@ -104,22 +104,22 @@ x3dom.registerNodeType(
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
-                this.uniformFloatRetainedOpacity._vf.name = 'uRetainedOpacity';
+                this.uniformFloatRetainedOpacity._vf.name = 'uRetainedOpacity'+this._styleID;
                 this.uniformFloatRetainedOpacity._vf.type = 'SFFloat';
                 this.uniformFloatRetainedOpacity._vf.value = this._vf.retainedOpacity;
                 unis.push(this.uniformFloatRetainedOpacity);
 
-                this.uniformFloatBoundaryOpacity._vf.name = 'uBoundaryOpacity';
+                this.uniformFloatBoundaryOpacity._vf.name = 'uBoundaryOpacity'+this._styleID;
                 this.uniformFloatBoundaryOpacity._vf.type = 'SFFloat';
                 this.uniformFloatBoundaryOpacity._vf.value = this._vf.boundaryOpacity;
                 unis.push(this.uniformFloatBoundaryOpacity);
 
-                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor';
+                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor'+this._styleID;
                 this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
                 this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
                 unis.push(this.uniformFloatOpacityFactor);
 
-                this.uniformBoolEnableBoundary._vf.name = 'uEnableBoundary';
+                this.uniformBoolEnableBoundary._vf.name = 'uEnableBoundary'+this._styleID;
                 this.uniformBoolEnableBoundary._vf.type = 'SFBool';
                 this.uniformBoolEnableBoundary._vf.value = this._vf.enabled;
                 unis.push(this.uniformBoolEnableBoundary);
@@ -138,21 +138,25 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform float uRetainedOpacity;\n"+
-                    "uniform float uBoundaryOpacity;\n"+
-                    "uniform float uOpacityFactor;\n"+
-                    "uniform bool uEnableBoundary;\n";
+                return "uniform float uRetainedOpacity"+this._styleID+";\n"+
+                    "uniform float uBoundaryOpacity"+this._styleID+";\n"+
+                    "uniform float uOpacityFactor"+this._styleID+";\n"+
+                    "uniform bool uEnableBoundary"+this._styleID+";\n";
             },
 
             styleShaderText: function(){
-                return "void boundaryEnhancement(inout vec4 original_color, float gradientMagnitude){\n"+
-                "   original_color.a = original_color.a * (uRetainedOpacity + (uBoundaryOpacity*pow(gradientMagnitude, uOpacityFactor)));\n"+
-                "}\n";
+                if (this._first){
+                    return "void boundaryEnhancement(inout vec4 original_color, in float gradientMagnitude, in float retainedOpacity, in float boundaryOpacity, in float opacityFactor){\n"+
+                    "   original_color.a = original_color.a * (retainedOpacity + (boundaryOpacity * pow(gradientMagnitude, opacityFactor)));\n"+
+                    "}\n";
+                }else{
+                    return "";
+                }
             },
 
             inlineStyleShaderText: function(){
-                var inlineText = "    if(uEnableBoundary){\n"+
-                "    boundaryEnhancement(value, grad.w);\n"+
+                var inlineText = "    if(uEnableBoundary"+this._styleID+"){\n"+
+                "    boundaryEnhancement(value, grad.w, uRetainedOpacity"+this._styleID+", uBoundaryOpacity"+this._styleID+", uOpacityFactor"+this._styleID+");\n"+
                 "}\n";
                 return inlineText;
             }
