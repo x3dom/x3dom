@@ -2305,7 +2305,6 @@ x3dom.gfx_webgl = (function () {
 
         if (x3dom.isa(s_geo, x3dom.nodeTypes.ParticleSet)) {
             isParticleSet = true;
-            sp.canvasSize = [viewarea._width, viewarea._height];
         }
 
         if (s_gl.externalGeometry != 0)
@@ -2353,7 +2352,7 @@ x3dom.gfx_webgl = (function () {
                     }
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
-                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STREAM_DRAW);
+                    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.DYNAMIC_DRAW);
 
                     indexArray = null;
                 }
