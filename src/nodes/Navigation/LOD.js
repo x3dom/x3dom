@@ -45,7 +45,7 @@ x3dom.registerNodeType(
         
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 var i=0, n=this._childNodes.length;
 
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, []);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 }
             },
 

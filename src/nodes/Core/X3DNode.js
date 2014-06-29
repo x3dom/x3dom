@@ -166,7 +166,7 @@ x3dom.registerNodeType(
             },
 
             // Collects all objects to be drawn
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes) {
                 // explicitly do nothing on collect traversal for (most) nodes
             },
 
@@ -231,12 +231,12 @@ x3dom.registerNodeType(
                 //for Web-style access to the output data of ROUTES, provide a callback function
                 var eventObject = {
                     target: that._xmlNode,
-                    type: "onoutputchange",
+                    type: "outputchange",   // event only called onxxx if used as old-fashioned attribute
                     fieldName: field,
                     value: msg
                 };
 
-                this.callEvtHandler(eventObject.type, eventObject);
+                this.callEvtHandler("onoutputchange", eventObject);
             },
 
             // method for handling field updates
@@ -611,10 +611,10 @@ x3dom.registerNodeType(
                 this._vfFieldTypes[name] = "SFVec3f";
             },
 
-            addField_SFVec4f: function (ctx, name, x, y, z) {
+            addField_SFVec4f: function (ctx, name, x, y, z, w) {
                 this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                     x3dom.fields.SFVec4f.parse(ctx.xmlNode.getAttribute(name)) :
-                    new x3dom.fields.SFVec4f(x, y, z);
+                    new x3dom.fields.SFVec4f(x, y, z, w);
 
                 if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
                 this._vfFieldTypes[name] = "SFVec4f";
@@ -764,4 +764,5 @@ x3dom.registerNodeType(
                 this._cfFieldTypes[name] = "MFNode";
             }
         }
-    ));
+    )
+);
