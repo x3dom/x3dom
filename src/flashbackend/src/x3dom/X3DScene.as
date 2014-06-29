@@ -91,13 +91,16 @@
 			var max:Vector3D = new Vector3D(-999999.0, -999999.0, -999999.0);
 			
 			for(var i:uint = 0; i<this._drawableObjects.length; i++) {
-				if(min.x > this._drawableObjects[i].min.x) { min.x = this._drawableObjects[i].min.x; }
-				if(min.y > this._drawableObjects[i].min.y) { min.y = this._drawableObjects[i].min.y; }
-				if(min.z > this._drawableObjects[i].min.z) { min.z = this._drawableObjects[i].min.z; }
+				var objMin:Vector3D = this._drawableObjects[i].min;
+				var objMax:Vector3D = this._drawableObjects[i].max;
 				
-				if(max.x < this._drawableObjects[i].max.x) { max.x = this._drawableObjects[i].max.x; }
-				if(max.y < this._drawableObjects[i].max.y) { max.y = this._drawableObjects[i].max.y; }
-				if(max.z < this._drawableObjects[i].max.z) { max.z = this._drawableObjects[i].max.z; }
+				if (min.x > objMin.x) { min.x = objMin.x; }
+				if (min.y > objMin.y) { min.y = objMin.y; }
+				if (min.z > objMin.z) { min.z = objMin.z; }
+				
+				if (max.x < objMax.x) { max.x = objMax.x; }
+				if (max.y < objMax.y) { max.y = objMax.y; }
+				if (max.z < objMax.z) { max.z = objMax.z; }
 			}
 			
 			this._min = min;

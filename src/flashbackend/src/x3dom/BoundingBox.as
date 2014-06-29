@@ -22,6 +22,17 @@ package x3dom
 
 		}
 		
+		public static function Create(min:Vector3D, max:Vector3D) : BoundingBox
+		{
+			var result:BoundingBox = new BoundingBox();
+			result._min = min;
+			result._max = max;
+			result._center = min.add(max);
+			result._center.scaleBy(0.5);
+			result._size = max.subtract(min);
+			return result;
+		}
+		
 		public function set min(min:Vector3D) : void
 		{
 			this._min = min;
