@@ -58,9 +58,10 @@ package x3dom.shaders
 				//VS Positions pos * mv-Matrix 
 				shader += "m44 v3, va0, vc4\n";
 				
-				//VS Normals normal * mv-Matrix
-				shader += "m33 vt0.xyz, va2, vc4\n";
-				shader += "mov v0, vt0.xyz1\n";
+				//VS Normals = normal * mv-Normals-Matrix
+				shader += "m33 vt0.xyz, va2, vc10\n";
+				shader += "nrm vt0.xyz, vt0.xyz\n";
+				shader += "mov v0, vt0.xyz\n";		// normal -> Fragment(v0)
 			} 
 			
 			if( shape.colorBuffer ) {
@@ -82,7 +83,7 @@ package x3dom.shaders
 					} 
 					else 
 					{
-						shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+						shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v2)
 					}
 				}
 				
