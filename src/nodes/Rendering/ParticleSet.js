@@ -26,9 +26,8 @@ x3dom.registerNodeType(
          * @classdesc The ParticleSet is a geometry node used in combination with a ParticleSystem node.
          *  Attention: So far this is only a stub.
          */
-            function (ctx) {
+         function (ctx) {
             x3dom.nodeTypes.ParticleSet.superClass.call(this, ctx);
-
 
             /**
              * Drawing mode: "ViewDirQuads" - Draws quads directed to the viewpoint (default). "Points" - Draw points.
@@ -54,35 +53,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'drawOrder', 'Any');
 
-            /**
-             * Stores a Coordinate node containing the coordinates of the particles.
-             * @var {x3dom.fields.SFNode} coord
-             * @memberof x3dom.nodeTypes.ParticleSet
-             * @initvalue null
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
-
-            /**
-             * Stores a Coordinate node containing the second coordinates of the particles.
-             * @var {x3dom.fields.SFNode} secCoord
-             * @memberof x3dom.nodeTypes.ParticleSet
-             * @initvalue null
-             * @field x3dom
-             * @instance
-             */
+            // THINKABOUTME; does this very special field makes sense for being impl. in WebGL?
             //this.addField_SFNode('secCoord', x3dom.nodeTypes.X3DCoordinateNode); // NOT YET SUPPORTED!
-
-            /**
-             * Stores a Color node containing the colors of the particles.
-             * @var {x3dom.fields.SFNode} color
-             * @memberof x3dom.nodeTypes.ParticleSet
-             * @initvalue null
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             /**
              * Stores a Normal node containing the normals of the particles.
@@ -119,7 +91,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFFloat(ctx, 'textureZ', []); // NOT YET SUPPORTED!
+            this.addField_MFFloat(ctx, 'textureZ', []); // NOT YET SUPPORTED! (3D textures not supported in WebGL)
 
             this._mesh._primType = 'POINTS';
         },
