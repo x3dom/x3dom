@@ -14,6 +14,7 @@ package x3dom.shaders
 	import x3dom.Debug;
 	import x3dom.Shape;
 	import x3dom.texturing.CubeMapTexture;
+	import x3dom.X3DScene;
 	
 	public class ShaderCache
 	{
@@ -89,22 +90,24 @@ package x3dom.shaders
 		/**
 		 * Returns a dynamic generated shader program
 		 */
-		public function getDynamicShader(shape:Shape, lights:Array) : Program3D
+		public function getDynamicShader(shape:Shape, scene:X3DScene) : Program3D
 		{
 			//Build Shader identifier [light(false|true) / texture(false|true) / blend(false|true) / cubeMap(false|true) / color(false|true) / sphereMapping(false|true)  / solid(false|true)]
-			var shaderIdentifier:String = String(lights.length>0) + " / " + 
+			var shaderIdentifier:String = String(scene.lights.length>0) + " / " + 
 										  String(Boolean(shape.texCoordBuffer && shape.texture)) + " / " + 
 										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.blending)) + " / " + 
 										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture is CubeMapTexture)) + " / " +
 										  String(Boolean(shape.colorBuffer)) + " / " + 
 										  String(shape.sphereMapping) + " / " +
 										  String(shape.solid) + " / " +
-										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.transform));
+										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.transform)) + " / " +
+										  String(scene.fogType);
+
 
 			//Check if shader is in cache
 			if( this._cache[shaderIdentifier] == undefined ) 
 			{
-				this._cache[shaderIdentifier] = new DynamicShader(shape, lights).program3D;
+				this._cache[shaderIdentifier] = new DynamicShader(shape, scene).program3D;
 			}
 			
 			//Return Program3D from cache

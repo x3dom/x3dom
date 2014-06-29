@@ -56,6 +56,7 @@ package x3dom {
 			ExternalInterface.addCallback("setMeshProperties", setMeshProperties);
 			ExternalInterface.addCallback("removeTexture", removeTexture);
 			ExternalInterface.addCallback("setFPS", setFPS);
+			ExternalInterface.addCallback("setFog", setFog);
 		}
 		
 		private function renderScene() : void
@@ -315,6 +316,13 @@ package x3dom {
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = null;
 		}
 
+		private function setFog(value:Object) : void 
+		{	
+			this._scene.fogColor = value.color as Array;
+			this._scene.fogVisRange = Number(value.visibilityRange);
+			this._scene.fogType = Number(value.fogType);
+		}
+		
 	}
 	
 }
