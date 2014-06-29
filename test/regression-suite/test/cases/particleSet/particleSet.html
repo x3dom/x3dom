@@ -8,28 +8,53 @@
 <body>
 <x3d width="800px" height="600px" id="x3d">
     <scene>
-        <Transform id="trans" translation="0 0 0">
+        <Background></Background>
+        <Transform id="trans">
             <Shape id="shape">
                 <Appearance>
-                    <Material diffusecolor="0 1 0.2" ></Material>
+                    <Material diffuseColor="0 1 0.2"></Material>
+                    <DepthMode readOnly='true'></DepthMode>
                 </Appearance>
-                <ParticleSet id="ps"></ParticleSet>
+                <ParticleSet id="ps" drawOrder='backToFront' size="1 1 1, 1 1 1, 1 1 1">
+                    <Coordinate point='0 0 0, 1 1 1, 2 2 2'></Coordinate>
+                    <Color color='1 1 0, 1 1 0, 1 1 0'></Color>
+                </ParticleSet>
             </Shape>
         </Transform>
     </scene>
 </x3d>
-<script>
+
+<div>
+    <br><input type="button" value="Change" onclick="changeParticles();">
+</div>
+
+<script type="text/javascript">
 	document.onload = function()
 	{
 		var ps = document.getElementById("ps");
-        ps.setAttribute("mode","testSA");
-        ps.setFieldValue("mode","testSFV");
+        ps.setAttribute("mode", "ViewDirQuads");
+        ps.setFieldValue("mode", "Points");
 
         var ref = ps.requestFieldRef("mode");
-        ref = "testFR";
+        console.log(ref);
+        ref = "ViewDirQuads";   // Attention, cannot work, is primitive data type, fix in source!
         ps.releaseFieldRef("mode");
 
-	}
+        console.log(ps._x3domNode._vf.mode);
+        ps.setAttribute("mode", "ViewDirQuads");
+	};
+
+    function changeParticles()
+    {
+        var mat = document.getElementsByTagName("Color");
+        mat[0].setAttribute("color", '0 1 0, 0 0 1, 1 0 0, 1 1 1');
+
+        var pnt = document.getElementsByTagName("Coordinate");
+        pnt[0].setAttribute("point", '0 1 1, 2 2 2, 3 2 2, -1 -1 -1');
+
+        var ps = document.getElementById("ps");
+        ps.setAttribute("size", '3 3 3, 2 2 2, .5 .5 .5, 1 1 1');
+    }
 </script>
 </body>
 </html>

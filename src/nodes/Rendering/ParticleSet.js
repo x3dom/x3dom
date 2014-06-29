@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'mode', 'ViewDirQuads'); // NOT YET SUPPORTED
+            this.addField_SFString(ctx, 'mode', 'ViewDirQuads'); // only default value supported
 
             /**
              * Defines the drawing order for the particles. Possible values: "Any" - The order is undefined.
@@ -82,7 +82,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            //this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
+            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             /**
              * Stores a Normal node containing the normals of the particles.
@@ -121,7 +121,7 @@ x3dom.registerNodeType(
              */
             this.addField_MFFloat(ctx, 'textureZ', []); // NOT YET SUPPORTED!
 
-            this._mesh._primType = 'POINTS';    // THINKABOUTME; what's better, gen tris or render points?
+            this._mesh._primType = 'POINTS';
         },
         {
             drawOrder: function() {
@@ -152,11 +152,17 @@ x3dom.registerNodeType(
                     normals = normalNode._vf.vector;
                 }
 
-                var indices = this._vf.index.toGL();
-                if (indices.length == 0 && this.drawOrder() != "any") {
+                var indices = [];
+                if (this.drawOrder() != "any") {
+                    indices = this._vf.index.toGL();
+
                     // generate indices since also used for sorting
-                    for (var i=0, n=positions.length; i<n; i++) {
-                        indices[i] = i;
+                    if (indices.length == 0) {
+                        var i, n = positions.length;
+                        indices = new Array(n);
+                        for (i = 0; i < n; i++) {
+                            indices[i] = i;
+                        }
                     }
                 }
 
@@ -177,9 +183,19 @@ x3dom.registerNodeType(
             {
                 var pnts = null;
 
-                if(fieldName == 'index')
+                if (fieldName == "index")
                 {
                     this._mesh._indices[0] = this._vf.index.toGL();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.indexes = true;
+                    });
+                }
+                else if (fieldName == "size")
+                {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.specialAttribs = true;
+                    });
                 }
                 else if (fieldName == "coord")
                 {
@@ -187,10 +203,26 @@ x3dom.registerNodeType(
 
                     this._mesh._positions[0] = pnts.toGL();
 
+                    var indices = [];
+                    if (this.drawOrder() != "any") {
+                        indices = this._vf.index.toGL();
+
+                        // generate indices since also used for sorting
+                        if (indices.length == 0) {
+                            var i, n = pnts.length;
+                            indices = new Array(n);
+                            for (i = 0; i < n; i++) {
+                                indices[i] = i;
+                            }
+                        }
+                    }
+                    this._mesh._indices[0] = indices;
+
                     this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node._dirty.indexes = true;
                         node.invalidateVolume();
                     });
                 }

@@ -233,7 +233,6 @@ x3dom.gfx_webgl = (function () {
             //Check if we need a new shader
             shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
-
             if (!needFullReInit && shape._webgl.binaryGeometry == 0)    // THINKABOUTME: What about PopGeo & Co.?
             {
                 for (q = 0; q < shape._webgl.positions.length; q++)
@@ -368,29 +367,21 @@ x3dom.gfx_webgl = (function () {
                         shape._dirty.texcoords = false;
                     }
 
-                    if (shape._dirty.ids == true) {
-                        if (shape._webgl.shader.texcoord !== undefined) {
-                            shape._webgl.texcoords[q] = geoNode._mesh._texCoords[q];
+                    if (shape._dirty.specialAttribs == true) {
+                        if (shape._webgl.shader.particleSize !== undefined) {
+                            var szArr = geoNode._vf.size.toGL();
 
-                            gl.deleteBuffer(shape._webgl.buffers[q6 + 3]);
+                            if (szArr.length) {
+                                gl.deleteBuffer(shape._webgl.buffers[q6 + 5]);
+                                shape._webgl.buffers[q6 + 5] = gl.createBuffer();
 
-                            texCoordBuffer = gl.createBuffer();
-                            shape._webgl.buffers[q6 + 3] = texCoordBuffer;
+                                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 5]);
+                                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(szArr), gl.STATIC_DRAW);
+                            }
 
-                            texCoords = new Float32Array(shape._webgl.texcoords[q]);
-
-                            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-                            gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
-
-                            gl.vertexAttribPointer(shape._webgl.shader.texCoord,
-                                geoNode._mesh._numTexComponents,
-                                shape._webgl.texCoordType, false,
-                                shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-
-                            texCoords = null;
+                            shape._dirty.specialAttribs = false;
                         }
-
-                        shape._dirty.texcoords = false;
+                        // Maybe other special attribs here, though e.g. AFAIK only BG (which not handled here) has ids.
                     }
                 }
             }

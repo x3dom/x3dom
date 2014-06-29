@@ -79,6 +79,7 @@ x3dom.registerNodeType(
                 normals: true,
                 texcoords: true,
                 colors: true,
+                specialAttribs: true,   // e.g., particleSize, IDs,...
                 indexes: true,
                 texture: true,
                 material: true,
@@ -93,12 +94,10 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
-        
         },
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
-
                 // attention, in contrast to other collectDrawableObjects()
                 // this one has boolean return type to better work with RSG
                 var graphState = this.graphState();
@@ -211,7 +210,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = false;
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
-                this._dirty.colors =  false;
+                this._dirty.colors = false;
+                this._dirty.specialAttribs = false;
                 // indices/topology
                 this._dirty.indexes = false;
                 // appearance properties
@@ -225,7 +225,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = false;
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
-                this._dirty.colors =  false;
+                this._dirty.colors = false;
+                this._dirty.specialAttribs = false;
                 this._dirty.indexes = false;
             },
 
@@ -234,7 +235,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = true;
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
-                this._dirty.colors =  true;
+                this._dirty.colors = true;
+                this._dirty.specialAttribs = true;
                 // indices/topology
                 this._dirty.indexes = true;
                 // appearance properties
@@ -259,6 +261,7 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.specialAttribs = true;
                 this._dirty.indexes = true;
                 // finally invalidate volume
                 this.invalidateVolume();
