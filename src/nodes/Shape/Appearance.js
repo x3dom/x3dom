@@ -159,7 +159,8 @@ x3dom.registerNodeType(
 
             checkSortType: function() {
                 if (this._vf.sortType == 'auto') {
-                    if (this._cf.material.node && this._cf.material.node._vf.transparency > 0) {
+                    if (this._cf.material.node && (this._cf.material.node._vf.transparency > 0 ||
+                        this._cf.material.node._vf.backTransparency && this._cf.material.node._vf.backTransparency > 0)) {
                         this._vf.sortType = 'transparent';
                     }
                     else if (this._cf.texture.node && this._cf.texture.node._vf.url.length) {

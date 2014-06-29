@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "TwoSidedMaterial",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DMaterialNode,
+    defineClass(x3dom.nodeTypes.Material,
         
         /**
          * Constructor for TwoSidedMaterial

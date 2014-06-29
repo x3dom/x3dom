@@ -23,6 +23,20 @@
 					 
 	return shaderPart;
 };
+
+/*******************************************************************************
+ * TwoSidedMaterial
+ ********************************************************************************/
+x3dom.shader.twoSidedMaterial = function() {
+    var shaderPart = "uniform vec3  backDiffuseColor;\n" +
+                     "uniform vec3  backSpecularColor;\n" +
+                     "uniform vec3  backEmissiveColor;\n" +
+                     "uniform float backShininess;\n" +
+                     "uniform float backTransparency;\n" +
+                     "uniform float backAmbientIntensity;\n";
+
+    return shaderPart;
+};
 						 
 /*******************************************************************************
 * Fog
@@ -324,7 +338,7 @@ x3dom.shader.light = function(numLights) {
 	
 	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin)\n" +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -352,7 +366,7 @@ x3dom.shader.light = function(numLights) {
 					"   float NdotL = clamp(dot(L, N), 0.0, 1.0);\n" +
 					"   float NdotH = clamp(dot(H, N), 0.0, 1.0);\n" +
 					
-					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
+					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
 					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
                     "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +

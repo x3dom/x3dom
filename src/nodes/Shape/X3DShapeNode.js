@@ -179,7 +179,9 @@ x3dom.registerNodeType(
             },
 
             isSolid: function() {
-                return this._cf.geometry.node._vf.solid;
+                var twoSidedMat = (this._cf.appearance.node && this._cf.appearance.node._cf.material.node &&
+                                   x3dom.isa(this._cf.appearance.node._cf.material.node, x3dom.nodeTypes.TwoSidedMaterial));
+                return this._cf.geometry.node._vf.solid && !twoSidedMat;
             },
 
             isCCW: function() {

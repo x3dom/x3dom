@@ -482,7 +482,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     shader += "uniform mat4 viewMatrixInverse;\n";
 	
 	//Material
-	shader += x3dom.shader.material();
+    shader += x3dom.shader.material();
+
+    if (properties.TWOSIDEDMAT ) {
+        shader += x3dom.shader.twoSidedMaterial();
+    }
 	
 	//Colors
 	if(properties.VERTEXCOLOR){
@@ -590,6 +594,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     //gamma-adjusting actively before doing lighting computations. At the end
     //the color value is encoded again. See shader propery GAMMACORRECTION.
     shader += "vec4 color;\n";
+
 	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
 
@@ -628,7 +633,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
 		shader += "vec3 eye 	  = -fragPosition.xyz;\n";
-        shader += "float shin     = shininess;\n";
+
+        shader += "float _shininess     = shininess;\n";
+        shader += "vec3 _specularColor  = specularColor;\n";
+        shader += "vec3 _emissiveColor  = emissiveColor;\n";
+        shader += "float _ambientIntensity = ambientIntensity;\n";
 		
 		//Normalmap
 		if(properties.NORMALMAP){
@@ -651,13 +660,22 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 
         if(properties.SHINMAP){
-            shader += "shin = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+            shader += "_shininess = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
         }
 		
 		//Solid
-		if(!properties.SOLID) {
+		if(!properties.SOLID || properties.TWOSIDEDMAT) {
 			shader += "if (dot(normal, eye) < 0.0) {\n";
 			shader += "  normal *= -1.0;\n";
+            if(properties.SEPARATEBACKMAT) {
+                shader += "  color.rgb = " + x3dom.shader.decodeGamma(properties, "backDiffuseColor") + ";\n";
+                shader += "  color.a = 1.0 - backTransparency;\n";
+                shader += "  _shininess = backShininess;\n";
+                shader += "  _emissiveColor = backEmissiveColor;\n";
+                shader += "  _specularColor = backSpecularColor;\n";
+                shader += "  _ambientIntensity = backAmbientIntensity;\n";
+            }
+
 			shader += "}\n";
 		}
 		
@@ -677,7 +695,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                                     "light"+l+"_AmbientIntensity, " +
                                     "light"+l+"_BeamWidth, " +
                                     "light"+l+"_CutOffAngle, " +
-                                    "normal, eye, shin);\n";
+                                    "normal, eye, _shininess, _ambientIntensity);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";
@@ -714,17 +732,17 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "color.a *= texColor.a;\n";
 			}
 			if(properties.BLENDING){
-				shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor);\n";
 				if(properties.CUBEMAP) {
 					shader += "color.rgb = mix(color.rgb, texColor.rgb, vec3(0.75));\n";
 				} else {
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 			}else{
-				shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*specularColor);\n";
+				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*_specularColor);\n";
 			}
 		}else{
-			shader += "color.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*specularColor);\n";
+			shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor);\n";
 		}
 		
 	} else {

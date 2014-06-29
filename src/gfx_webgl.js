@@ -1940,6 +1940,7 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         var mat = s_app ? s_app._cf.material.node : null;
         var shader = s_app ? s_app._shader : null;
+        var twoSidedMat = false;
 
         var isUserDefinedShader = shader && x3dom.isa(shader, x3dom.nodeTypes.ComposedShader);
 
@@ -1989,6 +1990,15 @@ x3dom.gfx_webgl = (function () {
             sp.shininess = mat._vf.shininess;
             sp.ambientIntensity = mat._vf.ambientIntensity;
             sp.transparency = mat._vf.transparency;
+            if (x3dom.isa(mat, x3dom.nodeTypes.TwoSidedMaterial)) {
+                twoSidedMat = true;
+                sp.backDiffuseColor = mat._vf.backDiffuseColor.toGL();
+                sp.backSpecularColor = mat._vf.backSpecularColor.toGL();
+                sp.backEmissiveColor = mat._vf.backEmissiveColor.toGL();
+                sp.backShininess = mat._vf.backShininess;
+                sp.backAmbientIntensity = mat._vf.backAmbientIntensity;
+                sp.backTransparency = mat._vf.backTransparency;
+            }
         }
         else {
             sp.diffuseColor = [1.0, 1.0, 1.0];
@@ -2206,7 +2216,7 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.lineWidth(1);
         }
 
-        if (shape.isSolid()) {
+        if (shape.isSolid() && !twoSidedMat) {
             this.stateManager.enable(gl.CULL_FACE);
 
             if (shape.isCCW()) {
