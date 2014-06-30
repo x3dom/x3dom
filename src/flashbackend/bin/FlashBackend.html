@@ -7,27 +7,21 @@
 </head>
 
 <body>
-<X3D id="x3d" showLog="false" width="800px" height="600px">
-    <Scene>
-    	<Background skyColor="1 1 1"></Background>
-	    <Transform translation="-2 0 0">
-	        <Fog visibilityRange='20'></Fog>
-	        <Shape>
-	            <Appearance>
-	                <Material diffuseColor='0.1 0.6 0.2' specularColor='.2 .2 .2' ></Material>
-	            </Appearance>
-	            <Box></Box>
-	        </Shape>
-	    </Transform>
-        <Transform translation="2 0 -5">
-            <Shape>
+<X3D width="400px" height="400px">
+  <Scene>
+    <Viewpoint position='0 0 10'></Viewpoint>
+    <Background skyColor="0.8 0.9 1.0"></Background>
+    <transform scale="1 1 0.1">             
+        <transform rotation="1 1 0 0.78">
+            <Shape DEF='thebox'>
                 <Appearance>
-                    <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' ></Material>
+                    <Material diffuseColor='0.8 0.8 0.8'></Material>
                 </Appearance>
                 <Box></Box>
             </Shape>
-        </Transform>
-    </Scene>
+        </transform>
+    </transform>
+  </Scene>
 </X3D>
 </body>
 </html>
