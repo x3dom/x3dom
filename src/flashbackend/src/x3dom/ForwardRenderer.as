@@ -78,7 +78,7 @@ package x3dom
 					}
 					
 					//Set Dynamic shader
-					this._context3D.setProgram( this._shaderCache.getDynamicShader(shape, lights) );
+					this._context3D.setProgram( this._shaderCache.getDynamicShader(shape, this._scene) );
 					
 					//Build ModelView-Matrix
 					this._mvMatrix.identity();
@@ -145,6 +145,15 @@ package x3dom
 						{
 							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  13, shape.texture.transform, true );
 						}
+					}
+					
+					// Associate fog paramenters
+					if (this._scene.fogType == 0.0 || this._scene.fogType == 1.0)
+					{
+						var fogColor : Array = _scene.fogColor;
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 11, Vector.<Number>([fogColor[0], fogColor[1], fogColor[2], this._scene.fogVisRange]));
+						// Set other constants for fog calculation, such as the base of the natural logarithm, for exponnential fog
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 12, Vector.<Number>([2.71828, 0.0, 0.0, 0.0]));
 					}
 					
 					for(var j:uint = 0; j<shape.vertexBuffer.length; j++) {

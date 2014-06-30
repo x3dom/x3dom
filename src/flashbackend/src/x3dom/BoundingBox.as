@@ -19,7 +19,7 @@ package x3dom
 		
 		public function BoundingBox()
 		{
-
+ 
 		}
 		
 		public static function Create(min:Vector3D, max:Vector3D) : BoundingBox

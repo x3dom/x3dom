@@ -158,6 +158,12 @@ x3dom.gfx_flash = (function () {
 
         //Setup the background
         this.setupBackground(background);
+		
+		// Get the fog node
+		var fog = scene.getFog();
+		
+		// Setup the fog
+		this.setupFog(fog);
 
         //Collect all drawableObjects
         scene.drawableCollection = null;
@@ -355,6 +361,26 @@ x3dom.gfx_flash = (function () {
                 transparency: background.getTransparency() });
             background._dirty = false;
         }
+    };
+	
+	/** setup Fog
+     *
+     */
+    Context.prototype.setupFog = function (fog) {
+		if (!fog || !fog._vf || fog._vf.visibilityRange <= 0.0) {
+			this.object.setFog({
+				color: null,
+				visibilityRange: -1.0,
+				fogType: -1.0
+			});
+			return;
+		};		
+		
+		this.object.setFog({
+			color: fog._vf.color.toGL(),
+			visibilityRange: fog._vf.visibilityRange,
+			fogType: (fog._vf.fogType === "LINEAR") ? 0.0 : 1.0
+		});
     };
 
     /** setup Shape
