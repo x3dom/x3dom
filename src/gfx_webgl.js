@@ -1428,19 +1428,6 @@ x3dom.gfx_webgl = (function () {
         var bufHeight = scene._webgl.fboPick.height;
         var x = lastX * ps;
         var y = (bufHeight - 1) - lastY * ps;
-        var sp = null;
-
-        switch (pickMode) {
-            case 0: sp = scene._webgl.pickShader;         break;
-            case 1: sp = scene._webgl.pickColorShader;    break;
-            case 2: sp = scene._webgl.pickTexCoordShader; break;
-            case 3: sp = scene._webgl.pickShader24;       break;
-            case 4: sp = scene._webgl.pickShaderId;       break;
-            default: break;
-        }
-        if (!sp) {   // error
-            return;
-        }
 
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         this.stateManager.viewport(0, 0, scene._webgl.fboPick.width, bufHeight);
@@ -1470,19 +1457,6 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.enable(gl.CULL_FACE);
         this.stateManager.disable(gl.BLEND);
 
-        this.stateManager.useProgram(sp);
-
-        // workaround for old graphics cards/ drivers
-        if (pickMode == 0)  //pop geo only here impl.
-        {
-            sp.PG_precisionLevel = 1.0;
-            sp.PG_powPrecision = 1.0;
-            sp.PG_maxBBSize = [0, 0, 0];
-            sp.PG_bbMin = [0, 0, 0];
-            sp.PG_bbMaxModF = [0, 0, 0];
-            sp.PG_bboxShiftVec = [0, 0, 0];
-        }
-
         if (x3dom.Utils.needLineWidth) {
             this.stateManager.lineWidth(2);     // bigger lines for better picking
         }
@@ -1502,6 +1476,19 @@ x3dom.gfx_webgl = (function () {
             var s_app = shape._cf.appearance.node;
             var s_msh = s_geo._mesh;
 
+            //Get shapes shader properties
+            var properties = shape.getShaderProperties(viewarea);
+
+            //Generate Dynamic picking shader
+            var sp = this.cache.getShaderByProperties(gl, shape, properties, pickMode);
+
+            if (!sp) {   // error
+                return;
+            }
+
+            //Bind shader
+            this.stateManager.useProgram(sp);
+
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
@@ -1511,16 +1498,12 @@ x3dom.gfx_webgl = (function () {
             sp.from = from.toGL();
             sp.sceneSize = sceneSize;
 
-            //Set ImageGeometry switch
-            sp.imageGeometry = s_gl.imageGeometry;
-            sp.popGeometry = s_gl.popGeometry;
+            // Set shadow ids if available
+            if(s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) {
+                sp.shadowIDs = (shape._vf.idOffset + x3dom.nodeTypes.Shape.objectID + 2);
+            }
 
-            // Set IDs perVertex switch
-            sp.writeShadowIDs = (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) ?
-                                (shape._vf.idOffset + x3dom.nodeTypes.Shape.objectID + 2) : 0;
-
-            sp.visibilityMap = 0.0;
-
+            // BoundingBox stuff
             if (s_gl.coordType != gl.FLOAT) {
                 if (!s_gl.popGeometry && (x3dom.Utils.isUnsignedType(s_geo._vf.coordType))) {
                     sp.bgCenter = s_geo.getMin().toGL();
@@ -1531,24 +1514,31 @@ x3dom.gfx_webgl = (function () {
                 sp.bgSize = s_geo._vf.size.toGL();
                 sp.bgPrecisionMax = s_geo.getPrecisionMax('coordType');
             }
-            else {
-                sp.bgCenter = bgCenter;
-                sp.bgSize = bgSize;
-                sp.bgPrecisionMax = 1;
-            }
 
-            if (s_gl.colorType != gl.FLOAT) {
+            if (pickMode == 1 && s_gl.colorType != gl.FLOAT) {
                 sp.bgPrecisionColMax = s_geo.getPrecisionMax('colorType');
-            } else {
-                sp.bgPrecisionColMax = 1.0;
             }
 
-            if (s_gl.texCoordType != gl.FLOAT) {
+            if (pickMode == 2 && s_gl.texCoordType != gl.FLOAT) {
                 sp.bgPrecisionTexMax = s_geo.getPrecisionMax('texCoordType');
-            } else {
-                sp.bgPrecisionTexMax = 1.0;
             }
 
+            //===========================================================================
+            // Set ClipPlanes
+            //===========================================================================
+            if (shape._clipPlanes) {
+                sp.modelViewMatrix = mat_view.mult(trafo).toGL();
+                sp.viewMatrixInverse = mat_view.inverse().toGL();
+                for (var cp = 0; cp < shape._clipPlanes.length; cp++) {
+                    var clip_trafo = shape._clipPlanes[cp].getCurrentTransform();
+
+                    sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(shape._clipPlanes[cp]._vf.plane).toGL();
+                    sp['clipPlane' + cp + '_CappingStrength'] = shape._clipPlanes[cp]._vf.cappingStrength;
+                    sp['clipPlane' + cp + '_CappingColor'] = shape._clipPlanes[cp]._vf.cappingColor.toGL();
+                }
+            }
+
+            //ImageGeometry stuff
             if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE)  // FIXME: mobile errors
             {
                 sp.IG_bboxMin = s_geo.getMin().toGL();
@@ -1596,11 +1586,10 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-            else if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) {
+            else if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) { //MultiPart
                 var shader = s_app._shader;
                 if(shader && x3dom.isa(s_app._shader, x3dom.nodeTypes.CommonSurfaceShader)) {
                     if (shader.getMultiVisibilityMap()) {
-                        sp.visibilityMap = 1.0;
                         sp.multiVisibilityMap = 0;
                         var visTex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
                         sp.multiVisibilityWidth = visTex.texture.width;
@@ -1699,7 +1688,7 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
+                if (pickMode == 1 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
 
                     gl.vertexAttribPointer(sp.texcoord,
@@ -1707,7 +1696,7 @@ x3dom.gfx_webgl = (function () {
                         shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.texcoord);
                 }
-                if (sp.color !== undefined && s_gl.buffers[q6 + 4]) {
+                if (pickMode == 2 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
 
                     gl.vertexAttribPointer(sp.color,
@@ -3201,11 +3190,11 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = null;
 
             //Set picking shaders
-            scene._webgl.pickShader = this.cache.getShader(gl, x3dom.shader.PICKING);
+            /*scene._webgl.pickShader = this.cache.getShader(gl, x3dom.shader.PICKING);
             scene._webgl.pickShader24 = this.cache.getShader(gl, x3dom.shader.PICKING_24);
             scene._webgl.pickShaderId = this.cache.getShader(gl, x3dom.shader.PICKING_ID);
             scene._webgl.pickColorShader = this.cache.getShader(gl, x3dom.shader.PICKING_COLOR);
-            scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);
+            scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);*/
 
             scene._webgl.normalShader = this.cache.getShader(gl, x3dom.shader.NORMAL);
 
