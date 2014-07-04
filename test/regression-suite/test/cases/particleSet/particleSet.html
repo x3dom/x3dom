@@ -29,31 +29,43 @@
 </div>
 
 <script type="text/javascript">
-	document.onload = function()
-	{
-		var ps = document.getElementById("ps");
-        ps.setAttribute("mode", "ViewDirQuads");
-        ps.setFieldValue("mode", "Points");
-
-        var ref = ps.requestFieldRef("mode");
-        console.log(ref);
-        ref = "ViewDirQuads";   // Attention, cannot work, is primitive data type, fix in source!
-        ps.releaseFieldRef("mode");
-
-        console.log(ps._x3domNode._vf.mode);
-        ps.setAttribute("mode", "ViewDirQuads");
-	};
-
     function changeParticles()
     {
-        var mat = document.getElementsByTagName("Color");
-        mat[0].setAttribute("color", '0 1 0, 0 0 1, 1 0 0, 1 1 1');
-
-        var pnt = document.getElementsByTagName("Coordinate");
-        pnt[0].setAttribute("point", '0 1 1, 2 2 2, 3 2 2, -1 -1 -1');
-
-        var ps = document.getElementById("ps");
-        ps.setAttribute("size", '3 3 3, 2 2 2, .5 .5 .5, 1 1 1');
+        //manipulate position values
+        var coordDOMNode  = document.getElementsByTagName("Coordinate")[0];
+        var coordinateObj = coordDOMNode.requestFieldRef("point");
+        
+        coordinateObj[0] = new x3dom.fields.SFVec3f(0, 1, 1);
+        coordinateObj[1] = new x3dom.fields.SFVec3f(2, 2, 2);
+        coordinateObj[2] = new x3dom.fields.SFVec3f(3, 2, 2);
+        coordinateObj.push(new x3dom.fields.SFVec3f(-1, -1, -1));
+        
+        coordDOMNode.releaseFieldRef("point");
+    
+    
+        //manipulate particle size values
+        var particleSetDOMNode = document.getElementById("ps");
+        var sizeObj            = particleSetDOMNode.requestFieldRef("size");
+        
+        sizeObj[0] = new x3dom.fields.SFVec3f(3, 3, 3);
+        sizeObj[1] = new x3dom.fields.SFVec3f(2, 2, 2);
+        sizeObj[2] = new x3dom.fields.SFVec3f(0.5, 0.5, 0.5);
+        sizeObj.push(new x3dom.fields.SFVec3f(1, 1, 1));
+        
+        particleSetDOMNode.releaseFieldRef("size");
+        
+        
+        //manipulate color values
+        var colorDOMNode = document.getElementsByTagName("Color")[0];         
+        
+        var colorObj = colorDOMNode.requestFieldRef("color");
+        
+        colorObj[0] = new x3dom.fields.SFColor(0, 1, 0);
+        colorObj[1] = new x3dom.fields.SFColor(0, 0, 1);
+        colorObj[2] = new x3dom.fields.SFColor(1, 0, 0);
+        colorObj.push(new x3dom.fields.SFColor(1, 1, 1));
+        
+        colorDOMNode.releaseFieldRef("color");
     }
 </script>
 </body>
