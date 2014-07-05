@@ -2709,7 +2709,7 @@ x3dom.gfx_webgl = (function () {
         
         var scene = viewarea._scene;
         
-        if (scene._vf.pickOnNav || (!viewarea._isMoving && !viewarea._isAnimating)) 
+        if (scene._forcePicking || scene._vf.pickOnNav || (!viewarea._isMoving && !viewarea._isAnimating)) 
         {
             var gl = this.ctx3d;
             

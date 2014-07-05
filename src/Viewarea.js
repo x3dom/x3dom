@@ -350,8 +350,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
             tmpMat = tmpMat.inverse();
 
+            this._scene._forcePicking = true;
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                         this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
+            this._scene._forcePicking = false;            
 
             if (this._pickingInfo.pickObj)
             {
@@ -471,6 +473,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var currProjMat = this.getProjectionMatrix();
 
             if (navType !== "freefly") {
+                this._scene._forcePicking = true;
                 if (step < 0) {
                     // backwards: negate viewing direction
                     tmpMat = new x3dom.fields.SFMatrix4f();
@@ -483,7 +486,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 else {
                     this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
                 }
-
+                this._scene._forcePicking = false;
                 if (this._pickingInfo.pickObj)
                 {
                     dist = this._pickingInfo.pickPos.subtract(this._from).length();
@@ -508,8 +511,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
                 tmpMat = tmpMat.inverse();
 
+                this._scene._forcePicking = true;
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                             this._lastButton, tmpMat, currProjMat.mult(tmpMat));
+                this._scene._forcePicking = false;            
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -552,7 +557,9 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
+        this._scene._forcePicking = true;
         this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
+        this._scene._forcePicking = false;
 
         if (this._pickingInfo.pickObj)
         {

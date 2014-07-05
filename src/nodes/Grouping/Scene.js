@@ -92,6 +92,8 @@ x3dom.registerNodeType(
             this.loadMapping();
 
             this._multiPartMap = null;
+            
+            this._forcePicking = false;
         
         },
         {
