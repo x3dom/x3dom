@@ -1552,7 +1552,7 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 {
-    if (this._doc._x3dElem.hasAttribute() &&
+    if (this._doc._x3dElem.hasAttribute('disableDoubleClick') &&
         this._doc._x3dElem.getAttribute('disableDoubleClick') === 'true') {
         return;
     }
