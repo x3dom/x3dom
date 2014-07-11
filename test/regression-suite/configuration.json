@@ -47,6 +47,34 @@
                         }
                     ]
             },
+			{
+                "url"   : "/test/cases/screenGroup/screenGroup.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "move_vp1();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
             {
                 "url"   : "/test/cases/text/text.html",
                 "steps" :
