@@ -1271,8 +1271,9 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
                 {
                     childNode = node._childNodes[i];
 
-                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode))
+                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode) && childNode._vf["enabled"])
                     {
+                        
                         affectedPointingSensorsList.push(childNode);
                     }
                 }
