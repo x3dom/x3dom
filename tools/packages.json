@@ -278,6 +278,9 @@
                     {"file": "GeoTransform.js"},
                     {"file": "GeoViewpoint.js"}
                 ]},
+                {"name": "Layout", "filePrefix": "nodes/Layout/", "files":[
+                    {"file": "ScreenGroup.js"}
+                ]},
                 {"name": "Geometry2D", "filePrefix": "nodes/Geometry2D/", "files":[
                     {"file": "X3DPlanarGeometryNode.js"},
                     {"file": "Arc2D.js"},
