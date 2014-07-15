@@ -350,8 +350,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
             tmpMat = tmpMat.inverse();
 
+            this._scene._forcePicking = true;
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                         this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
+            this._scene._forcePicking = false;            
 
             if (this._pickingInfo.pickObj)
             {
@@ -471,6 +473,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var currProjMat = this.getProjectionMatrix();
 
             if (navType !== "freefly") {
+                this._scene._forcePicking = true;
                 if (step < 0) {
                     // backwards: negate viewing direction
                     tmpMat = new x3dom.fields.SFMatrix4f();
@@ -483,7 +486,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 else {
                     this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
                 }
-
+                this._scene._forcePicking = false;
                 if (this._pickingInfo.pickObj)
                 {
                     dist = this._pickingInfo.pickPos.subtract(this._from).length();
@@ -508,8 +511,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
                 tmpMat = tmpMat.inverse();
 
+                this._scene._forcePicking = true;
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                             this._lastButton, tmpMat, currProjMat.mult(tmpMat));
+                this._scene._forcePicking = false;            
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -552,7 +557,9 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
+        this._scene._forcePicking = true;
         this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
+        this._scene._forcePicking = false;
 
         if (this._pickingInfo.pickObj)
         {
@@ -1264,8 +1271,9 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
                 {
                     childNode = node._childNodes[i];
 
-                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode))
+                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode) && childNode._vf["enabled"])
                     {
+                        
                         affectedPointingSensorsList.push(childNode);
                     }
                 }
@@ -1545,7 +1553,8 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 {
-    if (this._doc.properties.getProperty('disableDoubleClick', 'false') === 'true') {
+    if (this._doc._x3dElem.hasAttribute('disableDoubleClick') &&
+        this._doc._x3dElem.getAttribute('disableDoubleClick') === 'true') {
         return;
     }
     
