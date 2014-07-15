@@ -293,7 +293,12 @@ x3dom.registerNodeType(
             createColorData: function ()
             {
                 var diffuseColor, transparency, rgba;
+
                 var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
+
+                //scale image data array size to the next highest power of two
+                size = x3dom.Utils.nextHighestPowerOfTwo(size);
+
                 var colorData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
