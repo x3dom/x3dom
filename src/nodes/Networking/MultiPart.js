@@ -330,6 +330,10 @@ x3dom.registerNodeType(
             {
                 var i, j;
                 var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
+
+                //scale image data array size to the next highest power of two
+                size = x3dom.Utils.nextHighestPowerOfTwo(size);
+                
                 var visibilityData = size + " " + size + " 1";
 
                 for (i=0; i<size*size; i++)
