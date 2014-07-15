@@ -285,7 +285,7 @@ x3dom.registerNodeType(
                                 //for non-indexed rendering, we assume that all attributes have the same count
                                 if (mesh["indices"] == "")
                                 {
-                                    shape._webgl.drawCount = attributeView["count"];
+                                    shape._webgl.drawCount[meshIdx] = attributeView["count"];
                                     //TODO: add support for LINES and POINTS
                                     this._mesh._numFaces += attributeView["count"] / 3;
                                 }
