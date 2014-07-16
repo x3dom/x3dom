@@ -82,8 +82,6 @@ x3dom.registerNodeType(
             this._multiPartMap = null;
             
             this._forcePicking = false;
-
-            this._numberOfClipPlanes = 0;
         
         },
         {

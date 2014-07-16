@@ -91,15 +91,14 @@ x3dom.registerNodeType(
             },
 
             nodeChanged: function () {
-                this._nameSpace.doc._scene._numberOfClipPlanes++;
+                x3dom.nodeTypes.ClipPlane.count++;
             },
 
             onRemove: function() {
-                this._nameSpace.doc._scene._numberOfClipPlanes--;
+                x3dom.nodeTypes.ClipPlane.count--;
             },
 
             parentAdded: function(parent) {
-                //TODO
             },
 
             parentRemoved: function(parent) {
@@ -108,3 +107,6 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/** Static class ID counter (needed for caching) */
+x3dom.nodeTypes.ClipPlane.count = 0;
