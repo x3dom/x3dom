@@ -74,7 +74,7 @@ x3dom.registerNodeType(
                 }
 
 
-                if (drawableCollection.viewarea._scene._vf.experimentalClipPlanes == true) {
+                if (drawableCollection.viewarea._scene._numberOfClipPlanes > 0) {
                     var localClipPlanes = [];
 
                     for (var j = 0, n = this._childNodes.length; j < n; j++) {

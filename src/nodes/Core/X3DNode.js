@@ -111,6 +111,7 @@ x3dom.registerNodeType(
                                 }
                                 for (var j = this._childNodes.length - 1; j >= 0; j--) {
                                     if (this._childNodes[j] === node) {
+                                        node.onRemove();
                                         this._childNodes.splice(j, 1);
                                         return true;
                                     }
@@ -120,6 +121,10 @@ x3dom.registerNodeType(
                     }
                 }
                 return false;
+            },
+
+            onRemove: function() {
+                // to be overwritten by concrete classes
             },
 
             parentAdded: function(parent) {

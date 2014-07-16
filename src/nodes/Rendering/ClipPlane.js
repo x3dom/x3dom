@@ -91,7 +91,11 @@ x3dom.registerNodeType(
             },
 
             nodeChanged: function () {
-                //TODO
+                this._nameSpace.doc._scene._numberOfClipPlanes++;
+            },
+
+            onRemove: function() {
+                this._nameSpace.doc._scene._numberOfClipPlanes--;
             },
 
             parentAdded: function(parent) {
