@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Circle2D ### */
@@ -14,10 +13,40 @@ x3dom.registerNodeType(
     "Circle2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Circle2D
+         * @constructs x3dom.nodeTypes.Circle2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Circle2D node specifies a circle centred at (0,0) in the local 2D coordinate system.
+         */
         function (ctx) {
             x3dom.nodeTypes.Circle2D.superClass.call(this, ctx);
 
+
+            /**
+             * The radius field specifies the radius of the Circle2D. The value of radius shall be greater than zero.
+             * @var {x3dom.fields.SFFloat} radius
+             * @memberof x3dom.nodeTypes.Circle2D
+             * @initvalue 1
+             * @range (0, inf)
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1);
+
+            /**
+             * Number of segments the circle is composed of
+             * @var {x3dom.fields.SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this._mesh._primType = 'LINES';
@@ -60,6 +89,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

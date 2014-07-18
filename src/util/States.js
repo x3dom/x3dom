@@ -39,7 +39,7 @@ x3dom.States = function (x3dElem) {
     this.viewer.appendChild(this.infoList);
 
     /**
-     *
+     * Disable the context menu
      */
     this.disableContextMenu = function (e) {
         e.preventDefault();
@@ -49,14 +49,14 @@ x3dom.States = function (x3dElem) {
     };
 
     /**
-     *
+     * Add a seperator for thousands to the string
      */
     this.thousandSeperator = function (value) {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
     /**
-     *
+     * Return numerical value to fixed length
      */
     this.toFixed = function (value) {
         var fixed = (value < 1) ? 2 : (value < 10) ? 2 : 2;
@@ -64,7 +64,7 @@ x3dom.States = function (x3dElem) {
     };
 
     /**
-     *
+     * Update the states.
      */
     this.update = function () {
         if (!x3dElem.runtime && this.updateMethodID !== undefined) {
@@ -128,7 +128,7 @@ x3dom.States = function (x3dElem) {
 };
 
 /**
- *
+ * Display the states
  */
 x3dom.States.prototype.display = function (value) {
     this.active = (value !== undefined) ? value : !this.active;

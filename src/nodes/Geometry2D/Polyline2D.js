@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Polyline2D ### */
@@ -14,9 +13,31 @@ x3dom.registerNodeType(
     "Polyline2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Polyline2D
+         * @constructs x3dom.nodeTypes.Polyline2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Polyline2D node specifies a series of contiguous line segments in the local 2D coordinate
+         *  system connecting the specified vertices.
+         */
         function (ctx) {
             x3dom.nodeTypes.Polyline2D.superClass.call(this, ctx);
 
+
+            /**
+             * The lineSegments field specifies the vertices to be connected.
+             * @var {x3dom.fields.MFVec2f} lineSegments
+             * @memberof x3dom.nodeTypes.Polyline2D
+             * @initvalue []
+             * @range (-inf, inf)
+             * @field x3dom
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'lineSegments', []);
 
             this._mesh._primType = 'LINES';
@@ -52,6 +73,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

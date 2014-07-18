@@ -9,8 +9,44 @@
   <body>
     <x3d id='x3d' showStat='false' showLog='false' width='800px' height='600px'>
       <scene DEF='scene'>
-      <Viewpoint position="-15.27539 -8.50736 50.59314" orientation="0.24287 -0.10319 -0.96456 1.35688"
-                 zNear="0.01705" zFar="170.53326" description="defaultX3DViewpointNode"></Viewpoint>
+      <Viewpoint position="-8.40196 24.34261 -57.88320" orientation="0.01346 0.98225 0.18709 3.28984"
+                 zNear="0.01702" zFar="170.23677" description="defaultX3DViewpointNode"></Viewpoint>
+
+        <GeoLocation geoCoords='8.65985 49.8744 69.649' geoSystem='"GD" "WE" "longitude_first"' containerField='children'>
+          <geoOrigin geoSystem='"GD" "WE" "longitude_first"' geoCoords='8.65985400721 49.8743893062 59.648964311' rotateYUp='true'></geoOrigin>
+          <Group>
+            <Transform rotation='1 0 0 3.1415'>
+              <Shape>
+                <Appearance>
+                    <Material DEF="yellowM" diffuseColor='1 1 0'>
+                    </Material>
+                </Appearance> 
+                <Cone DEF="pointy" bottomRadius='1' height='10'>
+                </Cone>
+              </Shape>
+            </Transform>
+            <Transform rotation="1 0 0 1.57">
+              <Shape>
+                <Appearance>
+                  <Material DEF="redM" diffuseColor='1 0 0'>
+                  </Material>
+                </Appearance>
+                <Cone USE="pointy">
+                </Cone>
+              </Shape>
+            </Transform>
+          </Group>
+        </GeoLocation>
+
+        <Shape>
+          <Appearance>
+            <Material USE="yellowM">
+            </Material>
+          </Appearance> 
+            <Box DEF="YisUp" size='2 15 2'>
+            </Box>
+        </Shape>
+      
         <group DEF='Layer_geb_IGD_LoD3t' bboxCenter='8.65985 49.8744 59.649' bboxSize='0.00160206 0.000953474 20.8681'>
           <group DEF='Layer_geb_IGD_LoD3t_73212555-63f8-4b96-a184-80061704eeeb' bboxCenter='8.65989 49.8743 59.649' bboxSize='0.0010336 0.0005819 20.8681'>
             <group DEF='Layer_Aufbau' bboxCenter='8.65992 49.8741 68.883' bboxSize='0.000838723 0.000162995 2.4'>

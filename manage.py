@@ -80,11 +80,12 @@ from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
-from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
+from tools.packages import FULL_PROFILE, CORE_PROFILE, EXTENSIONS, prefix_path
 
 
 PROJECT_ROOT = os.path.dirname(__file__)
 SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')
+LIB_ROOT = os.path.join(PROJECT_ROOT, 'lib')
 DIST_ROOT = os.path.join(PROJECT_ROOT, 'dist')
 DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc')
 GUIDE_ROOT = os.path.join(DOC_ROOT, 'guide')
@@ -109,14 +110,14 @@ def build(mode='production'):
         packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    print("\nBundling components...")
+    print("\nBundling extensions...")
     nodes_dest = os.path.join(DIST_ROOT, 'components')
 
     if not os.path.exists(nodes_dest):
         os.makedirs(nodes_dest)
         
-    for (component, files) in COMPONENTS:
-        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component)), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
+    for (component, files) in EXTENSIONS:
+        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component + '.js')), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
 
         try:
             """
@@ -149,9 +150,9 @@ def build(mode='production'):
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/dash.all.js', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/ammo.js', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/dash.all.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/ammo.js', DIST_ROOT)
+    #shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
     # end other files
 
 def _build_examples():

@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### TriangleSet2D ### */
@@ -14,12 +13,34 @@ x3dom.registerNodeType(
     "TriangleSet2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for TriangleSet2D
+         * @constructs x3dom.nodeTypes.TriangleSet2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The TriangleSet2D node specifies a set of triangles in the local 2D coordinate system.
+         */
         function (ctx) {
             x3dom.nodeTypes.TriangleSet2D.superClass.call(this, ctx);
 
-            this.addField_MFVec2f(ctx, 'vertices', []);
-            this.addField_MFVec2f(ctx, 'lineSegments', []);
 
+            /**
+             * The vertices field specifies the triangles to be displayed. The number of vertices provided shall be
+             *  evenly divisible by three.
+             * @var {x3dom.fields.MFVec2f} vertices
+             * @memberof x3dom.nodeTypes.TriangleSet2D
+             * @initvalue []
+             * @range (-inf, inf)
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFVec2f(ctx, 'vertices', []);
+
+            
             var x = 0, y = 0;
             if (this._vf.vertices.length) {
                 x = this._vf.vertices[0].x;
@@ -85,10 +106,11 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName == "vertices" || fieldName == "lineSegments") {
+                if (fieldName == "vertices") {
                     this._mesh._positions[0] = [];
                     this._mesh._indices[0] = [];
                     this._mesh._normals[0] = [];

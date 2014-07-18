@@ -56,6 +56,7 @@ package x3dom {
 			ExternalInterface.addCallback("setMeshProperties", setMeshProperties);
 			ExternalInterface.addCallback("removeTexture", removeTexture);
 			ExternalInterface.addCallback("setFPS", setFPS);
+			ExternalInterface.addCallback("setFog", setFog);
 		}
 		
 		private function renderScene() : void
@@ -223,9 +224,6 @@ package x3dom {
 				case "BinaryGeometry":
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
 					break;
-				case "BitLODGeometry":
-					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
-					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
 					break;
@@ -270,9 +268,6 @@ package x3dom {
 					break;
 				case "BinaryGeometry":
 					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, value );
-					break;
-				case "BitLODGeometry":
-					this._scene.getDrawableObject( uint(value.id) ).shape.setComponents(value);
 					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
@@ -321,6 +316,13 @@ package x3dom {
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = null;
 		}
 
+		private function setFog(value:Object) : void 
+		{	
+			this._scene.fogColor = value.color as Array;
+			this._scene.fogVisRange = Number(value.visibilityRange);
+			this._scene.fogType = Number(value.fogType);
+		}
+		
 	}
 	
 }

@@ -9,9 +9,10 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-/*
- * @namespace Namespace container for x3dom objects.
- */
+/**
+ * The Namespace container for x3dom objects.
+ * @namespace x3dom
+ * */
 var x3dom = {
     canvases : [],
 
@@ -21,13 +22,22 @@ var x3dom = {
     xhtmlNS  : 'http://www.w3.org/1999/xhtml'
 };
 
-/** @namespace the x3dom.nodeTypes namespace. */
+/**
+ * The x3dom.nodeTypes namespace.
+ * @namespace x3dom.nodeTypes
+ * */
 x3dom.nodeTypes = {};
 
-/** @namespace the x3dom.nodeTypesLC namespace. Stores nodetypes in lowercase */
+/**
+ * The x3dom.nodeTypesLC namespace. Stores nodetypes in lowercase
+ * @namespace x3dom.nodeTypesLC
+ * */
 x3dom.nodeTypesLC = {};
 
-/** @namespace the x3dom.components namespace. */
+/**
+ * The x3dom.components namespace.
+ * @namespace x3dom.components
+ * */
 x3dom.components = {};
 
 /** Cache for primitive nodes (Box, Sphere, etc.) */

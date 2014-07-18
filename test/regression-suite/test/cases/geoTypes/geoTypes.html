@@ -8,7 +8,8 @@
 <body>
 <X3D id="x3d" width="800px" height="600px">
     <Scene>
-        <Viewpoint position="0 0 100"></Viewpoint>
+        <environment frustumCulling='true'></environment>
+        <Viewpoint position="0.69700 -9.88500 129.55998"></Viewpoint>
         <Transform translation="-40 30 0">
             <Inline url="./binGeo.x3d"></Inline>
         </Transform>
@@ -36,6 +37,15 @@
         <Transform translation="40 -30 0">
             <Inline url="./popGeoipb.x3d"></Inline>
         </Transform>
+        <Transform translation="-40 -60 0">
+            <Inline url="./extGeo.x3d"></Inline>
+        </Transform>
+        <!--Transform translation="0 -60 0">
+          
+        </Transform>
+        <Transform translation="40 -60 0">
+        
+        </Transform-->
     </Scene>
 </X3D>
 <style>
@@ -58,6 +68,10 @@
     <tr>        <td>popGeo indexed</td>
         <td>popGeo indexed spherical</td>
         <td>popGeo indexed spherical protect-borders</td>
+    </tr>
+    <tr>        <td>extGeo</td>
+        <td>extGeo indexed</td>
+        <td>extGeo indexed compact</td>
     </tr>
 </table>
 

@@ -21,10 +21,20 @@ var title = obj.title;
 
         <div class="x3d-classification">
             <?js
-                if (doc.x3d)
+                if (doc.x3d )
                 {
-                    var link = "http://www.web3d.org/files/specifications/19775-1/V"+ doc.x3d.toLowerCase() + "/Part01/components/" + doc.component.toLowerCase() +".html#"+doc.name;
+                    if(doc.x3d == "x.x")
+                    {
             ?>
+            <div class="x3d-propdesc">
+                X3DOM
+            </div>
+            <?js
+                    }
+                    else
+                    {
+                        var link = "http://www.web3d.org/files/specifications/19775-1/V"+ doc.x3d.toLowerCase() + "/Part01/components/" + doc.component.toLowerCase() +".html#"+doc.name;
+             ?>
             <div class="x3d-propdesc">
                 X3D:
                 <div class="x3d-value ">
@@ -35,7 +45,10 @@ var title = obj.title;
                     <?js } ?>
                 </div>
             </div>
-            <?js } ?>
+            <?js
+                    }
+                }
+            ?>
             <?js if (doc.component) { ?>
             <div class="x3d-propdesc">
                 Component:
@@ -49,7 +62,7 @@ var title = obj.title;
             </div>
             <?js } ?>
             <?js
-            if (doc.status)
+            if (doc.status && doc.x3d != "x.x")
             {
                 var class = (doc.status == "full")
                 ? "status-full"

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+      <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+      <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+    <style>.x3dom-logContainer { bottom: 0px; position: absolute; }
+    </style>
+  </head>
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+
+    <x3d id='x3dElement' showStat='false' showLog='false' width="800px" height="600px">
+      <scene>
+          <Viewpoint position="0.00000 0.00000 13.31799" orientation="0.00000 0.00000 0.00000 0.00000" zNear="5.30955" zFar="26.06246" description="defaultX3DViewpointNode"></Viewpoint>
+          <transform translation="-6 0 0">
+              <shape>
+                  <appearance>
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                      <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <Nozzle id="geo4">
+                  </Nozzle>
+              </shape>
+          </transform>
+        <transform id="thor" translation="-3 0 0">
+          <shape>
+            <appearance>
+              <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+              <material diffuseColor='0.7 0.6 0.5' specularColor='0.3 0.3 0.3'></material>
+            </appearance><!-- 6.283185307179586 -->
+            <torus id="geo" insideOutsideRadius="true" innerRadius="0.5" outerRadius="1.0" angle="3.14159265359">
+            </torus>
+          </shape>
+        </transform>
+          <transform translation="0 0 0">
+              <shape>
+                <appearance>
+                  <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                  <material diffuseColor='0.7 0.5 0.3' specularColor='0.3 0.3 0.3'></material>
+                </appearance>
+                <cone id="geo1" bottomRadius="1.0" height="2.0" topRadius="0.5">
+                </cone>
+              </shape>
+          </transform>
+            <transform translation="-3 0 0">
+                <shape>
+                  <appearance>
+                    <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                    <material diffuseColor='0.4 0.5 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
+                  </appearance>
+                  <dish id="geod" radius="1" height="1" diameter="2">
+                  </dish>
+                </shape>
+            </transform>
+          <transform translation="3 0 0">
+              <shape>
+                  <appearance>
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                      <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <RectangularTorus id="geo2" innerRadius="0.5" outerRadius="1.0" height="1.0" angle="1.57">
+                  </RectangularTorus>
+              </shape>
+          </transform>
+          <transform translation="6 0 0">
+              <shape>
+                  <appearance>
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture -->
+                      <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <Pyramid id="geo3">
+                  </Pyramid>
+              </shape>
+          </transform>
+          <transform id="totalRevolution" translation="2 3 -1">
+              <shape>
+                <appearance>
+                  <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5" transparency="0"></material>
+                  <!--depthMode readOnly="true"></depthMode-->
+                </appearance>
+                <solidOfRevolution creaseAngle="0.8" crossSection='1 0.7, 1.5 1.5, 3 1.2, 4.5 1.5, 5 0.7, 4 0.7, 3 1, 2 0.7, 1 0.7'>
+                </solidOfRevolution>
+              </shape>
+          </transform>
+            <matrixTransform id="revolution" matrix="1 0 0 0, 0 1 0 0, 0 0 1 0, 2 0 0 1">
+                <shape>
+                  <appearance>
+                    <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
+                  </appearance>
+                  <solidOfRevolution id="geor" angle="1.57" subdivision="12" crossSection='-0.866 0.5, -0.5 0.866, 0 0.8, 0.5 0.866, 0.866 0.5'>
+                  </solidOfRevolution>
+                </shape>
+            </matrixTransform>
+      </scene>
+    </x3d>
+  <script>
+      function notified(elem, pos) {
+        x3dom.debug.logWarning(elem.getAttribute('id') + ": " + pos.toString());
+      }
+
+      document.onload = function() {
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("thor"), notified, 0, "all");
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("totalRevolution"), notified, 0, "all");
+        new x3dom.Moveable(document.getElementById("x3dElement"), document.getElementById("revolution"), notified, 0, "all");
+      }
+  </script>
+  </body>
+</html>

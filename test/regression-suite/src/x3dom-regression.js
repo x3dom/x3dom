@@ -16,7 +16,7 @@ function run(){
     if(!globals.publishOnly)
     {
         var testsuite = new TestSuite();
-        testsuite.startTesting(globals.configuration, function(){
+        testsuite.startTesting(function(){
 
         })
     }
@@ -60,23 +60,23 @@ function parseConfig()
                 var publisher = new rp.ResultsPublisher();
                 if(globals.publishOnly)
                 {
-                    publisher.publishResults(config.profiles, config.outputPath, function(){
+                    publisher.publishResults(config, function(){
                         //done;
                     });
                 }
                 else
                 {
-                    var testsuite = new ts.TestSuite();
-                    testsuite.startTesting(config, function(profile, results, callback){
+                    var testsuite = new ts.TestSuite(config);
+                    testsuite.startTesting(function(profile, results, id, callback){
                         if(!globals.testOnly)
                         {
-                            publisher.storeResults(profile, results, config.outputPath, callback);
+                            publisher.storeResults(profile, results, id, config, callback);
                         }
                         else{
                             callback();
                         }
                     }, function(){
-                        if(!globals.testOnly)publisher.publishResults(config.profiles, config.outputPath, function(){
+                        if(!globals.testOnly)publisher.publishResults(config, function(){
                             //done;
                         });
                     });
@@ -94,14 +94,13 @@ process.argv.forEach(function(val, index, array){
         if(val == '-c' || val == '--conservative')
         {
             console.log("Running in conservative mode");
-            globals.screenshotDelay = 1000;
+            globals.screenshotDelay = 5000;
         }
-        if(val == '-n' || val == '--no-aa')
-        {
-
-            console.log("Using reference folder: test/reference-no-aa");
-            globals.referencePath = "test/reference-no-aa/";
-        }
+//        if(val == '-n' || val == '--no-aa')
+//        {
+//            console.log("Using reference folder: test/reference-no-aa");
+//            globals.referencePath = "test/reference-no-aa/";
+//        }
         if(val == '-t' || val == '--testing-only')
         {
             globals.testOnly = true;

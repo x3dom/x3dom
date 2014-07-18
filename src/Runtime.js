@@ -24,7 +24,8 @@
 
 // Global runtime
 /**
- * @namespace Namespace container for Runtime module
+ * Namespace container for Runtime module
+ * @namespace x3dom.runtime
  */
 x3dom.runtime = {};
 
@@ -310,7 +311,7 @@ x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
  * Returns the viewing ray for a given (x, y) position.
  *
  * Returns:
- * 		Line object
+ * 		Ray object
  */
 x3dom.Runtime.prototype.getViewingRay = function(x, y) {
     return this.canvas.doc._viewarea.calcViewRay(x, y);
@@ -758,7 +759,7 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *    The min and max positions of the node's bounding box.
  */
 x3dom.Runtime.prototype.getBBox = function(domNode) {
-    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedNode"))
+    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject"))
     {
         var vol = domNode._x3domNode.getVolume();
 

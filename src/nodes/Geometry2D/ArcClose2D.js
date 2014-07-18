@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### ArcClose2D ### */
@@ -14,13 +13,74 @@ x3dom.registerNodeType(
     "ArcClose2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for ArcClose2D
+         * @constructs x3dom.nodeTypes.ArcClose2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The ArcClose node specifies a portion of a circle whose center is at (0,0) and whose angles are
+         *  measured starting at the positive x-axis and sweeping towards the positive y-axis.
+         */
         function (ctx) {
             x3dom.nodeTypes.ArcClose2D.superClass.call(this, ctx);
 
+
+            /**
+             * The end points of the arc specified are connected as defined by the closureType field.
+             * @var {x3dom.fields.SFString} closureType
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue "PIE"
+             * @range ["PIE" | "CHORD"]
+             * @field x3d
+             * @instance
+             */
             this.addField_SFString(ctx, 'closureType', "PIE");
+
+            /**
+             * The radius field specifies the radius of the circle of which the arc is a portion.
+             * @var {x3dom.fields.SFFloat} radius
+             * @memberof x3dom.nodeTypes.ArcClose2D
+             * @initvalue 1
+             * @range (0, inf)
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'radius', 1);
+
+            /**
+             * The arc extends from the startAngle counterclockwise to the endAngle.
+             * @var {x3dom.fields.SFFloat} startAngle
+             * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 0
+             * @range [-2 pi, 2pi]
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'startAngle', 0);
+
+            /**
+             * The arc extends from the startAngle counterclockwise to the endAngle.
+             * @var {x3dom.fields.SFFloat} endAngle
+             * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 1.570796
+             * @range [-2 pi, 2pi]
+             * @field x3d
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'endAngle', 1.570796);
+
+            /**
+             * Number of lines into which the arc is subdivided
+             * @var {x3dom.fields.SFFloat} subdivision
+             * @memberof x3dom.nodeTypes.Arc2D
+             * @initvalue 32
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var r = this._vf.radius;
@@ -131,6 +191,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

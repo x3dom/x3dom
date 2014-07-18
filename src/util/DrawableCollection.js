@@ -260,7 +260,7 @@ x3dom.DrawableCollection.prototype.calculatePriority = function (graphState) {
 };
 
 /**
- *
+ *  Concatenate opaque and transparent drawables
  */
 x3dom.DrawableCollection.prototype.concat = function () {
     var opaque = (this.collection['opaque'] !== undefined) ? this.collection['opaque'] : [];
@@ -271,14 +271,14 @@ x3dom.DrawableCollection.prototype.concat = function () {
 };
 
 /**
- *
+ *  Get drawable for id
  */
 x3dom.DrawableCollection.prototype.get = function (idx) {
     return this.collection[idx];
 };
 
 /**
- *
+ * Sort the DrawableCollection
  */
 x3dom.DrawableCollection.prototype.sort = function () {
     var opaque = [];

@@ -19,6 +19,7 @@ package x3dom
 	public class ForwardRenderer extends Renderer
 	{	
 		private var _mvMatrix:Matrix3D = new Matrix3D();
+		private var _mvMatNormals:Matrix3D = new Matrix3D();
 		private var _mvInvMatrix:Matrix3D = new Matrix3D();
 		private var _orthoMatrix:Matrix3D = new Matrix3D();
 		private var _quad:Quad = new Quad(FlashBackend.getWidth()/4, FlashBackend.getHeight()/4);
@@ -78,7 +79,7 @@ package x3dom
 					}
 					
 					//Set Dynamic shader
-					this._context3D.setProgram( this._shaderCache.getDynamicShader(shape, lights) );
+					this._context3D.setProgram( this._shaderCache.getDynamicShader(shape, this._scene) );
 					
 					//Build ModelView-Matrix
 					this._mvMatrix.identity();
@@ -96,6 +97,13 @@ package x3dom
 					this._mvpMatrix.append(this._scene.viewMatrix);
 					this._mvpMatrix.append(this._scene.projectionMatrix);
 					
+					//Build normal transformation matrix.
+					this._mvMatNormals.identity();
+					this._mvMatNormals.append(trafo);
+					this._mvMatNormals.append(this._scene.viewMatrix);
+					this._mvMatNormals.invert();
+					this._mvMatNormals.transpose();
+
 					if(shape.solid) {
 						this._context3D.setCulling(Context3DTriangleFace.FRONT);
 					} else {
@@ -107,6 +115,9 @@ package x3dom
 					
 					//Associate MV-Matrix
 					this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  4, this._mvMatrix, true );
+					
+					// MV-Matrix for normals
+					_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  10, this._mvMatNormals, true );
 					
 					if(lights.length && shape.material != null)
 					{
@@ -145,6 +156,15 @@ package x3dom
 						{
 							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  13, shape.texture.transform, true );
 						}
+					}
+					
+					// Associate fog paramenters
+					if (this._scene.fogType == 0.0 || this._scene.fogType == 1.0)
+					{
+						var fogColor : Array = _scene.fogColor;
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 11, Vector.<Number>([fogColor[0], fogColor[1], fogColor[2], this._scene.fogVisRange]));
+						// Set other constants for fog calculation, such as the base of the natural logarithm, for exponnential fog
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 12, Vector.<Number>([2.71828, 0.0, 0.0, 0.0]));
 					}
 					
 					for(var j:uint = 0; j<shape.vertexBuffer.length; j++) {

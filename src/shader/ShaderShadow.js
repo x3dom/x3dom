@@ -41,10 +41,6 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
 		shader +=   "attribute vec3 position;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
 					"varying vec4 projCoords;\n" +
-					//bitLOD 
-					"uniform vec3 bgCenter;\n" +
-					"uniform vec3 bgSize;\n" +
-					"uniform float bgPrecisionMax;\n" +
 					//image geometry 
 					"uniform float imageGeometry;\n" +
 					"uniform vec3 IG_bboxMin;\n" +
@@ -57,6 +53,9 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
 					"uniform sampler2D IG_coordinateTexture;\n" +
 					"uniform vec2 IG_implicitMeshSize;\n" +
                     //pop geometry
+                    "uniform vec3 bgCenter;\n" +
+                    "uniform vec3 bgSize;\n" +
+                    "uniform float bgPrecisionMax;\n" +
                     "uniform float popGeometry;\n" +
                     "uniform float PG_precisionLevel;\n" +
                     "uniform float PG_powPrecision;\n" +

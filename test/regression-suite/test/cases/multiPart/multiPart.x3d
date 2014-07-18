@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <Scene DEF='scene'>
+    <Viewpoint position="0.33505 0.29506 0.67708" orientation="-0.64855 0.75948 0.05070 0.58371"></Viewpoint>
+    <Shape DEF='_G_1'>
+      <Appearance>
+        <Material diffuseColor='0 0 0.85' shininess='0.75' specularColor='0 0 0.8'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_0' vertexCount='14124' primType='"TRIANGLES"' position='-0.213500291109 -0.00775200128555 -0.0200023502111' size='0.296999394894 0.143495798111 0.190699294209' coord='bingeo/BG_0_coordBinary.bin' normal='bingeo/BG_0_normalBinary.bin' texCoord='bingeo/BG_0_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_2'>
+      <Appearance>
+        <Material diffuseColor='0.85 0.561 0' shininess='0.75' specularColor='0.8 0.528 0'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_3' vertexCount='32829' primType='"TRIANGLES"' position='-0.0894015133381 -0.0665296018124 -0.038186699152' size='0.530166983604 0.204822808504 0.201626598835' coord='bingeo/BG_3_coordBinary.bin' normal='bingeo/BG_3_normalBinary.bin' texCoord='bingeo/BG_3_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_3'>
+      <Appearance>
+        <Material diffuseColor='0.85 0 0' shininess='0.75' specularColor='0.8 0 0'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_2' vertexCount='4623' primType='"TRIANGLES"' position='-0.156636789441 -0.0468104481697 -0.020055949688' size='0.350636392832 0.1218791008 0.169350102544' coord='bingeo/BG_2_coordBinary.bin' normal='bingeo/BG_2_normalBinary.bin' texCoord='bingeo/BG_2_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_4'>
+      <Appearance>
+        <Material diffuseColor='0.85 0.85 0.85' shininess='0.75' specularColor='0.6 0.6 0.6'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_1' vertexCount='7806' primType='"TRIANGLES"' position='0 0 0.00100000016391' size='0.359313994646 0.123505197465 0.0619999989867' coord='bingeo/BG_1_coordBinary.bin' normal='bingeo/BG_1_normalBinary.bin' texCoord='bingeo/BG_1_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_5'>
+      <Appearance>
+        <Material diffuseColor='0.85 0.85 0.85' shininess='0.75' specularColor='0.8 0.8 0.8'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_5' vertexCount='134592' primType='"TRIANGLES"' position='-0.0238054990768 -0.0453847497702 0' size='0.660390973091 0.271172493696 0.256000012159' coord='bingeo/BG_5_coordBinary.bin' normal='bingeo/BG_5_normalBinary.bin' texCoord='bingeo/BG_5_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_6'>
+      <Appearance>
+        <Material diffuseColor='0 0 0' shininess='0.75'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_6' vertexCount='5034' primType='"TRIANGLES"' position='0.20042899251 1.00582838058e-007 0.0199999976903' size='0.021484002471 0.0929998010397 0.0929309949279' coord='bingeo/BG_6_coordBinary.bin' normal='bingeo/BG_6_normalBinary.bin' texCoord='bingeo/BG_6_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_7'>
+      <Appearance>
+        <Material diffuseColor='0 0.425 0.425' shininess='0.75' specularColor='0 0.4 0.4'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_7' vertexCount='10410' primType='"TRIANGLES"' position='0.119238033891 -0.0301734507084 -0.0122499912977' size='0.35152387619 0.179381102324 0.255500018597' coord='bingeo/BG_7_coordBinary.bin' normal='bingeo/BG_7_normalBinary.bin' texCoord='bingeo/BG_7_texCoordBinary.bin'/>
+    </Shape>
+    <Shape DEF='_G_8'>
+      <Appearance>
+        <Material diffuseColor='0 0.561 0.85' shininess='0.75' specularColor='0 0.528 0.8'/>
+      </Appearance>
+      <BinaryGeometry idsPerVertex='true' DEF='BG_4' vertexCount='14772' primType='"TRIANGLES"' size='0.74338299036 0.184083297849 0.242999002337' coord='bingeo/BG_4_coordBinary.bin' normal='bingeo/BG_4_normalBinary.bin' texCoord='bingeo/BG_4_texCoordBinary.bin'/>
+    </Shape>
+  </Scene>
+</X3D>

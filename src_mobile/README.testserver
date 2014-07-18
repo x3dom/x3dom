@@ -1,8 +1,0 @@
-To start the testserver do:
-
-$> python testserver.py
-
-and open the following URL in a WebGL enabled browser:
-
-http://localhost:8070/index.html
-

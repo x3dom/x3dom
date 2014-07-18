@@ -44,6 +44,17 @@ exports.defineTags = function(dictionary)
         }
     });
 
+    //range of the value
+    dictionary.defineTag('range',
+        {
+            mustHaveValue: true,
+            onTagged: function(doclet, tag)
+            {
+                if(tag)
+                    doclet.range = tag.value;
+            }
+        });
+
     //is the object X3D relative
     dictionary.defineTag('x3d',
     {

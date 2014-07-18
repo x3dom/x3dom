@@ -1,15 +1,16 @@
 var fw = require('./filewriter');
 var fs = require('fs');
+var rmdir = require("rimraf");
 var ResultsPublisher = function()
 {
     var that = this;
     this.outputPath;
-    this.dbPath;
     this.overviewData = {};
     this.overviewData.profiles = [];
     this.db = {};
     this.newFail = {};
-    that.tableStyle = "<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{background-color: #FF7E74;} td.broken{background-color: #FFCC7E} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>";
+    this.maxTestResults = 10;
+    this.tableStyle = "<style>h1,p,th,td{font-family: 'Trebuchet MS' Helvetica, Arial, sans-serif} td.success{background-color: #94FF86; } td.failed{background-color: #FF7E74;} td.broken{background-color: #FFCC7E} img{width:75px;height:75px;} table,th,td{text-align:left; vertical-align:middle; border: 2px solid darkslategray; border-collapse:collapse} th{font-size:1.1em; background-color:darkslategray; color: white}</style>";
 
 
 
@@ -18,15 +19,15 @@ var ResultsPublisher = function()
 
     //------------------------------------------------------------------------------------------------------------------
 
-    this.storeResults = function(profile, results, outputPath, callback)
+    this.storeResults = function(profile, results, id, config, callback)
     {
         var db = {};
-        that.dbPath = "db/"+profile.name+"_results.json";
-        fs.readFile(that.dbPath, function(err, data)
+        that.dbFile = config.dbPath + "/" + profile.name + "_results.json";
+        fs.readFile(that.dbFile, function(err, data)
         {
             if(err)
             {
-                console.log("Could not find db file: " + that.dbPath);
+                console.log("Could not find db file: " + that.dbFile);
                 db.data = [];
             }
             else
@@ -38,34 +39,58 @@ var ResultsPublisher = function()
 //                    console.log(detail.data);
 //                });
 //            });
-            db.data.unshift({"results": results, "time": new Date().getTime()});
-            fw.writeFile(that.dbPath, JSON.stringify(db), callback);
+            db.data.unshift({"results": results, "time": id});
+            db = that.removeOldResults(config, profile, db);
+            fw.writeFile(that.dbFile, JSON.stringify(db), callback);
         });
-    }
+    };
 
-    this.publishResults = function(profiles, outputPath, callback, index)
+    this.removeOldResults = function(config, profile, db)
+    {
+        while(db.data.length > that.maxTestResults)
+        {
+            var profilePage = that.getProfilePagePath(config, profile, db.data[that.maxTestResults - 1].time);
+            var profileFolder = that.getProfileDataFolder(config, profile, db.data[that.maxTestResults - 1].time);
+            fs.unlink(profilePage, function(err)
+            {
+                if(err)
+                {
+                    console.log(err.message);
+                }
+            });
+            console.log(profileFolder);
+            try{
+                rmdir.sync(profileFolder,function(){
+                    console.log("Error removing folder: " + profileFolder);
+                });
+            }catch(e){};
+            //remove from db
+            db.data.splice(that.maxTestResults, 1);
+        }
+
+        return db;
+    };
+
+    this.publishResults = function(config, callback, index)
     {
         if(!index)
         {
             index = 0;
         }
-        if (index >= profiles.length)
+        if (index >= config.profiles.length)
         {
             //done
             return that.publishOverview(callback);
         }
-        console.log(index);
-        var profile = profiles[index];
-        that.dbPath = "db/"+profile.name+"_results.json";
-        that.outputPath = outputPath;
-        var profilePath = that.outputPath+"/"+profile.name+"/";
-        that.db = {};
+        var profile = config.profiles[index];
+        var dbFile = config.dbPath + "/" + profile.name + "_results.json";
+        that.outputPath = config.outputPath;
         var db;
-        fs.readFile(that.dbPath, function(err, data)
+        fs.readFile(dbFile, function(err, data)
         {
             if(err)
             {
-                console.log("Could not find db file: " + that.dbPath);
+                console.log("Could not find db file: " + dbFile);
                 return;
             }
             else
@@ -74,49 +99,56 @@ var ResultsPublisher = function()
                 db = that.db[profile.name];
             }
 
-            var statistics =
+            for (var i = 0; i < db.data.length; i++)
             {
-                "count" : db.data[0].results.length,
-                "failed" : 0,
-                "passed" : 0
-            };
-            var contents = [];
-
-            that.createProfilePage(profile, statistics, contents, profilePath);
+                var statistics =
+                {
+                    "count" : db.data[0].results.length,
+                    "failed" : 0,
+                    "passed" : 0
+                };
+                var contents = [];
+                that.createProfilePage(profile, statistics, contents, config, i);
+            }
             that.createTimelinePage(profile, function(){
-                that.publishResults(profiles, outputPath, callback, index+1);
+                that.publishResults(config, callback, index+1);
             });
         });
     }
 
 
-    this.createProfilePage = function(profile, statistics, contents, path)
+    this.createProfilePage = function(profile, statistics, contents, config, i)
     {
+        var pathPrefix = "../"
         var db = that.db[profile.name];
-        db.data[db.data.length-1].results.forEach(function(result){
-            that.evaluateTestResult(result,statistics,contents);
+        var id = db.data[i].time;
+        var imagePath = that.getProfileDataFolder(config, profile, id);
+        db.data[i].results.forEach(function(result){
+            that.evaluateTestResult(result, statistics, contents, imagePath, pathPrefix);
         });
 
 
 
+        var dateString = that.getDateString(id);
 
-        var dateString = that.getDateString();
-
-        var includes = "<link rel='stylesheet' href='../../jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='../../jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='../../jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
+        var includes = "<link rel='stylesheet' href='" + pathPrefix + "jquery-ui-1.10.4.custom/css/smoothness/jquery-ui-1.10.4.custom.min.css'/><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-1.10.2.js'></script><script src='" + pathPrefix + "jquery-ui-1.10.4.custom/js/jquery-ui-1.10.4.custom.min.js'></script>";
         var script = "<script>$(function(){$(\".accordion\").accordion({collapsible: true, heightStyle: 'content', active: false});});</script>"
         var pageStart = "<html><head>"+includes+script+"<title>x3dom Regression Tests for "+ profile.name +"</title></head><body><h1>"+profile.name +" results overview - "+ statistics.passed +" / "+ (statistics.passed + statistics.failed) +" passed</h1><h3>" + dateString + "</h3>";
         var pageEnd = "<br/><br/><br/><br/>"+"</body>";
 
         var details = contents.join("");
-        profile.statistics = statistics;
-        that.overviewData.profiles.push(profile);
+        if(i == 0)
+        {
+            profile.statistics = statistics;
+            that.overviewData.profiles.push(profile);
+        }
 
-        fw.writeFile(path+"index.html", pageStart+details+pageEnd);
+        fw.writeFile(that.getProfilePagePath(config, profile, id), pageStart + details + pageEnd);
     }
 
     //------------------------------------------------------------------------------------------------------------------
 
-    this.evaluateTestResult = function(result, statistics, content)
+    this.evaluateTestResult = function(result, statistics, content, imagePath, pathPrefix)
     {
         var success = true;
 
@@ -125,11 +157,11 @@ var ResultsPublisher = function()
         for(var d in result.details)
         {
             var detail = result.details[d];
-            console.log("detail" + Object.keys(detail.data));
             var image = result.testName + "_" + detail.data.screenshotId + ".png";
-            var difftag = "<a target='_blank' href='diff/" + image + "'><img width = '200px' height = '150px' src='diff/" + image + "'/></a>";
-            var imagetag = "<a target='_blank' href='" + image + "'><img width = '200px' height = '150px' src='" + image + "'/></a>";
-            var reftag = "<a target='_blank' href='../../"+globals.referencePath + image + "'><img width = '200px' height = '150px' src='../../"+globals.referencePath + image + "'/></a>";
+            var imagePrefix = pathPrefix + imagePath;
+            var difftag = "<a target='_blank' href='" + imagePrefix + "diff/" + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + "diff/" + image + "'/></a>";
+            var imagetag = "<a target='_blank' href='" + imagePrefix + image + "'><img width = '200px' height = '150px' src='" + imagePrefix + image + "'/></a>";
+            var reftag = "<a target='_blank' href='" + pathPrefix + globals.referencePath + image + "'><img width = '200px' height = '150px' src='" + pathPrefix + globals.referencePath + image + "'/></a>";
             if(detail.status == 'success')
             {
                 statistics.passed++;
@@ -159,7 +191,8 @@ var ResultsPublisher = function()
             }
             else if(detail.status == 'error')
             {
-                resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #ff7e74; '>" + detail.data.type + "</h3><div>"+detail.data.error + "</div></div>";
+                if(detail.data.type)statistics.failed++;
+                resultText += "<div class='accordion' style='width: 500px;'><h3 style='background: none; background-color: #ff7e74; '>" + detail.data.type + "</h3><div>"+detail.data.error.message + "</div></div>";
             }
 
         }
@@ -167,7 +200,7 @@ var ResultsPublisher = function()
 
 
 
-        content.push("<h3>"+result.testName+"</h3><div>" + resultText +"</div>");
+        content.push("<h3 id='" + result.testName + "'>"+result.testName+"</h3><div>" + resultText +"</div>");
     }
 
     this.getDateString = function(time){
@@ -194,19 +227,23 @@ var ResultsPublisher = function()
         var pageStart = "<html><head><title>x3dom Testing Overview</title>"+that.tableStyle+"</head><body><h1>Regression Test Results</h1><h3>"+that.getDateString()+"</h3>";
         pageStart += "<table><tr><th>Browser</th><th>Test-Results</th><th>Timeline</th></tr>";
         var content = "";
+        var notify = false;
         for(var i in that.overviewData.profiles)
         {
             var profile = that.overviewData.profiles[i];
+            var profilePage = profile.name + "_" + that.db[profile.name].data[0].time + ".html";
             var success = profile.statistics.failed <= 0;
             var anyNewFail = false;
-            that.newFail[profile.name][0].forEach(function(nf){
-                anyNewFail = anyNewFail || nf;
-            });
-            var successString = success?"success":anyNewFail[0]?"failed":"broken";
+            for(var nf = 0; nf < that.newFail[profile.name][0].length; nf++)
+            {
+                anyNewFail = anyNewFail || that.newFail[profile.name][0][nf];
+            }
+            notify = notify || anyNewFail;
+            var successString = success?"success":anyNewFail?"failed":"broken";
             content += "<tr>";
-            content += "<td><img src='img/"+profile.name+"_icon.png'/></td>";
-            content += "<td class='"+successString+"'><a href='results/"+profile.name+"/index.html'>"+profile.statistics.passed+" / "+(profile.statistics.passed + profile.statistics.failed)+" passed</a></td>";
-            content += "<td><a href='timeline_"+profile.name+".html'>Timeline</a></td></tr>";
+            content += "<td><img src='../img/" + profile.name + "_icon.png'/></td>";
+            content += "<td class='"+successString+"'><a href='" + profilePage + "'>"+profile.statistics.passed+" / "+(profile.statistics.passed + profile.statistics.failed)+" passed</a></td>";
+            content += "<td><a href='timeline_" + profile.name + ".html'>Timeline</a></td></tr>";
             content += "</tr>";
         }
         var pageEnd = "</table></body></html>";
@@ -215,6 +252,11 @@ var ResultsPublisher = function()
 
         console.log("publishing overview: "+path);
         fw.writeFile(path, pageStart+content+pageEnd, callback);
+        if(notify && fs.existsSync("notify.js"))
+        {
+            var notificationService = require("../notify.js");
+            notificationService.notify();
+        }
     }
 
     this.createTimelinePage = function(profile, callback)
@@ -225,8 +267,7 @@ var ResultsPublisher = function()
         var pageEnd = "</table></body></html>";
         var body = "";
 
-        var newFail = that.newFail[profile.name];
-        newFail = [];
+        var newFail = [];
         for (var resultId = -1; resultId < db.data[0].results.length; resultId++)
         {
             body += "<tr>";
@@ -234,8 +275,14 @@ var ResultsPublisher = function()
             {
                 for (var row = -1; row < db.data.length; row++)
                 {
+                    var empty = false;
                     var result = db.data[Math.max(0, row)].results[Math.max(0, resultId)];
-                    var entry = result.details[detail];
+                    empty = empty || !result;
+                    if (!empty)
+                    {
+                        var entry = result.details[detail];
+                        empty = empty || !entry;
+                    }
                     if(resultId == -1 && detail == 0) //headline
                     {
                         if(row == -1)
@@ -250,7 +297,7 @@ var ResultsPublisher = function()
                     else if(resultId != -1)
                     {
                         //if no comparison
-                        if(entry.status != 'success' && entry.status != 'failed' && entry.status != 'error')
+                        if(!empty && entry.status != 'success' && entry.status != 'failed' && (entry.status != 'error' || !entry.data.type))
                         {
 
                         }
@@ -260,26 +307,35 @@ var ResultsPublisher = function()
                         }
                         else
                         {
-
-                            if(!newFail[row])
+                            if(empty)
                             {
-                                newFail[row] = [];
-                            }
-                            if(row < db.data.length - 1) //if not last row
-                            {
-                                newFail[row].push(db.data[row+1].results[resultId].details[detail].status == "success" && entry.status != "success");
+                                body += "<td>N/A</td>";
                             }
                             else
                             {
-                                newFail[row].push(false);
+                                if(!newFail[row])
+                                {
+                                    newFail[row] = [];
+                                }
+                                if(row < db.data.length - 1) //if not last row
+                                {
+                                    newFail[row].push(db.data[row+1].results[resultId].details[detail].status == "success" && entry.status != "success");
+                                }
+                                else
+                                {
+                                    newFail[row].push(false);
+                                }
+
+                                var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
+                                var link = profile.name + "_" + db.data[row].time + ".html#" + result.testName;
+                                body += "<td class='" + successString + "'><a href='" + link + "'>" + successString + "</a></td>";
                             }
 
-                            var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
-                            body += "<td class='"+successString+"'>"+successString+"</td>";
-                            if(row == db.data.length-1)//last row
-                            {
-                                body += "</tr><tr>";
-                            }
+
+                        }
+                        if(row == db.data.length-1)//last row
+                        {
+                            body += "</tr><tr>";
                         }
                     }
                 }
@@ -289,6 +345,15 @@ var ResultsPublisher = function()
         that.newFail[profile.name] = newFail;
         fw.writeFile(path, pageStart+body+pageEnd);
         callback(newFail);
+    }
+
+    this.getProfilePagePath = function(config, profile, id)
+    {
+        return config.outputPath +"/" + profile.name + "_" + id + ".html"
+    }
+    this.getProfileDataFolder = function(config, profile, id)
+    {
+        return config.dbPath + "/" + profile.name + "/" + id + "/";
     }
 
 };

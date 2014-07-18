@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="../../../index.html">documentation</a>    
+    >
+    <a href="../../index.html">Tutorials</a>
+	>
+    <a href="#">AOPT Optimized X3DOM Content</a>
+</div>
+<div id="main">
+
+    <section>	
+        
+        <div>
+            <div class="simpleButton" style="float:left;"><a href="../inline/index.html" style="float:right;">&#8678; Previous Section</a></div>
+            <div class="simpleButton" style="float:right;"><a href="../thirdParty/index.html" style="float:right;">Next Section &#8680;</a></div>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h1>Using AOPT to Create Optimized X3DOM Content</h1>
+        </div>            
+        <br>
+        <p>
+        X3DOM is able to use several kinds of geometry formats.
+        Besides the common X3D geometry nodes, there is a non-standardized, optimized <i>BinaryGeometry</i> node available in X3DOM.
+        Instead of including a text-based description of the geometry data (for instance, vertex positions), it uses external binary files.
+        This is very useful for several purposes: First of all, binary data is usually more compact, which means that you can save bandwidth.
+        Second, your HTML page will look much less cluttered, since it does not contain the large sets of vertex and index data any more.
+        Finally, a third advantage is that you 
+        </p>
+		<p>        
+		The <a href="http://www.instantreality.org/">InstantReality</a> platform provides its users tools to help them better understand and optimize their (possibly large) 3D data sets. 
+		One such tool is AOPT that (among other things) can help you in various ways to optimize 3D models with a special focus on scene-graph data.
+		You can get it <a href="http://www.instantreality.org/downloads/">here</a>.
+        Please note that AOPT is free for non-commercial use.
+        If you want to use it in commercial projects, please obtain a license first.
+        </p>
+
+		<p>
+		While on Windows and Linux the aopt tool is simply located in Instant Reality’s bin folder, on Mac it is sort of hidden here:
+		
+        <pre class="prettyprint">
+        <code>
+    /Applications/Instant Player.app/Contents/MacOS/aopt  
+        </code></pre>        
+        </p>
+        
+		AOPT is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering “aopt” 
+		will provide you with a list of all available command line arguments and some examples of its usage.        
+		A very basic procedure, for example, would be to convert a file that InstantReality can open (e.g. in obj, ply or wrl format) into an X3D file:
+        <pre class="prettyprint">
+        <code>
+    aopt –i myFile.foo -x myResult.x3d
+        </code></pre>  
+        
+		You can also directly convert any input to an X3DOM HTML page:<br>
+		<pre class="prettyprint">
+        <code>
+    aopt –i myFile.foo -N myResult.html
+        </code></pre>
+        
+        To create optimized BinaryGeometry nodes, you can, for instance, use the following command with <a href="myModel.x3d">this</a> example file:<br>
+		<pre class="prettyprint">
+        <code>
+    aopt –i myModel.x3d -F Scene:"cacheopt(true)" -G binGeo/:c -N example.html
+        </code></pre>
+        
+        Here, two new commands have been used to process the model data.
+        The "-F" command merges all parts with the same material together.
+        It then performs a cache optimization by re-arranging geometry data for faster rendering,
+        and finally splits the resulting parts again in order to fulfill a 16 bit index limit, as it is present with WebGL 1.0.
+        The second command, "-G", performs the actual conversion to X3DOM BinaryGeometry.
+        It exports a compressed ("c" = "compact") version of the model, referring to binary files in the folder "binGeo".
+        The resulting X3DOM nodes are contained in the "example.html" file.
+        
+        You can, of course, also export to BinaryGeometry without previous optimization.
+        By specifing and additional "a" flag (e.g., "-G binGeo/:ac"), the exporter will use a non-indexed version of the mesh automatically,
+        in case the index limit of WebGL can not be met by the model data ("a" = "autoindex").
+        
+        In the example file below, you can find an optimized model, created by the above AOPT example line, using the <i>BinaryGeometry</i> node.
+                
+        <p>                       
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="contentBox">                        
+            <h2>Get this X3DOM example:</h2>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
+                <li><a href="aopt.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <ul>
+				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+				
+				<li><a href="../../../author/Geometry3D/BinaryGeometry.html">BinaryGeometry</a></li>
+				
+				<li><a href="../../../author/Shape/Material.html">Material</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+            </ul>
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+</body>
+</html>

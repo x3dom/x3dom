@@ -36,8 +36,8 @@ exports.publish = function(taffyData, opts, tutorials) {
     var indexUrl = helper.getUniqueFilename('index');
     // don't call registerLink() on this one! 'index' is also a valid longname
 
-    var globalUrl = helper.getUniqueFilename('global');
-    helper.registerLink('global', globalUrl);
+    //var globalUrl = "";//helper.getUniqueFilename('global');
+    helper.registerLink('global', "");
 
     // set up templating
     view.layout = 'layout.tmpl';
@@ -85,7 +85,7 @@ exports.publish = function(taffyData, opts, tutorials) {
         var url = helper.longnameToUrl[doclet.longname];
 
         if (url.indexOf('#') > -1) {
-            doclet.id = helper.longnameToUrl[doclet.longname].split(/#/).pop();
+            doclet.id = url.split(/#/).pop();
         }
         else {
             doclet.id = doclet.name;
@@ -189,6 +189,8 @@ exports.publish = function(taffyData, opts, tutorials) {
                 var classes = helper.find(taffy(typeLists.classes), { memberof: longname});
 
                 view.api = "developer";
+
+                //if(helper.longnameToUrl[longname].indexOf("global") != 0 )
                 generateNameSpace('Namespace: ' + namespaces[0].name, namespaces, classes, createDeveloperlApiPathWithFolders("developer."+helper.longnameToUrl[longname],true,true));
             }
         }
@@ -208,7 +210,7 @@ exports.publish = function(taffyData, opts, tutorials) {
 function createSceneAuthorApiPathWithFolders(doc,url, addNodeFolder)
 {
     addNodeFolder = addNodeFolder === false ? false : true;
-    var desc = disassemble(url,true,/\./g);
+    var desc = disassemble(url,true,/\./g, false);
 
     return (addNodeFolder ? "author/" : "")+doc.component+"/"+desc.name+ "." + desc.ending;
 }
@@ -218,16 +220,27 @@ function createSceneAuthorApiPathWithFolders(doc,url, addNodeFolder)
 
 function createDeveloperlApiPathWithFolders(url, isNamespace, hasEnding)
 {
+    //secure against "global" links
+    if(isNamespace)
+    {
+        if(url.indexOf("global.html#") != -1)
+        {
+            url = url.replace("global.html#","x3dom.");
+        }
+    }
+
     hasEnding = (typeof hasEnding != 'undefined') ? hasEnding : true;
     isNamespace = (typeof isNamespace != 'undefined') ? isNamespace : false;
-    var desc = disassemble(url, hasEnding, /\./g);
+    var desc = disassemble(url, hasEnding, /\./g, isNamespace);
 
     var path = desc.path.toString().replace(/,/g,"/");
-    var val = isNamespace ?
-        path+ (path.length > 0 ? "/" : "" ) + desc.name+"/index.html":
-        path+"/"+desc.name+ "." + ( hasEnding ? desc.ending: "html");
+    path = path + ((path.length  > 0 && path[path.length-1] != "/") ? "/" : "" );
 
-    return val;
+    var val = isNamespace ?
+         path + desc.name + "/index.html":
+         path + desc.name+ "." + ( hasEnding ? desc.ending: "html");
+
+    return val.replace('//','/');
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -610,16 +623,25 @@ function generateIndex(title, objects, isNameSpace, filename, generateUrls)
         indexed: []
     }
 
+    var names =  [];
+
     for(var o in objects)
     {
-        docData.indexed.push({
-            name: isNameSpace ? objects[o].longname : objects[o].name,
-            url: generateUrls ?
-                (view.api == "developer" ?
-                    createDeveloperlApiPathWithFolders(objects[o].longname,isNameSpace,false) :
-                    createSceneAuthorApiPathWithFolders(objects[o], helper.longnameToUrl[objects[o].longname],false)) :
-                objects[o].url
-        });
+        var name = isNameSpace ? objects[o].longname : objects[o].name;
+
+        if(!isNameSpace || names.indexOf(name) < 0)
+        {
+            names.push(name);
+
+            docData.indexed.push({
+                name: name,
+                url: generateUrls ?
+                    (view.api == "developer" ?
+                        createDeveloperlApiPathWithFolders(objects[o].longname,isNameSpace,false) :
+                        createSceneAuthorApiPathWithFolders(objects[o], helper.longnameToUrl[objects[o].longname],false)) :
+                    objects[o].url
+            });
+        }
     }
 
     docData.indexed.sort(function(a,b)
@@ -729,7 +751,7 @@ function linkFromContextTo( longnameTo, toNameSpace, linktext, cssClass)
             }
         }
     }
-    return link;
+    return (!link)?linktext:link;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

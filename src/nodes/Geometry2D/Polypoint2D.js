@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Polypoint2D ### */
@@ -14,9 +13,31 @@ x3dom.registerNodeType(
     "Polypoint2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Polypoint2D
+         * @constructs x3dom.nodeTypes.Polypoint2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Polyline2D node specifies a set of vertices in the local 2D coordinate system at each of which
+         *  is displayed a point.
+         */
         function (ctx) {
             x3dom.nodeTypes.Polypoint2D.superClass.call(this, ctx);
 
+
+            /**
+             * The points field specifies the vertices to be displayed.
+             * @var {x3dom.fields.MFVec2f} point
+             * @memberof x3dom.nodeTypes.Polypoint2D
+             * @initvalue []
+             * @range (-inf, inf)
+             * @field x3d
+             * @instance
+             */
             this.addField_MFVec2f(ctx, 'point', []);
 
             this._mesh._primType = 'POINTS';
@@ -47,6 +68,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {

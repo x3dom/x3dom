@@ -1,6 +1,7 @@
 {
     "urlPrefix" : "http://localhost:8080/test/regression-suite",
     "outputPath"  :    "output",
+    "dbPath" : "db",
     "profiles" :
         [
             {
@@ -12,6 +13,10 @@
                 "command"   : "function() { return new webdriver.Builder().withCapabilities(webdriver.Capabilities.firefox()).build();}"
             }
         ],
+    "settings" :
+    {
+        "misMatchPercentage" : "0.52"
+    },
     "tests" :
         [
             {
@@ -31,6 +36,34 @@
                             {
                                 "x3d"       :   "x3d",
                                 "command"   :   "document.getElementById('trans').setAttribute('translation', '0 -3 0');document.getElementById('mat1').setAttribute('diffuseColor', '0.2 0 0.7');"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+			{
+                "url"   : "/test/cases/screenGroup/screenGroup.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "move_vp1();"
                             }
                         },
                         {
@@ -757,6 +790,173 @@
                                 "command"       :   "change();"
                             }
                         },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/composedShader/composedShader.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/lod/lod.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "changeVP();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/normalGen/normalGen.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/pixelTexture/pixelTexture.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/points/points.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/materialTest/materialTest.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoPrimExt/geoPrimExt.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/displacementMapping/displacementMapping.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/volrenOpacity/volrenOpacity.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "201",
+                                "y"     :   "389"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/volrenProjection/volrenProjection.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/renderTexMirror/renderTexMirror.html",
+                "steps" :
+                    [
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :

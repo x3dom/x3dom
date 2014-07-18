@@ -9,10 +9,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-
-/**
- * @namespace Cache namespace
- */
 x3dom.Cache = function () {
     this.textures = [];
     this.shaders = [];
@@ -27,6 +23,19 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentia
     if (this.textures[textureIdentifier] === undefined) {
         this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(
                                            gl, doc, url, bgnd, withCredentials, scale, genMipMaps);
+    }
+
+    return this.textures[textureIdentifier];
+};
+
+/**
+ * Returns a Texture 2D
+ */
+x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
+    var textureIdentifier = nameSpace.name + "_" + def;
+
+    if (this.textures[textureIdentifier] === undefined) {
+        this.textures[textureIdentifier] = gl.createTexture();
     }
 
     return this.textures[textureIdentifier];
@@ -142,16 +151,22 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 /**
  * Returns a dynamic generated shader program by properties
  */
-x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
+x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, pickMode) {
 
     //Get shaderID
     var shaderID = properties.id;
+
+    if(pickMode != undefined || pickMode != null) {
+        shaderID += pickMode;
+    }
 
     if (this.shaders[shaderID] === undefined)
     {
         var program;
         if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
+        } else if(pickMode != undefined || pickMode != null) {
+            program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
         } else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
                 new x3dom.shader.DynamicShader(gl, properties);

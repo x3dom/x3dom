@@ -31,35 +31,39 @@ function CompareScreenshot()
         var referenceImagePath = globals.referencePath+filename;
 
         setTimeout(function(){
-            that.writeRenderedImage(context.driver, step.params,renderedImagePath, function()
+            that.writeRenderedImage(context.driver, step.params, renderedImagePath, function()
             {
                 that.compareImages(referenceImagePath, renderedImagePath, context);
             });
         }, globals.screenshotDelay);
-    }
+    };
 
     this.writeRenderedImage = function(driver, params, outputPath, callback)
     {
         var script = "var x3d_node = document.getElementById('"+params.x3d+"');if(!x3d_node) x3d_node = document.getElementsByTagName('x3d')[0]; return x3d_node.runtime.getScreenshot()";
 
+
         driver.executeScript(script)
-        driver.executeScript(script)
-            .then(function(return_value)
-            {
-                var buf = new Buffer(return_value.replace(/^data:image\/png;base64,/,''),'base64');
+            .then(function (return_value) {
+                var buf = new Buffer(return_value.replace(/^data:image\/png;base64,/, ''), 'base64');
                 //console.log("OutputPath: " +outputPath);
-                fw.writeFile(outputPath, buf, function(err){
-                    if(err)
-                    {
-                        console.log("Error writing rendered image: "+ err);
-                        that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
+                fw.writeFile(outputPath, buf, function (err) {
+                    if (err) {
+                        console.log("Error writing rendered image: " + err);
+                        that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "type" : "CompareScreenshot", "error": err}));
                         that.context.finishedCallback();
                     }
                     else
                         callback();
                 });
+            }, function(err)
+            {
+                console.log("Error executing screenshot script: " + err);
+                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "type" : "CompareScreenshot", "error": err}));
+                that.context.finishedCallback();
             });
-    }
+
+    };
 
 
     this.compareImages = function(referenceImagePath, renderedImagePath, context)
@@ -74,7 +78,8 @@ function CompareScreenshot()
             else
             {
                 resemble.resemble(referenceImagePath).compareTo(renderedImagePath).onComplete(function(data){
-                    var equal = data.misMatchPercentage < 0.01;
+                    var equal = data.misMatchPercentage < that.context.config.settings.misMatchPercentage;
+                    //console.log(equal + "  " + data.misMatchPercentage + " " +that.context.config.settings.misMatchPercentage);
                     if(!equal)
                     {
                         //write diff
@@ -85,27 +90,27 @@ function CompareScreenshot()
                             if(err)
                             {
                                 console.log("Error writing rendered image: "+ err);
-                                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
+                                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "type" : "CompareScreenshot", "error": err}));
                                 that.context.finishedCallback();
                             }
                         });
                     }
                     that.context.result.details.push( equal ?
-                        new ts.SuccessDetail(
-                            {
-                                "screenshotId"   : that.context.screenshotId,
-                                "equality"      : data.misMatchPercentage,
-                                "type" : "CompareScreenshot",
-                                "testName"   : getName(context.test.url)
-                            }) :
-                        new ts.FailureDetail(
-                            {
-                                "screenshotId"   : that.context.screenshotId,
-                                "equality"      : data.misMatchPercentage,
-                                "type" : "CompareScreenshot",
-                                "testName"   : getName(context.test.url)
-                            }
-                        )
+                            new ts.SuccessDetail(
+                                {
+                                    "screenshotId"   : that.context.screenshotId,
+                                    "equality"      : data.misMatchPercentage,
+                                    "type" : "CompareScreenshot",
+                                    "testName"   : getName(context.test.url)
+                                }) :
+                            new ts.FailureDetail(
+                                {
+                                    "screenshotId"   : that.context.screenshotId,
+                                    "equality"      : data.misMatchPercentage,
+                                    "type" : "CompareScreenshot",
+                                    "testName"   : getName(context.test.url)
+                                }
+                            )
                     );
                     that.context.finishedCallback();
                 });
@@ -192,10 +197,15 @@ function CompareValue(){
                 "referenceValue" : referenceValue,
                 "type" : "CompareValue",
                 "testName"   : getName(context.test.url)
-            }
+            };
             that.context.result.details.push(
-                (distance != 0) ? new ts.SuccessDetail(detail) : new ts.FailureDetail(detail)
+                (distance < referenceValue * that.context.config.settings.misMatchPercentage) ? new ts.SuccessDetail(detail) : new ts.FailureDetail(detail)
             );
+            that.context.finishedCallback();
+        }, function(err)
+        {
+            console.log("Error executing screenshot script: " + err);
+            that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "type" : "CompareValue", "error": err}));
             that.context.finishedCallback();
         });
     }
@@ -215,6 +225,11 @@ function ExecuteCommand(){
                     "type"   : "ExecuteCommand"
                 }));
             that.context.finishedCallback();
+        }, function(err)
+        {
+            console.log("Error executing screenshot script: " + err);
+            that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": err}));
+            that.context.finishedCallback();
         });
     }
 }
@@ -226,10 +241,10 @@ function ExecuteClick(){
     this.run = function(context){
         that.context = context;
         click();
-    }
+    };
     function click(){
         var context = that.context;
-        if(tries > 10){
+        if(tries++ > 10){
             return context.finishedCallback();
         }
         var coords = {};
@@ -250,6 +265,7 @@ function ExecuteClick(){
                 setTimeout(click, 20);
             });
         }, function(err){
+            console.log(err);
             setTimeout(click, 20);
         });
     }
@@ -257,7 +273,7 @@ function ExecuteClick(){
 
 function ExecuteDrag(){
     var that = this;
-    var tries
+    var tries = 0;
 
     this.run = function(context){
         that.context = context;
@@ -266,7 +282,7 @@ function ExecuteDrag(){
 
     function drag(){
         var context = that.context;
-        if(tries > 10){
+        if(tries++ > 10){
             return context.finishedCallback();
         }
         var target  = context.test.steps[context.stepId].params.target;

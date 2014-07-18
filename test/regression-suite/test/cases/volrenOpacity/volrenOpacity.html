@@ -1,0 +1,45 @@
+<html>
+
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+      <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+
+      <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+      <script>
+      function main() {
+          var canvas = document.getElementById("myCanvas");
+          var ctx = canvas.getContext("2d");
+          
+          var img = new Image();
+          img.src = './transfer.png';
+          
+          img.onload = function() {
+              ctx.drawImage(img, 0, 0);
+              
+              var r = document.getElementById("x3d").runtime;
+              r.triggerRedraw();
+          };
+      }
+      </script>
+  </head>
+  
+  <body onload='main();'>
+    <X3D id='x3d' showStat='false' showLog='false' width='800px' height='600px'>
+      <Scene>
+          <Background skyColor='0.0 0.0 0.0'></Background>
+          <Viewpoint description='Default' zNear='0.0001' zFar='100'></Viewpoint>
+          <Transform>
+            <VolumeData id='volume1' dimensions='4.0 4.0 4.0'>
+              <ImageTextureAtlas containerField='voxels' url='./aorta4096.png'
+               numberOfSlices='96' slicesOverX='10' slicesOverY='10'></ImageTextureAtlas>
+              <OpacityMapVolumeStyle lightFactor='1.2' opacityFactor='6.0'>
+                <Texture hideChildren="false" containerField="transferFunction">
+                  <canvas id='myCanvas' style="border: solid 1px black; position: absolute; top: -1px; left:501px;" width='256px' height='1px'></canvas>
+                </Texture>
+              </OpacityMapVolumeStyle>
+            </VolumeData>
+          </Transform>
+      </Scene>
+    </X3D>
+  </body>
+</html>

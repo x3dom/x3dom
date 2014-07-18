@@ -23,6 +23,20 @@
 					 
 	return shaderPart;
 };
+
+/*******************************************************************************
+ * TwoSidedMaterial
+ ********************************************************************************/
+x3dom.shader.twoSidedMaterial = function() {
+    var shaderPart = "uniform vec3  backDiffuseColor;\n" +
+                     "uniform vec3  backSpecularColor;\n" +
+                     "uniform vec3  backEmissiveColor;\n" +
+                     "uniform float backShininess;\n" +
+                     "uniform float backTransparency;\n" +
+                     "uniform float backAmbientIntensity;\n";
+
+    return shaderPart;
+};
 						 
 /*******************************************************************************
 * Fog
@@ -49,6 +63,49 @@ x3dom.shader.fog = function() {
 					 "}\n";
 					 
 	return shaderPart;
+};
+
+/*******************************************************************************
+ * Clipplane
+ ********************************************************************************/
+x3dom.shader.clipPlanes = function(numClipPlanes) {
+    var shaderPart = "", c;
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += 	"uniform vec4 clipPlane"+c+"_Plane;\n";
+        shaderPart += 	"uniform float clipPlane"+c+"_CappingStrength;\n";
+        shaderPart += 	"uniform vec3 clipPlane"+c+"_CappingColor;\n";
+    }
+
+    shaderPart += "vec3 calculateClipPlanes() {\n";
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
+        shaderPart += "    float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
+    }
+
+    shaderPart += "    if( ";
+
+    for(c=0; c<numClipPlanes; c++) {
+        if(c!=0) {
+            shaderPart += " || ";
+        }
+        shaderPart += "dist" + c + " < 0.0" ;
+    }
+
+    shaderPart += " ) ";
+    shaderPart += "{ discard; }\n";
+
+    for (c = 0; c < numClipPlanes; c++) {
+        shaderPart += "    if( abs(dist" + c + ") < clipPlane" + c + "_CappingStrength ) ";
+        shaderPart += "{ return clipPlane" + c + "_CappingColor; }\n";
+    }
+
+    shaderPart += "    return vec3(-1.0, -1.0, -1.0);\n";
+
+    shaderPart += "}\n";
+
+    return shaderPart;
 };
 
 /*******************************************************************************
@@ -281,7 +338,7 @@ x3dom.shader.light = function(numLights) {
 	
 	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V)\n" +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -309,9 +366,9 @@ x3dom.shader.light = function(numLights) {
 					"   float NdotL = clamp(dot(L, N), 0.0, 1.0);\n" +
 					"   float NdotH = clamp(dot(H, N), 0.0, 1.0);\n" +
 					
-					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
+					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
-					"   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
+					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
                     "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +
 					//"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
 					//"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +

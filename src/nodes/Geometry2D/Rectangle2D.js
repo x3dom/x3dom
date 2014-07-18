@@ -1,3 +1,4 @@
+/** @namespace x3dom.nodeTypes */
 /*
  * X3DOM JavaScript Library
  * http://www.x3dom.org
@@ -5,8 +6,6 @@
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
  *
- * Based on code originally provided by
- * Philip Taylor: http://philip.html5.org
  */
 
 /* ### Rectangle2D ### */
@@ -14,10 +13,43 @@ x3dom.registerNodeType(
     "Rectangle2D",
     "Geometry2D",
     defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
+        
+        /**
+         * Constructor for Rectangle2D
+         * @constructs x3dom.nodeTypes.Rectangle2D
+         * @x3d 3.3
+         * @component Geometry2D
+         * @status full
+         * @extends x3dom.nodeTypes.X3DPlanarGeometryNode
+         * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc The Rectangle2D node specifies a rectangle centred at (0, 0) in the current local 2D coordinate
+         *  system and aligned with the local coordinate axes. By default, the box measures 2 units in each dimension,
+         *  from -1 to +1.
+         */
         function (ctx) {
             x3dom.nodeTypes.Rectangle2D.superClass.call(this, ctx);
 
+
+            /**
+             * The size field specifies the extents of the box along the X-, and Y-axes respectively and each component
+             *  value shall be greater than zero.
+             * @var {x3dom.fields.SFVec2f} size
+             * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 2,2
+             * @range (0, inf)
+             * @field x3d
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'size', 2, 2);
+
+            /**
+             * Number of segments of the rectangle
+             * @var {x3dom.fields.SFVec2f} subdivision
+             * @memberof x3dom.nodeTypes.Rectangle2D
+             * @initvalue 1,1
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
@@ -62,6 +94,7 @@ x3dom.registerNodeType(
 
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
+        
         },
         {
             fieldChanged: function (fieldName) {
