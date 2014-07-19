@@ -67,7 +67,7 @@ x3dom.registerNodeType(
              * @type {x3dom.fields.SFMatrix4f}
              * @private
              */
-            this._rotationMatrix = this._vf['offset'].toMatrix();
+            this._rotationMatrix = this._vf.offset.toMatrix();
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -152,7 +152,8 @@ x3dom.registerNodeType(
 				 
 				 var A = viewRay.dir.dot(viewRay.dir);
 				 var B = 2.0*(viewRay.dir.dot(viewRay.pos.subtract(this._localOrigin)));
-				 var C = viewRay.pos.dot(viewRay.pos) - 2.0*this._localOrigin.dot(viewRay.pos) + this._localOrigin.dot(this._localOrigin) - this._sphereRadius*this._sphereRadius;
+				 var C = viewRay.pos.dot(viewRay.pos) - 2.0*this._localOrigin.dot(viewRay.pos) +
+                         this._localOrigin.dot(this._localOrigin) - this._sphereRadius*this._sphereRadius;
 				 
 				 var determinant = (B*B) - (4.0*A*C);
 				 var alpha_1;
@@ -176,7 +177,7 @@ x3dom.registerNodeType(
 						
 						this._currentRotation = x3dom.fields.Quaternion.rotateFromTo(this._initialSphereIntersectionVector, vecToHitPoint);
 						
-						this._currentRotation = this._currentRotation.multiply(this._vf["offset"]);
+						this._currentRotation = this._currentRotation.multiply(this._vf.offset);
 						
 						// output rotationChanged_event, given in local sphere sensor coordinates
 						this.postMessage('rotation_changed',  this._currentRotation);
@@ -197,11 +198,10 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
 
-                if (this._vf["autoOffset"])
+                if (this._vf.autoOffset)
                 {
-                    this._vf["offset"] = this._currentRotation;
-					console.log(this._vf["offset"]);
-					this.postMessage('offset_changed', this._vf["offset"]);
+                    this._vf.offset = this._currentRotation;
+					this.postMessage('offset_changed', this._vf.offset);
                 }
 				
 				this._currentRotation = new x3dom.fields.Quaternion();

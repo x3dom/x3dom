@@ -156,7 +156,7 @@ x3dom.registerNodeType(
                 }else{
                     return "";
                 }
-            },
+            }
         }
     )
 );

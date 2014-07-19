@@ -60,15 +60,12 @@ x3dom.registerNodeType(
             this._styleList = [];
             this.normalTextureProvided = false;
             this.fragmentPreamble = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
-                            "  precision highp float;\n" +
-                            "#else\n" +
-                            "  precision mediump float;\n" +
-                            "#endif\n\n";
-
-            x3dom.debug.logWarning('VolumeRendering component NYI!!!');
-        
+                                    "  precision highp float;\n" +
+                                    "#else\n" +
+                                    "  precision mediump float;\n" +
+                                    "#endif\n\n";
         },
-       {
+        {
             getTextureSize: function(texture) {
                 var size = { w: 0, h: 0, valid: false };
                 var texBag = this._webgl ? this._webgl.texture : null;
