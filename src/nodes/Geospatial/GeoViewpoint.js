@@ -75,7 +75,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3d(ctx, 'position', 0, 0, 100000);
 
             /**
-             * Enable/disable directional light that always points in the direction the user is looking.
+             * Enable/disable directional light that always points in the direction the user is looking. Removed in X3D V3.3. See NavigationInfo
              * @var {x3dom.fields.SFBool} headlight
              * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue true
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
 
             /**
-             * Specifies the navigation type.
+             * Specifies the navigation type. Removed in X3D V3.3. See NavigationInfo
              * @var {x3dom.fields.MFString} navType
              * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue 'EXAMINE'
