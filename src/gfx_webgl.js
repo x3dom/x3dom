@@ -831,7 +831,12 @@ x3dom.gfx_webgl = (function () {
                     sky[i] /= Math.PI;
                 }
 
-                x3dom.debug.assert(sky.length == colors.length);
+                if (sky.length != colors.length) {
+                    x3dom.debug.logError("Number of background colors and corresponding angles are different!");
+                    var minArrayLength = (sky.length < colors.length) ? sky.length : colors.length;
+                    sky.length = minArrayLength;
+                    colors.length = minArrayLength;
+                }
 
                 var interp = new x3dom.nodeTypes.ColorInterpolator();
 

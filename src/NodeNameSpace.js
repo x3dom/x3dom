@@ -159,6 +159,7 @@ x3dom.setFieldValue = function(fieldName, fieldvalue) {
  * Returns the field object of the field with the given name.
  * The returned object is no copy, but instead a reference to X3DOM's internal field object.
  * Changes to this object should be committed using the returnFieldRef function.
+ * Note: this only works for fields with pointer types such as MultiFields!
  *
  * @param {String} fieldName - the name of the field
  */

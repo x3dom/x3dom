@@ -184,7 +184,8 @@ x3dom.registerNodeType(
 
                 var h = this._vf.height;
 
-                x3dom.debug.assert((h.length >= this._vf.xDimension*this._vf.zDimension));
+                x3dom.debug.assert((h.length >= this._vf.xDimension*this._vf.zDimension),
+                    "Too few height values for given x/zDimension!");
 
                 var normals = null, texCoords = null, colors = null;
 

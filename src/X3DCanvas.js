@@ -622,7 +622,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     touches.lastPos.y += deltaZoom;
                     touches.lastSquareDistance = squareDistance;
 
-                    doc.onDrag(that.gl, touches.lastPos.x, touches.lastPos.y, 6);
+                    doc.onDrag(that.gl, touches.lastPos.x, touches.lastPos.y, 2);
                 }
                 else {
                     pos = this.parent.mousePosition(evt.touches[0]);
