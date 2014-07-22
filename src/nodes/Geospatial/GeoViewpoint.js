@@ -125,25 +125,122 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DViewpointNode);
 
-            // borrowed from Viewpoint.js
-           
-            this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
-                mult(this._vf.orientation.toMatrix()).inverse();
-
-            this._projMatrix = null;
-            this._lastAspect = 1.0;
-
-            // z-ratio: a value around 5000 would be better...
-            this._zRatio = 10000;
-            this._zNear = this._vf.zNear;
-            this._zFar = this._vf.zFar;
-
-            // special stuff...
-            this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
-        
+                    
         },
-        // all borrowed from Viewpoint.js
         {
+
+            nodeChanged: function() {
+                // orientation needs to rotated as in GeoLocation node
+
+                var coords = new x3dom.fields.MFVec3f();
+
+                coords.push(this._vf.position);
+
+                var positionGC = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(this._vf.geoSystem, this._cf.geoOrigin, coords)[0];
+
+                  x3dom.debug.logInfo("GEOVIEWPOINT at: " + positionGC);
+            
+                var rotMat = x3dom.nodeTypes.GeoLocation.prototype.getRotMat(positionGC);
+
+                var rotOrient = rotMat.mult(this._vf.orientation.toMatrix());
+                var positionX3D = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, coords)[0];
+
+                  x3dom.debug.logInfo("GEOVIEWPOINT at: " + positionX3D);
+            
+
+
+
+                this._viewMatrix = x3dom.fields.SFMatrix4f.translation(positionX3D).mult(rotOrient).inverse();
+
+
+                // also transform centerOfRotation for initial view
+
+                
+var coords = new x3dom.fields.MFVec3f();
+
+                coords.push(this._vf.centerOfRotation);
+
+                var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, coords);
+
+                this._vf.centerOfRotation = transformed[0];
+
+
+                // elevation scaled speed, could go in activate()?
+                var viewarea = this._nameSpace.doc._viewarea;
+
+                viewarea._needNavigationMatrixUpdate = true;
+
+                //x3dom.nodeTypes.X3DBindableNode.prototype.activate.call(this, prev);
+
+                //x3dom.debug.logInfo ('activate myGeoViewBindable ' + this._DEF + '/' + this._vf.description);
+
+                var navi = viewarea._scene.getNavigationInfo();
+
+                // get elevation above ground
+
+                // viewpoint position in GC
+
+                // var coords = new x3dom.fields.MFVec3f();
+
+                //coords.push(this._vf.position);
+
+                //var posGC = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, coords)[0];
+
+                //lat. long. of position
+
+                var newUp = positionGC.normalize();
+         
+       // below uses geocentric latitude but only geodetic latitude would give proper ground level
+
+                // http://info.ogp.org.uk/geodesy/guides/docs/G7-2.pdf
+
+                // has formulas for deriving geodetic latitude, eg a GCtoGD function
+
+                var rad2deg = 180/Math.PI;
+
+                // latitude as asin of z; only valid for spheres
+
+                var lat = Math.asin(newUp.z) * rad2deg;
+                // atan2 gets the sign correct for longitude; is exact since in circular section
+
+                var lon = Math.atan2(newUp.y, newUp.x) * rad2deg;
+                var coords = new x3dom.fields.MFVec3f();
+
+                coords.push(new x3dom.fields.SFVec3f(lat, lon, 0));
+
+                var groundGC = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(this._vf.geoSystem, this._cf.geoOrigin, coords)[0];
+
+                  //x3dom.debug.logError("GEO GD ground at: " + lat + " " + lon);
+
+                  //x3dom.debug.logError("GEO GD        at: " + coords);
+
+                  //x3dom.debug.logError("GEO ground at: " + groundGC);
+
+                var elevation = groundGC.subtract(positionGC).length();
+
+                  x3dom.debug.logInfo("Geoelevation is " + elevation);
+                // at 10m above ground a speed of 1 sounds about right; is positive
+                navi._vf.speed = Math.abs(elevation/10.0 * this._vf.speedFactor);
+              
+    x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed);
+
+            
+                // borrowed from Viewpoint.js
+            
+                this._projMatrix = null;
+                this._lastAspect = 1.0;
+ 
+                // z-ratio: a value around 5000 would be better...
+                this._zRatio = 10000;
+                // set to -1 to trigger automatic setting since fields do not exist
+                this._zNear = -1;
+                this._zFar = -1;
+
+                // special stuff...
+                this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
+
+            },
+            // all borrowed from Viewpoint.js
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
