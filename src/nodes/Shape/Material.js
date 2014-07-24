@@ -46,7 +46,6 @@ x3dom.registerNodeType(
              * The emissiveColor field models "glowing" objects.
              * This can be useful for displaying pre-lit models (where the light energy of the room is computed explicitly), or for displaying scientific data.
              * @var {x3dom.fields.SFColor} diffuseColor
-             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.8,0.8,0.8
              * @field x3d
@@ -58,7 +57,6 @@ x3dom.registerNodeType(
              * The emissiveColor field models "glowing" objects.
              * This can be useful for displaying pre-lit models (where the light energy of the room is computed explicitly), or for displaying scientific data.
              * @var {x3dom.fields.SFColor} emissiveColor
-             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
              * @field x3d
@@ -74,7 +72,7 @@ x3dom.registerNodeType(
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0.2
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'shininess', 0.2);
@@ -84,10 +82,9 @@ x3dom.registerNodeType(
              * When the angle from the light to the surface is close to the angle from the surface to the viewer, the specularColor is added to the diffuse and ambient colour calculations.
              * Lower shininess values produce soft glows, while higher values result in sharper, smaller highlights.
              * @var {x3dom.fields.SFColor} specularColor
-             * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0,0,0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
@@ -98,7 +95,7 @@ x3dom.registerNodeType(
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.X3DMaterialNode
              * @initvalue 0
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFFloat(ctx, 'transparency', 0);

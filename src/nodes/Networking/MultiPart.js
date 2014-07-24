@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             /**
              * Change render order manually.
              * @var {x3dom.fields.SFInt32} sortKey
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
              * Set the initial visibility.
              * @var {x3dom.fields.SFInt32} initialVisibility
              * @range [auto, visible, invisible]
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 'auto'
              * @field x3dom
              * @instance
