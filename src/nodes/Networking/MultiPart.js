@@ -148,7 +148,7 @@ x3dom.registerNodeType(
                         if (childVol && childVol.isValid())
                             vol.extendBounds(childVol.min, childVol.max);
                     }
-                };
+                }
                 
                 return vol;
             },

@@ -15,15 +15,15 @@
  * During each frame, only interaction of the current type is being processed, it is not possible to
  * perform interaction (for instance, selecting or dragging objects) and navigation at the same time
  */
-x3dom.InputTypes = {};
-
-x3dom.InputTypes.NAVIGATION  = 1;
-x3dom.InputTypes.INTERACTION = 2;
+x3dom.InputTypes = {
+    NAVIGATION:  1,
+    INTERACTION: 2
+};
 
 
 /**
 * Constructor.
-    *
+*
 * @class represents a view area
 * @param {x3dom.X3DDocument} document - the target X3DDocument
 * @param {Object} scene - the scene
@@ -99,6 +99,8 @@ x3dom.Viewarea = function (document, scene) {
      * @protected
      */
     this._deltaT = 0;
+
+    this._flyMat = null;
 
     this._pitch = 0;
     this._yaw = 0;
@@ -1205,7 +1207,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     var that = this;
     var needRecurse = true;
     var childNode;
-    var i;
+    var i, n;
     var target = (obj && obj._xmlNode) ? obj._xmlNode : {};
 
 
@@ -1267,13 +1269,14 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
             if (buttonState == 0 && affectedPointingSensorsList.length == 0 &&
                 (eventType == 'onmousemove' || eventType == 'onmouseover' || eventType == 'onmouseout') )
             {
-                for (i = 0; i < node._childNodes.length; ++i)
+                n = node._childNodes.length;
+
+                for (i = 0; i < n; ++i)
                 {
                     childNode = node._childNodes[i];
 
-                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode) && childNode._vf["enabled"])
+                    if (x3dom.isa(childNode, x3dom.nodeTypes.X3DPointingDeviceSensorNode) && childNode._vf.enabled)
                     {
-                        
                         affectedPointingSensorsList.push(childNode);
                     }
                 }
@@ -1296,7 +1299,6 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 	return needRecurse;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 /**
  * Notifies all pointing device sensors that are currently affected by mouse events, if any, about the given event
@@ -1304,43 +1306,24 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
  */
 x3dom.Viewarea.prototype._notifyAffectedPointingSensors = function(event)
 {
-    var i;
-    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    var funcDict = {
+        "mousedown" : "pointerPressedOverSibling",
+        "mousemove" : "pointerMoved",
+        "mouseover" : "pointerMovedOver",
+        "mouseout"  : "pointerMovedOut"
+    };
 
-    if (affectedPointingSensorsList.length > 0)
+    var func = funcDict[event.type];
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    var i, n = affectedPointingSensorsList.length;
+
+    if (n > 0 && func !== undefined)
     {
-        if (event.type == 'mousedown')
-        {
-            for (i = 0; i < affectedPointingSensorsList.length; ++i)
-            {
-                affectedPointingSensorsList[i].pointerPressedOverSibling(event);
-            }
-        }
-        else if (event.type == 'mousemove')
-        {
-            for (i = 0; i < affectedPointingSensorsList.length; ++i)
-            {
-                affectedPointingSensorsList[i].pointerMoved(event);
-            }
-        }
-        else if (event.type == 'mouseover')
-        {
-            for (i = 0; i < affectedPointingSensorsList.length; ++i)
-            {
-                affectedPointingSensorsList[i].pointerMovedOver(event);
-            }
-        }
-        else if (event.type == 'mouseout')
-        {
-            for (i = 0; i < affectedPointingSensorsList.length; ++i)
-            {
-                affectedPointingSensorsList[i].pointerMovedOut(event);
-            }
-        }
+        for (i = 0; i < n; i++)
+            affectedPointingSensorsList[i][func](event);
     }
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 x3dom.Viewarea.prototype.initMouseState = function()
 {
@@ -1765,6 +1748,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         else if (navType === "turntable")   // requires that y is up vector in world coords
         {
+            if (!this._flyMat)
+                this.initTurnTable(navi);
+
             if (buttonState & 1) //left
             {
                 alpha = (dy * 2 * Math.PI) / this._height;

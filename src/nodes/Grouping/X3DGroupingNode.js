@@ -73,15 +73,14 @@ x3dom.registerNodeType(
                     childTransform = this.transformMatrix(transform);
                 }
 
+                var n = this._childNodes.length;
 
-                if (drawableCollection.viewarea._scene._vf.experimentalClipPlanes == true) {
+                if (x3dom.nodeTypes.ClipPlane.count > 0) {
                     var localClipPlanes = [];
 
-                    for (var j = 0, n = this._childNodes.length; j < n; j++) {
+                    for (var j = 0; j < n; j++) {
                         if ( (cnode = this._childNodes[j]) ) {
-                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) &&
-                                cnode._vf.on &&
-                                cnode._vf.enabled) {
+                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
                                 localClipPlanes.push(cnode);
                             }
                         }
@@ -90,9 +89,7 @@ x3dom.registerNodeType(
                     clipPlanes = localClipPlanes.concat(clipPlanes);
                 }
 
-
-
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                for (var i=0; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
                         cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }

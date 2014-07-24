@@ -61,18 +61,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'pickOnNav', false);
 
-            // another experimental field for enable clipping planes
-
-            /**
-             * Flag to enable experimental clipping plane support
-             * @var {x3dom.fields.SFBool} experimentalClipPlanes
-             * @memberof x3dom.nodeTypes.Scene
-             * @initvalue false
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFBool(ctx, 'experimentalClipPlanes', false);
-
             // another experimental field for shadow DOM remapping
 
             /**

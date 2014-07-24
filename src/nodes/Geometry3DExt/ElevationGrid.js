@@ -184,7 +184,8 @@ x3dom.registerNodeType(
 
                 var h = this._vf.height;
 
-                x3dom.debug.assert((h.length === this._vf.xDimension*this._vf.zDimension));
+                x3dom.debug.assert((h.length >= this._vf.xDimension*this._vf.zDimension),
+                    "Too few height values for given x/zDimension!");
 
                 var normals = null, texCoords = null, colors = null;
 
@@ -314,7 +315,39 @@ x3dom.registerNodeType(
                         node.invalidateVolume();
                     });
                 }
-                // TODO: handle other cases!
+                else if (fieldName == "xSpacing" || fieldName == "zSpacing")
+                {
+                    for (var y = 0; y < this._vf.zDimension; y++) {
+                        for (var x = 0; x < this._vf.xDimension; x++) {
+                            var j = 3 * (y * this._vf.xDimension + x);
+                            this._mesh._positions[0][j  ] = x * this._vf.xSpacing;
+                            this._mesh._positions[0][j+2] = y * this._vf.zSpacing;
+                        }
+                    }
+
+                    if (!normals) {
+                        this._mesh._normals[0] = [];
+                        this._mesh.calcNormals(Math.PI, this._vf.ccw);
+                    }
+
+                    this.invalidateVolume();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                        if (!normals)
+                            node._dirty.normals = true;
+                        node.invalidateVolume();
+                    });
+                }
+                else if (fieldName == "xDimension" || fieldName == "zDimension")
+                {
+                    this.nodeChanged();     // re-init whole geo, changed too much
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setGeoDirty();
+                        node.invalidateVolume();
+                    });
+                }
             }
         }
     )

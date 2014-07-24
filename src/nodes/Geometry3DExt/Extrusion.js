@@ -78,7 +78,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'crossSection', [ new x3dom.fields.SFVec2f(1, 1),
+            this.addField_MFVec2f(ctx, 'crossSection', [
+                new x3dom.fields.SFVec2f(1, 1),
                 new x3dom.fields.SFVec2f(1, -1),
                 new x3dom.fields.SFVec2f(-1, -1),
                 new x3dom.fields.SFVec2f(-1, 1),

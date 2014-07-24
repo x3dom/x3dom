@@ -6,6 +6,8 @@
  * Dual licensed under the MIT and GPL
  */
 
+// TODO: this file has lots of syntactical issues, fix them!
+
 function X3DCollidableShape(){
     var CollidableShape = new x3dom.fields.SFNode();
     var RigidBody = new x3dom.fields.SFNode();
@@ -1124,7 +1126,7 @@ function X3DJoint(){
             }
         }
         building_constraints = false;
-    }
+    };
 
     CreateInteractiveObjects = function(){
         x3dWorld.parentElement.addEventListener('mouseup', MouseControlStop, false);
@@ -1142,7 +1144,7 @@ function X3DJoint(){
             }
         }
 
-    }
+    };
 
     UpdateConstraints = function(){
         if(drag && building_constraints == false){
@@ -1161,13 +1163,13 @@ function X3DJoint(){
             UpdateRigidbody = null;
             mousePickObject = null;
         }
-    }
+    };
 
     MouseControlMove = function(e){
         if(e.hitPnt){
             mousePos = new x3dom.fields.SFVec3f.parse(e.hitPnt);
         }
-    }
+    };
 
     MouseControlStart = function(e){
         if(!drag){
@@ -1193,13 +1195,13 @@ function X3DJoint(){
                 mousePickObject = null;
             }
         }
-    }
+    };
 
     MouseControlStop = function(e){
         if(drag){
             drag = false;
         }
-    }
+    };
 
 //	###############################################################
 //	####################	UPDATE RIGIDBODIES	###################
@@ -1256,7 +1258,7 @@ function X3DJoint(){
                 }
             }
         }
-    }
+    };
 
     function UpdateTransforms(a, b){
         if(x3dom.isa(a._x3domNode, x3dom.nodeTypes.Transform)){

@@ -52,8 +52,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     //try to determine behavior of certain DOMNodeInsertedEvent:
     //IE11 dispatches one event for each node in an inserted subtree, other browsers use a single event per subtree
-    x3dom.caps.DOMNodeInsertedEvent_perSubtree = (navigator.userAgent.indexOf('MSIE')    != -1 ||
-                                                  navigator.userAgent.indexOf('Trident') != -1   ) ? false : true;
+    x3dom.caps.DOMNodeInsertedEvent_perSubtree = !(navigator.userAgent.indexOf('MSIE')    != -1 ||
+                                                   navigator.userAgent.indexOf('Trident') != -1 );
 
     // allow listening for (size) changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
@@ -85,7 +85,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 break;
         }
     };
-
 
 
     x3dom.caps.MOBILE = (navigator.appVersion.indexOf("Mobile") > -1);
@@ -204,6 +203,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if(!this.isMulti) {
                 this.focus();
                 this.classList.add('x3dom-canvas-mousedown');
+
                 switch(evt.button) {
                     case 0:  this.mouse_button = 1; break;  //left
                     case 1:  this.mouse_button = 4; break;  //middle
@@ -230,6 +230,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if(!this.isMulti) {
                 var prev_mouse_button = this.mouse_button;
                 this.classList.remove('x3dom-canvas-mousedown');
+
                 this.mouse_button = 0;
                 this.mouse_dragging = false;
 
@@ -252,6 +253,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if(!this.isMulti) {
                 this.mouse_button = 0;
                 this.mouse_dragging = false;
+                this.classList.remove('x3dom-canvas-mousedown');
 
                 this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
                 this.parent.doc.needRender = true;
@@ -365,15 +367,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             firstTouchTime: new Date().getTime(),
             firstTouchPoint: new x3dom.fields.SFVec2f(0,0),
 
+            lastPos : new x3dom.fields.SFVec2f(),
             lastDrag : new x3dom.fields.SFVec2f(),
 
             lastMiddle : new x3dom.fields.SFVec2f(),
-            lastDistance : new x3dom.fields.SFVec2f(),
             lastSquareDistance : 0,
             lastAngle : 0,
             lastLayer : [],
 
-            examineNavType: true,
+            examineNavType: 1,
 
             calcAngle : function(vector)
             {
@@ -438,7 +440,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             }
         };
 
-        // Mozilla Touches
+        // Mozilla Touches (seems obsolete now...)
         var mozilla_ids = [];
 
         var mozilla_touches =
@@ -460,7 +462,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 doc = this.parent.doc;
 
             var navi = doc._scene.getNavigationInfo();
-            touches.examineNavType = (navi.getType() == "examine");
+
+            switch(navi.getType()) {
+                case "examine":
+                    touches.examineNavType = 1;
+                    break;
+                case "turntable":
+                    touches.examineNavType = 2;
+                    break;
+                default:
+                    touches.examineNavType = 0;
+                    break;
+            }
 
             touches.lastLayer = [];
 
@@ -486,16 +499,17 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 var middle = distance.multiply(0.5).add(touch0);
                 var squareDistance = distance.dot(distance);
 
-                touches.lastDistance = distance;
                 touches.lastMiddle = middle;
                 touches.lastSquareDistance = squareDistance;
                 touches.lastAngle = touches.calcAngle(distance);
+
+                touches.lastPos = this.parent.mousePosition(evt.touches[0]);
             }
 
             // update scene bbox
             doc._scene.updateVolume();
 
-            if (touches.examineNavType) {
+            if (touches.examineNavType == 1) {
                 for(i = 0; i < evt.touches.length; i++) {
                     pos = this.parent.mousePosition(evt.touches[i]);
                     doc.onPick(that.gl, pos.x, pos.y);
@@ -541,7 +555,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             var pos = null;
             var rotMatrix = null;
 
-            if (touches.examineNavType) {
+            var touch0, touch1, distance, middle, squareDistance, deltaMiddle, deltaZoom, deltaMove;
+
+            if (touches.examineNavType == 1) {
                 /*
                  if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
                  for(var i = 0; i < evt.touches.length; i++) {
@@ -568,20 +584,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 }
                 // two fingers: scale, translation, rotation around view (z) axis
                 else if(evt.touches.length >= 2) {
-                    var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-                    var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
 
-                    var distance = touch1.subtract(touch0);
-                    var middle = distance.multiply(0.5).add(touch0);
-                    var squareDistance = distance.dot(distance);
+                    distance = touch1.subtract(touch0);
+                    middle = distance.multiply(0.5).add(touch0);
+                    squareDistance = distance.dot(distance);
 
-                    var deltaMiddle = middle.subtract(touches.lastMiddle);
-                    var deltaZoom = squareDistance - touches.lastSquareDistance;
+                    deltaMiddle = middle.subtract(touches.lastMiddle);
+                    deltaZoom = squareDistance - touches.lastSquareDistance;
 
-                    var deltaMove = new x3dom.fields.SFVec3f(
-                        deltaMiddle.x / screen.width,
-                        -deltaMiddle.y / screen.height,
-                        deltaZoom / (screen.width * screen.height * 0.2));
+                    deltaMove = new x3dom.fields.SFVec3f(
+                                deltaMiddle.x / screen.width, -deltaMiddle.y / screen.height,
+                                deltaZoom / (screen.width * screen.height * 0.2));
 
                     var rotation = touches.calcAngle(distance);
                     var angleDelta = touches.lastAngle - rotation;
@@ -590,15 +605,30 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
 
                     touches.lastMiddle = middle;
-                    touches.lastDistance = distance;
                     touches.lastSquareDistance = squareDistance;
 
                     doc.onMoveView(that.gl, deltaMove, rotMatrix);
                 }
             }
             else if (evt.touches.length) {
-                pos = this.parent.mousePosition(evt.touches[0]);
-                doc.onDrag(that.gl, pos.x, pos.y, 1);
+                if (touches.examineNavType == 2 && evt.touches.length >= 2) {
+                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+
+                    distance = touch1.subtract(touch0);
+                    squareDistance = distance.dot(distance);
+                    deltaZoom = (squareDistance - touches.lastSquareDistance) / (0.1 * (screen.width + screen.height));
+
+                    touches.lastPos.y += deltaZoom;
+                    touches.lastSquareDistance = squareDistance;
+
+                    doc.onDrag(that.gl, touches.lastPos.x, touches.lastPos.y, 2);
+                }
+                else {
+                    pos = this.parent.mousePosition(evt.touches[0]);
+
+                    doc.onDrag(that.gl, pos.x, pos.y, 1);
+                }
             }
 
             doc.needRender = true;
@@ -639,7 +669,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 touches.numTouches = evt.touches.length;
             }
 
-            if (touches.examineNavType) {
+            if (touches.examineNavType == 1) {
                 for(var i = 0; i < touches.lastLayer.length; i++) {
                     var pos = touches.lastLayer[i][1];
 
@@ -712,10 +742,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
         if (!this.disableTouch)
         {
-            // mozilla touch events
-            this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
-            this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
-            this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
+            // mozilla touch events (TODO: seem to be obsolete now, completely remove all code if no one complains!)
+            // However, touch in general seems to be broken if this flag is not set: dom.w3c_touch_events.enabled;10
+            //this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
+            //this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
+            //this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
             // w3c / apple touch events (in Chrome via chrome://flags)
             this.canvas.addEventListener('touchstart',    touchStartHandler, true);
@@ -783,9 +814,9 @@ x3dom.X3DCanvas.prototype._initFlashContext = function(canvas, renderType) {
 
 /**
  * Creates a param node and adds it to the target node's children
- * @param {node} - the target node
- * @param {name} - the name for the parameter
- * @param {value} - the value for the parameter
+ * @param {String} node - the target node
+ * @param {String} name - the name for the parameter
+ * @param {String} value - the value for the parameter
  */
 x3dom.X3DCanvas.prototype.appendParam = function(node, name, value) {
     var param = document.createElement('param');
@@ -1052,15 +1083,10 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
         "ontouchleave",
         "ontouchenter",
 
-        // apple gestures
-        //"ongesturestart",
-        //"ongesturechange",
-        //"ongestureend",
-
         // mozilla touch
-        "onMozTouchDown",
-        "onMozTouchMove",
-        "onMozTouchUp",
+        //"onMozTouchDown",
+        //"onMozTouchMove",
+        //"onMozTouchUp",
 
         // drag and drop, requires 'draggable' source property set true (usually of an img)
         "ondragstart",
@@ -1109,7 +1135,7 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
 
             if (found) {
                 x3dom.debug.logInfo('addEventListener for div.on' + type);
-                that.canvas.addEventListener(type, func, phase);
+                canvas.addEventListener(type, func, phase);
             } else {
                 x3dom.debug.logInfo('addEventListener for X3D.on' + type);
                 this.__addEventListener(type, func, phase);
@@ -1126,7 +1152,7 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
 
             if (found) {
                 x3dom.debug.logInfo('removeEventListener for div.on' + type);
-                that.canvas.removeEventListener(type, func, phase);
+                canvas.removeEventListener(type, func, phase);
             } else {
                 x3dom.debug.logInfo('removeEventListener for X3D.on' + type);
                 this.__removeEventListener(type, func, phase);

@@ -30,6 +30,7 @@ x3dom.registerNodeType(
 
             // Node implements optimizations; no need to maintain the children node's
             // X3D representations, as they cannot be accessed after creation time
+            x3dom.debug.logWarning("StaticGroup erroneously also bakes parent transforms, if happens use Group node!"); // Blender exports to SG
 
             /**
              * Enables debugging.
