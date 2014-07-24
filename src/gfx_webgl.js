@@ -92,6 +92,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.STD_DERIVATIVES = ctx.getExtension("OES_standard_derivatives");
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
+                        x3dom.caps.DEPTH_TEXTURE = ctx.getExtension("WEBGL_depth_texture");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
                         var extString = x3dom.caps.EXTENSIONS.toString().replace(/,/g, ", ");
@@ -3268,16 +3269,17 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType,
-                    (texProp && texProp._vf.generateMipMaps), !rt_tex.requirePingPong());
-
+					(texProp && texProp._vf.generateMipMaps), rt_tex._vf.depthMap || !rt_tex.requirePingPong());
+					
                 rt_tex._cleanupGLObjects = function(retainTex) {
                     if (!retainTex)
                         gl.deleteTexture(this._webgl.fbo.tex);
                     if (this._webgl.fbo.rbo)
                         gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+					if (this._webgl.fbo.dtex)
+						gl.deleteTexture(this._webgl.fbo.dtex);
                     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                     gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                    this._webgl.fbo.rbo = null;
                     this._webgl.fbo.fbo = null;
                 };
 
@@ -3329,9 +3331,10 @@ x3dom.gfx_webgl = (function () {
                             gl.deleteTexture(this._webgl.fbo.tex);
                         if (this._webgl.fbo.rbo)
                             gl.deleteRenderbuffer(this._webgl.fbo.rbo);
+						if (this._webgl.fbo.dtex)
+							gl.deleteTexture(this._webgl.fbo.dtex);
                         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
                         gl.deleteFramebuffer(this._webgl.fbo.fbo);
-                        this._webgl.fbo.rbo = null;
                         this._webgl.fbo.fbo = null;
                     };
 
@@ -3340,7 +3343,7 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = x3dom.Utils.initFBO(gl,
                                     rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], texType,
-                                    (texProp && texProp._vf.generateMipMaps), !rt_tex.requirePingPong());
+                                    (texProp && texProp._vf.generateMipMaps), rt_tex._vf.depthMap || !rt_tex.requirePingPong());
 
                 if (rt_tex.requirePingPong()) {
                     refinementPos = rt_tex._vf.dimensions[0] + "x" + rt_tex._vf.dimensions[1];

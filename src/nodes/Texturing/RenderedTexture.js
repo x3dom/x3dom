@@ -140,6 +140,17 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
 
+			/**
+			 * Determines if textures shall be treated as depth map. 
+			 * If it is TRUE, then the generated texture will contain the depth buffer of the image instead of the color buffer. 
+			 * @var {x3dom.fields.SFBool} depthMap
+			 * @memberof x3dom.nodeTypes.RenderedTexture
+			 * @initvalue 0.064
+			 * @field x3dom
+			 * @instance 
+			 */
+			this.addField_SFBool(ctx, 'depthMap', []);
+
             this.hScreenSize = 0.14976;
             this.vScreenSize = 0.09356;
             this.vScreenCenter = this.vScreenSize / 2;
@@ -153,7 +164,14 @@ x3dom.registerNodeType(
                 "RenderedTexture.dimensions requires at least 3 entries.");
             this._clearParents = true;
             this._needRenderUpdate = true;
-        
+        	
+        	this.checkDepthSupport = function() {
+				if(this._vf.depthMap && x3dom.caps.DEPTH_TEXTURE === null)
+				{
+					x3dom.debug.logWarning("RenderedTexture Node: depth texture extension not supported");
+				}
+			};
+			this.checkDepthSupport();
         },
         {
             nodeChanged: function()
@@ -175,6 +193,11 @@ x3dom.registerNodeType(
                             this._needRenderUpdate = true;
                         }
                         break;
+					case "depthMap":
+                    	this.checkDepthSupport();
+                    	this._x3domTexture.updateTexture();
+                    	this._needRenderUpdate = true;
+						break;
                     default:
                         // TODO: dimensions
                         break;

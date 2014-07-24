@@ -216,7 +216,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 /*****************************************************************************
  * Initialize framebuffer object and associated texture(s)
  *****************************************************************************/
-x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
+x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
     var tex = gl.createTexture();
     tex.width  = w;
     tex.height = h;
@@ -246,15 +246,22 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
     }
 
     var fbo = gl.createFramebuffer();
-    var rb = null;
+    var dtex = null;
 
-    if (needRenderBuf) {
-        rb = gl.createRenderbuffer();
+	if(needDepthBuf) {
+		if(x3dom.caps.DEPTH_TEXTURE !== null) {
+			dtex = gl.createTexture();
 
-        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
-        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-    }
+			gl.bindTexture(gl.TEXTURE_2D, dtex);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.DEPTH_COMPONENT, w, h, 0, gl.DEPTH_COMPONENT, gl.UNSIGNED_SHORT, null);
+			if (mipMap)
+				gl.generateMipmap(gl.TEXTURE_2D);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+
+			dtex.width = w;
+			dtex.height = h;
+		}
+	}
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
 
@@ -264,7 +271,7 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
             gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, mrts[i], 0);
         }
     }
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT , gl.TEXTURE_2D, dtex, 0);
 
     var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
     if (status != gl.FRAMEBUFFER_COMPLETE) {
@@ -274,7 +281,7 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
     return {
-        fbo: fbo, rbo: rb,
+        fbo: fbo, dtex: dtex,
         tex: tex, texTargets: mrts,
         width: w, height: h,
         type: type, mipMap: mipMap
