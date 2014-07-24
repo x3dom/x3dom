@@ -1,0 +1,53 @@
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"></meta>
+    <link rel="stylesheet" type="text/css" href="../../../../../dist/x3dom.css"></link>
+    <script type="text/javascript" src="../../../../../dist/x3dom-full.debug.js"></script>
+  </head>
+  
+  <script type="text/javascript">
+    function toggle_color_depth() {
+		var rt = document.getElementById("rt");
+		if(rt.getAttribute("depthMap") == "false")
+			rt.setAttribute("depthMap", "true");
+		else
+			rt.setAttribute("depthMap", "false");
+	}
+  </script>
+  
+  
+  <body style="background:white">
+	<button onclick="toggle_color_depth();">Toggle between Color and Depth Buffer</button>
+	
+	<div style="position:relative;">
+		<X3D id="x3d" xmlns='http://www.web3d.org/specifications/x3d-namespace'
+			 showStat='true' showLog='true' width='400px' height='400px'>
+			<Scene>
+				<Background DEF="bg" transparency ='0.0' skyColor='0.0 0.0 0.0'></Background>
+				<Background DEF="bg-white" transparency ='0.0' skyColor='1.0 0.0 1.0'></Background>
+				<Viewpoint DEF="vp" description='Default' zNear='2.0' zFar='20.0'></Viewpoint>
+				<Shape>
+					<Appearance>
+						<RenderedTexture id="rt" update="always" dimensions="512 512 4" depthMap="true">
+							<Viewpoint USE="vp"></Viewpoint>
+							<Background USE="bg-white"></Background>
+							<Scene>
+								<transform rotation="1.0 0.0 0.0 1.4">
+									<shape>
+										<appearance>
+											<Material emissiveColor="0 0 1"></Material>
+										</appearance>
+										<Rectangle2D id="map_rectangle" size='4 8' subdivision='1 1'></Rectangle2D>
+									</shape>
+								</transform>
+							</Scene>
+						</RenderedTexture>
+					</Appearance>
+					<Rectangle2D id="map_rectangle" size='4 4' subdivision='1 1'></Rectangle2D>
+				</Shape>
+			</Scene>
+		</X3D>
+	</div>
+  </body>
+</html>
