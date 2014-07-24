@@ -667,17 +667,20 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(!properties.SOLID || properties.TWOSIDEDMAT) {
 			shader += "if (dot(normal, eye) < 0.0) {\n";
 			shader += "  normal *= -1.0;\n";
-            if(properties.SEPARATEBACKMAT) {
-                shader += "  color.rgb = " + x3dom.shader.decodeGamma(properties, "backDiffuseColor") + ";\n";
-                shader += "  color.a = 1.0 - backTransparency;\n";
-                shader += "  _shininess = backShininess;\n";
-                shader += "  _emissiveColor = backEmissiveColor;\n";
-                shader += "  _specularColor = backSpecularColor;\n";
-                shader += "  _ambientIntensity = backAmbientIntensity;\n";
-            }
-
-			shader += "}\n";
+            shader += "}\n";
 		}
+
+        if(properties.SEPARATEBACKMAT) {
+            shader += "  if(gl_FrontFacing) {\n";
+            shader += "    color.rgb = " + x3dom.shader.decodeGamma(properties, "backDiffuseColor") + ";\n";
+            shader += "    color.a = 1.0 - backTransparency;\n";
+            shader += "    _shininess = backShininess;\n";
+            shader += "    _emissiveColor = backEmissiveColor;\n";
+            shader += "    _specularColor = backSpecularColor;\n";
+            shader += "    _ambientIntensity = backAmbientIntensity;\n";
+            shader += "  }\n";
+        }
+
 		
 		//Calculate lights
         if (properties.LIGHTS) {
