@@ -5,7 +5,13 @@
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
+ *
  */
+
+ /* Added support for changes of the "color" field
+  * (C) 2014 Toshiba Corporation
+  * Dual licensed under the MIT and GPL
+  */
 
 /* ### ElevationGrid ### */
 x3dom.registerNodeType(
