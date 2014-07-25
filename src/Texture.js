@@ -9,6 +9,11 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+/*
+ * Added support for depthTexture option in case of RenderedTexture.
+ * (c) 2014 Toshiba Corporation
+ * Dual licensed under MIT and GPL
+ */
 
 function startDashVideo(recurl, texturediv) {
     var vars = function () {

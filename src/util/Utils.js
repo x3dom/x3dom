@@ -9,6 +9,12 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+/*
+ * Modified x3dom.Utils.initFBO. Added support for depth texture.
+ * (C) 2014 Toshiba Corporation
+ * Dual licensed under MIT and GPL
+ */
+
 /*****************************************************************************
 * Utils class holds utility functions for renderer
 *****************************************************************************/

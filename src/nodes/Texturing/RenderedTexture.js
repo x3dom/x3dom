@@ -7,6 +7,12 @@
  * Dual licensed under the MIT and GPL
  */
 
+/*
+ * Added 'depthMap' field.
+ * (c) 2014 Toshiba Corporation
+ * Dual licensed under MIT and GPL
+ */
+
 /* ### RenderedTexture ### */
 x3dom.registerNodeType(
     "RenderedTexture",
