@@ -1,56 +1,92 @@
 x3dom.SSAO = {};
-x3dom.SSAO.isInitialized = false;
-x3dom.SSAO.isEnabled = true;
-x3dom.SSAO.randomTextureSize = 4;
+x3dom.SSAO.isEnabled = function(scene){return scene._vf.SSAO};
 
-x3dom.SSAO.initialize = function(gl,canvas) {
-	x3dom.SSAO.shaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOShader(gl), "ssao");
-	x3dom.SSAO.blurShaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOBlurShader(gl), "ssao-blur");
-	
-	//create 4x4 random texture
-	x3dom.SSAO.randomTexture = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.randomTexture);
-	var rTexSize = x3dom.SSAO.randomTextureSize;
-	var randomImageBuffer = new ArrayBuffer(rTexSize*rTexSize*4); //4x4 pixels with 4 bytes each
-	var randomImageView = Uint8Array(randomImageBuffer);
-	for(var i = 0; i<rTexSize*rTexSize;++i){
-		var x = Math.random()*2.0-1.0;
-		var y = Math.random()*2.0-1.0;
-		var z = Math.random()*2.0-1.0;
-		var length = Math.sqrt(x*x+y*y+z*z);
-		x /=length;
-		y /=length;
-		z /=length;
-		randomImageView[4*i] = (x+1.0)*0.5*255.0;
-		randomImageView[4*i+1] = (y+1.0)*0.5*255.0;
-		randomImageView[4*i+2] = (z+1.0)*0.5*255.0;
-		randomImageView[4*i+3] = 255;
+/**
+ * Reinitializes the shaders if they were not created yet or need to be updated.
+ */
+x3dom.SSAO.reinitializeShadersIfNecessary = function(gl){
+	if(x3dom.SSAO.shaderProgram === undefined){
+		x3dom.SSAO.shaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOShader(gl), "ssao");
 	}
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,rTexSize,rTexSize,0, gl.RGBA,gl.UNSIGNED_BYTE, randomImageView);
-	gl.bindTexture(gl.TEXTURE_2D,null);
-
-	//create framebuffer texture
-var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-	x3dom.SSAO.fbo = gl.createFramebuffer();
-	gl.bindFramebuffer(gl.FRAMEBUFFER, x3dom.SSAO.fbo);
-	x3dom.SSAO.fbotex = gl.createTexture();
-	gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.fbotex);
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,canvas.width,canvas.height,0, gl.RGBA,gl.UNSIGNED_BYTE, null);
-	gl.bindTexture(gl.TEXTURE_2D,null);
-	gl.framebufferTexture2D(gl.FRAMEBUFFER,
-                       gl.COLOR_ATTACHMENT0,
-                       gl.TEXTURE_2D,
-                       x3dom.SSAO.fbotex,
-                       0);
-	gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
-
-
-	console.log("initialized SSAO");
-	x3dom.SSAO.isInitialized = true;
+	if(x3dom.SSAO.blurShaderProgram === undefined){
+		x3dom.SSAO.blurShaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOBlurShader(gl), "ssao-blur");
+	}
 };
 
-x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
+/**
+ * Reinitializes the random Texture if it was not created yet or if it's size changed.
+ */
+x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl,scene){
+	var sizeHasChanged = scene._vf.SSAOrandomTextureSize != x3dom.SSAO.currentRandomTextureSize;
 
+	if(x3dom.SSAO.randomTexture === undefined){
+		//create random texture
+		x3dom.SSAO.randomTexture = gl.createTexture();
+	}
+
+	if(x3dom.SSAO.randomTexture === undefined || sizeHasChanged){
+		gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.randomTexture);
+		var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene._vf.SSAOrandomTextureSize;
+		var randomImageBuffer = new ArrayBuffer(rTexSize*rTexSize*4); //rTexSize^2 pixels with 4 bytes each
+		var randomImageView = Uint8Array(randomImageBuffer);
+		//fill the image with random unit Vectors:
+		for(var i = 0; i<rTexSize*rTexSize;++i){
+			var x = Math.random()*2.0-1.0;
+			var y = Math.random()*2.0-1.0;
+			var z = Math.random()*2.0-1.0;
+			var length = Math.sqrt(x*x+y*y+z*z);
+			x /=length;
+			y /=length;
+			z /=length;
+			randomImageView[4*i] = (x+1.0)*0.5*255.0;
+			randomImageView[4*i+1] = (y+1.0)*0.5*255.0;
+			randomImageView[4*i+2] = (z+1.0)*0.5*255.0;
+			randomImageView[4*i+3] = 255;
+		}
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,rTexSize,rTexSize,0, gl.RGBA,gl.UNSIGNED_BYTE, randomImageView);
+		gl.bindTexture(gl.TEXTURE_2D,null);
+	}
+};
+
+/**
+ * Reinitializes the FBO render target for the SSAO if it wasn't created yet or if the canvas size changed.
+ */
+x3dom.SSAO.reinitializeFBOIfNecessary = function(gl,canvas){
+
+	var dimensionsHaveChanged =
+		x3dom.SSAO.currentFBOWidth != canvas.width || 
+		x3dom.SSAO.currentFBOHeight != canvas.height;
+
+	if(x3dom.SSAO.fbo === undefined || dimensionsHaveChanged)
+	{
+		x3dom.SSAO.currentFBOWidth = canvas.width;
+		x3dom.SSAO.currentFBOHeight = canvas.height;
+		var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+		if(x3dom.SSAO.fbo === undefined){
+			//create framebuffer
+			x3dom.SSAO.fbo = gl.createFramebuffer();
+		}
+		gl.bindFramebuffer(gl.FRAMEBUFFER, x3dom.SSAO.fbo);
+		if(x3dom.SSAO.fbotex === undefined){
+			//create render texture
+			x3dom.SSAO.fbotex = gl.createTexture();
+		}
+		gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.fbotex);
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,x3dom.SSAO.currentFBOWidth,
+			x3dom.SSAO.currentFBOHeight,0, gl.RGBA,gl.UNSIGNED_BYTE, null);
+		gl.bindTexture(gl.TEXTURE_2D,null);
+		gl.framebufferTexture2D(gl.FRAMEBUFFER,
+			gl.COLOR_ATTACHMENT0,
+			gl.TEXTURE_2D,
+			x3dom.SSAO.fbotex,
+			0);
+		gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
+	}
+};
+
+
+x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
+	//save previous fbo
 	var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 	if(fbo != null){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -64,21 +100,26 @@ x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	
 	stateManager.useProgram(sp);
 
-	gl.uniform1i(sp.program.depthTextureLocation,0);
-	gl.uniform1i(sp.program.randomTextureLocation,1);
-	gl.uniform2f(sp.program.randomTextureTilingFactorLocation,canvas.width/x3dom.SSAO.randomTextureSize,canvas.height/x3dom.SSAO.randomTextureSize);
+	//set up uniforms
+	sp.depthTexture = 0;
+	sp.randomTexture = 1;
+	sp.radius = scene._vf.SSAOradius;
+	sp.randomTextureTilingFactor = [canvas.width/x3dom.SSAO.currentRandomTextureSize,canvas.height/x3dom.SSAO.currentRandomTextureSize];
+
+	var viewpoint = scene.getViewpoint();
+	sp.nearPlane = viewpoint.getNear();
+	sp.farPlane = viewpoint.getFar();
 
 	if (!sp.tex) {
 		sp.tex = 0;
 	}
 
-	//this.stateManager.enable(gl.TEXTURE_2D);
 	//depth texture
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, tex);
 
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	
@@ -104,15 +145,16 @@ x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	gl.activeTexture(gl.TEXTURE1);
 	gl.bindTexture(gl.TEXTURE_2D, null);
-	//this.stateManager.disable(gl.TEXTURE_2D);
 	
+	//restore prevoius fbo
 	if(fbo != null){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
 	}
 };
 
-x3dom.SSAO.blur = function(stateManager,gl,scene,tex,canvas,fbo) {
+x3dom.SSAO.blur = function(stateManager,gl,scene,tex,depthTex,canvas,fbo) {
 
+	//save previous fbo
 	var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
 	if(fbo != null){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -126,14 +168,29 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,tex,canvas,fbo) {
 	
 	stateManager.useProgram(sp);
 
+	sp.SSAOTexture = 0;
+	sp.depthTexture = 1;
+
+	var viewpoint = scene.getViewpoint();
+	sp.nearPlane = viewpoint.getNear();
+	sp.farPlane = viewpoint.getFar();
+
 	if (!sp.tex) {
 		sp.tex = 0;
 	}
 
-	//this.stateManager.enable(gl.TEXTURE_2D);
 	//ssao texture
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, tex);
+
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+	//depth texture
+	gl.activeTexture(gl.TEXTURE1);
+	gl.bindTexture(gl.TEXTURE_2D, depthTex);
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -149,28 +206,36 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,tex,canvas,fbo) {
 
 	gl.disableVertexAttribArray(sp.position);
 
+	gl.activeTexture(gl.TEXTURE0);
+	gl.bindTexture(gl.TEXTURE_2D, null);
+	gl.activeTexture(gl.TEXTURE1);
 	gl.bindTexture(gl.TEXTURE_2D, null);
 	
+	//restore previous fbo
 	if(fbo != null){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
 	}
 }
 
 x3dom.SSAO.renderSSAO =
-	function(stateManager, gl, scene, canvas) {
-		if(!this.isInitialized) {
-			this.initialize(gl,canvas);
-		}
-			
-			//render depth buffer to scene:
-			//scene._webgl.fboScene contains screen-space coordinates. This means that the blue component is the depth (z) value.
-			
-			stateManager.viewport(0,0,canvas.width, canvas.height);
-            //scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
+function(stateManager, gl, scene, canvas) {
 
-            this.render(stateManager,gl, scene, scene._webgl.fboScene.tex,canvas,x3dom.SSAO.fbo);
-	gl.enable(gl.BLEND);
-	gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
-	    this.blur(stateManager,gl, scene, x3dom.SSAO.fbotex,canvas,/*x3dom.SSAO.fbo*/null);		
-	gl.disable(gl.BLEND);
-	};
+	//set up resources if they are non-existent or if they are outdated:
+	this.reinitializeShadersIfNecessary(gl);
+	this.reinitializeRandomTextureIfNecessary(gl,scene);
+	this.reinitializeFBOIfNecessary(gl,canvas);
+
+	//render depth buffer to scene:
+	//scene._webgl.fboScene contains screen-space coordinates. This means that the blue component is the depth (z/w) value.
+		
+	stateManager.viewport(0,0,canvas.width, canvas.height);
+    //scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
+
+    //render SSAO into fbo
+    this.render(stateManager,gl, scene, scene._webgl.fboScene.tex,canvas,x3dom.SSAO.fbo);
+    //render blurred SSAO multiplicatively
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
+    this.blur(stateManager,gl, scene, x3dom.SSAO.fbotex,scene._webgl.fboScene.tex,canvas,/*x3dom.SSAO.fbo*/null);		
+    gl.disable(gl.BLEND);
+};

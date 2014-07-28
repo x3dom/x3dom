@@ -15,8 +15,6 @@ x3dom.shader.SSAOBlurShader = function(gl)
     gl.bindAttribLocation(this.program, 0, "position");
 
     gl.linkProgram(this.program);
-	
-
 	return this.program;
 };
 
@@ -57,17 +55,47 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
   shader += "#endif\n\n";
   
 
-	shader += "uniform sampler2D tex;\n" +
-		  "varying vec2 fragTexCoord;\n";
+	shader += "uniform sampler2D SSAOTexture;\n" +
+		"uniform sampler2D depthTexture;\n" +
+		"uniform float nearPlane;\n"+
+		"uniform float farPlane;\n"+
+		"varying vec2 fragTexCoord;\n";
 
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+		shader += 	x3dom.shader.rgbaPacking();
 		
+	shader+= 	"float getDepth(vec2 fragTexCoord) {\n"+
+			"    vec4 col = texture2D(depthTexture, fragTexCoord);\n"+
+			"    float d;\n";
+	
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
+		shader+="    d = unpackDepth(col);\n";
+	} else {
+		shader+="    d = col.b;\n"
+	}	
+	shader+=	"    return mix(nearPlane,farPlane,d);\n";
+	shader+=	"}\n";
+/*
+	shader+=	"vec3 getNormal(){\n"+
+			"    float d = getDepth(fragTexCoord);\n"+
+			"    float dx = d-getDepth(fragTexCoord+vec2(1.0/800.0,0.0));\n"+
+			"    float dy = d-getDepth(fragTexCoord+vec2(0.0,1.0/800.0));\n"+
+			"    return vec3(dx*800.0,dy*800.0,sqrt(1.0-dx*dx-dy*dy));\n"+
+			"}\n";
+*/
 	shader+=	"void main(void) {\n" +
-"float sum = 0.0;\n"+
-"for(int i = -2; i<2;i++){\n"+
-"    for(int j = -2; j<2;j++){\n"+
-"        sum+= texture2D(tex,fragTexCoord+vec2(1.0/800.0*float(i),1.0/800.0*float(j))).r;}}\n"+
-				"    gl_FragColor = vec4(sum/16.0,sum/16.0,sum/16.0,1.0);\n"+
-				"}\n";
+			"    float sum = 0.0;\n"+
+			"    float referenceDepth = getDepth(fragTexCoord);\n"+
+			"    float numSamples = 0.0;\n"+
+			"    for(int i = -2; i<2;i++){\n"+
+			"        for(int j = -2; j<2;j++){\n"+
+			"            vec2 sampleTexCoord = fragTexCoord+vec2(1.0/800.0*float(i),1.0/800.0*float(j));\n"+
+			"            if(abs(referenceDepth - getDepth(sampleTexCoord))<0.005){\n"+
+			"                sum+= texture2D(SSAOTexture,sampleTexCoord).r;\n"+
+			"                numSamples+=1.0;\n"+
+			"    }}}\n"+
+			"    gl_FragColor = vec4(sum/numSamples,sum/numSamples,sum/numSamples,1.0);\n"+
+			"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);

@@ -15,11 +15,6 @@ x3dom.shader.SSAOShader = function(gl)
     gl.bindAttribLocation(this.program, 0, "position");
     
 	gl.linkProgram(this.program);
-	
-	this.program.depthTextureLocation = gl.getUniformLocation(this.program, "tex");
-    this.program.randomTextureLocation = gl.getUniformLocation(this.program, "randomTexture");
-    this.program.randomTextureTilingFactorLocation = gl.getUniformLocation(this.program, "randomTexTilingFactor");
-	console.log(gl.getProgramParameter(this.program, gl.ACTIVE_UNIFORMS));
 	return this.program;
 };
 
@@ -31,12 +26,12 @@ x3dom.shader.SSAOShader.prototype.generateVertexShader = function(gl)
 	var shader = 	"attribute vec3 position;\n" +
 					"varying vec2 fragTexCoord;\n" +
 					"varying vec2 randomTexCoord;\n"+
-					"uniform vec2 randomTexTilingFactor;\n"+
+					"uniform vec2 randomTextureTilingFactor;\n"+
 					"\n" +
 					"void main(void) {\n" +
 					"    vec2 texCoord = (position.xy + 1.0) * 0.5;\n" +
 					"    fragTexCoord = texCoord;\n" +
-					"	 randomTexCoord = randomTexTilingFactor*texCoord;\n"+
+					"	 randomTexCoord = randomTextureTilingFactor*texCoord;\n"+
 					"    gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
 					"}\n";
 
@@ -56,15 +51,17 @@ x3dom.shader.SSAOShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.SSAOShader.prototype.generateFragmentShader = function(gl)
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
-  
+  var shader = 	"#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += 	"precision highp float;\n";
+  shader += 	"#else\n";
+  shader += 	" precision mediump float;\n";
+  shader += 	"#endif\n\n";
 
-	shader += "uniform sampler2D tex;\n" +
+	shader += 	"uniform sampler2D depthTexture;\n" +
 				"uniform sampler2D randomTexture;\n"+
+				"uniform float nearPlane;\n"+
+				"uniform float farPlane;\n"+
+				"uniform float radius;\n"+
 				"varying vec2 fragTexCoord;\n" +
 				"varying vec2 randomTexCoord;\n"+
 				"\n"+
@@ -74,15 +71,17 @@ x3dom.shader.SSAOShader.prototype.generateFragmentShader = function(gl)
 		shader += 	x3dom.shader.rgbaPacking();
 		
 	shader+= 	"float getDepth(vec2 fragTexCoord) {\n"+
-				"    vec4 col = texture2D(tex, fragTexCoord);\n";
+				"    vec4 col = texture2D(depthTexture, fragTexCoord);\n"+
+				"    float d;\n";
 	
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
-		shader+="    return unpackDepth(col);\n";
+		shader+="    d = unpackDepth(col);\n";
 	} else {
-		shader+="	 return col.b;\n"
-	}
-				
+		shader+="    d = col.b;\n"
+	}	
+	shader+=	"    return mix(nearPlane,farPlane,d);\n";
 	shader+=	"}\n";
+
 		
 	shader+=	"void main(void) {\n" +
  				"    samples[0] = vec3(0.05321558340367116,-0.1484831519915224,-0.2537120167549982);\n"+
@@ -103,32 +102,22 @@ x3dom.shader.SSAOShader.prototype.generateFragmentShader = function(gl)
  				"    samples[15] = vec3(-0.5474223108033605,-0.13473101761932615,0.5159944178424483);\n"+
 				"    float referenceDepth = getDepth(fragTexCoord);\n" +
 				"    if(referenceDepth == 1.0)\n"+ //background
-                                "    {\n"+
-                                "        gl_FragColor = vec4(1.0,1.0,1.0, 1.0);\n"+
-                                "        return;\n"+
-                                "    }\n"+
+                "    {\n"+
+                "        gl_FragColor = vec4(1.0,1.0,1.0, 1.0);\n"+
+                "        return;\n"+
+                "    }\n"+
 				"    int numOcclusions = 0;\n"+
-				"    const float scale = 0.005;\n"+
+				//"    const float scale = 0.005;\n"+
 				"    for(int i = 0; i<16; ++i){\n"+
 				"        vec3 samplepos = reflect(samples[i],texture2D(randomTexture,randomTexCoord).xyz*2.0-vec3(1.0,1.0,1.0));\n"+
-				"        float sampleDepth = getDepth(fragTexCoord+samplepos.xy*scale*float(i));\n"+
+				"        float sampleDepth = getDepth(fragTexCoord+samplepos.xy*radius*float(i));\n"+
 				"        if( sampleDepth < referenceDepth) {\n"+
 				"            ++numOcclusions;\n"+
 				"        }\n"+
 				"    }\n"+
 				"    float r = 1.0-float(numOcclusions)/16.0;\n"+
-				/*"	 for(int i = -5; i <= 5; i++) {\n"+
-				"        for(int j = -5; j <= 5; j++){\n"+
-				"            float sampleDepth = getDepth(fragTexCoord+referenceDepth*0.0025*vec2(i,j));\n"+
-				"            if( sampleDepth < referenceDepth) {\n"+
-				"                ++numOcclusions;\n"+
-				"            }\n"+
-				"        }\n"+
-				"	 }\n"+
-				"    float r = 1.0-float(numOcclusions)/121.0;\n"+*/
 				"    r*=2.0;\n"+
 				"    gl_FragColor = vec4(r,r,r, 1.0);\n" +
-				//"    gl_FragColor = texture2D(randomTexture,randomTexCoord);"+
 				"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);

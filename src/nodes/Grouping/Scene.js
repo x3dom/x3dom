@@ -82,6 +82,27 @@ x3dom.registerNodeType(
             this._multiPartMap = null;
             
             this._forcePicking = false;
+
+            /**
+             * Flag to enable Screen Space Ambient Occlusion
+             * @var {x3dom.fields.SFBool} SSAO
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "false"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'SSAO', false);
+
+            /**
+             * Value that determines the radius in which the SSAO is sampled
+             * @var {x3dom.fields.SFFloat} SSAO
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "false"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'SSAOradius',0.005);
+            this.addField_SFInt32(ctx, 'SSAOrandomTextureSize',4);
         
         },
         {
