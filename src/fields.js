@@ -1340,7 +1340,7 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
     var psi_1, psi_2, psi;
     var cos_theta_1, cos_theta_2;
 
-    if ( (Math.abs(this._20) - 1.0) > 0.0001) {
+    if ( Math.abs((Math.abs(this._20) - 1.0)) > 0.0001) {
         theta_1 = -Math.asin(this._20);
         theta_2 = Math.PI - theta_1;
 
