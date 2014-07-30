@@ -48,25 +48,25 @@ x3dom.shader.SSAOBlurShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
+  var shader = 	"#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+	  shader += "precision highp float;\n";
+	  shader += "#else\n";
+	  shader += " precision mediump float;\n";
+	  shader += "#endif\n\n";
   
 
-	shader += "uniform sampler2D SSAOTexture;\n" +
-		"uniform sampler2D depthTexture;\n" +
-		"uniform float nearPlane;\n"+
-		"uniform float farPlane;\n"+
-		"varying vec2 fragTexCoord;\n";
+	shader += 	"uniform sampler2D SSAOTexture;\n" +
+				"uniform sampler2D depthTexture;\n" +
+				"uniform float nearPlane;\n"+
+				"uniform float farPlane;\n"+
+				"varying vec2 fragTexCoord;\n";
 
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
 		shader += 	x3dom.shader.rgbaPacking();
 		
 	shader+= 	"float getDepth(vec2 fragTexCoord) {\n"+
-			"    vec4 col = texture2D(depthTexture, fragTexCoord);\n"+
-			"    float d;\n";
+				"    vec4 col = texture2D(depthTexture, fragTexCoord);\n"+
+				"    float d;\n";
 	
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
 		shader+="    d = unpackDepth(col);\n";
@@ -83,7 +83,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 			"    return vec3(dx*800.0,dy*800.0,sqrt(1.0-dx*dx-dy*dy));\n"+
 			"}\n";
 */
-	shader+=	"void main(void) {\n" +
+	shader+="void main(void) {\n" +
 			"    float sum = 0.0;\n"+
 			"    float referenceDepth = getDepth(fragTexCoord);\n"+
 			"    float numSamples = 0.0;\n"+

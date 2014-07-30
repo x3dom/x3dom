@@ -84,7 +84,15 @@ x3dom.SSAO.reinitializeFBOIfNecessary = function(gl,canvas){
 	}
 };
 
-
+/*
+ * Renders a sparsely sampled Screen-Space Ambient Occlusion Factor.
+ * @param stateManager x3dom webgl stateManager
+ * @param gl WebGL context
+ * @param scene Scene Node
+ * @param tex depth texture
+ * @param canvas Canvas the scene is rendered on (needed for dimensions)
+ * @param fbo FrameBufferObject handle that should be used as a target (null to use curent fbo)
+ */
 x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	//save previous fbo
 	var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
@@ -152,7 +160,17 @@ x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	}
 };
 
-x3dom.SSAO.blur = function(stateManager,gl,scene,tex,depthTex,canvas,fbo) {
+/**
+ * Applies a depth-aware averaging filter.
+ * @param stateManager x3dom webgl stateManager
+ * @param gl WebGL context
+ * @param scene Scene Node
+ * @param ssaoTexture texture that contains the SSAO factor
+ * @param depthTexture depth texture
+ * @param canvas Canvas the scene is rendered on (needed for dimensions)
+ * @param fbo FrameBufferObject handle that should be used as a target (null to use curent fbo)
+ */
+x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas,fbo) {
 
 	//save previous fbo
 	var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
@@ -175,13 +193,9 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,tex,depthTex,canvas,fbo) {
 	sp.nearPlane = viewpoint.getNear();
 	sp.farPlane = viewpoint.getFar();
 
-	if (!sp.tex) {
-		sp.tex = 0;
-	}
-
 	//ssao texture
 	gl.activeTexture(gl.TEXTURE0);
-	gl.bindTexture(gl.TEXTURE_2D, tex);
+	gl.bindTexture(gl.TEXTURE_2D, ssaoTexture);
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -190,7 +204,7 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,tex,depthTex,canvas,fbo) {
 
 	//depth texture
 	gl.activeTexture(gl.TEXTURE1);
-	gl.bindTexture(gl.TEXTURE_2D, depthTex);
+	gl.bindTexture(gl.TEXTURE_2D, depthTexture);
 
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -215,10 +229,16 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,tex,depthTex,canvas,fbo) {
 	if(fbo != null){
 		gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
 	}
-}
+};
 
-x3dom.SSAO.renderSSAO =
-function(stateManager, gl, scene, canvas) {
+/**
+ * Renders Screen-Space Ambeint Occlusion multiplicatively on top of the scene.
+ * @param stateManager state manager for the WebGL context
+ * @param gl WebGL context
+ * @param scene current scene
+ * @param canvas canvas that the scene is rendered to
+ */
+x3dom.SSAO.renderSSAO = function(stateManager, gl, scene, canvas) {
 
 	//set up resources if they are non-existent or if they are outdated:
 	this.reinitializeShadersIfNecessary(gl);
