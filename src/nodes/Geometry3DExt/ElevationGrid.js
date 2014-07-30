@@ -356,7 +356,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "color")
                 {
-                    var i, n = this._mesh._colors[0].length / 3;
+                    var i, n = this._mesh._colors[0].length / 3; // 3 stands for RGB. RGBA not supported yet.
                     var c = this._cf.color.node._vf.color;
 
                     for (i=0; i<n; i++) {
