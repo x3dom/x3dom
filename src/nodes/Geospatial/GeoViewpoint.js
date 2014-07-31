@@ -65,7 +65,8 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
 
             /**
-             * The centerOfRotation field specifies a center about which to rotate the user's eyepoint when in EXAMINE mode. The coordinates are provided in the coordinate system specified by geoSystem.
+             * The centerOfRotation field specifies a center about which to rotate the user's eyepoint when in EXAMINE mode.
+             * The coordinates are provided in the coordinate system specified by geoSystem.
              * @var {x3dom.fields.SFVec3f} centerOfRotation
              * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue 0,0,0
@@ -75,7 +76,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
 
             /**
-             * The position fields of the Viewpoint node specifies a relative location in the local coordinate system. The coordinates are provided in the coordinate system specified by geoSystem. 
+             * The position fields of the Viewpoint node specifies a relative location in the local coordinate system.
+             * The coordinates are provided in the coordinate system specified by geoSystem. 
              * @var {x3dom.fields.SFVec3d} position
              * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue 0,0,100000
@@ -85,24 +87,28 @@ x3dom.registerNodeType(
             this.addField_SFVec3d(ctx, 'position', 0, 0, 100000);
 
             /**
-             * Enable/disable directional light that always points in the direction the user is looking. Removed in X3D V3.3. See NavigationInfo
+             * Enable/disable directional light that always points in the direction the user is looking.
+             * Removed in X3D V3.3. See NavigationInfo
+             * still supported but required changing default to undefined
              * @var {x3dom.fields.SFBool} headlight
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue true
+             * @initvalue true; undefined since could be already given by NavigationInfo
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'headlight', true);
+            this.addField_SFBool(ctx, 'headlight', undefined);
 
             /**
-             * Specifies the navigation type. Removed in X3D V3.3. See NavigationInfo
+             * Specifies the navigation type.
+             * Removed in X3D V3.3. See NavigationInfo
+             * still supported but required changing default to undefined
              * @var {x3dom.fields.MFString} navType
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue ['EXAMINE']
+             * @initvalue ['EXAMINE']; undefined since could be already given by NavigationInfo
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'navType', ['EXAMINE']);
+            this.addField_MFString(ctx, 'navType', undefined);
 
             /**
              * The speedFactor field of the GeoViewpoint node is used as a multiplier to the elevation-based velocity that the node sets internally; i.e., this is a relative value and not an absolute speed as is the case for the NavigationInfo node.
@@ -117,6 +123,7 @@ x3dom.registerNodeType(
             
             /**
              * Enable/disable elevation scaled speed for automatic adjustment of user movement as recommended in spec. 
+             * Custom field to allow disabling for performance
              * @var {x3dom.fields.SFBool} elevationScaling
              * @memberof x3dom.nodeTypes.GeoViewpoint
              * @initvalue true
@@ -158,7 +165,11 @@ x3dom.registerNodeType(
                 this._prevSpeed = navi._vf.speed;
                 this._userSpeedFactor = 1.0;
                   x3dom.debug.logInfo("initial navigation speed: " + this._initSpeed);
-                                
+                //set headlight and navType here if they are given (but removed from spec.)
+                //is there a way to check if fields are given in the document ? (dom has default values if not given)
+                if (this._vf.headlight !== undefined) {navi._vf.headlight = this._vf.headlight;}
+                if (this._vf.navType !== undefined) {navi._vf.navType = this._vf.navType;}
+                
             },
             
             //overwrite deactivate to restore initial speed
@@ -169,7 +180,7 @@ x3dom.registerNodeType(
                 navi._vf.speed = this._examineSpeed;
                 x3dom.debug.logInfo("restored navigation speed: " + this._examineSpeed);
                 x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this, prev);
-                //somehow this.getViewMatrix here gets called one more time after deactivate and resets speed
+                //somehow this.getViewMatrix here gets called one more time after deactivate and resets speed, check there
             },
             
             nodeChanged: function() {
@@ -236,7 +247,7 @@ x3dom.registerNodeType(
             getViewMatrix: function() {
                 //called a lot from viewarea.js; (ab)use for updating elevation scaled speed
                 //do only if elevationScaling is enabled
-                //skip frames for performance ? do only every second ?
+                //skip frames for performance ? do only every 0.1s or so ?
                 //gets called once even after being deactivated
                 if (this._vf.isActive && this._vf.elevationScaling) {
                     var viewarea = this._nameSpace.doc._viewarea;
@@ -258,7 +269,7 @@ x3dom.registerNodeType(
                         this._prevNavType = navType;
                         //check if speed was modified interactively
                         if (navi._vf.speed != this._prevSpeed) {
-                            this._userSpeedFactor = navi._vf.speed / this._prevSpeed;
+                            this._userSpeedFactor *= navi._vf.speed / this._prevSpeed;
                             x3dom.debug.logError("interactive speed factor changed: " + this._userSpeedFactor);
                         }
                         // get elevation above ground
@@ -268,7 +279,7 @@ x3dom.registerNodeType(
                         viewtrafo = viewtrafo.inverse().mult(this._viewMatrix);
                         var position = viewtrafo.inverse().e3();
                         
-                        ////deal with geoOrigin here since below only valid for GC
+                        ////TODO: deal with geoOrigin here since below only valid for GC
                         ////need inverse geoOrigin; add back offset but how to do rotateYUp: use inverse matrix ?
                         ////eg. first rotate back, then translate back
                         
@@ -310,6 +321,7 @@ x3dom.registerNodeType(
                 var rotMat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(positionGC);
                 var rotOrient = rotMat.mult(orientation.toMatrix());
                 ///deal with GeoOrigin here as in GeoLocation
+                //TODO
                 var positionX3D = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(geoSystem, geoOrigin, coords)[0];
                   x3dom.debug.logInfo("GEOVIEWPOINT at X3D: " + positionX3D);
                 return x3dom.fields.SFMatrix4f.translation(positionX3D).mult(rotOrient).inverse();

@@ -315,9 +315,45 @@ x3dom.registerNodeType(
 
                 return output;
             },
+            
+            GCtoGD: function(geoSystem, coords) {
+                // below uses http://info.ogp.org.uk/geodesy/guides/docs/G7-2.pdf
+                var output = new x3dom.fields.MFVec3f();
+                var rad2deg = 180/Math.PI;
+                var ellipsoide = this.getElipsoide(geoSystem);
+                var a = ellipsoide[1];
+                var f = 1/ellipsoide[2];
+                var b = a * (1 - f); //polar axis.
+                var esq = (1 - (b/a)*(b/a)); //e squared for use in expansions
+                //var e = Math.sqrt(esq); //eccentricity
+                var eps = esq/(1 - esq);
+                for(var i=0; i<coords.length; ++i) {
+                    var x = coords[i].x;
+                    var y = coords[i].y;
+                    var z = coords[i].z;
+                    
+                    var current = new x3dom.fields.SFVec3f();
+                    
+                    var p = Math.sqrt(x*x + y*y);
+                    var q = Math.atan((z * a) / (p * b));
+                    var lat = Math.atan((z + eps * b * Math.pow(Math.sin(q),3))/(p - esq * a * Math.pow(Math.cos(q),3)));
+                    var nu = a / Math.sqrt(1-esq * Math.pow(Math.sin(lat),2));
+                    var elev = p/Math.cos(lat) - nu;
+                    // atan2 gets the sign correct for longitude; is exact since in circular section
+                    var lon = Math.atan2(y, x);
+                    
+                    current.x = lon * rad2deg;
+                    current.y = lat * rad2deg;
+                    current.z = elev;
 
-            GEOtoGC: function(geoSystem, geoOrigin, coords)
-            {
+                    output.push(current);
+                }
+                
+                return output;
+            },
+        
+            GEOtoGC: function(geoSystem, geoOrigin, coords) {
+                
                 var referenceFrame = this.getReferenceFrame(geoSystem);
 
                 if(referenceFrame == 'GD')
@@ -387,14 +423,14 @@ x3dom.registerNodeType(
                 {
                     // transform points by origin
                     var origin = this.OriginToGC(geoOrigin);
-		    //avoid expensive matrix inversion by just subtracting origin
-		    var matrix = x3dom.fields.SFMatrix4f.translation(origin.negate()); 
+                    //avoid expensive matrix inversion by just subtracting origin
+                    var matrix = x3dom.fields.SFMatrix4f.translation(origin.negate());
                     
                     //also rotate Y up if requested
                     if(geoOrigin.node._vf.rotateYUp)
                     {
                         //roation is inverse of GeoLocation rotation, eg. Up to Y and N to -Z
-                        var rotmat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(origin).inverse();
+                        var rotmat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin).inverse();
                         //first translate, then rotate
                         matrix = rotmat.mult(matrix);
                     }
