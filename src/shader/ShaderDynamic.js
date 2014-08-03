@@ -671,7 +671,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 
         if(properties.SEPARATEBACKMAT) {
-            shader += "  if(gl_FrontFacing) {\n";
+            shader += "  if(!gl_FrontFacing) {\n";
             shader += "    color.rgb = " + x3dom.shader.decodeGamma(properties, "backDiffuseColor") + ";\n";
             shader += "    color.a = 1.0 - backTransparency;\n";
             shader += "    _shininess = backShininess;\n";
