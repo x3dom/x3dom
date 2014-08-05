@@ -5,14 +5,20 @@
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
+ *
  */
+
+ /* Added support for changes of the "color" field
+  * (C) 2014 Toshiba Corporation
+  * Dual licensed under the MIT and GPL
+  */
 
 /* ### ElevationGrid ### */
 x3dom.registerNodeType(
     "ElevationGrid",
     "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+
         /**
          * Constructor for ElevationGrid
          * @constructs x3dom.nodeTypes.ElevationGrid
@@ -167,7 +173,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'zSpacing', 1.0);
-        
+
         },
         {
             nodeChanged: function()
@@ -348,6 +354,24 @@ x3dom.registerNodeType(
                         node.invalidateVolume();
                     });
                 }
+                else if (fieldName == "color")
+                {
+                    var i, n = this._mesh._colors[0].length / 3; // 3 stands for RGB. RGBA not supported yet.
+                    var c = this._cf.color.node._vf.color;
+
+                    for (i=0; i<n; i++) {
+                        this._mesh._colors[0][i*3]   = c[i].r;
+                        this._mesh._colors[0][i*3+1] = c[i].g;
+                        this._mesh._colors[0][i*3+2] = c[i].b;
+                    }
+                    this.invalidateVolume();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
+                        node.invalidateVolume();
+                    });
+                }
+                // TODO: handle other cases!
             }
         }
     )
