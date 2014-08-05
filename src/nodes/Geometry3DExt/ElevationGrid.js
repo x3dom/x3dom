@@ -364,11 +364,9 @@ x3dom.registerNodeType(
                         this._mesh._colors[0][i*3+1] = c[i].g;
                         this._mesh._colors[0][i*3+2] = c[i].b;
                     }
-                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
-                        node.invalidateVolume();
                     });
                 }
                 // TODO: handle other cases!
