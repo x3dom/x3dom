@@ -344,6 +344,7 @@
                     {"file": "HAnimHumanoid.js"}
                 ]},
                 {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
+                    {"file": "../../../lib/ammo.js"},
                     {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},

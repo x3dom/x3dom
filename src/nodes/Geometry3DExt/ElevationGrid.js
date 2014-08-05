@@ -140,8 +140,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'xDimension', 0);
 
             /**
-             * When the geoSystem is "GD", xSpacing refers to the number of units of longitude in angle base units between adjacent height values.
-             * When the geoSystem is "UTM", xSpacing refers to the number of eastings (length base units) between adjacent height values
              * @var {x3dom.fields.SFDouble} xSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
@@ -163,8 +161,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'zDimension', 0);
 
             /**
-             * When the geoSystem is "GD", zSpacing refers to the number of units of latitude in angle base units between vertical height values.
-             * When the geoSystem is "UTM", zSpacing refers to the number of northings (length base units) between vertical height values.
              * @var {x3dom.fields.SFDouble} zSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
@@ -292,6 +288,7 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                var i, n;
                 var normals = null;
 
                 if (this._cf.normal.node) {
@@ -300,7 +297,7 @@ x3dom.registerNodeType(
 
                 if (fieldName == "height")
                 {
-                    var i, n = this._mesh._positions[0].length / 3;
+                    n = this._mesh._positions[0].length / 3;
                     var h = this._vf.height;
 
                     for (i=0; i<n; i++) {
@@ -356,7 +353,8 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "color")
                 {
-                    var i, n = this._mesh._colors[0].length / 3; // 3 stands for RGB. RGBA not supported yet.
+                    // TODO; FIXME: this code assumes that size has not change and color node exists.
+                    n = this._mesh._colors[0].length / 3; // 3 stands for RGB. RGBA not supported yet.
                     var c = this._cf.color.node._vf.color;
 
                     for (i=0; i<n; i++) {
