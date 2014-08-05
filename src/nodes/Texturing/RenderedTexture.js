@@ -9,6 +9,7 @@
 
 /*
  * Added 'depthMap' field.
+ * Refer : http://doc.instantreality.org/documentation/nodetype/RenderedTexture/
  * (c) 2014 Toshiba Corporation
  * Dual licensed under MIT and GPL
  */
