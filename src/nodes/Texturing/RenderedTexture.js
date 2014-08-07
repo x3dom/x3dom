@@ -156,7 +156,7 @@ x3dom.registerNodeType(
 			 * @field x3dom
 			 * @instance 
 			 */
-			this.addField_SFBool(ctx, 'depthMap', []);
+			this.addField_SFBool(ctx, 'depthMap', false);
 
             this.hScreenSize = 0.14976;
             this.vScreenSize = 0.09356;
