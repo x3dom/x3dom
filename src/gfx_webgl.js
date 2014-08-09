@@ -1693,21 +1693,22 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (pickMode == 1 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
-
-                    gl.vertexAttribPointer(sp.texcoord,
-                        s_msh._numTexComponents, s_gl.texCoordType, false,
-                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.texcoord);
-                }
-                if (pickMode == 2 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
+                if (pickMode == 1 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
 
                     gl.vertexAttribPointer(sp.color,
                         s_msh._numColComponents, s_gl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
+                }
+
+                if (pickMode == 2 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
+
+                    gl.vertexAttribPointer(sp.texcoord,
+                        s_msh._numTexComponents, s_gl.texCoordType, false,
+                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.texcoord);
                 }
 
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
