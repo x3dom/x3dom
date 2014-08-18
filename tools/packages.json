@@ -343,8 +343,7 @@
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
                 ]},
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
-                    {"file": "../../../lib/ammo.js"},
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
                     {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},
@@ -360,6 +359,12 @@
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
                 ]}                
+            ]},
+            {"group": "COMPRESSED_EXT_LIBS",
+                "data": [
+                    {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
+                        {"file": "ammo.js"}
+                    ]}
             ]}
     ]
 }
