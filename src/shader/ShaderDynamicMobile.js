@@ -304,7 +304,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			} else if(properties.COLCOMPONENTS  == 4) {
 				shader += "vec4 vertColor = color;";
 			}
-			if(properties.REQUIREBBOXNOR) {
+			if(properties.REQUIREBBOXCOL) {
 				shader += "vertColor = vertColor / bgPrecisionColMax;\n";
 			}
 		}
