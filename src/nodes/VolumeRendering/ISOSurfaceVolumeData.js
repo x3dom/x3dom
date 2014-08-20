@@ -11,30 +11,30 @@
  * http://www.x3dom.org
  */
 
-/* ### ISOSurfaceVolumeData ### */
+/* ### IsoSurfaceVolumeData ### */
 x3dom.registerNodeType(
-    "ISOSurfaceVolumeData",
+    "IsoSurfaceVolumeData",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeDataNode,
         
         /**
-         * Constructor for ISOSurfaceVolumeData
-         * @constructs x3dom.nodeTypes.ISOSurfaceVolumeData
+         * Constructor for IsoSurfaceVolumeData
+         * @constructs x3dom.nodeTypes.IsoSurfaceVolumeData
          * @x3d x.x
          * @component VolumeRendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeDataNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The ISOSurfaceVolumeData node specifies one or more surfaces to be extracted from the volume data.
+         * @classdesc The IsoSurfaceVolumeData node specifies one or more surfaces to be extracted from the volume data.
          */
         function (ctx) {
-            x3dom.nodeTypes.ISOSurfaceVolumeData.superClass.call(this, ctx);
+            x3dom.nodeTypes.IsoSurfaceVolumeData.superClass.call(this, ctx);
 
 
             /**
              * The renderStyle field contains a list of volume render style nodes to be used on each isosurface.
              * @var {x3dom.fields.MFNode} renderStyle
-             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @memberof x3dom.nodeTypes.IsoSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.X3DVolumeRenderStyleNode
              * @field x3dom
              * @instance
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
             /**
              * The gradients field allows to provide the normals of the volume data. It takes an ImageTextureAtlas of the same dimensions of the volume data. If it is not provided, it is computed on the fly.
              * @var {x3dom.fields.SFNode} gradients
-             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @memberof x3dom.nodeTypes.IsoSurfaceVolumeData
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
             /**
              * The surfaceValues field is a list containing the surface values to be extracted. One or multiple isovalues can be declared.
              * @var {x3dom.fields.MFFloat} surfaceValues
-             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @memberof x3dom.nodeTypes.IsoSurfaceVolumeData
              * @initvalue [0.0]
              * @field x3dom
              * @instance
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * The countourStepSize field specifies an step size to render isosurfaces that are multiples of an initial isovalue.
              * When this field is non-zero a single isovalue must be defined on the surfaceValues field.
              * @var {x3dom.fields.SFFloat} contourStepSize
-             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @memberof x3dom.nodeTypes.IsoSurfaceVolumeData
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
             /**
              * The surfaceTolerance field is a threshold to adjust the boundary of the isosurface.
              * @var {x3dom.fields.SFFloat} surfaceTolerance
-             * @memberof x3dom.nodeTypes.ISOSurfaceVolumeData
+             * @memberof x3dom.nodeTypes.IsoSurfaceVolumeData
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -432,13 +432,13 @@ x3dom.registerNodeType(
                     //Take volume texture size for the ComposableRenderStyles offset parameter
                     this.offsetInterval = window.setInterval((function(aTex, obj) {
                         return function() {
-                            x3dom.debug.logInfo('[VolumeRendering][ISOSurfaceVolumeData] Looking for Volume Texture size...');
+                            x3dom.debug.logInfo('[VolumeRendering][IsoSurfaceVolumeData] Looking for Volume Texture size...');
                             var s = obj.getTextureSize(aTex);
                             if(s.valid){
                                 clearInterval(obj.offsetInterval);
                                 obj.vrcSinglePassShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/(s.w/aTex._vf.slicesOverX), 1.0/(s.h/aTex._vf.slicesOverY), 1.0/aTex._vf.numberOfSlices);
                                 obj.vrcSinglePassShader.nodeChanged();
-                                x3dom.debug.logInfo('[VolumeRendering][ISOSurfaceVolumeData] Volume Texture size obtained');
+                                x3dom.debug.logInfo('[VolumeRendering][IsoSurfaceVolumeData] Volume Texture size obtained');
                             }
                         }
                     })(this.vrcVolumeTexture, this), 1000);
