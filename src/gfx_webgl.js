@@ -53,12 +53,21 @@ x3dom.gfx_webgl = (function () {
             stencil: true,
             antialias: true,
             premultipliedAlpha: false,
-            preserveDrawingBuffer: true
+            preserveDrawingBuffer: true,
+            failIfMajorPerformanceCaveat : true
         };
 
         for (var i = 0; i < validContextNames.length; i++) {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
+
+                //If context creation fails, retry the creation with failIfMajorPerformanceCaveat = false
+                if ( !ctx ) {
+                    x3dom.caps.RENDERMODE = "SOFTWARE";
+                    ctxAttribs.failIfMajorPerformanceCaveat = false;
+                    ctx = canvas.getContext(validContextNames[i], ctxAttribs);
+                }
+
                 if (ctx) {
                     var newCtx = new Context(ctx, canvas, 'webgl', x3dElem);
 
@@ -92,11 +101,21 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.STD_DERIVATIVES = ctx.getExtension("OES_standard_derivatives");
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
+                        x3dom.caps.DEBUGRENDERINFO = ctx.getExtension("WEBGL_debug_renderer_info");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
+
+                        if ( x3dom.caps.DEBUGRENDERINFO ) {
+                            x3dom.caps.UNMASKED_RENDERER_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_RENDERER_WEBGL );
+                            x3dom.caps.UNMASKED_VENDOR_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_VENDOR_WEBGL );
+                        } else {
+                            x3dom.caps.UNMASKED_RENDERER_WEBGL = "";
+                            x3dom.caps.UNMASKED_VENDOR_WEBGL = "";
+                        }
 
                         var extString = x3dom.caps.EXTENSIONS.toString().replace(/,/g, ", ");
                         x3dom.debug.logInfo(validContextNames[i] + " context found\nVendor: " + x3dom.caps.VENDOR +
-                            ", Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
+                            " " + x3dom.caps.UNMASKED_VENDOR_WEBGL + ", Renderer: " + x3dom.caps.RENDERER +
+                            " " + x3dom.caps.UNMASKED_RENDERER_WEBGL + ", " + "Version: " + x3dom.caps.VERSION + ", " +
                             "ShadingLangV.: " + x3dom.caps.SHADING_LANGUAGE_VERSION
                             + ", MSAA samples: " + x3dom.caps.SAMPLES + "\nExtensions: " + extString);
 
