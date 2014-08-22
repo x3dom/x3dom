@@ -81,7 +81,7 @@
 	{
 		//Check if type and output of the eventObject are correct
 		//There may be multiple eventObjects but only one of them contains the value we need
-		if(eventObject.type != "onoutputchange" || eventObject.fieldName != "value_changed")
+		if(eventObject.type != "outputchange" || eventObject.fieldName != "value_changed")
 			return;
 		
 		//Get the value...
