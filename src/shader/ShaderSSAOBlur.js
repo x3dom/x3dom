@@ -59,6 +59,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 				"uniform sampler2D depthTexture;\n" +
 				"uniform float nearPlane;\n"+
 				"uniform float farPlane;\n"+
+				"uniform vec2 pixelSize;\n"+
 				"varying vec2 fragTexCoord;\n";
 
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
@@ -73,7 +74,10 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 	} else {
 		shader+="    d = col.b;\n"
 	}	
-	shader+=	"    return mix(nearPlane,farPlane,d);\n";
+	shader+=    "    float a = (farPlane+nearPlane)/(nearPlane-farPlane);\n"
+	shader+=    "    float b = (2.0*farPlane*nearPlane)/(nearPlane-farPlane);\n"
+	shader+=    "    d = b/(a+d);\n"
+	shader+=	"    return d;\n";
 	shader+=	"}\n";
 /*
 	shader+=	"vec3 getNormal(){\n"+
@@ -89,8 +93,8 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 			"    float numSamples = 0.0;\n"+
 			"    for(int i = -2; i<2;i++){\n"+
 			"        for(int j = -2; j<2;j++){\n"+
-			"            vec2 sampleTexCoord = fragTexCoord+vec2(1.0/800.0*float(i),1.0/800.0*float(j));\n"+
-			"            if(abs(referenceDepth - getDepth(sampleTexCoord))<0.005){\n"+
+			"            vec2 sampleTexCoord = fragTexCoord+vec2(pixelSize.x*float(i),pixelSize.y*float(j));\n"+
+			"            if(abs(referenceDepth - getDepth(sampleTexCoord))<5.0){\n"+
 			"                sum+= texture2D(SSAOTexture,sampleTexCoord).r;\n"+
 			"                numSamples+=1.0;\n"+
 			"    }}}\n"+

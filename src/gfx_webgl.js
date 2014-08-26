@@ -51,7 +51,7 @@ x3dom.gfx_webgl = (function () {
             alpha: true,
             depth: true,
             stencil: true,
-            antialias: true,
+            antialias: false,
             premultipliedAlpha: false,
             preserveDrawingBuffer: true
         };

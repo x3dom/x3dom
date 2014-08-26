@@ -192,6 +192,7 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
 	var viewpoint = scene.getViewpoint();
 	sp.nearPlane = viewpoint.getNear();
 	sp.farPlane = viewpoint.getFar();
+	sp.pixelSize = [1.0/canvas.width,1.0/canvas.height];
 
 	//ssao texture
 	gl.activeTexture(gl.TEXTURE0);
