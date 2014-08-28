@@ -186,7 +186,7 @@ x3dom.registerNodeType(
                         }
 
                         //if some mouse button is up fire mouseup event
-                        if (this._lastButton != 0 && e.button == 0) {
+                        if (e.mouseup || (this._lastButton != 0 && e.button == 0)) {
                             e.type = "mouseup";
                             this.callEvtHandler("onmouseup", e);
                             this._lastButton = 0;
