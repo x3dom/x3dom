@@ -96,32 +96,23 @@ x3dom.registerNodeType(
                 var unis = [];
                 
                 if (this._cf.transferFunction.node) {
-                    //Lookup for the parent VolumeData
-                    var volumeDataParent = this._parentNodes[0];
-                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                        volumeDataParent = volumeDataParent._parentNodes[0];
-                    }
-                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][OpacityMapVolumeStyle] Not VolumeData parent found!");
-                        volumeDataParent = null;
-                    }
-                    this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
+                    this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction'+this._styleID;
                     this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
-                    this.uniformSampler2DTransferFunction._vf.value = volumeDataParent._textureID++;
+                    this.uniformSampler2DTransferFunction._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DTransferFunction);
                 }
 
-                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor';
+                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor'+this._styleID;
                 this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
                 this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
                 unis.push(this.uniformFloatOpacityFactor);
 
-                this.uniformFloatLightFactor._vf.name = 'uLightFactor';
+                this.uniformFloatLightFactor._vf.name = 'uLightFactor'+this._styleID;
                 this.uniformFloatLightFactor._vf.type = 'SFFloat';
                 this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
                 unis.push(this.uniformFloatLightFactor);
 
-                this.uniformBoolEnableOpacityMap._vf.name = 'uEnableOpacityMap';
+                this.uniformBoolEnableOpacityMap._vf.name = 'uEnableOpacityMap'+this._styleID;
                 this.uniformBoolEnableOpacityMap._vf.type = 'SFBool';
                 this.uniformBoolEnableOpacityMap._vf.value = this._vf.enabled;
                 unis.push(this.uniformBoolEnableOpacityMap);
@@ -141,21 +132,21 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function() {
-                var uniformsText = "uniform float uOpacityFactor;\n"+
-                "uniform float uLightFactor;\n"+
-                "uniform bool uEnableOpacityMap;\n";
+                var uniformsText = "uniform float uOpacityFactor"+this._styleID+";\n"+
+                "uniform float uLightFactor"+this._styleID+";\n"+
+                "uniform bool uEnableOpacityMap"+this._styleID+";\n";
                 if (this._cf.transferFunction.node) {
-                        uniformsText += "uniform sampler2D uTransferFunction;\n";
+                        uniformsText += "uniform sampler2D uTransferFunction"+this._styleID+";\n";
                 }
                 return uniformsText;
             },
 
             inlineStyleShaderText: function(){
-                var shaderText = "    if(uEnableOpacityMap){\n"+
-                "       opacityFactor = uOpacityFactor;\n"+
-                "       lightFactor = uLightFactor;\n";
+                var shaderText = "    if(uEnableOpacityMap"+this._styleID+"){\n"+
+                "       opacityFactor = uOpacityFactor"+this._styleID+";\n"+
+                "       lightFactor = uLightFactor"+this._styleID+";\n";
                 if (this._cf.transferFunction.node){
-                        shaderText += "     value = texture2D(uTransferFunction,vec2(value.r,0.5));\n";
+                        shaderText += "       value = texture2D(uTransferFunction"+this._styleID+",vec2(value.r,0.5));\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;

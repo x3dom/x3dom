@@ -57,21 +57,24 @@ x3dom.registerNodeType(
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
              * @var {x3dom.fields.SFNode} geoOrigin
              * @memberof x3dom.nodeTypes.GeoLocation
-             * @initvalue x3dom.nodeTypes.X3DChildNode
+             * @initvalue x3dom.nodeTypes.GeoOrigin
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DChildNode);
-
-            // similar to what transform in Grouping.js does
-            var position = this._vf.geoCoords;
-            var geoSystem = this._vf.geoSystem;
-            var geoOrigin = this._cf.geoOrigin;
-
-            this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
-        
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
         },
+
         {
+	        nodeChanged: function()
+            {
+                // similar to what transform in Grouping.js does
+                var position = this._vf.geoCoords;
+                var geoSystem = this._vf.geoSystem;
+                var geoOrigin = this._cf.geoOrigin; // gets only populated if in nodeChanged()
+
+                this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
+            },
+        
             getGeoRotMat: function (positionGC)
             {
                 //returns transformation matrix to align coordinate system with geoposition as required:
@@ -84,30 +87,51 @@ x3dom.registerNodeType(
 
                 var newUp = positionGC.normalize();
                 var Xaxis = new  x3dom.fields.SFVec3f(1,0,0);
+
                 // below uses geocentric latitude but only geodetic latitude would give exact tangential plane
                 // http://info.ogp.org.uk/geodesy/guides/docs/G7-2.pdf
                 // has formulas for deriving geodetic latitude, eg a GCtoGD function
-
                 var rotlat = Math.PI - Math.asin(newUp.z); // latitude as asin of z; only valid for spheres
-                var rotUpQuat = new x3dom.fields.Quaternion.axisAngle(Xaxis, rotlat);
+                var rotUpQuat = x3dom.fields.Quaternion.axisAngle(Xaxis, rotlat);
+
                 var rotlon = Math.PI/2 + Math.atan2(newUp.y, newUp.x);// 90 to get to prime meridian; atan2 gets the sign correct for longitude; is exact since in circular section
                 var Zaxis = new x3dom.fields.SFVec3f(0,0,1);
-                var rotZQuat = new x3dom.fields.Quaternion.axisAngle(Zaxis, rotlon);
+                var rotZQuat = x3dom.fields.Quaternion.axisAngle(Zaxis, rotlon);
+
                 //return rotZQuat.toMatrix().mult(rotUpQuat.toMatrix();
                 return rotZQuat.multiply(rotUpQuat).toMatrix();
 
             },
+
             getGeoTransRotMat: function (geoSystem, geoOrigin, position)
             {
-                //accept geocoords, returntranslation/rotation transform matrix
+                // accept geocoords, return translation/rotation transform matrix
                 var coords = new x3dom.fields.MFVec3f();
                 coords.push(position);
 
-                var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(geoSystem, geoOrigin, coords)[0];
+                var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
                 var rotMat = this.getGeoRotMat(transformed);
-                return x3dom.fields.SFMatrix4f.translation(transformed).mult(rotMat);
 
+		        // account for geoOrigin with and without rotateYUp
+                if (geoOrigin.node)
+                {
+                    var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
+                    if(geoOrigin.node._vf.rotateYUp)
+                    {
+                        // inverse rotation after original rotation and offset
+			            // just skipping all rotations produces incorrect position
+                        return rotMat.inverse().mult(x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat));
+                    }
+                    //rotate, then translate; account for geoOrigin by subtracting origin from GeoLocation
+                    return x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat);
+                }
+                else
+		        //no GeoOrigin: first rotate, then translate
+                {
+                    return x3dom.fields.SFMatrix4f.translation(transformed).mult(rotMat);
+                }
             },
+
             //mimic what transform node does
             fieldChanged: function (fieldName)
             {

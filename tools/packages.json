@@ -7,6 +7,7 @@
                 {"path": "debug.js"},
                 {"path": "util/AdaptiveRenderControl.js"},
                 {"path": "util/DownloadManager.js"},
+                {"path": "util/Parts.js"},
                 {"path": "util/Properties.js"},
                 {"path": "util/DoublyLinkedList.js"},
                 {"path": "util/EarClipping.js"},
@@ -35,13 +36,9 @@
                 {"path": "shader/ShaderParts.js"},
                 {"path": "shader/ShaderDynamic.js"},
                 {"path": "shader/ShaderDynamicMobile.js"},
+				{"path": "shader/ShaderDynamicPicking.js"},
                 {"path": "shader/ShaderComposed.js"},
                 {"path": "shader/ShaderNormal.js"},
-                {"path": "shader/ShaderPicking.js"},
-                {"path": "shader/ShaderPicking24.js"},
-                {"path": "shader/ShaderPickingId.js"},
-                {"path": "shader/ShaderPickingColor.js"},
-                {"path": "shader/ShaderPickingTexcoord.js"},
                 {"path": "shader/ShaderFrontgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundSkyTexture.js"},
@@ -109,7 +106,8 @@
                     {"file": "X3DColorNode.js"},
                     {"file": "Color.js"},
                     {"file": "ColorRGBA.js"},
-                    {"file": "ParticleSet.js"}
+                    {"file": "ParticleSet.js"},
+                    {"file": "ClipPlane.js"}
                 ]},
                 {"name": "Shape", "filePrefix": "nodes/Shape/", "files":[
                     {"file": "X3DAppearanceNode.js"},
@@ -280,6 +278,9 @@
                     {"file": "GeoTransform.js"},
                     {"file": "GeoViewpoint.js"}
                 ]},
+                {"name": "Layout", "filePrefix": "nodes/Layout/", "files":[
+                    {"file": "ScreenGroup.js"}
+                ]},
                 {"name": "Geometry2D", "filePrefix": "nodes/Geometry2D/", "files":[
                     {"file": "X3DPlanarGeometryNode.js"},
                     {"file": "Arc2D.js"},
@@ -342,7 +343,8 @@
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
                 ]},
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
+                    {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},
                     {"file": "X3DNBodyCollidableNode.js"},
@@ -357,6 +359,12 @@
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
                 ]}                
+            ]},
+            {"group": "COMPRESSED_EXT_LIBS",
+                "data": [
+                    {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
+                        {"file": "ammo.js"}
+                    ]}
             ]}
     ]
 }

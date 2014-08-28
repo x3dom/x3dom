@@ -64,6 +64,12 @@
 		 */
 		private var _drawableObjects:Array = new Array();
 		
+		/**
+		 * Fog parameters
+		 */
+		private var _fogColor:Array = null;
+		private var _fogVisRange:Number = -1.0;	// Initialized as negative, meaning it's invalid
+		private var _fogType:Number = -1.0;		// -1.0 for none, 0.0 for linear, 1.0 for exponnential 	
 		
 		//For Picking
 		private var _min:Vector3D = new Vector3D();
@@ -91,13 +97,16 @@
 			var max:Vector3D = new Vector3D(-999999.0, -999999.0, -999999.0);
 			
 			for(var i:uint = 0; i<this._drawableObjects.length; i++) {
-				if(min.x > this._drawableObjects[i].min.x) { min.x = this._drawableObjects[i].min.x; }
-				if(min.y > this._drawableObjects[i].min.y) { min.y = this._drawableObjects[i].min.y; }
-				if(min.z > this._drawableObjects[i].min.z) { min.z = this._drawableObjects[i].min.z; }
+				var objMin:Vector3D = this._drawableObjects[i].min;
+				var objMax:Vector3D = this._drawableObjects[i].max;
 				
-				if(max.x < this._drawableObjects[i].max.x) { max.x = this._drawableObjects[i].max.x; }
-				if(max.y < this._drawableObjects[i].max.y) { max.y = this._drawableObjects[i].max.y; }
-				if(max.z < this._drawableObjects[i].max.z) { max.z = this._drawableObjects[i].max.z; }
+				if (min.x > objMin.x) { min.x = objMin.x; }
+				if (min.y > objMin.y) { min.y = objMin.y; }
+				if (min.z > objMin.z) { min.z = objMin.z; }
+				
+				if (max.x < objMax.x) { max.x = objMax.x; }
+				if (max.y < objMax.y) { max.y = objMax.y; }
+				if (max.z < objMax.z) { max.z = objMax.z; }
 			}
 			
 			this._min = min;
@@ -330,6 +339,53 @@
 			return this._drawableObjects;
 		}
 
+		/**
+		 * @private
+		 */
+		public function get fogColor() : Array
+		{
+			return _fogColor;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogColor(val:Array) : void
+		{
+			_fogColor = val;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get fogVisRange() : Number
+		{
+			return _fogVisRange;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogVisRange(val:Number) : void
+		{
+			_fogVisRange = val;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get fogType() : Number
+		{
+			return _fogType;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fogType(val:Number) : void
+		{
+			_fogType = val;
+		}		
 	}
 	
 }

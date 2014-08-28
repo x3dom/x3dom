@@ -158,16 +158,28 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 
-                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
-                        that.count++;
-                        var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
-                        x3dom.debug.logInfo('Statuscode ' + xhr.status + ' and send new request in ' + refreshTime + ' sec.');
-
-                        window.setTimeout(function() {
+                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding) {
+                        if (that.count < that.numRetries)
+                        {
+                            that.count++;
+                            var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+                            x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                'Next request in ' + refreshTime + ' seconds');
+                      
+                            window.setTimeout(function() {
+                                that._nameSpace.doc.downloadCount -= 1;
+                                that.loadInline();
+                            }, refreshTime * 1000);
+                            return xhr;
+                        }
+                        else
+                        {
+                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                 'No Retries left');
                             that._nameSpace.doc.downloadCount -= 1;
-                            that.loadInline();
-                        }, refreshTime * 1000);
-                        return xhr;
+                            that.count = 0;
+                            return xhr;
+                        }
                     }
                     else if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that.fireEvents("error");
@@ -286,15 +298,6 @@ x3dom.registerNodeType(
                 if (this._vf.url.length && this._vf.url[0].length)
                 {
                     var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
-
-                    //Unfortunately, there is currently an inconsistent behavior between
-                    //chrome and firefox, where the first one is "escaping" the "%" character in the
-                    //blob URI, which contains a ref to a "file" object. This can also not be fixed by
-                    //first using "decodeURI", because, in that case, "%3A" is not resolved to "%".
-                    if (!(xhrURI.substr(0, 5) === "blob:"))
-                    {
-                        xhrURI = encodeURI(xhrURI);
-                    }
 
                     xhr.open('GET', xhrURI, true);
 

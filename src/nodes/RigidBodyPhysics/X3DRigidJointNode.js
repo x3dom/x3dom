@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "X3DRigidJointNode",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass(x3dom.nodeTypes.X3DNode,
 
         /**
          * Constructor for X3DRigidJointNode

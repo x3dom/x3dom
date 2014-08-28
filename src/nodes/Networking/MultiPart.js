@@ -35,10 +35,71 @@ x3dom.registerNodeType(
              */
             this.addField_MFString(ctx, 'urlIDMap', []);
 
+            /**
+             * Defines whether the shape is pickable.
+             * @var {x3dom.fields.SFBool} isPickable
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'isPickable', true);
+            
+            /**
+             * Defines the shape type for sorting.
+             * @var {x3dom.fields.SFString} sortType
+             * @range [auto, transparent, opaque]
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue 'auto'
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'sortType', 'auto');
+
+            /**
+             * Specifies whether backface-culling is used. If solid is TRUE only front-faces are drawn.
+             * @var {x3dom.fields.SFBool} solid
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'solid', true);
+
+            /**
+             * Change render order manually.
+             * @var {x3dom.fields.SFInt32} sortKey
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'sortKey', 0);
+
+            /**
+             * Set the initial visibility.
+             * @var {x3dom.fields.SFInt32} initialVisibility
+             * @range [auto, visible, invisible]
+             * @memberof x3dom.nodeTypes.MultiPart
+             * @initvalue 'auto'
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'initialVisibility', 'auto');
+
             this._idMap = null;
-            this._oldPixels = null;
             this._inlineNamespace = null;
             this._highlightedParts = [];
+            this._minId = 0;
+            this._maxId = 0;
+            this._lastId = -1;
+            this._lastButton = 0;
+            this._identifierToPartId = [];
+            this._identifierToAppId = [];
+            this._visiblePartsPerShape = [];
+            this._partVolume = [];
+            this._partVisibility = [];
+			this._originalColor = [];
 
         },
         {
@@ -68,57 +129,106 @@ x3dom.registerNodeType(
                 if (!this.initDone) {
                     this.initDone = true;
                     this.loadIDMap();
-                    this.appendAPI();
-                    this.appendEventListeners();
                 }
             },
-
-            appendEventListeners: function ()
+            
+            getVolume: function ()
             {
-                var that = this;
+                var vol = this._graph.volume;
 
-                this._xmlNode._shadowObjectID = -1
+                if (!this.volumeValid() && this._vf.render)
+                {
+                    for (var i=0; i<this._partVisibility.length; i++)
+                    {
+                        if (!this._partVisibility[i])
+                            continue;
 
-                this._xmlNode.addEventListener("mousedown", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                        this.dispatchEvent(new CustomEvent("partclick", {detail: e}));
+                        var childVol = this._partVolume[i];
+
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
-                }, false);
+                }
+                
+                return vol;
+            },
 
-                this._xmlNode.addEventListener("mouseout", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        if (e.shadowObjectId == -1) {
-                            e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                            this._shadowObjectID = -1;
-                            var event = new CustomEvent("partout", {detail: e});
-                            this.dispatchEvent(event);
+            handleEvents: function(e)
+            {
+                if( this._inlineNamespace ) {
+                    var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
+
+                    if (e.pickedId != -1) {
+                        e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                        e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+
+                        //fire mousemove event
+                        e.type = "mousemove";
+                        this.callEvtHandler("onmousemove", e);
+
+                        //fire mousemove event
+                        e.type = "mouseover";
+                        this.callEvtHandler("onmouseover", e);
+
+                        //fire click event
+                        if (e.button && e.button != this._lastButton) {
+                            e.type = "click";
+                            this.callEvtHandler("onclick", e);
+                            this._lastButton = e.button;
                         }
-                    }
-                }, false);
 
-                this._xmlNode.addEventListener("mousemove", function (e) {
-                    if (!that._nameSpace.doc._viewarea._isMoving) {
-                        e.partID = that._idMap.mapping[e.shadowObjectId].name
-                        this.dispatchEvent(new CustomEvent("partmove", {detail: e}));
-                        if (e.shadowObjectId != this._shadowObjectID) {
-                            var tmp = e.shadowObjectId;
-                            if (this._shadowObjectID != -1) {
-                                e.partID = that._idMap.mapping[this._shadowObjectID].name;
-                                this.dispatchEvent(new CustomEvent("partout", {detail: e}));
+                        //if some mouse button is down fire mousedown event
+                        if (e.button) {
+                            e.type = "mousedown";
+                            this.callEvtHandler("onmousedown", e);
+                            this._lastButton = e.button;
+                        }
+
+                        //if some mouse button is up fire mouseup event
+                        if (this._lastButton != 0 && e.button == 0) {
+                            e.type = "mouseup";
+                            this.callEvtHandler("onmouseup", e);
+                            this._lastButton = 0;
+                        }
+
+                        //If the picked id has changed we enter+leave a part
+                        if (e.pickedId != this._lastId) {
+                            if (this._lastId != -1) {
+                                e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                                e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                                e.type = "mouseleave";
+                                this.callEvtHandler("onmouseleave", e);
                             }
-                            this._shadowObjectID = e.shadowObjectId = tmp;
-                            e.partID = that._idMap.mapping[e.shadowObjectId].name;
-                            this.dispatchEvent(new CustomEvent("partover", {detail: e}));
+
+                            e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                            e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
+                            e.type = "mouseenter";
+                            this.callEvtHandler("onmouseenter", e);
+                            this._lastId = e.pickedId;
                         }
+
+                        this._lastId = e.pickedId;
                     }
-                }, false);
+                    else if (this._lastId != -1) {
+                        e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                        e.partID = this._idMap.mapping[this._lastId - this._minId].name;
+                        e.type = "mouseout";
+                        this.callEvtHandler("onmouseout", e);
+                        e.type = "mouseleave";
+                        this.callEvtHandler("onmouseleave", e);
+                        this._lastId = -1;
+                    }
+                }
+
             },
 
             loadIDMap: function ()
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
+                    var i, min, max;
+
                     var that = this;
 
                     var idMapURI = this._nameSpace.getURL(this._vf.urlIDMap[0]);
@@ -131,7 +241,47 @@ x3dom.registerNodeType(
                     {
                         that._idMap = JSON.parse(this.responseText);
 
-                        that._nameSpace.doc._scene._shadowIdMap = eval("(" + this.response + ")");
+                        //Check if the MultiPart map already initialized
+                        if (that._nameSpace.doc._scene._multiPartMap == null) {
+                            that._nameSpace.doc._scene._multiPartMap = {numberOfIds: 0, multiParts: []};
+                        }
+
+                        //Set the ID range this MultiPart is holding
+                        that._minId = that._nameSpace.doc._scene._multiPartMap.numberOfIds;
+                        that._maxId = that._minId + that._idMap.numberOfIDs - 1;
+
+                        //Update the MultiPart map
+                        that._nameSpace.doc._scene._multiPartMap.numberOfIds += that._idMap.numberOfIDs;
+                        that._nameSpace.doc._scene._multiPartMap.multiParts.push(that);
+
+                        //prepare internal shape map
+                        for (i=0; i<that._idMap.mapping.length; i++)
+                        {
+                            if (!that._identifierToPartId[that._idMap.mapping[i].name]) {
+                                that._identifierToPartId[that._idMap.mapping[i].name] = [];
+                            }
+
+                            if (!that._identifierToPartId[that._idMap.mapping[i].appearance]) {
+                                that._identifierToPartId[that._idMap.mapping[i].appearance] = [];
+                            }
+
+                            that._identifierToPartId[that._idMap.mapping[i].name].push(i);
+                            that._identifierToPartId[that._idMap.mapping[i].appearance].push(i);
+
+                            if (!that._partVolume[i]) {
+                                var min = x3dom.fields.SFVec3f.parse(that._idMap.mapping[i].min);
+                                var max = x3dom.fields.SFVec3f.parse(that._idMap.mapping[i].max);
+
+                                that._partVolume[i] = new x3dom.fields.BoxVolume(min, max);
+                            }
+
+                        }
+
+                        //prepare internal appearance map
+                        for (i=0; i<that._idMap.appearance.length; i++)
+                        {
+                            that._identifierToAppId[that._idMap.appearance[i].name] = i;
+                        }
 
                         that.loadInline();
                     };
@@ -140,50 +290,108 @@ x3dom.registerNodeType(
                 }
             },
 
-            createImageData: function ()
+            createColorData: function ()
             {
                 var diffuseColor, transparency, rgba;
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
-                var imageData = size + " " + size + " 4";
+
+                var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
+
+                //scale image data array size to the next highest power of two
+                size = x3dom.Utils.nextHighestPowerOfTwo(size);
+
+                var colorData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
                 {
                     if (i < this._idMap.mapping.length)
                     {
                         var appName = this._idMap.mapping[i].appearance;
+                        var appID = this._identifierToAppId[appName];
 
-                        for (var a=0; a<this._idMap.appearance.length; a++)
-                        {
-                            if (this._idMap.appearance[a].name == appName)
-                            {
-                                diffuseColor = this._idMap.appearance[a].material.diffuseColor;
-                                transparency = this._idMap.appearance[a].material.transparency;
+                        diffuseColor = this._idMap.appearance[appID].material.diffuseColor;
+                        transparency = this._idMap.appearance[appID].material.transparency;
 
-                                rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
 
-                                imageData += " " + rgba.toUint();
-                            }
-                        }
+                        colorData += " " + rgba.toUint();
+						
+						this._originalColor[i] = rgba;
                     }
                     else
                     {
-                        imageData += " 255";
+                        colorData += " 255";
                     }
                 }
 
-                return imageData;
+                return colorData;
             },
 
             createVisibilityData: function ()
             {
-                var size = x3dom.Utils.nextHighestPowerOfTwo(Math.sqrt(this._idMap.numberOfIDs));
+                var i, j;
+                var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
+
+                //scale image data array size to the next highest power of two
+                size = x3dom.Utils.nextHighestPowerOfTwo(size);
+                
                 var visibilityData = size + " " + size + " 1";
 
-                for (var i=0; i<size*size; i++)
+                for (i=0; i<size*size; i++)
                 {
                     if (i < this._idMap.mapping.length)
                     {
-                        visibilityData += " 255";
+                        if (this._vf.initialVisibility == 'auto')
+                        {
+                            //TODO get the Data from JSON
+                            visibilityData += " 255";
+
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = true;
+                            }
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].val++;
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+                        else if (this._vf.initialVisibility == 'visible')
+                        {
+                            visibilityData += " 255";
+
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = true;
+                            }
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].val++;
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+                        else if (this._vf.initialVisibility == 'invisible')
+                        {
+                            visibilityData += " 0";
+
+                            if (!this._partVisibility[i]) {
+                                this._partVisibility[i] = false;
+                            }
+
+                            for (j=0; j<this._idMap.mapping[i].usage.length; j++)
+                            {
+                                if (!this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]]) {
+                                    this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]] = {val:0, max:0};
+                                }
+                                this._visiblePartsPerShape[this._idMap.mapping[i].usage[j]].max++;
+                            }
+                        }
+
                     }
                     else
                     {
@@ -195,20 +403,50 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css;
+                var css, shapeDEF, colorData, visibilityData, appearance;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
+                    colorData = this.createColorData();
+                    visibilityData = this.createVisibilityData();
+
                     var shapes = inlScene.getElementsByTagName("Shape");
 
                     for (var s=0; s<shapes.length; s++)
                     {
-                        var appearances = shapes[s].getElementsByTagName("Appearance");
+                        shapeDEF = shapes[s].getAttribute("DEF") ||
+                                   shapes[s].getAttribute("def");
 
+                        if(shapeDEF && this._visiblePartsPerShape[shapeDEF] && 
+                           this._visiblePartsPerShape[shapeDEF].val == 0)
+                        {
+                            shapes[s].setAttribute("render", "false");
+                        }
+
+                        shapes[s].setAttribute("idOffset", this._minId);
+                        shapes[s].setAttribute("isPickable", this._vf.isPickable);
+
+                        var geometries = shapes[s].getElementsByTagName("BinaryGeometry");
+
+                        if (geometries && geometries.length) {
+                            for (var g = 0; g < geometries.length; g++) {
+                                geometries[g].setAttribute("solid", this._vf.solid);
+                            }
+                        }
+
+                        var appearances = shapes[s].getElementsByTagName("Appearance");
+                        
                         if (appearances.length)
                         {
                             for (var a = 0; a < appearances.length; a++)
                             {
+                                //Remove DEF/USE
+                                appearances[a].removeAttribute("DEF");
+                                appearances[a].removeAttribute("USE");
+                                
+                                appearances[a].setAttribute("sortType", this._vf.sortType);
+                                appearances[a].setAttribute("sortKey", this._vf.sortKey);
+
                                 var materials = appearances[a].getElementsByTagName("Material");
 
                                 if (materials.length)
@@ -219,43 +457,89 @@ x3dom.registerNodeType(
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("DEF", "MultiMaterial");
 
-                                        var sstDA = document.createElement("SurfaceShaderTexture");
-                                        sstDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
-
                                         var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", this.createImageData());
-
-                                        var sstV = document.createElement("SurfaceShaderTexture");
-                                        sstV.setAttribute("containerField", "multiVisibilityTexture");
+                                        ptDA.setAttribute("image", colorData);
 
                                         var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
                                         ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
-                                        ptV.setAttribute("image", this.createVisibilityData());
+                                        ptV.setAttribute("image", visibilityData);
 
-                                        sstDA.appendChild(ptDA);
-                                        sstV.appendChild(ptV);
-                                        css.appendChild(sstDA);
-                                        css.appendChild(sstV);
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
                                     }
                                     else
                                     {
                                         css = document.createElement("CommonSurfaceShader");
                                         css.setAttribute("USE", "MultiMaterial");
                                     }
-                                    materials[0].parentNode.replaceChild(css, materials[0]);
+                                    appearances[a].replaceChild(css, materials[0]);
                                 }
                                 else
                                 {
                                     //Add Material
-                                    console.log("Add Material");
+                                    if (firstMat) {
+                                        firstMat = false;
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("DEF", "MultiMaterial");
+
+                                        var ptDA = document.createElement("PixelTexture");
+                                        ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                        ptDA.setAttribute("id", "MultiMaterial_ColorMap");
+                                        ptDA.setAttribute("image", colorData);
+
+                                        var ptV = document.createElement("PixelTexture");
+                                        ptV.setAttribute("containerField", "multiVisibilityTexture");
+                                        ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
+                                        ptV.setAttribute("image", visibilityData);
+
+                                        css.appendChild(ptDA);
+                                        css.appendChild(ptV);
+                                    }
+                                    else
+                                    {
+                                        css = document.createElement("CommonSurfaceShader");
+                                        css.setAttribute("USE", "MultiMaterial");
+                                    }
+
+                                    appearances[a].appendChild(css);
                                 }
                             }
                         }
                         else
                         {
-                            //Add Appearance + Material
-                            console.log("Add Appearance + Material");
+                            //Add Appearance
+                            appearance = document.createElement("Appearance");
+                            
+                            //Add Material
+                            if (firstMat) {
+                                firstMat = false;
+                                css = document.createElement("CommonSurfaceShader");
+                                css.setAttribute("DEF", "MultiMaterial");
+
+                                var ptDA = document.createElement("PixelTexture");
+                                ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
+                                ptDA.setAttribute("id", "MultiMaterial_ColorMap");
+                                ptDA.setAttribute("image", colorData);
+
+                                var ptV = document.createElement("PixelTexture");
+                                ptV.setAttribute("containerField", "multiVisibilityTexture");
+                                ptV.setAttribute("id", "MultiMaterial_VisibilityMap");
+                                ptV.setAttribute("image", visibilityData);
+
+                                css.appendChild(ptDA);
+                                css.appendChild(ptV);
+                            }
+                            else
+                            {
+                                css = document.createElement("CommonSurfaceShader");
+                                css.setAttribute("USE", "MultiMaterial");
+                            }
+
+                            appearance.appendChild(css);
+                            geometries[g].appendChild(appearance);
                         }
                     }
                 }
@@ -264,211 +548,66 @@ x3dom.registerNodeType(
             appendAPI: function ()
             {
                 var multiPart = this;
+
+                this._xmlNode.getIdList = function ()
+                {
+                    var i, ids = [];
+
+                    for (i=0; i<multiPart._idMap.mapping.length; i++) {
+                        ids.push( multiPart._idMap.mapping[i].name );
+                    }
+
+                    return ids;
+                };
+
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;
-                    var selection = []
+                    var selection = [];
 
-                    if (selector == undefined || selector.length == 0) {
+                    if (selector == undefined) {
                         for (m=0; m<multiPart._idMap.mapping.length; m++) {
                             selection.push(m);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         for (i=0; i<selector.length; i++) {
-                            for (m=0; m<multiPart._idMap.mapping.length; m++) {
-                                if (selector[i].id == multiPart._idMap.mapping[m].name ||
-                                    selector[i].app == multiPart._idMap.mapping[m].appearance) {
-                                    selection.push(m);
-                                }
+                            if (multiPart._identifierToPartId[selector[i]]) {
+                                selection = selection.concat(multiPart._identifierToPartId[selector[i]]);
                             }
                         }
                     }
 
-                    var Parts = function(ids, colorMap, visibilityMap)
-                    {
-                        var parts = this;
-                        this.ids = ids;
-                        this.colorMap = colorMap;
-                        this.visibilityMap = visibilityMap;
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.setColor = function(color) {
-
-                            var i, x, y;
-                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]] = colorRGBA;
-                                    } else {
-                                        pixels[parts.ids[i]] = colorRGBA;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]] = colorRGBA;
-                                } else {
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    parts.colorMap.setPixel(x, y, colorRGBA);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param transparency
-                         */
-                        this.setTransparency = function(transparency) {
-
-                            var i, x, y;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]){
-                                        multiPart._highlightedParts[parts.ids[i]].a = transparency;
-                                    } else {
-                                        pixels[parts.ids[i]].a = transparency;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]){
-                                    multiPart._highlightedParts[parts.ids[0]].a = transparency;
-                                } else {
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-
-                                    var pixel = parts.colorMap.getPixel(x, y);
-
-                                    pixel.a = transparency;
-
-                                    parts.colorMap.setPixel(x, y, pixel);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param visibility
-                         */
-                        this.setVisibility = function(visibility) {
-
-                            var i, x, y;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.visibilityMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    pixels[parts.ids[i]].r = (visibility) ? 1 : 0;
-                                }
-
-                                parts.visibilityMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                x = parts.ids[0] % parts.colorMap.getWidth();
-                                y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-
-                                var pixel = parts.visibilityMap.getPixel(x, y);
-
-                                pixel.r = (visibility) ? 1 : 0;
-
-                                parts.visibilityMap.setPixel(x, y, pixel);
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.highlight = function(color) {
-
-                            var i, x, y;
-                            var colorRGBA = x3dom.fields.SFColorRGBA.parse(color);
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]] == undefined) {
-                                        multiPart._highlightedParts[parts.ids[i]] = pixels[parts.ids[i]]
-                                        pixels[parts.ids[i]] = colorRGBA;
-                                    }
-                                }
-
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else //Single select
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]] == undefined){
-
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    multiPart._highlightedParts[parts.ids[0]] = parts.colorMap.getPixel(x, y);
-                                    parts.colorMap.setPixel(x, y, colorRGBA);
-                                }
-                            }
-                        };
-
-                        /**
-                         *
-                         * @param color
-                         */
-                        this.unhighlight = function() {
-
-                            var i, x, y;
-
-                            if (ids.length && ids.length > 1) //Multi select
-                            {
-                                var pixels = parts.colorMap.getPixels();
-                                for(i=0; i<parts.ids.length; i++) {
-                                    if (multiPart._highlightedParts[parts.ids[i]]) {
-                                        pixels[parts.ids[i]] = multiPart._highlightedParts[parts.ids[i]];
-                                        multiPart._highlightedParts[parts.ids[i]] = undefined;
-                                    }
-                                }
-                                parts.colorMap.setPixels(pixels);
-                            }
-                            else
-                            {
-                                if (multiPart._highlightedParts[parts.ids[0]]) {
-
-                                    x = parts.ids[0] % parts.colorMap.getWidth();
-                                    y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
-                                    var pixel = multiPart._highlightedParts[parts.ids[0]];
-                                    multiPart._highlightedParts[parts.ids[0]] = undefined;
-                                    parts.colorMap.setPixel(x, y, pixel);
-                                }
-                            }
-                        };
-                    };
-
                     var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
                     var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
-                    return new Parts(selection, colorMap, visibilityMap);
-                }
+
+                    if ( selection.length == 0) {
+                        return null;
+                    } else {
+                        return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
+                    }
+                };
+                
+                this._xmlNode.fitPart = function (id, updateCenterOfRotation)
+                {
+                    var shapeID = multiPart._identifierToPartId[id];
+                
+                    if (shapeID)
+                    {
+                        if (updateCenterOfRotation === undefined) {
+                            updateCenterOfRotation = true;
+                        }
+                        
+                        var min = multiPart._partVolume[shapeID[0]].min;
+                        var max = multiPart._partVolume[shapeID[0]].max;
+
+                        var mat = multiPart.getCurrentTransform();
+
+                        min = mat.multMatrixPnt(min);
+                        max = mat.multMatrixPnt(max);
+                         
+                        multiPart._nameSpace.doc._viewarea.fit(min, max, updateCenterOfRotation);
+                    }
+                };
             },
 
             loadInline: function ()
@@ -486,16 +625,28 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 
-                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding && that.count < that.numRetries) {
-                        that.count++;
-                        var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
-                        x3dom.debug.logInfo('Statuscode ' + xhr.status + ' and send new request in ' + refreshTime + ' sec.');
-
-                        window.setTimeout(function() {
+                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding) {
+                        if (that.count < that.numRetries)
+                        {
+                            that.count++;
+                            var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+                            x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                'Next request in ' + refreshTime + ' seconds');
+                      
+                            window.setTimeout(function() {
+                                that._nameSpace.doc.downloadCount -= 1;
+                                that.loadInline();
+                            }, refreshTime * 1000);
+                            return xhr;
+                        }
+                        else
+                        {
+                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                 'No Retries left');
                             that._nameSpace.doc.downloadCount -= 1;
-                            that.loadInline();
-                        }, refreshTime * 1000);
-                        return xhr;
+                            that.count = 0;
+                            return xhr;
+                        }
                     }
                     else if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that.fireEvents("error");
@@ -530,8 +681,10 @@ x3dom.registerNodeType(
 
                     if (inlScene)
                     {
+                        var nsDefault = "ns" + that._nameSpace.childSpaces.length;
+                        
                         var nsName = (that._vf.nameSpaceName.length != 0) ?
-                                      that._vf.nameSpaceName.toString().replace(' ','') : "";
+                                      that._vf.nameSpaceName.toString().replace(' ','') : nsDefault;
 
                         that._inlineNamespace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
 
@@ -613,6 +766,7 @@ x3dom.registerNodeType(
                             }, 1000 );
                         }
 
+                        that.appendAPI();
                         that.fireEvents("load");
                     }
 
@@ -627,15 +781,6 @@ x3dom.registerNodeType(
                 if (this._vf.url.length && this._vf.url[0].length)
                 {
                     var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
-
-                    //Unfortunately, there is currently an inconsistent behavior between
-                    //chrome and firefox, where the first one is "escaping" the "%" character in the
-                    //blob URI, which contains a ref to a "file" object. This can also not be fixed by
-                    //first using "decodeURI", because, in that case, "%3A" is not resolved to "%".
-                    if (!(xhrURI.substr(0, 5) === "blob:"))
-                    {
-                        xhrURI = encodeURI(xhrURI);
-                    }
 
                     xhr.open('GET', xhrURI, true);
 

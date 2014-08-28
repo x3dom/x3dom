@@ -64,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime ("collideTime", 0);
+            this.addField_SFTime (ctx, "collideTime", 0);
 
             /**
              * NOT YET IMPLEMENTED. The value of the isActive field indicates the current state of the Collision node.
@@ -75,10 +75,10 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool ("isActive", true);
+            this.addField_SFBool (ctx, "isActive", true);
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -106,7 +106,7 @@ x3dom.registerNodeType(
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
                     if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }
                 }
             }

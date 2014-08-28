@@ -280,18 +280,7 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                var isBlendedStyle = false;
-                //Check if there is a blendedStyle, not to use lightAssigment
-                Array.forEach(this._cf.renderStyle.nodes, function(style){
-                    if(x3dom.isa(style, x3dom.nodeTypes.BlendedVolumeStyle)){
-                        isBlendedStyle = true;
-                    }
-                });
-                if(!isBlendedStyle){
-                    return this._cf.renderStyle.nodes[0].lightAssigment();
-                }else{
-                    return "";
-                }
+                return this._cf.renderStyle.nodes[0].lightAssigment();
             },
 
             lightEquationShaderText: function(){ //TODO: ligth equation per isosurface?
@@ -326,6 +315,11 @@ x3dom.registerNodeType(
                     
                     this._cf.appearance.node.addChild(this.vrcMultiTexture);
                     this.vrcMultiTexture.nodeChanged();
+                    
+                    //Update child node properties
+                    for (var i = 0; i < this._cf.renderStyle.nodes.length; i++) {
+                        this._cf.renderStyle.nodes[i].updateProperties(this);
+                    }
                     
                     // here goes the volume shader
                     this.vrcSinglePassShaderVertex._vf.type = 'vertex';
@@ -442,7 +436,7 @@ x3dom.registerNodeType(
                             var s = obj.getTextureSize(aTex);
                             if(s.valid){
                                 clearInterval(obj.offsetInterval);
-                                obj.vrcSinglePassShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/s.w, 1.0/s.h, 1.0/aTex._vf.numberOfSlices);
+                                obj.vrcSinglePassShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/(s.w/aTex._vf.slicesOverX), 1.0/(s.h/aTex._vf.slicesOverY), 1.0/aTex._vf.numberOfSlices);
                                 obj.vrcSinglePassShader.nodeChanged();
                                 x3dom.debug.logInfo('[VolumeRendering][ISOSurfaceVolumeData] Volume Texture size obtained');
                             }

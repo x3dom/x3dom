@@ -12,78 +12,67 @@
 
         window.onload = function() {
             multiPart = document.getElementById('multiPart');
-            document.getElementById('multiPart').addEventListener('partmove', partmove, false);
-            document.getElementById('multiPart').addEventListener('partclick', partclick, false);
-            document.getElementById('multiPart').addEventListener('partover', partover, false);
-            document.getElementById('multiPart').addEventListener('partout', partout, false);
+            multiPart.addEventListener('load', handleLoad, false);
         };
-
-        function partover(e){
-            //console.log("[mouseover]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.detail.partID}]);
-            parts.highlight("yellow");
+        
+        function handleLoad() {
+            multiPart.addEventListener('mouseenter', handleMouseEnter, false);
+            multiPart.addEventListener('mouseleave', handleMouseLeave, false);
+            multiPart.addEventListener('mouseout', handleMouseLeave, false);
+            multiPart.addEventListener('mousemove', handleMouseMove, false);
+            multiPart.addEventListener('click', handleClick, false);
         }
 
-        function partmove(e){
+        function handleMouseEnter(e){
+            //console.log("[mouseover]: " + e.detail.partID);
+            e.part.highlight("yellow");
+        }
+
+        function handleMouseMove(e){
             var tooltip = document.getElementById("tooltip");
-            tooltip.innerHTML = e.detail.partID
-            tooltip.style.left = e.detail.layerX + 15 +"px";
-            tooltip.style.top = e.detail.layerY + 15 + "px";
+            tooltip.innerHTML = e.partID
+            tooltip.style.left = e.layerX + 15 +"px";
+            tooltip.style.top = e.layerY + 15 + "px";
             tooltip.style.display = "block";
         }
 
-        function partout(e){
+        function handleMouseLeave(e){
             //console.log("[mouseout]: " + e.detail.partID);
-            var parts = this.getParts([{id:e.detail.partID}]);
-            parts.unhighlight();
-
-            if(e.detail.shadowObjectId == -1) {
-                tooltip.style.display = "none";
-            }
+            e.part.unhighlight();
+            tooltip.style.display = "none";
         }
 
-        function partclick(e){
+        function handleClick(e){
             //console.log("[click]: " + e.detail.partID);
             tooltip.style.display = "none";
-            if(selection.indexOf(e.detail.partID) == -1)
-                selection.push(e.detail.partID);
+            if(selection.indexOf(e.partID) == -1)
+                selection.push(e.partID);
 
             updateTextArea();
         }
 
-
-        function getSelection()
-        {
-            var sel = [];
-            for(var key in selection)
-            {
-                sel.push({id:selection[key]});
-            }
-            return sel;
-        }
-
         function highlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.highlight("yellow");
         }
 
         function unhighlight()
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.unhighlight();
         }
 
         function setVisibility(flag)
         {
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setVisibility(flag);
         }
 
         function setColor()
         {
             var color = document.getElementById("colorPicker").value;
-            var parts = multiPart.getParts(getSelection());
+            var parts = multiPart.getParts(selection);
             parts.setColor(color);
         }
 
@@ -101,6 +90,16 @@
         function updateTextArea()
         {
             document.getElementById('selectionTA').innerHTML = selection.join('\n');
+        }
+
+        function fitAll()
+        {
+            document.getElementById('x3dElement').runtime.fitAll();
+        }
+
+        function showAll()
+        {
+            document.getElementById('x3dElement').runtime.showAll();
         }
 
 
@@ -131,6 +130,10 @@
     <div>
         <input id="colorPicker" type="color">
         <input id="setColor" type="button" value="Set Color" onclick="setColor();">
+    </div>
+    <div>
+        <input id="fitAll" type="button"  value="Fit All" onclick="fitAll();">
+        <input id="showAll" type="button"  value="Show All" onclick="showAll();">
     </div>
 </div>
 <div id="selectionUI">

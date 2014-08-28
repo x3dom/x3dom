@@ -43,6 +43,10 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	
 	//Material
 	shader += x3dom.shader.material();
+
+    if (properties.TWOSIDEDMAT ) {
+        shader += x3dom.shader.twoSidedMaterial();
+    }
 	
 	//Default Matrices
 	shader += "uniform mat4 normalMatrix;\n";
@@ -300,7 +304,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			} else if(properties.COLCOMPONENTS  == 4) {
 				shader += "vec4 vertColor = color;";
 			}
-			if(properties.REQUIREBBOXNOR) {
+			if(properties.REQUIREBBOXCOL) {
 				shader += "vertColor = vertColor / bgPrecisionColMax;\n";
 			}
 		}
@@ -365,12 +369,24 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
+        shader += "float _shininess     = shininess;\n";
+        shader += "vec3 _specularColor  = specularColor;\n";
+        shader += "vec3 _emissiveColor  = emissiveColor;\n";
+        shader += "float _ambientIntensity = ambientIntensity;\n";
 		
 		//Solid
-		if(!properties.SOLID) {
+		if(!properties.SOLID || properties.TWOSIDEDMAT) {
 			shader += "if (dot(normalMV, eye) < 0.0) {\n";
 			shader += "	 normalMV *= -1.0;\n";
-			shader += "}\n";
+            if(properties.SEPARATEBACKMAT) {
+                shader += "    rgb = backDiffuseColor;\n";
+                shader += "    alpha = 1.0 - backTransparency;\n";
+                shader += "    _shininess = backShininess;\n";
+                shader += "    _emissiveColor = backEmissiveColor;\n";
+                shader += "    _specularColor = backSpecularColor;\n";
+                shader += "    _ambientIntensity = backAmbientIntensity;\n";
+            }
+            shader += "  }\n";
 		}
 		
 		//Calculate lighting
@@ -389,7 +405,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
                           "light"+l+"_AmbientIntensity, " +
                           "light"+l+"_BeamWidth, " +
                           "light"+l+"_CutOffAngle, " +
-                          "normalMV, eye, shininess);\n";
+                          "normalMV, eye, _shininess, _ambientIntensity);\n";
                 shader += "   ambient  += " + lightCol + " * ads.r;\n" +
                           "   diffuse  += " + lightCol + " * ads.g;\n" +
                           "   specular += " + lightCol + " * ads.b;\n";
@@ -404,10 +420,10 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		if(properties.TEXTURED  && !properties.BLENDING) {
 			shader += "fragAmbient = ambient;\n";
 			shader += "fragDiffuse = diffuse;\n";
-			shader += "fragColor.rgb = (emissiveColor + specular*specularColor);\n";
+			shader += "fragColor.rgb = (_emissiveColor + specular*_specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		} else {
-			shader += "fragColor.rgb = (emissiveColor + max(ambient + diffuse, 0.0) * rgb + specular*specularColor);\n";
+			shader += "fragColor.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * rgb + specular*_specularColor);\n";
 			shader += "fragColor.a = alpha;\n";
 		}
 	} else {

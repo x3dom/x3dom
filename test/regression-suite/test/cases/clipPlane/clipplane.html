@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>clipplane</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+
+<body onload="initialize();">
+    <X3D id="x3d" width="600" height="600">
+        <Scene id="scene" experimentalClipPlanes="true">            
+                <ClipPlane plane="0.7 0 -0.7 0.3" cappingColor="0 0 1" cappingStrength="0.1"></ClipPlane>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor="1 0 0"></Material>                        
+                    </Appearance>
+                    <Cone solid='false'></Cone>
+                </Shape>            
+        </Scene>
+    </X3D>    
+</body>
+</html>

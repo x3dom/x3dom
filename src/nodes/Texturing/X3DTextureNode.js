@@ -181,6 +181,14 @@ x3dom.registerNodeType(
                                 shape._dirty.texture = true;
                             });
                         }
+                        else if (x3dom.isa(app, x3dom.nodeTypes.MultiTexture)) {
+                            Array.forEach(app._parentNodes, function (realApp) {
+                                realApp.nodeChanged();
+                                Array.forEach(realApp._parentNodes, function (shape) {
+                                    shape._dirty.texture = true;
+                                });
+                            });
+                        }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
                             var cf = null;
                             if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
@@ -191,9 +199,18 @@ x3dom.registerNodeType(
                         else if (x3dom.nodeTypes.X3DVolumeDataNode !== undefined) {
                             if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
                                 if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
-                                    Array.forEach(app._parentNodes, function(shape){
-                                        shape._dirty.texture = true;
-                                    });
+                                    if(app._volumeDataParent){
+                                        app._volumeDataParent._dirty.texture = true;
+                                    }else{
+                                        //Texture maybe under a ComposedVolumeStyle
+                                        var volumeDataParent = app._parentNodes[0];
+                                        while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) && x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                                            volumeDataParent = volumeDataParent._parentNodes[0];
+                                        }
+                                        if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                                            volumeDataParent._dirty.texture = true;
+                                        }
+                                    }
                                 }
                             } else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
                                 if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {

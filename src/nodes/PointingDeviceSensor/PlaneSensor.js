@@ -100,7 +100,7 @@ x3dom.registerNodeType(
              * @private
              */
             //TODO: update on change
-            this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+            this._rotationMatrix = this._vf.axisRotation.toMatrix();
 
             /**
              * World-To-Local matrix for this node, including the axisRotation of the sensor
@@ -215,11 +215,11 @@ x3dom.registerNodeType(
                     {
                         //compute difference between new point of intersection and initial point
                         this._currentTranslation = intersectionPoint.subtract(this._initialPlaneIntersection);
-                        this._currentTranslation = this._currentTranslation.add(this._vf["offset"]);
+                        this._currentTranslation = this._currentTranslation.add(this._vf.offset);
 
                         //clamp translation components, if desired
-                        minPos = this._vf["minPosition"];
-                        maxPos = this._vf["maxPosition"];
+                        minPos = this._vf.minPosition;
+                        maxPos = this._vf.maxPosition;
 
                         if (minPos.x <= maxPos.x)
                         {
@@ -248,10 +248,10 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
 
-                if (this._vf["autoOffset"])
+                if (this._vf.autoOffset)
                 {
-                    this._vf["offset"] = x3dom.fields.SFVec3f.copy(this._currentTranslation);
-                    this.postMessage('offset_changed', this._vf["offset"]);
+                    this._vf.offset = x3dom.fields.SFVec3f.copy(this._currentTranslation);
+                    this.postMessage('offset_changed', this._vf.offset);
                 }
             }
 

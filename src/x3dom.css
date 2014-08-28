@@ -134,6 +134,16 @@ x3d:hover,
   font-size: 26px;
 }
 
+.x3dom-states-rendermode-software {
+    font-size: 10px;
+    margin: 0 0 2px 2px;
+}
+
+.x3dom-states-rendermode-hardware {
+    font-size: 10px;
+    margin: 0 0 2px 2px;
+}
+
 .x3dom-states-head2 {
   font-size: 10px;
 }

@@ -19,61 +19,7 @@
     },
     "tests" :
         [
-            {
-                "url"   : "/test/cases/shadows/shadows.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        },
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"   :   "document.getElementById('trans').setAttribute('translation', '0 -3 0');document.getElementById('mat1').setAttribute('diffuseColor', '0.2 0 0.7');"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/text/text.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/texture/texture.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
+        {
                 "url"   : "/test/cases/billboard/billboard.html",
                 "steps" :
                     [
@@ -130,25 +76,14 @@
                     ]
             },
             {
-                "url"   : "/test/cases/picking/picking.html",
+                "url"   : "/test/cases/clipPlane/clipplane.html",
                 "steps" :
                     [
                         {
-                            "type"      :   "ExecuteClick",
+                            "type"      :   "CompareScreenshot",
                             "params"    :
                             {
-                                "x3d"       :   "x3d",
-                                "x"   :   "430",
-                                "y"   :   "320"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareValue",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "id"      :   "test-result",
-                                "value"     :   "1.1332057369"
+                                "x3d"       :   "x3d"
                             }
                         }
                     ]
@@ -166,20 +101,6 @@
                                 "y"   :   "10 248"
                             }
                         },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/surfaceShader/surfaceShader.html",
-                "steps" :
-                    [
-
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
@@ -229,27 +150,7 @@
                             }
                         }
                     ]
-            },
-            {
-                "url"   : "/test/cases/defUse/defUse.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "time"       :   "2000"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
+            },          
             {
                 "url"   : "/test/cases/changeShaderAndDOM/changeShaderAndDOM.html",
                 "steps" :
@@ -285,6 +186,142 @@
                                 "command"       :   "changeShader();"
                             }
                         },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/chaser/chaser.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "505",
+                                "y"     :   "257"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "x"     :   "201",
+                                "y"     :   "389"
+                            }
+                        },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+                {
+                "url"   : "/test/cases/composedShader/composedShader.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+             {
+                "url"   : "/test/cases/coordinateInterpolator/coordinateInterpolator.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "change();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },               
+              {
+                "url"   : "/test/cases/defUse/defUse.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "2000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },                        
+            {
+                "url"   : "/test/cases/displacementMapping/displacementMapping.html",
+                "steps" :
+                    [
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
@@ -336,16 +373,9 @@
                     ]
             },
             {
-                "url"   : "/test/cases/geoPrim2D/geoPrim2D.html",
+                "url"   : "/test/cases/fog/fog.html",
                 "steps" :
                     [
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "time"       :   "1200"
-                            }
-                        },
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
@@ -355,84 +385,7 @@
                         }
                     ]
             },
-            {
-                "url"   : "/test/cases/geoPrim3D/geoPrim3D.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "time"       :   "1200"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/routes/routes.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"       :   "rotor();"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        },
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"       :   "rotor();"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/geoTypes/geoTypes.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "time"       :   "4000"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
+              {
                 "url"   : "/test/cases/fitting/fitting.html",
                 "steps" :
                     [
@@ -507,134 +460,10 @@
                         }
                     ]
             },
-            {
-                "url"   : "/test/cases/chaser/chaser.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "ExecuteClick",
-                            "params"    :
-                            {
-                                "x3d"   :   "x3d",
-                                "x"     :   "505",
-                                "y"     :   "257"
-                            }
-                        },
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "time"       :   "2000"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        },
-                        {
-                            "type"      :   "ExecuteClick",
-                            "params"    :
-                            {
-                                "x3d"   :   "x3d",
-                                "x"     :   "201",
-                                "y"     :   "389"
-                            }
-                        },
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "time"       :   "2000"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/fog/fog.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
+             {
                 "url"   : "/test/cases/geoElevationGrid/geoElevationGrid.html",
                 "steps" :
                     [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/imageFormats/imageFormats.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "Wait",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "time"  :   "1200"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
-            {
-                "url"   : "/test/cases/coordinateInterpolator/coordinateInterpolator.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"       :   "change();"
-                            }
-                        },
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        },
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"       :   "change();"
-                            }
-                        },
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
@@ -664,24 +493,15 @@
                         }
                     ]
             },
-            {
-                "url"   : "/test/cases/reload/reload.html",
+             {
+                "url"   : "/test/cases/geoPrim2D/geoPrim2D.html",
                 "steps" :
                     [
                         {
-                            "type"      :   "ExecuteCommand",
+                            "type"      :   "Wait",
                             "params"    :
                             {
-                                "x3d"       :   "x3d",
-                                "command"       :   "addX3D();"
-                            }
-                        },
-                        {
-                            "type"      :   "ExecuteCommand",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d",
-                                "command"       :   "addX3D();"
+                                "time"       :   "1200"
                             }
                         },
                         {
@@ -693,6 +513,81 @@
                         }
                     ]
             },
+            {
+                "url"   : "/test/cases/geoPrim3D/geoPrim3D.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "time"       :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/geoTypes/geoTypes.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"       :   "4000"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+               {
+                "url"   : "/test/cases/geoPrimExt/geoPrimExt.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            }, 
+             {
+                "url"   : "/test/cases/imageFormats/imageFormats.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"  :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            }, 
             {
                 "url"   : "/test/cases/inlineEvents/inlineEvents.html",
                 "steps" :
@@ -727,8 +622,8 @@
                             }
                         }
                     ]
-            },
-            {
+            },           
+             {
                 "url"   : "/test/cases/lightRadius/lightRadius.html",
                 "steps" :
                     [
@@ -770,20 +665,7 @@
                             }
                         }
                     ]
-            },
-            {
-                "url"   : "/test/cases/composedShader/composedShader.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            },
+            },        
             {
                 "url"   : "/test/cases/lod/lod.html",
                 "steps" :
@@ -813,7 +695,33 @@
                     ]
             },
             {
+                "url"   : "/test/cases/materialTest/materialTest.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },            
+            {
                 "url"   : "/test/cases/normalGen/normalGen.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },          
+             {
+                "url"   : "/test/cases/pixelTexture/pixelTexture.html",
                 "steps" :
                     [
                         {
@@ -826,10 +734,25 @@
                     ]
             },
             {
-                "url"   : "/test/cases/pixelTexture/pixelTexture.html",
+                 "url"   : "/test/cases/particleSet/particleSet.html",
                 "steps" :
                     [
                         {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "changeParticles();"
+                            }
+                        },
+                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
                             {
@@ -851,8 +774,97 @@
                         }
                     ]
             },
+             {
+                "url"   : "/test/cases/picking/picking.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteClick",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "x"   :   "430",
+                                "y"   :   "320"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareValue",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "id"      :   "test-result",
+                                "value"     :   "1.1332057369"
+                            }
+                        }
+                    ]
+            },     
             {
-                "url"   : "/test/cases/materialTest/materialTest.html",
+                "url"   : "/test/cases/routes/routes.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "rotor();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "rotor();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },            
+            {
+                "url"   : "/test/cases/reload/reload.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "addX3D();"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"       :   "addX3D();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+             {
+                "url"   : "/test/cases/renderTexMirror/renderTexMirror.html",
                 "steps" :
                     [
                         {
@@ -865,7 +877,63 @@
                     ]
             },
             {
-                "url"   : "/test/cases/geoPrimExt/geoPrimExt.html",
+                "url"   : "/test/cases/shadows/shadows.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "document.getElementById('trans').setAttribute('translation', '0 -3 0');document.getElementById('mat1').setAttribute('diffuseColor', '0.2 0 0.7');"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+			{
+                "url"   : "/test/cases/screenGroup/screenGroup.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "move_vp1();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/text/text.html",
                 "steps" :
                     [
                         {
@@ -878,7 +946,7 @@
                     ]
             },
             {
-                "url"   : "/test/cases/displacementMapping/displacementMapping.html",
+                "url"   : "/test/cases/texture/texture.html",
                 "steps" :
                     [
                         {
@@ -889,7 +957,21 @@
                             }
                         }
                     ]
-            },
+            }, 
+            {
+                "url"   : "/test/cases/surfaceShader/surfaceShader.html",
+                "steps" :
+                    [
+
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },            
             {
                 "url"   : "/test/cases/volrenOpacity/volrenOpacity.html",
                 "steps" :
@@ -924,20 +1006,7 @@
                             }
                         }
                     ]
-            },
-            {
-                "url"   : "/test/cases/renderTexMirror/renderTexMirror.html",
-                "steps" :
-                    [
-                        {
-                            "type"      :   "CompareScreenshot",
-                            "params"    :
-                            {
-                                "x3d"       :   "x3d"
-                            }
-                        }
-                    ]
-            }
+            }           
         ]
 }
 

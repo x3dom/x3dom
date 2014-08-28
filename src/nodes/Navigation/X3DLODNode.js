@@ -49,7 +49,7 @@ x3dom.registerNodeType(
         
         },
         {
-            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -65,12 +65,12 @@ x3dom.registerNodeType(
                 // at the moment, no caching here as children may change every frame
                 singlePath = false;
 
-                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
 
                 //out.LODs.push( [transform, this] );
             },
 
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask) {
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes) {
                 // overwritten
             }
         }

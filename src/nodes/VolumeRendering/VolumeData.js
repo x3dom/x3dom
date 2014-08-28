@@ -85,12 +85,7 @@ x3dom.registerNodeType(
             },
 
             lightAssigment: function(){
-                //Check if there is a blendedStyle, not to use lightAssigment
-                if(x3dom.isa(this._cf.renderStyle.node, x3dom.nodeTypes.BlendedVolumeStyle)){
-                    return "";
-                }else{
-                    return this._cf.renderStyle.node.lightAssigment();
-                }
+                return this._cf.renderStyle.node.lightAssigment();
             },
 
             //Obtain the light equation from the render style child node
@@ -131,7 +126,10 @@ x3dom.registerNodeType(
                     
                     this._cf.appearance.node.addChild(this.vrcMultiTexture);
                     this.vrcMultiTexture.nodeChanged();
-                    
+
+                    //Update child node private properties
+                    this._cf.renderStyle.node.updateProperties(this);
+
                     // here goes the volume shader
                     this.vrcSinglePassShaderVertex._vf.type = 'vertex';
                     this.vrcSinglePassShaderVertex._vf.url[0]=this.vertexShaderText();
@@ -188,7 +186,7 @@ x3dom.registerNodeType(
                             var s = obj.getTextureSize(aTex);
                             if(s.valid){
                                 clearInterval(obj.offsetInterval);
-                                obj.vrcSinglePassShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/s.w, 1.0/s.h, 1.0/aTex._vf.numberOfSlices);
+                                obj.vrcSinglePassShaderFieldOffset._vf.value = new x3dom.fields.SFVec3f(1.0/(s.w/aTex._vf.slicesOverX), 1.0/(s.h/aTex._vf.slicesOverY), 1.0/aTex._vf.numberOfSlices);
                                 obj.vrcSinglePassShader.nodeChanged();
                                 x3dom.debug.logInfo('[VolumeRendering][VolumeData] Volume Texture size obtained');
                             }

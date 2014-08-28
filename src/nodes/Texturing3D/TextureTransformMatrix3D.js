@@ -37,7 +37,8 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+            this.addField_SFMatrix4f(ctx, 'matrix',
+                1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1);

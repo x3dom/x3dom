@@ -339,7 +339,8 @@
             </ul>
             
             <p>
-            In the latter case, the field usually is a multi valued field, with its type starting with "MF".
+            Please note that requestFieldRef is especially thought for such cases and does not work on fields that represent single, primitive javascript datatypes, such as SFFloat or SFString.
+            A field value that consists of a large array of values is usually a multi-valued field, with its type starting with "MF".
             For example, <code>MFVec3f</code> denotes a field type which represents an array of three-element float vectors.
             Such a field may contain an arbitrary number of elements, therefore you may want to avoid to copy the corresponding field object every time you change some of its values.
             The solution in this case is to operate on a <i>reference</i> to the <i>original field object</i> which is internally used by X3DOM, instead of using a copy.            

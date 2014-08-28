@@ -44,7 +44,7 @@ x3dom.registerNodeType(
         
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -73,9 +73,25 @@ x3dom.registerNodeType(
                     childTransform = this.transformMatrix(transform);
                 }
 
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                var n = this._childNodes.length;
+
+                if (x3dom.nodeTypes.ClipPlane.count > 0) {
+                    var localClipPlanes = [];
+
+                    for (var j = 0; j < n; j++) {
+                        if ( (cnode = this._childNodes[j]) ) {
+                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
+                                localClipPlanes.push(cnode);
+                            }
+                        }
+                    }
+
+                    clipPlanes = localClipPlanes.concat(clipPlanes);
+                }
+
+                for (var i=0; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }
                 }
             }

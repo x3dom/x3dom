@@ -81,14 +81,14 @@ x3dom.registerNodeType(
                 //post request
                 xhr = new XMLHttpRequest();
 
-                xhr.open("GET", encodeURI(this._vf['url']), true);
+                xhr.open("GET", this._vf['url'], true);
 
                 xhr.responseType = "arraybuffer";
 
                 xhr.send(null);
 
                 xhr.onerror = function() {
-                    x3dom.debug.logError("Unable to load SRC data from URL \"" + encodeURI(that._vf['url']) + "\"");
+                    x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
                 };
 
                 //TODO: currently, we assume that the referenced file is always an SRC file
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 
                     var srcHeaderObj;
 
-                    if (xhr.status == 200 && responseBeginUint32.length >= 3) {
+                    if ((xhr.status == 200 || xhr.status == 0) && responseBeginUint32.length >= 3) {
 
                         srcHeaderSize = responseBeginUint32[2];
                         srcBodyOffset = srcHeaderSize + 12;
@@ -131,13 +131,13 @@ x3dom.registerNodeType(
                         else
                         {
                             x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
-                                                 encodeURI(that._vf['url']) + "\"");
+                                                 that._vf['url'] + "\"");
                             return;
                         }
                     }
                     else
                     {
-                        x3dom.debug.logError("Unable to load SRC data from URL \"" + encodeURI(that._vf['url']) + "\"");
+                        x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
                     }
                 };
             } ,
@@ -285,7 +285,7 @@ x3dom.registerNodeType(
                                 //for non-indexed rendering, we assume that all attributes have the same count
                                 if (mesh["indices"] == "")
                                 {
-                                    shape._webgl.drawCount = attributeView["count"];
+                                    shape._webgl.drawCount[meshIdx] = attributeView["count"];
                                     //TODO: add support for LINES and POINTS
                                     this._mesh._numFaces += attributeView["count"] / 3;
                                 }
@@ -319,7 +319,7 @@ x3dom.registerNodeType(
                                 shape._webgl.buffers[ID_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
                                 break;
-                        };
+                        }
 
                         shape["_" + x3domTypeID + "StrideOffset"][0] = attributeView["byteStride"];
                         shape["_" + x3domTypeID + "StrideOffset"][1] = attributeView["byteOffset"];
@@ -515,6 +515,6 @@ x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType = function
         case "VEC4":   return 4;
         default:       return 0;
     }
-}
+};
 
 //----------------------------------------------------------------------------------------------------------------------

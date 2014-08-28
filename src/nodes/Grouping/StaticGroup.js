@@ -30,6 +30,7 @@ x3dom.registerNodeType(
 
             // Node implements optimizations; no need to maintain the children node's
             // X3D representations, as they cannot be accessed after creation time
+            x3dom.debug.logWarning("StaticGroup erroneously also bakes parent transforms, if happens use Group node!"); // Blender exports to SG
 
             /**
              * Enables debugging.
@@ -109,7 +110,7 @@ x3dom.registerNodeType(
                 return this._vf.maxDepth;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -157,7 +158,7 @@ x3dom.registerNodeType(
                     for (i=0; i<n; i++) {
                         if ( (cnode = this._childNodes[i]) ) {
                             //this is only used to collect all drawables once
-                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask);
+                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                         }
                     }
                     this.drawableCollection.concat();

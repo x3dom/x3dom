@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "TwoSidedMaterial",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DMaterialNode,
+    defineClass(x3dom.nodeTypes.Material,
         
         /**
          * Constructor for TwoSidedMaterial
@@ -31,6 +31,7 @@ x3dom.registerNodeType(
             /**
              * Defines the ambient intensity for the back side.
              * @var {x3dom.fields.SFFloat} backAmbientIntensity
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0.2
              * @field x3d
@@ -61,6 +62,7 @@ x3dom.registerNodeType(
             /**
              * Defines the shininess for the back side.
              * @var {x3dom.fields.SFFloat} backShininess
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0.2
              * @field x3d
@@ -81,6 +83,7 @@ x3dom.registerNodeType(
             /**
              * Defines the transparency for the back side.
              * @var {x3dom.fields.SFFloat} backTransparency
+             * @range [0, 1]
              * @memberof x3dom.nodeTypes.TwoSidedMaterial
              * @initvalue 0
              * @field x3d

@@ -70,7 +70,7 @@ x3dom.registerNodeType(
             this.uniformBoolEnableSilhouette = new x3dom.nodeTypes.Uniform(ctx);
         
         },
-        {
+        { 
             fieldChanged: function(fieldName){
                 switch(fieldName){
                     case 'silhouetteBoundaryOpacity':
@@ -91,37 +91,28 @@ x3dom.registerNodeType(
             uniforms: function(){
                 var unis = [];
                 if (this._cf.surfaceNormals.node) {
-                    //Lookup for the parent VolumeData
-                    var volumeDataParent = this._parentNodes[0];
-                    while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) || !x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                        volumeDataParent = volumeDataParent._parentNodes[0];
-                    }
-                    if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                        x3dom.debug.logError("[VolumeRendering][SilhouetteEnhancementVolumeStyle] Not VolumeData parent found!");
-                        volumeDataParent = null;
-                    }
                     this.uniformSampler2DSurfaceNormals._vf.name = 'uSurfaceNormals';
                     this.uniformSampler2DSurfaceNormals._vf.type = 'SFInt32';
-                    this.uniformSampler2DSurfaceNormals._vf.value = volumeDataParent._textureID++;
+                    this.uniformSampler2DSurfaceNormals._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DSurfaceNormals);
                 }
 
-                this.uniformFloatBoundaryOpacity._vf.name = 'uSilhouetteBoundaryOpacity';
+                this.uniformFloatBoundaryOpacity._vf.name = 'uSilhouetteBoundaryOpacity'+this._styleID;
                 this.uniformFloatBoundaryOpacity._vf.type = 'SFFloat';
                 this.uniformFloatBoundaryOpacity._vf.value = this._vf.silhouetteBoundaryOpacity;
                 unis.push(this.uniformFloatBoundaryOpacity);
 
-                this.uniformFloatRetainedOpacity._vf.name = 'uSilhouetteRetainedOpacity';
+                this.uniformFloatRetainedOpacity._vf.name = 'uSilhouetteRetainedOpacity'+this._styleID;
                 this.uniformFloatRetainedOpacity._vf.type = 'SFFloat';
                 this.uniformFloatRetainedOpacity._vf.value = this._vf.silhouetteRetainedOpacity;
                 unis.push(this.uniformFloatRetainedOpacity);
 
-                this.uniformFloatSilhouetteSharpness._vf.name = 'uSilhouetteSharpness';
+                this.uniformFloatSilhouetteSharpness._vf.name = 'uSilhouetteSharpness'+this._styleID;
                 this.uniformFloatSilhouetteSharpness._vf.type = 'SFFloat';
                 this.uniformFloatSilhouetteSharpness._vf.value = this._vf.silhouetteSharpness;
                 unis.push(this.uniformFloatSilhouetteSharpness);
 
-                this.uniformBoolEnableSilhouette._vf.name = 'uEnableSilhouette';
+                this.uniformBoolEnableSilhouette._vf.name = 'uEnableSilhouette'+this._styleID;
                 this.uniformBoolEnableSilhouette._vf.type = 'SFBool';
                 this.uniformBoolEnableSilhouette._vf.value = this._vf.enabled;
                 unis.push(this.uniformBoolEnableSilhouette);
@@ -141,23 +132,29 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                return "uniform float uSilhouetteBoundaryOpacity;\n"+
-                    "uniform float uSilhouetteRetainedOpacity;\n"+
-                    "uniform float uSilhouetteSharpness;\n"+
-                    "uniform bool uEnableSilhouette;\n";
+                return "uniform float uSilhouetteBoundaryOpacity"+this._styleID+";\n"+
+                    "uniform float uSilhouetteRetainedOpacity"+this._styleID+";\n"+
+                    "uniform float uSilhouetteSharpness"+this._styleID+";\n"+
+                    "uniform bool uEnableSilhouette"+this._styleID+";\n";
             },
 
             styleShaderText: function(){
-                return "void silhouetteEnhancement(inout vec4 orig_color, vec4 normal, vec3 V)\n"+
-                "{\n"+
-                "   orig_color.a = orig_color.a * (uSilhouetteRetainedOpacity + uSilhouetteBoundaryOpacity * pow((1.0-abs(dot(normal.xyz, V))), uSilhouetteSharpness));\n"+
-                "}\n"+
-                "\n";
+                if (this._first){
+                    return "void silhouetteEnhancement(inout vec4 orig_color, in vec4 normal, in vec3 V, in float sBoundary, in float sRetained, in float sSharpness)\n"+
+                    "{\n"+
+                    "   if(normal.w > 0.05){\n"+
+                    "       orig_color.a = orig_color.a * (sRetained + sBoundary * pow((1.0-abs(dot(normal.xyz, V))), sSharpness));\n"+
+                    "   }\n"+
+                    "}\n"+
+                    "\n";
+                }else{
+                    return "";
+                }                
             },
 
             inlineStyleShaderText: function(){
-                var inlineText = "  if(uEnableSilhouette){\n"+
-                "       silhouetteEnhancement(value, grad, normalize(dir));\n"+
+                var inlineText = "  if(uEnableSilhouette"+this._styleID+"){\n"+
+                "       silhouetteEnhancement(value, grad, normalize(dir), uSilhouetteBoundaryOpacity"+this._styleID+", uSilhouetteRetainedOpacity"+this._styleID+", uSilhouetteSharpness"+this._styleID+");\n"+
                 "   }\n";
                 return inlineText;
             }

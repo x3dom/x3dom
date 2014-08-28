@@ -38,6 +38,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isPickable', true);
 
             /**
+             * Holds the id offset for MultiPart picking.
+             * @var {x3dom.fields.SFInt32} isPickable
+             * @memberof x3dom.nodeTypes.X3DShapeNode
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'idOffset', 0);
+
+            /**
              * Holds the appearance node.
              * @var {x3dom.fields.SFNode} appearance
              * @memberof x3dom.nodeTypes.X3DShapeNode
@@ -59,6 +69,7 @@ x3dom.registerNodeType(
 
             this._objectID = 0;
             this._shaderProperties = null;
+            this._clipPlanes = [];
 
             // in WebGL-based renderer a clean-up function is attached
             this._cleanupGLObjects = null;
@@ -68,6 +79,7 @@ x3dom.registerNodeType(
                 normals: true,
                 texcoords: true,
                 colors: true,
+                specialAttribs: true,   // e.g., particleSize, IDs,...
                 indexes: true,
                 texture: true,
                 material: true,
@@ -82,10 +94,9 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
-        
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
                 // attention, in contrast to other collectDrawableObjects()
                 // this one has boolean return type to better work with RSG
@@ -104,6 +115,13 @@ x3dom.registerNodeType(
 
                 if (singlePath && !this._graph.globalMatrix)
                     this._graph.globalMatrix = transform;
+
+                if (this._clipPlanes.length != clipPlanes.length)
+                {
+                    this._dirty.shader = true;
+                }
+
+                this._clipPlanes = clipPlanes;
 
                 drawableCollection.addShape(this, transform, graphState);
 
@@ -161,7 +179,9 @@ x3dom.registerNodeType(
             },
 
             isSolid: function() {
-                return this._cf.geometry.node._vf.solid;
+                var twoSidedMat = (this._cf.appearance.node && this._cf.appearance.node._cf.material.node &&
+                                   x3dom.isa(this._cf.appearance.node._cf.material.node, x3dom.nodeTypes.TwoSidedMaterial));
+                return this._cf.geometry.node._vf.solid && !twoSidedMat;
             },
 
             isCCW: function() {
@@ -192,7 +212,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = false;
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
-                this._dirty.colors =  false;
+                this._dirty.colors = false;
+                this._dirty.specialAttribs = false;
                 // indices/topology
                 this._dirty.indexes = false;
                 // appearance properties
@@ -206,7 +227,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = false;
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
-                this._dirty.colors =  false;
+                this._dirty.colors = false;
+                this._dirty.specialAttribs = false;
                 this._dirty.indexes = false;
             },
 
@@ -215,7 +237,8 @@ x3dom.registerNodeType(
                 this._dirty.positions = true;
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
-                this._dirty.colors =  true;
+                this._dirty.colors = true;
+                this._dirty.specialAttribs = true;
                 // indices/topology
                 this._dirty.indexes = true;
                 // appearance properties
@@ -240,6 +263,7 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.specialAttribs = true;
                 this._dirty.indexes = true;
                 // finally invalidate volume
                 this.invalidateVolume();

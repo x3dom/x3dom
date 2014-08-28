@@ -6,6 +6,8 @@
  * Dual licensed under the MIT and GPL
  */
 
+// TODO: this file has lots of syntactical issues, fix them!
+
 function X3DCollidableShape(){
     var CollidableShape = new x3dom.fields.SFNode();
     var RigidBody = new x3dom.fields.SFNode();
@@ -34,7 +36,7 @@ function X3DJoint(){
 
 (function(){
 
-    var CollidableShapes = [], JointShapes = [], bulletWorld, x3dWorld, initScene, main, updateRigidbodies, MakeUpdateList, X3DRigidBodyComponents, CreateX3DCollidableShape,
+    var CollidableShapes = [], JointShapes = [], bulletWorld, x3dWorld = null, initScene, main, updateRigidbodies, MakeUpdateList, X3DRigidBodyComponents, CreateX3DCollidableShape,
         UpdateTransforms, CreateRigidbodies, rigidbodies = [], mousePickObject, mousePos = new x3dom.fields.SFVec3f(), drag = false, interactiveTransforms = [], UpdateRigidbody,
         intervalVar, building_constraints = true, ParseX3DElement, InlineObjectList, inline_x3dList = [], inlineLoad = false, completeJointSetup = false;
 
@@ -48,37 +50,38 @@ function X3DJoint(){
             }
         }
 
-        for (var i in x3dWorld.children){
-            if(x3dom.isa(x3dWorld.children[i]._x3domNode, x3dom.nodeTypes.Transform)){
-                if(x3dom.isa(x3dWorld.children[i]._x3domNode._cf.children.nodes[0]._xmlNode._x3domNode, x3dom.nodeTypes.Inline)){
-                    if(inline_x3dList.length == 0){
-                        inline_x3dList.push(x3dWorld.children[i]);
-                    }
-                    else{
-                        for(var n in inline_x3dList){
-                            if(inline_x3dList[n]._x3domNode._DEF.toString() == x3dWorld.children[i]._x3domNode._DEF.toString()){
-                                break;
-                            }
-                            else{
-                                if(n == inline_x3dList.length-1){
-                                    inline_x3dList.push(x3dWorld.children[i]);
+        if (x3dWorld) {
+            for (var i in x3dWorld.children) {
+                if (x3dom.isa(x3dWorld.children[i]._x3domNode, x3dom.nodeTypes.Transform)) {
+                    if (x3dom.isa(x3dWorld.children[i]._x3domNode._cf.children.nodes[0]._xmlNode._x3domNode, x3dom.nodeTypes.Inline)) {
+                        if (inline_x3dList.length == 0) {
+                            inline_x3dList.push(x3dWorld.children[i]);
+                        }
+                        else {
+                            for (var n in inline_x3dList) {
+                                if (inline_x3dList[n]._x3domNode._DEF.toString() == x3dWorld.children[i]._x3domNode._DEF.toString()) {
+                                    break;
                                 }
-                            }
+                                else {
+                                    if (n == inline_x3dList.length - 1) {
+                                        inline_x3dList.push(x3dWorld.children[i]);
+                                    }
+                                }
 
+                            }
                         }
                     }
                 }
-            }
-            if(x3dom.isa(x3dWorld.children[i]._x3domNode, x3dom.nodeTypes.Group)){
-                for(var all in x3dWorld.children[i].childNodes){
-                    CreateX3DCollidableShape(x3dWorld.children[i].childNodes[all], null);
+                if (x3dom.isa(x3dWorld.children[i]._x3domNode, x3dom.nodeTypes.Group)) {
+                    for (var all in x3dWorld.children[i].childNodes) {
+                        CreateX3DCollidableShape(x3dWorld.children[i].childNodes[all], null);
+                    }
+                }
+                else {
+                    CreateX3DCollidableShape(x3dWorld.children[i], null);
                 }
             }
-            else{
-                CreateX3DCollidableShape(x3dWorld.children[i], null);
-            }
         }
-
     }
 
     function CreateX3DCollidableShape(a, b){
@@ -1124,25 +1127,26 @@ function X3DJoint(){
             }
         }
         building_constraints = false;
-    }
+    };
 
     CreateInteractiveObjects = function(){
-        x3dWorld.parentElement.addEventListener('mouseup', MouseControlStop, false);
-        x3dWorld.parentElement.addEventListener('mousedown', MouseControlStart, false);
-        x3dWorld.parentElement.addEventListener('mousemove', MouseControlMove, false);
-        for(var t in interactiveTransforms){
-            for(var cs in CollidableShapes){
-                if(CollidableShapes[cs].Transform._x3domNode._DEF == interactiveTransforms[t]._x3domNode._DEF){
-                    if(!CollidableShapes[cs].RigidBody._vf.fixed){
-                        interactiveTransforms[t].addEventListener('mousedown', MouseControlStart, false);
-                        interactiveTransforms[t].addEventListener('mousemove', MouseControlMove, false);
-                        new x3dom.Moveable(x3dWorld.parentElement, interactiveTransforms[t], null, 0);
+        if (x3dWorld) {
+            x3dWorld.parentElement.addEventListener('mouseup', MouseControlStop, false);
+            x3dWorld.parentElement.addEventListener('mousedown', MouseControlStart, false);
+            x3dWorld.parentElement.addEventListener('mousemove', MouseControlMove, false);
+            for (var t in interactiveTransforms) {
+                for (var cs in CollidableShapes) {
+                    if (CollidableShapes[cs].Transform._x3domNode._DEF == interactiveTransforms[t]._x3domNode._DEF) {
+                        if (!CollidableShapes[cs].RigidBody._vf.fixed) {
+                            interactiveTransforms[t].addEventListener('mousedown', MouseControlStart, false);
+                            interactiveTransforms[t].addEventListener('mousemove', MouseControlMove, false);
+                            new x3dom.Moveable(x3dWorld.parentElement, interactiveTransforms[t], null, 0);
+                        }
                     }
                 }
             }
         }
-
-    }
+    };
 
     UpdateConstraints = function(){
         if(drag && building_constraints == false){
@@ -1161,13 +1165,13 @@ function X3DJoint(){
             UpdateRigidbody = null;
             mousePickObject = null;
         }
-    }
+    };
 
     MouseControlMove = function(e){
         if(e.hitPnt){
             mousePos = new x3dom.fields.SFVec3f.parse(e.hitPnt);
         }
-    }
+    };
 
     MouseControlStart = function(e){
         if(!drag){
@@ -1193,13 +1197,13 @@ function X3DJoint(){
                 mousePickObject = null;
             }
         }
-    }
+    };
 
     MouseControlStop = function(e){
         if(drag){
             drag = false;
         }
-    }
+    };
 
 //	###############################################################
 //	####################	UPDATE RIGIDBODIES	###################
@@ -1256,7 +1260,7 @@ function X3DJoint(){
                 }
             }
         }
-    }
+    };
 
     function UpdateTransforms(a, b){
         if(x3dom.isa(a._x3domNode, x3dom.nodeTypes.Transform)){

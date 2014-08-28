@@ -545,6 +545,31 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     );
 };
 
+
+/**
+ * Transforms a given 3D point, using this matrix as a transform matrix
+ * (also includes projection part of matrix - required for e.g. modelview-projection matrix).
+ * The resulting point is normalized by a w component.
+ * @param {x3dom.fields.SFVec4f} vec - plane to transform
+ * @return {x3dom.fields.SFVec4f} resulting plane
+ */
+x3dom.fields.SFMatrix4f.prototype.multMatrixPlane = function (plane) {
+
+    var normal = new x3dom.fields.SFVec3f(plane.x, plane.y, plane.z);
+
+    var memberPnt = normal.multiply(-plane.w);
+
+    memberPnt = this.multMatrixPnt(memberPnt);
+
+    var invTranspose = this.inverse().transpose();
+
+    normal = invTranspose.multMatrixVec(normal);
+
+    var d = -normal.dot(memberPnt);
+
+    return new x3dom.fields.SFVec4f(normal.x, normal.y, normal.z, d);
+};
+
 /**
  * Returns a transposed version of this matrix.
  * @return {x3dom.fields.SFMatrix4f} resulting matrix
@@ -1315,7 +1340,7 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
     var psi_1, psi_2, psi;
     var cos_theta_1, cos_theta_2;
 
-    if (Math.abs(this._20) != 1.0) {
+    if ( Math.abs((Math.abs(this._20) - 1.0)) > 0.0001) {
         theta_1 = -Math.asin(this._20);
         theta_2 = Math.PI - theta_1;
 
@@ -1539,7 +1564,7 @@ x3dom.fields.SFVec3f.copy = function(v) {
 };
 
 x3dom.fields.SFVec3f.MIN = function() {
-    return new x3dom.fields.SFVec3f(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+    return new x3dom.fields.SFVec3f(-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE);
 };
 
 x3dom.fields.SFVec3f.MAX = function() {
@@ -3597,6 +3622,8 @@ x3dom.fields.BoxVolume.prototype.getRadialVec = function()
 x3dom.fields.BoxVolume.prototype.invalidate = function()
 {
     this.valid = false;
+    this.min = new x3dom.fields.SFVec3f(0, 0, 0);
+    this.max = new x3dom.fields.SFVec3f(0, 0, 0);
 };
 
 x3dom.fields.BoxVolume.prototype.isValid = function()

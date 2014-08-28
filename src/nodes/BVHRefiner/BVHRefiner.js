@@ -662,12 +662,12 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) || level < bvhRefiner._vf.minDepth) {
                 if (bvhRefiner.view.isMovingOrAnimating() && children.length === 0 ||
                     bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     if (children.length === 0) {
                         bvhRefiner.nodeProducer.AddNewNode(that, distanceToCamera);
-                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else {
                         if (childrenReadyState) {
@@ -676,7 +676,7 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
                             }
                         }
                         else {
-                            shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                            shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                             for (var i = 0; i < children.length; i++) {
                                 children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                                 children[i].Shape()._vf.render = false;
@@ -686,7 +686,7 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -975,12 +975,12 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) || level < bvhRefiner._vf.minDepth) {
                 if (bvhRefiner.view.isMovingOrAnimating() && children.length === 0 ||
                     bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     if (children.length === 0) {
                         bvhRefiner.nodeProducer.AddNewNode(that, distanceToCamera);
-                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else {
                         if (childrenReadyState) {
@@ -989,7 +989,7 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
                             }
                         }
                         else {
-                            shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                            shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                             for (var i = 0; i < children.length; i++) {
                                 children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                                 children[i].Shape()._vf.render = false;
@@ -999,7 +999,7 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -1635,7 +1635,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             lastIndice = indiceNumber;
         }
         shape._tessellationProperties = [ triangulationAttributes ];
-        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
     }
 
 
@@ -1877,15 +1877,15 @@ function QuadtreeNodeBin(ctx, bvhRefiner, level, columnNr, rowNr, resizeFac)
 
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) / fac * 1000) || level < bvhRefiner._vf.minDepth) {
                 if (bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     if (children.length === 0) {
                         bvhRefiner.nodeProducer.AddNewNode(that, distanceToCamera);
-                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else if (children.length === 0 && bvhRefiner.createChildren > 0) {
-                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else {
                         if (!childrenExist) {
@@ -1906,13 +1906,13 @@ function QuadtreeNodeBin(ctx, bvhRefiner, level, columnNr, rowNr, resizeFac)
                                 children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                                 children[i].Shape()._vf.render = false;
                             }
-                            shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                            shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                         }
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -2156,15 +2156,15 @@ function BVHNode(ctx, bvhRefiner, level, path, imgNumber, count)
 
             if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) / fac) || level < bvhRefiner._vf.minDepth) {
                 if (bvhRefiner.view.isMovingOrAnimating() && level >= bvhRefiner._vf.interactionDepth) {
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     if (children.length === 0) {
                         bvhRefiner.nodeProducer.AddNewNode(that, distanceToCamera);
-                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else if (children.length === 0 && bvhRefiner.createChildren > 0) {
-                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                     }
                     else {
                         if (!childrenExist){
@@ -2185,13 +2185,13 @@ function BVHNode(ctx, bvhRefiner, level, path, imgNumber, count)
                                 children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                                 children[i].Shape()._vf.render = false;
                             }
-                            shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                            shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
                         }
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -2456,10 +2456,10 @@ function QuadtreeNode3D_NEW(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
                 if (children.length === 0 && bvhRefiner.createChildren === 0) {
                     bvhRefiner.createChildren++;
                     create();
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else if (children.length === 0 && bvhRefiner.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
@@ -2468,7 +2468,7 @@ function QuadtreeNode3D_NEW(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -2619,7 +2619,7 @@ function OctreeNode(ctx, bvhRefiner, level, nodeTransformation)
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };
@@ -2934,10 +2934,10 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
                 if (children.length === 0 && bvhRefiner.createChildren === 0) {
                     bvhRefiner.createChildren++;
                     create();
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else if (children.length === 0 && bvhRefiner.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
@@ -2946,7 +2946,7 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask, []);
             }
         }
     };

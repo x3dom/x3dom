@@ -98,7 +98,7 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerMoved.call(this, event);
 
-                if (this._vf["isActive"] && this._vf["enabled"])
+                if (this._vf.isActive && this._vf.enabled)
                 {
                     this._process2DDrag(event.layerX,
                                         event.layerY,
@@ -111,7 +111,6 @@ x3dom.registerNodeType(
 
             /**
              * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode._pointerReleased
-             * @param {DOMEvent] event - the pointer event
              * @private
              */
             pointerReleased: function()
@@ -149,7 +148,7 @@ x3dom.registerNodeType(
              * @param {Double} x - 2D pointer x coordinate at the time of the dragging initiation
              * @param {Double} y - 2D pointer y coordinate at the time of the dragging initiation
              * @param {Double} dx - delta of x, with respect to the last time the function was invoked
-             * @param {Double} dY - delta of Y, with respect to the last time the function was invoked
+             * @param {Double} dy - delta of Y, with respect to the last time the function was invoked
              * @private
              */
             _process2DDrag: function(x, y, dx, dy)
