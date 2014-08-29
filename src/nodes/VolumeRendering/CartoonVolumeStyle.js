@@ -33,7 +33,7 @@ x3dom.registerNodeType(
 
 
             /**
-             * The pallelColor field specifies the color to be use when the surface normal is parallel to the view direction.
+             * The parallelColor field specifies the color to be used when the surface normal is parallel to the view direction.
              * @var {x3dom.fields.SFColor} parallelColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 0,0,0
@@ -43,7 +43,7 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'parallelColor', 0, 0, 0);
 
             /**
-             * The orthogonalColor field specifies the color to be use when the surface normal is perpendicular to the view direction.
+             * The orthogonalColor field specifies the color to be used when the surface normal is perpendicular to the view direction.
              * @var {x3dom.fields.SFColor} orthogonalColor
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 1,1,1
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'orthogonalColor', 1, 1, 1);
 
             /**
-             * The colorStpes field specifies how many distinct colors are taken from the interpolated colors and used to render the object.
+             * The colorSteps field specifies how many distinct colors are taken from the interpolated colors and used to render the object.
              * @var {x3dom.fields.SFInt32} colorSteps
              * @memberof x3dom.nodeTypes.CartoonVolumeStyle
              * @initvalue 4
