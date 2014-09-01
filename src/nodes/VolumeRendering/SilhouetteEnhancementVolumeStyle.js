@@ -26,8 +26,8 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The SilhouetteEnhancementVolumeStyle node specifies that silhouettes of the assocciated volume data are going to be enhanced.
-         * Voxels opacity are modified based on their normals orientation relative to the view direction. When the orientation is perpendicular towards the view directions
-         * voxels are darkened, whereas it is parallel towards the view directions the opacity is not enhanced.
+         * Voxels opacity are modified based on their normals orientation relative to the view direction. When the normal orientation is perpendicular towards the view direction,
+         * voxels are darkened, whereas when it is parallel towards the view direction, the opacity is not enhanced.
          */
         function (ctx) {
             x3dom.nodeTypes.SilhouetteEnhancementVolumeStyle.superClass.call(this, ctx);
