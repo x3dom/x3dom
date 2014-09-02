@@ -1391,6 +1391,12 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
 {
+    //Mouse release always needs a pick pass
+    this._scene._forcePicking = true;
+    this._scene._nameSpace.doc.ctx.pickValue(this, x, y, this._lastButton);
+    this._scene._forcePicking = false;
+
+
     var i;
     //if the mouse is released, reset the list of currently affected pointing sensors
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
