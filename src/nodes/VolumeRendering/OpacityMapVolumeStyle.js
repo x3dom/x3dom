@@ -26,7 +26,7 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * The OpacityMapVolumeStyle node specifies that the associated volume data is going to be rendered using a transfer function.
-         * The original opacity is mapped to a function stored as a texture (transfer function).
+         * The original opacity is mapped to a color with a function stored as a texture (transfer function).
          */
         function (ctx) {
             x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call(this, ctx);

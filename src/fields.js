@@ -1747,8 +1747,8 @@ x3dom.fields.Quaternion = function(x, y, z, w) {
     if (arguments.length === 0) {
         this.x = 0;
         this.y = 0;
-        this.z = 1;
-        this.w = 0;
+        this.z = 0;
+        this.w = 1;
     }
     else {
         this.x = x;

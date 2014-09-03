@@ -25,7 +25,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The ComposedVolumeStyle node is used to compose multiple rendering styles into the a single-rendering pass.
+         * @classdesc The ComposedVolumeStyle node is used to compose multiple rendering styles into a single-rendering pass.
          * The styles are applied in the same order they are defined on the scene tree.
          */
         function (ctx) {

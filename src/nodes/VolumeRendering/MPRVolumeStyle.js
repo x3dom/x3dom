@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
 
             /**
-             * The originLine field specifies the base line of the slice plane 
+             * The originLine field specifies the base line of the slice plane. 
              * @var {x3dom.fields.SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 1.0,1.0,0.0
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'originLine', 1.0, 1.0, 0.0);
 
             /**
-             * The finalLine field specifies the second line to calculate the normal plane
+             * The finalLine field specifies the second line to calculate the normal plane.
              * @var {x3dom.fields.SFVec3f} finalLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 0.0,1.0,0.0
