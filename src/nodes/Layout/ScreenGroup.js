@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
                 ratio = view_direction.dot(viewpoint_to_screengroup) / one_to_one_pixel_depth;
 
-                scale_matrix = x3dom.fields.SFMatrix4f.scale({x: ratio, y: ratio, z: ratio});
+                scale_matrix = x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(ratio, ratio, ratio));
                 var childTransform = this.transformMatrix(model_transform.mult(scale_matrix));
 
 
@@ -113,4 +113,3 @@ x3dom.registerNodeType(
         }
     )
 );
-

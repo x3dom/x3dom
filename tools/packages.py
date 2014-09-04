@@ -46,7 +46,9 @@ GFX = getPathTuples(json_object['grouplist'][2]['data'])
 
 COMPONENTS = getPathTuples(json_object['grouplist'][3]['data'])
 
-EXTENSIONS =  getPathTuples(json_object['grouplist'][4]['data'])
+EXTENSIONS = getPathTuples(json_object['grouplist'][4]['data'])
+
+COMPRESSED_EXT_LIBS = getPathTuples(json_object['grouplist'][5]['data'])
 
 
 #Combine categories to create profiles

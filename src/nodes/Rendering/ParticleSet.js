@@ -103,7 +103,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 var coordNode = this._cf.coord.node;
-                x3dom.debug.assert(coordNode);
+                x3dom.debug.assert(coordNode, "ParticleSet without coord node!");
                 var positions = coordNode.getPoints();
 
                 var numColComponents = 3;
@@ -111,7 +111,7 @@ x3dom.registerNodeType(
                 var colors = new x3dom.fields.MFColor();
                 if (colorNode) {
                     colors = colorNode._vf.color;
-                    x3dom.debug.assert(positions.length == colors.length);
+                    x3dom.debug.assert(positions.length == colors.length, "Size of color and coord array differs!");
 
                     if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
                         numColComponents = 4;

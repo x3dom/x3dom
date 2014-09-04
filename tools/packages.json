@@ -304,7 +304,7 @@
                     {"file": "CartoonVolumeStyle.js"},
                     {"file": "ComposedVolumeStyle.js"},
                     {"file": "EdgeEnhancementVolumeStyle.js"},
-                    {"file": "ISOSurfaceVolumeData.js"},
+                    {"file": "IsoSurfaceVolumeData.js"},
                     {"file": "MPRVolumeStyle.js"},
                     {"file": "OpacityMapVolumeStyle.js"},
                     {"file": "ProjectionVolumeStyle.js"},
@@ -346,7 +346,8 @@
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
                 ]},
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
+                    {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},
                     {"file": "X3DNBodyCollidableNode.js"},
@@ -361,6 +362,12 @@
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
                 ]}                
+            ]},
+            {"group": "COMPRESSED_EXT_LIBS",
+                "data": [
+                    {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
+                        {"file": "ammo.js"}
+                    ]}
             ]}
     ]
 }

@@ -5,14 +5,20 @@
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
+ *
  */
+
+ /* Added support for changes of the "color" field
+  * (C) 2014 Toshiba Corporation
+  * Dual licensed under the MIT and GPL
+  */
 
 /* ### ElevationGrid ### */
 x3dom.registerNodeType(
     "ElevationGrid",
     "Geometry3DExt",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+
         /**
          * Constructor for ElevationGrid
          * @constructs x3dom.nodeTypes.ElevationGrid
@@ -134,8 +140,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'xDimension', 0);
 
             /**
-             * When the geoSystem is "GD", xSpacing refers to the number of units of longitude in angle base units between adjacent height values.
-             * When the geoSystem is "UTM", xSpacing refers to the number of eastings (length base units) between adjacent height values
              * @var {x3dom.fields.SFDouble} xSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
@@ -157,8 +161,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'zDimension', 0);
 
             /**
-             * When the geoSystem is "GD", zSpacing refers to the number of units of latitude in angle base units between vertical height values.
-             * When the geoSystem is "UTM", zSpacing refers to the number of northings (length base units) between vertical height values.
              * @var {x3dom.fields.SFDouble} zSpacing
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.ElevationGrid
@@ -167,7 +169,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'zSpacing', 1.0);
-        
+
         },
         {
             nodeChanged: function()
@@ -184,7 +186,8 @@ x3dom.registerNodeType(
 
                 var h = this._vf.height;
 
-                x3dom.debug.assert((h.length === this._vf.xDimension*this._vf.zDimension));
+                x3dom.debug.assert((h.length >= this._vf.xDimension*this._vf.zDimension),
+                    "Too few height values for given x/zDimension!");
 
                 var normals = null, texCoords = null, colors = null;
 
@@ -285,6 +288,7 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                var i, n;
                 var normals = null;
 
                 if (this._cf.normal.node) {
@@ -293,7 +297,7 @@ x3dom.registerNodeType(
 
                 if (fieldName == "height")
                 {
-                    var i, n = this._mesh._positions[0].length / 3;
+                    n = this._mesh._positions[0].length / 3;
                     var h = this._vf.height;
 
                     for (i=0; i<n; i++) {
@@ -312,6 +316,55 @@ x3dom.registerNodeType(
                         if (!normals)
                             node._dirty.normals = true;
                         node.invalidateVolume();
+                    });
+                }
+                else if (fieldName == "xSpacing" || fieldName == "zSpacing")
+                {
+                    for (var y = 0; y < this._vf.zDimension; y++) {
+                        for (var x = 0; x < this._vf.xDimension; x++) {
+                            var j = 3 * (y * this._vf.xDimension + x);
+                            this._mesh._positions[0][j  ] = x * this._vf.xSpacing;
+                            this._mesh._positions[0][j+2] = y * this._vf.zSpacing;
+                        }
+                    }
+
+                    if (!normals) {
+                        this._mesh._normals[0] = [];
+                        this._mesh.calcNormals(Math.PI, this._vf.ccw);
+                    }
+
+                    this.invalidateVolume();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                        if (!normals)
+                            node._dirty.normals = true;
+                        node.invalidateVolume();
+                    });
+                }
+                else if (fieldName == "xDimension" || fieldName == "zDimension")
+                {
+                    this.nodeChanged();     // re-init whole geo, changed too much
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setGeoDirty();
+                        node.invalidateVolume();
+                    });
+                }
+                else if (fieldName == "color")
+                {
+                    // TODO; FIXME: this code assumes that size has not change and color node exists.
+                    n = this._mesh._colors[0].length / 3; // 3 stands for RGB. RGBA not supported yet.
+                    var c = this._cf.color.node._vf.color;
+
+                    for (i=0; i<n; i++) {
+                        this._mesh._colors[0][i*3]   = c[i].r;
+                        this._mesh._colors[0][i*3+1] = c[i].g;
+                        this._mesh._colors[0][i*3+2] = c[i].b;
+                    }
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
                     });
                 }
                 // TODO: handle other cases!

@@ -86,7 +86,11 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	    return texture;
 	
 	var image = new Image();
-	image.crossOrigin = withCredentials ? 'use-credentials' : '';
+
+    if(withCredentials) {
+        image.crossOrigin = 'use-credentials'
+    }
+
 	image.src = src;
 	
 	doc.downloadCount++;	
@@ -157,7 +161,9 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 		var face = faces[i];
 
 		var image = new Image();
-		image.crossOrigin = withCredentials ? 'use-credentials' : '';
+        if(withCredentials) {
+            image.crossOrigin = 'use-credentials';
+        }
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		

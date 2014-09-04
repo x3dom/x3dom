@@ -22,7 +22,7 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc TouchSensor tracks location and state of the pointing device, and detects when user points at
          * geometry. Hint: X3DOM, running in an HTML environment, you actually don't need this node, as you can
-         * simply use HTML events (like onlick) on your nodes. However, this node is implemented to complete the
+         * simply use HTML events (like onclick) on your nodes. However, this node is implemented to complete the
          * pointing device sensor component, and it may be useful to ensure compatibility with older X3D scene content.
          */
         function (ctx)

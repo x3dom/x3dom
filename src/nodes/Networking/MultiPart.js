@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             /**
              * Change render order manually.
              * @var {x3dom.fields.SFInt32} sortKey
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
              * Set the initial visibility.
              * @var {x3dom.fields.SFInt32} initialVisibility
              * @range [auto, visible, invisible]
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 'auto'
              * @field x3dom
              * @instance
@@ -93,6 +93,7 @@ x3dom.registerNodeType(
             this._minId = 0;
             this._maxId = 0;
             this._lastId = -1;
+            this._lastClickedId = -1;
             this._lastButton = 0;
             this._identifierToPartId = [];
             this._identifierToAppId = [];
@@ -148,7 +149,7 @@ x3dom.registerNodeType(
                         if (childVol && childVol.isValid())
                             vol.extendBounds(childVol.min, childVol.max);
                     }
-                };
+                }
                 
                 return vol;
             },
@@ -159,6 +160,13 @@ x3dom.registerNodeType(
                     var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
                     var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
 
+                    //Check for Background press and release
+                    if (e.pickedId == -1 && e.button != 0) {
+                        this._lastClickedId = 0;
+                    } else if (e.pickedId == -1 && e.button == 0) {
+                        this._lastClickedId = -1;
+                    }
+
                     if (e.pickedId != -1) {
                         e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
                         e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
@@ -167,29 +175,32 @@ x3dom.registerNodeType(
                         e.type = "mousemove";
                         this.callEvtHandler("onmousemove", e);
 
-                        //fire mousemove event
+                        //fire mouseover event
                         e.type = "mouseover";
                         this.callEvtHandler("onmouseover", e);
-
-                        //fire click event
-                        if (e.button && e.button != this._lastButton) {
-                            e.type = "click";
-                            this.callEvtHandler("onclick", e);
-                            this._lastButton = e.button;
-                        }
 
                         //if some mouse button is down fire mousedown event
                         if (e.button) {
                             e.type = "mousedown";
                             this.callEvtHandler("onmousedown", e);
                             this._lastButton = e.button;
+                            if ( this._lastClickedId == -1 ) {
+                                this._lastClickedId = e.pickedId;
+                            }
                         }
 
                         //if some mouse button is up fire mouseup event
-                        if (this._lastButton != 0 && e.button == 0) {
+                        if (e.mouseup || (this._lastButton != 0 && e.button == 0)) {
                             e.type = "mouseup";
                             this.callEvtHandler("onmouseup", e);
                             this._lastButton = 0;
+
+                            if ( e.pickedId == this._lastClickedId ) {
+                                e.type = "click";
+                                this.callEvtHandler("onclick", e);
+                            }
+
+                            this._lastClickedId = -1;
                         }
 
                         //If the picked id has changed we enter+leave a part

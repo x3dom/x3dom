@@ -26,7 +26,7 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The ToneMappedVolumeStyle node specifies that the associated volume rendering data is going to be rendered following the Gooch et. al. shading model.
-         * Two colors are used: warm and cool to shade the volume data based on the the light direction. 
+         * Two colors are used: warm and cool to shade the volume data based on the light direction. 
          */
         function (ctx) {
             x3dom.nodeTypes.ToneMappedVolumeStyle.superClass.call(this, ctx);

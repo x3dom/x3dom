@@ -43,7 +43,7 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'edgeColor', 0, 0, 0);
 
             /**
-             * The gradientThreshold field is used to adjust the egdge detection.
+             * The gradientThreshold field is used to adjust the edge detection.
              * @var {x3dom.fields.SFFloat} gradientThreshold
              * @memberof x3dom.nodeTypes.EdgeEnhancementVolumeStyle
              * @initvalue 0.4

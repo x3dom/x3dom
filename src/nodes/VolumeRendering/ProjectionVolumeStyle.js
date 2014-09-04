@@ -25,7 +25,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The ProjectionVolumeStyle node generates an output color based on the voxel data values traversed by a ray following view direction. 
+         * @classdesc The ProjectionVolumeStyle node generates an output color based on the voxel data values traversed by a ray following the view direction. 
          */
         function (ctx) {
             x3dom.nodeTypes.ProjectionVolumeStyle.superClass.call(this, ctx);

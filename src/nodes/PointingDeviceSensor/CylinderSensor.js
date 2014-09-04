@@ -113,7 +113,7 @@ x3dom.registerNodeType(
              * @private
              */
             //TODO: updates
-            this._rotationMatrix = this._vf['axisRotation'].toMatrix();
+            this._rotationMatrix = this._vf.axisRotation.toMatrix();
 
             /**
              * Current value of the matrix that transforms world coordinates to local sensor coordinates
@@ -258,7 +258,8 @@ x3dom.registerNodeType(
                     //1. bring equation into the following form:
                     //   | alpha * A - B | = r
                     var A = viewRay.dir.subtract(this._yAxisLine.dir.multiply(viewRay.dir.dot(this._yAxisLine.dir)));
-                    var B = viewRay.pos.subtract(this._yAxisLine.pos).add(this._yAxisLine.dir.multiply(this._yAxisLine.dir.dot(this._yAxisLine.pos.subtract(viewRay.pos))));
+                    var B = viewRay.pos.subtract(this._yAxisLine.pos).add(this._yAxisLine.dir.multiply(
+                            this._yAxisLine.dir.dot(this._yAxisLine.pos.subtract(viewRay.pos))));
 
                     //2. solve quadratic formula (0, 1 or 2 solutions are possible)
                     var p = 2 * A.dot(B) / A.dot(A);
@@ -290,7 +291,7 @@ x3dom.registerNodeType(
 
                             this._currentRotation = x3dom.fields.Quaternion.rotateFromTo(this._initialCylinderIntersectionVector, vecToHitPoint);
 
-                            var offsetQuat = x3dom.fields.Quaternion.axisAngle(this._yAxisLine.dir, this._vf["offset"]);
+                            var offsetQuat = x3dom.fields.Quaternion.axisAngle(this._yAxisLine.dir, this._vf.offset);
 
                             this._currentRotation = this._currentRotation.multiply(offsetQuat);
 
@@ -316,10 +317,10 @@ x3dom.registerNodeType(
             {
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
 
-                if (this._vf["autoOffset"])
+                if (this._vf.autoOffset)
                 {
-                    this._vf["offset"] = this._currentRotation.angle();
-                    this.postMessage('offset_changed', this._vf["offset"]);
+                    this._vf.offset = this._currentRotation.angle();
+                    this.postMessage('offset_changed', this._vf.offset);
                 }
             }
 

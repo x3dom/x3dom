@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 
                     var srcHeaderObj;
 
-                    if (xhr.status == 200 && responseBeginUint32.length >= 3) {
+                    if ((xhr.status == 200 || xhr.status == 0) && responseBeginUint32.length >= 3) {
 
                         srcHeaderSize = responseBeginUint32[2];
                         srcBodyOffset = srcHeaderSize + 12;
@@ -319,7 +319,7 @@ x3dom.registerNodeType(
                                 shape._webgl.buffers[ID_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
                                 break;
-                        };
+                        }
 
                         shape["_" + x3domTypeID + "StrideOffset"][0] = attributeView["byteStride"];
                         shape["_" + x3domTypeID + "StrideOffset"][1] = attributeView["byteOffset"];
@@ -515,6 +515,6 @@ x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType = function
         case "VEC4":   return 4;
         default:       return 0;
     }
-}
+};
 
 //----------------------------------------------------------------------------------------------------------------------
