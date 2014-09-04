@@ -28,7 +28,7 @@ x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl,scene){
 		gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.randomTexture);
 		var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene._vf.SSAOrandomTextureSize;
 		var randomImageBuffer = new ArrayBuffer(rTexSize*rTexSize*4); //rTexSize^2 pixels with 4 bytes each
-		var randomImageView = Uint8Array(randomImageBuffer);
+		var randomImageView = new Uint8Array(randomImageBuffer);
 		//fill the image with random unit Vectors in the z-y-plane:
 		for(var i = 0; i<rTexSize*rTexSize;++i){
 			var x = Math.random()*2.0-1.0;
