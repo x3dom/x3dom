@@ -94,14 +94,33 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'SSAO', false);
 
             /**
-             * Value that determines the radius in which the SSAO is sampled
+             * Value that determines the radius in which the SSAO is sampled in world space
              * @var {x3dom.fields.SFFloat} SSAO
              * @memberof x3dom.nodeTypes.Scene
-             * @initvalue "false"
+             * @initvalue "4"
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'SSAOradius',0.005);
+            this.addField_SFFloat(ctx, 'SSAOradius',4);
+
+            /**
+             * Value that determines the amount of contribution of SSAO (from 0 to 1)
+             * @var {x3dom.fields.SFFloat} SSAO
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "1.0"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'SSAOamount',1.0);
+
+            /**
+             * Value that determines the size of the random texture used for sparse sampling of SSAO
+             * @var {x3dom.fields.SFFloat} SSAO
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "4"
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFInt32(ctx, 'SSAOrandomTextureSize',4);
         
         },

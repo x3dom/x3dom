@@ -24,13 +24,13 @@ x3dom.shader.SSAOShader = function(gl)
 x3dom.shader.SSAOShader.prototype.generateVertexShader = function(gl)
 {
 	var shader = 	"attribute vec3 position;\n" +
-					"varying vec2 fragTexCoord;\n" +
+					"varying vec2 depthTexCoord;\n" +
 					"varying vec2 randomTexCoord;\n"+
 					"uniform vec2 randomTextureTilingFactor;\n"+
 					"\n" +
 					"void main(void) {\n" +
 					"    vec2 texCoord = (position.xy + 1.0) * 0.5;\n" +
-					"    fragTexCoord = texCoord;\n" +
+					"    depthTexCoord = texCoord;\n" +
 					"	 randomTexCoord = randomTextureTilingFactor*texCoord;\n"+
 					"    gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
 					"}\n";
@@ -45,6 +45,32 @@ x3dom.shader.SSAOShader.prototype.generateVertexShader = function(gl)
 	
 	return vertexShader;
 };
+
+/**
+ * Returns the code for a function "getDepth(vec2 depthTexCoord)" that returns the linear depth.
+ * It also introduces two uniform floats depthReconstructionConstantA and depthReconstructionConstantB,
+ * which are needed for the depth reconstruction.
+ */
+x3dom.shader.SSAOShader.depthReconsructionFunctionCode = function()
+{
+	var code = 	"uniform float depthReconstructionConstantA;\n"+
+				"uniform float depthReconstructionConstantB;\n";
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+		code += 	x3dom.shader.rgbaPacking();
+		
+	code+= 	"float getDepth(vec2 depthTexCoord) {\n"+
+				"    vec4 col = texture2D(depthTexture, depthTexCoord);\n"+
+				"    float d;\n";
+	
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
+		code+="    d = unpackDepth(col);\n";
+	} else {
+		code+="    d = col.b;\n"
+	}
+	code+=    "    return depthReconstructionConstantB/(depthReconstructionConstantA+d);\n";
+	code+=	"}\n";
+	return code;
+}
 
 /**
  * Generate the fragment shader
@@ -62,59 +88,27 @@ x3dom.shader.SSAOShader.prototype.generateFragmentShader = function(gl)
 				"uniform float nearPlane;\n"+
 				"uniform float farPlane;\n"+
 				"uniform float radius;\n"+
-				"varying vec2 fragTexCoord;\n" +
-				"varying vec2 randomTexCoord;\n"+
-				"\n"+
-				"vec3 samples[16];\n";// = vec3[]( vec3(0.25166067217123755,0.13077722880292653,-0.47842480208047955), vec3(0.1336390011607076,0.23139745222339658,0.4709501590616245), vec3(-0.19051150018588014,0.6328770569503113,0.5266116404428918), vec3(-0.46385667289008925,0.34936580309717313,0.7532159792668025), vec3(0.04965137195031821,0.33038286809402595,0.6204585133133012), vec3(0.6629761573815169,-0.2059003026677475,-0.060087399946977316), vec3(0.8127750013391202,0.3503059975577929,-0.13902848335602092), vec3(0.7785122585974273,-0.02526342203464771,0.6027046154401532) );\n";
-	
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
-		shader += 	x3dom.shader.rgbaPacking();
-		
-	shader+= 	"float getDepth(vec2 fragTexCoord) {\n"+
-				"    vec4 col = texture2D(depthTexture, fragTexCoord);\n"+
-				"    float d;\n";
-	
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
-		shader+="    d = unpackDepth(col);\n";
-	} else {
-		shader+="    d = col.b;\n"
-	}	
-	shader+=    "    float a = (farPlane+nearPlane)/(nearPlane-farPlane);\n"
-	shader+=    "    float b = (2.0*farPlane*nearPlane)/(nearPlane-farPlane);\n"
-	shader+=    "    d = b/(a+d);\n"
-	shader+=	"    return d;//mix(nearPlane,farPlane,d);\n";
-	shader+=	"}\n";
+				"uniform float depthBufferEpsilon;\n"+
+				"uniform vec3 samples[16];\n"+
+				"varying vec2 depthTexCoord;\n" +
+				"varying vec2 randomTexCoord;\n";
 
+	shader += 	x3dom.shader.SSAOShader.depthReconsructionFunctionCode();
 		
 	shader+=	"void main(void) {\n" +
-				"    samples[0] = vec3(0.03800223814729654,0.10441029119843426,0.39953456286640554);\n"+
-				"    samples[1] = vec3(-0.03800223814729654,-0.10441029119843426,-0.39953456286640554);\n"+
-				"    samples[2] = vec3(-0.17023209847088397,0.1428416910414532,0.26276184289416693);\n"+
-				"    samples[3] = vec3(0.17023209847088397,-0.1428416910414532,-0.26276184289416693);\n"+
-				"    samples[4] = vec3(-0.288675134594813,-0.16666666666666646,0.034013126463970034);\n"+
-				"    samples[5] = vec3(0.288675134594813,0.16666666666666646,-0.034013126463970034);\n"+
-				"    samples[6] = vec3(0.07717696785196887,-0.43769233467209245,0.5399550311629946);\n"+
-				"    samples[7] = vec3(-0.07717696785196887,0.43769233467209245,-0.5399550311629946);\n"+
-				"    samples[8] = vec3(0.5471154183401156,-0.09647120981496134,-0.7739778114115472);\n"+
-				"    samples[9] = vec3(-0.5471154183401156,0.09647120981496134,0.7739778114115472);\n"+
-				"    samples[10] = vec3(0.3333333333333342,0.5773502691896253,-0.4254346075746447);\n"+
-				"    samples[11] = vec3(-0.3333333333333342,-0.5773502691896253,0.4254346075746447);\n"+
-				"    samples[12] = vec3(-0.49994591864508653,0.5958123446480936,0.5129126360239229);\n"+
-				"    samples[13] = vec3(0.49994591864508653,-0.5958123446480936,-0.5129126360239229);\n"+
-				"    samples[14] = vec3(-0.8352823295874743,-0.3040179051783715,-0.18003418237922397);\n"+
-				"    samples[15] = vec3(0.8352823295874743,0.3040179051783715,0.18003418237922397);\n"+
-				"    float referenceDepth = getDepth(fragTexCoord);\n" +
+				"    float referenceDepth = getDepth(depthTexCoord);\n" +
 				"    if(referenceDepth == 1.0)\n"+ //background
                 "    {\n"+
                 "        gl_FragColor = vec4(1.0,1.0,1.0, 1.0);\n"+
                 "        return;\n"+
                 "    }\n"+
 				"    int numOcclusions = 0;\n"+
-				//"    const float scale = 0.005;\n"+
 				"    for(int i = 0; i<16; ++i){\n"+
+				"        float scale  = 1.0/referenceDepth;\n"+
 				"        vec3 samplepos = reflect(samples[i],texture2D(randomTexture,randomTexCoord).xyz*2.0-vec3(1.0,1.0,1.0));\n"+
-				"        float sampleDepth = getDepth(fragTexCoord+samplepos.xy*radius*float(i));\n"+
-				"        if( sampleDepth < referenceDepth) {\n"+
+				"        float sampleDepth = getDepth(depthTexCoord+samplepos.xy*scale*radius);\n"+
+				"        //if(abs(sampleDepth-referenceDepth)<=radius*(1.0/nearPlane))\n"+ //leads to bright halos
+				"        if( sampleDepth < referenceDepth-depthBufferEpsilon) {\n"+
 				"            ++numOcclusions;\n"+
 				"        }\n"+
 				"    }\n"+

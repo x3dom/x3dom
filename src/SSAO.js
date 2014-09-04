@@ -29,15 +29,14 @@ x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl,scene){
 		var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene._vf.SSAOrandomTextureSize;
 		var randomImageBuffer = new ArrayBuffer(rTexSize*rTexSize*4); //rTexSize^2 pixels with 4 bytes each
 		var randomImageView = Uint8Array(randomImageBuffer);
-		//fill the image with random unit Vectors:
+		//fill the image with random unit Vectors in the z-y-plane:
 		for(var i = 0; i<rTexSize*rTexSize;++i){
 			var x = Math.random()*2.0-1.0;
 			var y = Math.random()*2.0-1.0;
-			var z = Math.random()*2.0-1.0;
+			var z = 0;
 			var length = Math.sqrt(x*x+y*y+z*z);
 			x /=length;
 			y /=length;
-			z /=length;
 			randomImageView[4*i] = (x+1.0)*0.5*255.0;
 			randomImageView[4*i+1] = (y+1.0)*0.5*255.0;
 			randomImageView[4*i+2] = (z+1.0)*0.5*255.0;
@@ -115,9 +114,30 @@ x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	sp.randomTextureTilingFactor = [canvas.width/x3dom.SSAO.currentRandomTextureSize,canvas.height/x3dom.SSAO.currentRandomTextureSize];
 
 	var viewpoint = scene.getViewpoint();
-	sp.nearPlane = viewpoint.getNear();
-	sp.farPlane = viewpoint.getFar();
-
+	var nearPlane = viewpoint.getNear();
+	var farPlane = viewpoint.getFar();
+	sp.nearPlane = nearPlane;
+	sp.farPlane = farPlane;
+	sp.depthReconstructionConstantA = (farPlane+nearPlane)/(nearPlane-farPlane);
+	sp.depthReconstructionConstantB = (2.0*farPlane*nearPlane)/(nearPlane-farPlane);
+	sp.depthBufferEpsilon = 0.0001*(farPlane-nearPlane);
+	//16 samples with a well distributed pseudo random opposing-pairs sampling pattern:
+	sp.samples = [0.03800223814729654,0.10441029119843426,-0.04479934806797181,
+				-0.03800223814729654,-0.10441029119843426,0.04479934806797181,
+				-0.17023209847088397,0.1428416910414532,0.6154407640895228,
+				0.17023209847088397,-0.1428416910414532,-0.6154407640895228,
+				-0.288675134594813,-0.16666666666666646,-0.3774214123135722,
+				0.288675134594813,0.16666666666666646,0.3774214123135722,
+				0.07717696785196887,-0.43769233467209245,-0.5201284112706428,
+				-0.07717696785196887,0.43769233467209245,0.5201284112706428,
+				0.5471154183401156,-0.09647120981496134,-0.15886420745887797,
+				-0.5471154183401156,0.09647120981496134,0.15886420745887797,
+				0.3333333333333342,0.5773502691896253,-0.8012446019636266,
+				-0.3333333333333342,-0.5773502691896253,0.8012446019636266,
+				-0.49994591864508653,0.5958123446480936,-0.15385106176844343,
+				0.49994591864508653,-0.5958123446480936,0.15385106176844343,
+				-0.8352823295874743,-0.3040179051783715,0.7825440557226517,
+				0.8352823295874743,0.3040179051783715,-0.7825440557226517];
 	if (!sp.tex) {
 		sp.tex = 0;
 	}
@@ -190,9 +210,14 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
 	sp.depthTexture = 1;
 
 	var viewpoint = scene.getViewpoint();
-	sp.nearPlane = viewpoint.getNear();
-	sp.farPlane = viewpoint.getFar();
+	var nearPlane = viewpoint.getNear();
+	var farPlane = viewpoint.getFar();
+	sp.nearPlane = nearPlane;
+	sp.farPlane = farPlane;
+	sp.depthReconstructionConstantA = (farPlane+nearPlane)/(nearPlane-farPlane);
+	sp.depthReconstructionConstantB = (2.0*farPlane*nearPlane)/(nearPlane-farPlane);
 	sp.pixelSize = [1.0/canvas.width,1.0/canvas.height];
+	sp.amount = scene._vf.SSAOamount;
 
 	//ssao texture
 	gl.activeTexture(gl.TEXTURE0);
@@ -245,18 +270,14 @@ x3dom.SSAO.renderSSAO = function(stateManager, gl, scene, canvas) {
 	this.reinitializeShadersIfNecessary(gl);
 	this.reinitializeRandomTextureIfNecessary(gl,scene);
 	this.reinitializeFBOIfNecessary(gl,canvas);
-
-	//render depth buffer to scene:
-	//scene._webgl.fboScene contains screen-space coordinates. This means that the blue component is the depth (z/w) value.
 		
 	stateManager.viewport(0,0,canvas.width, canvas.height);
-    //scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
 
     //render SSAO into fbo
     this.render(stateManager,gl, scene, scene._webgl.fboScene.tex,canvas,x3dom.SSAO.fbo);
     //render blurred SSAO multiplicatively
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
-    this.blur(stateManager,gl, scene, x3dom.SSAO.fbotex,scene._webgl.fboScene.tex,canvas,/*x3dom.SSAO.fbo*/null);		
+    this.blur(stateManager,gl, scene, x3dom.SSAO.fbotex,scene._webgl.fboScene.tex,canvas,null);		
     gl.disable(gl.BLEND);
 };
