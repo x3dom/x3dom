@@ -122,6 +122,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'SSAOrandomTextureSize',4);
+
+            /**
+             * Value that determines the maximum depth difference for the SSAO blurring pass.
+             * Pixels with higher depth difference to the filer kernel center are not incorporated into the average.
+             * @var {x3dom.fields.SFFloat} SSAO
+             * @memberof x3dom.nodeTypes.Scene
+             * @initvalue "5"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'SSAOblurDepthTreshold',5);
         
         },
         {

@@ -61,6 +61,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 				"uniform float farPlane;\n"+
 				"uniform float amount;\n"+
 				"uniform vec2 pixelSize;\n"+
+				"uniform float depthThreshold;\n"+
 				"varying vec2 fragTexCoord;\n";
 
 
@@ -73,7 +74,7 @@ x3dom.shader.SSAOBlurShader.prototype.generateFragmentShader = function(gl)
 			"    for(int i = -2; i<2;i++){\n"+
 			"        for(int j = -2; j<2;j++){\n"+
 			"            vec2 sampleTexCoord = fragTexCoord+vec2(pixelSize.x*float(i),pixelSize.y*float(j));\n"+
-			"            if(abs(referenceDepth - getDepth(sampleTexCoord))<5.0){\n"+
+			"            if(abs(referenceDepth - getDepth(sampleTexCoord))<depthThreshold){\n"+
 			"                sum+= texture2D(SSAOTexture,sampleTexCoord).r;\n"+
 			"                numSamples++;\n"+
 			"    }}}\n"+
