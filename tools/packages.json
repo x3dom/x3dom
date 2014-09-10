@@ -267,6 +267,13 @@
 
         {"group": "EXTENSIONS",
             "data": [
+                {"name": "DIS", "filePrefix": "nodes/DIS/", "files":[
+                    {"file": "DISEntityManager.js"},
+                    {"file": "DISEntityTypeMapping.js"},
+                    {"file": "EspduTransform.js"},
+                    {"file": "NetworkSingleton.js"},
+                    {"file": "dis.js"}
+                   ]},
                 {"name": "Geospatial", "filePrefix": "nodes/Geospatial/", "files":[
                     {"file": "GeoCoordinate.js"},
                     {"file": "GeoElevationGrid.js"},
