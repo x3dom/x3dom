@@ -619,6 +619,26 @@ x3dom.registerNodeType(
             this.addField_SFNode('multiDiffuseAlphaTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
+             * Multi specular shininess texture.
+             * @var {x3dom.fields.SFNode} multiSpecularShininessTexture
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFNode('multiSpecularShininessTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             * Multi emissive ambientIntensity texture.
+             * @var {x3dom.fields.SFNode} multiEmmisiveAmbientIntensityTexture
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue x3dom.nodeTypes.X3DTextureNode
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFNode('multiEmissiveAmbientTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
              * Multi visibility texture.
              * @var {x3dom.fields.SFNode} multiVisibilityTexture
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
@@ -853,6 +873,36 @@ x3dom.registerNodeType(
                 }
             },
 
+            getMultiEmissiveAmbientMap: function()
+            {
+                if(this._cf.multiEmissiveAmbientTexture.node) {
+                    if (x3dom.isa(this._cf.multiEmissiveAmbientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.multiEmissiveAmbientTexture.node._cf.texture.node._type = "multiEmissiveAmbientMap";
+                        return this._cf.multiEmissiveAmbientTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.multiEmissiveAmbientTexture.node._type = "multiEmissiveAmbientMap";
+                        return this._cf.multiEmissiveAmbientTexture.node;
+                    }
+                } else {
+                    return null;
+                }
+            },
+
+            getMultiSpecularShininessMap: function()
+            {
+                if(this._cf.multiSpecularShininessTexture.node) {
+                    if (x3dom.isa(this._cf.multiSpecularShininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.multiSpecularShininessTexture.node._cf.texture.node._type = "multiSpecularShininessMap";
+                        return this._cf.multiSpecularShininessTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.multiSpecularShininessTexture.node._type = "multiSpecularShininessMap";
+                        return this._cf.multiSpecularShininessTexture.node;
+                    }
+                } else {
+                    return null;
+                }
+            },
+
             getMultiVisibilityMap: function()
             {
                 if(this._cf.multiVisibilityTexture.node) {
@@ -892,6 +942,12 @@ x3dom.registerNodeType(
 
                 var multiDiffuseAlpha = this.getMultiDiffuseAlphaMap();
                 if(multiDiffuseAlpha) textures.push(multiDiffuseAlpha);
+
+                var multiEmissiveAmbient = this.getMultiEmissiveAmbientMap();
+                if(multiEmissiveAmbient) textures.push(multiEmissiveAmbient);
+
+                var multiSpecularShininess = this.getMultiSpecularShininessMap();
+                if(multiSpecularShininess) textures.push(multiSpecularShininess);
 
                 var multiVisibility = this.getMultiVisibilityMap();
                 if(multiVisibility) textures.push(multiVisibility);

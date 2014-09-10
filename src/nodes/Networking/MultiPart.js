@@ -301,16 +301,19 @@ x3dom.registerNodeType(
                 }
             },
 
-            createColorData: function ()
+            createMaterialData: function ()
             {
-                var diffuseColor, transparency, rgba;
+                var diffuseColor, transparency, specularColor, shininess, emissiveColor, ambientIntensity;
+                var rgba_DT, rgba_SS, rgba_EA;
 
                 var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
 
                 //scale image data array size to the next highest power of two
                 size = x3dom.Utils.nextHighestPowerOfTwo(size);
 
-                var colorData = size + " " + size + " 4";
+                var diffuseTransparencyData = size + " " + size + " 4";
+                var specularShininessData = size + " " + size + " 4";
+                var emissiveAmbientIntensityData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
                 {
@@ -319,22 +322,65 @@ x3dom.registerNodeType(
                         var appName = this._idMap.mapping[i].appearance;
                         var appID = this._identifierToAppId[appName];
 
-                        diffuseColor = this._idMap.appearance[appID].material.diffuseColor;
-                        transparency = this._idMap.appearance[appID].material.transparency;
+                        if (this._idMap.appearance[appID].material.ambientIntensity) {
+                            ambientIntensity = this._idMap.appearance[appID].material.ambientIntensity
+                        } else {
+                            ambientIntensity = "0.2";
+                        }
 
-                        rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        if (this._idMap.appearance[appID].material.diffuseColor) {
+                            diffuseColor = this._idMap.appearance[appID].material.diffuseColor
+                        } else {
+                            diffuseColor = "0.8 0.8 0.8";
+                        }
 
-                        colorData += " " + rgba.toUint();
-						
-						this._originalColor[i] = rgba;
+                        if (this._idMap.appearance[appID].material.emissiveColor) {
+                            emissiveColor = this._idMap.appearance[appID].material.emissiveColor
+                        } else {
+                            emissiveColor = "0.0 0.0 0.0";
+                        }
+
+                        if (this._idMap.appearance[appID].material.shininess) {
+                            shininess = this._idMap.appearance[appID].material.shininess;
+                        } else {
+                            shininess = "0.2";
+                        }
+
+                        if (this._idMap.appearance[appID].material.specularColor) {
+                            specularColor = this._idMap.appearance[appID].material.specularColor;
+                        } else {
+                            specularColor = "0 0 0";
+                        }
+
+                        if (this._idMap.appearance[appID].material.transparency) {
+                            transparency = this._idMap.appearance[appID].material.transparency;
+                        } else {
+                            transparency = "0";
+                        }
+
+                        rgba_DT = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        rgba_SS = x3dom.fields.SFColorRGBA.parse(specularColor + " " + shininess);
+                        rgba_EA = x3dom.fields.SFColorRGBA.parse(emissiveColor + " " + ambientIntensity);
+
+                        diffuseTransparencyData += " " + rgba_DT.toUint();
+                        specularShininessData += " " + rgba_SS.toUint();
+                        emissiveAmbientIntensityData += " " + rgba_EA.toUint();
+
+                        this._originalColor[i] = rgba_DT;
                     }
                     else
                     {
-                        colorData += " 255";
+                        diffuseTransparencyData += " 255";
+                        specularShininessData += " 255";
+                        emissiveAmbientIntensityData += " 255";
                     }
                 }
 
-                return colorData;
+                return {
+                    "diffuseTransparency": diffuseTransparencyData,
+                    "specularShininess": specularShininessData,
+                    "emissiveAmbientIntensity": emissiveAmbientIntensityData
+                };
             },
 
             createVisibilityData: function ()
@@ -414,11 +460,11 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css, shapeDEF, colorData, visibilityData, appearance;
+                var css, shapeDEF, materialData, visibilityData, appearance;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
-                    colorData = this.createColorData();
+                    materialData = this.createMaterialData();
                     visibilityData = this.createVisibilityData();
 
                     var shapes = inlScene.getElementsByTagName("Shape");
@@ -471,7 +517,17 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", colorData);
+                                        ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                        var ptEA = document.createElement("PixelTexture");
+                                        ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                        ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                        ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                        var ptSS = document.createElement("PixelTexture");
+                                        ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                        ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                        ptSS.setAttribute("image", materialData.specularShininess);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -479,6 +535,8 @@ x3dom.registerNodeType(
                                         ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
+                                        css.appendChild(ptEA);
+                                        css.appendChild(ptSS);
                                         css.appendChild(ptV);
                                     }
                                     else
@@ -499,7 +557,17 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", colorData);
+                                        ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                        var ptEA = document.createElement("PixelTexture");
+                                        ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                        ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                        ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                        var ptSS = document.createElement("PixelTexture");
+                                        ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                        ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                        ptSS.setAttribute("image", materialData.specularShininess);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -507,6 +575,8 @@ x3dom.registerNodeType(
                                         ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
+                                        css.appendChild(ptEA);
+                                        css.appendChild(ptSS);
                                         css.appendChild(ptV);
                                     }
                                     else
@@ -533,7 +603,17 @@ x3dom.registerNodeType(
                                 var ptDA = document.createElement("PixelTexture");
                                 ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                 ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                ptDA.setAttribute("image", colorData);
+                                ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                var ptEA = document.createElement("PixelTexture");
+                                ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                var ptSS = document.createElement("PixelTexture");
+                                ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                ptSS.setAttribute("image", materialData.specularShininess);
 
                                 var ptV = document.createElement("PixelTexture");
                                 ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -541,6 +621,8 @@ x3dom.registerNodeType(
                                 ptV.setAttribute("image", visibilityData);
 
                                 css.appendChild(ptDA);
+                                css.appendChild(ptEA);
+                                css.appendChild(ptSS);
                                 css.appendChild(ptV);
                             }
                             else

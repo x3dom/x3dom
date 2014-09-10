@@ -1988,13 +1988,21 @@ x3dom.gfx_webgl = (function () {
                 tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiDiffuseAlphaMap");
                 sp.multiDiffuseAlphaWidth = tex.texture.width;
                 sp.multiDiffuseAlphaHeight = tex.texture.height;
-
+            }
+            if (shader.getMultiEmissiveAmbientMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiEmissiveAmbientMap");
+                sp.multiEmissiveAmbientWidth = tex.texture.width;
+                sp.multiEmissiveAmbientHeight = tex.texture.height;
+            }
+            if (shader.getMultiSpecularShininessMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiSpecularShininessMap");
+                sp.multiSpecularShininessWidth = tex.texture.width;
+                sp.multiSpecularShininessHeight = tex.texture.height;
             }
             if (shader.getMultiVisibilityMap()) {
                 tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
                 sp.multiVisibilityWidth = tex.texture.width;
                 sp.multiVisibilityHeight = tex.texture.height;
-
             }
         }
         else if (mat) {

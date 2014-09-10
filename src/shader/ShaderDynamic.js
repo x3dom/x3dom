@@ -536,6 +536,16 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform float multiDiffuseAlphaWidth;\n";
             shader += "uniform float multiDiffuseAlphaHeight;\n";
         }
+        if (properties.MULTIEMIAMBMAP) {
+            shader += "uniform sampler2D multiEmissiveAmbientMap;\n";
+            shader += "uniform float multiEmissiveAmbientWidth;\n";
+            shader += "uniform float multiEmissiveAmbientHeight;\n";
+        }
+        if (properties.MULTISPECSHINMAP) {
+            shader += "uniform sampler2D multiSpecularShininessMap;\n";
+            shader += "uniform float multiSpecularShininessWidth;\n";
+            shader += "uniform float multiSpecularShininessHeight;\n";
+        }
         if (properties.MULTIVISMAP) {
             shader += "uniform sampler2D multiVisibilityMap;\n";
             shader += "uniform float multiVisibilityWidth;\n";
@@ -598,7 +608,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
 
-    if (properties.MULTIVISMAP || properties.MULTIDIFFALPMAP) {
+    shader += "vec3 _emissiveColor     = emissiveColor;\n";
+    shader += "float _shininess        = shininess;\n";
+    shader += "vec3 _specularColor     = specularColor;\n";
+    shader += "float _ambientIntensity = ambientIntensity;\n";
+
+    if (properties.MULTIVISMAP || properties.MULTIDIFFALPMAP || properties.MULTISPECSHINMAP || properties.MULTIEMIAMBMAP) {
         shader += "vec2 idCoord;\n";
         shader += "float roundedID = floor(fragID+0.5);\n";
     }
@@ -616,7 +631,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, idCoord );\n";
         shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
         shader += "color.a = diffAlpha.a;\n";
+    }
 
+    if (properties.MULTIEMIAMBMAP) {
+        shader += "idCoord.x = (mod(roundedID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
+        shader += "idCoord.y = (floor(roundedID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
+        shader += "vec4 emiAmb = texture2D( multiEmissiveAmbientMap, idCoord );\n";
+        shader += "_emissiveColor = emiAmb.rgb;\n";
+        shader += "_ambientIntensity = emiAmb.a;\n";
     }
 			
 	if(properties.VERTEXCOLOR) {
@@ -634,10 +656,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
 		shader += "vec3 eye 	  = -fragPosition.xyz;\n";
 
-        shader += "float _shininess     = shininess;\n";
-        shader += "vec3 _specularColor  = specularColor;\n";
-        shader += "vec3 _emissiveColor  = emissiveColor;\n";
-        shader += "float _ambientIntensity = ambientIntensity;\n";
+
 		
 		//Normalmap
 		if(properties.NORMALMAP){
@@ -661,6 +680,19 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
         if(properties.SHINMAP){
             shader += "_shininess = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+        }
+
+        //Specularmap
+        if(properties.SPECMAP) {
+            shader += "_specularColor = " + x3dom.shader.decodeGamma(properties, "texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb") + ";\n";
+        }
+
+        if (properties.MULTISPECSHINMAP) {
+            shader += "idCoord.x = (mod(roundedID, multiSpecularShininessWidth)) * (1.0 / multiSpecularShininessWidth) + (0.5 / multiSpecularShininessWidth);\n";
+            shader += "idCoord.y = (floor(roundedID / multiSpecularShininessHeight)) * (1.0 / multiSpecularShininessHeight) + (0.5 / multiSpecularShininessHeight);\n";
+            shader += "vec4 specShin = texture2D( multiSpecularShininessMap, idCoord );\n";
+            shader += "_specularColor = specShin.rgb;\n";
+            shader += "_shininess = specShin.a;\n";
         }
 		
 		//Solid
@@ -708,11 +740,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "diffuse = max(diffuse, 0.0);\n";
             shader += "specular = max(specular, 0.0);\n";
         }
-		
-		//Specularmap
-		if(properties.SPECMAP) {
-			shader += "specular *= " + x3dom.shader.decodeGamma(properties, "texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb") + ";\n";
-		}
 		
 		//Textures
 		if(properties.TEXTURED || properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP){
@@ -763,15 +790,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "color.a = texColor.a;\n";
 
 			if(properties.BLENDING || properties.IS_PARTICLE){
-				shader += "color.rgb += emissiveColor.rgb;\n";
+				shader += "color.rgb += _emissiveColor.rgb;\n";
 				shader += "color.rgb *= texColor.rgb;\n";
 			} else {
 				shader += "color = texColor;\n";
 			}
 		} else if(!properties.VERTEXCOLOR && !properties.POINTLINE2D){
-			shader += "color.rgb += emissiveColor;\n";
+			shader += "color.rgb += _emissiveColor;\n";
 		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D && !properties.MULTIDIFFALPMAP){
-			shader += "color.rgb = emissiveColor;\n";
+			shader += "color.rgb = _emissiveColor;\n";
             if (properties.IS_PARTICLE) {
                 shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
                 shader += "color.rgb *= vec3(pAlpha);\n";
