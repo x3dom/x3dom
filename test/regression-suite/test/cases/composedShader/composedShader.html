@@ -1,0 +1,160 @@
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+
+<body>
+
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='x3d'
+         showStat='false' showLog='false' width='800px' height='600px'>
+      <Scene DEF='scene'>
+        <Background skyColor='0.1 0.3 0.6'></Background>
+        <Viewpoint position='0 0 5'></Viewpoint>
+        <Transform translation="-1 0 0">
+            <Shape>
+              <Appearance>
+                <ComposedShader DEF='ComposedShader'>
+                  <field name='DiffuseColor' type='SFVec3f' value='0.7 0.4 0.3'></field>
+                  <field name='PhongColor'   type='SFVec3f' value='0.1 0.9 0.7'></field>
+                  <field name='Edge'  type='SFFloat' value='0.5'></field>
+                  <field name='Phong' type='SFFloat' value='0.8'></field>
+
+                  <!-- do not use CDATA stuff in html docs -->
+                  <ShaderPart type='VERTEX'>
+
+                        attribute vec3 position;
+                        attribute vec3 normal;
+                        uniform mat4 modelViewMatrix;
+                        uniform mat4 modelViewProjectionMatrix;
+                        varying vec3 fragNormal;
+
+                        void main()
+                        {
+                            fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;
+                            gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                        }
+
+                  </ShaderPart>
+
+                  <!-- do not use CDATA stuff in html docs -->
+                  <ShaderPart type='FRAGMENT'>
+
+                        #ifdef GL_FRAGMENT_PRECISION_HIGH
+                          precision highp float;
+                        #else
+                          precision mediump float;
+                        #endif
+
+                        uniform vec3 DiffuseColor;
+                        uniform vec3 PhongColor;
+                        uniform float Edge;
+                        uniform float Phong;
+                        varying vec3 fragNormal;
+
+                        void main()
+                        {
+                            vec3 color = DiffuseColor;
+                            float f = fragNormal.z;
+                            if (abs(f) < Edge) color = vec3(0.0);
+                            if (f > Phong) color = PhongColor;
+                            gl_FragColor = vec4(color, 1.0);
+                        }
+
+                  </ShaderPart>
+                </ComposedShader>
+              </Appearance>
+              <Torus innerRadius="0.3" outerRadius="0.7"></Torus>
+            </Shape>
+        </Transform>
+
+        <Transform translation="1 0 0">
+            <Shape>
+                <Appearance>
+                    <ImageTexture repeatS='false' repeatT='false' url='"./snaefari.jpg"'>
+                        <TextureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
+                                           magnificationFilter='LINEAR' minificationFilter='LINEAR'
+                                           generateMipMaps='false' id='texProps'>
+                        </TextureProperties>
+                    </ImageTexture>
+                    <ComposedShader>
+                          <field name='tex' type='SFInt32' value='0'></field>
+
+                          <ShaderPart type='VERTEX'>
+
+                                attribute vec3 position;
+                                attribute vec2 texcoord;
+                                uniform mat4 modelViewProjectionMatrix;
+                                varying vec2 fragTexCoord;
+
+                                void main()
+                                {
+                                    fragTexCoord = vec2(texcoord.x, 1.0 - texcoord.y);
+                                    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                                }
+
+                          </ShaderPart>
+
+                          <ShaderPart type='FRAGMENT'>
+
+                                #ifdef GL_FRAGMENT_PRECISION_HIGH
+                                  precision highp float;
+                                #else
+                                  precision mediump float;
+                                #endif
+
+                                uniform sampler2D tex;
+                                varying vec2 fragTexCoord;
+
+                                void main()
+                                {
+                                    vec2 Offset0 = vec2(0.0,  0.0),
+                                         Offset1 = vec2(0.0,  0.0041667),
+                                         Offset2 = vec2(0.0, -0.0041667),
+                                         Offset3 = vec2( 0.003125, 0.0),
+                                         Offset4 = vec2(-0.003125, 0.0);
+                                    float KernelValue0 =  -4.0,
+                                          KernelValue1 =  1.0,
+                                          KernelValue2 =  1.0,
+                                          KernelValue3 =  1.0,
+                                          KernelValue4 =  1.0;
+                                    vec3 tmp;
+                                    float luminance, sum = 0.0;
+
+                                    tmp = texture2D(tex, fragTexCoord + Offset0).rgb;
+                                    luminance = dot(vec3(0.2125, 0.7154, 0.0721), tmp);
+                                    sum += luminance * KernelValue0;
+
+                                    tmp = texture2D(tex, fragTexCoord + Offset1).rgb;
+                                    luminance = dot(vec3(0.2125, 0.7154, 0.0721), tmp);
+                                    sum += luminance * KernelValue1;
+
+                                    tmp = texture2D(tex, fragTexCoord + Offset2).rgb;
+                                    luminance = dot(vec3(0.2125, 0.7154, 0.0721), tmp);
+                                    sum += luminance * KernelValue2;
+
+                                    tmp = texture2D(tex, fragTexCoord + Offset3).rgb;
+                                    luminance = dot(vec3(0.2125, 0.7154, 0.0721), tmp);
+                                    sum += luminance * KernelValue3;
+
+                                    tmp = texture2D(tex, fragTexCoord + Offset4).rgb;
+                                    luminance = dot(vec3(0.2125, 0.7154, 0.0721), tmp);
+                                    sum += luminance * KernelValue4;
+
+                                    sum = 1.0 - sum;
+
+                                    gl_FragColor = vec4(sum, sum, sum, 1.0);
+                                }
+
+                          </ShaderPart>
+                        </ComposedShader>
+                  </Appearance>
+                  <Plane size="2 1.5" solid="false"></Plane>
+            </Shape>
+        </Transform>
+      </Scene>
+    </X3D>
+    
+</body>
+</html>

@@ -24,7 +24,8 @@
 
 // Global runtime
 /**
- * @namespace Namespace container for Runtime module
+ * Namespace container for Runtime module
+ * @namespace x3dom.runtime
  */
 x3dom.runtime = {};
 
@@ -310,7 +311,7 @@ x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
  * Returns the viewing ray for a given (x, y) position.
  *
  * Returns:
- * 		Line object
+ * 		Ray object
  */
 x3dom.Runtime.prototype.getViewingRay = function(x, y) {
     return this.canvas.doc._viewarea.calcViewRay(x, y);
@@ -568,10 +569,7 @@ x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
-    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
-    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
-
-    this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
+    this.canvas.doc._viewarea.fit(scene._lastMin, scene._lastMax, updateCenterOfRotation);
 };
 
 /**
@@ -597,12 +595,20 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
         var vol = obj._x3domNode.getVolume();
         vol.getBounds(min, max);
 
-        if (!x3dom.isa(obj._x3domNode, x3dom.nodeTypes.Transform))
-        {
-            var mat = obj._x3domNode.getCurrentTransform();
+        var mat = obj._x3domNode.getCurrentTransform();
 
-            min = mat.multMatrixPnt(min);
-            max = mat.multMatrixPnt(max);
+        min = mat.multMatrixPnt(min);
+        max = mat.multMatrixPnt(max);
+
+        //TODO: revise separation of "getVolume" and "getCurrentTransform"
+        //      for the transform nodes - currently, both "overlap" because
+        //      both include the transform's own matrix
+        //      but which is what you usually expect from both methods...
+        if (x3dom.isa(obj._x3domNode, x3dom.nodeTypes.X3DTransformNode))
+        {
+            var invMat = obj._x3domNode._trafo.inverse();
+            min = invMat.multMatrixPnt(min);
+            max = invMat.multMatrixPnt(max);
         }
 
         this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
@@ -753,7 +759,7 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *    The min and max positions of the node's bounding box.
  */
 x3dom.Runtime.prototype.getBBox = function(domNode) {
-    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedNode"))
+    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject"))
     {
         var vol = domNode._x3domNode.getVolume();
 

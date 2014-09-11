@@ -1,0 +1,216 @@
+html
+{
+    height:100%;
+}
+
+body
+{
+    border:0;
+    padding:0;
+    margin:0;
+    font-family:Verdana, Arial, Helvetica, sans-serif;
+    font-size:9pt;
+    text-align:center;
+    background-color: #939393;
+    height:100%;
+    line-height: 20px;
+}
+
+img {
+    border: none;
+}
+
+a
+{
+    color: #444;
+}
+
+/* class for a small thumbnail on the left side of an unordered list,
+   which contains all elements of the chapter and is formatted using "chapter-contents" */
+.chapter-illustration
+{
+    width:92px;
+    height:92px;
+    display:inline-block;
+    vertical-align:top;
+    margin-bottom:16px;
+    border-radius:10px;    
+    border:1px solid #aaaaaa;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: rgba(0, 0, 0, 0.15) 3px 3px 3px;
+    -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+}
+
+.chapter-contents
+{
+    display:inline-block;
+    margin-bottom:16px;
+}
+
+.simpleButton
+{
+    border:1px solid #B9B9B9;
+    border-radius: 5px;
+    padding:6px;
+    background-color: #004BBC;
+    background: -webkit-linear-gradient(#004BBC, #000B27);
+    background: -o-linear-gradient(#004BBC, #000B27);
+    background: -moz-linear-gradient(#004BBC, #000B27);
+    background: linear-gradient(#004BBC, #000B27);     
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: rgba(0, 0, 0, 0.15) 3px 3px 3px;
+    -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+}
+
+.simpleButton a
+{
+    color: #EEEEEE;
+    text-decoration:none;
+}
+
+.simpleButton:hover
+{
+    background: -webkit-linear-gradient(#004BBC, #000B27);
+    background: -o-linear-gradient(#004BBC, #000B27);
+    background: -moz-linear-gradient(#004BBC, #000B27);
+    background: linear-gradient(#115BBD, #111E38);
+}
+
+.codeSnippet
+{
+    font-family: monospace;
+    background:#eeeeee;
+    border:1px solid #aaaaaa;
+    border-radius:5px;
+    padding:16px;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+.docuFigureContainer
+{
+    display:inline-block;
+    text-align:center;
+    margin:16px;
+}
+
+.docuFigure
+{
+    display:inline-block;
+    border:1px solid #aaaaaa;
+    padding:0;
+    margin:0;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: rgba(0, 0, 0, 0.15) 3px 3px 3px;
+    -webkit-box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15);
+}
+
+.docuCaption
+{
+    margin-top: 12px;
+    border-width: 1px 0 0 0;
+    border-style: solid;
+    border-color: #aaaaaa;
+    color:#444;
+    font-weight:bold;
+    text-align:center;
+}
+
+.contentBox
+{
+    display:inline-block;
+
+    background-color: #f3f3fc;
+    background: -webkit-linear-gradient(#eeeeee, #dddddd);
+    background: -o-linear-gradient(#eeeeee, #dddddd);
+    background: -moz-linear-gradient(#eeeeee, #dddddd);
+    background: linear-gradient(#eeeeee, #dddddd);
+
+    border-radius: 5px;
+    border: 1px solid #aaaaaa;
+    margin: 16px 0;
+    padding: 16px;
+
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
+    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+}
+
+.contentBox h2
+{
+    margin-top:0;
+    color:#444;    
+}
+
+.contentBox img
+{
+    vertical-align:middle;
+}
+
+h2
+{
+    margin-top:2.0em;
+}
+
+.prettyprint
+{
+    border-radius: 5px;
+    border: 1px solid #aaaaaa;
+    margin: 16px 0;
+    padding: 16px;
+}
+
+#mainContainerDiv
+{
+    background-color: white;
+    width:90%;
+    min-width:1024px;
+    margin:0 auto;
+    text-align:left;
+    min-height:100%;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: rgba(0, 0, 0, 0.15) 5px 5px 5px;
+    -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
+    border:1px solid gray;
+}
+
+#header-decoration
+{
+    padding: 24px;
+    background-color: #004BBC;
+    background: -webkit-linear-gradient(#000B27, #004BBC);
+    background: -o-linear-gradient(#000B27, #004BBC);
+    background: -moz-linear-gradient(#000B27, #004BBC);
+    background: linear-gradient(#000B27, #004BBC);                 
+    color:white;
+    font-size:150%;
+}
+
+#header-navbar
+{
+    background:black;
+    color:#EEEEEE;
+    border-style:solid;
+    border-color:#B9B9B9;
+    border-width:1px 0px;
+    font-size:10pt;
+    padding:6px;
+}
+
+#header-navbar a
+{
+    color:#EEEEEE;
+    text-decoration:none;
+    margin:8px;
+    padding:6px;
+}
+
+#header-navbar a:hover
+{
+    background:#333333;
+}
+
+section
+{
+    padding: 6px 24px;
+}

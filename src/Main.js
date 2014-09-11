@@ -102,13 +102,20 @@ x3dom.userAgentFeature = {
 
 
 (function loadX3DOM() {
+    "use strict";
 
     var onload = function() {
         var i,j;  // counters
 
         // Search all X3D elements in the page
-        var x3ds = document.getElementsByTagName('X3D');
-        var w3sg = document.getElementsByTagName('webSG');	// FIXME
+        var x3ds_unfiltered = document.getElementsByTagName('X3D');
+        var x3ds = [];
+
+        // check if element already has been processed
+        for (i=0; i < x3ds_unfiltered.length; i++) {
+            if (x3ds_unfiltered[i].hasRuntime === undefined)
+                x3ds.push(x3ds_unfiltered[i]);
+        }
 
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         var params;
@@ -169,10 +176,8 @@ x3dom.userAgentFeature = {
                         x3dom.loadJS(components[j] + ".js", prefix);
                     }
                 }
-            }
 
-            // src=foo.x3d adding inline node, not a good idea, but...
-            if (typeof X3DOM_SECURITY_OFF != 'undefined' && X3DOM_SECURITY_OFF === true) {
+                // src=foo.x3d adding inline node, not a good idea, but...
                 if (x3ds[i].getAttribute("src")) {
                     var _scene = document.createElement("scene");
                     var _inl = document.createElement("Inline");
@@ -195,12 +200,11 @@ x3dom.userAgentFeature = {
             n.hasRuntime = true;
             return n;
         });
-        w3sg = Array.map(w3sg, function (n) {
-            n.hasRuntime = false;
-            return n;
-        });
-        
+
+        var w3sg = document.getElementsByTagName('webSG');	// THINKABOUTME: shall we still support exp. WebSG?!
+
         for (i=0; i<w3sg.length; i++) {
+            w3sg[i].hasRuntime = false;
             x3ds.push(w3sg[i]);
         }
 
@@ -230,8 +234,10 @@ x3dom.userAgentFeature = {
                 x3dom.insertActiveX(x3d_element);
                 continue;
             }
-        
-            x3dcanvas = new x3dom.X3DCanvas(x3d_element, i);
+
+            x3dcanvas = new x3dom.X3DCanvas(x3d_element, x3dom.canvases.length);
+
+            x3dom.canvases.push(x3dcanvas);
 
             if (x3dcanvas.gl === null) {
 
@@ -290,8 +296,6 @@ x3dom.userAgentFeature = {
                 x3ds[i].runtime.processIndicator(false);
             }
 
-            x3dom.canvases.push(x3dcanvas);
-
 			t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
         }
@@ -320,14 +324,8 @@ x3dom.userAgentFeature = {
         }
     };
     
-    /** Initializes an <x3d> root element that was added after document load.
-     *
-     *  If there already was an <x3d> element, it needs to be removed before:
-     *  var x3d = document.getElementsByTagName("x3d")[0];
-	 *	x3d.parentNode.removeChild(x3d);
-     */
+    /** Initializes an <x3d> root element that was added after document load. */
     x3dom.reload = function() {
-        onunload();
         onload();
     };
 	

@@ -23,6 +23,20 @@
 					 
 	return shaderPart;
 };
+
+/*******************************************************************************
+ * TwoSidedMaterial
+ ********************************************************************************/
+x3dom.shader.twoSidedMaterial = function() {
+    var shaderPart = "uniform vec3  backDiffuseColor;\n" +
+                     "uniform vec3  backSpecularColor;\n" +
+                     "uniform vec3  backEmissiveColor;\n" +
+                     "uniform float backShininess;\n" +
+                     "uniform float backTransparency;\n" +
+                     "uniform float backAmbientIntensity;\n";
+
+    return shaderPart;
+};
 						 
 /*******************************************************************************
 * Fog
@@ -52,27 +66,68 @@ x3dom.shader.fog = function() {
 };
 
 /*******************************************************************************
+ * Clipplane
+ ********************************************************************************/
+x3dom.shader.clipPlanes = function(numClipPlanes) {
+    var shaderPart = "", c;
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += 	"uniform vec4 clipPlane"+c+"_Plane;\n";
+        shaderPart += 	"uniform float clipPlane"+c+"_CappingStrength;\n";
+        shaderPart += 	"uniform vec3 clipPlane"+c+"_CappingColor;\n";
+    }
+
+    shaderPart += "vec3 calculateClipPlanes() {\n";
+
+    for(c=0; c<numClipPlanes; c++) {
+        shaderPart += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
+        shaderPart += "    float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
+    }
+
+    shaderPart += "    if( ";
+
+    for(c=0; c<numClipPlanes; c++) {
+        if(c!=0) {
+            shaderPart += " || ";
+        }
+        shaderPart += "dist" + c + " < 0.0" ;
+    }
+
+    shaderPart += " ) ";
+    shaderPart += "{ discard; }\n";
+
+    for (c = 0; c < numClipPlanes; c++) {
+        shaderPart += "    if( abs(dist" + c + ") < clipPlane" + c + "_CappingStrength ) ";
+        shaderPart += "{ return clipPlane" + c + "_CappingColor; }\n";
+    }
+
+    shaderPart += "    return vec3(-1.0, -1.0, -1.0);\n";
+
+    shaderPart += "}\n";
+
+    return shaderPart;
+};
+
+/*******************************************************************************
 * Gamma correction support: initial declaration
 ********************************************************************************/
 x3dom.shader.gammaCorrectionDecl = function(properties) {
 	var shaderPart = "";
     if (properties.GAMMACORRECTION === "none") {
         // do not emit any declaration. 1.0 shall behave 'as without gamma'.
-    } else if (properties.GAMMACORRECTION === "fast-linear") {
+    } else if (properties.GAMMACORRECTION === "fastlinear") {
         // This is a slightly optimized gamma correction
         // which uses a gamma of 2.0 instead of 2.2. Gamma 2.0 is less costly
         // to encode in terms of cycles as sqrt() is usually optimized
         // in hardware.
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
                       "  vec4 tmp = sqrt(color);\n" +
-                      "  tmp.a = color.a;\n" +
-                      "  return tmp;\n" +
+                      "  return vec4(tmp.rgb, color.a);\n" +
                       "}\n";
 
         shaderPart += "vec4 gammaDecode(vec4 color){\n" +
-                      "  vec4 tmp = inversesqrt(color);\n" +
-                      "  tmp.a = color.a;\n" +
-                      "  return tmp;\n" +
+                      "  vec4 tmp = color * color;\n" +
+                      "  return vec4(tmp.rgb, color.a);\n" +
                       "}\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
@@ -80,13 +135,14 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
                       "}\n";
 
         shaderPart += "vec3 gammaDecode(vec3 color){\n" +
-                      "  return inversesqrt(color);\n" +
+                      "  return (color * color);\n" +
                       "}\n";
     } else {
         // The preferred implementation compensating for a gamma of 2.2, which closely
-        // follows sRGB.
-        shaderPart += "const vec4 gammaEncode4Vector = vec4(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2, 1.0 /* alpha remains linear*/);\n";
-        shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0 /* alpha remains linear*/);\n";
+        // follows sRGB; alpha remains linear
+        // minor opt: 1.0 / 2.2 = 0.4545454545454545
+        shaderPart += "const vec4 gammaEncode4Vector = vec4(0.4545454545454545, 0.4545454545454545, 0.4545454545454545, 1.0);\n";
+        shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0);\n";
 
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
                       "    return pow(color, gammaEncode4Vector);\n" +
@@ -96,8 +152,8 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
                       "    return pow(color, gammaDecode4Vector);\n" +
                       "}\n";
 
-        // RGB
-        shaderPart += "const vec3 gammaEncode3Vector = vec3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2);\n";
+        // RGB; minor opt: 1.0 / 2.2 = 0.4545454545454545
+        shaderPart += "const vec3 gammaEncode3Vector = vec3(0.4545454545454545, 0.4545454545454545, 0.4545454545454545);\n";
         shaderPart += "const vec3 gammaDecode3Vector = vec3(2.2, 2.2, 2.2);\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
@@ -114,7 +170,7 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
 /*******************************************************************************
 * Gamma correction support: encoding and decoding of given expressions
 * 
-* Unlike other shaderparts these javascript functions wrap the same-named gamma
+* Unlike other shader parts these javascript functions wrap the same-named gamma
 * correction shader functions (if applicable). When gamma correction is  not used,
 * the expression will be returned verbatim. Consequently, any terminating semicolon
 * is to be issued by the caller.
@@ -280,10 +336,9 @@ x3dom.shader.light = function(numLights) {
 						"uniform float light"+l+"_ShadowIntensity;\n";
 	}
 	
-	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
-					"inout vec3 specular)\n" +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -308,15 +363,16 @@ x3dom.shader.light = function(numLights) {
 					"   }\n" +
 					
 					"   vec3  H = normalize( L + V );\n" +
-					"   float NdotL = max(0.0, dot(L, N));\n" +
-					"   float NdotH = max(0.0, dot(H, N));\n" +
+					"   float NdotL = clamp(dot(L, N), 0.0, 1.0);\n" +
+					"   float NdotH = clamp(dot(H, N), 0.0, 1.0);\n" +
 					
-					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
+					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
-					"   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
-					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
-					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
-					"   specular += lColor * specularFactor * attentuation * spot;\n" +  
+					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
+                    "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +
+					//"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+					//"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+					//"   specular += lColor * specularFactor * attentuation * spot;\n" +
                     "}\n";
 						
 	return shaderPart;

@@ -24,6 +24,7 @@ package x3dom
 		private var _updated:Boolean;
 		private var _sortType:String;
 		private var _sortKey:uint;
+		private var _boundingBox:BoundingBox;
 		
 		public function DrawableObject(id:int=-1, refID:int=-1)
 		{
@@ -35,6 +36,9 @@ package x3dom
 			this._type		= "DEFAULT";
 			this._transform	= new Matrix3D();
 			this._updated	= true;
+			
+			this._boundingBox = new BoundingBox();
+			updateBB();
 		}
 		
 		/**
@@ -132,13 +136,59 @@ package x3dom
 		{
 			return this._updated;
 		}
+		
+		/**
+		 * @private
+		 */
+		private function updateBB() : void
+		{
+			var min:Vector3D = new Vector3D( 999999.0,  999999.0,  999999.0);
+			var max:Vector3D = new Vector3D( -999999.0, -999999.0, -999999.0);
+			
+			if (this._shape == null) 
+			{
+				this._boundingBox = BoundingBox.Create(max.clone(), max.clone());
+				return;
+			}
+			
+			var sbb:BoundingBox = _shape.boundingBox;
+			if (this._transform == null)
+			{
+				this._boundingBox = BoundingBox.Create(sbb.min.clone(), sbb.max.clone());
+				return;
+			}
+			
+			var bb:Array = new Array();
+			bb[0] = this._transform.transformVector(new Vector3D(sbb.min.x, sbb.min.y, sbb.min.z));
+			bb[1] = this._transform.transformVector(new Vector3D(sbb.min.x, sbb.min.y, sbb.max.z));
+			bb[2] = this._transform.transformVector(new Vector3D(sbb.min.x, sbb.max.y, sbb.min.z));
+			bb[3] = this._transform.transformVector(new Vector3D(sbb.min.x, sbb.max.y, sbb.max.z));
+			bb[4] = this._transform.transformVector(new Vector3D(sbb.max.x, sbb.min.y, sbb.min.z));
+			bb[5] = this._transform.transformVector(new Vector3D(sbb.max.x, sbb.min.y, sbb.max.z));
+			bb[6] = this._transform.transformVector(new Vector3D(sbb.max.x, sbb.max.y, sbb.min.z));
+			bb[7] = this._transform.transformVector(new Vector3D(sbb.max.x, sbb.max.y, sbb.max.z));
+			
+			for (var i:uint = 0; i < 8; i++)
+			{
+				if (bb[i].x < min.x) min.x = bb[i].x;
+				if (bb[i].y < min.y) min.y = bb[i].y;
+				if (bb[i].z < min.z) min.z = bb[i].z;
+				
+				if (bb[i].x > max.x) max.x = bb[i].x;
+				if (bb[i].y > max.y) max.y = bb[i].y;
+				if (bb[i].z > max.z) max.z = bb[i].z;
+			}
+			
+			this._boundingBox = BoundingBox.Create(min, max);
+		}
 			
 		/**
 		 * 
 		 */
 		public function set shape(shape:Shape) : void
 		{
-			this._shape = shape;
+			this._shape = shape;			
+			updateBB();
 		}
 		
 		/**
@@ -151,8 +201,6 @@ package x3dom
 					this._shape = new ImageGeometry();
 				} else if(this._type == "BinaryGeometry") {
 					this._shape = new BinaryGeometry();
-				} else if(this._type == "BitLODGeometry")  {
-					this._shape = new BitLODGeometry();
 				} else if(this._type == "Text")  {
 					this._shape = new X3DText();
 				} else {
@@ -170,6 +218,7 @@ package x3dom
 		{
 			this._updated = true;
 			this._transform = transform;
+			updateBB();			
 		}
 		
 		/**
@@ -185,7 +234,7 @@ package x3dom
 		 */
 		public function get min() : Vector3D
 		{
-			return this._transform.transformVector(this._shape.boundingBox.min);
+			return this._boundingBox.min;
 		}
 		
 		/**
@@ -193,7 +242,7 @@ package x3dom
 		 */
 		public function get max() : Vector3D
 		{
-			return this._transform.transformVector(this._shape.boundingBox.max);
+			return this._boundingBox.max;
 		}
 		
 		/**
@@ -201,7 +250,7 @@ package x3dom
 		 */
 		public function get center() : Vector3D
 		{
-			return this._transform.transformVector(this._shape.boundingBox.center);
+			return this._boundingBox.center;
 		}
 	}
 }

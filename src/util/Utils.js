@@ -15,6 +15,7 @@
 x3dom.Utils = {};
 
 x3dom.Utils.maxIndexableCoords = 65535;
+x3dom.Utils.needLineWidth = false;  // lineWidth not impl. in IE11
 x3dom.Utils.measurements = [];
 
 
@@ -66,7 +67,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -74,6 +75,9 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
     var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    if (genMipMaps) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+    }
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture.ready = false;
@@ -82,7 +86,11 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	    return texture;
 	
 	var image = new Image();
-	image.crossOrigin = withCredentials ? 'use-credentials' : '';
+
+    if(withCredentials) {
+        image.crossOrigin = 'use-credentials'
+    }
+
 	image.src = src;
 	
 	doc.downloadCount++;	
@@ -97,6 +105,9 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 		gl.bindTexture(gl.TEXTURE_2D, texture);
 		//gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        if (genMipMaps) {
+            gl.generateMipmap(gl.TEXTURE_2D);
+        }
 		gl.bindTexture(gl.TEXTURE_2D, null);
 		if(bgnd == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -122,7 +133,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale)
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -150,7 +161,9 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 		var face = faces[i];
 
 		var image = new Image();
-		image.crossOrigin = withCredentials ? 'use-credentials' : '';
+        if(withCredentials) {
+            image.crossOrigin = 'use-credentials';
+        }
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		
@@ -179,6 +192,13 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
                     texture.width  = width;
                     texture.height = height;
 					texture.textureCubeReady = true;
+
+                    if (genMipMaps) {
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    }
+
 					x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
 					doc.needRender = true;
 				}
@@ -197,6 +217,74 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 	}
 	
 	return texture;
+};
+
+/*****************************************************************************
+ * Initialize framebuffer object and associated texture(s)
+ *****************************************************************************/
+x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needRenderBuf, numMrt) {
+    var tex = gl.createTexture();
+    tex.width  = w;
+    tex.height = h;
+
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, type, null);
+    if (mipMap)
+        gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    var i, mrts = null;
+
+    if (x3dom.caps.DRAW_BUFFERS && numMrt !== undefined) {
+        mrts = [ tex ];
+
+        for (i=1; i<numMrt; i++) {
+            mrts[i] = gl.createTexture();
+            mrts[i].width  = w;
+            mrts[i].height = h;
+
+            gl.bindTexture(gl.TEXTURE_2D, mrts[i]);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, type, null);
+            if (mipMap)
+                gl.generateMipmap(gl.TEXTURE_2D);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+    }
+
+    var fbo = gl.createFramebuffer();
+    var rb = null;
+
+    if (needRenderBuf) {
+        rb = gl.createRenderbuffer();
+
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    if (x3dom.caps.DRAW_BUFFERS && numMrt !== undefined) {
+        for (i=1; i<numMrt; i++) {
+            gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0 + i, gl.TEXTURE_2D, mrts[i], 0);
+        }
+    }
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+
+    var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+    if (status != gl.FRAMEBUFFER_COMPLETE) {
+        x3dom.debug.logWarning("[Utils|InitFBO] FBO-Status: " + status);
+    }
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+    return {
+        fbo: fbo, rbo: rb,
+        tex: tex, texTargets: mrts,
+        width: w, height: h,
+        type: type, mipMap: mipMap
+    };
 };
 
 /*****************************************************************************
@@ -449,10 +537,20 @@ x3dom.Utils.isUnsignedType = function (str)
 /*****************************************************************************
 * Checks for lighting
 *****************************************************************************/
-x3dom.Utils.checkDirtyLighting = function (viewarea)
+x3dom.Utils.checkDirtyLighting = function(viewarea)
 {
 	return (viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight);
 };
+
+/*****************************************************************************
+ * Checks for environment
+ *****************************************************************************/
+x3dom.Utils.checkDirtyEnvironment = function(viewarea, shaderProperties)
+{
+    var environment = viewarea._scene.getEnvironment();
+
+    return (shaderProperties.GAMMACORRECTION != environment._vf.gammaCorrectionDefault);
+}
 
 /*****************************************************************************
 * Get GL min filter
@@ -611,7 +709,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	if (appearance && appearance._shader &&
         x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
 
-		property.CSHADER          = shape._objectID;
+		property.CSHADER          = appearance._shader._id; //shape._objectID;
 	}
     else if (geometry) {
 
@@ -619,31 +717,33 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.SOLID            = (shape.isSolid()) ? 1 : 0;
         property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
         property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
-        property.BITLODGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
         property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
+        property.BINARYGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BinaryGeometry))  ? 1 : 0;
         property.IG_PRECISION     = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
         property.IG_INDEXED       = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
-        property.POINTLINE2D      = x3dom.isa(geometry, x3dom.nodeTypes.PointSet) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.IndexedLineSet) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Polypoint2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Polyline2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Arc2D) ||
-                                    x3dom.isa(geometry, x3dom.nodeTypes.Circle2D) ? 1 : 0;
-        
+        property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
+        property.VERTEXID         = (property.BINARYGEOMETRY && geometry._vf.idsPerVertex) ? 1 : 0;
+        property.IS_PARTICLE      = (x3dom.isa(geometry, x3dom.nodeTypes.ParticleSet)) ? 1 : 0;
+
         property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
+        property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.TwoSidedMaterial)) ? 1 : 0;
+        property.SEPARATEBACKMAT  = ( property.TWOSIDEDMAT && material._vf.separateBackColor) ? 1 : 0;
         property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
         property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
         property.CSSHADER         = (appearance && appearance._shader &&
                                      x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
-        property.LIGHTS           = (!property.POINTLINE2D && appearance && (material || property.CSSHADER)) ?
+        property.LIGHTS           = (!property.POINTLINE2D && appearance && shape.isLit() && (material || property.CSSHADER)) ?
                                      viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
         property.TEXTURED         = (texture || property.TEXT) ? 1 : 0;
         property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
         property.DIFFUSEMAP       = (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0;
         property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0;
         property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
+        property.SHINMAP          = (property.CSSHADER && appearance._shader.getShininessMap()) ? 1 : 0;
         property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
         property.DIFFPLACEMENTMAP = (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
+        property.MULTIDIFFALPMAP  = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiDiffuseAlphaMap()) ? 1 : 0;
+        property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
         property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ? 1 : 0;
         property.BLENDING         = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
@@ -658,11 +758,11 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0;
         property.VERTEXCOLOR      = (geometry._mesh._colors[0].length > 0 ||
                                      (property.IMAGEGEOMETRY && geometry.getColorTexture()) ||
-                                     (property.BITLODGEOMETRY && geometry.hasColor()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+        property.CLIPPLANES       = shape._clipPlanes.length;
+        
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
-        x3dom.debug.logInfo("Gamma shader property is " + property.GAMMACORRECTION );
 	}
 	
 	property.toIdentifier = function() { 
@@ -767,8 +867,13 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 					(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           
 				break;
 			case gl.FLOAT_VEC3:
-				shader.__defineSetter__(obj.name, 
-					(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
+				/* Passing arrays of vec3. see above.*/
+				if (obj.name.indexOf("[0]") != -1)
+					shader.__defineSetter__(obj.name.substring(0, obj.name.length-3), 
+						(function (loc) { return function (val) { gl.uniform3fv(loc, new Float32Array(val)); }; })(loc));
+				else
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
 				break;
 			case gl.FLOAT_VEC4:
 				shader.__defineSetter__(obj.name, 

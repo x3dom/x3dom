@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="../../../index.html">documentation</a>    
+    >
+    <a href="../../index.html">Tutorials</a>
+	>
+    <a href="#">Using Images and Movies for Textures</a>
+</div>
+<div id="main">
+
+    <section>	
+        
+        <div>
+            <div class="simpleButton" style="float:left;"><a href="../htmlCSS/index.html" style="float:right;">&#8678; Previous Section</a></div>
+            <div class="simpleButton" style="float:right;"><a href="../sound/index.html" style="float:right;">Next Section &#8680;</a></div>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h1>Using Images and Movies for Textures</h1>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial shows what type of image and movie formats can be used in X3DOM and what are the features and restrictions.
+        </p>
+        
+        <p>
+		You can use <a href="http://en.wikipedia.org/wiki/Portable_Network_Graphics" target="_blank"> PNG</a>, <a href="http://en.wikipedia.org/wiki/Jpeg" target="_blank">JPEG</a> or <a href="http://en.wikipedia.org/wiki/Gif" target="_blank">GIF</a> to encode your static Texture data. JPG has a low memory profile but has a lossy compression and it does not support alpha channels. PNG compression is lossless and can handle alpha. GIF is also lossless and has alpha.
+
+General: If you do not need an alpha channel and the content does not have hard edges (e.g. Text) use JPG. Otherwise use PNG. You should not use GIF anymore. 
+PNG is more flexible for future content (e.g. 16-bit channels).
+</p>
+<p>
+As shown in the previous examples we always need a html-document with a x3DOM context. If you don't know how to do that check our previous <a href="x3Dom/doc/x3doc/base/tutorials/basics/hello/index.html" target="_blank">tutorial</a>. 
+		</p>
+        <h2>Images</h2>
+		<p>For using an image as texture we use the ImageTexture Node:</p>
+		
+        <pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt; 
+	&lt;shape&gt; 
+	&lt;appearance&gt; 
+	&lt;ImageTexture  url="myTexture.png"&gt;&lt;ImageTexture/&gt;
+	&lt;/appearance&gt; 
+	&lt;box&gt; &lt;/box&gt; 
+	&lt;/shape&gt; 
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+		
+		<h2>Movies</h2>
+        <p>
+        For using movies as textures we simply need to use the MovieTexture Node.
+		But one thing you need to keep in mind: 
+		There is no single movie file right now which is supported by all user agents. Use the <a href="http://x3dom.org/x3dom/example/x3dom_video.xhtml" target="_blank">X3DOM formats example</a> to check your browser format.
+
+The best solution right now is to encode your content as MP4 and OGV movie and provide alternative sources in your MovieTexture node.
+        </p>
+        
+<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt; 
+	&lt;shape&gt; 
+	&lt;appearance&gt; 
+	&lt;MovieTexture  url='”foo.mp4″,”foo.ogv”'&gt;&lt;MovieTexture/&gt;
+	&lt;/appearance&gt; 
+	&lt;box&gt; &lt;/box&gt; 
+	&lt;/shape&gt; 
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+		
+        <p>
+		Your result could look like this: 
+        </p>
+		
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="docuCaption">Image and movie texture on two cubes.</div>
+            </div>
+        </div>        
+		
+ 
+         You have now learned how you can use movies and images as texture. In our <a href="../inline/index.html"> next</a> tutorial we will show you how to include your own models in X3DOM.
+
+		       
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="contentBox">                        
+            <h2>Get this X3DOM example:</h2>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
+                <li><a href="imagesMovies.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <ul>
+				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+				
+				<li><a href="../../../author/Geometry3D/Box.html">Box</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+				
+				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>            
+            </ul>
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+</body>
+</html>

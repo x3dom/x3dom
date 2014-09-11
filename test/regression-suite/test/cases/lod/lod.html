@@ -1,0 +1,53 @@
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <script>
+        function changeVP()
+        {
+            var vp = document.getElementById("vp");
+            vp.setAttribute("position", "0 0 10");
+        }
+    </script>
+
+</head>
+<body>
+<X3D id="x3d" xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='false' showLog='false' width='800px' height='600px'>
+    <Scene DEF='scene'>
+        <LOD center='0 0 0' range='12'>
+            <Transform>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='1 0 0'></Material>
+                    </Appearance>
+                    <Sphere></Sphere>
+                </Shape>
+            </Transform>
+            <Transform>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='1 1 0'></Material>
+                    </Appearance>
+                    <Box></Box>
+                </Shape>
+            </Transform>
+        </LOD>
+
+        <Transform translation='0 0 -5'>
+            <Shape>
+                <Appearance>
+                    <Material></Material>
+                </Appearance>
+                <Box size='10 10 0.1'></Box>
+            </Shape>
+        </Transform>
+
+        <DirectionalLight intensity='0.6' shadowIntensity='0.8' direction='0 0.1 -0.9'></DirectionalLight>
+        <Viewpoint id="vp" position="0 0 15" zNear="0.5" zFar="1000" ></Viewpoint>
+        <Background></Background>
+    </Scene>
+</X3D>
+<input type="button" value="changeVP" onclick="changeVP();" />
+</body>
+</html>

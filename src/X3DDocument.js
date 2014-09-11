@@ -23,13 +23,15 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
 
     // bag for pro-active (or multi-core-like) elements
     this._nodeBag = {
-        timer: [],          // TimeSensor (tick)
-        lights: [],         // Light
-        clipPlanes: [],     // ClipPlane
-        followers: [],      // X3DFollowerNode
-        trans: [],          // X3DTransformNode (for listening to CSS changes)
-        renderTextures: [], // RenderedTexture
-        viewarea: []        // Viewport (for updating camera navigation)
+        timer: [],                // TimeSensor (tick)
+        lights: [],               // Light
+        clipPlanes: [],           // ClipPlane
+        followers: [],            // X3DFollowerNode
+        trans: [],                // X3DTransformNode (for listening to CSS changes)
+        renderTextures: [],       // RenderedTexture
+        viewarea: [],             // Viewport (for updating camera navigation)
+        affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
+                                    // this list is maintained for efficient update / deactivation
     };
 
     this.onload = function () {};
@@ -137,6 +139,18 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture)) {
                 cleanNodeBag(doc._nodeBag.renderTextures, node);
+                if (node._cleanupGLObjects) {
+                    node._cleanupGLObjects();
+                }
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.X3DPointingDeviceSensorNode)) {
+                cleanNodeBag(doc._nodeBag.affectedPointingSensors, node);
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.Texture)) {
+                node.shutdown();    // general texture might have video
+            }
+            else if (x3dom.isa(node, x3dom.nodeTypes.AudioClip)) {
+                node.shutdown();
             }
             else if (x3dom.isa(node, x3dom.nodeTypes.X3DBindableNode)) {
                 var stack = node._stack;
@@ -149,8 +163,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     node._cleanupGLObjects();
                 }
             }
+            else if (x3dom.isa(node, x3dom.nodeTypes.Scene)) {
+                if (node._webgl) {
+                    node._webgl = null;
+                    // TODO; explicitly delete all gl objects
+                }
+            }
 
-            if (nameSpace) {
+            //do not remove node from namespace if it was only "USE"d
+            if (nameSpace && ! domNode.getAttribute('use'))
+            {
                 nameSpace.removeNode(node._DEF);
             }
             node._xmlNode = null;
@@ -204,6 +226,33 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
                 }
             }
+            else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
+                var runtime = domNode.runtime;
+
+                if (runtime && runtime.canvas && runtime.canvas.doc && runtime.canvas.doc._scene) {
+                    var sceneNode = runtime.canvas.doc._scene._xmlNode;
+
+                    removeX3DOMBackendGraph(sceneNode);
+
+                    // also clear corresponding X3DCanvas element
+                    for (var i=0; i<x3dom.canvases.length; i++) {
+                        if (x3dom.canvases[i] === runtime.canvas) {
+                            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+                            x3dom.canvases.splice(i, 1);
+                            break;
+                        }
+                    }
+
+                    runtime.canvas.doc._scene = null;
+                    runtime.canvas.doc._viewarea = null;
+                    runtime.canvas.doc = null;
+                    runtime.canvas = null;
+                    runtime = null;
+
+                    domNode.context = null;
+                    domNode.runtime = null;
+                }
+            }
         },
         
         onNodeInserted: function(e) {
@@ -212,14 +261,19 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in parentNode) {
-				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline') {
+				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
+                    parentNode.tagName.toLowerCase() == 'multipart') {
                     // do nothing
 				}
 				else {
 					var parent = parentNode._x3domNode;
 					
 					if (parent && parent._nameSpace && (child instanceof Element)) {
-                        removeX3DOMBackendGraph(child);    // not really necessary...
+
+                        if (x3dom.caps.DOMNodeInsertedEvent_perSubtree)
+                        {
+                            removeX3DOMBackendGraph(child);    // not really necessary...
+                        }
 
                         var newNode = parent._nameSpace.setupTree(child);
 
@@ -474,10 +528,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 				states.display();
 			}
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
-                                "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | " +
+                                "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | \n" +
                                 "e: examine mode | f: fly mode | y: freefly mode | w: walk mode | h: helicopter mode | " +
-                                "l: lookAt mode | o: lookaround | g: game mode | u: upright position | v: print viewpoint info | " +
-                                "pageUp: next view | pageDown: prev. view | +: increase speed | -: decrease speed ");
+                                "l: lookAt mode | o: lookaround | g: game mode | n: turntable | u: upright position | \n" +
+                                "v: print viewpoint info | pageUp: next view | pageDown: prev. view | " +
+                                "+: increase speed | -: decrease speed ");
             break;
         case  43: /* + (incr. speed) */
             nav._vf.speed = 2 * nav._vf.speed;
@@ -505,7 +560,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             nav._heliUpdated = false;
             x3dom.debug.logInfo("Changed helicopter height to " + nav._vf.typeParams[1]);
             break;
-        case  56: /* 8 (decr height) */
+        case  56: /* 8 (decr angle) */
             nav._vf.typeParams[0] -= 0.02;
             nav._heliUpdated = false;
             x3dom.debug.logInfo("Changed helicopter angle to " + nav._vf.typeParams[0]);
@@ -540,6 +595,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 104: /* h, helicopter mode */
             nav.setType("helicopter", this._viewarea);
+            break;
+        case 105: /* i, fit all */
+            this._viewarea.fit(this._scene._lastMin, this._scene._lastMax);
             break;
         case 108: /* l, lookAt mode */
             nav.setType("lookat", this._viewarea);

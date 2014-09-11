@@ -1,0 +1,130 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>X3DOM example</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+</head>
+
+     
+<body>
+
+    <h1>Carousel menu showing some information about the planets of the solar system</h1>
+	<div class="group"> 
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+             id="elem" showStat="true" showLog="false" width="500px" height="400px">
+			<Scene>
+                <Transform id='trafo'>
+                </Transform>
+				<Background skyColor='0 0 0' ></Background>
+                <!--<NavigationInfo type='none' ></>-->
+				<Viewpoint position="0 2 12" orientation="1 0 0 -0.2" ></Viewpoint>
+			</Scene>
+		</X3D>
+	</div>
+	<div class="group">
+	    <iframe id="meinInfoFrame" width="800" height="350" marginheight="5" marginwidth="5" 
+    	   frameborder="0" src="http://de.wikipedia.org/wiki/Sonnensystem"> 
+	    </iframe>
+    </div>
+    
+    <div id="ausgabe" style="background-color: grey; color:yellow; border: black solid 1px; padding: 2px; font-size:14pt;">Click the planets to get some more information </div>
+	
+	<script type="text/javascript">
+	    var pos = 0;
+	    var inc = 0;
+    
+    function handleOrientation(event) {
+                /*
+                    var ext = "";
+                    for (var fName in event) {
+                        ext += (event[fName] + ": ");
+                        ext += (fName + " / ");
+                    }
+                    x3dom.debug.logInfo(ext);
+                */
+        var x3d = document.getElementById('elem');
+        var w = parseInt(x3d.getAttribute("width"));
+        pos = (event.layerX - (w / 2)) / (w / 2);
+        pos = (pos < -1) ? -1 : ( (pos > 1) ? 1 : pos);
+        event.cancelBubble = true;
+        event.stopPropagation();
+    }
+    
+    function tick() {
+        var d = document.getElementById("trafo");
+        inc += (pos / 50);  // scale down a bit
+        d.setAttribute('rotation', '0 1 0 ' + 3.14159265*inc);
+    }
+    
+    function showValue(val, link) {
+        //document.getElementById('ausgabe').style.color = val;
+        document.getElementById('ausgabe').innerHTML = val + " | " + link;
+        
+        var frame = document.getElementById("meinInfoFrame");
+        frame.src = link;
+    }
+    
+    function createScene() {
+        var N = 8, radius = 4;
+        
+        var textures = ["../../example/texture/solarSystem/Mercury.jpg",
+                        "../../example/texture/solarSystem/Venus.jpg",
+                        "../../example/texture/solarSystem/Earth.jpg",
+                        "../../example/texture/solarSystem/Mars.jpg",
+                        "../../example/texture/solarSystem/Jupiter.jpg",
+                        "../../example/texture/solarSystem/Saturn.jpg",
+                        "../../example/texture/solarSystem/Uranus.jpg",
+                        "../../example/texture/solarSystem/Neptune.jpg"];
+        
+        var planets = ["http://de.wikipedia.org/wiki/Merkur_(Planet)",
+                       "http://de.wikipedia.org/wiki/Venus_(Planet)",
+                       "http://de.wikipedia.org/wiki/Erde",
+                       "http://de.wikipedia.org/wiki/Mars_(Planet)",
+                       "http://de.wikipedia.org/wiki/Jupiter_(Planet)",
+                       "http://de.wikipedia.org/wiki/Saturn_(Planet)",
+                       "http://de.wikipedia.org/wiki/Uranus_(Planet)",
+                       "http://de.wikipedia.org/wiki/Neptun_(Planet)"];
+        
+        for (var i=0; i<N; i++) {
+            var phi = i * (2 * Math.PI / N);
+            var x = radius * Math.cos(phi);
+            var y = 0;
+            var z = -radius * Math.sin(phi);
+            
+            var t = document.createElement('Transform');
+            t.setAttribute("translation", x + " " + y + " " + z);
+            t.setAttribute("scale", ".75 .75 .75");
+            t.setAttribute("onclick", "showValue(" + i + ", '" + planets[i] + "')");
+            
+            var s = document.createElement('Shape');
+            t.appendChild(s);
+            
+            var a = document.createElement('Appearance');
+			var m = document.createElement('Material');
+			a.appendChild(m);
+            s.appendChild(a);
+            
+            var m = document.createElement('ImageTexture');
+            m.setAttribute("url", textures[i]);
+            a.appendChild(m);
+            
+            var b = document.createElement('Sphere');
+            s.appendChild(b);
+            
+            var ot = document.getElementById('trafo');
+            ot.appendChild(t);
+        }
+    }
+    
+    document.onload = function() {
+        document.getElementById('elem').addEventListener("mousemove", handleOrientation, true);
+        
+        createScene();
+        
+        setInterval( function() { tick(); }, 40 );
+    };
+	</script>
+
+</body>
+</html>

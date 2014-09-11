@@ -2,96 +2,58 @@
 def prefix_path(lst, path):
     return [path + '/' + entry for entry in lst]
 
-# Note: order is important
-BASICS = [
-  'lang/Array.js',
-  'Internals.js',
-  'debug.js',
-  'util/AdaptiveRenderControl.js',
-  'util/DownloadManager.js',
-  'util/RefinementJobManager.js',
-  'util/RefinementJobWorker.js',
-  'util/Properties.js',
-  'util/DoublyLinkedList.js',
-  'util/EarClipping.js',
-  'util/Utils.js',
-  'util/States.js',
-  'util/StateManager.js',
-  'util/BinaryContainerSetup.js',
-  'util/DrawableCollection.js',
-  'util/BVH.js',
-  'X3DCanvas.js',
-  'Runtime.js',
-  'Main.js',
-  'Cache.js',
-  'Texture.js'
-]
 
-SHADER = [
-	'shader/Shader.js',
-	'shader/ShaderParts.js',
-	'shader/ShaderDynamic.js',
-	'shader/ShaderDynamicMobile.js',
-	'shader/ShaderComposed.js',
-	'shader/ShaderNormal.js',
-	'shader/ShaderPicking.js',
-	'shader/ShaderPicking24.js',
-	'shader/ShaderPickingId.js',
-	'shader/ShaderPickingColor.js',
-	'shader/ShaderPickingTexcoord.js',
-	'shader/ShaderFrontgroundTexture.js',
-	'shader/ShaderBackgroundTexture.js',
-	'shader/ShaderBackgroundSkyTexture.js',
-	'shader/ShaderBackgroundCubeTexture.js',
-	'shader/ShaderShadow.js',
-	'shader/ShaderShadowRendering.js',
-	'shader/ShaderBlur.js'
-]
+def getPathTuples(data):
+    """
+    Loop over all elements of a given json object and generate a list of name-path-tuples
+    
+    @param data: Array of Objects containing the paths
+    @type data: JSON Array
+    
+    @return: List of tuples (name, paths)
+    @rtype: List<(String, List<String>)>
+    """
+    ENTRIES = []
+    for entry in data:
+        #For components consisting of a single file...
+        if 'path' in entry:
+            #...tuple consists of the file name and a list containing only this file
+            ENTRIES.append((entry['path'], [entry['path']]))
+        #For components split up in multiple files...
+        else:
+            #...tuple consists of the common file name for the component and a list
+            #of the files building this component
+            prefix = entry['filePrefix'] if 'filePrefix' in entry else ''
+            ENTRIES.append((entry['name'], [(prefix + f['file']) for f in entry['files']]))
+    return ENTRIES
 
-GFX = [
-  'gfx_webgl.js',
-  'gfx_flash.js'
-]
 
-NODES = [
-    'X3DDocument.js',
-    'MatrixMixer.js',
-    'Viewarea.js',
-    'Mesh.js',
-    'fields.js',
-    'nodes/NodeNameSpace.js',
-    'nodes/Core.js',
-    'nodes/Grouping.js',
-    'nodes/Bindable.js',
-    'nodes/Rendering.js',
-    'nodes/Shape.js',
-    'nodes/Lighting.js',
-    'nodes/Followers.js',
-    'nodes/Interpolation.js',
-    'nodes/Time.js',
-    'nodes/Networking.js',
-    'nodes/EnvironmentalEffects.js',
-    'nodes/Navigation.js',
-    'nodes/Text.js',
-    'nodes/Sound.js',
-    'nodes/Texturing.js',
-    'nodes/Shaders.js',
-    'nodes/Geometry3D.js',
-    'nodes/Texturing3D.js'
-]
 
-COMPONENTS = [
-  'nodes/Geospatial.js',
-  'nodes/Geometry2D.js',
-  'nodes/VolumeRendering.js',
-  'nodes/CADGeometry.js',
-  'nodes/BVHRefiner.js',
-  'nodes/Geometry3DExt.js',
-  'util/Moveable.js',          # SpaceSensor-like helper
-  'Docs.js'                    # interactive documentation
-]
+#Load json file
 
-CORE_PROFILE = BASICS + SHADER + GFX + NODES
-MORE_PROFILE = COMPONENTS
+f = open('tools/packages.json', 'r')
+import json
+json_object = json.load(f)
+
+
+#Generate path lists for all categories
+
+BASICS = getPathTuples(json_object['grouplist'][0]['data'])
+
+SHADER = getPathTuples(json_object['grouplist'][1]['data'])
+
+GFX = getPathTuples(json_object['grouplist'][2]['data'])
+
+COMPONENTS = getPathTuples(json_object['grouplist'][3]['data'])
+
+EXTENSIONS = getPathTuples(json_object['grouplist'][4]['data'])
+
+COMPRESSED_EXT_LIBS = getPathTuples(json_object['grouplist'][5]['data'])
+
+
+#Combine categories to create profiles
+
+CORE_PROFILE = BASICS + SHADER + GFX + COMPONENTS
+MORE_PROFILE = EXTENSIONS
 
 FULL_PROFILE = CORE_PROFILE + MORE_PROFILE

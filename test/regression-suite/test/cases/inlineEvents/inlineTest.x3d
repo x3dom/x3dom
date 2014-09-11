@@ -1,0 +1,39 @@
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+	<Scene>
+		<Transform translation="-1 1 0">
+			<shape>
+				<appearance>
+					<material id="color1" diffuseColor="red"></material>
+				</appearance>
+				<box></box>
+			</shape>
+		</Transform>
+		
+		<Transform translation="-1 -1 0">
+			<shape>
+				<appearance>
+					<material id="color2" diffuseColor="green"></material>
+				</appearance>
+				<box></box>
+			</shape>
+		</Transform>
+		
+		<Transform translation="1 1 0">
+			<shape>
+				<appearance>
+					<material id="color3" diffuseColor="blue"></material>
+				</appearance>
+				<box></box>
+			</shape>
+		</Transform>
+		
+		<Transform translation="1 -1 0">
+			<shape>
+				<appearance>
+					<material id="color4" diffuseColor="yellow"></material>
+				</appearance>
+				<box></box>
+			</shape>
+		</Transform>
+	</Scene>
+</X3D>

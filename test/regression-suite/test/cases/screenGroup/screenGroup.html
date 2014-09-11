@@ -1,0 +1,43 @@
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+	<script>
+		function move_vp1(){
+            document.getElementById("vp1").setAttribute("position", "0.0000 0.0000 80.0000");
+        }
+	</script>
+</head>
+<body>
+    <X3D id='x3d' showLog='true' width='512px' height='512px' style="border:10px solid #000000;">
+      <Scene DEF='scene'>
+          <Viewpoint id="vp1" position="0.00000 0.00000 60.00000" orientation="0.00000 0.00000 0.00000 0.00000" zNear="0.01" zFar="120.0" description=""></Viewpoint>
+          <NavigationInfo transitionType="LINEAR"></NavigationInfo>
+		  <Background skyColor='1 1 1'></Background>
+          <ScreenGroup>
+            <Shape>
+              <Appearance DEF='A'>
+                <Material></Material>
+              </Appearance>
+              <IndexedFaceSet coordIndex='3 2 1 0 -1 4 5 6 7 -1 1 2 6 5 -1 0 4 7 3 -1 6 2 3 7 -1 0 1 5 4'>
+                <Coordinate point='-10 -10 -10 10 -10 -10 10 10 -10 -10 10 -10 -10 -10 10 10 -10 10 10 10 10 -10 10 10'></Coordinate>
+              </IndexedFaceSet>
+            </Shape>
+          </ScreenGroup>
+		  <Transform translation="-20.0000 0.0000 0.0000">
+		    <Shape>
+		    <Appearance DEF='A'>
+              <Material></Material>
+            </Appearance>
+            <IndexedFaceSet coordIndex='3 2 1 0 -1 4 5 6 7 -1 1 2 6 5 -1 0 4 7 3 -1 6 2 3 7 -1 0 1 5 4'>
+              <Coordinate point='-2 -2 -2 2 -2 -2 2 2 -2 -2 2 -2 -2 -2 2 2 -2 2 2 2 2 -2 2 2'></Coordinate>
+            </IndexedFaceSet>
+            </Shape>
+		  </Transform>
+      </Scene>
+    </X3D>
+	<input type="button" value="change_vp1"
+         onclick="move_vp1();"/>
+  </body>
+</html>

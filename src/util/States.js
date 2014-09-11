@@ -21,12 +21,15 @@ x3dom.States = function (x3dElem) {
 
     var title = document.createElement('div');
     title.className = 'x3dom-states-head';
-    //title.appendChild(document.createTextNode('x3dom'));
+    title.appendChild(document.createTextNode('x3dom'));
 
     var subTitle = document.createElement('span');
     subTitle.className = 'x3dom-states-head2';
-    //subTitle.appendChild(document.createTextNode('stats'));
+    subTitle.appendChild(document.createTextNode('stats'));
     title.appendChild(subTitle);
+
+    this.renderMode = document.createElement('div');
+    this.renderMode.className = 'x3dom-states-rendermode-hardware';
 
     this.measureList = document.createElement('ul');
     this.measureList.className = 'x3dom-states-list';
@@ -34,12 +37,13 @@ x3dom.States = function (x3dElem) {
     this.infoList = document.createElement('ul');
     this.infoList.className = 'x3dom-states-list';
 
-    this.viewer.appendChild(title);
+    //this.viewer.appendChild(title);
+    this.viewer.appendChild(this.renderMode);
     this.viewer.appendChild(this.measureList);
     this.viewer.appendChild(this.infoList);
 
     /**
-     *
+     * Disable the context menu
      */
     this.disableContextMenu = function (e) {
         e.preventDefault();
@@ -49,14 +53,14 @@ x3dom.States = function (x3dElem) {
     };
 
     /**
-     *
+     * Add a seperator for thousands to the string
      */
     this.thousandSeperator = function (value) {
         return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
     /**
-     *
+     * Return numerical value to fixed length
      */
     this.toFixed = function (value) {
         var fixed = (value < 1) ? 2 : (value < 10) ? 2 : 2;
@@ -64,11 +68,27 @@ x3dom.States = function (x3dElem) {
     };
 
     /**
-     *
+     * Update the states.
      */
     this.update = function () {
+        if (!x3dElem.runtime && this.updateMethodID !== undefined) {
+            clearInterval(this.updateMethodID);
+            return;
+        }
+
         var infos = x3dElem.runtime.states.infos;
         var measurements = x3dElem.runtime.states.measurements;
+
+        var renderMode = x3dom.caps.RENDERMODE;
+
+        if ( renderMode == "HARDWARE" ) {
+            this.renderMode.innerHTML = "Hardware-Rendering";
+            this.renderMode.className = 'x3dom-states-rendermode-hardware';
+        } else if ( renderMode == "SOFTWARE" ) {
+            this.renderMode.innerHTML = "Software-Rendering";
+            this.renderMode.className = 'x3dom-states-rendermode-software';
+        }
+
 
         //Clear measure list
         this.measureList.innerHTML = "";
@@ -115,7 +135,7 @@ x3dom.States = function (x3dElem) {
         }
     };
 
-    window.setInterval(function () {
+    this.updateMethodID = window.setInterval(function () {
         that.update();
     }, 1000);
 
@@ -123,7 +143,7 @@ x3dom.States = function (x3dElem) {
 };
 
 /**
- *
+ * Display the states
  */
 x3dom.States.prototype.display = function (value) {
     this.active = (value !== undefined) ? value : !this.active;

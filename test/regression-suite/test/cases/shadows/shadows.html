@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <title>Shadows</title>
+</head>
+<body>
+<x3d width="800px" height="600px" id="x3d">
+    <scene>
+        <Pointlight id="light1" location="-4 -4 4" color="1 1 1" intensity="1.0" shadowfiltersize="0.0" shadowmapsize="1024" shadowintensity=".7"></Pointlight>
+        <DirectionalLight id="light2" direction="-4 4 -4" color="1 1 1" intensity="1.0" shadowfiltersize="0.0" shadowmapsize="1024" shadowintensity=".7"></DirectionalLight>
+        <Transform id="trans" translation="0 -2 0">
+            <Shape>
+                <appearance>
+                    <material id="mat1" diffusecolor="0 1 0.2" ></material>
+                </appearance>
+                <box></box>
+            </Shape>
+        </Transform>
+        <Transform translation="-2 0 0">
+            <Shape>
+                <appearance>
+                    <material diffusecolor="1 1 1"></material>
+                </appearance>
+                <indexedfaceset coordindex="0 1 2 3" solid="true">
+                    <coordinate point="-10 -10 -2 , 10 -10 -2, 10 10 -2, -10 10 -2"></coordinate>
+                </indexedfaceset>
+            </Shape>
+        </Transform>
+    </scene>
+
+</x3d>
+</body>
+</html>

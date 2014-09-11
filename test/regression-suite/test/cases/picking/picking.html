@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <script>
+        document.onload=function(){
+            document.getElementById("shape").addEventListener("click", function(e){
+                console.log("click");
+                //document.getElementById("result").setAttribute("string", e.hitPnt);
+                var x = e.hitPnt[0] + e.hitPnt[1] + e.hitPnt[2];
+                console.log(x);
+                document.getElementById("test-result").innerHTML = x;
+
+            }, false);
+        };
+
+    </script>
+    <title>Picking</title>
+</head>
+<body>
+<x3d width="800px" height="600px" id="x3d">
+    <scene>
+        <Transform id="trans" translation="0 0 0">
+            <Shape id="shape">
+                <appearance>
+                    <material diffusecolor="0 1 0.2" ></material>
+                </appearance>
+                <box></box>
+            </Shape>
+        </Transform>
+        <Transform translation="0 2 0">
+            <shape id="the_shape">
+                <appearance>
+                    <material diffuseColor='0 0 0' specularColor='0 0 0'></material>
+                </appearance>
+                <text id="result" string='' solid='false'>
+                    <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
+                    <fontstyle justify="MIDDLE" size="0.4" leftToRight="true"></fontstyle>
+                </text>
+            </shape>
+        </Transform>
+    </scene>
+</x3d>
+<p id="test-result">10</p>
+</body>
+</html>

@@ -2,9 +2,9 @@
 <X3D xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" profile="Full" version="3.0" xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
 <Scene>
 	<Shape>
-			<Appearance>
-				<Material id="color" diffuseColor="0.5 1 0"></Material>
-			</Appearance>
+		<Appearance>
+			<Material DEF="color" diffuseColor="0.5 1 0"></Material>
+		</Appearance>
 		<Sphere></Sphere>
 	</Shape>
 </Scene>

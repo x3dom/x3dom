@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Augmented Reality with X3DOM and JSARToolKit</title>
+    <script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'> </script>
+    <script type="text/javascript" src="JSARToolKit.js"></script>
+    <script src="script.js"></script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'/>
+    <link rel="stylesheet" href="mystyle.css"/>
+</head>
+<body>
+    <div class="ar">
+        <canvas id="bgnd" width="640px" height="480px"></canvas>
+    </div>
+
+    <div id='container'>
+        <X3D id="x3d" showStat='true' showLog='false' width="640px" height="480px">
+            <Scene>
+                <Viewfrustum id="vf"></Viewfrustum>
+
+                <MatrixTransform id="root">
+                    <Transform rotation="0 1 0 3.14159265359">
+                            <transform id="planet" translation="0 0 0.2">
+                                <shape id="earth">
+                                    <appearance>
+                                        <material diffuseColor="0.5 1 0"></material>
+                                    </appearance>
+                                    <box size="60 60 60"></box>
+                                </shape>
+                            </transform>
+                    </Transform>
+                </MatrixTransform>
+            </Scene>
+        </X3D>
+    </div>
+</body>
+</html>

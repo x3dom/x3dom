@@ -8,7 +8,7 @@ from __future__ import with_statement
 # -------------------------------------------------------------------
 # 
 # This buildfile creates the distributable package of X3DOM
-# and zips it up as tarball and zip variants. It also provides additiona
+# and zips it up as tarball and zip variants. It also provides additional
 # management tasks for development and debugging.
 #
 #
@@ -80,11 +80,12 @@ from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
-from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
+from tools.packages import FULL_PROFILE, CORE_PROFILE, EXTENSIONS, COMPRESSED_EXT_LIBS, prefix_path
 
 
 PROJECT_ROOT = os.path.dirname(__file__)
 SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')
+LIB_ROOT = os.path.join(PROJECT_ROOT, 'lib')
 DIST_ROOT = os.path.join(PROJECT_ROOT, 'dist')
 DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc')
 GUIDE_ROOT = os.path.join(DOC_ROOT, 'guide')
@@ -100,28 +101,44 @@ def build(mode='production'):
     packer = x3dom_packer.packer()
     
     # building compressed files
-    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin", include_version=True)
-    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin", include_version=True)
+    packer.build(CORE_PROFILE, "dist/x3dom.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
+    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)    
+    # add compressed external libraries to full release
+    packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full.js", ["../dist/x3dom-full.js"])], "dist/x3dom-full.js", 'none', src_prefix_path=SRC_ROOT)
+    
         
     if not mode == 'no-debug':
         # building plain files (debug)
-        packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.debug.js", 'none')
-        packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
+        packer.build(FULL_PROFILE, "dist/x3dom-full.debug.js", 'none', src_prefix_path=SRC_ROOT)
+        packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    print("\nBundling components...")
+    print("\nBundling extensions...")
     nodes_dest = os.path.join(DIST_ROOT, 'components')
 
     if not os.path.exists(nodes_dest):
         os.makedirs(nodes_dest)
         
-    for src in prefix_path(COMPONENTS, SRC_ROOT):
+    for (component, files) in EXTENSIONS:
+        packer.build([(component, files)], os.path.join(nodes_dest, os.path.basename(component + '.js')), 'jsmin', include_version=False, src_prefix_path=SRC_ROOT)
+
         try:
-            print "  Copying file %s to %s" % (src, nodes_dest)
-            packer.build([src], os.path.join(nodes_dest, os.path.basename(src)), 'jsmin', include_version=False)
+            """
+            #Handle special case (folder instead of single js file):
+            if not src.endswith(".js"):
+                #Construct name for concatenated file:
+                if src.endswith("/"):
+                    filename = src[:-1]+".js"
+                else:
+                    filename = src+".js"
+                print "  Copying files from folder %s concatenated as %s to %s" % (src, filename, nodes_dest)
+            else:
+                print "  Copying file %s to %s" % (src, nodes_dest)
+                filename = src
+            """
 #            shutil.copy(src, nodes_dest)
         except:
-            print "  Error copying file %s" % src
+            print "  Error copying file to %s" % component
     # done with components
     
     # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -136,8 +153,9 @@ def build(mode='production'):
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
-    shutil.copy(DOC_ROOT + '/help/dumpNodeTypeTree.html', DIST_ROOT + '/docs')
-    shutil.copy(SRC_ROOT + '/dash.all.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/dash.all.js', DIST_ROOT)
+    shutil.copy(LIB_ROOT + '/ammo.js', DIST_ROOT)
+    #shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
     # end other files
 
 def _build_examples():

@@ -1,0 +1,40 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>DEF/USE test</title>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+</head>
+       
+<body>
+	<div class="group">
+        <X3D id="x3d" showLog="true" width="800px" height="600px">
+            <Scene DEF='scene'>
+                <Viewpoint DEF='view0' position='0 0 10' orientation="0 0 0 1"></Viewpoint>
+                <Background skyColor='0.05 0.12 0.23'></Background>
+                <Transform translation='0 2 0'>
+                    <Shape>
+                        <Appearance>
+                            <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' ></Material>
+                            <Texture DEF='TEX0'><img src="./x3d_256.jpg" ></Texture></Texture>
+                        </Appearance>
+                        <Box></Box>
+                    </Shape>
+                </Transform>
+                <Transform translation='-2 0 0'>
+                    <Shape DEF='obj'>
+                        <Appearance>
+                            <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' ></Material>
+                            <Texture USE='TEX0'></Texture>
+                        </Appearance>
+                        <Box></Box>
+                    </Shape>
+                </Transform>
+                <Transform translation='2 0 0'>
+                    <Shape USE='obj'></Shape>
+                </Transform>
+            </Scene>
+        </X3D>
+	</div>
+</body>
+</html>

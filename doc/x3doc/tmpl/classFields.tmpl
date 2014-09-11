@@ -1,0 +1,78 @@
+<?js
+    var self = this;
+    var doc = obj.doc;
+    var fields = obj.fields;
+?>
+
+<div class="dataMemberOverviewContainer">
+    <?js
+         if (fields && fields.length )
+         {
+    ?>
+        <div class="head-row">
+            <span class="head-cell">Name</span>
+            <span class="head-cell">Type</span>
+            <span class="head-cell">Default Value</span>
+            <span class="head-cell">Range</span>
+            <span class="head-cell">Inheritance</span>
+            <span class="head-cell">Standard</span>
+            <span class="head-cell">Description</span>
+        </div>
+
+        <?js fields.forEach(function(f){ ?>
+        <div class="row">
+            <span class="cell table-fieldname"><?js= f.name ?></span>
+
+            <span class="cell">
+               <?js
+                var type = ( f.type && f.type.names && f.type.names.length )
+                            ? f.type.names[0] : null;
+
+                var typeSplit = type.split('.');
+
+                type = (type != null ? self.linkFromContextTo(type, false, typeSplit[typeSplit.length-1]) : "" );
+                ?>
+
+                <?js= type ?>
+            </span>
+
+            <span class="cell">
+                <?js if(f.initvalue)
+                {
+                    var fullInit = f.initvalue.split('.');
+                    var defVal = self.linkFromContextTo( f.initvalue, false, fullInit[fullInit.length-1]);
+                ?>
+                <?js= defVal ?></a>
+                <?js } ?>
+            </span>
+			
+            <span class="cell"><?js= (f.range ? f.range : '') ?></span>
+
+            <span class="cell">
+                <?js if(f.inherits)
+                     {
+                         var inherit = f.inherits.split('#');
+                         parent = inherit[inherit.length-2].split('.');
+
+                         var link = self.linkFromContextTo(inherit[inherit.length-2], false, parent[parent.length-1]);
+
+                         if(parent.length)
+                         {
+                ?>
+                <?js= link ?></a>
+                <?js }} ?>
+            </span>
+
+            <span class="cell">
+                <?js if (f.field == "x3d") { ?>
+                    <img src="<?js= obj.backPath ?>../static/images/x3d.png">
+                <?js } else { ?>
+                    <img src="<?js= obj.backPath ?>../static/images/x3dom.png">
+                <?js } ?>
+            </span>
+
+            <span class="cell"><?js= f.description ?></span>
+        </div>
+        <?js }) ?>
+    <?js }   ?>
+</div>

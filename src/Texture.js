@@ -65,6 +65,8 @@ x3dom.Texture = function (gl, doc, cache, node) {
     var tex = this.node;
     var suffix = "mpd";
 
+    this.node._x3domTexture = this;
+
     if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture)) {
         // for dash we are lazy and check only the first url
         if (tex._vf.url[0].indexOf(suffix, tex._vf.url[0].length - suffix.length) !== -1) {
@@ -109,6 +111,7 @@ x3dom.Texture = function (gl, doc, cache, node) {
 x3dom.Texture.dashVideoScriptFile = "dash.all.js";
 x3dom.Texture.loadDashVideos = [];
 x3dom.Texture.textNum = 0;
+x3dom.Texture.clampFontSize = false;
 
 
 x3dom.Texture.prototype.update = function()
@@ -123,9 +126,26 @@ x3dom.Texture.prototype.update = function()
 	}
 };
 
+x3dom.Texture.prototype.setPixel = function(x, y, pixel)
+{
+    var gl  = this.gl;
+
+    var pixels = new Uint8Array(pixel);
+
+    gl.bindTexture(this.type, this.texture);
+
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+
+    gl.texSubImage2D(this.type, 0, x, y, 1, 1, this.format, gl.UNSIGNED_BYTE, pixels);
+
+    gl.bindTexture(this.type, null);
+    
+    this.doc.needRender = true;
+};
+
 x3dom.Texture.prototype.updateTexture = function()
 {
-	var gl  = this.gl;
+    var gl  = this.gl;
 	var doc = this.doc;
 	var tex = this.node;
 	
@@ -151,34 +171,34 @@ x3dom.Texture.prototype.updateTexture = function()
 	} else {
 		this.format = gl.RGBA;
 	}
-	
-	//Looking for child texture
-	var childTex = (tex._video !== undefined && 
-					tex._video !== null && 
-					tex._needPerFrameUpdate !== undefined && 
-					tex._needPerFrameUpdate === true);
-	
-	//Set texture min, mag, wrapS and wrapT
-	if (tex._cf.textureProperties.node !== null) {
+
+    //Set texture min, mag, wrapS and wrapT
+    if (tex._cf.textureProperties.node !== null) {
 		var texProp = tex._cf.textureProperties.node;
-		
-		this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS);
+
+        this.wrapS = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeS);
         this.wrapT = x3dom.Utils.boundaryModesDic(gl, texProp._vf.boundaryModeT);
 
 		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter);
 		this.magFilter = x3dom.Utils.magFilterDic(gl, texProp._vf.magnificationFilter);
-		
+
 		if (texProp._vf.generateMipMaps === true) {
 			this.genMipMaps = true;
-						
+
 			if (this.minFilter == gl.NEAREST) {
 				this.minFilter  = gl.NEAREST_MIPMAP_NEAREST;
 			} else if (this.minFilter == gl.LINEAR) {
 				this.minFilter  = gl.LINEAR_MIPMAP_LINEAR;
 			}
+
+            if (this.texture && (this.texture.ready || this.texture.textureCubeReady)) {
+                gl.bindTexture(this.type, this.texture);
+                gl.generateMipmap(this.type);
+                gl.bindTexture(this.type, null);
+            }
 		} else {
 			this.genMipMaps = false;
-			
+
 			if ( (this.minFilter == gl.LINEAR_MIPMAP_LINEAR) ||
 				 (this.minFilter == gl.LINEAR_MIPMAP_NEAREST) ) {
 				this.minFilter  = gl.LINEAR;
@@ -188,14 +208,35 @@ x3dom.Texture.prototype.updateTexture = function()
 			}
 		}
 	} else {
-		if (tex._vf.repeatS == false || this.samplerName == "displacementMap") {
+		if (tex._vf.repeatS == false) {
 			this.wrapS = gl.CLAMP_TO_EDGE;
 		}
-		if (tex._vf.repeatT == false || this.samplerName == "displacementMap") {
+        else
+        {
+            this.wrapS = gl.REPEAT;
+        }
+		if (tex._vf.repeatT == false) {
 			this.wrapT = gl.CLAMP_TO_EDGE;
 		}
+        else
+        {
+            this.wrapT = gl.REPEAT;
+        }
+
+        if (this.samplerName == "displacementMap" ||
+            this.samplerName == "multiDiffuseAlphaMap" ||
+            this.samplerName == "multiVisibilityMap")
+        {
+            this.wrapS = gl.CLAMP_TO_EDGE;
+            this.wrapT = gl.CLAMP_TO_EDGE;
+            this.minFilter = gl.NEAREST;
+            this.magFilter = gl.NEAREST;
+        }
 	}
-	
+
+    //Looking for child texture
+    var childTex = (tex._video && tex._needPerFrameUpdate === true);
+
 	//Set texture
 	if (tex._isCanvas && tex._canvas)
 	{
@@ -204,9 +245,13 @@ x3dom.Texture.prototype.updateTexture = function()
 		}
         this.texture.width  = tex._canvas.width;
         this.texture.height = tex._canvas.height;
+        this.texture.ready = true;
 
 		gl.bindTexture(this.type, this.texture);
         gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, tex._canvas);
+        if (this.genMipMaps) {
+            gl.generateMipmap(this.type);
+        }
 		gl.bindTexture(this.type, null);
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
@@ -218,22 +263,35 @@ x3dom.Texture.prototype.updateTexture = function()
             this.texture = null;
             x3dom.debug.logError("Try updating RenderedTexture without FBO initialized!");
         }
+        if (this.texture) {
+            this.texture.ready = true;
+        }
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
 	{
 		if (this.texture == null) {
-			this.texture = gl.createTexture()
+            if (this.node._DEF) {
+                this.texture = this.cache.getTexture2DByDEF(gl, this.node._nameSpace, this.node._DEF);
+            } else {
+                this.texture = gl.createTexture();
+            }
 		}
         this.texture.width  = tex._vf.image.width;
         this.texture.height = tex._vf.image.height;
+        this.texture.ready = true;
 		
-		var pixelArr = tex._vf.image.toGL();
+		var pixelArr = tex._vf.image.array;//.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
-		
-		while (pixelArr.length < pixelArrfont_size) {
-			pixelArr.push(0);
-		}
-		
+
+        if (pixelArr.length < pixelArrfont_size)
+        {
+            var pixelArr = tex._vf.image.toGL();
+
+            while (pixelArr.length < pixelArrfont_size) {
+                pixelArr.push(0);
+            }
+        }
+
 		var pixels = new Uint8Array(pixelArr);
 		
 		gl.bindTexture(this.type, this.texture);
@@ -241,6 +299,9 @@ x3dom.Texture.prototype.updateTexture = function()
         gl.texImage2D(this.type, 0, this.format, 
                       tex._vf.image.width, tex._vf.image.height, 0, 
                       this.format, gl.UNSIGNED_BYTE, pixels);
+        if (this.genMipMaps) {
+            gl.generateMipmap(this.type);
+        }
 		gl.bindTexture(this.type, null);
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
@@ -256,7 +317,8 @@ x3dom.Texture.prototype.updateTexture = function()
             var element_vid = document.createElement('div');
             element_vid.setAttribute('class', 'dash-video-player' + x3dom.Texture.textNum);
             tex._video = document.createElement('video');
-            tex._video.setAttribute('autobuffer', 'true');
+            tex._video.setAttribute('preload', 'auto');
+            tex._video.setAttribute('muted', 'muted');
 
             var scriptToRun = document.createElement('script');
             scriptToRun.setAttribute('type', 'text/javascript');
@@ -266,13 +328,16 @@ x3dom.Texture.prototype.updateTexture = function()
             element_vid.appendChild(tex._video);
             p.appendChild(element_vid);
             tex._video.style.visibility = "hidden";
+            tex._video.style.display = "none";
         }
         else {
             if (!childTex) {
                 tex._video = document.createElement('video');
-                tex._video.setAttribute('autobuffer', 'true');
+                tex._video.setAttribute('preload', 'auto');
+                tex._video.setAttribute('muted', 'muted');
                 p.appendChild(tex._video);
                 tex._video.style.visibility = "hidden";
+                tex._video.style.display = "none";
             }
             for (var i = 0; i < tex._vf.url.length; i++) {
                 var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
@@ -287,7 +352,11 @@ x3dom.Texture.prototype.updateTexture = function()
 		{	
 			gl.bindTexture(that.type, that.texture);
 			gl.texImage2D(that.type, 0, that.format, that.format, gl.UNSIGNED_BYTE, tex._video);
+            if (that.genMipMaps) {
+                gl.generateMipmap(that.type);
+            }
 			gl.bindTexture(that.type, null);
+            that.texture.ready = true;
 			doc.needRender = true;
 		};
 		
@@ -318,12 +387,12 @@ x3dom.Texture.prototype.updateTexture = function()
 	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
 	{
 		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false, 
-		                                         tex._vf.withCredentials, tex._vf.scale);
+		                                         tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
 	}
 	else 
 	{
 		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]), 
-		                                       false, tex._vf.withCredentials, tex._vf.scale);
+		                                       false, tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
 	}
 };
 
@@ -388,7 +457,10 @@ x3dom.Texture.prototype.updateText = function()
 		font_language 	= fontStyleNode._vf.language;
 
         if (font_size < 0.1) font_size = 0.1;
-        if (font_size > 2.3) font_size = 2.3;
+        if(x3dom.Texture.clampFontSize && font_size > 2.3)
+        {
+            font_size = 2.3;
+        }
 	}
 	
 	var textX, textY;
@@ -414,9 +486,9 @@ x3dom.Texture.prototype.updateText = function()
 		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
-	
-	text_canvas.width = maxWidth;
-	text_canvas.height = textHeight * paragraph.length; 
+	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
+	text_canvas.width = maxWidth * canvas_scale;
+	text_canvas.height = textHeight * paragraph.length * canvas_scale;
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;

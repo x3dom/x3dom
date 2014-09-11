@@ -13,7 +13,9 @@
 // This module adds documentation related functionality
 // to the library.
 
-/** @namespace The x3dom.docs namespace. */
+/** The x3dom.docs namespace.
+ * @namespace x3dom.docs
+ */
 x3dom.docs = {};
 
 
