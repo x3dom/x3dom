@@ -82,7 +82,7 @@ x3dom.registerNodeType(
 			 */
 			this.checkSanity = function() {
 				var sane = (this._vf.key.length == this._vf.keyValue.length) &&
-						   ((this._vf.key.length == this._vf.keyVelocity.length) || (this._vf.keyVelocity.length == 2 && this._vf.key.length >= 2));
+						   ((this._vf.key.length == this._vf.keyVelocity.length) || (this._vf.keyVelocity.length == 2 && this._vf.key.length >= 2) || (this._vf.keyVelocity.length == 0));
 				if(!sane)
 					x3dom.debug.logWarning("SplinePositionInterpolator Node: 'key' , 'keyValue' and/or 'keyVelocity' fields have inappropriate sizes");
 			};
