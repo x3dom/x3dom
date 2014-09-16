@@ -67,7 +67,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale, genMipMaps)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -87,8 +87,19 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	
 	var image = new Image();
 
-    if(withCredentials) {
-        image.crossOrigin = 'use-credentials'
+    switch(crossOrigin.toLowerCase()) {
+        case 'anonymous': {
+            image.crossOrigin = 'anonymous';
+        } break;
+        case 'use-credentials': {
+            image.crossOrigin = 'use-credentials'
+        } break;
+        case 'none': {
+            //this is needed to omit the default case, if default is none, erase this and the default case
+        } break;
+        default: {
+            image.crossOrigin = 'anonymous';
+        }
     }
 
 	image.src = src;
@@ -133,7 +144,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale, genMipMaps)
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, crossOrigin, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -161,9 +172,22 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 		var face = faces[i];
 
 		var image = new Image();
-        if(withCredentials) {
-            image.crossOrigin = 'use-credentials';
+
+        switch(crossOrigin.toLowerCase()) {
+            case 'anonymous': {
+                image.crossOrigin = 'anonymous';
+            } break;
+            case 'use-credentials': {
+                image.crossOrigin = 'use-credentials'
+            } break;
+            case 'none': {
+                //this is needed to omit the default case, if default is none, erase this and the default case
+            } break;
+            default: {
+                image.crossOrigin = 'anonymous';
+            }
         }
+
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		
