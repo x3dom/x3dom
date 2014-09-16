@@ -1538,6 +1538,16 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
     this._lastX = x;
     this._lastY = y;
     this._deltaT = 0;
+
+    //if the mouse is moved out of the canvas, reset the list of currently affected pointing sensors
+    //(this behaves similar to a mouse release inside the canvas)
+    var i;
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    for (i = 0; i < affectedPointingSensorsList.length; ++i)
+    {
+        affectedPointingSensorsList[i].pointerReleased();
+    }
+    this._doc._nodeBag.affectedPointingSensors = [];
 };
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
