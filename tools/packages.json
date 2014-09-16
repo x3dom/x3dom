@@ -153,7 +153,8 @@
                     {"file": "NormalInterpolator.js"},
                     {"file": "ColorInterpolator.js"},
                     {"file": "ScalarInterpolator.js"},
-                    {"file": "CoordinateInterpolator.js"}
+                    {"file": "CoordinateInterpolator.js"},
+                    {"file": "SplinePositionInterpolator.js"}
                 ]},
                 {"name": "Time", "filePrefix": "nodes/Time/", "files":[
                     {"file": "TimeSensor.js"},
