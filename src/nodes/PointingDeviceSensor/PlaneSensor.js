@@ -167,7 +167,7 @@ x3dom.registerNodeType(
 
                 this._viewArea = viewarea;
 
-                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
+                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0).add(this._vf.offset);
 
                 //TODO: handle multi-path nodes
 
