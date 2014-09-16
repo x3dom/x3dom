@@ -29,14 +29,14 @@ x3dom.registerNodeType(
             var trans = (ctx && ctx.autoGen) ? 1 : 0;
 
             /**
-             * Credentials
-             * @var {x3dom.fields.SFBool} withCredentials
+             * Cross Origin Mode
+             * @var {x3dom.fields.SFString} crossOrigin
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
-             * @initvalue false
+             * @initvalue "anonymous"
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'withCredentials', false);
+            this.addField_SFString(ctx, 'crossOrigin', 'anonymous');
 
             /**
              * Color of the ground

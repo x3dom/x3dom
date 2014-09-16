@@ -79,14 +79,14 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'scale', true);
 
             /**
-             * Credentials.
-             * @var {x3dom.fields.SFBool} withCredentials
+             * Cross Origin Mode
+             * @var {x3dom.fields.SFString} crossOrigin
              * @memberof x3dom.nodeTypes.X3DTextureNode
-             * @initvalue false
-             * @field x3dom
+             * @initvalue "anonymous"
+             * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'withCredentials', false);
+            this.addField_SFString(ctx, 'crossOrigin', 'anonymous');
 
             /**
              * Sets a TextureProperty node.
