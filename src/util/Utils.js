@@ -970,7 +970,7 @@ x3dom.Utils.forbiddenBySOP = function (uri_string) {
     var Host;
     var originPort = document.location.port === "" ? "80" : document.location.port;
 
-    if (Scheme_AuthorityPQF.length === 2) { // if there is no '//', no authority is given;
+    if (Scheme_AuthorityPQF.length === 2) { // if there is '//' authority is given;
         Scheme = Scheme_AuthorityPQF[0];
         AuthorityPQF = Scheme_AuthorityPQF[1];
 
@@ -992,7 +992,7 @@ x3dom.Utils.forbiddenBySOP = function (uri_string) {
         Host_Port = HostPort.split(':');
         Host = Host_Port[0];
         Port = Host_Port[1];
-    } // else will return false for an invalid URL or URL with authority
+    } // else will return false for an invalid URL or URL without authority
 
     Port = Port || "80";
     Host = Host || document.location.host;
