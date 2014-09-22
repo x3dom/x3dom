@@ -32,11 +32,11 @@ x3dom.registerNodeType(
              * Cross Origin Mode
              * @var {x3dom.fields.SFString} crossOrigin
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
-             * @initvalue "anonymous"
+             * @initvalue ""
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'crossOrigin', 'anonymous');
+            this.addField_SFString(ctx, 'crossOrigin', '');
 
             /**
              * Color of the ground

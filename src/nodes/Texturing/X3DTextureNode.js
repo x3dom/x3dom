@@ -82,11 +82,11 @@ x3dom.registerNodeType(
              * Cross Origin Mode
              * @var {x3dom.fields.SFString} crossOrigin
              * @memberof x3dom.nodeTypes.X3DTextureNode
-             * @initvalue "anonymous"
+             * @initvalue ""
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'crossOrigin', 'anonymous');
+            this.addField_SFString(ctx, 'crossOrigin', '');
 
             /**
              * Sets a TextureProperty node.
