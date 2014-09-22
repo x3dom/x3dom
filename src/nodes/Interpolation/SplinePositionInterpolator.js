@@ -161,8 +161,14 @@ x3dom.registerNodeType(
 						else if((i == 0 || i == N-1) && closed)
 						{
 							Ti = this._vf.keyValue[1].subtract(this._vf.keyValue[N-2]).multiply(0.5);
-							F_plus_i = 2.0 * (this._vf.key[N-1] - this._vf.key[N-2]) / (this._vf.key[N-2] - this._vf.key[1]);
-							F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[0]) / (this._vf.key[N-2] - this._vf.key[1]);
+							if(i == 0) {
+								F_plus_i = 2.0 * (this._vf.key[0] - this._vf.key[N-2]) / (this._vf.key[1] - this._vf.key[N-2]);
+								F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[0]) / (this._vf.key[1] - this._vf.key[N-2]);
+							}
+							else {
+								F_plus_i = 2.0 * (this._vf.key[N-1] - this._vf.key[N-2]) / (this._vf.key[1] - this._vf.key[N-2]);
+								F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[N-1]) / (this._vf.key[1] - this._vf.key[N-2]);
+							}
 						}
 						else
 						{
@@ -192,6 +198,12 @@ x3dom.registerNodeType(
 					{
 						this.checkSanity();
 						this.calcDtot();
+						this.calcAdjustedKeyVelocity();
+						break;
+					}
+					case 'closed':
+					case 'normalizeVelocity':
+					{
 						this.calcAdjustedKeyVelocity();
 						break;
 					}
