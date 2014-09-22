@@ -1,0 +1,52 @@
+<html>
+<head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+	<script>
+		var step = 0;
+		var stepsize = 0.005;
+		var numsteps = 201;
+		function auto() {
+			for(var i = 0; i < numsteps; i=i+1) {
+				var sip = document.getElementById("spline_interp");
+				sip.setAttribute("set_fraction", step + i*stepsize);
+				var extruder = document.getElementById("extruder");
+				extruder.setAttribute("spine", extruder.getAttribute("spine") + " " + sip.getAttribute("value_changed"));
+			}
+		}
+	</script>
+</head>
+<body onload="auto();">
+    <X3D id='x3d' showLog='true' width='800px' height='800px' style="border:10px solid #000000;">
+      <Scene DEF='scene'>
+          <OrthoViewpoint></OrthoViewpoint>
+				<Background skyColor='0 0 0'></Background>
+				
+				<!--Transform id='Pointer1' translation='-1 0 0'>
+				</Transform>
+				
+				<Shape>
+					<Appearance>
+						<Material emissiveColor='1 1 1'></Material>
+					</Appearance>
+					<Extrusion id="extruder" convex='true' crossSection='.01 .01 .01 -.01 -.01 -.01 -.01 .01 .01 .01' spine='-1 0 0 -1 0 0'></Extrusion>
+				</Shape>
+				
+				<SplinePositionInterpolator id="spline_interp" DEF='PositionAnimator1'
+											key='0.0 1.0'
+											keyValue='-1 0 0 1 0 0' 
+											keyVelocity='0 10 0 0 10 0'>
+				</SplinePositionInerpolator>
+											
+				<ROUTE fromField='value_changed' fromNode='PositionAnimator1' toField='translation' toNode='Pointer1'></ROUTE-->
+				<Shape>
+					<Appearance>
+						<Material emissiveColor="1 1 1"></Material>
+					</Appearance>
+					<Box size="0.1 0.1 0.1"></Box>
+				</Shape>
+      </Scene>
+    </X3D>
+  </body>
+</html>
