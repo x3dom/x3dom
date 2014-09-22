@@ -161,6 +161,7 @@ x3dom.registerNodeType(
 						else if((i == 0 || i == N-1) && closed)
 						{
 							Ti = this._vf.keyValue[1].subtract(this._vf.keyValue[N-2]).multiply(0.5);
+<<<<<<< HEAD
 							if(i == 0) {
 								F_plus_i = 2.0 * (this._vf.key[0] - this._vf.key[N-2]) / (this._vf.key[1] - this._vf.key[N-2]);
 								F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[0]) / (this._vf.key[1] - this._vf.key[N-2]);
@@ -169,6 +170,10 @@ x3dom.registerNodeType(
 								F_plus_i = 2.0 * (this._vf.key[N-1] - this._vf.key[N-2]) / (this._vf.key[1] - this._vf.key[N-2]);
 								F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[N-1]) / (this._vf.key[1] - this._vf.key[N-2]);
 							}
+=======
+							F_plus_i = 2.0 * (this._vf.key[N-1] - this._vf.key[N-2]) / (this._vf.key[N-2] - this._vf.key[1]);
+							F_minus_i= 2.0 * (this._vf.key[1] - this._vf.key[0]) / (this._vf.key[N-2] - this._vf.key[1]);
+>>>>>>> 08c6285dd5a87c20d79d2a25f616eeba854aa57f
 						}
 						else
 						{
@@ -201,12 +206,15 @@ x3dom.registerNodeType(
 						this.calcAdjustedKeyVelocity();
 						break;
 					}
+<<<<<<< HEAD
 					case 'closed':
 					case 'normalizeVelocity':
 					{
 						this.calcAdjustedKeyVelocity();
 						break;
 					}
+=======
+>>>>>>> 08c6285dd5a87c20d79d2a25f616eeba854aa57f
 					case 'set_fraction':
 					{
 						var value;
