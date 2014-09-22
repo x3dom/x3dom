@@ -117,12 +117,9 @@ x3dom.registerNodeType(
                 if (this._first){
                     return "void edgeEnhancement(inout vec4 originalColor, in vec4 gradient, in vec3 V, in vec3 edgeColor, in float gradientT)\n"+
                     "{\n"+
-                    "   if(gradient.w > 0.05){\n"+
                     "       float angle_dif = abs(dot(gradient.xyz,V));\n"+
-                    "       if (angle_dif <= cos(gradientT)){\n"+
-                    "           originalColor.rgb = mix(edgeColor, originalColor.rgb, angle_dif);\n"+
-                    "       }\n"+
-                    "   }\n"+
+                    "       float br = clamp(sign(cos(gradientT)-angle_dif),0.0,1.0);\n"+
+                    "       originalColor.rgb = mix(originalColor.rgb, edgeColor, br*angle_dif);\n"+
                     "}\n";
                 }else{
                     return "";
@@ -131,7 +128,7 @@ x3dom.registerNodeType(
 
             inlineStyleShaderText: function(){
                 var inlineText = "   if(uEnableEdge"+this._styleID+"){\n"+
-                "       edgeEnhancement(value, grad, normalize(dir), uEdgeColor"+this._styleID+", uGradientThreshold"+this._styleID+");\n"+
+                "       edgeEnhancement(value, grad, dir, uEdgeColor"+this._styleID+", uGradientThreshold"+this._styleID+");\n"+
                 "   }\n";
                 return inlineText;
             }
