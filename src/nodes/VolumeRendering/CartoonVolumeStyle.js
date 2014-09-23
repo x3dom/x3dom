@@ -178,27 +178,12 @@ x3dom.registerNodeType(
                     "}\n"+
                     "void getCartoonStyle(inout vec4 outputColor, vec3 orthogonalColor, vec3 parallelColor, int colorSteps, vec4 surfNormal, vec3 V)\n"+
                     "{\n"+
-                    "   if(colorSteps > 0 && colorSteps <= 64){\n"+
-                    "       if(surfNormal.w > 0.05){\n"+
-                    "       float cos_angle = dot(surfNormal.xyz, V);\n"+
-                    "       if(cos_angle <= 0.0){\n"+
-                    "           outputColor.rgb = parallelColor.rgb;\n"+
-                    "       }else{\n"+
-                    "           if(cos_angle < 1.0){\n"+
-                    "               float range_size = pi_half / float(colorSteps);\n"+
-                    "               float interval = floor(cos_angle / range_size);\n"+
-                    "               float ang = interval * range_size;\n"+
-                    "               if(interval >= float(colorSteps))\n"+
-                    "                   interval = float(colorSteps) - 1.0;\n"+
-                    "               outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, ang));\n"+
-                    "           }else{\n"+
-                    "               outputColor.rgb = orthogonalColor.rgb;\n"+
-                    "           }\n"+
-                    "       }\n"+
-                    "   }else{\n"+
-                    "       outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, 0.5));\n"+
-                    "   }\n"+
-                    "   }\n"+
+                    "   float steps = clamp(float(colorSteps), 1.0,64.0);\n"+
+                    "   float range_size = pi_half / steps;\n"+
+                    "   float cos_angle = abs(dot(surfNormal.xyz, V));\n"+
+                    "   float interval = clamp(floor(cos_angle / range_size),0.0,64.0);\n"+
+                    "   float ang = interval * range_size;\n"+
+                    "   outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, ang));\n"+
                     "}\n"+
                     "\n";
                 }else{
@@ -219,7 +204,7 @@ x3dom.registerNodeType(
 
             inlineStyleShaderText: function(){
                 var inlineText = "  if(uEnableCartoon"+this._styleID+"){\n"+
-                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor"+this._styleID+"), rgb2hsv(uParallelColor"+this._styleID+"), uColorSteps"+this._styleID+", grad, normalize(dir));\n"+
+                "      getCartoonStyle(value, rgb2hsv(uOrthogonalColor"+this._styleID+"), rgb2hsv(uParallelColor"+this._styleID+"), uColorSteps"+this._styleID+", gradEye, dir);\n"+
                 "  }\n";   
                 return inlineText;
             }
