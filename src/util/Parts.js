@@ -290,4 +290,27 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
+
+    /**
+     * get bounding volume
+     *
+     */
+    this.getVolume = function() {
+
+        var i, x, y;
+
+        if (ids.length && ids.length > 1) //Multi select
+        {
+            var volume = new x3dom.fields.BoxVolume();
+            for(i=0; i<parts.ids.length; i++) {
+                volume.extendBounds(this.multiPart._partVolume[i].min, this.multiPart._partVolume[i].min);
+            }
+            return volume;
+
+        }
+        else
+        {
+            return this.multiPart._partVolume[parts.ids[0]];
+        }
+    };
 };
