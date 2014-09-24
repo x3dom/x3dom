@@ -613,6 +613,11 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
 
         this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
     }
+    else if(obj && obj.getVolume)
+    {
+        var objVolume = obj.getVolume();
+        this.canvas.doc._viewarea.fit(objVolume.min,objVolume.max,updateCenterOfRotation);
+    }
 };
 
 /**
