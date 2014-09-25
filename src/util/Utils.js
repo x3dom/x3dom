@@ -67,7 +67,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale, genMipMaps)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -87,8 +87,21 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 	
 	var image = new Image();
 
-    if(withCredentials) {
-        image.crossOrigin = 'use-credentials'
+    switch(crossOrigin.toLowerCase()) {
+        case 'anonymous': {
+            image.crossOrigin = 'anonymous';
+        } break;
+        case 'use-credentials': {
+            image.crossOrigin = 'use-credentials'
+        } break;
+        case 'none': {
+            //this is needed to omit the default case, if default is none, erase this and the default case
+        } break;
+        default: {
+            if(x3dom.Utils.forbiddenBySOP(src)) {
+                image.crossOrigin = 'anonymous';
+            }
+        }
     }
 
 	image.src = src;
@@ -133,7 +146,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scal
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale, genMipMaps)
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, crossOrigin, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
@@ -161,9 +174,24 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, sc
 		var face = faces[i];
 
 		var image = new Image();
-        if(withCredentials) {
-            image.crossOrigin = 'use-credentials';
+
+        switch(crossOrigin.toLowerCase()) {
+            case 'anonymous': {
+                image.crossOrigin = 'anonymous';
+            } break;
+            case 'use-credentials': {
+                image.crossOrigin = 'use-credentials'
+            } break;
+            case 'none': {
+                //this is needed to omit the default case, if default is none, erase this and the default case
+            } break;
+            default: {
+                if(x3dom.Utils.forbiddenBySOP(src)) {
+                    image.crossOrigin = 'anonymous';
+                }
+            }
         }
+
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		
@@ -793,6 +821,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	return property;
 };
 
+
 /*****************************************************************************
 * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the 
 * appropriate uniform
@@ -918,4 +947,55 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 	}
 
 	return shader;
+};
+
+
+/**
+ * Matches a given URI with document.location. If domain, port and protocol are the same SOP won't forbid access to the resource.
+ * @param {String} uri_string
+ * @returns {boolean}
+ */
+x3dom.Utils.forbiddenBySOP = function (uri_string) {
+
+    uri_string = uri_string.toLowerCase();
+    // scheme ":" hier-part [ "?" query ] [ "#" fragment ]
+    var Scheme_AuthorityPQF = uri_string.split('//'); //Scheme and AuthorityPathQueryFragment
+    var Scheme;
+    var AuthorityPQF;
+    var Authority;
+    var UserInfo_HostPort;
+    var HostPort;
+    var Host_Port;
+    var Port;
+    var Host;
+    var originPort = document.location.port === "" ? "80" : document.location.port;
+
+    if (Scheme_AuthorityPQF.length === 2) { // if there is '//' authority is given;
+        Scheme = Scheme_AuthorityPQF[0];
+        AuthorityPQF = Scheme_AuthorityPQF[1];
+
+        /*
+         * The authority component is preceded by a double slash ("//") and is
+         * terminated by the next slash ("/"), question mark ("?"), or number
+         * sign ("#") character, or by the end of the URI.
+         */
+        Authority = AuthorityPQF.split('/')[0].split('?')[0].split('#')[0];
+
+        //authority   = [ userinfo "@" ] host [ ":" port ]
+        UserInfo_HostPort = Authority.split('@');
+        if (UserInfo_HostPort.length === 1) { //No Userinfo given
+            HostPort = UserInfo_HostPort[0];
+        } else {
+            HostPort = UserInfo_HostPort[1];
+        }
+
+        Host_Port = HostPort.split(':');
+        Host = Host_Port[0];
+        Port = Host_Port[1];
+    } // else will return false for an invalid URL or URL without authority
+
+    Port = Port || "80";
+    Host = Host || document.location.host;
+    Scheme = Scheme || document.location.protocol;
+    return !(Port === originPort && Host === document.location.host && Scheme === document.location.protocol);
 };
