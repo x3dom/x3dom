@@ -19,7 +19,28 @@
     },
     "tests" :
         [
-        {
+        	{
+        		"url"   : "/test/cases/splinePositionInterpolator/splinePositionInterpolator.html",
+	        	"steps" :
+	                [
+	                   {
+	                       "type"      :   "ExecuteCommand",
+	                       "params"    :
+	                       {
+	                           "x3d"       :   "x3d",
+	                           "command"   :   "auto();"
+	                       }
+	                    },
+	                    {
+	                    	"type"		: "CompareScreenshot",
+	                    	"params"	:
+	                    	{
+	                    		"x3d"	: "x3d"
+	                    	}
+	                    }
+	                 ]
+	        },
+        	{
                 "url"   : "/test/cases/billboard/billboard.html",
                 "steps" :
                     [
