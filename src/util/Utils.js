@@ -146,7 +146,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, crossOrigin, scale, genMipMaps)
+x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
 {
 	var texture = gl.createTexture();
 
