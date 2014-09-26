@@ -186,7 +186,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                 //this is needed to omit the default case, if default is none, erase this and the default case
             } break;
             default: {
-                if(x3dom.Utils.forbiddenBySOP(src)) {
+                if(x3dom.Utils.forbiddenBySOP(src[i])) {
                     image.crossOrigin = 'anonymous';
                 }
             }
@@ -241,7 +241,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 		};
 		
 		// backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
-		image.src = url[i];
+		image.src = src[i];
 	}
 	
 	return texture;
