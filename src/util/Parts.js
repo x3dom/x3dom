@@ -303,7 +303,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
         {
             var volume = new x3dom.fields.BoxVolume();
             for(i=0; i<parts.ids.length; i++) {
-                volume.extendBounds(this.multiPart._partVolume[i].min, this.multiPart._partVolume[i].min);
+                volume.extendBounds(this.multiPart._partVolume[i].min, this.multiPart._partVolume[i].max);
             }
             volume.transform(transmat);
             return volume;
