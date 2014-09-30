@@ -214,13 +214,13 @@ x3dom.registerNodeType(
                 var inlineText = "    sample = value.r;\n";
                 if(this._vf.surfaceValues.length == 1) { //Only one surface value
                     if(this._vf.contourStepSize == 0.0){
-                        inlineText += "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n"+
-                        "       value = vec4(uSurfaceValues[0]);\n";
+                        inlineText += "   if(((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0])) && (grad.a>=uSurfaceTolerance)){\n"+
+                        "       value = vec4(vec3(uSurfaceValues[0]), 1.0);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                         }
-                        inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                        "       accum.a += value.a;\n"+
+                        inlineText += "       accum.rgb = value.rgb;\n"+
+                        "       accum.a = value.a;\n"+
                         "   }\n"; 
                     }else{ //multiple iso values with the contour step size
                         var tmp = this._vf.surfaceValues[0];
@@ -239,13 +239,13 @@ x3dom.registerNodeType(
                         range = negative_range.concat(positive_range);
                         for (var i = 0; i <= range.length - 1; i++) {
                             var s_value = range[i].toPrecision(3);
-                            inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n"+
+                            inlineText += " if(((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+")) && (grad.a>=uSurfaceTolerance)){\n"+
                             "       value = vec4("+s_value+");\n";
                             if(this._cf.renderStyle.nodes){
                                 inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                             }
-                            inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                            "       accum.a += value.a;\n"+
+                            inlineText += "       accum.rgb = value.rgb;\n"+
+                            "       accum.a = 1.0;\n"+
                             "   }\n"; 
                         };
                     }
@@ -254,13 +254,13 @@ x3dom.registerNodeType(
                     var s_values = this._vf.surfaceValues.length;
                     for(var i=0; i<s_values; i++){
                         var index = Math.min(i, n_styles);
-                        inlineText += "   if((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"]) && (grad.a>=uSurfaceTolerance)){\n"+
+                        inlineText += "   if(((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"])) && (grad.a>=uSurfaceTolerance)){\n"+
                         "       value.rgb = vec3(uSurfaceValues["+i+"]);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[index].inlineStyleShaderText();
                         }
-                        inlineText += "   accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                        "   accum.a += value.a;\n"+
+                        inlineText += "   accum.rgb = value.rgb;\n"+
+                        "   accum.a = 1.0;\n"+
                         "   }\n"; 
                     }
                 }
@@ -386,7 +386,7 @@ x3dom.registerNodeType(
                     }
                     shaderText += this.inlineStyleShaderText();
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                        shaderText += this.inlineLightAssigment();
+                        shaderText += this.lightAssigment();
                     }
                     shaderText +=
                     "    //advance the current position\n"+
