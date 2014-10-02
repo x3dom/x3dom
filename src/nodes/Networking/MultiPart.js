@@ -180,22 +180,23 @@ x3dom.registerNodeType(
                         this.callEvtHandler("onmouseover", e);
 
                         //if some mouse button is down fire mousedown event
-                        if (e.button) {
+                        if (!e.mouseup && e.button && e.button != this._lastButton) {
                             e.type = "mousedown";
-                            this.callEvtHandler("onmousedown", e);
                             this._lastButton = e.button;
                             if ( this._lastClickedId == -1 ) {
                                 this._lastClickedId = e.pickedId;
                             }
+                            this.callEvtHandler("onmousedown", e);
                         }
 
                         //if some mouse button is up fire mouseup event
-                        if (this._lastButton != 0 && e.button == 0) {
+                        if (e.mouseup || (this._lastButton != 0 && e.button == 0)) {
                             e.type = "mouseup";
                             this.callEvtHandler("onmouseup", e);
                             this._lastButton = 0;
 
                             if ( e.pickedId == this._lastClickedId ) {
+                                this._lastClickedId = -1;
                                 e.type = "click";
                                 this.callEvtHandler("onclick", e);
                             }
