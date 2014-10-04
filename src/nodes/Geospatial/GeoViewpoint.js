@@ -165,10 +165,10 @@ x3dom.registerNodeType(
                 this._lastSpeed = navi._vf.speed;
                 this._userSpeedFactor = 1.0;
                 this._lastNavType = navi.getType();
-                  x3dom.debug.logInfo("initial navigation speed: " + this._initSpeed);
-                  x3dom.debug.logInfo(this._xmlNode.hasAttribute('headlight'));
-                //set headlight and navType here if they are given (but removed from spec.)
-                //is there a way to check if fields are given in the document ? (dom has default values if not given)
+                x3dom.debug.logInfo("initial navigation speed: " + this._initSpeed);
+                // x3dom.debug.logInfo(this._xmlNode.hasAttribute('headlight'));
+                // set headlight and navType here if they are given (but removed from spec.)
+                // is there a way to check if fields are given in the document ? (dom has default values if not given)
                 if (this._vf.headlight !== undefined) {navi._vf.headlight = this._vf.headlight;}
                 if (this._vf.navType !== undefined) {navi._vf.navType = this._vf.navType;}
                 
@@ -180,7 +180,7 @@ x3dom.registerNodeType(
                 var navi = viewarea._scene.getNavigationInfo();
                 //retain examine mode speed modifications
                 navi._vf.speed = this._examineSpeed;
-                x3dom.debug.logInfo("restored navigation speed: " + this._examineSpeed);
+                x3dom.debug.logInfo("navigation speed restored to: " + this._examineSpeed);
                 x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this, prev);
                 //somehow this.getViewMatrix here gets called one more time after deactivate and resets speed, check there
             },
@@ -275,14 +275,14 @@ x3dom.registerNodeType(
                     else {
                         if (this.isExamineMode(this._lastNavType)) {
                             this._examineSpeed = navi._vf.speed;
-                            x3dom.debug.logError("returned from examine, set speed: " + this._lastSpeed);
+                            x3dom.debug.logInfo("back from examine mode, resume speed: " + this._lastSpeed);
                             navi._vf.speed = this._lastSpeed;
                         }
                         this._lastNavType = navType;
                         //check if speed was modified interactively
                         if (navi._vf.speed != this._lastSpeed) {
                             this._userSpeedFactor *= navi._vf.speed / this._lastSpeed;
-                            x3dom.debug.logError("interactive speed factor changed: " + this._userSpeedFactor);
+                            x3dom.debug.logInfo("interactive speed factor changed: " + this._userSpeedFactor);
                         }
                         // get elevation above ground
                         // current position in x3d 
@@ -300,7 +300,7 @@ x3dom.registerNodeType(
                             var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
                             // first rotate if requested 
                             if(geoOrigin.node._vf.rotateYUp) {
-                                //rotation is GeoLocation rotation
+                                // rotation is GeoLocation rotation
                                 var rotmat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin);
                                 positionGC = rotmat.multMatrixPnt(position);
                                 }
@@ -316,7 +316,7 @@ x3dom.registerNodeType(
                         // eg., move initial settings of GCtoGD outside 
                         var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
                         var elevation = positionGD.z;
-                          x3dom.debug.logInfo("Geoelevation is " + elevation);
+                        // x3dom.debug.logInfo("Geoelevation is " + elevation);
                         // at 10m above ground a speed of 1 sounds about right; make positive if below ground
                         navi._vf.speed = Math.abs(elevation/10.0) * this._vf.speedFactor * this._userSpeedFactor;
                         this._lastSpeed = navi._vf.speed;
@@ -354,7 +354,7 @@ x3dom.registerNodeType(
 
             resetView: function() {
                 this._viewMatrix = this.getInitViewMatrix(this._vf.orientation, this._vf.geoSystem, this._cf.geoOrigin, this._vf.position);
-                //also reset center of Rotation ? Not done for regular viewpoint; would need to save original
+                //also reset center of Rotation; is not done for regular viewpoint
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
             },
 
