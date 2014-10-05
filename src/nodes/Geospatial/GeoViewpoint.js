@@ -147,8 +147,8 @@ x3dom.registerNodeType(
 
         },
         {
-            //overwrite activate function to save initial speed
-            //from X3DViewpoint.js
+            // redefine activate function to save initial speed
+            // from X3DViewpoint.js
             activate: function (prev) {
                 var viewarea = this._nameSpace.doc._viewarea;
                 
@@ -174,7 +174,7 @@ x3dom.registerNodeType(
                 
             },
             
-            //overwrite deactivate to restore initial speed
+            // redefine deactivate to restore initial speed
             deactivate: function (prev) {
                 var viewarea = this._nameSpace.doc._viewarea;
                 var navi = viewarea._scene.getNavigationInfo();
@@ -182,20 +182,21 @@ x3dom.registerNodeType(
                 navi._vf.speed = this._examineSpeed;
                 x3dom.debug.logInfo("navigation speed restored to: " + this._examineSpeed);
                 x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this, prev);
-                //somehow this.getViewMatrix here gets called one more time after deactivate and resets speed, check there
+                // somehow this.getViewMatrix gets called one more time after deactivate and resets speed, check there
             },
             
+            // redefine, otherwise in X3DBindableNode
             nodeChanged: function() {
-                //this is otherwise in X3DBindableNode but function overwritten here
+                
                 this._stack = this._nameSpace.doc._bindableBag.addBindable(this);
                 
-                //for local use
+                // for local use
                 this._geoOrigin = this._cf.geoOrigin;
                 this._geoSystem = this._vf.geoSystem;
                 this._position = this._vf.position;
                 this._orientation = this._vf.orientation;
                 
-                //needs to be here because of GeoOrigin subnode
+                // needs to be here because of GeoOrigin subnode
                 this._viewMatrix = this.getInitViewMatrix(this._orientation, this._geoSystem, this._geoOrigin, this._position);
 
                 // also transform centerOfRotation for initial view                
@@ -216,6 +217,7 @@ x3dom.registerNodeType(
                 this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
                 
             },
+            
             // all borrowed from Viewpoint.js
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || fieldName == "orientation") {
@@ -257,15 +259,15 @@ x3dom.registerNodeType(
             },
             
             getViewMatrix: function() {
-                //called a lot from viewarea.js; (ab)use for updating elevation scaled speed
-                //do only if elevationScaling is enabled
-                //skip frames for performance ? do only every 0.1s or so ?
-                //gets called once even after being deactivated
+                // called a lot from viewarea.js; (ab)use for updating elevation scaled speed
+                // do only if elevationScaling is enabled
+                // skip frames for performance ? do only every 0.1s or so ?
+                // gets called once even after being deactivated
                 if (this._vf.isActive && this._vf.elevationScaling) {
                     var viewarea = this._nameSpace.doc._viewarea;
                     var navi = viewarea._scene.getNavigationInfo();
                     var navType = navi.getType();
-                    //manage examine mode: do not use elevation scaled speed and keep own speed
+                    // manage examine mode: do not use elevation scaled speed and keep own speed
                     if (this.isExamineMode(navType)) {
                         if (!this.isExamineMode(this._lastNavType)) {
                             navi._vf.speed = this._examineSpeed;
@@ -279,11 +281,12 @@ x3dom.registerNodeType(
                             navi._vf.speed = this._lastSpeed;
                         }
                         this._lastNavType = navType;
-                        //check if speed was modified interactively
+                        // check if speed was modified interactively
                         if (navi._vf.speed != this._lastSpeed) {
                             this._userSpeedFactor *= navi._vf.speed / this._lastSpeed;
                             x3dom.debug.logInfo("interactive speed factor changed: " + this._userSpeedFactor);
                         }
+                        
                         // get elevation above ground
                         // current position in x3d 
                         // borrowed from webgl_gfx.js
@@ -317,7 +320,7 @@ x3dom.registerNodeType(
                         var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
                         var elevation = positionGD.z;
                         // x3dom.debug.logInfo("Geoelevation is " + elevation);
-                        // at 10m above ground a speed of 1 sounds about right; make positive if below ground
+                        // at 10m above ground a speed of 1 sounds about right; make positive if below ground                      
                         navi._vf.speed = Math.abs(elevation/10.0) * this._vf.speedFactor * this._userSpeedFactor;
                         this._lastSpeed = navi._vf.speed;
                         // x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed + "; ground position at: " + positionGD.y + ", " + positionGD.x);
@@ -354,7 +357,7 @@ x3dom.registerNodeType(
 
             resetView: function() {
                 this._viewMatrix = this.getInitViewMatrix(this._vf.orientation, this._vf.geoSystem, this._cf.geoOrigin, this._vf.position);
-                //also reset center of Rotation; is not done for regular viewpoint
+                // also reset center of Rotation; is not done for regular viewpoint
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
             },
 
