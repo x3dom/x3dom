@@ -181,7 +181,7 @@ x3dom.registerNodeType(
                     "   float steps = clamp(float(colorSteps), 1.0,64.0);\n"+
                     "   float range_size = pi_half / steps;\n"+
                     "   float cos_angle = abs(dot(surfNormal.xyz, V));\n"+
-                    "   float interval = clamp(floor(cos_angle / range_size),0.0,64.0);\n"+
+                    "   float interval = clamp(floor(cos_angle / range_size),0.0,steps);\n"+
                     "   float ang = interval * range_size;\n"+
                     "   outputColor.rgb = hsv2rgb(mix(orthogonalColor, parallelColor, ang));\n"+
                     "}\n"+

@@ -120,9 +120,11 @@ x3dom.registerNodeType(
                 if (this._first){
                     return "void toneMapped(inout vec4 original_color, inout vec3 accum_color, in vec4 surfNormal, in vec3 lightDir, in vec3 cColor, in vec3 wColor)\n"+
                     "{\n"+
+                    "   if(surfNormal.a > 0.02){\n"+
                     "       float color_factor = (1.0 + dot(lightDir, surfNormal.xyz))*0.5;\n"+
                     "       accum_color += mix(wColor, cColor, color_factor);\n"+
                     "       original_color.rgb = accum_color;\n"+
+                    "   }\n"+
                     "}\n";
                 }else{
                     return "";
@@ -135,7 +137,7 @@ x3dom.registerNodeType(
                 "       vec3 L = vec3(0.0, 0.0, 0.0);\n";
                 for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                     shaderText += "       L = (light"+l+"_Type == 1.0) ? normalize(light"+l+"_Location - positionE.xyz) : -light"+l+"_Direction;\n"+
-                    "       toneMapped(value, toneColor, grad.xyzw, L, uCoolColor"+this._styleID+", uWarmColor"+this._styleID+");\n";
+                    "       toneMapped(value, toneColor, grad, L, uCoolColor"+this._styleID+", uWarmColor"+this._styleID+");\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;
