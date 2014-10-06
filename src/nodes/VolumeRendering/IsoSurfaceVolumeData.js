@@ -370,7 +370,7 @@ x3dom.registerNodeType(
                     }else{
                         shaderText += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }
-                    shaderText += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
+                    shaderText += "    vec4 grad = vec4((modelViewMatrix * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                     for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                         shaderText += "    lighting(light"+l+"_Type, " +
                         "light"+l+"_Location, " +

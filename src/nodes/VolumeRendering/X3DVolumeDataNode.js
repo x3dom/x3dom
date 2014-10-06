@@ -168,10 +168,8 @@ x3dom.registerNodeType(
 
             normalFunctionShaderText: function(){
                 return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
-                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-vec4(1.0,1.0,0.9,1.0));\n"+ //FIXME: blue chanel needs enhancement
-                "   n.a = length(n.xyz);\n"+
-                "   n.xyz = normalize(n.xyz);\n"+
-                "   return n;\n"+
+                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
+                "   return vec4(normalize(n.xyz), length(n.xyz));\n"+
                 "}\n"+
                 "\n"+
                 "vec4 getNormalOnTheFly(sampler2D sampler, vec3 voxPos, float nS, float nX, float nY){\n"+
@@ -181,7 +179,7 @@ x3dom.registerNodeType(
                 "   float v3 = cTexture3D(sampler, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
                 "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
                 "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   vec3 grad = vec3((v0-v1)/2.0, (v2-v3)/2.0, (v4-v5)/2.0)+vec3(0.0, 0.0, 0.1);\n"+ //FIXME: z drection needs enhancement
+                "   vec3 grad = vec3(v0-v1, v2-v3, v4-v5)*0.5;\n"+
                 "   return vec4(normalize(grad), length(grad));\n"+
                 "}\n"+
                 "\n";
@@ -226,7 +224,7 @@ x3dom.registerNodeType(
                 }else{
                     shaderLoop += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }
-                shaderLoop += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
+                shaderLoop += "    vec4 grad = vec4((modelViewMatrix * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                 shaderLoop += inlineShaderText;
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     shaderLoop += inlineLightAssigment;
