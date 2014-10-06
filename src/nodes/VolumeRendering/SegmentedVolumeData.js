@@ -145,7 +145,7 @@ x3dom.registerNodeType(
             },
 
             initializeValues: function() {
-                var initialValues ="float offset_s = 1.0/(2.0*maxSegments);\n";
+                var initialValues = "";
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){
                     if(this._cf.renderStyle.nodes[i].initializeValues != undefined){
@@ -185,7 +185,7 @@ x3dom.registerNodeType(
                 var inlineText = "";
                 if(this._cf.segmentIdentifiers.node){
                     inlineText += "float t_id = cTexture3D(uSegmentIdentifiers, ray_pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
-                    "int s_id = int(floor((t_id-offset_s)*maxSegments));\n";
+                    "int s_id = int(clamp(floor(t_id*maxSegments-0.5),0.0,maxSegments));\n";
                 }else{
                     inlineText += "int s_id = 0;\n";
                 }
