@@ -184,17 +184,23 @@ x3dom.registerNodeType(
             inlineStyleShaderText: function(){
                 var inlineText = "";
                 if(this._cf.segmentIdentifiers.node){
-                    inlineText += "float t_id = cTexture3D(uSegmentIdentifiers, ray_pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
-                    "int s_id = int(clamp(floor(t_id*maxSegments-0.5),0.0,maxSegments));\n";
+                    inlineText += "    float t_id = cTexture3D(uSegmentIdentifiers, ray_pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
+                    "    int s_id = int(clamp(floor(t_id*maxSegments-0.5),0.0,maxSegments));\n"+
+                    "    opacityFactor = 10.0;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        inlineText += "    lightFactor = 1.0;\n";
+                    }else{
+                        inlineText += "    lightFactor = 1.2;\n";
+                    }
                 }else{
-                    inlineText += "int s_id = 0;\n";
+                    inlineText += "    int s_id = 0;\n";
                 }
                 //TODO Check if the segment identifier is going to be rendered or not. NYI!!
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){ //TODO Check identifier and add the style
-                    inlineText += "if (s_id == "+i+"){\n"+
+                    inlineText += "    if (s_id == "+i+"){\n"+
                     this._cf.renderStyle.nodes[i].inlineStyleShaderText()+
-                    "}\n";
+                    "    }\n";
                 }
                 return inlineText;
             },
