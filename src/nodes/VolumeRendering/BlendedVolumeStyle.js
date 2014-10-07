@@ -317,8 +317,7 @@ x3dom.registerNodeType(
                         break;
                 }
                 if(x3dom.nodeTypes.X3DLightNode.lightID == 0){
-                    inlineText += "    value.rgb = clamp(value.rgb * wA + blendValue.rgb * wB, 0.0, 1.0);\n"+
-                    "    value.a = clamp(value.a * wA + blendValue.a * wB, 0.0, 1.0);\n";
+                    inlineText += "    value = clamp(value * wA + blendValue * wB, 0.0, 1.0);\n";
                 }
                 return inlineText;
             },
