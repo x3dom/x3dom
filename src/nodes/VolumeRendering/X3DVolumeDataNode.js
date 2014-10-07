@@ -189,9 +189,10 @@ x3dom.registerNodeType(
                 initializeValues = typeof initializeValues !== 'undefined' ? initializeValues : ""; //default value, empty string
                 var shaderLoop = "void main()\n"+
                 "{\n"+
+                "  bool out_box = all(bvec2(any(greaterThan(pos.xyz, vec3(1.0))), any(lessThan(pos.xyz, vec3(0.0)))));\n"+
+                "  if(out_box) discard;\n"+
                 "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                "  cam_pos = cam_pos/dimensions+0.5;\n"+
-                "  vec3 dir = normalize(pos.xyz-cam_pos);\n"+
+                "  vec3 dir = normalize(pos.xyz-(cam_pos/dimensions+0.5));\n"+
                 "  vec3 ray_pos = pos.xyz;\n"+
                 "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
@@ -214,11 +215,10 @@ x3dom.registerNodeType(
                 "  float opacityFactor = 10.0;\n"+
                 "  float t_near;\n"+
                 "  float t_far;\n"+
-                "  if((ray_pos.x <= 1.0 && ray_pos.y <= 1.0 && ray_pos.z <= 1.0) || (ray_pos.x >= 0.0 && ray_pos.y >= 0.0 && ray_pos.z >= 0.0)){\n"+
                 "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                 "  {\n"+
                 "    value = cTexture3D(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
-                "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
+                "    value = value.rgbr;\n";
                 if(this.normalTextureProvided){
                     shaderLoop += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                 }else{
@@ -244,7 +244,6 @@ x3dom.registerNodeType(
                 //Early ray termination and Break if the position is greater than <1, 1, 1>
                 "    if(accum.a >= 1.0 || ray_pos.x < 0.0 || ray_pos.y < 0.0 || ray_pos.z < 0.0 || ray_pos.x > 1.0 || ray_pos.y > 1.0 || ray_pos.z > 1.0)\n"+
                 "      break;\n"+
-                "    }\n"+
                 "  }\n"+
                 "  gl_FragColor = accum;\n"+
                 "}";
