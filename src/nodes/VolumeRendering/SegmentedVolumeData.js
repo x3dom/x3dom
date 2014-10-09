@@ -162,9 +162,12 @@ x3dom.registerNodeType(
                 for (var i=0; i<n; i++){
                     styleText += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
                     if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){
-                        styleText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is proided
+                        styleText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is provided
                         this.normalTextureProvided = true;
                         this.surfaceNormals = this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node;
+                    }
+                    if(!x3dom.isa(this._cf.renderStyle.nodes[i], x3dom.nodeTypes.OpacityMapVolumeStyle)){
+                        this.surfaceNormalsNeeded = true;
                     }
                 }
                 return styleText;

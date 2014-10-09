@@ -207,6 +207,8 @@ x3dom.registerNodeType(
                         this.surfaceNormals = this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node;
                     }
                 }
+                //Always needed for the isosurface
+                this.surfaceNormalsNeeded = true;   
                 return styleText;
             },
 

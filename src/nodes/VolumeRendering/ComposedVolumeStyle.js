@@ -112,6 +112,9 @@ x3dom.registerNodeType(
             styleUniformsShaderText: function(){
                 var styleText = "";
                 var n = this._cf.renderStyle.nodes.length;
+                if (n == 1 && !x3dom.isa(this._cf.renderStyle.nodes[0], x3dom.nodeTypes.OpacityMapVolumeStyle)){
+                    this.surfaceNormalsNeeded = true;
+                }
                 for (var i=0; i<n; i++){
                     styleText += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
                     if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){

@@ -58,6 +58,7 @@ x3dom.registerNodeType(
             this._textureID = 0;
             this._first = true;
             this._styleList = [];
+            this.surfaceNormalsNeeded = false;
             this.normalTextureProvided = false;
             this.fragmentPreamble = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                                     "  precision highp float;\n" +
@@ -167,22 +168,26 @@ x3dom.registerNodeType(
                 "\n",
 
             normalFunctionShaderText: function(){
-                return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
-                "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
-                "   return vec4(normalize(n.xyz), length(n.xyz));\n"+
-                "}\n"+
-                "\n"+
-                "vec4 getNormalOnTheFly(sampler2D sampler, vec3 voxPos, float nS, float nX, float nY){\n"+
-                "   float v0 = cTexture3D(sampler, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                "   float v1 = cTexture3D(sampler, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
-                "   float v2 = cTexture3D(sampler, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                "   float v3 = cTexture3D(sampler, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
-                "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
-                "   vec3 grad = vec3(v0-v1, v2-v3, v4-v5)*0.5;\n"+
-                "   return vec4(normalize(grad), length(grad));\n"+
-                "}\n"+
-                "\n";
+                if (this.surfaceNormalsNeeded){
+                    return "vec4 getNormalFromTexture(sampler2D sampler, vec3 pos, float nS, float nX, float nY) {\n"+
+                    "   vec4 n = (2.0*cTexture3D(sampler, pos, nS, nX, nY)-1.0);\n"+
+                    "   return vec4(normalize(n.xyz), length(n.xyz));\n"+
+                    "}\n"+
+                    "\n"+
+                    "vec4 getNormalOnTheFly(sampler2D sampler, vec3 voxPos, float nS, float nX, float nY){\n"+
+                    "   float v0 = cTexture3D(sampler, voxPos + vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v1 = cTexture3D(sampler, voxPos - vec3(offset.x, 0, 0), nS, nX, nY).r;\n"+
+                    "   float v2 = cTexture3D(sampler, voxPos + vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v3 = cTexture3D(sampler, voxPos - vec3(0, offset.y, 0), nS, nX, nY).r;\n"+
+                    "   float v4 = cTexture3D(sampler, voxPos + vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   float v5 = cTexture3D(sampler, voxPos - vec3(0, 0, offset.z), nS, nX, nY).r;\n"+
+                    "   vec3 grad = vec3(v0-v1, v2-v3, v4-v5)*0.5;\n"+
+                    "   return vec4(normalize(grad), length(grad));\n"+
+                    "}\n"+
+                    "\n";
+                }else{
+                    return "";
+                }
             },
 
             defaultLoopFragmentShaderText: function(inlineShaderText, inlineLightAssigment, initializeValues){
@@ -219,12 +224,14 @@ x3dom.registerNodeType(
                 "  {\n"+
                 "    value = cTexture3D(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
                 "    value = value.rgbr;\n";
-                if(this.normalTextureProvided){
-                    shaderLoop += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
-                }else{
-                    shaderLoop += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                if(this.surfaceNormalsNeeded){
+                    if(this.normalTextureProvided){
+                        shaderLoop += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                    }else{
+                        shaderLoop += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
+                    }
+                    shaderLoop += "    vec4 grad = vec4((modelViewMatrix * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                 }
-                shaderLoop += "    vec4 grad = vec4((modelViewMatrix * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                 shaderLoop += inlineShaderText;
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     shaderLoop += inlineLightAssigment;
