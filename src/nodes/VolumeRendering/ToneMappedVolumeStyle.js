@@ -124,6 +124,9 @@ x3dom.registerNodeType(
                     "       float color_factor = (1.0 + dot(lightDir, surfNormal.xyz))*0.5;\n"+
                     "       accum_color += mix(wColor, cColor, color_factor);\n"+
                     "       original_color.rgb = accum_color;\n"+
+                    "   }else{\n"+
+                    "       accum_color += mix(wColor, cColor, 0.5);\n"+
+                    "       original_color.rgb = accum_color;\n"+
                     "   }\n"+
                     "}\n";
                 }else{
