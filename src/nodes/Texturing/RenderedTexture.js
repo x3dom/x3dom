@@ -140,14 +140,25 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
 
-            this.hScreenSize = 0.14976;
-            this.vScreenSize = 0.09356;
+            /**
+             * Very experimental field to change between DK1 and DK2.
+             * @var {x3dom.fields.SFFloat} oculusRiftVersion
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'oculusRiftVersion', 1);
+
+            this.hScreenSize = (this._vf.oculusRiftVersion == 1) ? 0.14976 : 0.12576;
+            this.vScreenSize = (this._vf.oculusRiftVersion == 1) ? 0.09356 : 0.07074;
             this.vScreenCenter = this.vScreenSize / 2;
             this.eyeToScreenDistance = 0.041;
             this.lensSeparationDistance = 0.0635;
             this.distortionK = [1.0, 0.22, 0.24, 0.0];
-            //hRes, vRes = 1280 x 800
-            this.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
+            //hRes, vRes = 1280 x 800  // DK2:  1920 x 1080
+            //this.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
+            this.lensCenter = 0.151976495726;   // TODO: DK2 ?
 
             x3dom.debug.assert(this._vf.dimensions.length >= 3,
                 "RenderedTexture.dimensions requires at least 3 entries.");

@@ -285,7 +285,7 @@ x3dom.Texture.prototype.updateTexture = function()
 
         if (pixelArr.length < pixelArrfont_size)
         {
-            var pixelArr = tex._vf.image.toGL();
+            pixelArr = tex._vf.image.toGL();
 
             while (pixelArr.length < pixelArrfont_size) {
                 pixelArr.push(0);
