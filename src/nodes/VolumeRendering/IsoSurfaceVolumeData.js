@@ -385,7 +385,7 @@ x3dom.registerNodeType(
                         "light"+l+"_AmbientIntensity, " +
                         "light"+l+"_BeamWidth, " +
                         "light"+l+"_CutOffAngle, " +
-                        "grad.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
+                        "grad.xyz, positionE.xyz, ambient, diffuse, specular);\n";
                     }
                     shaderText += this.inlineStyleShaderText();
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
