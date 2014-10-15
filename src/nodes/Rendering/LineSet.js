@@ -92,9 +92,9 @@ x3dom.registerNodeType(
 
                     this._mesh._colors[0] = colors.toGL();
 
-                    var numColComponents = 3;
+                    this._mesh._numColComponents = 3;
                     if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
-                        numColComponents = 4;
+                        this._mesh._numColComponents = 4;
                     }
                 }
 
