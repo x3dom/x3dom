@@ -75,7 +75,7 @@ x3dom.registerNodeType(
                 this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
             },
         
-            getGeoRotMat: function (positionGC)
+            getGeoRotMat: function (geoSystem, positionGC)
             {
                 //returns transformation matrix to align coordinate system with geoposition as required:
                 //2 rotations to get required orientation
@@ -85,18 +85,18 @@ x3dom.registerNodeType(
                 //(angle between Z and orig. up)
                 //2) around Z to get orig. up on longitude
 
-                var newUp = positionGC.normalize();
+                var coords = new x3dom.fields.MFVec3f();
+                coords.push(positionGC);
+                var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
+                
                 var Xaxis = new  x3dom.fields.SFVec3f(1,0,0);
+                var rotlat = 180 - positionGD.y; // latitude
+                var deg2rad = Math.PI/180;
+                var rotUpQuat = x3dom.fields.Quaternion.axisAngle(Xaxis, rotlat*deg2rad);
 
-                // below uses geocentric latitude but only geodetic latitude would give exact tangential plane
-                // http://info.ogp.org.uk/geodesy/guides/docs/G7-2.pdf
-                // has formulas for deriving geodetic latitude, eg a GCtoGD function
-                var rotlat = Math.PI - Math.asin(newUp.z); // latitude as asin of z; only valid for spheres
-                var rotUpQuat = x3dom.fields.Quaternion.axisAngle(Xaxis, rotlat);
-
-                var rotlon = Math.PI/2 + Math.atan2(newUp.y, newUp.x);// 90 to get to prime meridian; atan2 gets the sign correct for longitude; is exact since in circular section
                 var Zaxis = new x3dom.fields.SFVec3f(0,0,1);
-                var rotZQuat = x3dom.fields.Quaternion.axisAngle(Zaxis, rotlon);
+                var rotlon = 90 + positionGD.x;// 90 to get to prime meridian;
+                var rotZQuat = x3dom.fields.Quaternion.axisAngle(Zaxis, rotlon*deg2rad);
 
                 //return rotZQuat.toMatrix().mult(rotUpQuat.toMatrix();
                 return rotZQuat.multiply(rotUpQuat).toMatrix();
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
                 coords.push(position);
 
                 var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
-                var rotMat = this.getGeoRotMat(transformed);
+                var rotMat = this.getGeoRotMat(geoSystem, transformed);
 
 		        // account for geoOrigin with and without rotateYUp
                 if (geoOrigin.node)
@@ -119,14 +119,15 @@ x3dom.registerNodeType(
                     if(geoOrigin.node._vf.rotateYUp)
                     {
                         // inverse rotation after original rotation and offset
-			            // just skipping all rotations produces incorrect position
-                        return rotMat.inverse().mult(x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat));
+      			            // just skipping all rotations produces incorrect position
+                        var rotMatOrigin = this.getGeoRotMat(geoSystem, origin);
+                        return rotMatOrigin.inverse().mult(x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat));
                     }
                     //rotate, then translate; account for geoOrigin by subtracting origin from GeoLocation
                     return x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat);
                 }
                 else
-		        //no GeoOrigin: first rotate, then translate
+		        // no GeoOrigin: first rotate, then translate
                 {
                     return x3dom.fields.SFMatrix4f.translation(transformed).mult(rotMat);
                 }
