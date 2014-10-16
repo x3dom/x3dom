@@ -956,20 +956,21 @@ x3dom.X3DCanvas.prototype._createFlashObject = function (x3dElem) {
 
         if (!this._fileExists(swf_path)) {
             var version;
-            if (x3dom.versionInfo === undefined ||
-                x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
+
+            //No version info or a dev string?
+            if (x3dom.versionInfo === undefined || x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
             {
                 version = "dev";
             }
-            else {
-                //Get modification number
-                var modification = test.substr(test.length-1);
+            //Stable version?
+            else
+            {
+                version = x3dom.versionInfo.version;
 
-                //Check if modification number is greater than 0
-                if(modification > 0) {
-                    version = x3dom.versionInfo.version;
-                } else {
-                    version = x3dom.versionInfo.version.substr(3);
+                //If version ends with ".0" (modification number), remove this part from path to download folder
+                var modification = version.substr(version.length-1);
+                if(modification == 0) {
+                    version = version.substr(0, 3);
                 }
             }
 
