@@ -22,10 +22,16 @@ html, body {
     user-select: none;
 }
 
-#ui
+#ui, #appListUI
 {
     position: absolute;
-    left: 10px;}
+    left: 10px;
+}
+
+#appListUI
+{
+    top: 250px;
+}
 
 input
 {
@@ -56,8 +62,13 @@ input:hover
 
 #colorPicker
 {
-    width: 124px;
+    width: 24px;
     height: 25px;
+}
+
+#getColor
+{
+    width: 90px;
 }
 
 #selectionUI

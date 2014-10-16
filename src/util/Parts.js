@@ -60,10 +60,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
-	
+
+
+    /**
+     * Returns the RGB string representation of a color
+     * @returns {String}
+     */
+    this.getColorRGB = function() {
+        var str = this.getColorRGBA();
+
+        var values = str.split(" ");
+
+        return values[0] + " " + values[1] + " " + values[2];
+    };
+
+    /**
+     * Returns the RGBA string representation of a color
+     * @returns {String}
+     */
+    this.getColorRGBA = function() {
+        var x, y;
+
+        //in case of multi select, this function returns the color of the first object
+        var colorRGBA = this.multiPart._originalColor[parts.ids[0]];
+
+        if (this.multiPart._highlightedParts[parts.ids[0]]){
+            colorRGBA = this.multiPart._highlightedParts[parts.ids[0]];
+        } else {
+            x = parts.ids[0] % parts.colorMap.getWidth();
+            y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
+            colorRGBA = parts.colorMap.getPixel(x, y);
+        }
+
+        return colorRGBA.toString();
+    };
+
 	/**
      *
-     * @param color
      */
     this.resetColor = function() {
 
