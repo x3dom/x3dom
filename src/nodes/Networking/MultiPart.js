@@ -654,6 +654,17 @@ x3dom.registerNodeType(
                     return ids;
                 };
 
+                this._xmlNode.getAppearanceIdList = function ()
+                {
+                    var i, ids = [];
+
+                    for (i=0; i<multiPart._idMap.appearance.length; i++) {
+                        ids.push( multiPart._idMap.appearance[i].name );
+                    }
+
+                    return ids;
+                };
+
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;

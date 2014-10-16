@@ -21,6 +21,27 @@
             multiPart.addEventListener('mouseout', handleMouseLeave, false);
             multiPart.addEventListener('mousemove', handleMouseMove, false);
             multiPart.addEventListener('click', handleClick, false);
+
+            var appIDListDiv = document.getElementById("appearanceIDList");
+
+            var appIDs = multiPart.getAppearanceIdList();
+            var newAppIDDiv;
+            for (var key in appIDs)
+            {
+                newAppIDDiv = document.createElement("input");
+                newAppIDDiv.type  = "button";
+                newAppIDDiv.value = appIDs[key];
+                (function(app) {
+                    newAppIDDiv.addEventListener('click', function () {
+                        clearSelection();
+                        selection = [app];
+                        updateTextArea();
+                    })
+                })(appIDs[key]);
+
+                appIDListDiv.appendChild(newAppIDDiv);
+                appIDListDiv.appendChild(document.createElement("br"));
+            }
         }
 
         function handleMouseEnter(e){
@@ -76,6 +97,26 @@
             parts.setColor(color);
         }
 
+        function getColor()
+        {
+            var parts = multiPart.getParts(selection);
+
+            if (parts)
+            {
+                var color = parts.getColorRGB();
+
+                var colValues = color.split(" ");
+                var hexCol = "#";
+                colValues.forEach(function(element, index, array){
+                    var val = (parseFloat(element) * 255).toFixed();
+                    val     = (0|val).toString(16);
+                    hexCol += val.length == 1 ? "0" + val : val;
+                });
+
+                document.getElementById("colorPicker").value = hexCol;
+            }
+        }
+
         function clearSelection()
         {
             selection = [];
@@ -129,6 +170,7 @@
     </div>
     <div>
         <input id="colorPicker" type="color">
+        <input id="getColor" type="button" value="Get Color" onclick="getColor();">
         <input id="setColor" type="button" value="Set Color" onclick="setColor();">
     </div>
     <div>
@@ -136,6 +178,13 @@
         <input id="showAll" type="button"  value="Show All" onclick="showAll();">
     </div>
 </div>
+
+<div id="appListUI">
+    <h3>Select parts by their appearance group:</h3>
+    <div id="appearanceIDList">
+    </div>
+</div>
+
 <div id="selectionUI">
     <div class="header" > Current Selection:</div>
     <textarea id="selectionTA" ></textarea>
