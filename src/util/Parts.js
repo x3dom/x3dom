@@ -323,4 +323,29 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
+
+    /**
+     * get bounding volume
+     *
+     */
+    this.getVolume = function() {
+
+        var i, x, y;
+        var transmat = this.multiPart.getCurrentTransform();
+        if (ids.length && ids.length > 1) //Multi select
+        {
+            var volume = new x3dom.fields.BoxVolume();
+            for(i=0; i<parts.ids.length; i++) {
+                volume.extendBounds(this.multiPart._partVolume[i].min, this.multiPart._partVolume[i].max);
+            }
+            volume.transform(transmat);
+            return volume;
+        }
+        else
+        {
+            var volume = x3dom.fields.BoxVolume.copy(this.multiPart._partVolume[parts.ids[0]]);
+            volume.transform(transmat);
+            return volume;
+        }
+    };
 };
