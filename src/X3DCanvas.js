@@ -281,7 +281,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
                 var pos = this.parent.mousePosition(evt);
                 
-                if ( pos.x != that.lastMousePos.x || pos.x != that.lastMousePos.x ) {
+                if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
                     that.lastMousePos = pos;
                     if (evt.shiftKey) { this.mouse_button = 1; }
                     if (evt.ctrlKey)  { this.mouse_button = 4; }
@@ -316,8 +316,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
                 this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
                 this.parent.doc.needRender = true;
-                this.parent.doc._viewarea._isMoving = false;
-                this.parent.doc._viewarea._isAnimating = false;
 
                 evt.preventDefault();
                 evt.stopPropagation();
@@ -334,8 +332,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
                 this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
                 this.parent.doc.needRender = true;
-                this.parent.doc._viewarea._isMoving = false;
-                this.parent.doc._viewarea._isAnimating = false;
 
                 evt.preventDefault();
                 evt.stopPropagation();
