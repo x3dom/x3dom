@@ -44,8 +44,7 @@ x3dom.registerNodeType(
          // The field names here must match the attribute names used in 
          // the HTML. 
          
-         // Articulation paramters. These should be SFFloats, but that type
-         // does not seem to present yet.
+         // Articulation paramters. 
          this.addField_SFFloat(ctx, 'set_articulationParameterValue0', 0.0);
          this.addField_SFFloat(ctx, 'set_articulationParameterValue1', 0.0);
          this.addField_SFFloat(ctx, 'set_articulationParameterValue2', 0.0);
@@ -55,52 +54,66 @@ x3dom.registerNodeType(
          this.addField_SFFloat(ctx, 'set_articulationParameterValue6', 0.0);
          this.addField_SFFloat(ctx, 'set_articulationParameterValue7', 0.0);
                   
-         // address
+         /** address */
          this.addField_SFString(ctx, 'address', "localhost");
          
-         // Site, application are defined in DISEntityManager. These three 
-         // numbers  uniquely identify an entity in DIS [0..65535]
+         /**The entity ID is one of the three values that together uniquely ID
+          * an entity in the world. [0..65535]
+          * */
          this.addField_SFInt32(ctx, "entityID", 0); 
          
-         // How many articulation parameters there are [0-78]
+         /** How many articulation parameters there are [0-78] */
          this.addField_SFInt32(ctx, "articulationParameterCount", 0);
          
-         // [0,255]
+         /** [0,255] */
          this.addField_MFInt32(ctx, 'articulationParameterDesignatorArray', 0);
         
-         // [0,255]
+         /** [0,255] */
          this.addField_MFInt32(ctx, 'articulationParameterChangeIndicatorArray', 0);
          
-         // [0,65535]
+         /**  [0,65535] */
          this.addField_MFInt32(ctx, 'articulationParameterIdPartAttachedToArray', 0);
          
-         // [0,65535]
+         /**  [0,65535] */
          this.addField_MFInt32(ctx, 'articulationParameterTypeArray', 0);
          
-         // [0,65535]
+         /** [0,65535] */
          this.addField_MFFloat(ctx, 'articulationParameterArray', 0);
       
-         // Center [-inf..+inf]
+         /** Center [-inf..+inf] */
          this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
 
          
-         // From the SISO EBV document, a series of integers that define
-         // a unique entity type, eg m1a2 abrams, F-16 block 3, etc.
+         /** From the SISO EBV document, a series of integers that define
+          * a unique entity type, eg m1a2 abrams, F-16 block 3, etc. The 
+          * range of values that are allowed are
+          * Name       Index  range
+          * ----       -----  ------
+          * EntityKind   0     [0-7]
+          * Domain       1     [0-7]
+          * Country      2     [0-65535]
+          * Category     3     [0-7]
+          * Subcategory  4     [0-7]
+          * Specific     5     [0-7]
+          * Extra        6     [0-7]
+          * 
+          * The meaning of the values are defined in the EBV document
+          * */
          this.addField_MFInt32(ctx, "entityType", 0, 0, 0, 0, 0, 0);
          
-         //child nodes
+         /** child nodes */
          this.addField_MFNode("children", x3dom.nodeTypes.X3DNode);
          
-         // Type of collision (elastic, inelastic). [0..255]
+         /** Type of collision (elastic, inelastic). [0..255] */
          this.addField_SFInt32(ctx, "collisionType", 0);
          
-         // Type of dead reckoning algorithm. [0..255]
+         /** Type of dead reckoning algorithm. [0..255] */
          this.addField_SFInt32(ctx, "deadReckoning", 0);
          
-         // Detonation location. (global coordinates?)
+         /** Detonation location. (global coordinates?)*/
          this.addField_MFFloat(ctx, "detonationLocation", 0, 0, 0);
          
-         // Detonation location. (Local coordinates?)
+         /** Detonation location. (Local coordinates?) */
          this.addField_MFFloat(ctx, "detonationRelativeLocation", 0, 0, 0);
          
          // Detonation result. [0..255]
