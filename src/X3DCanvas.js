@@ -50,6 +50,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     this.doc = null;
 
+    this.lastMousePos = { x: 0, y: 0 };
     //try to determine behavior of certain DOMNodeInsertedEvent:
     //IE11 dispatches one event for each node in an inserted subtree, other browsers use a single event per subtree
     x3dom.caps.DOMNodeInsertedEvent_perSubtree = !(navigator.userAgent.indexOf('MSIE')    != -1 ||
@@ -278,26 +279,30 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         this.canvas.addEventListener('mousemove', function (evt) {
             if(!this.isMulti) {
 
-                if (evt.shiftKey) { this.mouse_button = 1; }
-                if (evt.ctrlKey)  { this.mouse_button = 4; }
-                if (evt.altKey)   { this.mouse_button = 2; }
-
                 var pos = this.parent.mousePosition(evt);
-                this.mouse_drag_x = pos.x;
-                this.mouse_drag_y = pos.y;
+                
+                if ( pos.x != that.lastMousePos.x || pos.x != that.lastMousePos.x ) {
+                    that.lastMousePos = pos;
+                    if (evt.shiftKey) { this.mouse_button = 1; }
+                    if (evt.ctrlKey)  { this.mouse_button = 4; }
+                    if (evt.altKey)   { this.mouse_button = 2; }
 
-                if (this.mouse_dragging) {
-                    this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                    this.mouse_drag_x = pos.x;
+                    this.mouse_drag_y = pos.y;
+
+                    if (this.mouse_dragging) {
+                        this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                    }
+                    else {
+                        this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                    }
+
+                    this.parent.doc.needRender = true;
+
+                    // deliberately different for performance reasons
+                    evt.preventDefault();
+                    evt.stopPropagation();
                 }
-                else {
-                    this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                }
-
-                this.parent.doc.needRender = true;
-
-                // deliberately different for performance reasons
-                evt.preventDefault();
-                evt.stopPropagation();
             }
         }, false);
 
@@ -305,9 +310,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if(!this.isMulti) {
                 this.focus();
 
+                var originalY = this.parent.mousePosition(evt).y;
+
                 this.mouse_drag_y += 2 * evt.detail;
 
-                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
+                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
                 this.parent.doc.needRender = true;
                 this.parent.doc._viewarea._isMoving = false;
                 this.parent.doc._viewarea._isAnimating = false;
@@ -321,9 +328,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if(!this.isMulti) {
                 this.focus();
 
+                var originalY = this.parent.mousePosition(evt).y;
+
                 this.mouse_drag_y -= 0.1 * evt.wheelDelta;
 
-                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
+                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
                 this.parent.doc.needRender = true;
                 this.parent.doc._viewarea._isMoving = false;
                 this.parent.doc._viewarea._isAnimating = false;

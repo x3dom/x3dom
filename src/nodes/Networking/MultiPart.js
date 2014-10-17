@@ -162,9 +162,11 @@ x3dom.registerNodeType(
 
                     //Check for Background press and release
                     if (e.pickedId == -1 && e.button != 0) {
-                        this._lastClickedId = 0;
+                        this._lastClickedId = -1;
+                        this._lastButton = e.button;
                     } else if (e.pickedId == -1 && e.button == 0) {
                         this._lastClickedId = -1;
+                        this._lastButton = 0;
                     }
 
                     if (e.pickedId != -1) {
@@ -239,7 +241,7 @@ x3dom.registerNodeType(
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
-                    var i, min, max;
+                    var i;
 
                     var that = this;
 

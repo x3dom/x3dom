@@ -352,10 +352,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
             tmpMat = tmpMat.inverse();
 
-            this._scene._forcePicking = true;
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                         this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
-            this._scene._forcePicking = false;            
 
             if (this._pickingInfo.pickObj)
             {
@@ -475,7 +473,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var currProjMat = this.getProjectionMatrix();
 
             if (navType !== "freefly") {
-                this._scene._forcePicking = true;
                 if (step < 0) {
                     // backwards: negate viewing direction
                     tmpMat = new x3dom.fields.SFMatrix4f();
@@ -488,7 +485,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 else {
                     this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
                 }
-                this._scene._forcePicking = false;
                 if (this._pickingInfo.pickObj)
                 {
                     dist = this._pickingInfo.pickPos.subtract(this._from).length();
@@ -513,10 +509,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
                 tmpMat = tmpMat.inverse();
 
-                this._scene._forcePicking = true;
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                             this._lastButton, tmpMat, currProjMat.mult(tmpMat));
-                this._scene._forcePicking = false;            
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -559,9 +553,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
-        this._scene._forcePicking = true;
         this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
-        this._scene._forcePicking = false;
 
         if (this._pickingInfo.pickObj)
         {
@@ -1391,12 +1383,6 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
 {
-    //Mouse release always needs a pick pass
-    //this._scene._forcePicking = true;
-    //this._scene._nameSpace.doc.ctx.pickValue(this, x, y, this._lastButton);
-    //this._scene._forcePicking = false;
-
-
     var i;
     //if the mouse is released, reset the list of currently affected pointing sensors
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
@@ -1736,29 +1722,29 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             }
             if (buttonState & 2) //right
             {
-                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+                    d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                    d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
+                vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
 
-            if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
-            {
-                viewpoint._vf.fieldOfView[0] += vec.z;
-                viewpoint._vf.fieldOfView[1] += vec.z;
-                viewpoint._vf.fieldOfView[2] -= vec.z;
-                viewpoint._vf.fieldOfView[3] -= vec.z;
-                viewpoint._projMatrix = null;
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    viewpoint._vf.fieldOfView[0] += vec.z;
+                    viewpoint._vf.fieldOfView[1] += vec.z;
+                    viewpoint._vf.fieldOfView[2] -= vec.z;
+                    viewpoint._vf.fieldOfView[3] -= vec.z;
+                    viewpoint._projMatrix = null;
+                }
+                else
+                {
+                    this._movement = this._movement.add(vec);
+                    mat = this.getViewpointMatrix().mult(this._transMat);
+                    //TODO; move real distance along viewing ray
+                    this._transMat = mat.inverse().
+                                     mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                                     mult(mat);
+                }
             }
-            else
-            {
-                this._movement = this._movement.add(vec);
-                mat = this.getViewpointMatrix().mult(this._transMat);
-                //TODO; move real distance along viewing ray
-                this._transMat = mat.inverse().
-                                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                                 mult(mat);
-            }
-        }
 
             this._isMoving = true;
         }

@@ -401,6 +401,16 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
     this._viewarea.onDrag(x, y, buttonState);
 };
 
+x3dom.X3DDocument.prototype.onWheel = function (ctx, x, y, originalY) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+
+    if (this._viewarea._scene._vf.doPickPass)
+        ctx.pickValue(this._viewarea, x, originalY, 0);
+    this._viewarea.onDrag(x, y, 2);
+};
+
 x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
