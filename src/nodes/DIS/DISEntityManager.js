@@ -44,29 +44,38 @@ x3dom.registerNodeType(
          
          console.log("In constructor for DISEntityManager");
          
-         // Add fields that show up as attributes in the x3d node.
-         // The field names here must match the attribute names used in 
-         // the HTML. 
-         this.addField_SFString(ctx, 'websocketUrl', "http://localhost:8282/"); 
+         /** DNS name/IP of the host we are communicatig with */
+         this.addField_SFString(ctx, 'address', "localhost");
          
-         // Application ID, one of the site/application/entity id triplet. [0...65535]
+         
+         /** Application ID, one of the site/application/entity id triplet. [0...65535]*/
          this.addField_SFInt32(ctx, 'applicationID', 1);
          
-         // Site ID, one of the site/application/entity id triplet. [0...65535]
-         this.addField_SFInt32(ctx, 'siteID', 1);
+         /** Site ID, one of the site/application/entity id triplet. [0...65535] */
+         this.addField_SFInt32(ctx, 'siteID', 0);
          
-         // zero or more DISEntityTypeMapping nodes. No ctx arg?
+         /** TCP port, [0...65535] */
+         this.addField_SF_Int32(ctx, 'port', 0);
+         
+         /** zero or more DISEntityTypeMapping nodes. No ctx arg? */
          this.addField_MFNode('mapping', x3dom.nodeTypes.DISEntityTypeMapping);
                   
-         // latitude, longitude, altitude (degrees and meters).
+         /** Add fields that show up as attributes in the x3d node.
+          * The field names here must match the attribute names used in 
+          * the XML
+          */
+         this.addField_SFString(ctx, 'websocketUrl', "http://localhost:8282/"); 
+         
+         /** The latitude, longitude, and altitude, in degrees and meters, of the
+          * local coordinate system origin. This is not in the standard, but is
+          * part of the additions for working with websockets.
+          */
          this.addField_MFDouble(ctx, "localCoordinateSystemOrigin", 0.0, 0.0, 0.0);
         
-         // The values in the X3D file node are directly passed here -- the
+         // The values in the X3D file node are in force below here -- the
          // "default" values above, such as the localCoordinateSystemOrign
          // attribute, are not used, instead the value in the x3D file are
          // in force here.
-         
-         
          
          // Set up internal objects, not visible to XML. These are entirely
          // javascript objects. 

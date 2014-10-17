@@ -19,20 +19,38 @@ function NetworkSingleton(theUrl, origin, entityManager)
  }
   arguments.callee._singletonInstance = this;
   var self = this;
+  /** URL of the server we communicate with */
   this.url = theUrl;
-  this.entityManager = entityManager;
-  this.localCoordinateSystemOrigin = origin;
-  console.log("Coordinate system origin:", origin);
   
+  /** The entity manager, which keeps track of entities, their location, etc.*/
+  this.entityManager = entityManager;
+  
+  /** The origin of the local coordinate system, in lat/lon/alt, degrees and meters */
+  this.localCoordinateSystemOrigin = origin;
+  
+  /** Factory object for converting binary data to Javascript DIS objects */
+  this.pduFactory = new PduFactory(); 
+    
+  /** The rangeCoordinates object converts to and from DIS global coordinates 
+   * (origin at center of earth) to local coordinates (relative to a rectilinear
+   * origin at a lat/lon/alt).
+   * */
   this.rangeCoordinates = new dis.RangeCoordinates(origin[0], origin[1], origin[2]);
-  // List of all the entities external to this page heard from
+  
+  /** array of all the entities external to this page we have heard from. Key is the
+   * JSON format EntityID.
+   * */
   this.remoteEntityDatabase = {};
-  // list of all the entities contained on this page, ie that are the source
-  // of ESDPU senders
+  
+  /** list of all the entities contained on this page, ie that are the source
+   * of ESDPU senders. Key is the JSON format EntityID.
+   */
   this.localEntityDatabase = {};
   
-  // Listeners that will be notified when a new entity from the network is 
-  // heard from
+  /** Listeners, objects that will be notified when a new entity from the network is 
+   * heard from.
+   */
+  
   this.newRemoteEntityListeners = new Array(0);
 
   if(window.WebSocket)
@@ -46,9 +64,13 @@ function NetworkSingleton(theUrl, origin, entityManager)
     this.websocketConnection.binaryType = 'arraybuffer';
     
     // Attach functions to the the web socket for various events
-    this.websocketConnection.onopen = function(evt){self.onOpen(evt);};
-    this.websocketConnection.onclose = function(evt){self.onClose(evt);};
-    this.websocketConnection.onerror = function(evt){self.onError(evt);};
+    this.websocketConnection.onopen = function(evt){console.log("Websocket onopen");};
+    this.websocketConnection.onclose = function(evt){console.log("Websocket onclose");};
+    
+    // Arguably we should try to reconnect with the server if we have a failure
+    this.websocketConnection.onerror = function(evt){console.log("Websocket onerror");};
+    
+    // The onmessage function is big enough to break out into its own function
     this.websocketConnection.onmessage = function(evt){self.onMessage(evt);};
 };
 
@@ -104,23 +126,9 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
     return matchingUrl;
 };
   
-  NetworkSingleton.prototype.onOpen = function(evt)
-  {
-      console.log("Websocket onOpen");
-  };
-  
-  NetworkSingleton.prototype.onClose = function(evt)
-  {
-      console.log("Websocket onClose:", evt);
-  };
-  
-  NetworkSingleton.prototype.onError = function(evt)
-  {
-      console.log("websocket onError", evt);
-  };
   
   /**
-   * An object that should be informed when a new message from the server arrives
+   * An object that should be informed when a new message from the server arrives.
    * @param {object} listener
    * @returns {undefined}
    */
@@ -157,7 +165,6 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
    */
   NetworkSingleton.prototype.notifyNewEntityListeners = function(aPdu)
   {
-      var idx = 0;
       for(idx = 0; idx < this.newRemoteEntityListeners.length; idx++)
       {
           this.newRemoteEntityListeners[idx].newEntityFound(aPdu);
@@ -173,25 +180,37 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
    * @param {EntityStatePdu} anEspdu
    * @returns {undefined}
    */
-  NetworkSingleton.prototype.handleEntityStatePdu = function(anEspdu)
+  NetworkSingleton.prototype.espduReceived = function(anEspdu)
   {
+      // The string index into the database
       var jsonEid = JSON.stringify(anEspdu.entityID);
       var newEntityFound = false;
       
+      // If we haven't heard of this entity before, create a new one
       if(typeof this.remoteEntityDatabase[jsonEid] === 'undefined')
       {
           console.log("**********Adding new espduTransfrom in reponse to msg from network");
           newEntityFound = true;
-          //console.log("Adding simple box");
           this.addNewEspduTransformNode(anEspdu);
-          //this.addSimpleBox();
       }
+      
+      // Add a date property, so we can periodicaly remove entities that haven't been
+      // heard from in some amount of time, and add the entity to the database.
       anEspdu.lastHeardFrom = new Date();
       this.remoteEntityDatabase[jsonEid] = anEspdu;
       
-      // Convert to local coordinate system.
+      // Convert to local coordinate system. "ECEF" refers to earth-centered, earth-fixed,
+      // and ENU refers to east-north-up, for the XYZ coordinate aces, respectively. 
+      // localCoordinates refers to the local x3d coordinate system, with the origin
+      // at the location specified, x-axis pointing east, y-axis pointing north, and
+      // z-axis pointing up.
       var localCoordinates = this.rangeCoordinates.ECEFtoENU(anEspdu.entityLocation.x, anEspdu.entityLocation.y, anEspdu.entityLocation.z);
+      
+      // Get the latitude, longitude, and elevation of the entity's location.
       var latLon = this.rangeCoordinates.ECEFObjectToLatLongAltInDegrees(anEspdu.entityLocation);
+      
+      // If this entity wasn't heard of before, notify a list of objects that are
+      // interested in that event.
       if(newEntityFound)
       {
           this.notifyNewEntityListeners(anEspdu);
@@ -232,10 +251,16 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // convert from binary to javascript object
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
+      
+      // If the factory can't correctly decode the message it will return null.
+      // Really, the only option is to throw up our hands and punt.
+      if(pdu === null)
+          return;
+         
       switch(pdu.pduType)
       {
           case 1: 
-              this.handleEntityStatePdu(pdu);
+              this.espduReceived(pdu);
               break;
               
           case 2: console.log("Got fire PDU");
