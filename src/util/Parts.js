@@ -323,4 +323,44 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
+
+    /**
+     * get bounding volume
+     *
+     */
+    this.getVolume = function() {
+
+        var volume;
+        var transmat = this.multiPart.getCurrentTransform();
+
+        if (ids.length && ids.length > 1) //Multi select
+        {
+            volume = new x3dom.fields.BoxVolume();
+
+            for(var i=0; i<parts.ids.length; i++) {
+                volume.extendBounds(this.multiPart._partVolume[parts.ids[i]].min, this.multiPart._partVolume[parts.ids[i]].max);
+            }
+
+            volume.transform(transmat);
+
+            return volume;
+        }
+        else
+        {
+            volume = x3dom.fields.BoxVolume.copy(this.multiPart._partVolume[parts.ids[0]]);
+            volume.transform(transmat);
+            return volume;
+        }
+    };
+
+    /**
+     * Fit the selected Parts to the screen
+     * @param updateCenterOfRotation
+     */
+    this.fit = function (updateCenterOfRotation) {
+
+        var volume = this.getVolume();
+
+        this.multiPart._nameSpace.doc._viewarea.fit(volume.min, volume.max, updateCenterOfRotation);
+    };
 };

@@ -693,28 +693,6 @@ x3dom.registerNodeType(
                         return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
                     }
                 };
-                
-                this._xmlNode.fitPart = function (id, updateCenterOfRotation)
-                {
-                    var shapeID = multiPart._identifierToPartId[id];
-                
-                    if (shapeID)
-                    {
-                        if (updateCenterOfRotation === undefined) {
-                            updateCenterOfRotation = true;
-                        }
-                        
-                        var min = multiPart._partVolume[shapeID[0]].min;
-                        var max = multiPart._partVolume[shapeID[0]].max;
-
-                        var mat = multiPart.getCurrentTransform();
-
-                        min = mat.multMatrixPnt(min);
-                        max = mat.multMatrixPnt(max);
-                         
-                        multiPart._nameSpace.doc._viewarea.fit(min, max, updateCenterOfRotation);
-                    }
-                };
             },
 
             loadInline: function ()
