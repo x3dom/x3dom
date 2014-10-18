@@ -44,7 +44,16 @@ x3dom.registerNodeType(
          // The field names here must match the attribute names used in 
          // the HTML. 
          
-         // Articulation paramters. 
+         // The best source for the meaning of the various fiels is 
+         // IEEE 1278.1-2012, the DIS standard, available from IEEE.
+         // (often for free if your university library is subscribed
+         // to IEEE standards, as many are.) Note that the IEEE standard
+         // has gone through revisions over the years, and the above is
+         // for version 7, while the node fields below were defined with
+         // DIS version 6 in mind. but they're very, very close, with generally
+         // better explainations in the V7 document. 
+         
+         /** Articulation paramters.  */
          this.addField_SFFloat(ctx, 'set_articulationParameterValue0', 0.0);
          this.addField_SFFloat(ctx, 'set_articulationParameterValue1', 0.0);
          this.addField_SFFloat(ctx, 'set_articulationParameterValue2', 0.0);
@@ -116,137 +125,137 @@ x3dom.registerNodeType(
          /** Detonation location. (Local coordinates?) */
          this.addField_MFFloat(ctx, "detonationRelativeLocation", 0, 0, 0);
          
-         // Detonation result. [0..255]
+         /** Detonation result. [0..255] */
          this.addField_SFInt32(ctx, "detonationResult", 0);
          
-         // Enabled or not boolean
+         /** Enabled or not boolean */
          this.addField_SFBool(ctx, "enabled", 'true');
          
-         // catetory
+         /** catetory [0..255] */
          this.addField_SFInt32(ctx, "entityCategory", 0);
          
-         // country
+         /** country [0..16K], 225 = USA */
          this.addField_SFInt32(ctx, "entityCountry", 0);
          
-         // domain
+         /* domain (air, surface, subsurface, etc), [0..255] */
          this.addField_SFInt32(ctx, "entityDomain", 0);
          
-         // extra
+         /** extra [0..255] */
          this.addField_SFInt32(ctx, "entityExtra", 0);
          
-         // kind
+         /** kind [0..255] */
          this.addField_SFInt32(ctx, "entityKind", 0);
          
-         // specific
+         /** specific [0..255] */
          this.addField_SFInt32(ctx, "entitySpecific", 0);
          
-         // specific
+         /** specific [0..255] */
          this.addField_SFInt32(ctx, "entitySubCategory", 0);
          
          
-         // app id for event
+         /** app id for event */
          this.addField_SFInt32(ctx, "eventApplicationID", 0);
          
-         // entity id for event
+         /** entity id for event */
          this.addField_SFInt32(ctx, "eventEntityID", 0);
          
-         // event number
+         /** event number */
          this.addField_SFInt32(ctx, "eventNumber", 0);
          
-         // event number
+         /** event number */
          this.addField_SFInt32(ctx, "eventNumber", 0);
          
-         // event site id
+         /** event site id */
          this.addField_SFInt32(ctx, "eventSiteID", 0);
          
-         // fired1 (should be SFBool)
+         /** fired1 */
          this.addField_SFBool(ctx, "fired1", 'false');
          
-         // fired2 (should be SFBool)
+         /** fired2  */
          this.addField_SFBool(ctx, "fired2", 'false');
          
-         // [0..64k]
+         /** [0..64k] */
          this.addField_SFInt32(ctx, "fireMissionIndex", 0);
          
-         // firing range [0...+inf]
+         /** firing range [0...+inf] */
          this.addField_MFFloat(ctx, "firingRange", 0);
          
-         // [0..64k]
+         /** [0..64k] */
          this.addField_SFInt32(ctx, "firingRate", 0);
          
-         // [0..255]
+         /** [0..255] */
          this.addField_SFInt32(ctx, "fuse", 0);
          
-          // [-inf..+inf]
+         /** [-inf..+inf] */
          this.addField_MFDouble(ctx, "geoCoords", 0, 0, 0);
          
-         // [-inf..+inf]
+         /** [-inf..+inf] */
          this.addField_MFFloat(ctx, "linearVelocity", 0, 0, 0);
          
-         // [-inf..+inf]
+         /** [-inf..+inf] */
          this.addField_MFFloat(ctx, "linearAcceleration", 0, 0, 0);
          
-         // Up to 11 chars
+         /** Up to 11 chars. Clamped to 11 */
          this.addField_SFString(ctx, "marking", "Entity");
          
-          // Metainfo node 
+         /** Metainfo node  */
          this.addField_SFNode("metadata", x3dom.nodeTypes.X3DMetadataObject);
          
-         // Send ucast to this, which changes to mcast
+         /** Send ucast to this, which changes to mcast */
          this.addField_SFString(ctx, "multicastRelayHost", "localhost");
          
-         // Relay port [0..64k]
+         /** Relay port [0..64k] */
          this.addField_SFInt32(ctx, "multicatRelayPort", 0);
          
-         // munition app id [0..64k]
+         /** munition app id [0..64k] */
          this.addField_SFInt32(ctx, "munitionApplicationID", 0);
          
-         // munition end point
+         /** munition end point */
          this.addField_SFVec3f(ctx, "munitionEndPoint", 0, 0, 0);
          
-         // munition entity id [0..64k]
+         /** munition entity id [0..64k] */
          this.addField_SFInt32(ctx, "munitionEntityID", 0);
          
-         // munition qty [0..64k]
+         /** munition qty [0..64k] */
          this.addField_SFInt32(ctx, "munitionQuantity", 0);
          
-         // munition site id [0..64k]
+         /** munition site id [0..64k] */
          this.addField_SFInt32(ctx, "munitionSiteID", 0);
          
-         // munition start point
+         /** munition start point */
          this.addField_SFVec3f(ctx, "munitionStartPoint", 0, 0, 0);
          
-         // standalone, networkReader, networkWriter
+         /** standalone, networkReader, networkWriter */
          this.addField_SFString(ctx, "networkMode", "networkWriter");
          
-         // port [0..64k]
+         /** port [0..64k] */
          this.addField_SFInt32(ctx, "port", 0);
          
-         // time between network operations (obsolete, really)
+         /** time between network operations (obsolete, really) */
          this.addField_SFTime(ctx, "interval", 0.1);
          
-         // Rotation matrix
+         /** Rotation matrix */
          this.addField_SFRotation(ctx, "rotation", 0, 0, 1, 0);
          
-         // scale
+         /** scale */
          this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
          
-         // Scale orientation
+         /** Scale orientation */
          this.addField_SFRotation(ctx, "scaleOrientation",0, 0, 1, 0  );
          
-         // siteID
+         /** siteID, part of the entity ID triplet */
          this.addField_SFInt32(ctx, 'siteID', 0);
          
-         // translation
+         /** translation */
          this.addField_SFVec3f(ctx, "translation", 0, 0, 0);
          
-         // warhead
+         /** warhead */
          this.addField_SFInt32(ctx, "warhead", 0);
          
-         // time between network write operations (obsolete, really)
+         /** time between network write operations (obsolete, really) */
          this.addField_SFTime(ctx, "writeInterval", 1000);
          
-         // articulation paramters
+         /** articulation paramter changes */
          this.addField_SFFloat(ctx, "articulationParameterValue0_changed", 0);
          this.addField_SFFloat(ctx, "articulationParameterValue1_changed", 0);
          this.addField_SFFloat(ctx, "articulationParameterValue2_changed", 0);
@@ -256,15 +265,16 @@ x3dom.registerNodeType(
          this.addField_SFFloat(ctx, "articulationParameterValue6_changed", 0);
          this.addField_SFFloat(ctx, "articulationParameterValue7_changed", 0);
          
-         // collideTime
+         /** collideTime */
          this.addField_SFTime(ctx, "collideTime", 0);
          
-         // detonateTime
+         /** detonateTime */
          this.addField_SFTime(ctx, "detonateTime", 0);
          
-         // firedTime
+         /** firedTime */
          this.addField_SFTime(ctx, "firedTime", 0);
          
+         /** Various status */
          this.addField_SFBool(ctx, 'isActive', 'false');
          this.addField_SFBool(ctx, 'isCollided', 'false');
          this.addField_SFBool(ctx, 'isDetonated', 'false');
@@ -273,13 +283,17 @@ x3dom.registerNodeType(
          this.addField_SFBool(ctx, 'isRtpHeaderHeard', 'false');
          this.addField_SFBool(ctx, 'isStandalone', 'false');
          
+         /** Timestap */
          this.addField_SFTime(ctx, "timestamp", 0);
          
+         /** bounding boxes */
          this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
          this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
          
+         /** Geodetic system */
          this.addField_MFString(ctx, 'geoSystem', "GD", 'WE' );
          
+         /** Real time header expected? Not really relevant any more */
          this.addField_SFBool(ctx, 'rtpHeaderExpected', 'false');
          
          // The values in the X3D file node are directly passed here -- the
@@ -324,6 +338,7 @@ x3dom.registerNodeType(
                 
                 this.espdu.entityID.entity = this._vf.entityID;
                 this.espdu.entityID.site = this._vf.siteID;
+                console.log("entityID=", this.espdu.entityID.entity, " siteID=", this.espdu.entityID.site);
                 
                 this.espdu.entityType.enityKind = this._vf.entityKind;
                 this.espdu.entityType.domain = this._vf.entityDomain;

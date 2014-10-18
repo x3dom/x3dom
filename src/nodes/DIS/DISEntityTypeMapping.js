@@ -48,8 +48,9 @@ x3dom.registerNodeType(
          // metadata node
          this.addField_SFNode(ctx, "metadata", "x3dom.nodeTypes.X3DMetadataObject");
 
-         // The URL form which a model is loaded, given the values in
-         // the enumerated fields below.
+         /** The URL form which a model is loaded, given the values in
+          *  the enumerated fields below.
+          */
          this.addField_SFString(ctx, 'url', "http://localhost"); 
          
          // The fields are kind, domain, country, category, subcategory,
@@ -58,30 +59,32 @@ x3dom.registerNodeType(
          // The semantic meaning of each of these fields can vary depending
          // on context. 
          
-          // kind, typically entity, cultural feature, life form, etc.
+         /** kind, typically entity, cultural feature, life form, etc. [0..255] */
          this.addField_SFInt32(ctx, 'kind', 1);
          
-          // domain, typically air/surface/subsurface/space 
+          /** domain, typically air/surface/subsurface/space [0..255] */
          this.addField_SFInt32(ctx, 'domain', 1);
          
-         // country, different value for each country. 225 = US.
+         /** country, different value for each country. [0..16K] 225 = US.*/
          this.addField_SFInt32(ctx, 'country', 225);
          
          // Category, subcategory, and specific are almost entirely
          // context-specific.
          
-         // Category
+         /**  Category [0..255]*/
          this.addField_SFInt32(ctx, 'category', 0);
          
-         // Subcategory
+         /**  Subcategory. [0..255] */
          this.addField_SFInt32(ctx, 'subcategory', 0);
          
-         // Subcategory
+         /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
          
-         this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
+         console.log("country:", this.country);
+         
+         //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
 
-         this.addField_SFNode(ctx, "removedNodes", "x3dom.nodeTypes.X3DNode");
+         //this.addField_SFNode(ctx, "removedNodes", "x3dom.nodeTypes.X3DNode");
 },
       
      // The implementation object. Thas has function definitions for the Node API,

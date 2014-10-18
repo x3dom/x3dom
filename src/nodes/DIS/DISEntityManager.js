@@ -55,7 +55,7 @@ x3dom.registerNodeType(
          this.addField_SFInt32(ctx, 'siteID', 0);
          
          /** TCP port, [0...65535] */
-         this.addField_SF_Int32(ctx, 'port', 0);
+         this.addField_SFInt32(ctx, 'port', 0);
          
          /** zero or more DISEntityTypeMapping nodes. No ctx arg? */
          this.addField_MFNode('mapping', x3dom.nodeTypes.DISEntityTypeMapping);

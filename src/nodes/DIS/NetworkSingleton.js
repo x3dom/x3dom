@@ -29,7 +29,7 @@ function NetworkSingleton(theUrl, origin, entityManager)
   this.localCoordinateSystemOrigin = origin;
   
   /** Factory object for converting binary data to Javascript DIS objects */
-  this.pduFactory = new PduFactory(); 
+  this.pduFactory = new dis.PduFactory(); 
     
   /** The rangeCoordinates object converts to and from DIS global coordinates 
    * (origin at center of earth) to local coordinates (relative to a rectilinear
@@ -252,6 +252,8 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
       
+      console.log("Recieved PDU from server");
+      
       // If the factory can't correctly decode the message it will return null.
       // Really, the only option is to throw up our hands and punt.
       if(pdu === null)
@@ -288,7 +290,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
           espduTransformNode.espdu.encodeToBinaryDIS(os);
           var trimmedData = dataBuffer.slice(0, os.currentPosition);
           this.websocketConnection.send(trimmedData);
-          console.log("Sent espdu from entity", espduTransformNode.espdu.entityLocation);
+          //console.log("Sent espdu from entity", espduTransformNode.espdu.entityID);
        };
        
        /**
@@ -325,7 +327,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
         var b = document.createElement('Box');
         s.appendChild(b);
         
-        var ot = document.getElementById('root');
+        var ot = document.getElementById('networkEntities');
         ot.appendChild(t);
         }
         
@@ -350,28 +352,30 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
                                                                   espdu.entityLocation.y, 
                                                                   espdu.entityLocation.z);
            
-           transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+           // The right way is to do geotranslation to local coords, as here. For debugging
+           // we add it near the origin.
+           //transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+           transform.setAttribute("translation", 1.0 + Math.random(), 1.0 + Math.random(), 1.0 + Math.random() );
            transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
            
            var shape = document.createElement("Shape");
            var appearance = document.createElement("Appearance");
            var material = document.createElement("Material");
-           material.setAttribute("diffuseColor", "0.603 0.894 0.909");
+           material.setAttribute("diffuseColor", "0.603 0.1 0.1");
            var box = document.createElement("Box");
            
-           var modelUrl = this.urlForEntityType(espdu.entityType);
-           console.log("Have model of ", modelUrl, ' for entityType', espdu.entityType);
+           //var modelUrl = this.urlForEntityType(espdu.entityType);
+           //console.log("Have model of ", modelUrl, ' for entityType', espdu.entityType);
            
            appearance.appendChild(material);
            shape.appendChild(appearance);
            shape.appendChild(box);
            transform.appendChild(shape);
  
-           
-           
            // The espduTransform constructor doesn't fire until it's added
            // to the document
-           var root = document.getElementById('DISNetworkEntities');
+           var root = document.getElementById('networkEntities');
+           console.log("Root node for added networked entities is ", root);
            root.appendChild(newEspduTransformNode);
            root.appendChild(transform);
            //root.style.display();
