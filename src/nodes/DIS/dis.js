@@ -114,6 +114,129 @@ dis.CoordinateConversion = function()
  };
  
  exports.CoordinateConversion = dis.CoordinateConversion;
+/**
+ * Some code to extract the entity apperance bit fields.<p>
+ * 
+ * The entityAppearance field in the espdu is a 32 bit integer. To save
+ * space, several different fields are contained within it. 
+ * Specifically:
+ * 
+ *  Name      bit position        Purpose
+ *  ----      ------------        --------
+ *  Paint            0            0 = uniform color, 1=camo
+ *  Mobility         1            0 = no mobility kill, 1 = mobility kill
+ *  Fire Power       2            0 = no firepower kill, 1 = firepower kill
+ *  Damage           3-4          0=no damange, 1=slight, 2=moderate, 3=destroyed
+ *  Smoke            5-6          0=not smoking, 1=smoke plume, 2=emitting engine smoke, 3=engine smoke + smoke plume
+ *  Trailing effects 7-8          dust cloud, 0=none, 1=small, 2=medium, 3=large
+ *  hatch            9-11         0=NA, 1=hatch closed, 2=popped, 3=popped + person visible, 4=open, 5=open and visible
+ *  head lights      12           0=off, 1=on
+ *  tail light       13           0=off, 1=on
+ *  brake lights     14           0=off, 1=on
+ *  flaming          15           0=none, 1=flames present
+ *  launcher         16           0=not raised, 1=raised
+ *  camo type        17-18        0=desert, 1=winter, 2=forest
+ *  concealed        19           0=not concealed, 1=prepared concealed position (netting, etc)
+ *  frozen status    20           0=not frozen, 1=frozen (in simulation terms)
+ *  power plant      22           0=power plant off 1=on
+ *  state            23           0=active, 1=deactivated
+ *  tent             24           0=not extended 1=extended
+ *  ramp             25           0=not extended, 1=extended
+ *  blackout lights  26           0=off, 1=on
+ *  blackout brake   27           0=off, 1=on
+ *  spot lights      28           0=off, 1=on
+ *  interior lights  29           0=off, 1=on
+ *  unused           30-31
+ *  
+ *  Typical use:
+ *  
+ *  var entityAppearance = new DisAppearance(espdu.entityAppearance);
+ *  var damage = entityAppearance.getBitfield(3, 4);
+ *  
+ *  This returns the "damage" bitfield in bits 3-4.
+ *  
+ *  var mobility = entityAppearance.getBitfield(1, 1);
+ *  
+ *  Returns the mobility field, 0 = no mobo kill, 1 = mobility kill
+ *  
+ *  @author DMcG
+ **/
+
+if (typeof dis === "undefined")
+ dis = {};
+ 
+// Support for node.js style modules; ignore if not using node.js require
+if (typeof exports === "undefined")
+   exports = {};
+
+/** Constructor. Takes the integer value extracted from the DIS Entity State Field appearance
+ * 
+ * @param {type} integerValue the entity appearance from the espdu
+ * @returns {undefined}
+ */
+dis.DisAppearance = function(integerValue)
+{
+    this.entityAppearance = integerValue; 
+}
+
+/**
+ * Test code for creating the correct bitmask
+ * @returns {undefined}
+ */
+dis.DisAppearance.prototype.getTestMask = function()
+{
+    mask = 0;
+    for(var idx = 0; idx < 7; idx++)
+    {
+        mask = mask + this.bit_set(mask, idx);
+    }
+    
+    return mask;
+};
+
+/**
+ * 
+ * @param {integer} startPosition
+ * @param {integer} finishPosition
+ * @returns {integer}
+ */
+dis.DisAppearance.prototype.getBitField = function(startPosition, finishPosition)
+{
+    // do some sanity checks
+    if(startPosition < 0 || startPosition > 31 || finishPosition < 0 || finishPosition > 31 || startPosition > finishPosition)
+    {
+        console.log("invalid start or finish for bitfield values: ", startPosition, " ", finishPosition);
+        return 0;
+    }
+    
+    // Develop the mask. Addition is equivalent to setting multiple bits.
+    var mask = 0;
+    for(var idx = startPosition; idx <= finishPosition; idx++)
+    {
+        mask = mask + this.bit_set(0, idx);
+    }
+        
+    // do the bitmask
+    var maskedValue = this.entityAppearance & mask;
+    // Shift bits to get the normalized value
+    var fieldValue = maskedValue >>> startPosition;  
+    
+    return fieldValue;
+};
+
+/** Set the "bit" position in a number to 1
+ * 
+ * @param {integer}  num the number whose bit we are setting. Typically zero.
+ * @param {integer} bit which bit to set
+ * @return {integer} the number passed in, with the "bit"th bit flipped on.
+ **/
+dis.DisAppearance.prototype.bit_set = function(num, bit)
+{
+    return num | 1<<bit;
+}
+
+exports.DisAppearance = dis.DisAppearance;
+
 //var BigInteger = require('BigInteger');
 
 if (typeof dis === "undefined")
@@ -318,48 +441,56 @@ if (typeof exports === "undefined")
      var asUint8Array = new Uint8Array(data);
      var pduType = asUint8Array[2];
      var inputStream = new dis.InputStream(data);
-     var newPdu;
+     var newPdu = null;
      
-     switch(pduType)
+     try
      {
-         case 1:     // entity state PDU
-             newPdu = new dis.EntityStatePdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         case 2:     // Fire
-             newPdu = new dis.FirePdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break; 
-             
-         case 3:     // detonation
-             newPdu = new dis.DetonationPdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         case 4:     // Collision
-             newPdu = new dis.CollisionPdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         case 11:    // Create entity
-             newPdu = new dis.CreateEntityPdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         case 12:    // Remove entity
-             newPdu = new dis.RemoveEntityPdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         case 20:    // data
-             newPdu = new dis.DataPdu();
-             newPdu.initFromBinaryDIS(inputStream);
-             break;
-             
-         default:
-            throw  "PduType: " + pduType + " Unrecognized PDUType. Add PDU in dis.PduFactory.";
-     }
+        switch(pduType)
+        {
+            case 1:     // entity state PDU
+                newPdu = new dis.EntityStatePdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            case 2:     // Fire
+                newPdu = new dis.FirePdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break; 
+
+            case 3:     // detonation
+                newPdu = new dis.DetonationPdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            case 4:     // Collision
+                newPdu = new dis.CollisionPdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            case 11:    // Create entity
+                newPdu = new dis.CreateEntityPdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            case 12:    // Remove entity
+                newPdu = new dis.RemoveEntityPdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            case 20:    // data
+                newPdu = new dis.DataPdu();
+                newPdu.initFromBinaryDIS(inputStream);
+                break;
+
+            default:
+               throw  "PduType: " + pduType + " Unrecognized PDUType. Add PDU in dis.PduFactory.";
+        }
+    }
+    // This also picks up any errors decoding what we though was a "normal" PDU
+    catch(error)
+    {
+      newPdu = null;
+    }
      
      return newPdu;
  };
@@ -687,7 +818,96 @@ dis.RangeCoordinates = function(lat, lon, alt)
        return {x:X, y:Y, z:Z};
    };
    
-exports.RangeCoordinates = dis.RangeCoordinates;/**
+exports.RangeCoordinates = dis.RangeCoordinates;if (typeof dis === "undefined")
+   dis = {};
+   
+// Support for node.js style modules; ignore if not using node.js require
+if (typeof exports === "undefined")
+   exports = {};
+
+/**
+ * Utility class that converts between strings and the DIS ESPDU marking
+ * field. The marking field is 12 bytes long, with the first byte being
+ * the character set used, and the remaining 11 bytes character codes in
+ * that character set. This is often used for debugging or "billboard"
+ * displays in 3D; it's intended for humans. The string character values
+ * are clamped (or filled) to exactly 11 bytes, so "This is a long string"
+ * will be clamped to "This is a l" (in charachter codes) and "foo" will
+ * be filled to "foo\0\0\0\0\0\0\0\0".<p>
+ * 
+ * It is recommended that only ASCII character set (character set = 1)
+ * be used.
+ * 
+ * @returns {undefined}
+ */
+dis.StringConversion = function()
+{
+};
+
+/**
+ * Given a string, returns a DIS marking field. The character set is set to
+ * 1, for ascii. The length is clamped to 11, and zero-filled if the string
+ * is shorter than 11.
+ * 
+ * @returns {array} disMarking field, 12 bytes long, character set = 1 (ascii) in 0, zero-filled to 11 character codes 
+ */
+dis.StringConversion.prototype.StringToDisMarking = function(markingString)
+{
+    var byteMarking = [];
+    
+    // character set 1 = ascii
+    byteMarking.push(1);
+    
+    var markingLength = markingString.length;
+    
+    // Clamp it to 11 bytes of character data
+    if(markingLength > 11)
+        markingLength = 11;
+    
+    // If the string is shorter than 11 bytes, we zero-fill the array
+    var  diff = 11 - markingLength;
+    
+    for(var idx = 0; idx < markingLength; idx++)
+    {
+        byteMarking.push(markingString.charCodeAt(idx));
+    }
+    
+    for(var idx = markingLength; idx < 11; idx++)
+    {
+        byteMarking.push(0);
+    }
+
+    return byteMarking;
+};
+
+/**
+ * Given a DIS marking field, returns a string. Assumes always ascii.
+ * 
+ * @param {array} disMarking dis marking field, [0] = character set, the rest character codes
+ * @returns {string} string equivalent of the marking field
+ */
+dis.StringConversion.prototype.DisMarkingToString = function(disMarking)
+{
+    var marking = "";
+    
+    for(var idx = 1; idx < disMarking.length; idx++)
+    {
+        marking = marking + String.fromCharCode(disMarking[idx]);
+    }
+    
+    return marking;
+};
+
+// This is a temporary placeholder until full require.js code
+// support is present.
+if (typeof exports === "undefined")
+   exports = {};
+
+exports.RangeCoordinates = dis.RangeCoordinates;
+exports.InputStream = dis.InputStream;
+exports.OutputStream = dis.OutputStream;
+
+/**
  * Section 5.3.6.5. Acknowledge the receiptof a start/resume, stop/freeze, or RemoveEntityPDU. COMPLETE
  *
  * Copyright (c) 2008-2014, MOVES Institute, Naval Postgraduate School. All rights reserved.
@@ -8073,6 +8293,9 @@ exports.LogisticsFamilyPdu = dis.LogisticsFamilyPdu;
 
 /**
  * Section 5.2.15. Specifies the character set used inthe first byte, followed by 11 characters of text data.
+ * The generated Marking class should be augmented with a patch that adds getMarking() and
+ * setMarking() methods that convert between arrays and strings, and clamp the length
+ * of the string to 11 characters.
  *
  * Copyright (c) 2008-2014, MOVES Institute, Naval Postgraduate School. All rights reserved.
  * This work is licensed under the BSD open source license, available at https://www.movesinstitute.org/licenses/bsd.html
@@ -8116,6 +8339,52 @@ dis.Marking = function()
        {
           outputStream.writeByte(this.characters[ idx ] );
        }
+  };
+  
+  /*
+   * Returns the byte array marking, in string format. 
+   * @return string format marking characters
+   */
+  dis.Marking.prototype.getMarking = function()
+  {
+      var marking = "";
+      for(var idx = 0; idx < 11; idx++)
+      {
+          marking = marking + String.fromCharCode(characters[idx]);
+      }
+      
+      return marking;
+  };
+  
+  /**
+   * Given a string format marking, sets the bytes of the marking object
+   * to the appropriate character values. Clamps the string to no more
+   * than 11 characters.
+   * 
+   * @param {String} newMarking string format marking
+   * @returns {nothing}
+   */
+  dis.Marking.prototype.setMarking = function(newMarking)
+  {
+      var stringLen = newMarking.length;
+      if(stringLen > 11)
+          stringLen = 11;
+      
+      // Copy over up to 11 characters from the string to the array
+      var charsCopied = 0;
+      while(charsCopied < stringLen)
+      {          
+          this.characters[charsCopied] = newMarking.charCodeAt( charsCopied );
+          charsCopied++;
+      }
+      
+      // Zero-fill the remainer of the character array
+      while(charsCopied < 11)
+      {
+          this.characters[ charsCopied ] = 0;
+          charsCopied++;
+      }
+      
   };
 }; // end of class
 
