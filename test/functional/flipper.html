@@ -45,28 +45,40 @@
                       isMultiField = (scene._cfFieldTypes[fieldName].charAt(0) == "M");
                       if (isMultiField) {
                           json[containerName][fieldName] = [];
+
                           for (var cnt=0; cnt<scene._cf[fieldName].nodes.length; cnt++) {
-                              traverse(json[containerName][fieldName],
-                                      scene._cf[fieldName].nodes[cnt],
-                                      scene._cf[fieldName].nodes[cnt].typeName());
+                              json[containerName][fieldName][cnt] = {};
+                              traverse(json[containerName][fieldName][cnt],
+                                       scene._cf[fieldName].nodes[cnt],
+                                       scene._cf[fieldName].nodes[cnt].typeName());
                           }
                       }
                       else {
                           json[containerName][fieldName] = {};
                           if (scene._cf[fieldName].node)
                               traverse(json[containerName][fieldName],
-                                      scene._cf[fieldName].node,
-                                      scene._cf[fieldName].node.typeName());
+                                       scene._cf[fieldName].node,
+                                       scene._cf[fieldName].node.typeName());
                           else
                               json[containerName][fieldName] = null;
                       }
                   }
+
+                  // Note: routes are currently missing, since they are no objects (see X3DNode.js)
+                  // and maybe exchange typeName against containerFieldName for spec conformance?
               };
 
               var scene = document.getElementById('x3dElement').runtime.canvas.doc._scene;
               var tree = {};
 
               traverse(tree, scene, scene.typeName());
+
+              // debug
+              var out = document.getElementById("stringifiedDump");
+              out.innerHTML = "<p>JSON is also dumped as object to console!<br></p><p>" +
+                              JSON.stringify(tree, null, " ") + "</p>";
+              out.style.display = "block";
+              //
 
               return tree;
           }
@@ -123,9 +135,9 @@
               </button> 
             </td>
             <td>
-              <button onclick='console.log(createJSON());'> Dump JSON to console </button>
+              <button onclick='console.log(createJSON());'> Dump scene as JSON </button>
             </td>
-          </tr> 
+          </tr>
         </table> 
       </div> 
     </div>
@@ -155,5 +167,6 @@
         <ROUTE fromNode='ts' fromField='fraction_changed' toNode='si' toField='set_fraction'></ROUTE>
       </scene>
     </x3d>
+    <div  id="stringifiedDump" style='display:none; margin:2px; padding:4px 20px 4px 4px; background-color:rgba(199,202,204,.7); position:absolute; z-index:1000; right:0; bottom:0; width:300px; height:300px; overflow: scroll;'></div>
   </body>
 </html>
