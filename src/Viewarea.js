@@ -1331,8 +1331,10 @@ x3dom.Viewarea.prototype.initMouseState = function()
     this._needNavigationMatrixUpdate = true;
 };
 
-x3dom.Viewarea.prototype.initTurnTable = function(navi)
+x3dom.Viewarea.prototype.initTurnTable = function(navi, flyTo)
 {
+    flyTo = (flyTo == undefined) ? true : flyTo;
+
     var currViewMat = this.getViewMatrix();
 
     var viewpoint = this._scene.getViewpoint();
@@ -1348,7 +1350,12 @@ x3dom.Viewarea.prototype.initTurnTable = function(navi)
     this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
     this._flyMat = this.calcOrbit(0, 0, navi);
 
-    var dur = 0.2 / navi._vf.speed;   // fly to pivot point
+    var dur = 0.0;
+
+    if (flyTo) {
+        dur = 0.2 / navi._vf.speed;   // fly to pivot point
+    }
+
     this.animateTo(this._flyMat.inverse(), viewpoint, dur);
 
     this.resetNavHelpers();
@@ -1376,7 +1383,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
         var navi = this._scene.getNavigationInfo();
 
         if (navi.getType() === "turntable") {
-            this.initTurnTable(navi);
+            this.initTurnTable(navi, false);
         }
     }
 };
@@ -1751,7 +1758,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         else if (navType === "turntable")   // requires that y is up vector in world coords
         {
             if (!this._flyMat)
-                this.initTurnTable(navi);
+                this.initTurnTable(navi, false);
 
             if (buttonState & 1) //left
             {
@@ -1858,8 +1865,8 @@ x3dom.Viewarea.prototype.calcOrbit = function (alpha, beta, navi)
     // angle from y-axis
     var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
 
-    phi -= Math.min(beta, 0.1);
-    theta -= Math.min(alpha, 0.1);
+    phi -= beta;
+    theta -= alpha;
 
     // clamp theta
     var typeParams = navi.getTypeParams();
