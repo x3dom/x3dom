@@ -305,11 +305,21 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             if (navType === "helicopter")
                 this._at.y = this._from.y;
-            
-            if (navType.substr(0, 5) !== "looka")
-                this._up = new x3dom.fields.SFVec3f(0, 1, 0);
-            else
+
+            //lookat, lookaround
+            if (navType.substr(0, 5) === "looka")
+            {
                 this._up = this._flyMat.e1();
+            }
+            //all other modes
+            else
+            {
+                //initially read up-vector from current orientation and keep it
+                if (typeof this._up == 'undefined')
+                {
+                    this._up = this._flyMat.e1();
+                }
+            }
 
             this._pitch = angleX * 180 / Math.PI;
             this._yaw = angleY * 180 / Math.PI;
