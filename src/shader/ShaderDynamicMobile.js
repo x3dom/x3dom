@@ -304,7 +304,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			} else if(properties.COLCOMPONENTS  == 4) {
 				shader += "vec4 vertColor = color;";
 			}
-			if(properties.REQUIREBBOXNOR) {
+			if(properties.REQUIREBBOXCOL) {
 				shader += "vertColor = vertColor / bgPrecisionColMax;\n";
 			}
 		}
@@ -379,14 +379,14 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "if (dot(normalMV, eye) < 0.0) {\n";
 			shader += "	 normalMV *= -1.0;\n";
             if(properties.SEPARATEBACKMAT) {
-                shader += "  rgb = backDiffuseColor;\n";
-                shader += "  alpha = 1.0 - backTransparency;\n";
-                shader += "  _shininess = backShininess;\n";
-                shader += "  _emissiveColor = backEmissiveColor;\n";
-                shader += "  _specularColor = backSpecularColor;\n";
-                shader += "  _ambientIntensity = backAmbientIntensity;\n";
+                shader += "    rgb = backDiffuseColor;\n";
+                shader += "    alpha = 1.0 - backTransparency;\n";
+                shader += "    _shininess = backShininess;\n";
+                shader += "    _emissiveColor = backEmissiveColor;\n";
+                shader += "    _specularColor = backSpecularColor;\n";
+                shader += "    _ambientIntensity = backAmbientIntensity;\n";
             }
-			shader += "}\n";
+            shader += "  }\n";
 		}
 		
 		//Calculate lighting

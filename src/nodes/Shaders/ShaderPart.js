@@ -54,8 +54,8 @@ x3dom.registerNodeType(
                 ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
-                this._vf.type.toLowerCase() == 'fragment');
-        
+                               this._vf.type.toLowerCase() == 'fragment',
+                               "Unknown shader part type!");
         },
         {
             nodeChanged: function()

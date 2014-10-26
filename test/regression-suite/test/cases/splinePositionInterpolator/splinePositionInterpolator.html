@@ -1,0 +1,59 @@
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+		<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"></meta>
+		<script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+		<script type="text/javascript">
+			var step = 0;
+			var stepsize = 0.005;
+			var numsteps = 201;
+			function auto() {
+				var sip = document.getElementById("spline_interp");
+				var extruder = document.getElementById("extruder");
+				for(var i = 0; i < numsteps; i=i+1) {
+					sip.setAttribute("set_fraction", step + i*stepsize);
+					extruder.setAttribute("spine", extruder.getAttribute("spine") + " " + sip.getAttribute("value_changed"));
+				}
+				
+				//sip.setAttribute("set_fraction", 0.5);
+				//extruder.setAttribute("spine", extruder.getAttribute("spine") + " " + sip.getAttribute("value_changed"));
+			}
+		</script>
+	</head>
+
+       
+<body>
+	<X3D xmlns="http://www.x3dom.org/x3dom" showStat="false" showLog="false" width="800px" height="600px">
+		<scene>
+			<OrthoViewpoint></OrthoViewpoint>
+			<Background skyColor='0 0 0'></Background>
+			
+			<Transform id='Pointer1' translation='-1 0 0'>
+				<Shape>
+					<Appearance>
+						<Material emissiveColor="1 1 1"></Material>
+					</Appearance>
+					<Sphere radius="0.001"></Sphere>
+				</Shape>
+			</Transform>
+			
+			<Shape>
+				<Appearance>
+					<Material emissiveColor='1 1 1'></Material>
+				</Appearance>
+				<Extrusion id="extruder" convex='true' crossSection='.01 .01 .01 -.01 -.01 -.01 -.01 .01 .01 .01' spine='-1 0 0 -1 0 0'></Extrusion>
+			</Shape>
+			
+			<SplinePositionInterpolator id="spline_interp" DEF='PositionAnimator1'
+										key='0.0 1.0'
+										keyValue='-1 0 0 1 0 0' 
+										keyVelocity='0 10 0 0 10 0'>
+			</SplinePositionInterpolator>
+										
+			<ROUTE fromField='value_changed' fromNode='PositionAnimator1' toField='translation' toNode='Pointer1'></ROUTE
+		</scene>
+	</X3D>
+	<input type="button" value="change" onclick="auto();"></input>
+</body>
+
+</html>

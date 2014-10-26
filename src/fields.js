@@ -1340,7 +1340,7 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
     var psi_1, psi_2, psi;
     var cos_theta_1, cos_theta_2;
 
-    if (Math.abs(this._20) != 1.0) {
+    if ( Math.abs((Math.abs(this._20) - 1.0)) > 0.0001) {
         theta_1 = -Math.asin(this._20);
         theta_2 = Math.PI - theta_1;
 
@@ -1747,8 +1747,8 @@ x3dom.fields.Quaternion = function(x, y, z, w) {
     if (arguments.length === 0) {
         this.x = 0;
         this.y = 0;
-        this.z = 1;
-        this.w = 0;
+        this.z = 0;
+        this.w = 1;
     }
     else {
         this.x = x;

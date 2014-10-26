@@ -53,12 +53,21 @@ x3dom.gfx_webgl = (function () {
             stencil: true,
             antialias: true,
             premultipliedAlpha: false,
-            preserveDrawingBuffer: true
+            preserveDrawingBuffer: true,
+            failIfMajorPerformanceCaveat : true
         };
 
         for (var i = 0; i < validContextNames.length; i++) {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
+
+                //If context creation fails, retry the creation with failIfMajorPerformanceCaveat = false
+                if ( !ctx ) {
+                    x3dom.caps.RENDERMODE = "SOFTWARE";
+                    ctxAttribs.failIfMajorPerformanceCaveat = false;
+                    ctx = canvas.getContext(validContextNames[i], ctxAttribs);
+                }
+
                 if (ctx) {
                     var newCtx = new Context(ctx, canvas, 'webgl', x3dElem);
 
@@ -92,11 +101,21 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.STD_DERIVATIVES = ctx.getExtension("OES_standard_derivatives");
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
+                        x3dom.caps.DEBUGRENDERINFO = ctx.getExtension("WEBGL_debug_renderer_info");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
+
+                        if ( x3dom.caps.DEBUGRENDERINFO ) {
+                            x3dom.caps.UNMASKED_RENDERER_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_RENDERER_WEBGL );
+                            x3dom.caps.UNMASKED_VENDOR_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_VENDOR_WEBGL );
+                        } else {
+                            x3dom.caps.UNMASKED_RENDERER_WEBGL = "";
+                            x3dom.caps.UNMASKED_VENDOR_WEBGL = "";
+                        }
 
                         var extString = x3dom.caps.EXTENSIONS.toString().replace(/,/g, ", ");
                         x3dom.debug.logInfo(validContextNames[i] + " context found\nVendor: " + x3dom.caps.VENDOR +
-                            ", Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
+                            " " + x3dom.caps.UNMASKED_VENDOR_WEBGL + ", Renderer: " + x3dom.caps.RENDERER +
+                            " " + x3dom.caps.UNMASKED_RENDERER_WEBGL + ", " + "Version: " + x3dom.caps.VERSION + ", " +
                             "ShadingLangV.: " + x3dom.caps.SHADING_LANGUAGE_VERSION
                             + ", MSAA samples: " + x3dom.caps.SAMPLES + "\nExtensions: " + extString);
 
@@ -745,7 +764,7 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
 
                 bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.withCredentials, true, false);
+                    true, bgnd._vf.crossOrigin, true, false);
             }
             else {
                 bgnd._webgl = {
@@ -759,7 +778,7 @@ x3dom.gfx_webgl = (function () {
                 url = bgnd._nameSpace.getURL(url[0]);
 
                 bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.withCredentials, true, false);
+                    true, bgnd._vf.crossOrigin, true, false);
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 
@@ -831,7 +850,12 @@ x3dom.gfx_webgl = (function () {
                     sky[i] /= Math.PI;
                 }
 
-                x3dom.debug.assert(sky.length == colors.length);
+                if (sky.length != colors.length) {
+                    x3dom.debug.logError("Number of background colors and corresponding angles are different!");
+                    var minArrayLength = (sky.length < colors.length) ? sky.length : colors.length;
+                    sky.length = minArrayLength;
+                    colors.length = minArrayLength;
+                }
 
                 var interp = new x3dom.nodeTypes.ColorInterpolator();
 
@@ -1688,21 +1712,22 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
-                if (pickMode == 1 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
-
-                    gl.vertexAttribPointer(sp.texcoord,
-                        s_msh._numTexComponents, s_gl.texCoordType, false,
-                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.texcoord);
-                }
-                if (pickMode == 2 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
+                if (pickMode == 1 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
 
                     gl.vertexAttribPointer(sp.color,
                         s_msh._numColComponents, s_gl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
+                }
+
+                if (pickMode == 2 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
+
+                    gl.vertexAttribPointer(sp.texcoord,
+                        s_msh._numTexComponents, s_gl.texCoordType, false,
+                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.texcoord);
                 }
 
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
@@ -1963,13 +1988,21 @@ x3dom.gfx_webgl = (function () {
                 tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiDiffuseAlphaMap");
                 sp.multiDiffuseAlphaWidth = tex.texture.width;
                 sp.multiDiffuseAlphaHeight = tex.texture.height;
-
+            }
+            if (shader.getMultiEmissiveAmbientMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiEmissiveAmbientMap");
+                sp.multiEmissiveAmbientWidth = tex.texture.width;
+                sp.multiEmissiveAmbientHeight = tex.texture.height;
+            }
+            if (shader.getMultiSpecularShininessMap()) {
+                tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiSpecularShininessMap");
+                sp.multiSpecularShininessWidth = tex.texture.width;
+                sp.multiSpecularShininessHeight = tex.texture.height;
             }
             if (shader.getMultiVisibilityMap()) {
                 tex = x3dom.Utils.findTextureByName(s_gl.texture, "multiVisibilityMap");
                 sp.multiVisibilityWidth = tex.texture.width;
                 sp.multiVisibilityHeight = tex.texture.height;
-
             }
         }
         else if (mat) {
@@ -2709,307 +2742,224 @@ x3dom.gfx_webgl = (function () {
         
         var scene = viewarea._scene;
         
-        if (scene._forcePicking || scene._vf.pickOnNav || (!viewarea._isMoving && !viewarea._isAnimating)) 
+        var gl = this.ctx3d;
+        
+        // method requires that scene has already been rendered at least once
+        if (!gl || !scene || !scene._webgl || !scene.drawableCollection) {
+            return false;
+        }
+
+        var pm = scene._vf.pickMode.toLowerCase();
+        var pickMode = 0;
+
+        switch (pm) {
+            case "box":      return false;
+            case "idbuf":    pickMode = 0; break;
+            case "idbuf24":  pickMode = 3; break;
+            case "idbufid":  pickMode = 4; break;
+            case "color":    pickMode = 1; break;
+            case "texcoord": pickMode = 2; break;
+        }
+
+        
+        // ViewMatrix and ViewProjectionMatrix
+        var mat_view, mat_scene;
+
+        if (arguments.length > 4) {
+            mat_view = viewMat;
+            mat_scene = sceneMat;
+        }
+        else {
+            mat_view = viewarea._last_mat_view;
+            mat_scene = viewarea._last_mat_scene;
+        }
+
+        // remember correct scene bbox
+        var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+        var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
+        // get current camera position
+        var from = mat_view.inverse().e3();
+
+        // get bbox of scene bbox and camera position
+        var _min = x3dom.fields.SFVec3f.copy(from);
+        var _max = x3dom.fields.SFVec3f.copy(from);
+
+        if (_min.x > min.x) { _min.x = min.x; }
+        if (_min.y > min.y) { _min.y = min.y; }
+        if (_min.z > min.z) { _min.z = min.z; }
+
+        if (_max.x < max.x) { _max.x = max.x; }
+        if (_max.y < max.y) { _max.y = max.y; }
+        if (_max.z < max.z) { _max.z = max.z; }
+
+        // temporarily set scene size to include camera
+        scene._lastMin.setValues(_min);
+        scene._lastMax.setValues(_max);
+
+        // get scalar scene size and adapted projection matrix
+        var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
+        var cctowc = viewarea.getCCtoWCMatrix();
+
+        // restore correct scene bbox
+        scene._lastMin.setValues(min);
+        scene._lastMax.setValues(max);
+
+        // for deriving shadow ids together with shape ids
+        var baseID = x3dom.nodeTypes.Shape.objectID + 2;
+
+
+        // render to texture for reading pixel values
+        this.renderPickingPass(gl, scene, mat_view, mat_scene, from, sceneSize, pickMode, x, y, 2, 2);
+
+        // the pixel values under mouse cursor
+        var pixelData = scene._webgl.fboPick.pixelData;
+
+        if (pixelData && pixelData.length)
         {
-            var gl = this.ctx3d;
-            
-            // method requires that scene has already been rendered at least once
-            if (!gl || !scene || !scene._webgl || !scene.drawableCollection) {
-                return false;
+            var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
+            var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
+
+            var index = 0;
+            var objId = pixelData[index + 3], shapeId;
+
+            var pixelOffset = 1.0 / scene._webgl.pickScale;
+            var denom = 1.0 / 256.0;
+            var dist, line, lineoff, right, up;
+
+            if (pickMode == 0) {
+                objId += 256 * pixelData[index + 2];
+
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
+
+                line = viewarea.calcViewRay(x, y, cctowc);
+
+                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+
+                index = 4;      // get right pixel
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
+
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
+
+                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = right.subtract(pickPos).normalize();
+
+                index = 8;      // get top pixel
+                dist = (pixelData[index    ] / 255.0) * denom +
+                       (pixelData[index + 1] / 255.0);
+
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
+
+                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = up.subtract(pickPos).normalize();
+
+                pickNorm = right.cross(up).normalize();
             }
+            else if (pickMode == 3) {
+                objId +=   256 * pixelData[index + 2] +
+                         65536 * pixelData[index + 1];
 
-            var pm = scene._vf.pickMode.toLowerCase();
-            var pickMode = 0;
+                dist = pixelData[index] / 255.0;
 
-            switch (pm) {
-                case "box":      return false;
-                case "idbuf":    pickMode = 0; break;
-                case "idbuf24":  pickMode = 3; break;
-                case "idbufid":  pickMode = 4; break;
-                case "color":    pickMode = 1; break;
-                case "texcoord": pickMode = 2; break;
+                line = viewarea.calcViewRay(x, y, cctowc);
+
+                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+
+                index = 4;      // get right pixel
+                dist = pixelData[index] / 255.0;
+
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
+
+                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = right.subtract(pickPos).normalize();
+
+                index = 8;      // get top pixel
+                dist = pixelData[index] / 255.0;
+
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
+
+                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = up.subtract(pickPos).normalize();
+
+                pickNorm = right.cross(up).normalize();
             }
+            else if (pickMode == 4) {
+                objId += 256 * pixelData[index + 2];
 
-            
-            // ViewMatrix and ViewProjectionMatrix
-            var mat_view, mat_scene;
+                shapeId  =       pixelData[index + 1];
+                shapeId += 256 * pixelData[index    ];
 
-            if (arguments.length > 4) {
-                mat_view = viewMat;
-                mat_scene = sceneMat;
+                // check if standard shape picked without special shadow id
+                if (objId == 0 && (shapeId > 0 && shapeId < baseID)) {
+                    objId = shapeId;
+                }
             }
             else {
-                mat_view = viewarea._last_mat_view;
-                mat_scene = viewarea._last_mat_scene;
+                pickPos.x = pixelData[index    ];
+                pickPos.y = pixelData[index + 1];
+                pickPos.z = pixelData[index + 2];
             }
+            //x3dom.debug.logInfo(pickPos + " / " + objId);
 
-            // remember correct scene bbox
-            var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
-            var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
-            // get current camera position
-            var from = mat_view.inverse().e3();
+            var eventType = "shadowObjectIdChanged";
+            var shadowObjectIdChanged, event;
+            var button = Math.max(buttonState >>> 8, buttonState & 255);
 
-            // get bbox of scene bbox and camera position
-            var _min = x3dom.fields.SFVec3f.copy(from);
-            var _max = x3dom.fields.SFVec3f.copy(from);
+            if (objId >= baseID) {
+                objId -= baseID;
 
-            if (_min.x > min.x) { _min.x = min.x; }
-            if (_min.y > min.y) { _min.y = min.y; }
-            if (_min.z > min.z) { _min.z = min.z; }
+                var hitObject;
 
-            if (_max.x < max.x) { _max.x = max.x; }
-            if (_max.y < max.y) { _max.y = max.y; }
-            if (_max.z < max.z) { _max.z = max.z; }
+                if (pickMode != 4) {
+                    viewarea._pickingInfo.pickPos = pickPos;
+                    viewarea._pick.setValues(pickPos);
 
-            // temporarily set scene size to include camera
-            scene._lastMin.setValues(_min);
-            scene._lastMax.setValues(_max);
+                    viewarea._pickingInfo.pickNorm = pickNorm;
+                    viewarea._pickNorm.setValues(pickNorm);
 
-            // get scalar scene size and adapted projection matrix
-            var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
-            var cctowc = viewarea.getCCtoWCMatrix();
+                    viewarea._pickingInfo.pickObj = null;
+                    viewarea._pickingInfo.lastClickObj = null;
 
-            // restore correct scene bbox
-            scene._lastMin.setValues(min);
-            scene._lastMax.setValues(max);
-
-            // for deriving shadow ids together with shape ids
-            var baseID = x3dom.nodeTypes.Shape.objectID + 2;
-
-
-            // render to texture for reading pixel values
-            this.renderPickingPass(gl, scene, mat_view, mat_scene, from, sceneSize, pickMode, x, y, 2, 2);
-
-            // the pixel values under mouse cursor
-            var pixelData = scene._webgl.fboPick.pixelData;
-
-            if (pixelData && pixelData.length)
-            {
-                var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
-                var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-
-                var index = 0;
-                var objId = pixelData[index + 3], shapeId;
-
-                var pixelOffset = 1.0 / scene._webgl.pickScale;
-                var denom = 1.0 / 256.0;
-                var dist, line, lineoff, right, up;
-
-                if (pickMode == 0) {
-                    objId += 256 * pixelData[index + 2];
-
-                    dist = (pixelData[index    ] / 255.0) * denom +
-                           (pixelData[index + 1] / 255.0);
-
-                    line = viewarea.calcViewRay(x, y, cctowc);
-
-                    pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
-
-                    index = 4;      // get right pixel
-                    dist = (pixelData[index    ] / 255.0) * denom +
-                           (pixelData[index + 1] / 255.0);
-
-                    lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
-
-                    right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
-                    right = right.subtract(pickPos).normalize();
-
-                    index = 8;      // get top pixel
-                    dist = (pixelData[index    ] / 255.0) * denom +
-                           (pixelData[index + 1] / 255.0);
-
-                    lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
-
-                    up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
-                    up = up.subtract(pickPos).normalize();
-
-                    pickNorm = right.cross(up).normalize();
-                }
-                else if (pickMode == 3) {
-                    objId +=   256 * pixelData[index + 2] +
-                             65536 * pixelData[index + 1];
-
-                    dist = pixelData[index] / 255.0;
-
-                    line = viewarea.calcViewRay(x, y, cctowc);
-
-                    pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
-
-                    index = 4;      // get right pixel
-                    dist = pixelData[index] / 255.0;
-
-                    lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
-
-                    right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
-                    right = right.subtract(pickPos).normalize();
-
-                    index = 8;      // get top pixel
-                    dist = pixelData[index] / 255.0;
-
-                    lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
-
-                    up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
-                    up = up.subtract(pickPos).normalize();
-
-                    pickNorm = right.cross(up).normalize();
-                }
-                else if (pickMode == 4) {
-                    objId += 256 * pixelData[index + 2];
-
-                    shapeId  =       pixelData[index + 1];
-                    shapeId += 256 * pixelData[index    ];
-
-                    // check if standard shape picked without special shadow id
-                    if (objId == 0 && (shapeId > 0 && shapeId < baseID)) {
-                        objId = shapeId;
-                    }
+                    hitObject = scene._xmlNode;
                 }
                 else {
-                    pickPos.x = pixelData[index    ];
-                    pickPos.y = pixelData[index + 1];
-                    pickPos.z = pixelData[index + 2];
+                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[shapeId];
+
+                    hitObject = viewarea._pickingInfo.pickObj._xmlNode;
                 }
-                //x3dom.debug.logInfo(pickPos + " / " + objId);
-
-                var eventType = "shadowObjectIdChanged";
-                var shadowObjectIdChanged, event;
-                var button = Math.max(buttonState >>> 8, buttonState & 255);
-
-                if (objId >= baseID) {
-                    objId -= baseID;
-
-                    var hitObject;
-
-                    if (pickMode != 4) {
-                        viewarea._pickingInfo.pickPos = pickPos;
-                        viewarea._pick.setValues(pickPos);
-
-                        viewarea._pickingInfo.pickNorm = pickNorm;
-                        viewarea._pickNorm.setValues(pickNorm);
-
-                        viewarea._pickingInfo.pickObj = null;
-                        viewarea._pickingInfo.lastClickObj = null;
-
-                        hitObject = scene._xmlNode;
-                    }
-                    else {
-                        viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[shapeId];
-
-                        hitObject = viewarea._pickingInfo.pickObj._xmlNode;
-                    }
 
 
-                    //Check if there are MultiParts
-                    if (scene._multiPartMap) {
-                        var mp, multiPart;
+                //Check if there are MultiParts
+                if (scene._multiPartMap) {
+                    var mp, multiPart;
 
-                        //Find related MultiPart
-                        for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
-                        {
-                            multiPart = scene._multiPartMap.multiParts[mp];
-                            if (objId >= multiPart._minId && objId <= multiPart._maxId)
-                            {
-                                hitObject = multiPart._xmlNode;
-
-                                event = {
-                                    target: multiPart._xmlNode,
-                                    button: button, mouseup: ((buttonState >>> 8) > 0),
-                                    layerX: x, layerY: y,
-                                    pickedId: objId,
-                                    worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
-                                    normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
-                                    hitPnt: pickPos.toGL(),
-                                    hitObject: hitObject,
-                                    cancelBubble: false,
-                                    stopPropagation: function () { this.cancelBubble = true; },
-                                    preventDefault:  function () { this.cancelBubble = true; }
-                                };
-
-                                multiPart.handleEvents(event);
-                            }
-                            else
-                            {
-                                event = {
-                                    target: multiPart._xmlNode,
-                                    button: button, mouseup: ((buttonState >>> 8) > 0),
-                                    layerX: x, layerY: y,
-                                    pickedId: -1,
-                                    cancelBubble: false,
-                                    stopPropagation: function () { this.cancelBubble = true; },
-                                    preventDefault:  function () { this.cancelBubble = true; }
-                                };
-
-                                multiPart.handleEvents(event);
-                            }
-                        }
-                    }
-
-                    shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != objId);
-                    viewarea._pickingInfo.lastShadowObjectId = viewarea._pickingInfo.shadowObjectId;
-                    viewarea._pickingInfo.shadowObjectId = objId;
-                    //x3dom.debug.logInfo(baseID + " + " + objId);
-
-                    if ((shadowObjectIdChanged || button) && scene._xmlNode &&
-                        (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
-                         scene._listeners[eventType]))
+                    //Find related MultiPart
+                    for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
                     {
-                        event = {
-                            target: scene._xmlNode,
-                            type: eventType,
-                            button: button, mouseup: ((buttonState >>> 8) > 0),
-                            layerX: x, layerY: y,
-                            shadowObjectId: objId,
-                            worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
-                            normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
-                            hitPnt: pickPos.toGL(),
-                            hitObject: hitObject,
-                            cancelBubble: false,
-                            stopPropagation: function () { this.cancelBubble = true; },
-                            preventDefault:  function () { this.cancelBubble = true; }
-                        };
-                        scene.callEvtHandler(("on" + eventType), event);
-                    }
-
-                    if (scene._shadowIdMap && scene._shadowIdMap.mapping &&
-                        objId < scene._shadowIdMap.mapping.length) {
-                        var shIds = scene._shadowIdMap.mapping[objId].usage;
-                        var n, c, shObj;
-
-                        if (!line) {
-                            line = viewarea.calcViewRay(x, y, cctowc);
-                        }
-                        // find corresponding dom tree object
-                        for (c = 0; c < shIds.length; c++) {
-                            shObj = scene._nameSpace.defMap[shIds[c]];
-                            // FIXME; bbox test too coarse (+ should include trafo)
-                            if (shObj && shObj.doIntersect(line)) {
-                                viewarea._pickingInfo.pickObj = shObj;
-                                break;
-                            }
-                        }
-                        //Check for other namespaces e.g. Inline/Multipart (FIXME; check recursively)
-                        for (n = 0; n<scene._nameSpace.childSpaces.length; n++)
+                        multiPart = scene._multiPartMap.multiParts[mp];
+                        if (objId >= multiPart._minId && objId <= multiPart._maxId)
                         {
-                            for (c = 0; c < shIds.length; c++) {
-                                shObj = scene._nameSpace.childSpaces[n].defMap[shIds[c]];
-                                // FIXME; bbox test too coarse (+ should include trafo)
-                                if (shObj && shObj.doIntersect(line)) {
-                                    viewarea._pickingInfo.pickObj = shObj;
-                                    break;
-                                }
-                            }
+                            hitObject = multiPart._xmlNode;
+
+                            event = {
+                                target: multiPart._xmlNode,
+                                button: button, mouseup: ((buttonState >>> 8) > 0),
+                                layerX: x, layerY: y,
+                                pickedId: objId,
+                                worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
+                                normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
+                                hitPnt: pickPos.toGL(),
+                                hitObject: hitObject,
+                                cancelBubble: false,
+                                stopPropagation: function () { this.cancelBubble = true; },
+                                preventDefault:  function () { this.cancelBubble = true; }
+                            };
+
+                            multiPart.handleEvents(event);
                         }
-                    }
-                }
-                else {
-                    //Check if there are MultiParts
-                    if (scene._multiPartMap) {
-
-                        //Find related MultiPart
-                        for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                        else
                         {
-                            multiPart = scene._multiPartMap.multiParts[mp];
-
                             event = {
                                 target: multiPart._xmlNode,
                                 button: button, mouseup: ((buttonState >>> 8) > 0),
@@ -3023,42 +2973,122 @@ x3dom.gfx_webgl = (function () {
                             multiPart.handleEvents(event);
                         }
                     }
+                }
 
+                shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != objId);
+                viewarea._pickingInfo.lastShadowObjectId = viewarea._pickingInfo.shadowObjectId;
+                viewarea._pickingInfo.shadowObjectId = objId;
+                //x3dom.debug.logInfo(baseID + " + " + objId);
 
-                    shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != -1);
-                    viewarea._pickingInfo.shadowObjectId = -1;     // nothing hit
+                if ((shadowObjectIdChanged || button) && scene._xmlNode &&
+                    (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
+                     scene._listeners[eventType]))
+                {
+                    event = {
+                        target: scene._xmlNode,
+                        type: eventType,
+                        button: button, mouseup: ((buttonState >>> 8) > 0),
+                        layerX: x, layerY: y,
+                        shadowObjectId: objId,
+                        worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
+                        normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
+                        hitPnt: pickPos.toGL(),
+                        hitObject: hitObject,
+                        cancelBubble: false,
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
+                    };
+                    scene.callEvtHandler(("on" + eventType), event);
+                }
 
-                    if ( shadowObjectIdChanged && scene._xmlNode &&
-                        (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
-                         scene._listeners[eventType]) )
+                if (scene._shadowIdMap && scene._shadowIdMap.mapping &&
+                    objId < scene._shadowIdMap.mapping.length) {
+                    var shIds = scene._shadowIdMap.mapping[objId].usage;
+                    var n, c, shObj;
+
+                    if (!line) {
+                        line = viewarea.calcViewRay(x, y, cctowc);
+                    }
+                    // find corresponding dom tree object
+                    for (c = 0; c < shIds.length; c++) {
+                        shObj = scene._nameSpace.defMap[shIds[c]];
+                        // FIXME; bbox test too coarse (+ should include trafo)
+                        if (shObj && shObj.doIntersect(line)) {
+                            viewarea._pickingInfo.pickObj = shObj;
+                            break;
+                        }
+                    }
+                    //Check for other namespaces e.g. Inline/Multipart (FIXME; check recursively)
+                    for (n = 0; n<scene._nameSpace.childSpaces.length; n++)
                     {
+                        for (c = 0; c < shIds.length; c++) {
+                            shObj = scene._nameSpace.childSpaces[n].defMap[shIds[c]];
+                            // FIXME; bbox test too coarse (+ should include trafo)
+                            if (shObj && shObj.doIntersect(line)) {
+                                viewarea._pickingInfo.pickObj = shObj;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                //Check if there are MultiParts
+                if (scene._multiPartMap) {
+
+                    //Find related MultiPart
+                    for (mp=0; mp<scene._multiPartMap.multiParts.length; mp++)
+                    {
+                        multiPart = scene._multiPartMap.multiParts[mp];
+
                         event = {
-                            target: scene._xmlNode,
-                            type: eventType,
+                            target: multiPart._xmlNode,
                             button: button, mouseup: ((buttonState >>> 8) > 0),
                             layerX: x, layerY: y,
-                            shadowObjectId: viewarea._pickingInfo.shadowObjectId,
+                            pickedId: -1,
                             cancelBubble: false,
                             stopPropagation: function () { this.cancelBubble = true; },
                             preventDefault:  function () { this.cancelBubble = true; }
                         };
-                        scene.callEvtHandler(("on" + eventType), event);
-                    }
 
-                    if (objId > 0) {
-                        //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
-                        //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
-                        viewarea._pickingInfo.pickPos = pickPos;
-                        viewarea._pickingInfo.pickNorm = pickNorm;
-                        viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
-                    }
-                    else {
-                        viewarea._pickingInfo.pickObj = null;
-                        //viewarea._pickingInfo.lastObj = null;
-                        viewarea._pickingInfo.lastClickObj = null;
+                        multiPart.handleEvents(event);
                     }
                 }
-            }        
+
+
+                shadowObjectIdChanged = (viewarea._pickingInfo.shadowObjectId != -1);
+                viewarea._pickingInfo.shadowObjectId = -1;     // nothing hit
+
+                if ( shadowObjectIdChanged && scene._xmlNode &&
+                    (scene._xmlNode["on" + eventType] || scene._xmlNode.hasAttribute("on" + eventType) ||
+                     scene._listeners[eventType]) )
+                {
+                    event = {
+                        target: scene._xmlNode,
+                        type: eventType,
+                        button: button, mouseup: ((buttonState >>> 8) > 0),
+                        layerX: x, layerY: y,
+                        shadowObjectId: viewarea._pickingInfo.shadowObjectId,
+                        cancelBubble: false,
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
+                    };
+                    scene.callEvtHandler(("on" + eventType), event);
+                }
+
+                if (objId > 0) {
+                    //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
+                    //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
+                    viewarea._pickingInfo.pickPos = pickPos;
+                    viewarea._pickingInfo.pickNorm = pickNorm;
+                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
+                }
+                else {
+                    viewarea._pickingInfo.pickObj = null;
+                    //viewarea._pickingInfo.lastObj = null;
+                    viewarea._pickingInfo.lastClickObj = null;
+                }
+            }
         }
         var pickTime = x3dom.Utils.stopMeasure("picking");
         this.x3dElem.runtime.addMeasurement('PICKING', pickTime);

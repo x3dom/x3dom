@@ -192,7 +192,7 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function(gl, 
             shader += "fragColor = color;\n";
         } else if(pickMode == 1 && properties.REQUIREBBOXCOL) { //Color Picking
             shader += "fragColor = color / bgPrecisionColMax;\n";
-        } else  if(pickMode == 2 && !properties.REQUIREBBOXCOL) { //TexCoord Picking
+        } else  if(pickMode == 2 && !properties.REQUIREBBOXTEX) { //TexCoord Picking
             shader += "fragColor = vec3(abs(texcoord.x), abs(texcoord.y), 0.0);\n";
         } else if(pickMode == 2 && properties.REQUIREBBOXTEX) { //TexCoord Picking
             shader += "vec2 texCoord = texcoord / bgPrecisionTexMax;\n";
@@ -308,7 +308,7 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
         }
     }
 
-    if(pickMode != 1 || pickMode != 2) {
+    if(pickMode != 1 && pickMode != 2) {
         shader += "float d = length(worldCoord) / sceneSize;\n";
     }
 

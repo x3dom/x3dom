@@ -285,7 +285,7 @@ x3dom.Texture.prototype.updateTexture = function()
 
         if (pixelArr.length < pixelArrfont_size)
         {
-            var pixelArr = tex._vf.image.toGL();
+            pixelArr = tex._vf.image.toGL();
 
             while (pixelArr.length < pixelArrfont_size) {
                 pixelArr.push(0);
@@ -387,12 +387,12 @@ x3dom.Texture.prototype.updateTexture = function()
 	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
 	{
 		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false, 
-		                                         tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
+		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
 	else 
 	{
 		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]), 
-		                                       false, tex._vf.withCredentials, tex._vf.scale, this.genMipMaps);
+		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
 };
 

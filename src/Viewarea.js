@@ -305,11 +305,21 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             if (navType === "helicopter")
                 this._at.y = this._from.y;
-            
-            if (navType.substr(0, 5) !== "looka")
-                this._up = new x3dom.fields.SFVec3f(0, 1, 0);
-            else
+
+            //lookat, lookaround
+            if (navType.substr(0, 5) === "looka")
+            {
                 this._up = this._flyMat.e1();
+            }
+            //all other modes
+            else
+            {
+                //initially read up-vector from current orientation and keep it
+                if (typeof this._up == 'undefined')
+                {
+                    this._up = this._flyMat.e1();
+                }
+            }
 
             this._pitch = angleX * 180 / Math.PI;
             this._yaw = angleY * 180 / Math.PI;
@@ -352,10 +362,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
             tmpMat = tmpMat.inverse();
 
-            this._scene._forcePicking = true;
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                         this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
-            this._scene._forcePicking = false;            
 
             if (this._pickingInfo.pickObj)
             {
@@ -475,7 +483,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var currProjMat = this.getProjectionMatrix();
 
             if (navType !== "freefly") {
-                this._scene._forcePicking = true;
                 if (step < 0) {
                     // backwards: negate viewing direction
                     tmpMat = new x3dom.fields.SFMatrix4f();
@@ -488,7 +495,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 else {
                     this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
                 }
-                this._scene._forcePicking = false;
                 if (this._pickingInfo.pickObj)
                 {
                     dist = this._pickingInfo.pickPos.subtract(this._from).length();
@@ -513,10 +519,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
                 tmpMat = tmpMat.inverse();
 
-                this._scene._forcePicking = true;
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
                             this._lastButton, tmpMat, currProjMat.mult(tmpMat));
-                this._scene._forcePicking = false;            
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -559,9 +563,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
-        this._scene._forcePicking = true;
         this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
-        this._scene._forcePicking = false;
 
         if (this._pickingInfo.pickObj)
         {
@@ -1339,8 +1341,10 @@ x3dom.Viewarea.prototype.initMouseState = function()
     this._needNavigationMatrixUpdate = true;
 };
 
-x3dom.Viewarea.prototype.initTurnTable = function(navi)
+x3dom.Viewarea.prototype.initTurnTable = function(navi, flyTo)
 {
+    flyTo = (flyTo == undefined) ? true : flyTo;
+
     var currViewMat = this.getViewMatrix();
 
     var viewpoint = this._scene.getViewpoint();
@@ -1356,7 +1360,12 @@ x3dom.Viewarea.prototype.initTurnTable = function(navi)
     this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
     this._flyMat = this.calcOrbit(0, 0, navi);
 
-    var dur = 0.2 / navi._vf.speed;   // fly to pivot point
+    var dur = 0.0;
+
+    if (flyTo) {
+        dur = 0.2 / navi._vf.speed;   // fly to pivot point
+    }
+
     this.animateTo(this._flyMat.inverse(), viewpoint, dur);
 
     this.resetNavHelpers();
@@ -1384,7 +1393,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
         var navi = this._scene.getNavigationInfo();
 
         if (navi.getType() === "turntable") {
-            this.initTurnTable(navi);
+            this.initTurnTable(navi, false);
         }
     }
 };
@@ -1532,6 +1541,16 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
     this._lastX = x;
     this._lastY = y;
     this._deltaT = 0;
+
+    //if the mouse is moved out of the canvas, reset the list of currently affected pointing sensors
+    //(this behaves similar to a mouse release inside the canvas)
+    var i;
+    var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
+    for (i = 0; i < affectedPointingSensorsList.length; ++i)
+    {
+        affectedPointingSensorsList[i].pointerReleased();
+    }
+    this._doc._nodeBag.affectedPointingSensors = [];
 };
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
@@ -1720,36 +1739,36 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             }
             if (buttonState & 2) //right
             {
-                d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-                d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+                    d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+                    d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
+                vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
 
-            if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
-            {
-                viewpoint._vf.fieldOfView[0] += vec.z;
-                viewpoint._vf.fieldOfView[1] += vec.z;
-                viewpoint._vf.fieldOfView[2] -= vec.z;
-                viewpoint._vf.fieldOfView[3] -= vec.z;
-                viewpoint._projMatrix = null;
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    viewpoint._vf.fieldOfView[0] += vec.z;
+                    viewpoint._vf.fieldOfView[1] += vec.z;
+                    viewpoint._vf.fieldOfView[2] -= vec.z;
+                    viewpoint._vf.fieldOfView[3] -= vec.z;
+                    viewpoint._projMatrix = null;
+                }
+                else
+                {
+                    this._movement = this._movement.add(vec);
+                    mat = this.getViewpointMatrix().mult(this._transMat);
+                    //TODO; move real distance along viewing ray
+                    this._transMat = mat.inverse().
+                                     mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                                     mult(mat);
+                }
             }
-            else
-            {
-                this._movement = this._movement.add(vec);
-                mat = this.getViewpointMatrix().mult(this._transMat);
-                //TODO; move real distance along viewing ray
-                this._transMat = mat.inverse().
-                                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                                 mult(mat);
-            }
-        }
 
             this._isMoving = true;
         }
         else if (navType === "turntable")   // requires that y is up vector in world coords
         {
             if (!this._flyMat)
-                this.initTurnTable(navi);
+                this.initTurnTable(navi, false);
 
             if (buttonState & 1) //left
             {
@@ -1856,8 +1875,8 @@ x3dom.Viewarea.prototype.calcOrbit = function (alpha, beta, navi)
     // angle from y-axis
     var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
 
-    phi -= Math.min(beta, 0.1);
-    theta -= Math.min(alpha, 0.1);
+    phi -= beta;
+    theta -= alpha;
 
     // clamp theta
     var typeParams = navi.getTypeParams();

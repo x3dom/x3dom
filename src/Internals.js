@@ -44,7 +44,7 @@ x3dom.components = {};
 x3dom.geoCache = [];
 
 /** Stores information about Browser and hardware capabilities */
-x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent };
+x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent, RENDERMODE: "HARDWARE" };
 
 /** Registers the node defined by @p nodeDef.
 

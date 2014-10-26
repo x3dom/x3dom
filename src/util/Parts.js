@@ -60,10 +60,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
             }
         }
     };
-	
+
+
+    /**
+     * Returns the RGB string representation of a color
+     * @returns {String}
+     */
+    this.getColorRGB = function() {
+        var str = this.getColorRGBA();
+
+        var values = str.split(" ");
+
+        return values[0] + " " + values[1] + " " + values[2];
+    };
+
+    /**
+     * Returns the RGBA string representation of a color
+     * @returns {String}
+     */
+    this.getColorRGBA = function() {
+        var x, y;
+
+        //in case of multi select, this function returns the color of the first object
+        var colorRGBA = this.multiPart._originalColor[parts.ids[0]];
+
+        if (this.multiPart._highlightedParts[parts.ids[0]]){
+            colorRGBA = this.multiPart._highlightedParts[parts.ids[0]];
+        } else {
+            x = parts.ids[0] % parts.colorMap.getWidth();
+            y = Math.floor(parts.ids[0] / parts.colorMap.getHeight());
+            colorRGBA = parts.colorMap.getPixel(x, y);
+        }
+
+        return colorRGBA.toString();
+    };
+
 	/**
      *
-     * @param color
      */
     this.resetColor = function() {
 
@@ -289,5 +322,45 @@ x3dom.Parts = function(multiPart, ids, colorMap, visibilityMap)
                 parts.colorMap.setPixel(x, y, pixel);
             }
         }
+    };
+
+    /**
+     * get bounding volume
+     *
+     */
+    this.getVolume = function() {
+
+        var volume;
+        var transmat = this.multiPart.getCurrentTransform();
+
+        if (ids.length && ids.length > 1) //Multi select
+        {
+            volume = new x3dom.fields.BoxVolume();
+
+            for(var i=0; i<parts.ids.length; i++) {
+                volume.extendBounds(this.multiPart._partVolume[parts.ids[i]].min, this.multiPart._partVolume[parts.ids[i]].max);
+            }
+
+            volume.transform(transmat);
+
+            return volume;
+        }
+        else
+        {
+            volume = x3dom.fields.BoxVolume.copy(this.multiPart._partVolume[parts.ids[0]]);
+            volume.transform(transmat);
+            return volume;
+        }
+    };
+
+    /**
+     * Fit the selected Parts to the screen
+     * @param updateCenterOfRotation
+     */
+    this.fit = function (updateCenterOfRotation) {
+
+        var volume = this.getVolume();
+
+        this.multiPart._nameSpace.doc._viewarea.fit(volume.min, volume.max, updateCenterOfRotation);
     };
 };

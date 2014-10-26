@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             /**
              * Change render order manually.
              * @var {x3dom.fields.SFInt32} sortKey
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -80,7 +80,7 @@ x3dom.registerNodeType(
              * Set the initial visibility.
              * @var {x3dom.fields.SFInt32} initialVisibility
              * @range [auto, visible, invisible]
-             * @memberof x3dom.nodeTypes.Appearance
+             * @memberof x3dom.nodeTypes.MultiPart
              * @initvalue 'auto'
              * @field x3dom
              * @instance
@@ -93,6 +93,7 @@ x3dom.registerNodeType(
             this._minId = 0;
             this._maxId = 0;
             this._lastId = -1;
+            this._lastClickedId = -1;
             this._lastButton = 0;
             this._identifierToPartId = [];
             this._identifierToAppId = [];
@@ -159,6 +160,15 @@ x3dom.registerNodeType(
                     var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
                     var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
 
+                    //Check for Background press and release
+                    if (e.pickedId == -1 && e.button != 0) {
+                        this._lastClickedId = -1;
+                        this._lastButton = e.button;
+                    } else if (e.pickedId == -1 && e.button == 0) {
+                        this._lastClickedId = -1;
+                        this._lastButton = 0;
+                    }
+
                     if (e.pickedId != -1) {
                         e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
                         e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
@@ -167,29 +177,33 @@ x3dom.registerNodeType(
                         e.type = "mousemove";
                         this.callEvtHandler("onmousemove", e);
 
-                        //fire mousemove event
+                        //fire mouseover event
                         e.type = "mouseover";
                         this.callEvtHandler("onmouseover", e);
 
-                        //fire click event
-                        if (e.button && e.button != this._lastButton) {
-                            e.type = "click";
-                            this.callEvtHandler("onclick", e);
-                            this._lastButton = e.button;
-                        }
-
                         //if some mouse button is down fire mousedown event
-                        if (e.button) {
+                        if (!e.mouseup && e.button && e.button != this._lastButton) {
                             e.type = "mousedown";
-                            this.callEvtHandler("onmousedown", e);
                             this._lastButton = e.button;
+                            if ( this._lastClickedId == -1 ) {
+                                this._lastClickedId = e.pickedId;
+                            }
+                            this.callEvtHandler("onmousedown", e);
                         }
 
                         //if some mouse button is up fire mouseup event
-                        if (this._lastButton != 0 && e.button == 0) {
+                        if (e.mouseup || (this._lastButton != 0 && e.button == 0)) {
                             e.type = "mouseup";
                             this.callEvtHandler("onmouseup", e);
                             this._lastButton = 0;
+
+                            if ( e.pickedId == this._lastClickedId ) {
+                                this._lastClickedId = -1;
+                                e.type = "click";
+                                this.callEvtHandler("onclick", e);
+                            }
+
+                            this._lastClickedId = -1;
                         }
 
                         //If the picked id has changed we enter+leave a part
@@ -227,7 +241,7 @@ x3dom.registerNodeType(
             {
                 if (this._vf.urlIDMap.length && this._vf.urlIDMap[0].length)
                 {
-                    var i, min, max;
+                    var i;
 
                     var that = this;
 
@@ -290,16 +304,19 @@ x3dom.registerNodeType(
                 }
             },
 
-            createColorData: function ()
+            createMaterialData: function ()
             {
-                var diffuseColor, transparency, rgba;
+                var diffuseColor, transparency, specularColor, shininess, emissiveColor, ambientIntensity;
+                var rgba_DT, rgba_SS, rgba_EA;
 
                 var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
 
                 //scale image data array size to the next highest power of two
                 size = x3dom.Utils.nextHighestPowerOfTwo(size);
 
-                var colorData = size + " " + size + " 4";
+                var diffuseTransparencyData = size + " " + size + " 4";
+                var specularShininessData = size + " " + size + " 4";
+                var emissiveAmbientIntensityData = size + " " + size + " 4";
 
                 for (var i=0; i<size*size; i++)
                 {
@@ -308,22 +325,65 @@ x3dom.registerNodeType(
                         var appName = this._idMap.mapping[i].appearance;
                         var appID = this._identifierToAppId[appName];
 
-                        diffuseColor = this._idMap.appearance[appID].material.diffuseColor;
-                        transparency = this._idMap.appearance[appID].material.transparency;
+                        if (this._idMap.appearance[appID].material.ambientIntensity) {
+                            ambientIntensity = this._idMap.appearance[appID].material.ambientIntensity
+                        } else {
+                            ambientIntensity = "0.2";
+                        }
 
-                        rgba = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        if (this._idMap.appearance[appID].material.diffuseColor) {
+                            diffuseColor = this._idMap.appearance[appID].material.diffuseColor
+                        } else {
+                            diffuseColor = "0.8 0.8 0.8";
+                        }
 
-                        colorData += " " + rgba.toUint();
-						
-						this._originalColor[i] = rgba;
+                        if (this._idMap.appearance[appID].material.emissiveColor) {
+                            emissiveColor = this._idMap.appearance[appID].material.emissiveColor
+                        } else {
+                            emissiveColor = "0.0 0.0 0.0";
+                        }
+
+                        if (this._idMap.appearance[appID].material.shininess) {
+                            shininess = this._idMap.appearance[appID].material.shininess;
+                        } else {
+                            shininess = "0.2";
+                        }
+
+                        if (this._idMap.appearance[appID].material.specularColor) {
+                            specularColor = this._idMap.appearance[appID].material.specularColor;
+                        } else {
+                            specularColor = "0 0 0";
+                        }
+
+                        if (this._idMap.appearance[appID].material.transparency) {
+                            transparency = this._idMap.appearance[appID].material.transparency;
+                        } else {
+                            transparency = "0";
+                        }
+
+                        rgba_DT = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
+                        rgba_SS = x3dom.fields.SFColorRGBA.parse(specularColor + " " + shininess);
+                        rgba_EA = x3dom.fields.SFColorRGBA.parse(emissiveColor + " " + ambientIntensity);
+
+                        diffuseTransparencyData += " " + rgba_DT.toUint();
+                        specularShininessData += " " + rgba_SS.toUint();
+                        emissiveAmbientIntensityData += " " + rgba_EA.toUint();
+
+                        this._originalColor[i] = rgba_DT;
                     }
                     else
                     {
-                        colorData += " 255";
+                        diffuseTransparencyData += " 255";
+                        specularShininessData += " 255";
+                        emissiveAmbientIntensityData += " 255";
                     }
                 }
 
-                return colorData;
+                return {
+                    "diffuseTransparency": diffuseTransparencyData,
+                    "specularShininess": specularShininessData,
+                    "emissiveAmbientIntensity": emissiveAmbientIntensityData
+                };
             },
 
             createVisibilityData: function ()
@@ -403,11 +463,11 @@ x3dom.registerNodeType(
 
             replaceMaterials: function (inlScene)
             {
-                var css, shapeDEF, colorData, visibilityData, appearance;
+                var css, shapeDEF, materialData, visibilityData, appearance;
                 var firstMat = true;
                 if (inlScene && inlScene.hasChildNodes())
                 {
-                    colorData = this.createColorData();
+                    materialData = this.createMaterialData();
                     visibilityData = this.createVisibilityData();
 
                     var shapes = inlScene.getElementsByTagName("Shape");
@@ -460,7 +520,17 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", colorData);
+                                        ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                        var ptEA = document.createElement("PixelTexture");
+                                        ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                        ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                        ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                        var ptSS = document.createElement("PixelTexture");
+                                        ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                        ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                        ptSS.setAttribute("image", materialData.specularShininess);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -468,6 +538,8 @@ x3dom.registerNodeType(
                                         ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
+                                        css.appendChild(ptEA);
+                                        css.appendChild(ptSS);
                                         css.appendChild(ptV);
                                     }
                                     else
@@ -488,7 +560,17 @@ x3dom.registerNodeType(
                                         var ptDA = document.createElement("PixelTexture");
                                         ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                         ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                        ptDA.setAttribute("image", colorData);
+                                        ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                        var ptEA = document.createElement("PixelTexture");
+                                        ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                        ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                        ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                        var ptSS = document.createElement("PixelTexture");
+                                        ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                        ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                        ptSS.setAttribute("image", materialData.specularShininess);
 
                                         var ptV = document.createElement("PixelTexture");
                                         ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -496,6 +578,8 @@ x3dom.registerNodeType(
                                         ptV.setAttribute("image", visibilityData);
 
                                         css.appendChild(ptDA);
+                                        css.appendChild(ptEA);
+                                        css.appendChild(ptSS);
                                         css.appendChild(ptV);
                                     }
                                     else
@@ -522,7 +606,17 @@ x3dom.registerNodeType(
                                 var ptDA = document.createElement("PixelTexture");
                                 ptDA.setAttribute("containerField", "multiDiffuseAlphaTexture");
                                 ptDA.setAttribute("id", "MultiMaterial_ColorMap");
-                                ptDA.setAttribute("image", colorData);
+                                ptDA.setAttribute("image", materialData.diffuseTransparency);
+
+                                var ptEA = document.createElement("PixelTexture");
+                                ptEA.setAttribute("containerField", "multiEmissiveAmbientTexture");
+                                ptEA.setAttribute("id", "MultiMaterial_EmissiveMap");
+                                ptEA.setAttribute("image", materialData.emissiveAmbientIntensity);
+
+                                var ptSS = document.createElement("PixelTexture");
+                                ptSS.setAttribute("containerField", "multiSpecularShininessTexture");
+                                ptSS.setAttribute("id", "MultiMaterial_SpecularMap");
+                                ptSS.setAttribute("image", materialData.specularShininess);
 
                                 var ptV = document.createElement("PixelTexture");
                                 ptV.setAttribute("containerField", "multiVisibilityTexture");
@@ -530,6 +624,8 @@ x3dom.registerNodeType(
                                 ptV.setAttribute("image", visibilityData);
 
                                 css.appendChild(ptDA);
+                                css.appendChild(ptEA);
+                                css.appendChild(ptSS);
                                 css.appendChild(ptV);
                             }
                             else
@@ -560,6 +656,17 @@ x3dom.registerNodeType(
                     return ids;
                 };
 
+                this._xmlNode.getAppearanceIdList = function ()
+                {
+                    var i, ids = [];
+
+                    for (i=0; i<multiPart._idMap.appearance.length; i++) {
+                        ids.push( multiPart._idMap.appearance[i].name );
+                    }
+
+                    return ids;
+                };
+
                 this._xmlNode.getParts = function (selector)
                 {
                     var i, m;
@@ -584,28 +691,6 @@ x3dom.registerNodeType(
                         return null;
                     } else {
                         return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
-                    }
-                };
-                
-                this._xmlNode.fitPart = function (id, updateCenterOfRotation)
-                {
-                    var shapeID = multiPart._identifierToPartId[id];
-                
-                    if (shapeID)
-                    {
-                        if (updateCenterOfRotation === undefined) {
-                            updateCenterOfRotation = true;
-                        }
-                        
-                        var min = multiPart._partVolume[shapeID[0]].min;
-                        var max = multiPart._partVolume[shapeID[0]].max;
-
-                        var mat = multiPart.getCurrentTransform();
-
-                        min = mat.multMatrixPnt(min);
-                        max = mat.multMatrixPnt(max);
-                         
-                        multiPart._nameSpace.doc._viewarea.fit(min, max, updateCenterOfRotation);
                     }
                 };
             },

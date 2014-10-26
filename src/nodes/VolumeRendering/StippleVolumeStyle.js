@@ -25,6 +25,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
+         * @classdesc NYI!!
          */
         function (ctx) {
             x3dom.nodeTypes.StippleVolumeStyle.superClass.call(this, ctx);
