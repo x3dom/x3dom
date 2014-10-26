@@ -122,6 +122,28 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'speedFactor', 1.0);
             
             /**
+             * Specifies the near plane.
+             * @var {x3dom.fields.SFFloat} zNear
+             * @range -1 or [0, inf]
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'zNear', -1); //0.1);
+            
+            /**
+             * Specifies the far plane.
+             * @var {x3dom.fields.SFFloat} zFar
+             * @range -1 or [0, inf]
+             * @memberof x3dom.nodeTypes.Viewpoint
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'zFar', -1); //100000);
+                        
+            /**
              * Enable/disable elevation scaled speed for automatic adjustment of user movement as recommended in spec. 
              * Custom field to allow disabling for performance
              * @var {x3dom.fields.SFBool} elevationScaling
@@ -209,10 +231,10 @@ x3dom.registerNodeType(
  
                 // z-ratio: a value around 5000 would be better...
                 this._zRatio = 10000;
-                // set to -1 to trigger automatic setting since fields do not exist
-                this._zNear = -1;
-                this._zFar = -1;
-
+                // set to -1 to trigger automatic setting
+                this._zNear = this._vf.zNear;
+                this._zFar = this._vf.zFar ;
+                
                 // special stuff...
                 this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
                 
@@ -226,9 +248,8 @@ x3dom.registerNodeType(
                 else if (fieldName == "fieldOfView" ||
                     fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
-                    // set to -1 to trigger automatic setting since fields do not exist
-                    this._zNear = -1;
-                    this._zFar = -1;
+                    this._zNear = this._vf.zNear;
+                    this._zFar = this._vf.zFar ;
                     this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
                 }
                 else if (fieldName.indexOf("bind") >= 0) {
@@ -376,9 +397,9 @@ x3dom.registerNodeType(
             getProjectionMatrix: function(aspect)
             {
                 var fovy = this._vf.fieldOfView;
-                // set to -1 to trigger automatic setting since fields do not exist
-                var zfar = -1;
-                var znear = -1;
+
+                var zfar = this._vf.zFar ;
+                var znear = this._vf.zNear;
 
                 if (znear <= 0 || zfar <= 0)
                 {
@@ -436,15 +457,10 @@ x3dom.registerNodeType(
 
                     var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
-                    // hm, fields do not exist, becomes non-sensical
-                    //if (zfar > this._vf.zNear && this._vf.zNear > 0)
-                    if (zfar > -1 && -1 > 0)
-                        //znear = this._vf.zNear;
-                        znear = -1;
-                    //if (this._vf.zFar > znear)
-                    if (-1 > znear)
-                        //zfar = this._vf.zFar;
-                        zfar = -1;
+                    if (zfar > this._vf.zNear && this._vf.zNear > 0)
+                        znear = this._vf.zNear;
+                    if (this._vf.zFar > znear)
+                        zfar = this._vf.zFar;
                     if (zfar <= znear)
                         zfar = znear + 1;
                     //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
