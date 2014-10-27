@@ -341,33 +341,36 @@ x3dom.registerNodeType(
                 var output = new x3dom.fields.MFVec3f();
 
                 var elipsoide = this.getElipsoide(geoSystem);
-                var radius = elipsoide[1];
+                var A = elipsoide[1];
                 var eccentricity = elipsoide[2];
 
                 var longitudeFirst = this.isLogitudeFirst(geoSystem);
 
                 // large parts of this code from freeWRL
-                var A = radius;
-                var A2 = radius*radius;
+                // var A = radius;
+                var A2 = A*A;
                 var F = 1.0/eccentricity;
                 var C = A*(1.0-F);
                 var C2 = C*C;
+                var C2oA2 = C2/A2;
                 var Eps2 = F*(2.0-F);
-                var Eps25 = 0.25*Eps2;
+                //var Eps25 = 0.25*Eps2;
 
                 var radiansPerDegree = 0.0174532925199432957692;
+                
+                var i, current, source_lat, source_lon, slat, slat2, clat, Rn, RnPh
 
                 // for (current in coords)
-                for(var i=0; i<coords.length; ++i)
+                for(i=0; i<coords.length; ++i)
                 {
-                    var current = new x3dom.fields.SFVec3f();
+                    current = new x3dom.fields.SFVec3f();
 
-                    var source_lat = radiansPerDegree * (longitudeFirst == true ? coords[i].y : coords[i].x);
-                    var source_lon = radiansPerDegree * (longitudeFirst == true ? coords[i].x : coords[i].y);
+                    source_lat = radiansPerDegree * (longitudeFirst == true ? coords[i].y : coords[i].x);
+                    source_lon = radiansPerDegree * (longitudeFirst == true ? coords[i].x : coords[i].y);
 
-                    var slat = Math.sin(source_lat);
-                    var slat2 = slat*slat;
-                    var clat = Math.cos(source_lat);
+                    slat = Math.sin(source_lat);
+                    slat2 = slat*slat;
+                    clat = Math.cos(source_lat);
 
                     /* square root approximation for Rn */
                     /* replaced by real sqrt
@@ -376,13 +379,13 @@ x3dom.registerNodeType(
                      */
 
                     // with real sqrt; really slower ?
-                    var Rn = A / Math.sqrt(1.0 - Eps2 * slat2);
+                    Rn = A / Math.sqrt(1.0 - Eps2 * slat2);
 
-                    var RnPh = Rn + coords[i].z;
+                    RnPh = Rn + coords[i].z;
 
                     current.x = RnPh * clat * Math.cos(source_lon);
                     current.y = RnPh * clat * Math.sin(source_lon);
-                    current.z = ((C2 / A2) * Rn + coords[i].z) * slat;
+                    current.z = (C2oA2 * Rn + coords[i].z) * slat;
 
                     output.push(current);
                 }
