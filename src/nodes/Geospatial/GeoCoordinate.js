@@ -212,40 +212,43 @@ x3dom.registerNodeType(
                 var f55o32 = 55/32;
                 var f151o96 = 151/96;
                 var f1097o512 = 1097/512;
-
-
+                var fmua = 1 - esq*(0.25 + esq*(f3o64 + f5o256*esq));
+                var fphi11 = e1*(1.5 - f27o32*e1sq);
+                var fphi12 = e1sq*(f21o16 - f55o32*e1sq);
+                
+                var current, x, y, z, M, mu, phi1, cosphi1, C1, tanphi1, T1, T1sq;
+                var esinphi1, oneesinphi1, N1, R1, D, Dsq, C1sq, phi, lng;
+                
                 for(var i=0; i<coords.length; ++i)
                 {
-                    var x = (eastingFirst ? coords[i].x : coords[i].y);
-                    var y = (eastingFirst ? coords[i].y : coords[i].x);
-                    var z = coords[i].z;
+                    x = (eastingFirst ? coords[i].x : coords[i].y);
+                    y = (eastingFirst ? coords[i].y : coords[i].x);
+                    z = coords[i].z;
 
-                    var current = new x3dom.fields.SFVec3f();
                     //var M = M0 + y/k0; //Arc length along standard meridian.
                     //var M = y/k0;
                     //if (hemisphere == "S"){ M = M0 + (y - 10000000)/k; }
-                    var M = (hemisphere == "S" ? (y - 10000000) : y )/k0 ;
-                    //TODO: compute constant factors outside
-                    var mu = M/(a * (1 - esq*(0.25 + esq*(f3o64 + f5o256*esq))));
-                    var phi1 = mu + e1*(1.5 - f27o32*e1sq)*Math.sin(2*mu) + e1sq*(f21o16 - f55o32*e1sq)*Math.sin(4*mu); //Footprint Latitude
+                    M = (hemisphere == "S" ? (y - 10000000) : y )/k0 ;
+                    mu = M/(a * fmua);
+                    phi1 = mu + fphi11*Math.sin(2*mu) + fphi12*Math.sin(4*mu); //Footprint Latitude
                     phi1 = phi1 + e1*(e1sq*(Math.sin(6*mu)*f151o96 + Math.sin(8*mu)*f1097o512));
-                    //
-                    var cosphi1 = Math.cos(phi1);
-                    var C1 = e0sq*cosphi1*cosphi1;
-                    var tanphi1 = Math.tan(phi1);
-                    var T1 = tanphi1*tanphi1;
-                    var T1sq = T1*T1;
-                    var esinphi1 = e*Math.sin(phi1);
-                    var oneesinphi1 = 1 - esinphi1*esinphi1;
-                    var N1 = a/Math.sqrt(oneesinphi1);
-                    var R1 = N1*(1-e*e)/oneesinphi1;
-                    var D = (x-500000)/(N1*k0);
-                    var Dsq = D*D;
-                    var C1sq = C1*C1;
-                    var phi = Dsq*(0.5 - Dsq*(5 + 3*T1 + 10*C1 - 4*C1sq - 9*e0sq)/24);
+                    cosphi1 = Math.cos(phi1);
+                    C1 = e0sq*cosphi1*cosphi1;
+                    tanphi1 = Math.tan(phi1);
+                    T1 = tanphi1*tanphi1;
+                    T1sq = T1*T1;
+                    esinphi1 = e*Math.sin(phi1);
+                    oneesinphi1 = 1 - esinphi1*esinphi1;
+                    N1 = a/Math.sqrt(oneesinphi1);
+                    R1 = N1*(1-esq)/oneesinphi1;
+                    D = (x-500000)/(N1*k0);
+                    Dsq = D*D;
+                    C1sq = C1*C1;
+                    phi = Dsq*(0.5 - Dsq*(5 + 3*T1 + 10*C1 - 4*C1sq - 9*e0sq)/24);
                     phi = phi + Math.pow(D,6)*(61 + 90*T1 + 298*C1 + 45*T1sq -252*e0sq - 3*C1sq)/720;
                     phi = phi1 - (N1*tanphi1/R1)*phi;
-                    var lng = D*(1 + Dsq*((-1 -2*T1 -C1)/6 + Dsq*(5 - 2*C1 + 28*T1 - 3*C1sq +8*e0sq + 24*T1sq)/120))/cosphi1;
+                    lng = D*(1 + Dsq*((-1 -2*T1 -C1)/6 + Dsq*(5 - 2*C1 + 28*T1 - 3*C1sq +8*e0sq + 24*T1sq)/120))/cosphi1;
+                    current = new x3dom.fields.SFVec3f();
                     current.x = zcm + rad2deg*lng;
                     current.y = rad2deg*phi;
                     current.z = coords[i].z;
