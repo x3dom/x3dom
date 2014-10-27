@@ -573,6 +573,8 @@ x3dom.registerNodeType(
             {
                 // transform points to GeoCentric
                 var gc = this.GEOtoGC(geoSystem, geoOrigin, coords);
+                return this.GCtoX3D(geoSystem, geoOrigin, gc);
+                /*
 
                 // transform by origin
                 if(geoOrigin.node)
@@ -596,6 +598,7 @@ x3dom.registerNodeType(
                 }
 
                 return gc;
+                */
             },
 
             getPoints: function()
