@@ -469,18 +469,69 @@ x3dom.registerNodeType(
                 }
             },
 
+            GCtoGEO: function(geoSystem, geoOrigin, coords) {
+                
+                var referenceFrame = this.getReferenceFrame(geoSystem);
+
+                if(referenceFrame == 'GD') {
+                    var coordsGD = this.GCtoGD(geoSystem, coords);
+                    if(!this.isLogitudeFirst(geoSystem)) {
+                        var currentx;
+                        for(var i=0; i<coordsGD.length; ++i) {
+                            currentx = coordsGD[i].x;
+                            coordsGD[i].x = coordsGD[i].y;
+                            coordsGD[i].y = currentx;
+                        }
+                    }
+                    return coordsGD;
+                }
+
+                else if(referenceFrame == 'UTM')
+                    return this.GCtoUTM(geoSystem, coords);
+
+                else if(referenceFrame ==  'GC')
+                {
+                    // Performance Hack
+                    // Normaly GCtoGD & GCtoUTM will create a copy
+                    // If we are already in GC & have an origin: we have to copy here
+                    // Else Origin will change original DOM elements
+
+                    if(geoOrigin.node)
+                    {
+                        var copy = new x3dom.fields.MFVec3f();
+                        for(var i=0; i<coords.length; ++i)
+                        {
+                            var current = new x3dom.fields.SFVec3f();
+
+                            current.x = coords[i].x;
+                            current.y = coords[i].y;
+                            current.z = coords[i].z;
+
+                            copy.push(current);
+                        }
+                        return copy;
+                    }
+                    else
+                        return coords;
+                }
+                else {
+                    x3dom.debug.logError('Unknown geoSystem: ' + geoSystem[0]);
+                    return new x3dom.fields.MFVec3f();
+                }
+            },
+            
             OriginToGC: function(geoOrigin)
             {
                 // dummy function to send a scalar to an array function
                 var geoCoords = geoOrigin.node._vf.geoCoords;
                 var geoSystem = geoOrigin.node._vf.geoSystem;
 
-                var point = new x3dom.fields.SFVec3f;
+                var point = new x3dom.fields.SFVec3f();
                 point.x = geoCoords.x;
                 point.y = geoCoords.y;
                 point.z = geoCoords.z;
 
-                var temp = new x3dom.fields.MFVec3f;
+                var temp = new x3dom.fields.MFVec3f();
                 temp.push(point);
 
                 // transform origin to GeoCentric
