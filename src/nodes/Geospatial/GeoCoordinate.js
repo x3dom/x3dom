@@ -358,7 +358,7 @@ x3dom.registerNodeType(
 
                 var radiansPerDegree = 0.0174532925199432957692;
                 
-                var i, current, source_lat, source_lon, slat, slat2, clat, Rn, RnPh
+                var i, current, source_lat, source_lon, slat, slat2, clat, Rn, RnPh;
 
                 // for (current in coords)
                 for(i=0; i<coords.length; ++i)
@@ -404,28 +404,27 @@ x3dom.registerNodeType(
                 var esq = (1 - (b/a)*(b/a)); //e squared for use in expansions
                 //var e = Math.sqrt(esq); //eccentricity
                 var eps = esq/(1 - esq);
-                for(var i=0; i<coords.length; ++i) {
-                    var x = coords[i].x;
-                    var y = coords[i].y;
-                    var z = coords[i].z;
+                var i, current, x, y, z, p, q, lat, nu, elev, lon;
+                for(i=0; i<coords.length; ++i) {
+                    x = coords[i].x;
+                    y = coords[i].y;
+                    z = coords[i].z;
                     
-                    var current = new x3dom.fields.SFVec3f();
-                    
-                    var p = Math.sqrt(x*x + y*y);
-                    var q = Math.atan((z * a) / (p * b));
-                    var lat = Math.atan((z + eps * b * Math.pow(Math.sin(q),3))/(p - esq * a * Math.pow(Math.cos(q),3)));
-                    var nu = a / Math.sqrt(1-esq * Math.pow(Math.sin(lat),2));
-                    var elev = p/Math.cos(lat) - nu;
+                    p = Math.sqrt(x*x + y*y);
+                    q = Math.atan((z * a) / (p * b));
+                    lat = Math.atan((z + eps * b * Math.pow(Math.sin(q),3))/(p - esq * a * Math.pow(Math.cos(q),3)));
+                    nu = a / Math.sqrt(1-esq * Math.pow(Math.sin(lat),2));
+                    elev = p/Math.cos(lat) - nu;
                     // atan2 gets the sign correct for longitude; is exact since in circular section
-                    var lon = Math.atan2(y, x);
+                    lon = Math.atan2(y, x);
                     
+                    current = new x3dom.fields.SFVec3f();
                     current.x = lon * rad2deg;
                     current.y = lat * rad2deg;
                     current.z = elev;
 
                     output.push(current);
-                }
-                
+                }                
                 return output;
             },
         
