@@ -265,6 +265,77 @@ x3dom.registerNodeType(
                 return this.GDtoGC(GDgeoSystem, output);
             },
 
+            //just used for GeoPositionInterpolator; after slerp
+            //for coordinates in the same UTM zone stripe, linear interpolation is almost identical
+            //so this is for correctness and if UTM zone is used outside stripe
+            GCtoUTM: function(geoSystem, coords) {
+                // geoSystem is target UTM
+                // GCtoGD
+                var coordsGD = this.GCtoGD(geoSystem, coords);
+                // GDtoUTM
+                // parse UTM projection parameters
+                var utmzone = this.getUTMZone(geoSystem);
+                if(utmzone < 1 || utmzone > 60 || utmzone === undefined)
+                    return x3dom.debug.logError('invalid UTM zone: ' + utmzone + ' in geosystem ' + geoSystem);
+                var hemisphere = this.getUTMHemisphere(geoSystem);
+                var eastingFirst = this.isUTMEastingFirst(geoSystem);
+                var elipsoide = this.getElipsoide(geoSystem);
+                //below from U.W. Green Bay Prof. Dutch; returns coordinates in the input ell., not WGS84
+                var a = elipsoide[1];
+                var f = 1/elipsoide[2];
+                var k0 = 0.9996; //scale on central meridian
+                var b = a * (1 - f); //polar axis.
+                var esq = (1 - (b/a)*(b/a)); //e squared for use in expansions
+                var e = Math.sqrt(esq); //eccentricity
+                //var e0 = e/Math.sqrt(1 - esq); //Called e prime in reference
+                var e0sq = esq/(1 - esq); // e0 squared - always even powers
+                //var e1 = (1 - Math.sqrt(1 - esq))/(1 + Math.sqrt(1 - esq)); //Called e1 in USGS PP 1395 also
+                //var e1sq = e1*e1;
+                var M0 = 0; //In case origin other than zero lat - not needed for standard UTM
+                var deg2rad = Math.PI/180;
+                var zcmrad = (3 + 6 * (utmzone - 1) - 180)*deg2rad; //Central meridian of zone
+                var coordsUTM = new x3dom.fields.MFVec3f();
+                var N, T, C, A, M, x, y, phi, lng, cosphi, tanphi, Asq;
+                var i, current;
+                var fMphi = 1 - esq*(1/4 + esq*(3/64 + 5*esq/256));
+                var fM2phi = esq*(3/8 + esq*(3/32 + 45*esq/1024));
+                var fM4phi = esq*esq*(15/256 + esq*45/1024);
+                var fM6phi = esq*esq*esq*(35/3072);
+                for (i=0; i<coordsGD.length; ++i) {
+                    current = new x3dom.fields.SFVec3f();
+                    phi = coordsGD[i].y*deg2rad;
+                    lng = coordsGD[i].x*deg2rad;
+                    cosphi = Math.cos(phi);
+                    tanphi = Math.tan(phi);
+                    
+                    N = a/Math.sqrt(1 - Math.pow(e * Math.sin(phi), 2));
+                    T = Math.pow(tanphi, 2);
+                    C = e0sq*Math.pow(cosphi, 2);
+                    A = (lng - zcmrad) * cosphi;
+                    //Calculate M
+                    M = phi*fMphi;
+                    M = M - Math.sin(2*phi)*fM2phi;
+                    M = M + Math.sin(4*phi)*fM4phi;
+                    M = M - Math.sin(6*phi)*fM6phi;
+                    M = M * a;//Arc length along standard meridian
+                    //Calculate UTM Values
+                    Asq = A*A;
+                    x = k0*N*A*(1 + Asq*((1 - T + C)/6 + Asq*(5 - T*(18 + T) + 72*C - 58*e0sq)/120));//Easting relative to CM
+                    x = x + 500000;//Easting standard 
+                    y = k0*(M - M0 + N*tanphi*(Asq*(0.5 + Asq*((5 - T + 9*C + 4*C*C)/24 + Asq*(61 - T*(58 + T) + 600*C - 330*e0sq)/720))));//Northing from equator
+                    if (y < 0) {
+                        if (hemisphere == "N") {
+                            x3dom.debug.logError('UTM zone in northern hemisphere but coordinates in southern!');
+                        }
+                        y = 10000000+y;}
+                    current.x = eastingFirst ? x : y;
+                    current.y = eastingFirst ? y : x;
+                    current.z = coordsGD[i].z;
+                    coordsUTM.push(current);
+                }
+                return coordsUTM;    
+            },
+            
             GDtoGC: function(geoSystem, coords) {
 
                 var output = new x3dom.fields.MFVec3f();
