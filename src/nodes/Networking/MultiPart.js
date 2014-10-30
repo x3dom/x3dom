@@ -64,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'solid', true);
+            this.addField_SFBool(ctx, 'solid', false);
 
             /**
              * Change render order manually.
@@ -101,6 +101,7 @@ x3dom.registerNodeType(
             this._partVolume = [];
             this._partVisibility = [];
 			this._originalColor = [];
+            this._materials = [];
 
         },
         {
@@ -158,6 +159,8 @@ x3dom.registerNodeType(
             {
                 if( this._inlineNamespace ) {
                     var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var emissiveMap = this._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
+                    var specularMap = this._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                     var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
 
                     //Check for Background press and release
@@ -170,7 +173,7 @@ x3dom.registerNodeType(
                     }
 
                     if (e.pickedId != -1) {
-                        e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                        e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, emissiveMap, specularMap, visibilityMap);
                         e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
 
                         //fire mousemove event
@@ -209,13 +212,13 @@ x3dom.registerNodeType(
                         //If the picked id has changed we enter+leave a part
                         if (e.pickedId != this._lastId) {
                             if (this._lastId != -1) {
-                                e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                                e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, emissiveMap, specularMap, visibilityMap);
                                 e.partID = this._idMap.mapping[this._lastId - this._minId].name;
                                 e.type = "mouseleave";
                                 this.callEvtHandler("onmouseleave", e);
                             }
 
-                            e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, visibilityMap);
+                            e.part = new x3dom.Parts(this, [e.pickedId - this._minId], colorMap, emissiveMap, specularMap, visibilityMap);
                             e.partID = this._idMap.mapping[e.pickedId - this._minId].name;
                             e.type = "mouseenter";
                             this.callEvtHandler("onmouseenter", e);
@@ -225,7 +228,7 @@ x3dom.registerNodeType(
                         this._lastId = e.pickedId;
                     }
                     else if (this._lastId != -1) {
-                        e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, visibilityMap);
+                        e.part = new x3dom.Parts(this, [this._lastId - this._minId], colorMap, emissiveMap, specularMap, visibilityMap);
                         e.partID = this._idMap.mapping[this._lastId - this._minId].name;
                         e.type = "mouseout";
                         this.callEvtHandler("onmouseout", e);
@@ -307,16 +310,19 @@ x3dom.registerNodeType(
             createMaterialData: function ()
             {
                 var diffuseColor, transparency, specularColor, shininess, emissiveColor, ambientIntensity;
-                var rgba_DT, rgba_SS, rgba_EA;
+                var backDiffuseColor, backTransparency, backSpecularColor, backShininess, backEmissiveColor, backAmbientIntensity;
+                var rgba_DT = "", rgba_SS = "", rgba_EA = "";
+                var rgba_DT_B = "", rgba_SS_B = "", rgba_EA_B = "";
 
                 var size = Math.ceil(Math.sqrt(this._idMap.numberOfIDs));
 
                 //scale image data array size to the next highest power of two
                 size = x3dom.Utils.nextHighestPowerOfTwo(size);
+                var sizeTwo = size * 2.0;
 
-                var diffuseTransparencyData = size + " " + size + " 4";
-                var specularShininessData = size + " " + size + " 4";
-                var emissiveAmbientIntensityData = size + " " + size + " 4";
+                var diffuseTransparencyData = size + " " + sizeTwo + " 4";
+                var specularShininessData = size + " " + sizeTwo + " 4";
+                var emissiveAmbientIntensityData = size + " " + sizeTwo + " 4";
 
                 for (var i=0; i<size*size; i++)
                 {
@@ -325,59 +331,131 @@ x3dom.registerNodeType(
                         var appName = this._idMap.mapping[i].appearance;
                         var appID = this._identifierToAppId[appName];
 
+                        //AmbientIntensity
                         if (this._idMap.appearance[appID].material.ambientIntensity) {
                             ambientIntensity = this._idMap.appearance[appID].material.ambientIntensity
                         } else {
                             ambientIntensity = "0.2";
                         }
 
+                        //BackAmbientIntensity
+                        if (this._idMap.appearance[appID].material.backAmbientIntensity) {
+                            backAmbientIntensity = this._idMap.appearance[appID].material.backAmbientIntensity
+                        } else {
+                            backAmbientIntensity = ambientIntensity;
+                        }
+
+                        //DiffuseColor
                         if (this._idMap.appearance[appID].material.diffuseColor) {
                             diffuseColor = this._idMap.appearance[appID].material.diffuseColor
                         } else {
                             diffuseColor = "0.8 0.8 0.8";
                         }
 
+                        //BackDiffuseColor
+                        if (this._idMap.appearance[appID].material.backDiffuseColor) {
+                            backDiffuseColor = this._idMap.appearance[appID].material.backDiffuseColor
+                        } else {
+                            backDiffuseColor = diffuseColor;
+                        }
+
+                        //EmissiveColor
                         if (this._idMap.appearance[appID].material.emissiveColor) {
                             emissiveColor = this._idMap.appearance[appID].material.emissiveColor
                         } else {
                             emissiveColor = "0.0 0.0 0.0";
                         }
 
+                        //BackEmissiveColor
+                        if (this._idMap.appearance[appID].material.backEmissiveColor) {
+                            backEmissiveColor = this._idMap.appearance[appID].material.backEmissiveColor
+                        } else {
+                            backEmissiveColor = emissiveColor;
+                        }
+
+                        //Shininess
                         if (this._idMap.appearance[appID].material.shininess) {
                             shininess = this._idMap.appearance[appID].material.shininess;
                         } else {
                             shininess = "0.2";
                         }
 
+                        //BackShininess
+                        if (this._idMap.appearance[appID].material.backShininess) {
+                            backShininess = this._idMap.appearance[appID].material.backShininess;
+                        } else {
+                            backShininess = shininess;
+                        }
+
+                        //SpecularColor
                         if (this._idMap.appearance[appID].material.specularColor) {
                             specularColor = this._idMap.appearance[appID].material.specularColor;
                         } else {
                             specularColor = "0 0 0";
                         }
 
+                        //BackSpecularColor
+                        if (this._idMap.appearance[appID].material.backSpecularColor) {
+                            backSpecularColor = this._idMap.appearance[appID].material.backSpecularColor;
+                        } else {
+                            backSpecularColor = specularColor;
+                        }
+
+                        //Transparency
                         if (this._idMap.appearance[appID].material.transparency) {
                             transparency = this._idMap.appearance[appID].material.transparency;
                         } else {
-                            transparency = "0";
+                            transparency = "0.0";
                         }
 
-                        rgba_DT = x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency);
-                        rgba_SS = x3dom.fields.SFColorRGBA.parse(specularColor + " " + shininess);
-                        rgba_EA = x3dom.fields.SFColorRGBA.parse(emissiveColor + " " + ambientIntensity);
+                        //BackTransparency
+                        if (this._idMap.appearance[appID].material.backTransparency) {
+                            backTransparency = this._idMap.appearance[appID].material.backTransparency;
+                        } else {
+                            backTransparency = transparency;
+                        }
 
-                        diffuseTransparencyData += " " + rgba_DT.toUint();
-                        specularShininessData += " " + rgba_SS.toUint();
-                        emissiveAmbientIntensityData += " " + rgba_EA.toUint();
+                        rgba_DT +=  " " + x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + (1.0-transparency)).toUint();
+                        rgba_SS +=  " " + x3dom.fields.SFColorRGBA.parse(specularColor + " " + shininess).toUint();
+                        rgba_EA +=  " " + x3dom.fields.SFColorRGBA.parse(emissiveColor + " " + ambientIntensity).toUint();
+
+                        rgba_DT_B += " " + x3dom.fields.SFColorRGBA.parse(backDiffuseColor + " " + (1.0-backTransparency)).toUint();
+                        rgba_SS_B += " " + x3dom.fields.SFColorRGBA.parse(backSpecularColor + " " + backShininess).toUint();
+                        rgba_EA_B += " " + x3dom.fields.SFColorRGBA.parse(backEmissiveColor + " " + backAmbientIntensity).toUint();
 
                         this._originalColor[i] = rgba_DT;
+
+                        this._materials[i] = new x3dom.MultiMaterial({
+                            "ambientIntensity": ambientIntensity,
+                            "diffuseColor": x3dom.fields.SFColorRGBA.parse(diffuseColor),
+                            "emissiveColor": x3dom.fields.SFColorRGBA.parse(emissiveColor),
+                            "shininess": shininess,
+                            "specularColor": x3dom.fields.SFColorRGBA.parse(specularColor),
+                            "transparency": transparency,
+                            "backAmbientIntensity": backAmbientIntensity,
+                            "backDiffuseColor": x3dom.fields.SFColorRGBA.parse(backDiffuseColor),
+                            "backEmissiveColor": x3dom.fields.SFColorRGBA.parse(backEmissiveColor),
+                            "backShininess": backShininess,
+                            "backSpecularColor": x3dom.fields.SFColorRGBA.parse(backSpecularColor),
+                            "backTransparency": backTransparency
+                        });
                     }
                     else
                     {
-                        diffuseTransparencyData += " 255";
-                        specularShininessData += " 255";
-                        emissiveAmbientIntensityData += " 255";
+                        rgba_DT += " 255";
+                        rgba_SS += " 255";
+                        rgba_EA += " 255";
+
+                        rgba_DT_B += " 255";
+                        rgba_SS_B += " 255";
+                        rgba_EA_B += " 255";
                     }
                 }
+
+                //Combine Front and Back Data
+                diffuseTransparencyData      += rgba_DT + rgba_DT_B;
+                specularShininessData        += rgba_SS + rgba_SS_B;
+                emissiveAmbientIntensityData += rgba_EA + rgba_EA_B;
 
                 return {
                     "diffuseTransparency": diffuseTransparencyData,
@@ -685,12 +763,14 @@ x3dom.registerNodeType(
                     }
 
                     var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var emissiveMap = multiPart._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
+                    var specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                     var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
 
                     if ( selection.length == 0) {
                         return null;
                     } else {
-                        return new x3dom.Parts(multiPart, selection, colorMap, visibilityMap);
+                        return new x3dom.Parts(multiPart, selection, colorMap, emissiveMap, specularMap, visibilityMap);
                     }
                 };
             },

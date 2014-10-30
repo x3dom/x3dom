@@ -615,27 +615,31 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     if (properties.MULTIVISMAP || properties.MULTIDIFFALPMAP || properties.MULTISPECSHINMAP || properties.MULTIEMIAMBMAP) {
         shader += "vec2 idCoord;\n";
-        shader += "float roundedID = floor(fragID+0.5);\n";
+        shader += "float roundedIDVisibility = floor(fragID+0.5);\n";
+        shader += "float roundedIDMaterial = floor(fragID+0.5);\n";
+        shader += "if(!gl_FrontFacing) {\n";
+        shader += "    roundedIDMaterial = floor(fragID + (multiDiffuseAlphaWidth*multiDiffuseAlphaWidth) + 0.5);\n";
+        shader += "}\n";
     }
 
     if (properties.MULTIVISMAP) {
-        shader += "idCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
-        shader += "idCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
+        shader += "idCoord.x = mod(roundedIDVisibility, multiVisibilityWidth) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
+        shader += "idCoord.y = floor(roundedIDVisibility / multiVisibilityWidth) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
         shader += "vec4 visibility = texture2D( multiVisibilityMap, idCoord );\n";
         shader += "if (visibility.r < 1.0) discard; \n";
     }
 
     if (properties.MULTIDIFFALPMAP) {
-        shader += "idCoord.x = (mod(roundedID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
-        shader += "idCoord.y = (floor(roundedID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
+        shader += "idCoord.x = mod(roundedIDMaterial, multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
+        shader += "idCoord.y = floor(roundedIDMaterial / multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
         shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, idCoord );\n";
         shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
         shader += "color.a = diffAlpha.a;\n";
     }
 
     if (properties.MULTIEMIAMBMAP) {
-        shader += "idCoord.x = (mod(roundedID, multiDiffuseAlphaWidth)) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
-        shader += "idCoord.y = (floor(roundedID / multiDiffuseAlphaHeight)) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
+        shader += "idCoord.x = mod(roundedIDMaterial, multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
+        shader += "idCoord.y = floor(roundedIDMaterial / multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
         shader += "vec4 emiAmb = texture2D( multiEmissiveAmbientMap, idCoord );\n";
         shader += "_emissiveColor = emiAmb.rgb;\n";
         shader += "_ambientIntensity = emiAmb.a;\n";
@@ -688,8 +692,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         }
 
         if (properties.MULTISPECSHINMAP) {
-            shader += "idCoord.x = (mod(roundedID, multiSpecularShininessWidth)) * (1.0 / multiSpecularShininessWidth) + (0.5 / multiSpecularShininessWidth);\n";
-            shader += "idCoord.y = (floor(roundedID / multiSpecularShininessHeight)) * (1.0 / multiSpecularShininessHeight) + (0.5 / multiSpecularShininessHeight);\n";
+            shader += "idCoord.x = mod(roundedIDMaterial, multiSpecularShininessWidth) * (1.0 / multiSpecularShininessWidth) + (0.5 / multiSpecularShininessWidth);\n";
+            shader += "idCoord.y = floor(roundedIDMaterial / multiSpecularShininessWidth) * (1.0 / multiSpecularShininessHeight) + (0.5 / multiSpecularShininessHeight);\n";
             shader += "vec4 specShin = texture2D( multiSpecularShininessMap, idCoord );\n";
             shader += "_specularColor = specShin.rgb;\n";
             shader += "_shininess = specShin.a;\n";

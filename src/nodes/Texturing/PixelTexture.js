@@ -58,19 +58,23 @@ x3dom.registerNodeType(
                 return this._vf.image.comp;
             },
 
-            setPixel: function(x, y, color) {
+            setPixel: function(x, y, color, update) {
+                update = (update == undefined) ? true : update;
+
                 if (this._x3domTexture) {
                     this._x3domTexture.setPixel(x, y, [
                         color.r*255,
                         color.g*255,
                         color.b*255,
-                        color.a*255 ] );
+                        color.a*255 ], update );
                     this._vf.image.setPixel(x, y, color);
                 }
                 else
                 {
                     this._vf.image.setPixel(x, y, color);
-                    this.invalidateGLObject();
+                    if( update ) {
+                        this.invalidateGLObject();
+                    }
                 }
 
             },
@@ -79,9 +83,14 @@ x3dom.registerNodeType(
                 return this._vf.image.getPixel(x, y);
             },
 
-            setPixels: function(pixels) {
+            setPixels: function(pixels, update) {
+                update = (update == undefined) ? true : update;
+
                 this._vf.image.setPixels(pixels);
-                this.invalidateGLObject();
+
+                if( update ) {
+                    this.invalidateGLObject();
+                }
             },
 
             getPixels: function() {
