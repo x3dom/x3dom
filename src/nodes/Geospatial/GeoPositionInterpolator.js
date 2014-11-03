@@ -59,8 +59,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
             
             /**
-             * The onGreatCircle field is used to specify whether coordinates will be interpolated along a great circle path
-             * The default behavior is to not perform this operation.
+             * The onGreatCircle field is used to specify whether coordinates will be interpolated along a great circle path.
+             * The default behavior is to not perform this operation for performance and compatibility.
              * @var {x3dom.fields.SFBool} onGreatCircle
              * @memberof x3dom.nodeTypes.GeoPositionInterpolator
              * @initvalue false
@@ -174,9 +174,11 @@ x3dom.registerNodeType(
                     }
                     
                     else {
-                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        indexValue = this.linearInterpHintKeyValue(this._vf.set_fraction, this._keyHint, this._vf.key, this._vf.keyValue, function (a, b, t) {
                             return a.multiply(1.0-t).add(b.multiply(t));                        
                         });
+                        this._keyHint = indexValue[0];
+                        value = indexValue[1];                            
                         coords = new x3dom.fields.MFVec3f();
                         coords.push(value);
                         valueGC = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(this._vf.geoSystem, this._cf.geoOrigin, coords)[0];
