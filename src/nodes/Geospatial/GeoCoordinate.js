@@ -564,7 +564,6 @@ x3dom.registerNodeType(
                     for(var i=0; i<coords.length; ++i)
                         gc[i] = matrix.multMatrixPnt(coords[i]);
                 }
-                //x3dom.debug.logInfo(i + " " + gc);
                 
                 return gc;
             },
@@ -573,32 +572,7 @@ x3dom.registerNodeType(
             {
                 // transform points to GeoCentric
                 var gc = this.GEOtoGC(geoSystem, geoOrigin, coords);
-                return this.GCtoX3D(geoSystem, geoOrigin, gc);
-                /*
-
-                // transform by origin
-                if(geoOrigin.node)
-                {
-                    // transform points by origin
-                    var origin = this.OriginToGC(geoOrigin);
-                    //avoid expensive matrix inversion by just subtracting origin
-                    var matrix = x3dom.fields.SFMatrix4f.translation(origin.negate());
-                    
-                    //also rotate Y up if requested
-                    if(geoOrigin.node._vf.rotateYUp)
-                    {
-                        //roation is inverse of GeoLocation rotation, eg. Up to Y and N to -Z
-                        var rotmat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin).inverse();
-                        //first translate, then rotate
-                        matrix = rotmat.mult(matrix);
-                    }
-                    
-                    for(var i=0; i<coords.length; ++i)
-                        gc[i] = matrix.multMatrixPnt(gc[i]);
-                }
-
-                return gc;
-                */
+                return this.GCtoX3D(geoSystem, geoOrigin, gc);               
             },
 
             getPoints: function()
