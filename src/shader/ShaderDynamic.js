@@ -746,7 +746,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         }
 		
 		//Textures
-		if(properties.TEXTURED || properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP){
+		if(properties.TEXTURED || properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP){        
 			if(properties.CUBEMAP) {
 				shader += "vec3 viewDir = normalize(fragViewDir);\n";
 				shader += "vec3 reflected = reflect(viewDir, normal);\n";
@@ -761,7 +761,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             }
             else
             {
-				shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+                if (properties.PIXELTEX) {
+                    shader += "vec2 texCoord = fragTexcoord;\n";
+                } else {
+                    shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+                }
 				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 				shader += "color.a *= texColor.a;\n";
 			}
@@ -785,7 +789,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		
 		if(properties.TEXTURED || properties.DIFFUSEMAP){
-            shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+            if (properties.PIXELTEX) {
+                shader += "vec2 texCoord = fragTexcoord;\n";
+            } else {
+                shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+            }
 
             if (properties.IS_PARTICLE) {
                 shader += "texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";

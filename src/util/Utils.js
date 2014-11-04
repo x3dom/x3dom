@@ -763,6 +763,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.LIGHTS           = (!property.POINTLINE2D && appearance && shape.isLit() && (material || property.CSSHADER)) ?
                                      viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
         property.TEXTURED         = (texture || property.TEXT) ? 1 : 0;
+        property.PIXELTEX         = (texture || x3dom.isa(texture, x3dom.nodeTypes.PixelTexture)) ? 1 : 0;
         property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
         property.DIFFUSEMAP       = (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0;
         property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0;
