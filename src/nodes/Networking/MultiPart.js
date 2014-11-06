@@ -427,16 +427,16 @@ x3dom.registerNodeType(
 
                         this._materials[i] = new x3dom.MultiMaterial({
                             "ambientIntensity": ambientIntensity,
-                            "diffuseColor": x3dom.fields.SFColorRGBA.parse(diffuseColor),
-                            "emissiveColor": x3dom.fields.SFColorRGBA.parse(emissiveColor),
+                            "diffuseColor": x3dom.fields.SFColor.parse(diffuseColor),
+                            "emissiveColor": x3dom.fields.SFColor.parse(emissiveColor),
                             "shininess": shininess,
-                            "specularColor": x3dom.fields.SFColorRGBA.parse(specularColor),
+                            "specularColor": x3dom.fields.SFColor.parse(specularColor),
                             "transparency": transparency,
                             "backAmbientIntensity": backAmbientIntensity,
-                            "backDiffuseColor": x3dom.fields.SFColorRGBA.parse(backDiffuseColor),
-                            "backEmissiveColor": x3dom.fields.SFColorRGBA.parse(backEmissiveColor),
+                            "backDiffuseColor": x3dom.fields.SFColor.parse(backDiffuseColor),
+                            "backEmissiveColor": x3dom.fields.SFColor.parse(backEmissiveColor),
                             "backShininess": backShininess,
-                            "backSpecularColor": x3dom.fields.SFColorRGBA.parse(backSpecularColor),
+                            "backSpecularColor": x3dom.fields.SFColor.parse(backSpecularColor),
                             "backTransparency": backTransparency
                         });
                     }

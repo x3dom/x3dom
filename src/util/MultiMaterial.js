@@ -24,7 +24,7 @@ x3dom.MultiMaterial = function( params )
     this._diffuseColor              = params.diffuseColor;
     this._emissiveColor             = params.emissiveColor;
     this._shininess                 = params.shininess;
-    this._specularColor              = params.specularColor;
+    this._specularColor             = params.specularColor;
     this._transparency              = params.transparency;
 
     this._backAmbientIntensity      = params.backAmbientIntensity;
@@ -41,7 +41,7 @@ x3dom.MultiMaterial = function( params )
         this._diffuseColor          = this._origDiffuseColor;
         this._emissiveColor         = this._origEmissiveColor;
         this._shininess             = this._origShininess;
-        this._specularColor          = this._origSpeclarColor;
+        this._specularColor         = this._origSpeclarColor;
         this._transparency          = this._origTransparency;
         this._backAmbientIntensity  = this._origBackAmbientIntensity;
         this._backDiffuseColor      = this._origBackDiffuseColor;

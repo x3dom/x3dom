@@ -30,11 +30,13 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
      * @param color
      * @param frontSide
      */
-    this.setDiffuseColor = function(color, frontSide)
+    this.setDiffuseColor = function(color, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         color = x3dom.fields.SFColor.parse( color );
 
@@ -46,21 +48,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._diffuseColor = color;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backDiffuseColor = color;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._diffuseColor = color;
                     this.multiPart._materials[partID]._backDiffuseColor = color;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].r = color.r;
-                    pixels[pixelID].g = color.g;
-                    pixels[pixelID].b = color.b;
+                    if (side == "front") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    }
                 }
             }
 
@@ -68,31 +92,71 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.colorMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.colorMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._diffuseColor = color;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.colorMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backDiffuseColor = color;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.colorMap.getPixel(xFront, yFront);
+                pixelBack = parts.colorMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._diffuseColor = color;
                 this.multiPart._materials[partID]._backDiffuseColor = color;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.r = color.r;
-                pixel.g = color.g;
-                pixel.b = color.b;
-            }
+                if (side == "front")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
 
-            parts.colorMap.setPixel(x, y, pixel);
+                    parts.colorMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.colorMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.colorMap.setPixel(x, y, pixelFront);
+                    parts.colorMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
@@ -101,11 +165,13 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
      * @param frontSide
      * @returns {*}
      */
-    this.getDiffuseColor = function(frontSide)
+    this.getDiffuseColor = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -115,11 +181,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     diffuseColors.push(this.multiPart._materials[partID]._diffuseColor);
                 }
-                else
+                else if(side == "back")
                 {
                     diffuseColors.push(this.multiPart._materials[partID]._backDiffuseColor);
                 }
@@ -130,11 +196,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._diffuseColor;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backDiffuseColor;
             }
@@ -144,13 +210,15 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
     /**
      *
      * @param color
-     * @param frontSide
+     * @param side
      */
-    this.setEmissiveColor = function(color, frontSide)
+    this.setEmissiveColor = function(color, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         color = x3dom.fields.SFColor.parse( color );
 
@@ -162,21 +230,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._emissiveColor = color;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backEmissiveColor = color;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._emissiveColor = color;
                     this.multiPart._materials[partID]._backEmissiveColor = color;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].r = color.r;
-                    pixels[pixelID].g = color.g;
-                    pixels[pixelID].b = color.b;
+                    if (side == "front") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    }
                 }
             }
 
@@ -184,44 +274,86 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.emissiveMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.emissiveMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._emissiveColor = color;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.emissiveMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backEmissiveColor = color;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.emissiveMap.getPixel(xFront, yFront);
+                pixelBack = parts.emissiveMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._emissiveColor = color;
                 this.multiPart._materials[partID]._backEmissiveColor = color;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.r = color.r;
-                pixel.g = color.g;
-                pixel.b = color.b;
-            }
+                if (side == "front")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
 
-            parts.emissiveMap.setPixel(x, y, pixel);
+                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
     /**
      *
-     * @param frontSide
+     * @param side
      * @returns {*}
      */
-    this.getEmissiveColor = function(frontSide)
+    this.getEmissiveColor = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -231,11 +363,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     emissiveColors.push(this.multiPart._materials[partID]._emissiveColor);
                 }
-                else
+                else if(side == "back")
                 {
                     emissiveColors.push(this.multiPart._materials[partID]._backEmissiveColor);
                 }
@@ -246,11 +378,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._emissiveColor;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backEmissiveColor;
             }
@@ -260,13 +392,15 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
     /**
      *
      * @param color
-     * @param frontSide
+     * @param side
      */
-    this.setSpecularColor = function(color, frontSide)
+    this.setSpecularColor = function(color, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         color = x3dom.fields.SFColor.parse( color );
 
@@ -278,21 +412,43 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._specularColor = color;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backSpecularColor = color;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._specularColor = color;
                     this.multiPart._materials[partID]._backSpecularColor = color;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].r = color.r;
-                    pixels[pixelID].g = color.g;
-                    pixels[pixelID].b = color.b;
+                    if (side == "front") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].r = color.r;
+                        pixels[pixelIDFront].g = color.g;
+                        pixels[pixelIDFront].b = color.b;
+                        pixels[pixelIDBack].r = color.r;
+                        pixels[pixelIDBack].g = color.g;
+                        pixels[pixelIDBack].b = color.b;
+                    }
                 }
             }
 
@@ -300,44 +456,87 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.specularMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.specularMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._specularColor = color;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.specularMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backSpecularColor = color;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.specularMap.getPixel(xFront, yFront);
+                pixelBack = parts.specularMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._specularColor = color;
                 this.multiPart._materials[partID]._backSpecularColor = color;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.r = color.r;
-                pixel.g = color.g;
-                pixel.b = color.b;
-            }
+                if (side == "front")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
 
-            parts.specularMap.setPixel(x, y, pixel);
+                    parts.specularMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.specularMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.r = color.r;
+                    pixelFront.g = color.g;
+                    pixelFront.b = color.b;
+                    pixelBack.r = color.r;
+                    pixelBack.g = color.g;
+                    pixelBack.b = color.b;
+
+                    parts.specularMap.setPixel(x, y, pixelFront);
+                    parts.specularMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
+
     /**
      *
-     * @param frontSide
+     * @param side
      * @returns {*}
      */
-    this.getSpecularColor = function(frontSide)
+    this.getSpecularColor = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -347,11 +546,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     specularColors.push(this.multiPart._materials[partID]._specularColor);
                 }
-                else
+                else if(side == "back")
                 {
                     specularColors.push(this.multiPart._materials[partID]._backSpecularColor);
                 }
@@ -362,11 +561,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._specularColor;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backSpecularColor;
             }
@@ -376,13 +575,15 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
     /**
      *
      * @param transparency
-     * @param frontSide
+     * @param side
      */
-    this.setTransparency = function(transparency, frontSide)
+    this.setTransparency = function(transparency, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -392,62 +593,115 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._transparency = transparency;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backTransparency = transparency;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._transparency = transparency;
                     this.multiPart._materials[partID]._backTransparency = transparency;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].a = 1.0 - transparency;
+                    if (side == "front") {
+                        pixels[pixelIDFront].a = 1.0 - transparency;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].a = 1.0 - transparency;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].a = 1.0 - transparency;
+                        pixels[pixelIDBack].a = 1.0 - transparency;
+                    }
                 }
             }
 
-            parts.colorMap.setPixels(pixels, true);
+            parts.colorMap.setPixels(pixels);
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.colorMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.colorMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._transparency = transparency;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.colorMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backTransparency = transparency;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.colorMap.getPixel(xFront, yFront);
+                pixelBack = parts.colorMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._transparency = transparency;
                 this.multiPart._materials[partID]._backTransparency = transparency;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.a = 1.0 - transparency;
-            }
+                if (side == "front")
+                {
+                    pixelFront.a = 1.0 - transparency;
 
-            parts.colorMap.setPixel(x, y, pixel, true);
+                    parts.colorMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.a = 1.0 - transparency;
+
+                    parts.colorMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.a = 1.0 - transparency;
+                    pixelBack.a = 1.0 - transparency;
+
+                    parts.colorMap.setPixel(x, y, pixelFront);
+                    parts.colorMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
+
     /**
      *
-     * @param frontSide
+     * @param side
      * @returns {*}
      */
-    this.getTransparency = function(frontSide)
+    this.getTransparency = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -457,11 +711,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     transparencies.push(this.multiPart._materials[partID]._transparency);
                 }
-                else
+                else if(side == "back")
                 {
                     transparencies.push(this.multiPart._materials[partID]._backTransparency);
                 }
@@ -472,11 +726,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._transparency;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backTransparency;
             }
@@ -488,11 +742,13 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
      * @param shininess
      * @param frontSide
      */
-    this.setShininess = function(shininess, frontSide)
+    this.setShininess = function(shininess, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -502,62 +758,115 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._shininess = shininess;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backShininess = shininess;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._shininess = shininess;
                     this.multiPart._materials[partID]._backShininess = shininess;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].a = shininess;
+                    if (side == "front") {
+                        pixels[pixelIDFront].a = shininess;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].a = shininess;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].a = shininess;
+                        pixels[pixelIDBack].a = shininess;
+                    }
                 }
             }
 
-            parts.specularMap.setPixels(pixels, true);
+            parts.specularMap.setPixels(pixels);
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.specularMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.specularMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._shininess = shininess;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.specularMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backShininess = shininess;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.specularMap.getPixel(xFront, yFront);
+                pixelBack = parts.specularMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._shininess = shininess;
                 this.multiPart._materials[partID]._backShininess = shininess;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.a = shininess;
-            }
+                if (side == "front")
+                {
+                    pixelFront.a = shininess;
 
-            parts.specularMap.setPixel(x, y, pixel, true);
+                    parts.specularMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.a = shininess;
+
+                    parts.specularMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.a = shininess;
+                    pixelBack.a = shininess;
+
+                    parts.specularMap.setPixel(x, y, pixelFront);
+                    parts.specularMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
+
     /**
      *
-     * @param frontSide
+     * @param side
      * @returns {*}
      */
-    this.getShininess = function(frontSide)
+    this.getShininess = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -567,11 +876,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     shininesses.push(this.multiPart._materials[partID]._shininess);
                 }
-                else
+                else if(side == "back")
                 {
                     shininesses.push(this.multiPart._materials[partID]._backShininess);
                 }
@@ -582,11 +891,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._shininess;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backShininess;
             }
@@ -596,13 +905,15 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
     /**
      *
      * @param ambientIntensity
-     * @param frontSide
+     * @param side
      */
-    this.setAmbientIntensity = function(ambientIntensity, frontSide)
+    this.setAmbientIntensity = function(ambientIntensity, side)
     {
-        var i, partID, pixelID;
+        var i, partID, pixelIDFront, pixelIDBack;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back" && side != "both") {
+            side = "both";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -612,62 +923,115 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ )
             {
                 partID = parts.ids[i];
-                pixelID = (frontSide) ? partID : partID + this.widthTwo;
+                pixelIDFront = partID;
+                pixelIDBack = partID + this.widthTwo;
 
                 //Check for front/back
-                if (frontSide) {
+                if (side == "front")
+                {
                     this.multiPart._materials[partID]._ambientIntensity = ambientIntensity;
-                } else {
+                }
+                else if(side == "back")
+                {
+                    this.multiPart._materials[partID]._backAmbientIntensity = ambientIntensity;
+                }
+                else if(side == "both")
+                {
+                    this.multiPart._materials[partID]._ambientIntensity = ambientIntensity;
                     this.multiPart._materials[partID]._backAmbientIntensity = ambientIntensity;
                 }
 
                 //If part is not highlighted update the pixel
                 if ( !this.multiPart._materials[partID]._highlighted )
                 {
-                    pixels[pixelID].a = ambientIntensity;
+                    if (side == "front") {
+                        pixels[pixelIDFront].a = ambientIntensity;
+                    } else if(side == "back") {
+                        pixels[pixelIDBack].a = ambientIntensity;
+                    } else if(side == "both") {
+                        pixels[pixelIDFront].a = ambientIntensity;
+                        pixels[pixelIDBack].a = ambientIntensity;
+                    }
                 }
             }
 
-            parts.emissiveMap.setPixels(pixels, true);
+            parts.emissiveMap.setPixels(pixels);
         }
         else
         {
+            var xFront, yFront, xBack, yBack, pixelFront, pixelBack;
+
             partID = parts.ids[0];
-            pixelID = (frontSide) ? partID : partID + this.widthTwo;
-
-            var x = pixelID % this.width;
-            var y = Math.floor(pixelID / this.width);
-
-            //Get original pixel
-            var pixel = parts.emissiveMap.getPixel(x, y);
+            pixelIDFront = partID;
+            pixelIDBack = partID + this.widthTwo;
 
             //Check for front/back
-            if (frontSide) {
+            if (side == "front")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                pixelFront = parts.emissiveMap.getPixel(xFront, yFront);
                 this.multiPart._materials[partID]._ambientIntensity = ambientIntensity;
-            } else {
+            }
+            else if(side == "back")
+            {
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelBack = parts.emissiveMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._backAmbientIntensity = ambientIntensity;
+            }
+            else if(side == "both")
+            {
+                xFront = pixelIDFront % this.width;
+                yFront = Math.floor(pixelIDFront / this.width);
+                xBack = pixelIDBack % this.width;
+                yBack = Math.floor(pixelIDBack / this.width);
+                pixelFront = parts.emissiveMap.getPixel(xFront, yFront);
+                pixelBack = parts.emissiveMap.getPixel(xBack, yBack);
+                this.multiPart._materials[partID]._ambientIntensity = ambientIntensity;
                 this.multiPart._materials[partID]._backAmbientIntensity = ambientIntensity;
             }
 
             //If part is not highlighted update the pixel
             if ( !this.multiPart._materials[partID]._highlighted )
             {
-                pixel.a = ambientIntensity;
-            }
+                if (side == "front")
+                {
+                    pixelFront.a = ambientIntensity;
 
-            parts.emissiveMap.setPixel(x, y, pixel, true);
+                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                }
+                else if(side == "back")
+                {
+                    pixelBack.a = ambientIntensity;
+
+                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                }
+                else if(side == "both")
+                {
+                    pixelFront.a = ambientIntensity;
+                    pixelBack.a = ambientIntensity;
+
+                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                }
+            }
         }
     };
 
+
     /**
      *
-     * @param frontSide
+     * @param side
      * @returns {*}
      */
-    this.getAmbientIntensity = function(frontSide)
+    this.getAmbientIntensity = function(side)
     {
         var i, partID;
 
-        frontSide = ( frontSide == undefined ) ? true : frontSide;
+        if(side == undefined && side != "front" && side != "back") {
+            side = "front";
+        }
 
         if (ids.length && ids.length > 1) //Multi select
         {
@@ -677,11 +1041,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             {
                 partID = parts.ids[i];
 
-                if(frontSide)
+                if(side == "front")
                 {
                     ambientIntensities.push(this.multiPart._materials[partID]._ambientIntensity);
                 }
-                else
+                else if(side == "back")
                 {
                     ambientIntensities.push(this.multiPart._materials[partID]._backAmbientIntensity);
                 }
@@ -692,11 +1056,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         {
             partID = parts.ids[0];
 
-            if(frontSide)
+            if(side == "front")
             {
                 return this.multiPart._materials[partID]._ambientIntensity;
             }
-            else
+            else if(side == "back")
             {
                 return this.multiPart._materials[partID]._backAmbientIntensity;
             }
@@ -869,10 +1233,10 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
     /**
      *
      * @param color
-     * @param back
+     * @param side
      */
-    this.setColor = function(color, back) {
-        this.setDiffuseColor(color, back);
+    this.setColor = function(color, side) {
+        this.setDiffuseColor(color, side);
     };
 
 
