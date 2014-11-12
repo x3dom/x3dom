@@ -96,7 +96,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'headlight', undefined);
+            this.addField_SFBool(ctx, 'headlight', false);
 
             /**
              * Specifies the navigation type.
@@ -108,7 +108,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'navType', undefined);
+            this.addField_MFString(ctx, 'navType', []);
 
             /**
              * The speedFactor field of the GeoViewpoint node is used as a multiplier to the elevation-based velocity that the node sets internally; i.e., this is a relative value and not an absolute speed as is the case for the NavigationInfo node.
