@@ -89,26 +89,26 @@ x3dom.registerNodeType(
             /**
              * Enable/disable directional light that always points in the direction the user is looking.
              * Removed in X3D V3.3. See NavigationInfo
-             * still supported but required changing default to undefined
+             * still supported but required changing default to undefined since could be already given by NavigationInfo
              * @var {x3dom.fields.SFBool} headlight
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue true; undefined since could be already given by NavigationInfo
+             * @initvalue undefined
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'headlight', false);
+            this.addField_SFBool(ctx, 'headlight', undefined);
 
             /**
              * Specifies the navigation type.
              * Removed in X3D V3.3. See NavigationInfo
-             * still supported but required changing default to undefined
+             * still supported but required changing default to undefined since could be already given by NavigationInfo
              * @var {x3dom.fields.MFString} navType
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue ['EXAMINE']; undefined since could be already given by NavigationInfo
+             * @initvalue undefined
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'navType', []);
+            this.addField_MFString(ctx, 'navType', undefined);
 
             /**
              * The speedFactor field of the GeoViewpoint node is used as a multiplier to the elevation-based velocity that the node sets internally; i.e., this is a relative value and not an absolute speed as is the case for the NavigationInfo node.
