@@ -727,6 +727,19 @@
                             }
                         }
                     ]
+            },     
+            {
+                "url"   : "/test/cases/mobileShader/mobileShader.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
             },            
             {
                 "url"   : "/test/cases/normalGen/normalGen.html",
