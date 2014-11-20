@@ -81,7 +81,7 @@ x3dom.registerNodeType(
                     for (var j = 0; j < n; j++) {
                         if ( (cnode = this._childNodes[j]) ) {
                             if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
-                                localClipPlanes.push(cnode);
+                                localClipPlanes.push({plane: cnode, trafo: childTransform});
                             }
                         }
                     }

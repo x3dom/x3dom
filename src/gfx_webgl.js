@@ -1554,11 +1554,12 @@ x3dom.gfx_webgl = (function () {
                 sp.modelViewMatrix = mat_view.mult(trafo).toGL();
                 sp.viewMatrixInverse = mat_view.inverse().toGL();
                 for (var cp = 0; cp < shape._clipPlanes.length; cp++) {
-                    var clip_trafo = shape._clipPlanes[cp].getCurrentTransform();
+                    var clip_plane = shape._clipPlanes[cp].plane;
+                    var clip_trafo = shape._clipPlanes[cp].trafo;
 
-                    sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(shape._clipPlanes[cp]._vf.plane).toGL();
-                    sp['clipPlane' + cp + '_CappingStrength'] = shape._clipPlanes[cp]._vf.cappingStrength;
-                    sp['clipPlane' + cp + '_CappingColor'] = shape._clipPlanes[cp]._vf.cappingColor.toGL();
+                    sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(clip_plane._vf.plane).toGL();
+                    sp['clipPlane' + cp + '_CappingStrength'] = clip_plane._vf.cappingStrength;
+                    sp['clipPlane' + cp + '_CappingColor'] = clip_plane._vf.cappingColor.toGL();
                 }
             }
 
@@ -2130,11 +2131,12 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         if (shape._clipPlanes) {
             for (var cp = 0; cp < shape._clipPlanes.length; cp++) {
-                var clip_trafo = shape._clipPlanes[cp].getCurrentTransform();
+                var clip_plane = shape._clipPlanes[cp].plane;
+                var clip_trafo = shape._clipPlanes[cp].trafo;
 
-                sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(shape._clipPlanes[cp]._vf.plane).toGL();
-                sp['clipPlane' + cp + '_CappingStrength'] = shape._clipPlanes[cp]._vf.cappingStrength;
-                sp['clipPlane' + cp + '_CappingColor'] = shape._clipPlanes[cp]._vf.cappingColor.toGL();
+                sp['clipPlane' + cp + '_Plane'] = clip_trafo.multMatrixPlane(clip_plane._vf.plane).toGL();
+                sp['clipPlane' + cp + '_CappingStrength'] = clip_plane._vf.cappingStrength;
+                sp['clipPlane' + cp + '_CappingColor'] = clip_plane._vf.cappingColor.toGL();
             }
         }
 
@@ -2283,7 +2285,6 @@ x3dom.gfx_webgl = (function () {
         if (s_gl.popGeometry) {
             this.updatePopState(drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps);
         }
-
 
         for (var cnt = 0, cnt_n = s_gl.texture.length; cnt < cnt_n; cnt++) {
             tex = s_gl.texture[cnt];
