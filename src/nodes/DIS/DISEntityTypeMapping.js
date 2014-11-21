@@ -37,7 +37,8 @@ x3dom.registerNodeType(
      {     
          
          // Call to superclass
-         x3dom.nodeTypes.X3DNode.call(this, ctx);
+         //x3dom.nodeTypes.X3DNode.call(this, ctx);
+         x3dom.nodeTypes.DISEntityTypeMapping.superClass.call(this, ctx);
          
          console.log("In constructor for DISEntityTypeMapping");
          
@@ -80,7 +81,7 @@ x3dom.registerNodeType(
          /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
          
-         console.log("country:", this.country);
+         console.log("DisEntityTypeMapping:", this._vf);
          
          //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
 

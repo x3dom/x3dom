@@ -4,7 +4,9 @@ if(typeof x3domDIS === 'undefined')  x3domDIS = {};
  * Singleton pattern for network connection. A single instance of this
  * object should be talking over a web socket back to the server. All
  * ESPDUTransform et al objects should communicate with the server
- * through this object.<p>
+ * through this object. Use the NetworkSingleton.getInstance() function
+ * to retrieve the single, shared instance.<p>
+ 
  * 
  * @param theUrl URL of the websocket server
  * @param origin array of three floats with lat/lon/alt (degrees and meters)
@@ -13,14 +15,33 @@ if(typeof x3domDIS === 'undefined')  x3domDIS = {};
  */
 function NetworkSingleton(theUrl, origin, entityManager)
 {
- if ( arguments.callee._singletonInstance )
+    console.log("Retrieving singleton instance of NetworkSingleton");
+    
+    if(NetworkSingleton.prototype._singletonInstance)
+    {
+        console.log("Returing already created instance of NetworkSingleton");
+        return NetworkSingleton.prototype._singletonInstance;
+    }
+    
+    
+    NetworkSingleton.prototype._singletonInstance = this;
+    
+        console.log("Returning new instance of NetworkSingleton ", NetworkSingleton.prototype);
+
+ 
+ // This doesn't work in strict mode
+ /*
+    if ( arguments.callee._singletonInstance )
  {
      return arguments.callee._singletonInstance;
  }
   arguments.callee._singletonInstance = this;
   var self = this;
+    */
+   
   /** URL of the server we communicate with */
   this.url = theUrl;
+  var self = this;
   
   /** The entity manager, which keeps track of entities, their location, etc.*/
   this.entityManager = entityManager;
@@ -63,7 +84,8 @@ function NetworkSingleton(theUrl, origin, entityManager)
     // Set the format we want to use to receive binary messages
     this.websocketConnection.binaryType = 'arraybuffer';
     
-    // Attach functions to the the web socket for various events
+    // Attach functions to the the web socket for various events. We should
+    // re-establish a connection if it closes, perhaps due to a timeout.
     this.websocketConnection.onopen = function(evt){console.log("Websocket onopen");};
     this.websocketConnection.onclose = function(evt){console.log("Websocket onclose");};
     
@@ -82,8 +104,8 @@ function NetworkSingleton(theUrl, origin, entityManager)
  * Note that it is easy for the EntityType to be just _slightly_ off and miss
  * a match. This needs to be thought about more carefully.
  * 
- * @param {type} listener
- * @returns {undefined}
+ * @param {entityType} entityType from the EBV document
+ * @returns {URL} URL to retrieve the 3D model for the entity type specified
  */
 NetworkSingleton.prototype.urlForEntityType = function(entityType)
 {
@@ -145,8 +167,8 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
    */
   NetworkSingleton.prototype.unregisterNewEntityListener = function(listener)
   {
-      var idx = 0;
-      for(idx = 0; idx < this.newRemoteEntityListeners.length; idx++)
+
+      for(var idx = 0; idx < this.newRemoteEntityListeners.length; idx++)
       {
           if(this.newRemoteEntityListeners[idx] === listener)
           {
@@ -189,7 +211,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // If we haven't heard of this entity before, create a new one
       if(typeof this.remoteEntityDatabase[jsonEid] === 'undefined')
       {
-          console.log("**********Adding new espduTransfrom in reponse to msg from network");
+          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", remoteEntityDatabase);
           newEntityFound = true;
           this.addNewEspduTransformNode(anEspdu);
       }
@@ -198,9 +220,13 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // heard from in some amount of time, and add the entity to the database.
       anEspdu.lastHeardFrom = new Date();
       this.remoteEntityDatabase[jsonEid] = anEspdu;
+      console.log(this.remoteEntityDatabase);
       
       // Convert to local coordinate system. "ECEF" refers to earth-centered, earth-fixed,
-      // and ENU refers to east-north-up, for the XYZ coordinate aces, respectively. 
+      // a cartesian coordinate system that rotates with the earth with the origin at
+      // the center of the earth, x pointing out at th equator and prime meridian,
+      // y pointing out at the equator and 90 deg east, and z through the north pole.
+      // ENU refers to east-north-up, for the XYZ coordinate axes, respectively. 
       // localCoordinates refers to the local x3d coordinate system, with the origin
       // at the location specified, x-axis pointing east, y-axis pointing north, and
       // z-axis pointing up.
@@ -252,7 +278,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
       
-      console.log("Recieved PDU from server");
+      //console.log("Recieved PDU from server");
       
       // If the factory can't correctly decode the message it will return null.
       // Really, the only option is to throw up our hands and punt.
@@ -261,14 +287,16 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
          
       switch(pdu.pduType)
       {
-          case 1: 
+          case 1: // Entity State PDU
               this.espduReceived(pdu);
               break;
               
-          case 2: console.log("Got fire PDU");
+          case 2:  // Fire PDU
+              console.log("Got fire PDU");
               break;
               
-          case 3: console.log("Got detonation PDU");
+          case 3: // Detonation PDU
+              console.log("Got detonation PDU");
               break;
               
           default: console.log("Got PDU of type ", pdu.pduType);
@@ -329,13 +357,13 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
         
         var ot = document.getElementById('networkEntities');
         ot.appendChild(t);
-        }
+        };
         
        /**
         * Adds a new EspduTransform node to the scenegraph as a result of a 
         * new entity from the network being heard from
         * 
-        * @param {type} param espdu from a newly discovered entity from the network
+        * @param {type} espdu from a newly discovered entity from the network
         */
        NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
        {
@@ -352,11 +380,15 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
                                                                   espdu.entityLocation.y, 
                                                                   espdu.entityLocation.z);
            
+           console.log("Entity position in local coordinates:", localCoordinates);
            // The right way is to do geotranslation to local coords, as here. For debugging
            // we add it near the origin.
            //transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
-           transform.setAttribute("translation", 1.0 + Math.random(), 1.0 + Math.random(), 1.0 + Math.random() );
+           transform.setAttribute("translation", 1.1 + Math.random(), " ", 1.2 + Math.random(), " ", 1.3 + Math.random() );
+         
            transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
+           
+           console.log(transform);
            
            var shape = document.createElement("Shape");
            var appearance = document.createElement("Appearance");
@@ -379,5 +411,4 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            root.appendChild(newEspduTransformNode);
            root.appendChild(transform);
            //root.style.display();
-           console.log(root);
        };

@@ -27,20 +27,20 @@
 // this contains a host url & port, and maintains a list of entities
 // that we have heard from the network.
 x3dom.registerNodeType(
-    "DISEntityManager",
-    "DIS",
+    "DISEntityManager",   // Class/name
+    "DIS",                // Group
      // This section of code is hand-manufacturing a Javascript class.
      // The zeroth arugment is what class is being extended,
      // The first argument is a constructor function, the second a 
      // object literal containing a list of methods for the class.
      // See Internals.js for details.
      
-     defineClass(x3dom.nodeTypes.X3DNode,  // Extends this node 
+     defineClass(x3dom.nodeTypes.X3DNode,  // Superclass
      // Constructor function
      function(ctx) 
-     {         
-         // Call to superclass
-         x3dom.nodeTypes.X3DNode.call(this, ctx);
+     {    
+         //x3dom.nodeTypes.Node.call(this, ctx);
+         x3dom.nodeTypes.DISEntityManager.superClass.call(this, ctx);
          
          console.log("In constructor for DISEntityManager");
          
@@ -71,15 +71,9 @@ x3dom.registerNodeType(
           * part of the additions for working with websockets.
           */
          this.addField_MFDouble(ctx, "localCoordinateSystemOrigin", 0.0, 0.0, 0.0);
-        
-         // The values in the X3D file node are in force below here -- the
-         // "default" values above, such as the localCoordinateSystemOrign
-         // attribute, are not used, instead the value in the x3D file are
-         // in force here.
          
-         // Set up internal objects, not visible to XML. These are entirely
-         // javascript objects. 
-         //this.network = new NetworkSingleton(this._vf.websocketUrl, this._vf.localCoordinateSystemOrigin);
+         console.log("After constructor DISEntityManager is ", this);
+         
      },
       
      // The implementation object. Thas has function definitions for the Node API,
@@ -105,7 +99,8 @@ x3dom.registerNodeType(
                 console.log("DISEntityManager nodeChanged called");
                 
              // Set up internal objects, not visible to XML. These are entirely
-             // javascript objects. 
+             // javascript objects. We do the network singleton here because this
+             // is the first place we have a value for the local coordinate system.
              this.network = new NetworkSingleton(this._vf.websocketUrl, this._vf.localCoordinateSystemOrigin, this);
             },
             
