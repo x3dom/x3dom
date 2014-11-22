@@ -31,14 +31,15 @@ x3dom.registerNodeType(
      // The first argument is a constructor function, the second a 
      // object literal containing a list of methods for the class.
      // See Internals.js for details.
-     defineClass(x3dom.nodeTypes.X3DNode,  // Extends this node 
+     defineClass(x3dom.nodeTypes.X3DNode,  // Superclass
      // Constructor function
      function(ctx) 
      {         
          // Call to superclass
-         x3dom.nodeTypes.EspduTransform.superClass.call(this, ctx);
+        // x3dom.nodeTypes.X3DNode.superClass.call(this, ctx);
+        x3dom.nodeTypes.EspduTransform.superClass.call(this, ctx);
 
-         console.log("In constructor for class EspudTransform");
+         console.log("In constructor for class EspduTransform");
          
          // Add fields that show up as attributes in the x3d node.
          // The field names here must match the attribute names used in 
@@ -311,6 +312,7 @@ x3dom.registerNodeType(
          
          this.disWriteIntervalTaskID = 0;
         
+        //console.log("espdu transform after constructor is ", this);
          
          //console.log("Network singleton in EspduTransform:", this.network);
      },

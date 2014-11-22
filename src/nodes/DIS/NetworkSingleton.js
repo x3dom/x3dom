@@ -211,7 +211,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // If we haven't heard of this entity before, create a new one
       if(typeof this.remoteEntityDatabase[jsonEid] === 'undefined')
       {
-          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", remoteEntityDatabase);
+          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
           newEntityFound = true;
           this.addNewEspduTransformNode(anEspdu);
       }
@@ -220,7 +220,6 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // heard from in some amount of time, and add the entity to the database.
       anEspdu.lastHeardFrom = new Date();
       this.remoteEntityDatabase[jsonEid] = anEspdu;
-      console.log(this.remoteEntityDatabase);
       
       // Convert to local coordinate system. "ECEF" refers to earth-centered, earth-fixed,
       // a cartesian coordinate system that rotates with the earth with the origin at
@@ -383,8 +382,8 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            console.log("Entity position in local coordinates:", localCoordinates);
            // The right way is to do geotranslation to local coords, as here. For debugging
            // we add it near the origin.
-           //transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
-           transform.setAttribute("translation", 1.1 + Math.random(), " ", 1.2 + Math.random(), " ", 1.3 + Math.random() );
+           transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+           //transform.setAttribute("translation", 3 + Math.random(), " ", 2 + Math.random(), " ", 4 + Math.random() );
          
            transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
            

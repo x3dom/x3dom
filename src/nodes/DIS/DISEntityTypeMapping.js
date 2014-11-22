@@ -107,9 +107,9 @@ x3dom.registerNodeType(
              * 
              * @returns {undefined}
              */
-            nodeChanged:function() {
-                console.log("DISEntityTypeMapping nodeChanged called");
-            },
+            //nodeChanged:function() {
+            //    console.log("DISEntityTypeMapping nodeChanged called");
+            //},
             
             /**
              * A field in DISEntityManager has been updated

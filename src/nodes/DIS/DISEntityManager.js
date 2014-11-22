@@ -34,7 +34,6 @@ x3dom.registerNodeType(
      // The first argument is a constructor function, the second a 
      // object literal containing a list of methods for the class.
      // See Internals.js for details.
-     
      defineClass(x3dom.nodeTypes.X3DNode,  // Superclass
      // Constructor function
      function(ctx) 
