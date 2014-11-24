@@ -39,7 +39,7 @@ x3dom.registerNodeType(
         // x3dom.nodeTypes.X3DNode.superClass.call(this, ctx);
         x3dom.nodeTypes.EspduTransform.superClass.call(this, ctx);
 
-         console.log("In constructor for class EspduTransform");
+         //console.log("In constructor for class EspduTransform");
          
          // Add fields that show up as attributes in the x3d node.
          // The field names here must match the attribute names used in 
@@ -321,14 +321,14 @@ x3dom.registerNodeType(
      {
           
           fieldChanged: function(fieldName) {
-              console.log("in EspduTransform fieldChanged, field=:", fieldName);
+              //console.log("in EspduTransform fieldChanged, field=:", fieldName);
               
               // There's a setInterval task to periodically call disWriteEvent.
               // Cancel the old interval, and set the new interval.
               
               if(fieldName === 'writeInterval' && this._vf.networkMode === 'networkWriter')
               {
-                  console.log("writeInterval value changed");
+                  //console.log("writeInterval value changed");
                   clearInterval(this.disWriteIntervalTaskID);
                   this.disWriteIntervalTaskID = setInterval(function(){self.disWriteEvent(self);}, this._vf.writeInterval);
               }
@@ -336,11 +336,11 @@ x3dom.registerNodeType(
             
             nodeChanged:function() {
                 
-                console.log("in EspduTransform nodeChanged");
+                //console.log("in EspduTransform nodeChanged");
                 
                 this.espdu.entityID.entity = this._vf.entityID;
                 this.espdu.entityID.site = this._vf.siteID;
-                console.log("entityID=", this.espdu.entityID.entity, " siteID=", this.espdu.entityID.site);
+                //console.log("entityID=", this.espdu.entityID.entity, " siteID=", this.espdu.entityID.site);
                 
                 this.espdu.entityType.enityKind = this._vf.entityKind;
                 this.espdu.entityType.domain = this._vf.entityDomain;
@@ -379,7 +379,7 @@ x3dom.registerNodeType(
             
             updateField:function(field, msg) {
                
-                console.log("EsdpudTransform updateField called:", field, ", ", msg);
+                //console.log("EsdpudTransform updateField called:", field, ", ", msg);
                 // if writeInterval, clear old task using id disUpdateIntervalTaskID and create a new one
             },
 

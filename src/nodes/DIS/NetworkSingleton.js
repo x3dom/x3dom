@@ -15,18 +15,18 @@ if(typeof x3domDIS === 'undefined')  x3domDIS = {};
  */
 function NetworkSingleton(theUrl, origin, entityManager)
 {
-    console.log("Retrieving singleton instance of NetworkSingleton");
+    //console.log("Retrieving singleton instance of NetworkSingleton");
     
     if(NetworkSingleton.prototype._singletonInstance)
     {
-        console.log("Returing already created instance of NetworkSingleton");
+        //console.log("Returing already created instance of NetworkSingleton");
         return NetworkSingleton.prototype._singletonInstance;
     }
     
     
     NetworkSingleton.prototype._singletonInstance = this;
     
-        console.log("Returning new instance of NetworkSingleton ", NetworkSingleton.prototype);
+        //console.log("Returning new instance of NetworkSingleton ", NetworkSingleton.prototype);
 
  
  // This doesn't work in strict mode
@@ -86,11 +86,11 @@ function NetworkSingleton(theUrl, origin, entityManager)
     
     // Attach functions to the the web socket for various events. We should
     // re-establish a connection if it closes, perhaps due to a timeout.
-    this.websocketConnection.onopen = function(evt){console.log("Websocket onopen");};
-    this.websocketConnection.onclose = function(evt){console.log("Websocket onclose");};
+    this.websocketConnection.onopen = function(evt){/*console.log("Websocket onopen");*/};
+    this.websocketConnection.onclose = function(evt){/*console.log("Websocket onclose");*/};
     
     // Arguably we should try to reconnect with the server if we have a failure
-    this.websocketConnection.onerror = function(evt){console.log("Websocket onerror");};
+    this.websocketConnection.onerror = function(evt){/*console.log("Websocket onerror");*/};
     
     // The onmessage function is big enough to break out into its own function
     this.websocketConnection.onmessage = function(evt){self.onMessage(evt);};
@@ -109,11 +109,11 @@ function NetworkSingleton(theUrl, origin, entityManager)
  */
 NetworkSingleton.prototype.urlForEntityType = function(entityType)
 {
-    console.log("in urlForEntityType");
+    //console.log("in urlForEntityType");
     
     var typeMatchingTags = document.getElementsByTagName("DISEntityTypeMapping");
     var matchingUrl;
-    console.log(typeMatchingTags);
+    //console.log(typeMatchingTags);
     
     for(var idx = 0; idx < typeMatchingTags.length; idx++)
     {
@@ -173,7 +173,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
           if(this.newRemoteEntityListeners[idx] === listener)
           {
               this.newRemoteEntityListeners.slice(idx);
-              console.log("unregistered new remote entity listener");
+              //console.log("unregistered new remote entity listener");
               break;
           };        
       };
@@ -207,20 +207,19 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // The string index into the database
       var jsonEid = JSON.stringify(anEspdu.entityID);
       var newEntityFound = false;
+      var matchingEntity;
+      
+      matchingEntity = this.remoteEntityDatabase[jsonEid];
       
       // If we haven't heard of this entity before, create a new one
-      if(typeof this.remoteEntityDatabase[jsonEid] === 'undefined')
+      if(typeof matchingEntity === 'undefined')
       {
-          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
+          //console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
           newEntityFound = true;
-          this.addNewEspduTransformNode(anEspdu);
+          matchingEntity = this.addNewEspduTransformNode(anEspdu);
+          this.remoteEntityDatabase[jsonEid] = matchingEntity;
       }
-      
-      // Add a date property, so we can periodicaly remove entities that haven't been
-      // heard from in some amount of time, and add the entity to the database.
-      anEspdu.lastHeardFrom = new Date();
-      this.remoteEntityDatabase[jsonEid] = anEspdu;
-      
+     
       // Convert to local coordinate system. "ECEF" refers to earth-centered, earth-fixed,
       // a cartesian coordinate system that rotates with the earth with the origin at
       // the center of the earth, x pointing out at th equator and prime meridian,
@@ -234,9 +233,13 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // Get the latitude, longitude, and elevation of the entity's location.
       var latLon = this.rangeCoordinates.ECEFObjectToLatLongAltInDegrees(anEspdu.entityLocation);
       
+      // Set the position of the graphics object in local coordinates
+      var graphicsGeometry = matchingEntity.transformNode;
+      graphicsGeometry.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+      
       // If this entity wasn't heard of before, notify a list of objects that are
       // interested in that event.
-      if(newEntityFound)
+      if(newEntityFound === true)
       {
           this.notifyNewEntityListeners(anEspdu);
       }
@@ -260,7 +263,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       if(typeof this.localEntityDatabase[jsonEid] === 'undefined')
       {
           this.localEntityDatabase[jsonEid] = espduTransformNode;
-          console.log("adding local entity ", jsonEid);
+          //console.log("adding local entity ", jsonEid);
       }
       
   };
@@ -291,14 +294,14 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
               break;
               
           case 2:  // Fire PDU
-              console.log("Got fire PDU");
+              //console.log("Got fire PDU");
               break;
               
           case 3: // Detonation PDU
-              console.log("Got detonation PDU");
+              //console.log("Got detonation PDU");
               break;
               
-          default: console.log("Got PDU of type ", pdu.pduType);
+          default: //console.log("Got PDU of type ", pdu.pduType);
       
       };
   };
@@ -363,6 +366,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
         * new entity from the network being heard from
         * 
         * @param {type} espdu from a newly discovered entity from the network
+        * @returns {entity} object with properties of espdu, x3d espdu transform node, and date last heard from
         */
        NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
        {
@@ -379,7 +383,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
                                                                   espdu.entityLocation.y, 
                                                                   espdu.entityLocation.z);
            
-           console.log("Entity position in local coordinates:", localCoordinates);
+           //console.log("Entity position in local coordinates:", localCoordinates);
            // The right way is to do geotranslation to local coords, as here. For debugging
            // we add it near the origin.
            transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
@@ -387,7 +391,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
          
            transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
            
-           console.log(transform);
+           //console.log(transform);
            
            var shape = document.createElement("Shape");
            var appearance = document.createElement("Appearance");
@@ -406,8 +410,19 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            // The espduTransform constructor doesn't fire until it's added
            // to the document
            var root = document.getElementById('networkEntities');
-           console.log("Root node for added networked entities is ", root);
+           //console.log("Root node for added networked entities is ", root);
            root.appendChild(newEspduTransformNode);
+           //newEspduTransformNode.addChild(transform);
            root.appendChild(transform);
-           //root.style.display();
+           
+           // Crete a new "entity" object, with properties for the last time
+           // it was heard from, the last espdu received, and the graphics
+           // associated with the object.
+           var newEntity = {};
+           newEntity.espdu = espdu;
+           newEntity.espduTransformNode = newEspduTransformNode;
+           newEntity.transformNode = transform;
+           newEntity.lastHeardFrom = new Date();
+           
+           return newEntity;
        };

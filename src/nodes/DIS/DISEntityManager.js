@@ -40,9 +40,7 @@ x3dom.registerNodeType(
      {    
          //x3dom.nodeTypes.Node.call(this, ctx);
          x3dom.nodeTypes.DISEntityManager.superClass.call(this, ctx);
-         
-         console.log("In constructor for DISEntityManager");
-         
+                  
          /** DNS name/IP of the host we are communicatig with */
          this.addField_SFString(ctx, 'address', "localhost");
          
@@ -69,10 +67,9 @@ x3dom.registerNodeType(
           * local coordinate system origin. This is not in the standard, but is
           * part of the additions for working with websockets.
           */
-         this.addField_MFDouble(ctx, "localCoordinateSystemOrigin", 0.0, 0.0, 0.0);
+         this.addField_MFDouble(ctx, "localCoordinateSystemOrigin", 0.0, 0.0, 0.0); 
          
-         console.log("After constructor DISEntityManager is ", this);
-         
+         //console.log("DISEntityManager constructor done ", this);
      },
       
      // The implementation object. Thas has function definitions for the Node API,
@@ -86,7 +83,7 @@ x3dom.registerNodeType(
            * @returns {undefined} nothing
            */
           fieldChanged: function(fieldName) {
-              console.log("in DISEntityManager fieldChanged, field=:", fieldName);
+              //console.log("in DISEntityManager fieldChanged, field=:", fieldName);
             },
             
             /**
@@ -95,7 +92,7 @@ x3dom.registerNodeType(
              * @returns {undefined}
              */
             nodeChanged:function() {
-                console.log("DISEntityManager nodeChanged called");
+                //console.log("DISEntityManager nodeChanged called");
                 
              // Set up internal objects, not visible to XML. These are entirely
              // javascript objects. We do the network singleton here because this
@@ -111,12 +108,12 @@ x3dom.registerNodeType(
              */
             updateField:function(field, msg) {
                
-                console.log("DISEntityManager updateField called:", field, ", ", msg);
+                //console.log("DISEntityManager updateField called:", field, ", ", msg);
             },
 
            testFromObject: function(aParam) 
            {
-               console.log("DISEntityManager TestFromObject called");
+               //console.log("DISEntityManager TestFromObject called");
            }
        }
      )

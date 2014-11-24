@@ -40,7 +40,7 @@ x3dom.registerNodeType(
          //x3dom.nodeTypes.X3DNode.call(this, ctx);
          x3dom.nodeTypes.DISEntityTypeMapping.superClass.call(this, ctx);
          
-         console.log("In constructor for DISEntityTypeMapping");
+         //console.log("In constructor for DISEntityTypeMapping");
          
          // Add fields that show up as attributes in the x3d node.
          // The field names here must match the attribute names used in 
@@ -81,7 +81,7 @@ x3dom.registerNodeType(
          /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
          
-         console.log("DisEntityTypeMapping:", this._vf);
+         //console.log("DisEntityTypeMapping:", this._vf);
          
          //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
 
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
            * @returns {undefined} nothing
            */
           fieldChanged: function(fieldName) {
-              console.log("in DISEntityTypeMapping fieldChanged, field=:", fieldName);
+              //console.log("in DISEntityTypeMapping fieldChanged, field=:", fieldName);
             },
             
             /**
@@ -119,12 +119,12 @@ x3dom.registerNodeType(
              */
             updateField:function(field, msg) {
                
-                console.log("DISEntityTypeMapping updateField called:", field, ", ", msg);
+                //console.log("DISEntityTypeMapping updateField called:", field, ", ", msg);
             },
 
            testFromObject: function(aParam) 
            {
-               console.log("DISEntityTypeMapping TestFromObject called");
+               //console.log("DISEntityTypeMapping TestFromObject called");
            }
        }
      )
