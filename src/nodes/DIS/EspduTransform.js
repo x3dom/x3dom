@@ -317,11 +317,11 @@ x3dom.registerNodeType(
          //console.log("Network singleton in EspduTransform:", this.network);
      },
       
-     // The implementation object. Thas has function definitions for the Node API.
+     // The implementation object. Thas has function definitions for the Node's API.
      {
           
           fieldChanged: function(fieldName) {
-              //console.log("in EspduTransform fieldChanged, field=:", fieldName);
+              console.log("in EspduTransform fieldChanged, field=:", fieldName);
               
               // There's a setInterval task to periodically call disWriteEvent.
               // Cancel the old interval, and set the new interval.
@@ -340,26 +340,21 @@ x3dom.registerNodeType(
                 
                 this.espdu.entityID.entity = this._vf.entityID;
                 this.espdu.entityID.site = this._vf.siteID;
-                //console.log("entityID=", this.espdu.entityID.entity, " siteID=", this.espdu.entityID.site);
+                var applicationID = NetworkSingleton.getInstance().entityManager._vf.applicationID;
+                this.espdu.entityID.application = applicationID;
                 
-                this.espdu.entityType.enityKind = this._vf.entityKind;
+                //console.log("state of node in nodeChanged:", this._vf);
+                this.espdu.entityType.entityKind = this._vf.entityKind;
                 this.espdu.entityType.domain = this._vf.entityDomain;
                 this.espdu.entityType.country = this._vf.entityCountry;
                 this.espdu.entityType.category = this._vf.entityCategory;
                 this.espdu.entityType.subcategory = this._vf.entitySubCategory;
-                this.espdu.entityType.specific = this._vf.entitySpecific;
+                this.espdu.entityType.spec = this._vf.entitySpecific;
                 this.espdu.entityType.extra = this._vf.entityExtra;
+                this.espdu.marking.setMarking(this._vf.marking);
                 
-                // DIS keeps the marking string in a special format
-                var stringConversion = new dis.StringConversion();
-                
-                //  Not quite working yet
-                /*
-                if(typeof this._vf.marking === 'undefined')
-                    this.espdu.marking = stringConversion.StringToDisMarking("");
-                else
-                    this.espdu.marking = stringConversion.StringToDisMarking(this._vf.marking);
-                */
+                //console.log("Entity type after:" ,this.espdu.entityType);
+               
                
                 var self = this;
                 

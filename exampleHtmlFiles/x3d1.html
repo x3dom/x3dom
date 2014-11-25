@@ -29,7 +29,8 @@
                  DIS packets contain position expressed in 
             -->
             <DisEntityManager websocketUrl="ws://localhost:8282"
-                        localCoordinateSystemOrigin=" 36.595480 -121.877000 1.0">
+                        localCoordinateSystemOrigin=" 36.595480 -121.877000 1.0"
+                        applicationID="23">
                 
                 
                 
@@ -38,9 +39,9 @@
                                       country="225"
                                       domain="1"
                                       kind="1"
-                                      specific="1"
-                                      subcategory="3"
-                                      extra="1"></DISEntityTypeMapping>
+                                      specific="3"
+                                      subcategory="1"
+                                      extra="0"></DISEntityTypeMapping>
                 
                 <DISEntityTypeMapping url="https://savage.nps.edu/bradley.x3d"
                                       category="1"
@@ -64,10 +65,16 @@
                
             </DisEntityManager>
             
-            <EspduTransform marking="testMark1"
+            <EspduTransform marking="X3D Entity"
                             entityID="42"
                             siteID="2"
-                            entityType="1 1 225 1 1 3"
+                            entityKind="1"
+                            entityDomain="1"
+                            entityCountry ="225"
+                            entityCategory="1"
+                            entitySubCategory="1"
+                            entitySpecific ="1"
+                            entityExtra="1"
                             networkMode="networkWriter"
                             writeInterval = "2000"> <!-- milliseconds -->
              </EspduTransform>
@@ -85,4 +92,3 @@
 
 </body>
 </html>
-

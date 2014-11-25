@@ -86,6 +86,7 @@ x3dom.registerNodeType(
          //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
 
          //this.addField_SFNode(ctx, "removedNodes", "x3dom.nodeTypes.X3DNode");
+         
 },
       
      // The implementation object. Thas has function definitions for the Node API,

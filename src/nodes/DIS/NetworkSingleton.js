@@ -71,8 +71,8 @@ function NetworkSingleton(theUrl, origin, entityManager)
   /** Listeners, objects that will be notified when a new entity from the network is 
    * heard from.
    */
-  
   this.newRemoteEntityListeners = new Array(0);
+ 
 
   if(window.WebSocket)
         this.websocketConnection = new WebSocket(this.url);
@@ -119,6 +119,8 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
     {
         
         aTag = typeMatchingTags[idx];
+        
+        //console.log("Tag:", aTag, " entity type:", entityType);
            
         var etype = new dis.EntityType();
         
@@ -132,6 +134,36 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
         var url = aTag.getAttribute("url");
         var matchFound = false;
        
+       /*
+       console.log("entityKind:", entityType.entityKind, ", ", kind);
+        if(entityType.entityKind === parseInt(kind))
+            console.log("match on kind");
+        
+        console.log("domain:", entityType.domain, ", ", domain);
+        if(entityType.domain === parseInt(domain))
+            console.log("match on domain");
+        
+        console.log("country:", entityType.country, ", ", country);
+        if(entityType.country === parseInt(country))
+            console.log("match on country");
+        
+        console.log("category:", entityType.category, ", ", category);
+        if(entityType.category === parseInt(category))
+            console.log("match on category");
+        
+        console.log("subcategory:", entityType.subcategory, ", ", subcategory);
+        if(entityType.subcategory === parseInt(subcategory))
+            console.log("match on subcategory");
+        
+        console.log("specific:", entityType.spec, ", ", specific);
+        if(entityType.spec === parseInt(specific))
+            console.log("match on specific");
+        
+        console.log("extra:", entityType.extra, ", ", extra);
+        if(entityType.extra === parseInt(extra))
+            console.log("match on extra");
+        */
+        
         if(entityType.entityKind === parseInt(kind) &&
            entityType.domain === parseInt(domain) &&
            entityType.country === parseInt(country) &&
@@ -139,12 +171,14 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            entityType.subcategory === parseInt(subcategory) &&
            entityType.spec === parseInt(specific) &&
            entityType.extra === parseInt(extra) )
-            {
+           {
                 matchFound = true;
                 matchingUrl = url;
                 break;
-            };
+           };
     };
+    
+    //console.log("Returning URL", matchingUrl, " for entity type " + entityType);
     return matchingUrl;
 };
   
@@ -375,7 +409,12 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            newEspduTransformNode.setAttribute("siteID", espdu.entityID.site);
            newEspduTransformNode.setAttribute("applicationID", espdu.entityID.application);
            newEspduTransformNode.setAttribute("entityID", espdu.entityID.entity);
+           
+           //console.log("newly created espdu transform node:", newEspduTransformNode);
+           //newEspduTransformNode.espdu.entityType = espdu.entityType;
           
+           var url = this.urlForEntityType(espdu.entityType);
+           
            var transform = document.createElement("transform");
            
            // Convert from global (earth-centered) coordinates 
@@ -425,4 +464,14 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            newEntity.lastHeardFrom = new Date();
            
            return newEntity;
+       };
+       
+       NetworkSingleton.getInstance = function()
+       {
+           if(NetworkSingleton.prototype._singletonInstance === undefined)
+           {
+               console.log("***** attempting to retrieve network singleton before it is constructed");
+               return;
+           }
+           return NetworkSingleton.prototype._singletonInstance;
        };
