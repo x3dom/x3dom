@@ -1022,7 +1022,7 @@ x3dom.X3DCanvas.prototype._createFlashObject = function (x3dElem) {
         obj.setAttribute('id', id);
 
         //Check for xhtml
-        if (!document.doctype || document.doctype && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
+        if (!document.doctype || document.doctype && document.doctype.publicId && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
             x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
             obj.setAttribute('style', 'width:' + width + 'px; height:' + height + 'px;');
         } else {
