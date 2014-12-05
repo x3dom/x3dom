@@ -3120,14 +3120,14 @@ x3dom.gfx_webgl = (function () {
 
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, viewarea._last_mat_view, viewarea._last_mat_scene,
-               from, sceneSize, 0, x, y, (width < 1) ? 1 : width, (height < 1) ? 1 : height);
+            from, sceneSize, 0, x, y, (width < 1) ? 1 : width, (height < 1) ? 1 : height);
 
         var index;
         var pickedObjects = [];
 
         // get objects in rectangle
         for (index = 0; scene._webgl.fboPick.pixelData &&
-                        index < scene._webgl.fboPick.pixelData.length; index += 4) {
+        index < scene._webgl.fboPick.pixelData.length; index += 4) {
             var objId = scene._webgl.fboPick.pixelData[index + 3] +
                 scene._webgl.fboPick.pixelData[index + 2] * 256;
 
@@ -3152,14 +3152,45 @@ x3dom.gfx_webgl = (function () {
 
         var pickedNodes = [];
 
+        var hitObject;
+
+        // for deriving shadow ids together with shape ids
+        var baseID = x3dom.nodeTypes.Shape.objectID + 2;
+
         for (index = 0; index < pickedObjects.length; index++) {
-            var obj = pickedObjects[index];
+            objId = pickedObjects[index];
 
-            obj = x3dom.nodeTypes.Shape.idMap.nodeID[obj];
-            obj = (obj && obj._xmlNode) ? obj._xmlNode : null;
+            if (objId >= baseID)
+            {
+                objId -= baseID;
 
-            if (obj)
-                pickedNodes.push(obj);
+                //Check if there are MultiParts
+                if (scene._multiPartMap) {
+                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap;
+
+                    //Find related MultiPart
+                    for (mp = 0; mp < scene._multiPartMap.multiParts.length; mp++) {
+                        multiPart = scene._multiPartMap.multiParts[mp];
+                        colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                        emissiveMap = multiPart._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
+                        specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
+                        visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
+                        if (objId >= multiPart._minId && objId <= multiPart._maxId) {
+                            hitObject = new x3dom.Parts(multiPart, [objId], colorMap, emissiveMap, specularMap, visibilityMap);
+                            pickedNodes.push(hitObject);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                hitObject = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
+                hitObject = (hitObject && hitObject._xmlNode) ? hitObject._xmlNode : null;
+
+                if (hitObject)
+                    pickedNodes.push(hitObject);
+            }
         }
 
         return pickedNodes;
