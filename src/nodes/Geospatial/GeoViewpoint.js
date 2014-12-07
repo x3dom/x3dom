@@ -339,12 +339,12 @@ x3dom.registerNodeType(
                         // could be a bit optimized since geoSystem does not change
                         // eg., move initial settings of GCtoGD outside 
                         var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
-                        var elevation = positionGD.z;
-                        // x3dom.debug.logInfo("Geoelevation is " + elevation);
                         // at 10m above ground a speed of 1 sounds about right; make positive if below ground                      
-                        navi._vf.speed = Math.abs(elevation/10.0) * this._vf.speedFactor * this._userSpeedFactor;
+                        var elevationSpeed = Math.abs(positionGD.z/10);
+                        // keep above 1 to be able to move close to the ground
+                        elevationSpeed = elevationSpeed > 1 ? elevationSpeed : 1;
+                        navi._vf.speed = elevationSpeed * this._vf.speedFactor * this._userSpeedFactor;
                         this._lastSpeed = navi._vf.speed;
-                        // x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed + "; ground position at: " + positionGD.y + ", " + positionGD.x);
                     }
                 }
                 return this._viewMatrix;
