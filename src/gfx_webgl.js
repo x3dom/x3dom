@@ -46,12 +46,16 @@ x3dom.gfx_webgl = (function () {
         }
 
         var ctx = null;
+
+        var sceneNode   = x3dElem.children[0];
+        var ssaoEnabled = (sceneNode && sceneNode.getAttribute("SSAO").toLowerCase() == 'true') ? true : false;
+
         // Context creation params
         var ctxAttribs = {
             alpha: true,
             depth: true,
             stencil: true,
-            antialias: false,
+            antialias: !ssaoEnabled,
             premultipliedAlpha: false,
             preserveDrawingBuffer: true,
             failIfMajorPerformanceCaveat : true

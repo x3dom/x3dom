@@ -81,27 +81,27 @@ x3dom.registerNodeType(
 
             /**
              * Value that determines the radius in which the SSAO is sampled in world space
-             * @var {x3dom.fields.SFFloat} SSAO
+             * @var {x3dom.fields.SFFloat} SSAOradius
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "4"
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'SSAOradius',4);
+            this.addField_SFFloat(ctx, 'SSAOradius',0.7);
 
             /**
              * Value that determines the amount of contribution of SSAO (from 0 to 1)
-             * @var {x3dom.fields.SFFloat} SSAO
+             * @var {x3dom.fields.SFFloat} SSAOamount
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "1.0"
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'SSAOamount',1.0);
+            this.addField_SFFloat(ctx, 'SSAOamount',0.3);
 
             /**
              * Value that determines the size of the random texture used for sparse sampling of SSAO
-             * @var {x3dom.fields.SFFloat} SSAO
+             * @var {x3dom.fields.SFFloat} SSAOrandomTextureSize
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "4"
              * @field x3dom
@@ -112,13 +112,13 @@ x3dom.registerNodeType(
             /**
              * Value that determines the maximum depth difference for the SSAO blurring pass.
              * Pixels with higher depth difference to the filer kernel center are not incorporated into the average.
-             * @var {x3dom.fields.SFFloat} SSAO
+             * @var {x3dom.fields.SFFloat} SSAOblurDepthTreshold
              * @memberof x3dom.nodeTypes.Scene
              * @initvalue "5"
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'SSAOblurDepthTreshold',5);
+            this.addField_SFInt32(ctx, 'SSAOblurDepthTreshold',1);
         
         },
         {
@@ -127,7 +127,13 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "shadowObjectIdMapping")
+                {
                     this.loadMapping();
+                }
+                else if (fieldName == "SSAO")
+                {
+                    this._nameSpace.doc.needRender = true;
+                }
             },
 
             updateVolume: function()
