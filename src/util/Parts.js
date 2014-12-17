@@ -1230,6 +1230,22 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
         }
     };
 
+
+    /**
+     *
+     * @param color
+     */
+    this.toggleHighlight = function ( color ) {
+        for ( var i=0; i < parts.ids.length; i++ ) {
+            if ( this.multiPart._materials[parts.ids[i]]._highlighted ) {
+                this.unhighlight();
+            } else {
+                this.highlight(color);
+            }
+        }
+    };
+
+
     /**
      *
      * @param color
