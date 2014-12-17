@@ -25,3 +25,4 @@ x3dom.shader.BLUR = "blur";
 x3dom.shader.DEPTH = "depth";
 x3dom.shader.NORMAL = "normal";
 x3dom.shader.TEXTURE_REFINEMENT = "textureRefinement";
+x3dom.shader.SSAO = "ssao";
