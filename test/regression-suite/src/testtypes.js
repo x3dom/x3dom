@@ -72,7 +72,7 @@ function CompareScreenshot()
         fs.exists(referenceImagePath, function(exists){
             if(!exists)
             {
-                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "error": "Reference image not found!"}));
+                that.context.result.details.push(new ts.ErrorDetail({"description": that.context.stepId, "type" : "CompareScreenshot", "error": {"message" : "Reference image not found!"}}));
                 that.context.finishedCallback();
             }
             else
