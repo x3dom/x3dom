@@ -1,5 +1,5 @@
 x3dom.SSAO = {};
-x3dom.SSAO.isEnabled = function(scene){return scene._vf.SSAO};
+x3dom.SSAO.isEnabled = function(scene){return scene.getEnvironment()._vf.SSAO};
 
 /**
  * Reinitializes the shaders if they were not created yet or need to be updated.
@@ -17,7 +17,7 @@ x3dom.SSAO.reinitializeShadersIfNecessary = function(gl){
  * Reinitializes the random Texture if it was not created yet or if it's size changed.
  */
 x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl,scene){
-	var sizeHasChanged = scene._vf.SSAOrandomTextureSize != x3dom.SSAO.currentRandomTextureSize;
+	var sizeHasChanged = scene.getEnvironment()._vf.SSAOrandomTextureSize != x3dom.SSAO.currentRandomTextureSize;
 
 	if(x3dom.SSAO.randomTexture === undefined){
 		//create random texture
@@ -26,7 +26,7 @@ x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl,scene){
 
 	if(x3dom.SSAO.randomTexture === undefined || sizeHasChanged){
 		gl.bindTexture(gl.TEXTURE_2D,x3dom.SSAO.randomTexture);
-		var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene._vf.SSAOrandomTextureSize;
+		var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene.getEnvironment()._vf.SSAOrandomTextureSize;
 		var randomImageBuffer = new ArrayBuffer(rTexSize*rTexSize*4); //rTexSize^2 pixels with 4 bytes each
 		var randomImageView = new Uint8Array(randomImageBuffer);
 		//fill the image with random unit Vectors in the z-y-plane:
@@ -110,7 +110,7 @@ x3dom.SSAO.render = function(stateManager,gl,scene,tex,canvas,fbo) {
 	//set up uniforms
 	sp.depthTexture = 0;
 	sp.randomTexture = 1;
-	sp.radius = scene._vf.SSAOradius;
+	sp.radius = scene.getEnvironment()._vf.SSAOradius;
 	sp.randomTextureTilingFactor = [canvas.width/x3dom.SSAO.currentRandomTextureSize,canvas.height/x3dom.SSAO.currentRandomTextureSize];
 
 	var viewpoint = scene.getViewpoint();
@@ -209,7 +209,7 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
 	sp.SSAOTexture = 0;
 	sp.depthTexture = 1;
 
-	sp.depthThreshold = scene._vf.SSAOblurDepthTreshold;
+	sp.depthThreshold = scene.getEnvironment()._vf.SSAOblurDepthTreshold;
 
 	var viewpoint = scene.getViewpoint();
 	var nearPlane = viewpoint.getNear();
@@ -219,7 +219,7 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
 	sp.depthReconstructionConstantA = (farPlane+nearPlane)/(nearPlane-farPlane);
 	sp.depthReconstructionConstantB = (2.0*farPlane*nearPlane)/(nearPlane-farPlane);
 	sp.pixelSize = [1.0/canvas.width,1.0/canvas.height];
-	sp.amount = scene._vf.SSAOamount;
+	sp.amount = scene.getEnvironment()._vf.SSAOamount;
 
 	//ssao texture
 	gl.activeTexture(gl.TEXTURE0);

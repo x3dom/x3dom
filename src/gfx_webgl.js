@@ -47,8 +47,8 @@ x3dom.gfx_webgl = (function () {
 
         var ctx = null;
 
-        var sceneNode   = x3dElem.children[0];
-        var ssaoEnabled = (sceneNode && sceneNode.getAttribute("SSAO").toLowerCase() == 'true') ? true : false;
+        var envNodes   = x3dElem.getElementsByTagName("Environment");
+        var ssaoEnabled = (envNodes && envNodes[0] && envNodes[0].getAttribute("SSAO").toLowerCase() == 'true') ? true : false;
 
         // Context creation params
         var ctxAttribs = {
