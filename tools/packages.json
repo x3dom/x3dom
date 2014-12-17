@@ -37,7 +37,7 @@
                 {"path": "shader/ShaderParts.js"},
                 {"path": "shader/ShaderDynamic.js"},
                 {"path": "shader/ShaderDynamicMobile.js"},
-				{"path": "shader/ShaderDynamicPicking.js"},
+		{"path": "shader/ShaderDynamicPicking.js"},
                 {"path": "shader/ShaderComposed.js"},
                 {"path": "shader/ShaderNormal.js"},
                 {"path": "shader/ShaderFrontgroundTexture.js"},
@@ -47,11 +47,14 @@
                 {"path": "shader/ShaderShadow.js"},
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
-                {"path": "shader/ShaderBlur.js"}
+                {"path": "shader/ShaderBlur.js"},
+		{"path": "shader/ShaderSSAO.js", "type": "file"},
+		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
 
         {"group": "GFX",
             "data": [
+		{"path": "SSAO.js", "type": "file"},
                 {"path": "gfx_webgl.js"},
                 {"path": "gfx_flash.js"}
             ]},

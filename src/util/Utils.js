@@ -899,8 +899,13 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 					(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           
 				break;
 			case gl.FLOAT_VEC3:
-				shader.__defineSetter__(obj.name, 
-					(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
+				/* Passing arrays of vec3. see above.*/
+				if (obj.name.indexOf("[0]") != -1)
+					shader.__defineSetter__(obj.name.substring(0, obj.name.length-3), 
+						(function (loc) { return function (val) { gl.uniform3fv(loc, new Float32Array(val)); }; })(loc));
+				else
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
 				break;
 			case gl.FLOAT_VEC4:
 				shader.__defineSetter__(obj.name, 
