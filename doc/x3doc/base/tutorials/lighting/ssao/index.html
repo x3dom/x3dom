@@ -38,12 +38,31 @@
         </div>            
         <br>
 		
-		<h2>More to come soon...</h2>
+		<h2>Using Screen-Space Ambient Occlusion (SSAO)</h2>
+		<p>Screen-Space Ambient Occlusion is a post-process that coarsely approximates a shadowing effect from ambient light.
+		Its practical effect is a better perception of spatial relations between objects in.
+		Screen-Space Ambient Occlusion can be enabled with the Environment node's attribute "SSAO".
+		The attribute "SSAOamount" determines the strength of the SSAO effect.
+		The attributes "SSAOblurDepthTreshold" and "SSAOradius" must be tweaked according to the scale of the scene.
+		<pre class="prettyprint"><code class="language-html">
+		&ltEnvironment id='myEnv' SSAO='true' SSAOamount='0.3' SSAOblurDepthTreshold='1.0' SSAOradius='0.7'&gt &ltEnvironment&gt
+		</code></pre>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='ssao_before_after.jpg'>
+                <div class="docuCaption">SSAO disabled (left) and enabled (right)</div>
+            </div>
+        </div>
 		<p>
-		... on this page. Please check again in a day or two!
-        Example <a href="example.html">here</a>.
-		</p>
-		
+		<h2>How it works</h2>		
+		The post-processing shader measures the amount of occlusion for each pixel.
+		It does so by sampling a spherical kernel where the size of the kernel depends on the world-space distance of the pixel to the camera.
+		As a result, the radius in which the amount of ambient occlusion is determined is specified in world-space (attribute "SSAOradius").
+		Thus, the sampling radius always stays the same (relative to the scene) if the camera is moved.
+		In order to keep the number of samples for the ambient occlusion low, each pixel is sampled with a different random seed.
+		This sparse sampling scheme results in noise that is removed with a depth-aware averaging filter.
+		This filter only incorporates neigboring pixels that are not too far away to prevent blurring across edges.
+		The attribute "SSAOblurDepthTreshold" defines how big the depth difference (in world space) is allowed to be.
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
@@ -60,6 +79,8 @@
             <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
             <ul>
 				<li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
             </ul>
         </div>
 
