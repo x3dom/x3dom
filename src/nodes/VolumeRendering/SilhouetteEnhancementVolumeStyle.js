@@ -142,7 +142,7 @@ x3dom.registerNodeType(
                 if (this._first){
                     return "void silhouetteEnhancement(inout vec4 orig_color, in vec4 normal, in vec3 V, in float sBoundary, in float sRetained, in float sSharpness)\n"+
                     "{\n"+
-                    "   if(normal.w > 0.05){\n"+
+                    "   if(normal.w > 0.02){\n"+
                     "       orig_color.a = orig_color.a * (sRetained + sBoundary * pow((1.0-abs(dot(normal.xyz, V))), sSharpness));\n"+
                     "   }\n"+
                     "}\n"+
@@ -154,7 +154,7 @@ x3dom.registerNodeType(
 
             inlineStyleShaderText: function(){
                 var inlineText = "  if(uEnableSilhouette"+this._styleID+"){\n"+
-                "       silhouetteEnhancement(value, grad, normalize(dir), uSilhouetteBoundaryOpacity"+this._styleID+", uSilhouetteRetainedOpacity"+this._styleID+", uSilhouetteSharpness"+this._styleID+");\n"+
+                "       silhouetteEnhancement(value, gradEye, dir, uSilhouetteBoundaryOpacity"+this._styleID+", uSilhouetteRetainedOpacity"+this._styleID+", uSilhouetteSharpness"+this._styleID+");\n"+
                 "   }\n";
                 return inlineText;
             }
