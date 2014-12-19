@@ -47,8 +47,11 @@ x3dom.gfx_webgl = (function () {
 
         var ctx = null;
 
+        // TODO; FIXME; this is an ugly hack, don't look for elements like this 
+        // (e.g., Bindable nodes may only exist in backend etc.)
         var envNodes   = x3dElem.getElementsByTagName("Environment");
-        var ssaoEnabled = (envNodes && envNodes[0] && envNodes[0].getAttribute("SSAO").toLowerCase() == 'true') ? true : false;
+        var ssaoEnabled = (envNodes && envNodes[0] && envNodes[0].hasAttribute("SSAO") && 
+                    envNodes[0].getAttribute("SSAO").toLowerCase() === 'true') ? true : false;
 
         // Context creation params
         var ctxAttribs = {
