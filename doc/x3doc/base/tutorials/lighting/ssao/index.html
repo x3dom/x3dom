@@ -47,6 +47,12 @@
 		<pre class="prettyprint"><code class="language-html">
 		&ltEnvironment id='myEnv' SSAO='true' SSAOamount='0.3' SSAOblurDepthTreshold='1.0' SSAOradius='0.7'&gt &ltEnvironment&gt
 		</code></pre>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='ssao_before_after.jpg'>
+                <div class="docuCaption">SSAO disabled (left) and enabled (right)</div>
+            </div>
+        </div>
 		<p>
 		<h2>How it works</h2>		
 		The post-processing shader measures the amount of occlusion for each pixel.
@@ -57,8 +63,6 @@
 		This sparse sampling scheme results in noise that is removed with a depth-aware averaging filter.
 		This filter only incorporates neigboring pixels that are not too far away to prevent blurring across edges.
 		The attribute "SSAOblurDepthTreshold" defines how big the depth difference (in world space) is allowed to be.
-		
-
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
