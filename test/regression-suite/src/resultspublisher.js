@@ -268,80 +268,110 @@ var ResultsPublisher = function()
         var body = "";
 
         var newFail = [];
-        for (var resultId = -1; resultId < db.data[0].results.length; resultId++)
+
+        var lastTestTitle = "";
+        var offsets = [];
+
+        //Create title line and initialize variables
+        body += "<thead><th>Test</th>";
+        for (var testRun = 0; testRun < db.data.length; testRun++)
         {
-            body += "<tr>";
-            for (var detail = 0; detail < db.data[0].results[Math.max(0, resultId)].details.length; detail++)
+            body += "<th>"+that.getDateString(db.data[testRun].time)+"</th>";
+            newFail[testRun] = [];
+            offsets[testRun] = 0;
+        }
+        body += "</thead>";
+
+        //For every test:
+        for(var testID=0; testID < db.data[0].results.length; testID++)
+        {
+            var test = db.data[0].results[testID];
+            body += "<tr><td style='font-weight: bold'>"+test.testName+"</td>";
+
+            //Temporary store for the results of different runs for this test
+            var timeResults = [];
+
+            //Run over all available results for this test:
+            for (var testRun = 0; testRun < db.data.length; testRun++)
             {
-                for (var row = -1; row < db.data.length; row++)
+                //Get the result (offset is subtracted when this run contains less tests to allow revisiting)
+                var runResult = db.data[testRun].results[testID-offsets[testRun]];
+
+                if(runResult == undefined)
+                    timeResults[testRun] = {run: false};
+
+                //This result does not belong to the current test?
+                else if(test.testName != runResult.testName)
                 {
-                    var empty = false;
-                    var result = db.data[Math.max(0, row)].results[Math.max(0, resultId)];
-                    empty = empty || !result;
-                    if (!empty)
+                    //Skip (this data set will be inspected again for the next test)
+                    offsets[testRun]++;
+                    timeResults[testRun] = {run: false};
+                }
+
+                else
+                {
+                    var steps = runResult.details;
+
+                    //Make sure all steps of the test were executed successfully
+                    var success = true;
+                    for(step = 0; step < steps.length; step++)
                     {
-                        var entry = result.details[detail];
-                        empty = empty || !entry;
-                    }
-                    if(resultId == -1 && detail == 0) //headline
-                    {
-                        if(row == -1)
+                        if(steps[step].status && (steps[step].status == "failed" || steps[step].status == "error"))
                         {
-                            body += "<th>Test</th>";
+                            success = false;
                         }
+                    }
+
+                    var link = profile.name + "_" + db.data[testRun].time + ".html#" + test.testName;
+
+                    //Store results temporarily until all results for this test were evaluated
+                    //This allows to take the behaviour over time into account
+                    timeResults[testRun] = {link: link, success: success, run: true};
+                }
+            }
+
+            //Write results for every run of this test
+            for (var testRun = 0; testRun < db.data.length; testRun++)
+            {
+                //This test was not contained? Then there is nearly nothing to write
+                if(!timeResults[testRun].run)
+                    body += "<td style='text-align: center'>-</td>";
+
+                //If the test run, the result has to be ínspected
+                else
+                {
+                    var statusText;
+                    //Test successful?
+                    if(timeResults[testRun].success)
+                    {
+                        statusText = "success";
+                        newFail[testRun].push(false);
+                    }
+                    else
+                    {
+                        //Not a new fail (was broken before or has no predecessor)?
+                        if(testRun == (db.data.length-1) || !timeResults[testRun+1].success)
+                        {
+                            //It's just (still) broken
+                            statusText = "broken";
+
+                        }
+                        //Otherwise:
                         else
                         {
-                            body += "<th>"+that.getDateString(db.data[row].time)+"</th>";
+                            //Report the (new) fail
+                            statusText = "failed";
+                            newFail[testRun].push(true);
                         }
                     }
-                    else if(resultId != -1)
-                    {
-                        //if no comparison
-                        if(!empty && entry.status != 'success' && entry.status != 'failed' && (entry.status != 'error' || !entry.data.type))
-                        {
-
-                        }
-                        else if(row == -1)
-                        {
-                            body += "<td>"+result.testName+"</td>"
-                        }
-                        else
-                        {
-                            if(empty)
-                            {
-                                body += "<td>N/A</td>";
-                            }
-                            else
-                            {
-                                if(!newFail[row])
-                                {
-                                    newFail[row] = [];
-                                }
-                                if(row < db.data.length - 1) //if not last row
-                                {
-                                    newFail[row].push(db.data[row+1].results[resultId].details[detail].status == "success" && entry.status != "success");
-                                }
-                                else
-                                {
-                                    newFail[row].push(false);
-                                }
-
-                                var successString = (entry.status=="success")?"success":newFail[row][newFail[row].length-1]?"failed":"broken";
-                                var link = profile.name + "_" + db.data[row].time + ".html#" + result.testName;
-                                body += "<td class='" + successString + "'><a href='" + link + "'>" + successString + "</a></td>";
-                            }
-
-
-                        }
-                        if(row == db.data.length-1)//last row
-                        {
-                            body += "</tr><tr>";
-                        }
-                    }
+                    body += "<td class='"+statusText+"' style='text-align: center'><a href='" + timeResults[testRun].link + "'>"+statusText+"</a></td>";
                 }
             }
             body += "</tr>";
         }
+
+        body += "</table>";
+
         that.newFail[profile.name] = newFail;
         fw.writeFile(path, pageStart+body+pageEnd);
         callback(newFail);
