@@ -405,7 +405,7 @@ x3dom.registerNodeType(
                         if (this._idMap.appearance[appID].material.transparency) {
                             transparency = this._idMap.appearance[appID].material.transparency;
                         } else {
-                            transparency = "0.0";
+                            transparency = 0.0;
                         }
 
                         //BackTransparency
@@ -415,11 +415,11 @@ x3dom.registerNodeType(
                             backTransparency = transparency;
                         }
 
-                        rgba_DT +=  " " + x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + transparency).toUint();
+                        rgba_DT +=  " " + x3dom.fields.SFColorRGBA.parse(diffuseColor + " " + (1.0 - transparency)).toUint();
                         rgba_SS +=  " " + x3dom.fields.SFColorRGBA.parse(specularColor + " " + shininess).toUint();
                         rgba_EA +=  " " + x3dom.fields.SFColorRGBA.parse(emissiveColor + " " + ambientIntensity).toUint();
 
-                        rgba_DT_B += " " + x3dom.fields.SFColorRGBA.parse(backDiffuseColor + " " + backTransparency).toUint();
+                        rgba_DT_B += " " + x3dom.fields.SFColorRGBA.parse(backDiffuseColor + " " + (1.0 - backTransparency)).toUint();
                         rgba_SS_B += " " + x3dom.fields.SFColorRGBA.parse(backSpecularColor + " " + backShininess).toUint();
                         rgba_EA_B += " " + x3dom.fields.SFColorRGBA.parse(backEmissiveColor + " " + backAmbientIntensity).toUint();
 
