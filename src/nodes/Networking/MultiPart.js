@@ -431,13 +431,13 @@ x3dom.registerNodeType(
                             "emissiveColor": x3dom.fields.SFColor.parse(emissiveColor),
                             "shininess": shininess,
                             "specularColor": x3dom.fields.SFColor.parse(specularColor),
-                            "transparency": 1.0 - transparency,
+                            "transparency": transparency,
                             "backAmbientIntensity": backAmbientIntensity,
                             "backDiffuseColor": x3dom.fields.SFColor.parse(backDiffuseColor),
                             "backEmissiveColor": x3dom.fields.SFColor.parse(backEmissiveColor),
                             "backShininess": backShininess,
                             "backSpecularColor": x3dom.fields.SFColor.parse(backSpecularColor),
-                            "backTransparency": 1.0 - backTransparency
+                            "backTransparency": backTransparency
                         });
                     }
                     else
