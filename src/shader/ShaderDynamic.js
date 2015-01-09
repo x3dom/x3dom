@@ -809,7 +809,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			}
 		} else if(!properties.VERTEXCOLOR && !properties.POINTLINE2D){
 			shader += "color.rgb += _emissiveColor;\n";
-		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D && !properties.MULTIDIFFALPMAP){
+		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D){
 			shader += "color.rgb = _emissiveColor;\n";
             if (properties.IS_PARTICLE) {
                 shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
