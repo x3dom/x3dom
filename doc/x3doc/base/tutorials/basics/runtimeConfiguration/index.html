@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    >
+    <a href="../../../index.html">documentation</a>    
+    >
+    <a href="../../index.html">Tutorials</a>
+	>
+    <a href="#">Configure X3DOM</a>
+</div>
+<div id="main">
+
+    <section>	
+        
+        <div>
+            <div class="simpleButton" style="float:left;"><a href="../htmlCSS/index.html" style="float:right;">&#8678; Previous Section</a></div>
+            <div class="simpleButton" style="float:right;"><a href="../imagesMovies/index.html" style="float:right;">Next Section &#8680;</a></div>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h1>Configure X3DOM</h1>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial will learn how to modify important properties of the x3dom runtime using declarative code.
+        There are several parameters that change default behaviour, for example to show debug information or influence
+        how the scene is rendered.
+        </p>
+        
+        <p>
+		Lets set a param for our runtime:
+		</p>
+        
+        <pre class="prettyprint"><code class="language-html">
+    &lt;x3d showStat="true"&gt;
+        &lt;scene&gt;
+            ...
+        &lt;/scene&gt;
+    &lt;/x3d&gt;
+        </code></pre>
+
+        <p>
+        The param you just added activates the statistics window, giving you some debug information that may be relevant
+        during development. Since the user normally should not see this, the stat window is deactivated by default.
+        If you only need it sometimes, you may also toggle its visibility using the space bar on your keyboard.
+        </p>
+
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">
+                <img class="docuFigure" src='stats.png'>
+                <div class="docuCaption">Sample stats.</div>
+            </div>
+        </div>
+
+        <p>
+        The values of params are not restricted to boolean values. Using the param <code>PrimitiveQuality</code>, you
+        can influence how many triangles are used to approximate primitives. The default value is <code>high</code> but
+        you may set it to <code>Medium</code>, <code>Low</code> or any float value between 0.0 and 1.0. A smaller value
+        means less triangles used. You can compare the effect in the picture below.
+        </p>
+
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='compare_quality.png'>
+                <div class="docuCaption">X3DOM rendering of a sphere using high and low quality primitives.</div>
+            </div>
+        </div>        
+		
+        <p>
+        If you want your application to use less triangles (for example because of performance limits), just add the
+        following argument.
+		</p>
+        
+		<pre class="prettyprint"><code class="language-html">		
+    &lt;x3d PrimitiveQuality="low"&gt;
+		</code></pre>
+
+        <p>
+
+        </p>
+		
+        <p>
+		The resulting page should now look like this:
+		</p>
+        
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot_example.png'>
+                <div class="docuCaption">Scene in low quality with stats window.</div>
+            </div>
+        </div>
+		
+        <p>
+		Visit the <a href="../../../author/Configuration.html">Scene Author Configuration Documentation</a> page to
+        learn about more possible params. <br>
+        You can configure even more rendering details using the environment node. Some examples can be found in the
+        Tutorials about <a href="../../lighting/ssao/index.html">Simple Screen-Space Ambient Occlusion</a> and
+        <a href="../../largeModels/culling/index.html">Culling Technologies</a>.
+        </p>
+		       
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="contentBox">                        
+            <h2>Get this X3DOM example:</h2>
+            <ul>
+                <li><a href="runtimeConfiguration.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'runtimeConfiguration.html');"><img src="../../source.png">View example page source</a></li>
+                <li><a href="runtimeConfiguration.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <ul>
+				<li><a href="../../../author/Configuration.html">Configuration Parameters</a></li>
+                <li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
+            </ul>
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+</body>
+</html>
