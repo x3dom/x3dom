@@ -3157,7 +3157,7 @@ x3dom.gfx_webgl = (function () {
         })(pickedObjects);
         pickedObjects = pickedObjectsTemp;
 
-        var pickedNodes = [];
+        var pickedNode, pickedNodes = [];
 
         var hitObject;
 
@@ -3173,7 +3173,7 @@ x3dom.gfx_webgl = (function () {
 
                 //Check if there are MultiParts
                 if (scene._multiPartMap) {
-                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap;
+                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID;
 
                     //Find related MultiPart
                     for (mp = 0; mp < scene._multiPartMap.multiParts.length; mp++) {
@@ -3183,8 +3183,12 @@ x3dom.gfx_webgl = (function () {
                         specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                         visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
                         if (objId >= multiPart._minId && objId <= multiPart._maxId) {
+                            partID = multiPart._idMap.mapping[objId - multiPart._minId].name;
                             hitObject = new x3dom.Parts(multiPart, [objId], colorMap, emissiveMap, specularMap, visibilityMap);
-                            pickedNodes.push(hitObject);
+
+                            pickedNode = {"partID": partID, "part":hitObject};
+
+                            pickedNodes.push(pickedNode);
                         }
                     }
                 }
