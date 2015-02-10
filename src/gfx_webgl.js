@@ -2045,7 +2045,7 @@ x3dom.gfx_webgl = (function () {
                 for (var fName in shader._vf) {
                     if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
                         var field = shader._vf[fName];
-                        if (field) {
+                        if (field !== undefined && field !== null) {
                             if (field.toGL) {
                                 sp[fName] = field.toGL();
                             }
