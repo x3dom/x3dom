@@ -578,7 +578,7 @@ x3dom.Utils.checkDirtyEnvironment = function(viewarea, shaderProperties)
     var environment = viewarea._scene.getEnvironment();
 
     return (shaderProperties.GAMMACORRECTION != environment._vf.gammaCorrectionDefault);
-}
+};
 
 /*****************************************************************************
 * Get GL min filter
