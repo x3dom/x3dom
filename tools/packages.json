@@ -103,6 +103,7 @@
                     {"file": "IndexedLineSet.js"},
                     {"file": "IndexedTriangleSet.js"},
                     {"file": "IndexedTriangleStripSet.js"},
+                    {"file": "TriangleSet.js"},
                     {"file": "X3DGeometricPropertyNode.js"},
                     {"file": "X3DCoordinateNode.js"},
                     {"file": "Coordinate.js"},
