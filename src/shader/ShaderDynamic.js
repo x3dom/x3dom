@@ -834,7 +834,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	if(properties.TEXT) {
 		shader += "if (color.a <= 0.5) discard;\n";
 	} else {
-		shader += "if (color.a <= 0.1) discard;\n";
+		shader += "if (color.a <= " + properties.ALPHATHRESHOLD + ") discard;\n";
 	}
 
     //Output the gamma encoded result.

@@ -808,6 +808,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.CLIPPLANES       = shape._clipPlanes.length;
+		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
         
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 	}
