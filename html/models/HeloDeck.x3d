@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='HeloDeck.x3d' name='title'/>
+    <meta content='Spruance Helo Deck' name='description'/>
+    <meta content='LT Josh Hansen' name='creator'/>
+    <meta content='17 September 2001' name='created'/>
+    <meta content='3 November 2002' name='modified'/>
+    <meta content='http://www.fas.org/man/dod-101/sys/ac/sh-60.htm' name='reference'/>
+    <meta content='https://savage.nps.edu/Savage/ShipsMilitary/DD963-Spruance-UnitedStates/HeloDeck.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <Group>
+      <Transform translation='0 0 -10'>
+        <Shape>
+          <Box size='10 3 10'/>
+          <Appearance>
+            <Material diffuseColor='.6 .6 .6'/>
+          </Appearance>
+        </Shape>
+        <Transform translation='0 1.51 0'>
+          <Shape>
+            <Box size='10 .05 10'/>
+            <Appearance>
+              <ImageTexture repeatS='true' repeatT='true' url='"HeloPaint.jpg" "https://savage.nps.edu/Savage/ShipsMilitary/DD963-Spruance-UnitedStates/HeloPaint.jpg"'/>
+            </Appearance>
+          </Shape>
+        </Transform>
+      </Transform>
+      <Transform scale='.7 1 .5' translation='0 0 0'>
+        <Group DEF='FLIGHTDECK'>
+          <Transform translation='0 1.48 -14.5'>
+            <Group DEF='FDNETBACK'>
+              <Transform translation='0 0 0'>
+                <Group DEF='ENTIRENET'>
+                  <Transform translation='2 .6 4.25'>
+                    <Shape DEF='NETTING'>
+                      <!-- GRILLWORK EXAMPLE FROM VRML COURSE BOOK USED -->
+                      <Appearance>
+                        <ImageTexture url='"grill.png" "http://www.web3d.org/x3d/content/examples/Vrml2.0Sourcebook/Chapter18-TextureMapping/grill.png"'/>
+                        <TextureTransform center='0.5 0.5' scale='32 8'/>
+                      </Appearance>
+                      <IndexedFaceSet DEF='Screen' coordIndex='0 1 2 3' solid='false' texCoordIndex='0 1 2 3'>
+                        <Coordinate point='-1 -.4 0.1 1 -.4 0.1 1 .4 0.1 -1 .4 0.1'/>
+                        <TextureCoordinate point='0 0 1 0 1 1 0 1'/>
+                      </IndexedFaceSet>
+                    </Shape>
+                    <Transform translation='-1 0 0'>
+                      <Shape DEF='POST'>
+                        <Appearance DEF='NETGREY'>
+                          <Material diffuseColor='.7 .7 .7' shininess='.3'/>
+                        </Appearance>
+                        <Cylinder DEF='SIDEPOST' height='1' radius='.1'/>
+                      </Shape>
+                    </Transform>
+                    <Transform translation='1 0 0'>
+                      <Shape USE='POST'/>
+                    </Transform>
+                    <Transform rotation='0 0 1 1.57' scale='1 2 1' translation='0 .4 0'>
+                      <Shape USE='POST'/>
+                    </Transform>
+                    <Transform rotation='0 0 1 1.57' scale='1 2 1' translation='0 -.4 0'>
+                      <Shape USE='POST'/>
+                    </Transform>
+                  </Transform>
+                </Group>
+                <Transform translation='2 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='-8 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='4 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='-4 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='-6 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+              </Transform>
+            </Group>
+            <Group DEF='FDNETRIGHT'>
+              <Transform rotation='0 1 0 1.57' translation='2.8 0 -2.6'>
+                <Group USE='FDNETBACK'/>
+                <Transform translation='-2 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='6 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='8 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+                <Transform translation='10 0 0'>
+                  <Group USE='ENTIRENET'/>
+                </Transform>
+              </Transform>
+            </Group>
+            <Transform rotation='0 0 1 0' translation='-14 0 0'>
+              <Group USE='FDNETRIGHT'/>
+            </Transform>
+          </Transform>
+        </Group>
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>

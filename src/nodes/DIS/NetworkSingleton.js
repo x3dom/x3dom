@@ -182,6 +182,89 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
     return matchingUrl;
 };
   
+/** 
+ * Builds a string using the name from the DISEntityTypeMapping and the entityID fields.
+ * 
+ * @param {entityType} entityType from the EBV document
+ * @param {entityID} entityID {site:application:entity} from the espdu
+ * @returns unique name for display in table of entities
+ */
+NetworkSingleton.prototype.displayName = function(entityType, entityID)
+{
+    //console.log("in displayName");
+    
+    var typeString = "Unknown Entity Type";
+    var entityIDString = ":" + entityID.site + ":" + entityID.application + ":" + entityID.entity;
+    
+    var typeMatchingTags = document.getElementsByTagName("DISEntityTypeMapping");
+    //console.log(typeMatchingTags);
+    
+    for(var idx = 0; idx < typeMatchingTags.length; idx++)
+    {
+        
+        aTag = typeMatchingTags[idx];
+        
+        //console.log("Tag:", aTag, " entity type:", entityType);
+           
+        var etype = new dis.EntityType();
+        
+        var kind = aTag.getAttribute("kind");
+        var domain = aTag.getAttribute("domain");
+        var country = aTag.getAttribute("country");
+        var category = aTag.getAttribute("category");
+        var subcategory = aTag.getAttribute("subcategory");
+        var specific = aTag.getAttribute("specific");
+        var extra = aTag.getAttribute("extra");
+        var matchFound = false;
+       
+       /*
+       console.log("entityKind:", entityType.entityKind, ", ", kind);
+        if(entityType.entityKind === parseInt(kind))
+            console.log("match on kind");
+        
+        console.log("domain:", entityType.domain, ", ", domain);
+        if(entityType.domain === parseInt(domain))
+            console.log("match on domain");
+        
+        console.log("country:", entityType.country, ", ", country);
+        if(entityType.country === parseInt(country))
+            console.log("match on country");
+        
+        console.log("category:", entityType.category, ", ", category);
+        if(entityType.category === parseInt(category))
+            console.log("match on category");
+        
+        console.log("subcategory:", entityType.subcategory, ", ", subcategory);
+        if(entityType.subcategory === parseInt(subcategory))
+            console.log("match on subcategory");
+        
+        console.log("specific:", entityType.spec, ", ", specific);
+        if(entityType.spec === parseInt(specific))
+            console.log("match on specific");
+        
+        console.log("extra:", entityType.extra, ", ", extra);
+        if(entityType.extra === parseInt(extra))
+            console.log("match on extra");
+        */
+        
+        if(entityType.entityKind === parseInt(kind) &&
+           entityType.domain === parseInt(domain) &&
+           entityType.country === parseInt(country) &&
+           entityType.category === parseInt(category) &&
+           entityType.subcategory === parseInt(subcategory) &&
+           entityType.spec === parseInt(specific) &&
+           entityType.extra === parseInt(extra) )
+           {
+                matchFound = true;
+                typeString = aTag.getAttribute("name");        
+                break;
+           };
+    };
+    
+    //console.log("Returning URL", matchingUrl, " for entity type " + entityType);
+    return typeString + entityIDString;
+};
+
   
   /**
    * An object that should be informed when a new message from the server arrives.
@@ -248,11 +331,19 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // If we haven't heard of this entity before, create a new one
       if(typeof matchingEntity === 'undefined')
       {
-          //console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
+          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
           newEntityFound = true;
           matchingEntity = this.addNewEspduTransformNode(anEspdu);
           this.remoteEntityDatabase[jsonEid] = matchingEntity;
       }
+      
+      // Figure out how much time passed since last espdu
+      var oldLastHeardFrom = matchingEntity.lastHeardFrom;
+      matchingEntity.lastHeardFrom = new Date();
+      var interarrivalTime = matchingEntity.lastHeardFrom - oldLastHeardFrom;
+      
+      //Get the previous location for this entity
+      var oldLocation = matchingEntity.location;
      
       // Convert to local coordinate system. "ECEF" refers to earth-centered, earth-fixed,
       // a cartesian coordinate system that rotates with the earth with the origin at
@@ -263,13 +354,67 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       // at the location specified, x-axis pointing east, y-axis pointing north, and
       // z-axis pointing up.
       var localCoordinates = this.rangeCoordinates.ECEFtoENU(anEspdu.entityLocation.x, anEspdu.entityLocation.y, anEspdu.entityLocation.z);
+      //Temporary ground-clamping hack: zero the altitude
+      localCoordinates.z = 0.0;
       
       // Get the latitude, longitude, and elevation of the entity's location.
       var latLon = this.rangeCoordinates.ECEFObjectToLatLongAltInDegrees(anEspdu.entityLocation);
       
-      // Set the position of the graphics object in local coordinates
+      // Set the orientation of the graphics object.
+      // For now, we ignore the DIS orientation, and just base it on previous and new x/y values
+      var moveVector = new x3dom.fields.SFVec2f(
+          localCoordinates.x - oldLocation.x,
+          localCoordinates.y - oldLocation.y
+          );
+      var rotation = Math.acos(moveVector.normalize().x);
+      if(moveVector.y < 0) rotation = Math.PI + (Math.PI - rotation);
+      //console.log("Movement vector (" + moveVector.x + ", " + moveVector.y + ")");
+      //console.log("  Normalized x: " + moveVector.normalize().x);
+      //console.log("  Setting rotation: " + rotation);
+      // Find all inner transforms and set the xy rotation
       var graphicsGeometry = matchingEntity.transformNode;
-      graphicsGeometry.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+      var innerChild = {};
+      for (var childIndex in graphicsGeometry.children) {
+          innerChild = graphicsGeometry.children[childIndex];
+          if (innerChild.tagName === "TRANSFORM") {
+              innerChild.setAttribute("rotation", "0 1 0 " + rotation);
+          }
+      }
+      
+      // Set the position of the graphics object in local coordinates
+      //   to the previous location so it can be animated to the new one
+        graphicsGeometry.setAttribute("translation", 
+            matchingEntity.location.x + " " + 
+            matchingEntity.location.y + " " + 
+            matchingEntity.location.z + " ");
+      
+      //Animate the entity from its last position to the newly received position.
+      //  This approach incurs a delay corresponding to 1 ESPDU interarrival time.
+      //We have to disable the timeSensor first--it'll ignore inputs if active
+      matchingEntity.timeSensorNode.setAttribute("enabled", "false");
+      //Reset the time sensor (Date is in milliseconds and timeSensor expects seconds)
+      matchingEntity.timeSensorNode.setAttribute("cycleInterval", interarrivalTime/1000);
+      //Restart the time sensor
+      matchingEntity.timeSensorNode.setAttribute("startTime", new Date()/1000);
+      matchingEntity.timeSensorNode.setAttribute("enabled", "true");
+      /*
+      console.log("enabled: " + matchingEntity.timeSensorNode.getAttribute("enabled"));
+      console.log("startTime: " + matchingEntity.timeSensorNode.getAttribute("startTime"));
+      console.log("stopTime: " + matchingEntity.timeSensorNode.getAttribute("stopTime"));
+      console.log("cycleInterval: " + matchingEntity.timeSensorNode.getAttribute("cycleInterval"));
+      console.log("elapsedTime: " + matchingEntity.timeSensorNode.getAttribute("elapsedTime"));
+      console.log("fractionChanged: " + matchingEntity.timeSensorNode.getAttribute("fractionChanged"));
+      console.log("isActive: " + matchingEntity.timeSensorNode.getAttribute("isActive"));
+      */
+      matchingEntity.positionInterpolatorNode.setAttribute("keyValue", 
+            graphicsGeometry.getAttribute("translation") + " " +
+            localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+      
+      
+      
+      //Update the most recent espdu and location
+      matchingEntity.espdu = anEspdu;
+      matchingEntity.location = localCoordinates;
       
       // If this entity wasn't heard of before, notify a list of objects that are
       // interested in that event.
@@ -314,7 +459,7 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
       
-      //console.log("Recieved PDU from server");
+      console.log("Recieved PDU from server");
       
       // If the factory can't correctly decode the message it will return null.
       // Really, the only option is to throw up our hands and punt.
@@ -405,10 +550,12 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
        NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
        {
            var newEspduTransformNode = document.createElement("EspduTransform");
+           var displayName = this.displayName(espdu.entityType, espdu.entityID);
            newEspduTransformNode.setAttribute("networkMode", "reader");
            newEspduTransformNode.setAttribute("siteID", espdu.entityID.site);
            newEspduTransformNode.setAttribute("applicationID", espdu.entityID.application);
            newEspduTransformNode.setAttribute("entityID", espdu.entityID.entity);
+           newEspduTransformNode.setAttribute("displayName", displayName);
            
            //console.log("newly created espdu transform node:", newEspduTransformNode);
            //newEspduTransformNode.espdu.entityType = espdu.entityType;
@@ -417,6 +564,10 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            
            var transform = document.createElement("transform");
            
+           //we'll need a unique DEF to connect animation routes to each other
+           var transformDEF = displayName + ":transform";
+           transform.setAttribute("DEF", transformDEF);
+
            // Convert from global (earth-centered) coordinates 
            var localCoordinates = this.rangeCoordinates.ECEFtoENU(espdu.entityLocation.x, 
                                                                   espdu.entityLocation.y, 
@@ -429,9 +580,14 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            //transform.setAttribute("translation", 3 + Math.random(), " ", 2 + Math.random(), " ", 4 + Math.random() );
          
            transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
+           //for debugging:
+           //transform.setAttribute("scale", 10 + " " + 10 + " " + 10);
+           transform.setAttribute("rotation", "1 0 0 1.570796"); //orient to xy plane
            
            //console.log(transform);
-           
+           var innerTransform = document.createElement("transform");
+           var inlineModel = document.createElement("inline");
+           inlineModel.setAttribute("url", url);
            var shape = document.createElement("Shape");
            var appearance = document.createElement("Appearance");
            var material = document.createElement("Material");
@@ -441,10 +597,41 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            //var modelUrl = this.urlForEntityType(espdu.entityType);
            //console.log("Have model of ", modelUrl, ' for entityType', espdu.entityType);
            
+           // The following elements will be used to animate the entity from one point to the next
+           // Time sensor will tell the pos interpolator how much time has passed
+           var timeSensor = document.createElement("timeSensor");
+           var timeSensorDEF = displayName + ":timeSensor";
+           timeSensor.setAttribute("DEF", timeSensorDEF);
+           timeSensor.setAttribute("loop", "false");
+           // Pos interpolator will tell the transform how far it has moved
+           var positionInterpolator = document.createElement("PositionInterpolator");
+           var positionInterpolatorDEF = displayName + ":positionInterpolator";
+           positionInterpolator.setAttribute("DEF", positionInterpolatorDEF);
+           positionInterpolator.setAttribute("key", "0 1");
+           //initial value is (x y z) to (x y z) i.e. zero velocity
+           positionInterpolator.setAttribute("keyValue", 
+                localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z + " " +
+                localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+           //route the time sensor output to the pos interpolator
+           var timePosRoute = document.createElement("Route");
+           timePosRoute.setAttribute("DEF", displayName + ":timePosRoute");
+           timePosRoute.setAttribute("fromNode", timeSensorDEF);
+           timePosRoute.setAttribute("fromField", "fraction_changed");
+           timePosRoute.setAttribute("toNode", positionInterpolatorDEF);
+           timePosRoute.setAttribute("toField", "set_fraction");
+           //route the pos interpolator output to the transform
+           var posTransformRoute = document.createElement("Route");
+           posTransformRoute.setAttribute("DEF", displayName + ":posTransformRoute");
+           posTransformRoute.setAttribute("fromNode", positionInterpolatorDEF);
+           posTransformRoute.setAttribute("fromField", "value_changed");
+           posTransformRoute.setAttribute("toNode", transformDEF);
+           posTransformRoute.setAttribute("toField", "translation");           
+
            appearance.appendChild(material);
            shape.appendChild(appearance);
            shape.appendChild(box);
-           transform.appendChild(shape);
+           innerTransform.appendChild(inlineModel);
+           transform.appendChild(innerTransform);
  
            // The espduTransform constructor doesn't fire until it's added
            // to the document
@@ -452,7 +639,14 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            //console.log("Root node for added networked entities is ", root);
            root.appendChild(newEspduTransformNode);
            //newEspduTransformNode.addChild(transform);
+           //once the following works, try putting these all inside the transform
+           //  to make it easier to delete them
            root.appendChild(transform);
+           root.appendChild(timeSensor);
+           root.appendChild(positionInterpolator);
+           root.appendChild(timePosRoute);
+           root.appendChild(posTransformRoute);
+           
            
            // Crete a new "entity" object, with properties for the last time
            // it was heard from, the last espdu received, and the graphics
@@ -461,7 +655,11 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
            newEntity.espdu = espdu;
            newEntity.espduTransformNode = newEspduTransformNode;
            newEntity.transformNode = transform;
-           newEntity.lastHeardFrom = new Date();
+           newEntity.timeSensorNode = timeSensor;
+           newEntity.positionInterpolatorNode = positionInterpolator;
+           newEntity.timePosRouteNode = timePosRoute;
+           newEntity.posTransformRouteNode = posTransformRoute;
+           newEntity.location = localCoordinates;           
            
            return newEntity;
        };

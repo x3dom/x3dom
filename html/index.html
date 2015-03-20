@@ -1,0 +1,206 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
+        <!-- DIS library -->
+        <script src="javascript/dis.js"></script>
+        
+        <!-- three.js 3d javascript library -->
+        <script src="javascript/three.js"></script>
+        
+ <script>
+        
+    /** Unique(ish) ID for this web page entity.*/
+    var uniqueId = Math.floor(Math.random() * 10000);
+    
+    /** List of all entities in the world */
+    var allEntities = {};
+    
+    /** The entity this web page controls */
+    var ourEntity = {};
+    
+    /** The websocket back to the server */
+    var websocket;
+    
+    /** three.js scene */
+    var renderer, scene;
+    
+    /** Local East-North-Up (ENU) tangent plane coordinates for Monterey, CA */
+    var rangeCoordinates = new dis.RangeCoordinates(36.595, -121.877, 0.0);
+
+    /** Fired when the window is finished loading. Create the 3D scene and initialize
+     * communications with the server.
+     */
+    window.onload = function()
+    {
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize( 800, 640 );
+        document.body.appendChild( renderer.domElement );
+
+        scene = new THREE.Scene();
+
+        // Compatiability checks--not all web browsers support Websockets.
+        // note that to reach this web server from off-host you MUST change
+        // the localhost to an IP or DNS name.
+        if(window.WebSocket)
+            websocket = new WebSocket("ws://localhost:8282");//, "nve");
+        else if(Window.MozWebSocket)
+            websocket = new MozWebSocket("ws://localhost:8282");//, "nve");
+        else
+            alert("This web browser does not support web sockets");
+
+        // Note that though we have created the web socket, we can at this
+        // point still not send messages to the server. That can happen only
+        // after the onopen method is called at some later time.
+        
+        // Set the format we want to use to receive binary messages
+        websocket.binaryType = 'arraybuffer';
+
+        // Attach functions to the the web socket for various events
+        websocket.onopen = function(evt){console.log("websocket onopen");};
+        websocket.onclose = function(evt){console.log("websocket close");};
+        websocket.onerror = function(evt){console.log("websocket error");};
+
+        // Set the format we want to use to receive binary messages
+        websocket.binaryType = 'arraybuffer';
+        
+        // Handle the messages sent from the server to us here
+        websocket.onmessage = function(evt)
+        {
+            // Convert the JSON into a javascript object
+            // Use this to convert JSON message format
+           //var disMessage = eval('(' + evt.data + ')' );
+           //
+           // convert from binary to javascript object
+            var inputStream = new dis.InputStream(evt.data);
+            var disMessage = new dis.EntityStatePdu();
+            disMessage.initFromBinaryDIS(inputStream);
+           //console.log(disMessage);
+           
+           // The entityID in the DIS message should be a unqiue triplet. We can
+           // use that as a key to create an attribute on an object--in effect this
+           // is a sneaky hash table.
+           eid = disMessage.entityID;
+           eidString = JSON.stringify(eid);
+           
+           // Look up the entity in our database. If not found, this is a 
+           // new entity and we should add it.
+           thisEntity = allEntities[eidString];
+           
+           // First time we've heard from this entity--create a new one to represent it
+           if(thisEntity === undefined)
+           {
+               console.log("heard from new entity ", eidString);
+               var newEntity = {};
+               newEntity.lastEspdu = disMessage;
+               var mesh = newCube(0xFF0000);
+               newEntity.mesh = mesh;
+               thisEntity = newEntity;
+               scene.add(mesh);
+               allEntities[eidString] = newEntity;
+           }
+           
+           // Convert from global coordinates (center of the earth/geocentric/ECEF)
+           // to the local coordinate system, a plane tangent to the earth at the
+           // given origin for the rangeCoordinates object.
+           var localCoordinates = rangeCoordinates.ECEFObjectToENU(disMessage.entityLocation);
+           thisEntity.mesh.position.x = localCoordinates.x;
+           thisEntity.mesh.position.y = localCoordinates.y;
+           thisEntity.mesh.position.z = localCoordinates.z;
+           thisEntity.lastEspdu = disMessage;
+           
+           renderer.render( scene, camera );
+        };
+
+        // Scene setup
+        var camera = new THREE.PerspectiveCamera(35,         // Field of view
+                                                 800 / 640,  // Aspect ratio
+                                                 .1,         // Near
+                                                 10000);     // Far
+
+        camera.position.set( -15, 10, 15 );
+        camera.lookAt( scene.position );
+
+        // Put our cube, the cube controlled by our web page, at some semi-random position and color, so they don't
+        // sit on top of each other. Draw our cube as green, and all other cubes as red.
+        var mesh = newCube(0x00FF00);
+        ourEntity.mesh = mesh;
+        
+        // Create an espdu to represent our state
+        ourEntity.lastEspdu = new dis.EntityStatePdu();
+        
+        // Init the unique ID for this entity, and a position. We need to convert
+        // from the local coordinate system to the global DIS coordinate system.
+        var localPosition = {x:0, y:0, z:0};
+        ourEntity.lastEspdu.entityID.entity = Math.round(Math.random() * 15000);
+        localPosition.x = Math.round(Math.random() * 7);
+        localPosition.y = Math.round(Math.random() * 7);
+        localPosition.z = Math.round(Math.random() * 7);
+        
+        var globalCoordinates = rangeCoordinates.ENUObjectToECEF(localPosition);
+        ourEntity.lastEspdu.entityLocation.x = globalCoordinates.x;
+        ourEntity.lastEspdu.entityLocation.y = globalCoordinates.y;
+        ourEntity.lastEspdu.entityLocation.z = globalCoordinates.z;
+        
+        // Set the position of the mesh.
+        ourEntity.mesh.position.x = localPosition.x;
+        ourEntity.mesh.position.y = localPosition.y;
+        ourEntity.mesh.position.z = localPosition.z;
+       
+        scene.add( ourEntity.mesh );
+
+        var light = new THREE.PointLight( 0xFFFF00 );
+        light.position.set( 10, 0, 10 );
+        scene.add( light );
+        renderer.render( scene, camera );
+
+        // Periodically send heartbeat messages
+        setInterval(heartbeat, 1000);
+
+        console.log("started web page");
+    };  
+    
+    /**
+     * Periodically send  messages to the server
+     */
+    function heartbeat()
+    {
+        //console.log("heartbeat");
+        // use this to send in JSON format
+        //websocket.send(JSON.stringify(ourEntity.lastEspdu));
+        
+        // Use this to send in standard IEEE DIS binary format
+        var dataBuffer = new ArrayBuffer(1500);
+        var outputStream = new dis.OutputStream(dataBuffer);
+        ourEntity.lastEspdu.encodeToBinaryDIS(outputStream);
+        var trimmedData = dataBuffer.slice(0, outputStream.currentPosition);
+        websocket.send(trimmedData);
+    }
+    
+    /**
+     * Returns a THREE.Mesh cube
+     * @param myColor RGB value, two bytes per value eg 0xFF0000 is red.
+     */
+    function newCube(myColor)
+    {
+        var geometry = new THREE.CubeGeometry( 3, 3, 3 );
+        var material = new THREE.MeshLambertMaterial( { color: myColor } );
+        var mesh = new THREE.Mesh( geometry, material );
+        
+        return mesh;
+    }
+            
+ </script>
+    </head>
+    
+    
+    <body>
+
+    </body>
+</html>
