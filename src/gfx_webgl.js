@@ -46,12 +46,19 @@ x3dom.gfx_webgl = (function () {
         }
 
         var ctx = null;
+
+        // TODO; FIXME; this is an ugly hack, don't look for elements like this 
+        // (e.g., Bindable nodes may only exist in backend etc.)
+        var envNodes   = x3dElem.getElementsByTagName("Environment");
+        var ssaoEnabled = (envNodes && envNodes[0] && envNodes[0].hasAttribute("SSAO") && 
+                    envNodes[0].getAttribute("SSAO").toLowerCase() === 'true') ? true : false;
+
         // Context creation params
         var ctxAttribs = {
             alpha: true,
             depth: true,
             stencil: true,
-            antialias: true,
+            antialias: !ssaoEnabled,
             premultipliedAlpha: false,
             preserveDrawingBuffer: true,
             failIfMajorPerformanceCaveat : true
@@ -2038,7 +2045,7 @@ x3dom.gfx_webgl = (function () {
                 for (var fName in shader._vf) {
                     if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
                         var field = shader._vf[fName];
-                        if (field) {
+                        if (field !== undefined && field !== null) {
                             if (field.toGL) {
                                 sp[fName] = field.toGL();
                             }
@@ -3150,7 +3157,7 @@ x3dom.gfx_webgl = (function () {
         })(pickedObjects);
         pickedObjects = pickedObjectsTemp;
 
-        var pickedNodes = [];
+        var pickedNode, pickedNodes = [];
 
         var hitObject;
 
@@ -3166,7 +3173,7 @@ x3dom.gfx_webgl = (function () {
 
                 //Check if there are MultiParts
                 if (scene._multiPartMap) {
-                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap;
+                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID;
 
                     //Find related MultiPart
                     for (mp = 0; mp < scene._multiPartMap.multiParts.length; mp++) {
@@ -3176,8 +3183,12 @@ x3dom.gfx_webgl = (function () {
                         specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                         visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
                         if (objId >= multiPart._minId && objId <= multiPart._maxId) {
+                            partID = multiPart._idMap.mapping[objId - multiPart._minId].name;
                             hitObject = new x3dom.Parts(multiPart, [objId], colorMap, emissiveMap, specularMap, visibilityMap);
-                            pickedNodes.push(hitObject);
+
+                            pickedNode = {"partID": partID, "part":hitObject};
+
+                            pickedNodes.push(pickedNode);
                         }
                     }
                 }
@@ -3283,7 +3294,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboShadow[i][j] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 			
-			if (scene._webgl.fboShadow.length > 0)
+			if (scene._webgl.fboShadow.length > 0 || x3dom.SSAO.isEnabled(scene))
 				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			scene._webgl.fboBlur = [];
 						
@@ -3449,7 +3460,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = x3dom.Utils.initFBO(gl, size, size, shadowType, false, true);
 			}
 
-			if (scene._webgl.fboShadow.length > 0 && typeof scene._webgl.fboScene == "undefined" || scene._webgl.fboScene &&
+			if ((x3dom.SSAO.isEnabled(scene) ||scene._webgl.fboShadow.length > 0) && typeof scene._webgl.fboScene == "undefined" || scene._webgl.fboScene &&
 				(this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height)) {
 				scene._webgl.fboScene = x3dom.Utils.initFBO(gl, this.canvas.width, this.canvas.height, shadowType, false, true);
 			}
@@ -3602,7 +3613,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         //One pass for depth of scene from camera view (to enable post-processing shading)
-        if (shadowCount > 0) {
+        if (shadowCount > 0 || x3dom.SSAO.isEnabled(scene)) {
             this.renderShadowPass(gl, viewarea, mat_scene, mat_view, scene._webgl.fboScene, 0.0, true);
             var shadowTime = x3dom.Utils.stopMeasure('shadow');
             this.x3dElem.runtime.addMeasurement('SHADOW', shadowTime);
@@ -3654,7 +3665,10 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.disable(gl.DEPTH_TEST);
 
         viewarea._numRenderedNodes = n;
-
+        
+        if(x3dom.SSAO.isEnabled(scene))
+            x3dom.SSAO.renderSSAO(this.stateManager, gl, scene, this.canvas);
+        
         // if _visDbgBuf then show helper buffers in foreground for debugging
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
@@ -3666,7 +3680,7 @@ x3dom.gfx_webgl = (function () {
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
 
-            if (shadowCount > 0) {
+            if (shadowCount > 0 || x3dom.SSAO.isEnabled(scene)) {
                 this.stateManager.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
                                            this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);

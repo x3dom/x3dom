@@ -75,7 +75,9 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "shadowObjectIdMapping")
+                {
                     this.loadMapping();
+                }
             },
 
             updateVolume: function()

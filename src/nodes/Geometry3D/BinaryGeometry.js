@@ -221,6 +221,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'idsPerVertex', false);
 
+            /**
+             * Flag that specifies whether the binary files are GZip compressed.
+             * @var {x3dom.fields.SFBool} compressed
+             * @memberof x3dom.nodeTypes.BinaryGeometry
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'compressed', false);
+
             // workaround
             this._hasStrideOffset = false;
             this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;

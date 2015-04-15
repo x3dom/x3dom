@@ -134,7 +134,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelFront.g = color.g;
                     pixelFront.b = color.b;
 
-                    parts.colorMap.setPixel(x, y, pixelFront);
+                    parts.colorMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
@@ -142,7 +142,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.colorMap.setPixel(x, y, pixelBack);
+                    parts.colorMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
@@ -153,8 +153,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.colorMap.setPixel(x, y, pixelFront);
-                    parts.colorMap.setPixel(x, y, pixelBack);
+                    parts.colorMap.setPixel(xFront, yFront, pixelFront);
+                    parts.colorMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }
@@ -316,7 +316,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelFront.g = color.g;
                     pixelFront.b = color.b;
 
-                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                    parts.emissiveMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
@@ -324,7 +324,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                    parts.emissiveMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
@@ -335,8 +335,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.emissiveMap.setPixel(x, y, pixelFront);
-                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                    parts.emissiveMap.setPixel(xFront, yFront, pixelFront);
+                    parts.emissiveMap.setPixel(xback, yBack, pixelBack);
                 }
             }
         }
@@ -498,7 +498,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelFront.g = color.g;
                     pixelFront.b = color.b;
 
-                    parts.specularMap.setPixel(x, y, pixelFront);
+                    parts.specularMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
@@ -506,7 +506,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.specularMap.setPixel(x, y, pixelBack);
+                    parts.specularMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
@@ -517,8 +517,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.g = color.g;
                     pixelBack.b = color.b;
 
-                    parts.specularMap.setPixel(x, y, pixelFront);
-                    parts.specularMap.setPixel(x, y, pixelBack);
+                    parts.specularMap.setPixel(xFront, yFront, pixelFront);
+                    parts.specularMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }
@@ -669,21 +669,21 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 {
                     pixelFront.a = 1.0 - transparency;
 
-                    parts.colorMap.setPixel(x, y, pixelFront);
+                    parts.colorMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
                     pixelBack.a = 1.0 - transparency;
 
-                    parts.colorMap.setPixel(x, y, pixelBack);
+                    parts.colorMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
                     pixelFront.a = 1.0 - transparency;
                     pixelBack.a = 1.0 - transparency;
 
-                    parts.colorMap.setPixel(x, y, pixelFront);
-                    parts.colorMap.setPixel(x, y, pixelBack);
+                    parts.colorMap.setPixel(xFront, yFront, pixelFront);
+                    parts.colorMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }
@@ -834,21 +834,21 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 {
                     pixelFront.a = shininess;
 
-                    parts.specularMap.setPixel(x, y, pixelFront);
+                    parts.specularMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
                     pixelBack.a = shininess;
 
-                    parts.specularMap.setPixel(x, y, pixelBack);
+                    parts.specularMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
                     pixelFront.a = shininess;
                     pixelBack.a = shininess;
 
-                    parts.specularMap.setPixel(x, y, pixelFront);
-                    parts.specularMap.setPixel(x, y, pixelBack);
+                    parts.specularMap.setPixel(xFront, yFront, pixelFront);
+                    parts.specularMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }
@@ -999,21 +999,21 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 {
                     pixelFront.a = ambientIntensity;
 
-                    parts.emissiveMap.setPixel(x, y, pixelFront);
+                    parts.emissiveMap.setPixel(xFront, yFront, pixelFront);
                 }
                 else if(side == "back")
                 {
                     pixelBack.a = ambientIntensity;
 
-                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                    parts.emissiveMap.setPixel(xBack, yBack, pixelBack);
                 }
                 else if(side == "both")
                 {
                     pixelFront.a = ambientIntensity;
                     pixelBack.a = ambientIntensity;
 
-                    parts.emissiveMap.setPixel(x, y, pixelFront);
-                    parts.emissiveMap.setPixel(x, y, pixelBack);
+                    parts.emissiveMap.setPixel(xFront, yFront, pixelFront);
+                    parts.emissiveMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }

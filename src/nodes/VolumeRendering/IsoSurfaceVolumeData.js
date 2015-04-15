@@ -207,6 +207,8 @@ x3dom.registerNodeType(
                         this.surfaceNormals = this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node;
                     }
                 }
+                //Always needed for the isosurface
+                this.surfaceNormalsNeeded = true;   
                 return styleText;
             },
 
@@ -214,13 +216,13 @@ x3dom.registerNodeType(
                 var inlineText = "    sample = value.r;\n";
                 if(this._vf.surfaceValues.length == 1) { //Only one surface value
                     if(this._vf.contourStepSize == 0.0){
-                        inlineText += "   if((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0]) && (grad.a>=uSurfaceTolerance)){\n"+
-                        "       value = vec4(uSurfaceValues[0]);\n";
+                        inlineText += "   if(((sample>=uSurfaceValues[0] && previous_value<uSurfaceValues[0])||(sample<uSurfaceValues[0] && previous_value>=uSurfaceValues[0])) && (grad.a>=uSurfaceTolerance)){\n"+
+                        "       value = vec4(vec3(uSurfaceValues[0]),1.0);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                         }
                         inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                        "       accum.a += value.a;\n"+
+                        "       accum.a += (1.0 - accum.a) * value.a;\n"+
                         "   }\n"; 
                     }else{ //multiple iso values with the contour step size
                         var tmp = this._vf.surfaceValues[0];
@@ -239,13 +241,13 @@ x3dom.registerNodeType(
                         range = negative_range.concat(positive_range);
                         for (var i = 0; i <= range.length - 1; i++) {
                             var s_value = range[i].toPrecision(3);
-                            inlineText += " if((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+") && (grad.a>=uSurfaceTolerance)){\n"+
-                            "       value = vec4("+s_value+");\n";
+                            inlineText += " if(((sample>="+s_value+" && previous_value<"+s_value+")||(sample<"+s_value+" && previous_value>="+s_value+")) && (grad.a>=uSurfaceTolerance)){\n"+
+                            "       value = vec4(vec3("+s_value+"),1.0);\n";
                             if(this._cf.renderStyle.nodes){
                                 inlineText += this._cf.renderStyle.nodes[0].inlineStyleShaderText();
                             }
                             inlineText += "       accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                            "       accum.a += value.a;\n"+
+                            "       accum.a += (1.0 - accum.a) * value.a;\n"+
                             "   }\n"; 
                         };
                     }
@@ -254,13 +256,13 @@ x3dom.registerNodeType(
                     var s_values = this._vf.surfaceValues.length;
                     for(var i=0; i<s_values; i++){
                         var index = Math.min(i, n_styles);
-                        inlineText += "   if((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"]) && (grad.a>=uSurfaceTolerance)){\n"+
-                        "       value.rgb = vec3(uSurfaceValues["+i+"]);\n";
+                        inlineText += "   if(((sample>=uSurfaceValues["+i+"] && previous_value<uSurfaceValues["+i+"])||(sample<uSurfaceValues["+i+"] && previous_value>=uSurfaceValues["+i+"])) && (grad.a>=uSurfaceTolerance)){\n"+
+                        "       value = vec4(vec3(uSurfaceValues["+i+"]),1.0);\n";
                         if(this._cf.renderStyle.nodes){
                             inlineText += this._cf.renderStyle.nodes[index].inlineStyleShaderText();
                         }
                         inlineText += "   accum.rgb += (1.0 - accum.a) * (value.rgb * value.a);\n"+
-                        "   accum.a += value.a;\n"+
+                        "   accum.a += (1.0 - accum.a) * value.a;\n"+
                         "   }\n"; 
                     }
                 }
@@ -336,9 +338,10 @@ x3dom.registerNodeType(
                     this.lightEquationShaderText();
                     shaderText += "void main()\n"+
                     "{\n"+
+                    "  bool out_box = all(bvec2(any(greaterThan(pos.xyz, vec3(1.0))), any(lessThan(pos.xyz, vec3(0.0)))));\n"+
+                    "  if(out_box) discard;\n"+
                     "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                    "  cam_pos = cam_pos/dimensions+0.5;\n"+
-                    "  vec3 dir = normalize(pos.xyz-cam_pos);\n"+
+                    "  vec3 dir = normalize(pos.xyz-(cam_pos/dimensions+0.5));\n"+
                     "  vec3 ray_pos = pos.xyz;\n"+
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  float sample = 0.0;\n"+
@@ -364,13 +367,13 @@ x3dom.registerNodeType(
                     "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                     "  {\n"+
                     "    value = cTexture3D(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n"+
-                    "    value = vec4(value.rgb,(0.299*value.r)+(0.587*value.g)+(0.114*value.b));\n";
+                    "    value = value.rgbr;\n";
                     if(this._cf.gradients.node){
                         shaderText += "    vec4 gradEye = getNormalFromTexture(uSurfaceNormals, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }else{
                         shaderText += "    vec4 gradEye = getNormalOnTheFly(uVolData, ray_pos, numberOfSlices, slicesOverX, slicesOverY);\n";
                     }
-                    shaderText += "    vec4 grad = vec4((modelViewMatrixInverse * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
+                    shaderText += "    vec4 grad = vec4((modelViewMatrix * vec4(gradEye.xyz, 0.0)).xyz, gradEye.a);\n";
                     for(var l=0; l<x3dom.nodeTypes.X3DLightNode.lightID; l++) {
                         shaderText += "    lighting(light"+l+"_Type, " +
                         "light"+l+"_Location, " +
@@ -382,11 +385,11 @@ x3dom.registerNodeType(
                         "light"+l+"_AmbientIntensity, " +
                         "light"+l+"_BeamWidth, " +
                         "light"+l+"_CutOffAngle, " +
-                        "grad.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
+                        "grad.xyz, positionE.xyz, ambient, diffuse, specular);\n";
                     }
                     shaderText += this.inlineStyleShaderText();
                     if(x3dom.nodeTypes.X3DLightNode.lightID>0){
-                        shaderText += this.inlineLightAssigment();
+                        shaderText += this.lightAssigment();
                     }
                     shaderText +=
                     "    //advance the current position\n"+

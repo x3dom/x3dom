@@ -64,10 +64,14 @@ x3dom.registerNodeType(
 
             styleUniformsShaderText: function(){
                 var styleUniformsText = this._cf.renderStyle.node.styleUniformsShaderText();
+                this.surfaceNormalsNeeded = true;
                 if(this._cf.renderStyle.node._cf.surfaceNormals && this._cf.renderStyle.node._cf.surfaceNormals.node != null){
-                    styleUniformsText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is proided
+                    styleUniformsText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is provided
                     this.normalTextureProvided = true;
                     this.surfaceNormals = this._cf.renderStyle.node._cf.surfaceNormals.node;
+                }else if(x3dom.isa(this._cf.renderStyle.node, x3dom.nodeTypes.OpacityMapVolumeStyle)){ //OpacityMap does not use surface normals
+                    this.surfaceNormalsNeeded = false;
+                    this.normalTextureProvided = false;
                 }
                 return styleUniformsText;
             },

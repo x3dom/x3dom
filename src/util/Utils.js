@@ -578,7 +578,7 @@ x3dom.Utils.checkDirtyEnvironment = function(viewarea, shaderProperties)
     var environment = viewarea._scene.getEnvironment();
 
     return (shaderProperties.GAMMACORRECTION != environment._vf.gammaCorrectionDefault);
-}
+};
 
 /*****************************************************************************
 * Get GL min filter
@@ -721,6 +721,22 @@ x3dom.Utils.blendEquation = function(gl, func)
 };
 
 /*****************************************************************************
+ * Try to gunzip arraybuffer, otherwise return unmodified arraybuffer
+ *****************************************************************************/
+x3dom.Utils.gunzip = function (arraybuffer)
+{
+    var byteArray = new Uint8Array(arraybuffer);
+
+    try {
+        arraybuffer = new Zlib.Gunzip(byteArray).decompress().buffer;
+    } catch (e) {
+        //Decompression failed, file is not compressed.
+    }
+
+    return arraybuffer;
+};
+
+/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.generateProperties = function (viewarea, shape) 
@@ -792,6 +808,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.CLIPPLANES       = shape._clipPlanes.length;
+		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
         
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 	}
@@ -899,8 +916,13 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 					(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           
 				break;
 			case gl.FLOAT_VEC3:
-				shader.__defineSetter__(obj.name, 
-					(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
+				/* Passing arrays of vec3. see above.*/
+				if (obj.name.indexOf("[0]") != -1)
+					shader.__defineSetter__(obj.name.substring(0, obj.name.length-3), 
+						(function (loc) { return function (val) { gl.uniform3fv(loc, new Float32Array(val)); }; })(loc));
+				else
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
 				break;
 			case gl.FLOAT_VEC4:
 				shader.__defineSetter__(obj.name, 

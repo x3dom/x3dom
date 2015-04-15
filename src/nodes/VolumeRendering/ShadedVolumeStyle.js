@@ -277,7 +277,7 @@ x3dom.registerNodeType(
                     "light"+l+"_CutOffAngle, " +
                     "ambientIntensity"+this._styleID+", "+
                     "shininess"+this._styleID+", "+
-                    "gradEye.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
+                    "grad.xyz, positionE.xyz, ambient, diffuse, specular);\n";
                 }
                 if(this._vf.lighting == true){
                     if(this._cf.material.node){

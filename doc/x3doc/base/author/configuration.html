@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+        <title>X3DOM Scene Author API Documentation: Configuration</title>
+
+    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs.css">    
+    <link type="text/css" rel="stylesheet" href="../static/styles/jsdoc-x3dom.css">
+    <script src="../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div id="mainContainerDiv">
+
+<div id="header-decoration">
+    official x3<strong>dom</strong> documentation
+</div>
+<div id="header-navbar">
+    <a href="http://x3dom.org">x3dom.org</a>
+    &gt;
+    <a href="../index.html">documentation</a>
+    &gt;
+    <a href="index.html">Scene Author API</a>
+</div>
+
+<div id="docu-navbar">
+    <a href="index.html">        
+        <div class="docu-navitem">Overview</div>
+    </a>
+    <a href="nodes.html">
+        <div class="docu-navitem">Nodes</div>
+    </a>
+    <a href="components.html">
+        <div class="docu-navitem">Components</div>
+    </a>
+    <a href="runtime.html">
+        <div class="docu-navitem">Runtime</div>
+    </a>
+    <a href="configuration.html">
+        <div class="docu-navitem docu-navitem-active">Configuration</div>
+    </a>
+</div>
+
+<div id="main">
+                
+    <section>
+        <article>
+            
+            <h2>Configuration</h2>
+            <p>
+                The X3D element supports attributes which allows to set configuration for the runtime.
+            </p>
+
+            <h3>Usage</h3>
+
+            <p>
+                The params behave just like any other HTML attribute. It must be added to the x3d canvas tag.
+            </p>
+
+            <pre class="prettyprint"><code class="language-html">
+    &lt;x3d showLog="true"&gt;
+        ...
+    &lt;/x3d&gt;
+            </code></pre>
+
+            <h3>Options</h3>
+
+            <p>
+                The following table lists the parameters currently supported.
+            </p>
+
+            <style>
+                td {
+                    padding: 5px;
+                }
+            </style>
+
+            <table>
+                <colgroup>
+                    <col width="17%" />
+                    <col width="23%" />
+                    <col width="10%" />
+                    <col width="50%" />
+                </colgroup>
+                <thead valign="bottom">
+                <tr style="background-color:#003D97;color: #ffffff;"><th>Parameter</th>
+                    <th class="head">Values</th>
+                    <th class="head">Default</th>
+                    <th class="head">Description</th>
+                </tr>
+                </thead>
+                <tbody valign="top">
+                <tr><td>showLog</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Hide or display the logging console</td>
+                </tr>
+                <tr style="background-color:#DDDDDD;"><td>showStat</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Hide or display the statistics overlay</td>
+                </tr>
+                <tr><td>showProgress</td>
+                    <td>true, false</td>
+                    <td>true</td>
+                    <td>Hide or show the loading indicator.
+                </tr>
+                <tr style="background-color:#DDDDDD;"><td>PrimitiveQuality</td>
+                    <td>High, Medium, Low, float</td>
+                    <td>High/1.0</td>
+                    <td>Render quality (tesselation level) for Box, Cone,
+                        Cylinder, Sphere.</td>
+                </tr>
+                </tbody>
+            </table>
+
+
+
+        </article>
+    
+        <br>
+
+    </section>
+
+    <footer>
+        This part of the X3DOM documentation is based upon the
+        <a href="http://x3dom.org/docs-old/configuration.html">configuration entry</a> in the old X3DOM documentation.
+    </footer>
+</div>
+
+</div>
+
+</body>
+</html>
