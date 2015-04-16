@@ -754,12 +754,23 @@ x3dom.registerNodeType(
                         for (m=0; m<multiPart._idMap.mapping.length; m++) {
                             selection.push(m);
                         }
-                    } else {
+                    } else if (selector instanceof Array) {
+
                         for (i=0; i<selector.length; i++) {
                             if (multiPart._identifierToPartId[selector[i]]) {
                                 selection = selection.concat(multiPart._identifierToPartId[selector[i]]);
                             }
                         }
+
+                    } else if (selector instanceof RegExp) {
+
+                        for (var key in multiPart._identifierToPartId) {
+
+                            if ( key.match( selector ) ) {
+                                selection = selection.concat(multiPart._identifierToPartId[ key ]);
+                            }
+                        }
+
                     }
 
                     var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
