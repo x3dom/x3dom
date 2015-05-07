@@ -783,6 +783,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
         property.DIFFUSEMAP       = (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0;
         property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0;
+		property.NORMALSPACE      = (property.NORMALMAP) ? appearance._shader._vf.normalSpace.toUpperCase() : "";
         property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
         property.SHINMAP          = (property.CSSHADER && appearance._shader.getShininessMap()) ? 1 : 0;
         property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;

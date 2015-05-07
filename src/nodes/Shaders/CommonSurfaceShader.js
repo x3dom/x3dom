@@ -269,12 +269,11 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalFormat', 'UNORM');
 
             /**
-             * Space in which normals in normalTexture are defined. Currently only "TANGENT" (a default tangent space
-             *  normal map) is supported.
+             * Space in which normals in normalTexture are defined.
              * @var {x3dom.fields.SFString} normalSpace
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
              * @initvalue 'TANGENT'
-             * @range [TANGENT]
+             * @range [TANGENT, OBJECT]
              * @field x3dom
              * @instance
              */
