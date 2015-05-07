@@ -246,6 +246,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 {
     var navi = this._scene.getNavigationInfo();
     var navType = navi.getType();
+    var savedPickingInfo = null;
     
     var needNavAnim = (this._currentInputType == x3dom.InputTypes.NAVIGATION) &&
                       ( navType === "game" ||
@@ -280,6 +281,21 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
     if (needNavAnim)
     {
+
+        //Save picking info if available
+        if( this._pickingInfo.pickObj !== null ) {
+
+            savedPickingInfo = {
+                pickPos: this._pickingInfo.pickPos,
+                pickNorm: this._pickingInfo.pickNorm,
+                pickObj: this._pickingInfo.pickObj,
+                firstObj: this._pickingInfo.firstObj,
+                lastObj: this._pickingInfo.lastObj,
+                lastClickObj: this._pickingInfo.lastClickObj,
+                shadowObjectId: this._pickingInfo.shadowObjectId
+            };
+        }
+
         var avatarRadius = 0.25;
         var avatarHeight = 1.6;
         var avatarKnee = 0.75;  // TODO; check max. step size
@@ -572,6 +588,13 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
 
         this._scene.getViewpoint().setView(this._flyMat.inverse());
+
+        //Restore picking info if available
+        if( savedPickingInfo !== null ) {
+
+            this._pickingInfo = savedPickingInfo;
+            
+        }
     }
 
     return needNavAnim;
