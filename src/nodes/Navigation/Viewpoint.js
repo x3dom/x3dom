@@ -149,6 +149,9 @@ x3dom.registerNodeType(
             resetView: function() {
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix()).inverse();
+				
+				//Reset navigation helpers of the viewarea
+				this._nameSpace.doc._viewarea.resetNavHelpers();
             },
 
             getNear: function() {
