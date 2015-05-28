@@ -131,7 +131,9 @@ x3dom.registerNodeType(
                 this._viewMatrix = this._viewMatrix.mult(offset).inverse();
 				
 				//Reset navigation helpers of the viewarea
-				this._nameSpace.doc._viewarea.resetNavHelpers();
+                if(this._nameSpace.doc._viewarea) {
+                    this._nameSpace.doc._viewarea.resetNavHelpers();
+                }
             },
 
             getNear: function() {
