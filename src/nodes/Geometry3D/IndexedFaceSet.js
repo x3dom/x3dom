@@ -101,10 +101,10 @@ x3dom.registerNodeType(
 
                 var indexes = this._vf.coordIndex;
 
+                //Last index value should be -1.
                 if (indexes.length && indexes[indexes.length-1] != -1)
                 {
                     indexes.push(-1);
-                    x3dom.debug.logWarning('Last index value should be -1.');
                 }
 
                 var normalInd = this._vf.normalIndex;
