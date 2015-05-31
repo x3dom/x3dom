@@ -188,6 +188,8 @@ x3dom.registerNodeType(
                         ') != x/zDimension(' + xDimension + '*' + zDimension + ')');
 
                 var longitude_first = x3dom.nodeTypes.GeoCoordinate.prototype.isLogitudeFirst(geoSystem);
+                var easting_first = x3dom.nodeTypes.GeoCoordinate.prototype.isUTMEastingFirst(geoSystem);
+                
                 var ccw = this._vf.ccw;
 
                 // coords, texture coords
@@ -206,12 +208,13 @@ x3dom.registerNodeType(
 
                         // coord
                         var coord = new x3dom.fields.SFVec3f();
-                        if(longitude_first)
+                        if(longitude_first||easting_first)
                         {
                             coord.x = x * xSpacing;
                             coord.y = z * zSpacing;
                         }
                         else
+                        // xSpacing is always east-west axis but geoSystem wants x north-south 
                         {
                             coord.x = z * zSpacing;
                             coord.y = x * xSpacing;
