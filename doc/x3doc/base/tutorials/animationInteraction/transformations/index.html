@@ -4,37 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Interactive 3D Transformations</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    &gt;
-    <a href="../../../index.html">documentation</a>    
-    &gt;
-    <a href="../../index.html">Tutorials</a>
-	&gt;
-    <a href="#">Interactive 3D Transformations</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../switch/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../picking/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../switch/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../picking/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Interactive 3D Transformations</h1>
+            <h2>Interactive 3D Transformations</h2>
         </div>            
         <br>
 		
@@ -55,7 +59,7 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">A simple scene with several 3D manipulators.</div>
+                <div class="text-muted">A simple scene with several 3D manipulators.</div>
             </div>
         </div>
 		
@@ -68,7 +72,7 @@
 		If you like, try out the <a href='example.html'>example</a> now, to see the manipulators in action.		
 		<p>
 				
-		<h2>Interactive 3D Translation with PlaneSensor</h2>
+		<h3>Interactive 3D Translation with PlaneSensor</h3>
 		<p>
 		We will now dive into the example more deeply, and first see how the translation manipulator was realized, using a <i>PlaneSensor</i> node.
 		In X3D (and thereby in X3DOM as well), there are several kinds of nodes that are especially designed for user interaction on 3D elements.
@@ -157,7 +161,7 @@
         </p>
 		
 		
-		<h2>Interactive 3D Rotation with CylinderSensor</h2>
+		<h3>Interactive 3D Rotation with CylinderSensor</h3>
 		<p>
         While the plane sensor node can be used to map mouse motion to translation events, the <i>CylinderSensor</i> node maps mouse motion to rotation events.
         The X3D description of the cylinder sensor nodes and their respective geometries inside our example HTML page looks pretty similar as for the plane sensor:
@@ -223,12 +227,12 @@
         instead of storing an absolute rotation value.
         With the event.value object, we receive such offset values from the start of the current drag operation, since we have specified the autoOffset field of the cylinder
         sensors as 'false'.
-        We do so by using two variables that are available throughout our javascript program:
+        We do so by using two variables that are available throughout our javascript program:</p>
         <ul>
             <li><i>currentGizmoRotationOffset</i> holds the offset values of the currently modified rotation, relative to the start of the current drag operation, as a matrix</li>
             <li><i>currentGizmoRotation</i> holds the current rotation value of the teapot, as a matrix</li>
         </ul>
-        </p>
+
         
         <p>
         You might be wondering at this point why we not just store an absolute rotation matrix for each axis, and then simply multiply the three transformations into a combined matrix,
@@ -240,7 +244,7 @@
         <div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='transformation.png'>
-                <div class="docuCaption">A 3D transformation. The local coordinate system is transformed along with the object.</div>
+                <div class="text-muted">A 3D transformation. The local coordinate system is transformed along with the object.</div>
             </div>
         </div>
         <p>
@@ -284,27 +288,22 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
-                <li><a href="animate.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+                <li><a href="transformations.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 				<li><a href="../../../author/PointingDeviceSensor/PlaneSensor.html">PlaneSensor</a></li>
 				
 				<li><a href="../../../author/PointingDeviceSensor/CylinderSensor.html">CylinderSensor</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>
