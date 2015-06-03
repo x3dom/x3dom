@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "GeoTransform",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+    defineClass(x3dom.nodeTypes.X3DTransformNode, //should be X3DGroupingNode but more convenient
         
         /**
          * Constructor for GeoTransform
@@ -100,6 +100,40 @@ x3dom.registerNodeType(
              */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         
+            // P' = T * C * R * SR * S * -SR * -C * P
+            this._trafo = x3dom.fields.SFMatrix4f.translation(
+                this._vf.translation.add(this._vf.center)).
+                mult(this._vf.rotation.toMatrix()).
+                mult(this._vf.scaleOrientation.toMatrix()).
+                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+                mult(this._vf.scaleOrientation.toMatrix().inverse()).
+                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
+        
+        },
+        {
+            fieldChanged: function (fieldName)
+            {
+                if (fieldName == "center" || fieldName == "translation" ||
+                    fieldName == "rotation" || fieldName == "scale" ||
+                    fieldName == "scaleOrientation")
+                {
+                    // P' = T * C * R * SR * S * -SR * -C * P
+                    this._trafo = x3dom.fields.SFMatrix4f.translation(
+                        this._vf.translation.add(this._vf.center)).
+                        mult(this._vf.rotation.toMatrix()).
+                        mult(this._vf.scaleOrientation.toMatrix()).
+                        mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+                        mult(this._vf.scaleOrientation.toMatrix().inverse()).
+                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
+
+                    this.invalidateVolume();
+                    //this.invalidateCache();
+                }
+                else if (fieldName == "render") {
+                    this.invalidateVolume();
+                    //this.invalidateCache();
+                }
+            }
         }
     )
 );
