@@ -125,17 +125,17 @@ x3dom.registerNodeType(
                         mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
                         this._trafo = this.getGeoTransform();
                 */
-                var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, transformed, geoSystem, geoOrigin;
+                var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, geoCenterGC, geoSystem, geoOrigin;
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
                 geoCenter = this._vf.geoCenter;
                 scaleOrientMat = this._vf.scaleOrientation.toMatrix();
                 coords = new x3dom.fields.MFVec3f();
                 coords.push(geoCenter);
-                transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
-                geoCenterRotMat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, transformed);
+                geoCenterGC = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
+                geoCenterRotMat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, geoCenterGC);
                 geoTransform = 
-                    x3dom.fields.SFMatrix4f.translation(geoCenter).
+                    x3dom.fields.SFMatrix4f.translation(geoCenterGC).
                     mult(geoCenterRotMat).
                     mult(x3dom.fields.SFMatrix4f.translation(this._vf.translation)).
                     mult(this._vf.rotation.toMatrix()).
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
                     mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                     mult(scaleOrientMat.inverse()).
                     mult(geoCenterRotMat.inverse()).
-                    mult(x3dom.fields.SFMatrix4f.translation(geoCenter.negate()));
+                    mult(x3dom.fields.SFMatrix4f.translation(geoCenterGC.negate()));
                 //do geoOrigin
                 return geoTransform;
             },
