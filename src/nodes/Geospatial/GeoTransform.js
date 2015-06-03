@@ -100,32 +100,58 @@ x3dom.registerNodeType(
              */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         
-            // P' = T * C * R * SR * S * -SR * -C * P
-            this._trafo = x3dom.fields.SFMatrix4f.translation(
-                this._vf.translation.add(this._vf.center)).
-                mult(this._vf.rotation.toMatrix()).
-                mult(this._vf.scaleOrientation.toMatrix()).
-                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-        
         },
         {
-            fieldChanged: function (fieldName)
+            nodeChanged: function ()
             {
-                if (fieldName == "center" || fieldName == "translation" ||
-                    fieldName == "rotation" || fieldName == "scale" ||
-                    fieldName == "scaleOrientation")
-                {
-                    // P' = T * C * R * SR * S * -SR * -C * P
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(
+                this._trafo = this.getGeoTransform();
+            },
+            
+            getGeoTransform: function ()
+            {
+                // OR x OT x C x GR x T x R x SR x S x -SR x -GR x -C x -OT x -OR
+                // OR: GeoOriginRotation
+                // OT: GeoOriginTranslation
+                // GR: GeoLocationRotation with geoCenter
+                // C: geoCenterTranslation
+                // regular Transform P' = T * C * R * SR * S * -SR * -C * P
+                return x3dom.fields.SFMatrix4f.translation(
                         this._vf.translation.add(this._vf.center)).
                         mult(this._vf.rotation.toMatrix()).
                         mult(this._vf.scaleOrientation.toMatrix()).
                         mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                         mult(this._vf.scaleOrientation.toMatrix().inverse()).
                         mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-
+                        this._trafo = this.getGeoTransform();
+                var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, transformed, geoSystem, geoOrigin;
+                geoSystem = this._vf.geoSystem;
+                geoOrigin = this._cf.geoOrigin;
+                geoCenter = this._vf.geoCenter;
+                scaleOrientMat = this._vf.scaleOrientation.toMatrix();
+                coords = new x3dom.fields.MFVec3f();
+                coords.push(geoCenter);
+                transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
+                geoCenterRotMat = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, transformed);
+                geoTransform = 
+                    x3dom.fields.SFMatrix4f.translation(geoCenter).
+                    mult(geoCenterRotMat).
+                    mult(x3dom.fields.SFMatrix4f.translation(this._vf.translation).
+                    mult(this._vf.rotation.toMatrix()).
+                    mult(scaleOrientMat).
+                    mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+                    mult(scaleOrientMat.inverse()).
+                    mult(geoCenterRotMat.inverse()).
+                    mult(x3dom.fields.SFMatrix4f.translation(geoCenter.negate());
+            },
+            
+            fieldChanged: function (fieldName)
+            {
+                if (fieldName == "geoCenter" || fieldName == "translation" ||
+                    fieldName == "rotation" || fieldName == "scale" ||
+                    fieldName == "scaleOrientation")
+                {
+                    this._trafo = this.getGeoTransform();
+                    
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }
