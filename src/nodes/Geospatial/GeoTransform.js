@@ -115,6 +115,7 @@ x3dom.registerNodeType(
                 // GR: GeoLocationRotation with geoCenter
                 // C: geoCenterTranslation
                 // regular Transform P' = T * C * R * SR * S * -SR * -C * P
+                /*
                 return x3dom.fields.SFMatrix4f.translation(
                         this._vf.translation.add(this._vf.center)).
                         mult(this._vf.rotation.toMatrix()).
@@ -123,6 +124,7 @@ x3dom.registerNodeType(
                         mult(this._vf.scaleOrientation.toMatrix().inverse()).
                         mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
                         this._trafo = this.getGeoTransform();
+                */
                 var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, transformed, geoSystem, geoOrigin;
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
@@ -135,13 +137,15 @@ x3dom.registerNodeType(
                 geoTransform = 
                     x3dom.fields.SFMatrix4f.translation(geoCenter).
                     mult(geoCenterRotMat).
-                    mult(x3dom.fields.SFMatrix4f.translation(this._vf.translation).
+                    mult(x3dom.fields.SFMatrix4f.translation(this._vf.translation)).
                     mult(this._vf.rotation.toMatrix()).
                     mult(scaleOrientMat).
                     mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                     mult(scaleOrientMat.inverse()).
                     mult(geoCenterRotMat.inverse()).
                     mult(x3dom.fields.SFMatrix4f.translation(geoCenter.negate()));
+                //do geoOrigin
+                return geoTransform;
             },
             
             fieldChanged: function (fieldName)
