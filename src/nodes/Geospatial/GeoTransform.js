@@ -141,7 +141,7 @@ x3dom.registerNodeType(
                     mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                     mult(scaleOrientMat.inverse()).
                     mult(geoCenterRotMat.inverse()).
-                    mult(x3dom.fields.SFMatrix4f.translation(geoCenter.negate());
+                    mult(x3dom.fields.SFMatrix4f.translation(geoCenter.negate()));
             },
             
             fieldChanged: function (fieldName)
