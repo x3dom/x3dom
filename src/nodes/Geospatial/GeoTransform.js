@@ -99,6 +99,19 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+            
+             /**
+             * The onGreatCircle field is used to specify whether coordinates will be interpolated along a great circle path.
+             * The default behavior is to not perform this operation for performance and compatibility.
+             * @var {x3dom.fields.SFBool} onGreatCircle
+             * @memberof x3dom.nodeTypes.GeoPositionInterpolator
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'applyGeoOriginToChildren', false);
+            
+            
         
         },
         {
@@ -129,6 +142,7 @@ x3dom.registerNodeType(
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
                 geoCenter = this._vf.geoCenter;
+                skipGO = this._vf.applyGeoOriginToChildren;
                 scaleOrientMat = this._vf.scaleOrientation.toMatrix();
                 coords = new x3dom.fields.MFVec3f();
                 coords.push(geoCenter);
@@ -149,12 +163,20 @@ x3dom.registerNodeType(
                 {
                     var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
                     //undo translation
+                    if (!skipGO) 
+                    {
                     geoTransform = geoTransform.mult(x3dom.fields.SFMatrix4f.translation(origin));
+                    }
                     if(geoOrigin.node._vf.rotateYUp)
                     {
                         var rotMatOrigin = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin);
-                        //undo rotation, redo
-                        geoTransform = rotMatOrigin.inverse().mult(geoTransform.mult(rotMatOrigin));
+                        //undo rotation
+                        if (!skipGO) 
+                        {    
+                        geoTransform = geoTransform.mult(rotMatOrigin);
+                        }
+                        //redo rotation
+                        geoTransform = rotMatOrigin.inverse().mult(geoTransform);
                     }
                     //redo transl.
                     geoTransform = x3dom.fields.SFMatrix4f.translation(origin.negate()).mult(geoTransform);
