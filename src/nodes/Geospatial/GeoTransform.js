@@ -87,7 +87,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.Transform);
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
