@@ -3,9 +3,10 @@
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
- * (C)2014 Naval Postgraduate School MOVES Institute. BSD License.
+ * (C)2015 Naval Postgraduate School MOVES Institute. BSD License.
  * 
  * @author DMcG
+ * @author Byron R. Harder
  */
 
 
@@ -80,6 +81,9 @@ x3dom.registerNodeType(
          
          /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
+         
+         /** Extra [0..255]*/
+         this.addField_SFInt32(ctx, 'extra', 0);
          
          //console.log("DisEntityTypeMapping:", this._vf);
          
