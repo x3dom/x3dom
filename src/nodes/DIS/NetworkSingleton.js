@@ -425,6 +425,84 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
   };
   
   /**
+   * A fire pdu has been received from the server over the websocket. Process
+   * it by creating a red line (actually a long, thin cylinder) from shooter to 
+   * target as a child node of the shooter . Schedule deletion of the visualization
+   * a short time into the future.
+   * 
+   * This is currently a copy of the espduReceived code, and needs to be 
+   * modified for firepdu logic. 
+   * 
+   * @param {EntityStatePdu} aFirepdu
+   * @returns {undefined}
+   */
+  NetworkSingleton.prototype.firepduReceived = function(aFirepdu)
+  {
+      // The string index into the database
+      var jsonEid = JSON.stringify(aFirepdu.firingEntityID);
+      var matchingEntity = this.remoteEntityDatabase[jsonEid];
+      //console.log("Received fire pdu:  ", aFirepdu);
+      
+      // If we don't have the firing entity, we can't animate the shot
+      if(typeof matchingEntity === 'undefined')
+      {
+          console.log("  Couldn't find in database: ", this.remoteEntityDatabase);
+          return;
+      }
+      
+      // Draw the shot line segment using firingEntity, velocity, and range.
+      // Line orientation is from the normalized velocity.
+      // Line segment length equals range.
+      // Translated half the range in the velocity direction so it appears to
+      // originate at the firer and terminate at the given range.
+      var root = document.getElementById('networkEntities');
+      var graphicsGeometry = matchingEntity.transformNode;
+      var shotLine = document.createElement("transform");
+      //get the velocity in local coordinates:
+      var vECEF = aFirepdu.velocity;
+      var locECEF = matchingEntity.espdu.entityLocation;
+      var impactPointECEF = {x:vECEF.x+locECEF.x, y:vECEF.y+locECEF.y, z:vECEF.z+locECEF.z};
+      //console.log("DIS coords impact point: ", impactPointECEF);
+      var impactPointENU = this.rangeCoordinates.ECEFObjectToENU(impactPointECEF);
+      impactPointENU.z = 10; //clamp to just above sea level
+      //console.log("Local coords impact point: ", impactPointENU);
+      var matchingEntityLocation = x3dom.fields.SFVec3f.parse(graphicsGeometry.getAttribute("translation"));
+      matchingEntityLocation.z = 10; //clamp to just above sea level
+      var velocityVector = new x3dom.fields.SFVec3f(impactPointENU.x-matchingEntityLocation.x, impactPointENU.y-matchingEntityLocation.y, impactPointENU.z-matchingEntityLocation.z);
+      //console.log("Local coords velocity: ", velocityVector);
+      var translationVector = velocityVector.normalize().multiply(aFirepdu.rangeToTarget/2);
+      //console.log("Local coords translation: ", translationVector);
+      worldTranslation = translationVector.add(matchingEntityLocation);
+      shotLine.setAttribute("translation", worldTranslation.toString());
+      var defaultCylinderDirVector = new x3dom.fields.SFVec3f(0, 1, 0); //oriented on y axis according to XML standard
+      var axisAngle = x3dom.fields.Quaternion.rotateFromTo(defaultCylinderDirVector, velocityVector).toAxisAngle();
+      shotLine.setAttribute("rotation", axisAngle[0].toString() + " " + axisAngle[1]);
+      var shape = document.createElement("shape");
+      var appearance = document.createElement("appearance");
+      var material = document.createElement("material");
+      material.setAttribute("diffuseColor", "1 0 0"); //red
+      material.setAttribute("transparency", "0.25");
+      var cylinder = document.createElement("cylinder");
+      cylinder.setAttribute("height", aFirepdu.rangeToTarget);
+      // we need to do better than a hard-coded radius. Should be scaled by model size:
+      cylinder.setAttribute("radius", 5);
+      shotLine.appendChild(shape);
+      shape.appendChild(appearance);
+      appearance.appendChild(material);
+      shape.appendChild(cylinder);
+      // remember this for later deletion:
+      root.appendChild(shotLine);
+      
+      //Schedule deletion of the shot line
+      function killShotLine(root, shotLine) { root.removeChild(shotLine); }
+      setTimeout(function() { killShotLine(root, shotLine) }, 2000);
+      
+      // Notify a list of objects that are
+      // interested in the fire event.
+      this.notifyNewEntityListeners(aFirepdu);      
+  };
+  
+  /**
    * Adds a local entity, ie the entity identified by a local espdu node. The
    * espduTransformNode should have the "networkWriter" mode turned on for
    * the attribute "networkMode". This signifies that the entity is being
@@ -459,7 +537,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
       
-      console.log("Recieved PDU from server");
+      //console.log("Recieved PDU from server");
       
       // If the factory can't correctly decode the message it will return null.
       // Really, the only option is to throw up our hands and punt.
@@ -473,7 +551,8 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
               break;
               
           case 2:  // Fire PDU
-              //console.log("Got fire PDU");
+              console.log("Got fire PDU");
+              this.firepduReceived(pdu);
               break;
               
           case 3: // Detonation PDU
@@ -556,6 +635,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
            newEspduTransformNode.setAttribute("applicationID", espdu.entityID.application);
            newEspduTransformNode.setAttribute("entityID", espdu.entityID.entity);
            newEspduTransformNode.setAttribute("displayName", displayName);
+           newEspduTransformNode.setAttribute("forceID", espdu.forceID);
            
            //console.log("newly created espdu transform node:", newEspduTransformNode);
            //newEspduTransformNode.espdu.entityType = espdu.entityType;
@@ -583,6 +663,8 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
            //for debugging:
            //transform.setAttribute("scale", 10 + " " + 10 + " " + 10);
            transform.setAttribute("rotation", "1 0 0 1.570796"); //orient to xy plane
+           //a hack until ESPDUtransform and transform are the same object:
+           transform.setAttribute("forceID", espdu.forceID);
            
            //console.log(transform);
            var innerTransform = document.createElement("transform");
@@ -648,7 +730,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
            root.appendChild(posTransformRoute);
            
            
-           // Crete a new "entity" object, with properties for the last time
+           // Create a new "entity" object, with properties for the last time
            // it was heard from, the last espdu received, and the graphics
            // associated with the object.
            var newEntity = {};

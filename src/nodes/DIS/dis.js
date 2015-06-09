@@ -1,3 +1,5 @@
+/* Updated 2015-05-20 by Byron R. Harder, Naval Postgraduate School */
+
 if (typeof dis === "undefined")
    dis = {};
  
@@ -5221,7 +5223,7 @@ dis.EntityStatePdu = function()
    this.entityID = new dis.EntityID(); 
 
    /** What force this entity is affiliated with, eg red, blue, neutral, etc */
-   this.forceId = 0;
+   this.forceID = 0;
 
    /** How many articulation parameters are in the variable length list */
    this.numberOfArticulationParameters = 0;
@@ -5266,7 +5268,7 @@ dis.EntityStatePdu = function()
        this.pduLength = inputStream.readUShort();
        this.padding = inputStream.readShort();
        this.entityID.initFromBinaryDIS(inputStream);
-       this.forceId = inputStream.readUByte();
+       this.forceID = inputStream.readUByte();
        this.numberOfArticulationParameters = inputStream.readByte();
        this.entityType.initFromBinaryDIS(inputStream);
        this.alternativeEntityType.initFromBinaryDIS(inputStream);
@@ -5297,7 +5299,7 @@ dis.EntityStatePdu = function()
        outputStream.writeUShort(this.pduLength);
        outputStream.writeShort(this.padding);
        this.entityID.encodeToBinaryDIS(outputStream);
-       outputStream.writeUByte(this.forceId);
+       outputStream.writeUByte(this.forceID);
        outputStream.writeByte(this.numberOfArticulationParameters);
        this.entityType.encodeToBinaryDIS(outputStream);
        this.alternativeEntityType.encodeToBinaryDIS(outputStream);
@@ -6065,7 +6067,7 @@ dis.FastEntityStatePdu = function()
    this.entity = 0;
 
    /** what force this entity is affiliated with, eg red, blue, neutral, etc */
-   this.forceId = 0;
+   this.forceID = 0;
 
    /** How many articulation parameters are in the variable length list */
    this.numberOfArticulationParameters = 0;
@@ -6183,7 +6185,7 @@ dis.FastEntityStatePdu = function()
        this.site = inputStream.readUShort();
        this.application = inputStream.readUShort();
        this.entity = inputStream.readUShort();
-       this.forceId = inputStream.readUByte();
+       this.forceID = inputStream.readUByte();
        this.numberOfArticulationParameters = inputStream.readByte();
        this.entityKind = inputStream.readUByte();
        this.domain = inputStream.readUByte();
@@ -6247,7 +6249,7 @@ dis.FastEntityStatePdu = function()
        outputStream.writeUShort(this.site);
        outputStream.writeUShort(this.application);
        outputStream.writeUShort(this.entity);
-       outputStream.writeUByte(this.forceId);
+       outputStream.writeUByte(this.forceID);
        outputStream.writeByte(this.numberOfArticulationParameters);
        outputStream.writeUByte(this.entityKind);
        outputStream.writeUByte(this.domain);
@@ -8350,7 +8352,7 @@ dis.Marking = function()
       var marking = "";
       for(var idx = 0; idx < 11; idx++)
       {
-          marking = marking + String.fromCharCode(characters[idx]);
+          marking = marking + String.fromCharCode(this.characters[idx]);
       }
       
       return marking;
