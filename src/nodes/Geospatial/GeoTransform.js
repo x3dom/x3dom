@@ -175,11 +175,15 @@ x3dom.registerNodeType(
                             //undo rotation before translation
                             geoTransform = geoTransform.mult(rotMatOrigin);
                         }
-                        //redo rotation after geotransform
+                        
+                    }
+                    //redo transl. afer geoTransform
+                    geoTransform = x3dom.fields.SFMatrix4f.translation(origin.negate()).mult(geoTransform);
+                    if(geoOrigin.node._vf.rotateYUp)
+                    {
+                        //redo rotation after translation
                         geoTransform = rotMatOrigin.inverse().mult(geoTransform);
                     }
-                    //redo transl. after rotation
-                    geoTransform = x3dom.fields.SFMatrix4f.translation(origin.negate()).mult(geoTransform);
                 }
                 return geoTransform;
             },
