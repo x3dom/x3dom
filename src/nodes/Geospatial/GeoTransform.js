@@ -101,18 +101,16 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             
              /**
-             * The onGreatCircle field is used to specify whether coordinates will be interpolated along a great circle path.
-             * The default behavior is to not perform this operation for performance and compatibility.
-             * @var {x3dom.fields.SFBool} onGreatCircle
-             * @memberof x3dom.nodeTypes.GeoPositionInterpolator
+             * The applyGeoOriginToChildren field is used to specify whether the scene omits GeoOrigin nodes in child nodes.
+             * The default is false which means that GeoOrigin nodes are expected in child nodes.
+             * A true value means that GeoOrigin nodes are expected to have been omitted from child nodes.
+             * @var {x3dom.fields.SFBool} applyGeoOriginToChildren
+             * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue false
              * @field x3dom
              * @instance
              */
             this.addField_SFBool(ctx, 'applyGeoOriginToChildren', false);
-            
-            
-        
         },
         {
             nodeChanged: function ()
@@ -123,21 +121,12 @@ x3dom.registerNodeType(
             getGeoTransform: function ()
             {
                 // OR x OT x C x GR x T x R x SR x S x -SR x -GR x -C x -OT x -OR
-                // OR: GeoOriginRotation
-                // OT: GeoOriginTranslation
-                // GR: GeoLocationRotation with geoCenter
-                // C: geoCenterTranslation
+                // OR: GeoOrigin Rotation
+                // OT: GeoOrigin Translation
+                // GR: GeoLocation Rotation with geoCenter
+                // C: geoCenter Translation
                 // regular Transform P' = T * C * R * SR * S * -SR * -C * P
-                /*
-                return x3dom.fields.SFMatrix4f.translation(
-                        this._vf.translation.add(this._vf.center)).
-                        mult(this._vf.rotation.toMatrix()).
-                        mult(this._vf.scaleOrientation.toMatrix()).
-                        mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                        mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-                        this._trafo = this.getGeoTransform();
-                */
+                
                 var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, geoCenterGC, geoSystem, geoOrigin;
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
@@ -158,30 +147,29 @@ x3dom.registerNodeType(
                     mult(scaleOrientMat.inverse()).
                     mult(geoCenterRotMat.inverse()).
                     mult(x3dom.fields.SFMatrix4f.translation(geoCenterGC.negate()));
-                //do geoOrigin
+                //deal with geoOrigin by first reversing its effect, then reapplying it.
                 if(geoOrigin.node)
                 {
-                    var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
+                    var originGC = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
                     if (!skipGO) 
-                        {
-                            //undo translation
-                            geoTransform = geoTransform.mult(x3dom.fields.SFMatrix4f.translation(origin));
-                        }
+                    {
+                        //undo geoOrigin translation from child node
+                        geoTransform = geoTransform.mult(x3dom.fields.SFMatrix4f.translation(originGC));
+                    }
                     if(geoOrigin.node._vf.rotateYUp)
                     {
-                        var rotMatOrigin = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin);
+                        var rotMatOrigin = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, originGC);
                         if (!skipGO) 
                         {    
-                            //undo rotation before translation
+                            //undo GeoOrigin rotation from child node before translation
                             geoTransform = geoTransform.mult(rotMatOrigin);
                         }
-                        
                     }
-                    //redo transl. afer geoTransform
-                    geoTransform = x3dom.fields.SFMatrix4f.translation(origin.negate()).mult(geoTransform);
+                    //apply GeoOrigin translation. after geoTransform
+                    geoTransform = x3dom.fields.SFMatrix4f.translation(originGC.negate()).mult(geoTransform);
                     if(geoOrigin.node._vf.rotateYUp)
                     {
-                        //redo rotation after translation
+                        //apply GeoOrigin rotation after translation
                         geoTransform = rotMatOrigin.inverse().mult(geoTransform);
                     }
                 }
