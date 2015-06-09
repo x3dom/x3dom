@@ -265,7 +265,10 @@ x3dom.registerNodeType(
 
             getCenterOfRotation: function() {
                 // is already transformed to GC
-                return this._vf.centerOfRotation;
+                // but apparently needs to have current transform applied
+                // since the current transform only seems to affect the location and orientation
+                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
+                //return this._vf.centerOfRotation;
             },
             
             getGeoCenterOfRotation: function(geoSystem, geoOrigin, geoCenterOfRotation) {
