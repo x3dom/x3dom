@@ -162,23 +162,23 @@ x3dom.registerNodeType(
                 if(geoOrigin.node)
                 {
                     var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
-                    //undo translation
-                    if (!skipGO) 
-                    {
-                    geoTransform = geoTransform.mult(x3dom.fields.SFMatrix4f.translation(origin));
-                    }
                     if(geoOrigin.node._vf.rotateYUp)
                     {
                         var rotMatOrigin = x3dom.nodeTypes.GeoLocation.prototype.getGeoRotMat(geoSystem, origin);
-                        //undo rotation
                         if (!skipGO) 
                         {    
+                        //undo rotation
                         geoTransform = geoTransform.mult(rotMatOrigin);
                         }
                         //redo rotation
                         geoTransform = rotMatOrigin.inverse().mult(geoTransform);
                     }
-                    //redo transl.
+                    if (!skipGO) 
+                    {
+                    //undo translation before rotation
+                    geoTransform = geoTransform.mult(x3dom.fields.SFMatrix4f.translation(origin));
+                    }
+                    //redo transl. after rotation
                     geoTransform = x3dom.fields.SFMatrix4f.translation(origin.negate()).mult(geoTransform);
                 }
                 return geoTransform;
