@@ -223,7 +223,10 @@ x3dom.registerNodeType(
 
                 // also transform centerOfRotation for initial view                
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._geoSystem, this._geoOrigin, this._geoCenterOfRotation);
-                
+                // needs to have current transform applied
+                // since the current transform only seems to affect the location and orientation
+                this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
+
                 // borrowed from Viewpoint.js
             
                 this._projMatrix = null;
@@ -265,10 +268,7 @@ x3dom.registerNodeType(
 
             getCenterOfRotation: function() {
                 // is already transformed to GC
-                // but apparently needs to have current transform applied
-                // since the current transform only seems to affect the location and orientation
-                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
-                //return this._vf.centerOfRotation;
+                return this._vf.centerOfRotation;
             },
             
             getGeoCenterOfRotation: function(geoSystem, geoOrigin, geoCenterOfRotation) {
