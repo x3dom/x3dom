@@ -225,6 +225,7 @@ x3dom.registerNodeType(
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._geoSystem, this._geoOrigin, this._geoCenterOfRotation);
                 // needs to have current transform applied
                 // since the current transform only seems to affect the location and orientation
+                // hmm, CurrentTransform not updated yet ...
                 this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
 
                 // borrowed from Viewpoint.js
@@ -383,6 +384,10 @@ x3dom.registerNodeType(
                 this._viewMatrix = this.getInitViewMatrix(this._vf.orientation, this._vf.geoSystem, this._cf.geoOrigin, this._vf.position);
                 // also reset center of Rotation; is not done for regular viewpoint
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
+                // needs to have current transform applied
+                // since the current transform only seems to affect the location and orientation
+                this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
+
             },
 
             getNear: function() {
