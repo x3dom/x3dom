@@ -1,0 +1,6576 @@
+For changes starting with version 1.6, see the RELEASENOTES file
+
+=================================================================================
+2013-10-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor improvements
+
+2013-10-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : first experimental turntable nav-type (requires y up)
+
+  * : cleanups, comments, and nav type check
+
+2013-10-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regenerate changelog
+
+2013-10-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed 1-px intermediate CubeTexture since this leads to computer crash
+  on certain mac systems
+
+2013-10-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added multi-marker example
+
+2013-10-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Internal centerOfRotation for Viewfrustum and reactivated 1-pixel
+  intermediate textures
+
+  * : local texture
+
+  * : added AR example
+
+  * : fixed Viewfrustum (matrices were transposed) and projection matrix of AR
+  demo
+
+2013-10-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : initial check-in of AR with WebRTC
+
+2013-10-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added runtime method to trigger redraw
+
+2013-10-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed buggy navigation when camera under transform
+
+2013-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : yet another minor show all fix
+
+  * : added all tests to index.html list for better testing
+
+2013-10-11  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add showAll test file
+
+2013-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : started follower corrections
+
+2013-10-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : 32-bit indices support now also for BinGeo
+
+2013-10-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix for issue #84
+
+  * : support for 32-bit indices (if extension available)
+
+2013-10-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - modify lizard example
+
+  * : - add on the fly shader-based tangent/binormal calculation for CSS
+
+2013-10-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : shader param fix
+
+  * : freefly mode added
+
+  * : fixed weired shader error
+
+2013-10-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed unused experimental setVisibility method
+
+2013-09-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added IR convenience flag
+
+  * : moved perspective/ortho calculation to matrix class, and cleanup of
+  fields.js so that it can be used standalone
+
+2013-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Create a default 1 pixel texture to prevent 'not texture complete'
+  warning
+
+2013-09-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : changed view to POT size
+
+2013-09-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added x3dom node ref to USE'd element
+
+2013-09-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented setMode method for Moveable so that one can choose between
+  translation, rotation, or all
+
+  * : nozzle fixes and changed Dish behaviour such that base is always circular
+
+2013-09-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small fix
+
+2013-09-23  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added source zip of BVHRefiner Dataset Converter
+
+  * : Update tutorial BVHRefiner
+
+2013-09-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed useless scissor test and impl. mobile popgeo picking
+
+2013-09-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : linear filtering for sky and fix for transparency issue #194
+
+2013-09-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small cleanup
+
+  * : minor picking improvements
+
+2013-09-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : culling check for pick pass
+
+  * : minor shadowObjectID improvements
+
+  * : fix for issue #217
+
+2013-09-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Ext. test for LineProperties
+
+2013-09-19  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : update tutorial BVHRefiner
+
+2013-09-19  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add ColorMaskMode and LineProperties
+
+2013-09-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : pass thru mouseup state
+
+2013-09-17  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added texture properties to all textures in BVHRefiner
+
+  * : BVHRefiner-Tool to produce wmts and tree conform data sets from image
+
+2013-09-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented picking for PopGeo
+
+  * : minor draw code cleanups
+
+2013-09-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : unified non-indexed rendering for standard geos and added fast path in
+  IFS coord update (for ipols)
+
+  * : primType cleanup
+
+  * : fixed broken DepthMode
+
+2013-09-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented IFS coordIndex update and optimized normal generation code
+
+2013-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Some work on BlendMode (TODO: alphaFunc and alphaFuncValue)
+
+  * : [flash] fix backbuffer resize before context3D creation
+
+  * : finish DepthMode implementation
+
+2013-09-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added normalUpdateMode field
+
+2013-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] fix for "Cannot redefine non-configurable property" error [flash]
+  fix remove texture bug
+
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added shadowID tests
+
+2013-09-12  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : back to development version
+
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : moved nodes to Ext
+
+2013-09-12  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Release 1.5.0
+
+2013-09-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanup of index-offset hack
+
+2013-09-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : hmmm
+
+  * : BVHRefiner now uses only one geometry
+
+2013-09-11  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : docu update
+
+2013-09-11  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Reorg internal docs structure to prepare for fompontent documentation
+  (subdir for component rst files). Made building doc without jsdocs the
+  default with manage.py
+
+2013-09-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : tutorial fixes (???)
+
+2013-09-10  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added crack prevention in BVHRefiner (Terrain)
+
+2013-09-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added fields, yet unfunctional
+
+  * : fixed broken texture scale field
+
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed personal project file
+
+2013-09-09  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : update docu of BVHRefiner
+
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : unset dirty
+
+  * : patch to tree fix
+
+2013-09-09  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : documentation update on parameter description of BVHRefiner
+
+  * : Added documentation of BVHRefiner
+
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Text node volume update fix
+
+2013-09-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : even more cleanups
+
+  * : another update fix as well as cleanups
+
+2013-09-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed update problem when inserting node, also did some performance opts
+  and clenups
+
+2013-09-07  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Implemented automated triangulation for all 9 mesh versions on Patch
+  component of BVHRefiner
+
+2013-09-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : changed second deltaT to constant multiplier
+
+  * : cleanup of events examples (used Moveable)
+
+2013-09-06  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Implemented noBackendFound callback. Implements #129
+
+2013-09-06  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added new geometry "Patch" to BVHRefiner.js
+
+2013-09-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Update of neighborhood calculation and new Patch 3D component
+
+2013-09-05  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Added first draft of culling tutorial
+
+2013-09-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+2013-09-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added calculation of neighborhood to BVHRefiner - Quadtree3D node
+
+  * : Update on BVHRefiner demo for x3dom release
+
+2013-09-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add IE11 test file
+
+2013-09-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : update tests
+
+  * : render flags update
+
+  * : ILS coordIndex field update
+
+2013-09-04  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Small reference fix on BVHRefiner.html
+
+  * : Renaming of terrain.html to bvh_refiner.html and Terrain.js to
+  BVHRefiner.js
+
+  * : Update of comments in BVHRefiner
+
+2013-09-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented route removal
+
+2013-09-03  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Improvements and CleanUps to BVHRefiner node
+
+2013-09-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed typos
+
+2013-09-02  Christian Stein <chrstein@gmx.net>
+
+  * : moved arc to viewarea  arc is now initated and updated from within
+  viewarea
+
+  * : bvh update
+
+  * : added experimental backend
+
+  * : moved arc fields to environmental effects
+
+  * : added frameid for bvh, small fixes
+
+2013-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : improved line picking and fixed point picking
+
+2013-08-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : moved most flags from scene to env
+
+  * : activated picking for LineSet
+
+  * : moved SphereSegment node to Geometry3DExt.js
+
+2013-08-29  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Minimal hack/fix for DOM mutation bug
+
+2013-08-28  Christian Stein <chrstein@gmx.net>
+
+  * : minor bug fixes  fixed culling parameter passing and jsBVH sfculling
+
+  * : added fields and cleaned up staticGroup, refactored BVH  static group now
+  controls culler choice and compile setup
+
+2013-08-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added EnvironmentBindable
+
+  * : pass thru button state
+
+2013-08-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : renamed new Geo file and added detachHandler method to Moveable object
+
+  * : moveable hang on touch fix
+
+2013-08-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added convenience field 'height' and fixed tessellation
+
+2013-08-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : both tori now oriented similarly
+
+  * : implemented missing caps and did some cleanups
+
+2013-08-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more runtime fixes
+
+  * : small runtime.debug fix
+
+2013-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added callback as third param
+
+  * : complete overhaul of solidOfRevolution
+
+2013-08-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl creaseAngle 0 for REVO
+
+  * : some revo improvements
+
+  * : fixed missing side caps in certain cases
+
+  * : started solidOfRev
+
+2013-08-14  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add Nozzle Primitive
+
+2013-08-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added code skeleton
+
+  * : finished dish primitive (ellipsoid part)
+
+  * : fixed special case for dish, where sphere section is required
+
+2013-08-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed pyramid
+
+2013-08-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : moved Extrusion (work cont'd) to where it belongs
+
+2013-08-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added Extrusion (only face normals supported, no orientation field etc)
+
+  * : minor fixes and added Extrusion skeleton
+
+2013-08-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : renamed fields for consistency (and added TODO for correct normal
+  calculation)
+
+2013-08-06  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : some inner and outer radius optimization
+
+  * : Add RectangularTorus primitive to GeometryEDF
+
+2013-08-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added plane primType flag
+
+2013-08-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added topRadius field to cone
+
+2013-08-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed update
+
+  * : finished angle field and caps for torus
+
+2013-07-19  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Fixed issue #199 (Offset for PopGeos with zero size in one dimension)
+
+2013-07-18  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : BVHRefiner update for point cloud rendering
+
+2013-07-15  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : opt addDrawable function
+
+2013-07-12  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Update DisplacementMap Example
+
+2013-07-11  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add combined Diffuse- and DisplacementMap Update FPS only on render
+
+2013-07-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : xxx
+
+2013-07-09  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix slow traversal
+
+2013-07-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added idBufId mode for getting shape + shadow ID
+
+  * : fixed broken picking
+
+2013-07-08  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : switch to the new StateManager
+
+2013-07-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added new pickShader file
+
+2013-07-08  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : initial StateManager check in
+
+2013-07-07  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : some preparation for drawableCollection-Map and state sorting
+
+2013-07-05  Christian Stein <chrstein@gmx.net>
+
+  * : variable renamed
+
+2013-07-04  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Added PopGeo AF
+
+2013-07-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : color fix
+
+2013-07-01  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Update BVHRefiner
+
+2013-07-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some navigator opt
+
+  * : updated test headers
+
+2013-06-30  Christian Stein <chrstein@gmx.net>
+
+  * : added first arc version
+
+2013-06-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed setVisibility
+
+2013-06-27  Christian Stein <chrstein@gmx.net>
+
+  * : added experimental native test src and crosscompiled js
+
+2013-06-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added new dir and 4 exp. factors
+
+2013-06-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added experimental visibility switch functions
+
+2013-06-25  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix unlit bug
+
+2013-06-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some code review on CAD component and added example
+
+2013-06-20  Harry Voorhees <hlv@stellarscience.com>
+
+  * : Fixed crash in Cache.release().  This caused a TYPE_ERROR when calling
+  x3dom.reload() because gl.deleteShader was being called on something other
+  than a WebGLShader. Our fix was to remove the program associated with each
+  shader and the GLShaders associated with each program.
+
+2013-06-17  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] initial LPP check in
+
+2013-06-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor corrections
+
+2013-06-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added x3dom.toggleFullScreen function and did more clean-ups
+
+  * : code cleanups
+
+  * : fixed unconsistently named dirty flag (shape dirty flags now all
+  lowercase)
+
+2013-06-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed typos in doc
+
+2013-06-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fine-tuning
+
+  * : minor debug fix
+
+2013-06-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small runtime fix
+
+2013-06-05  Vincent Marchetti <vmarchetti@kshell.com>
+
+  * : modified the meta tags to improve description
+
+  * : Tests which demonstrate the product structure nodes (CADLayer,
+  CADAssembly, CADPart, CADFace nodes of CADGeometry component, and the
+  indexedQuadSet node of that component
+
+2013-06-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix typo add html5 inline test
+
+2013-06-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added functionality to BVHRefiner on mode '3d'  Optimized data upload to
+  gpu without black flare
+
+  * : added BVHRefiner functionality  Wait for texture till it is completely
+  loaded to gpu before rendering and bug fixing in position calculation of the
+  quads
+
+2013-06-05  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Removed outdated example
+
+  * : Removed exploration directory, removed outdated tests, moved a few test
+  files into the functional tests directory
+
+2013-06-04  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add texture ready flag
+
+  * : [flash] add support for resizing (only with HTML5 not XHTML) [flash]
+  switch to Apache Flex 4.9.1 [flash] prepare for FP 1.8 with extended profile
+  [flash] some work on the LPP renderer
+
+2013-06-03  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add fragment shader precision switch to fix mobile chrome beta bug
+
+2013-06-03  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Started conventions doku
+
+2013-06-03  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Small fix
+
+2013-06-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : namespace fixes
+
+2013-05-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : RenderedTexture fixes
+
+2013-05-31  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : First approach towards automatically splitted IndexedLineSet
+
+2013-05-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed dynamic resize of renderedTexture and added test
+
+2013-05-28  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] add support for texture transform [flash] fix texture reload
+  after frustum culling bug
+
+2013-05-28  Christian Stein <chrstein@gmx.net>
+
+  * : bvh update: fixed drawable selection
+
+2013-05-27  Christian Stein <chrstein@gmx.net>
+
+  * : bvh update
+
+2013-05-27  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : new BVHRefiner node  arbitrary count of children for refinement
+
+  * : BVHRefiner node extension
+
+2013-05-24  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Not really a fix yet for the current POP Geo bug, but it looks slightly
+  better :-P
+
+2013-05-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added helper node
+
+2013-05-22  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Minor changes, added todos for missing fixes
+
+  * : Small optimization
+
+  * : Renamed variable
+
+2013-05-22  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Bug Fix at BVHRefiner  cull function
+
+2013-05-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added check for fully inside vs. only outside
+
+2013-05-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added new JS file to package list
+
+2013-05-17  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : update some test files
+
+2013-05-17  chrstein <max.limper@igd.fraunhofer.de>
+
+  * : Added bvh to static group
+
+2013-05-17  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : PopGeo now uses the coverage computed during the cull pass
+
+2013-05-16  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : NonWMTS data for BVHRefiner
+
+  * : New addressing scheme on BVHRefiner besides wmts scheme
+
+  * : Renaming of terrain in BVHRefiner
+
+2013-05-14  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add Common-Surface-Shader displacement mapping + normal calculation.
+
+2013-05-13  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added parameter 'lit' to terrain
+
+  * : Fixes and addings on terrain  fixed: volume on 3d mode added: vertex
+  lighting on 3d mode
+
+2013-05-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added scaleRenderedIdsOnMove field to scene
+
+2013-05-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added tutorial to index
+
+2013-05-08  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added 3d terrain with data
+
+2013-05-07  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added octreeNode to terrain
+
+2013-05-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some cleanups
+
+2013-05-07  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : level calculation fixes on terrain
+
+2013-05-06  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added frustum culling functionality to terrain
+
+  * : small bug fix at terrain postion calculation
+
+  * : level fixes at terrain
+
+  * : fixed bug at terrain
+
+  * : Added terrain functionality  2d mode
+
+2013-05-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : optimized cache invalidation and removed internalCulling field from RSG
+
+2013-05-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : world matrix/volume cache invalidation added
+
+2013-05-03  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added terrain functionality
+
+2013-05-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : matrix invalidation also needs to be propagated downwards
+
+2013-05-02  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : shadow bugfixing and minor refactoring
+
+2013-04-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : world volume cache
+
+2013-04-29  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : basic matrix caching added
+
+  * : finished interface change (TODO: use from cache if available)
+
+  * : interface changes
+
+  * : some opts and propagated graph states to addDrawable
+
+  * : switched param from vol to graphState
+
+2013-04-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added simple small feature culling
+
+  * : terrain fixes
+
+  * : finally switched to hierarchical viewfrustum culling
+
+2013-04-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added interface for culling
+
+2013-04-26  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : shadow improvements
+
+2013-04-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed experimental node and added render flag check
+
+2013-04-25  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix slow traversal bug
+
+2013-04-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added semicolon
+
+2013-04-25  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : zip stuff cleanup
+
+  * : zip stuff cleanup
+
+  * : Zip stuff
+
+2013-04-25  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Start integrate the DrawableCollection
+
+2013-04-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : changed getVolume interface
+
+2013-04-24  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : added dynamic terrain test
+
+2013-04-24  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : zip stuff
+
+2013-04-24  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : cascading detail settings added
+
+2013-04-24  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Added landinggear example files for upcoming zip test
+
+2013-04-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more volume stuff
+
+2013-04-23  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : shadow offset option
+
+  * : Cascaded shadows for spot lights
+
+2013-04-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : further work on bboxes
+
+  * : updated test headers
+
+2013-04-22  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : shadows
+
+2013-04-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : mozilla css anims
+
+2013-04-22  Nicolas Eicke <Nicolas.Eicke@stud.tu-darmstadt.de>
+
+  * : Shadow improvements
+
+2013-04-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : small fix
+
+2013-04-15  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : modified example binaries
+
+  * : Added delta-coded indices for BitLOD Geo
+
+2013-04-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : always provide center/size/precision to unify shader settings - useful
+  for user defined shaders independent of geo type
+
+2013-04-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : yet another fix
+
+2013-04-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+  * : normal shader
+
+  * : update headers
+
+  * : fix
+
+  * : some fixes
+
+2013-04-11  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added unzipped example
+
+  * : Another test with live gzip
+
+  * : Added gzip example
+
+2013-04-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cont'd volume stuff
+
+  * : intermediate
+
+2013-04-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : load fix
+
+  * : volume stuff
+
+2013-04-09  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Changed example files for BitLOD
+
+2013-04-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor cleanup
+
+2013-04-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed broken mesh split
+
+  * : more cleanups
+
+  * : added binGeo test
+
+2013-03-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+2013-03-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added node counter for collect traversal
+
+2013-03-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanup + experimental node for testing stuff...
+
+2013-03-21  unknown <mlimper@pc2042.ad.igd.fraunhofer.de>
+
+  * : Added support for flat shading for GeoElevationGrid
+
+2013-03-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed broken multi-touch interaction
+
+2013-03-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : finished idBuf24 pickMode
+
+2013-03-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added another new src file (not yet functional)
+
+  * : cleanup fix
+
+  * : cleanup of binary container stuff
+
+  * : added (yet empty) src file
+
+  * : removed ugly typos in copyright header
+
+2013-03-14  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : update states (back to the roots)
+
+2013-03-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some experiments in rsg, and node hierarchy cleanup
+
+2013-02-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix for ticket #159
+
+2013-02-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed typos
+
+2013-02-08  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix for #155 Unlit Geometry
+
+2013-02-07  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : added missing files
+
+  * : fix IG picking and implicitMeshSize Bug
+
+2013-02-06  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : very small lighting optimization
+
+2013-02-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added withCredentials field for textures
+
+2013-02-04  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : dragon->buddha
+
+2013-02-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added example
+
+2013-01-29  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] swap middle and right mouse button behavior
+
+2013-01-24  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fixes for generated API docs. Next: actually create all that inline
+  documentation
+
+  * : Added subsystem to generate JSDOC which is included in the Sphinx
+  documentation. Needs major work on the actual adding of JSDOC comments in the
+  code front.
+
+2013-01-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added jsdoc toolkit in preparation of integrating jsdoc generated
+  documentation to the sphinx system
+
+2013-01-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : disabled buggy state change optimizer
+
+2013-01-17  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : improvement
+
+  * : added onMove precision factor
+
+  * : added isMoving handler to pop
+
+2013-01-17  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : MInPRec, MaxPrec, PrecFact for POPGeo
+
+2013-01-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : triCnt fixed
+
+2013-01-16  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Changed error estimation formula
+
+2013-01-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : opts
+
+2013-01-16  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added benchmark to page (for iphone access)
+
+  * : Files for xyzrgb dragon model
+
+  * : Updated popgeo example dragon data
+
+  * : Added use of tightSize member of popgeo
+
+2013-01-15  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Renamed volDiameter to volRadius
+
+2013-01-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : isStaticHierarchy scene flag
+
+  * : minor opts
+
+2013-01-15  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added error tolerance switching via 3/4 keys
+
+2013-01-14  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Experimental smoothing length for fps (-> for slow devices)
+
+  * : Replaced pow computation in PopGeo by LUT
+
+2013-01-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added fps info to runtime
+
+  * : some more opts
+
+  * : some opts
+
+2013-01-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : mobile pop shader
+
+2013-01-10  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Some cleanups in gfx_webgl (popgeo)
+
+2013-01-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : frustum culling also for pick pass and a little LOD-LUT hack
+
+2013-01-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed special culling func
+
+  * : frustum culling
+
+2013-01-07  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Updated popGeo example dragon
+
+  * : Fixed cracks by constraining the position of border vertices (PopGeo)
+
+2013-01-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed wrong precision for multiple instances of POP geo
+
+2013-01-03  git@x3dom.org <git@x3dom.org>
+
+  * : some weak attempts to get rid of cracks at patch borders for pop geo
+
+2012-12-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix for #145
+
+2012-12-29  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : add new state display
+
+2012-12-28  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix for issue #144 (incl. some cleanups)
+
+2012-12-20  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added missing binary data
+
+  * : Updated popGeo examples to the new encoding
+
+  * : Fixed cracks for popGeo
+
+2012-12-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added possibility to force mobile backend
+
+2012-12-19  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : small fix
+
+2012-12-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix for #136 and #143
+
+2012-12-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : x3dom_defUse.xhtml
+
+2012-12-12  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : small cleanup
+
+2012-12-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : better fix of def-use bug
+
+  * : preliminary fix for texture def-use big
+
+2012-12-12  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : texture cleanups handled by the cache
+
+2012-12-11  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Encoded PopGeoLarge example (dragon) with spherical normals
+
+2012-12-11  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] add screenshot support
+
+2012-12-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : experimental shadowObjectIdMapping field added
+
+2012-12-10  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] much more faster CanvasTexture implementation
+
+2012-12-10  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Removed unnecessary BitLOD code, support for spherical coords in popGeo
+
+2012-12-10  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] Add CanvasTexture support
+
+2012-12-10  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added support for spherical normal encoding in PopGeo
+
+2012-12-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanup of dirty state: added unsetDirty method
+
+2012-12-09  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : fixed dynamic Shape/Geo/App update
+
+2012-12-06  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix texture cache bug
+
+2012-12-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : shadowObjectIdChanged scene event added
+
+  * : Picking shader modifications for per vertex ids
+
+2012-11-30  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed Min/Max Precision display issue for dragon demo (pop)
+
+  * : Small fix in viewfrustum culling
+
+2012-11-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed some pop errors, added error tolerance slider capability
+
+2012-11-28  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added Sculpture Garden example (BinaryGeo/PopGeo)
+
+2012-11-27  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Simple view frustum culling for PopGeo
+
+  * : Removed nested jquery code from backend to PopGeoLarge example, added
+  exitFrame function in runtime
+
+2012-11-26  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added jquery progressbar to visualize amount of rendered triangles in
+  PopGeo example
+
+  * : Added simple view-dependent LOD for PopGeo
+
+2012-11-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more cleanups and improved node type dump
+
+  * : field info added
+
+  * : bunch of cleanups
+
+2012-11-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : basic per-face normals and large index handling for binary geometry (not
+  yet for tri-strips)
+
+2012-11-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : improved example
+
+2012-11-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added SpaceSensor-like example, incl. corresponding code modifications
+
+2012-11-09  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] changed FontStyle size field to X3D default behavior [flash]
+  multiline Text support per specification
+
+2012-11-09  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed shading for pop geo, added large pop geo model
+
+  * : Corrected precisionMax value during loading of popGeo
+
+  * : Another small fix
+
+  * : Smaller changes
+
+  * : Fixes in PopGeo (fixes error on mobile dev.), adaptive rendering during
+  loading
+
+2012-11-08  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Made popGeo work without DL manager use
+
+  * : Fixed issue with PopGeo when loading content with zero length
+
+2012-11-06  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Addd larger PopGeo example (buddha instead of bunny)
+
+2012-11-06  aha <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Back to development version
+
+2012-11-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed broken binary geo - if one uses an inner loop variable i there must
+  not be an outer i, hrumpf
+
+2012-11-05  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Various fixes to Docs for release; added prepare target to build script
+
+2012-11-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+2012-11-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed components and box pick mode for multi touch
+
+2012-11-02  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : adjust test
+
+2012-11-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : two little fixes
+
+2012-11-01  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : hanged FontStyle size field to X3D default behavior
+
+2012-10-30  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added per-face-normals, computed on-the-fly as soon as the last level is
+  loaded.
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added indexed rendering example for PopGeometry
+
+  * : removed UNSIGNED stuff from shaders
+
+2012-10-29  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some cleanups and fixed broken binGeo
+
+  * : some cleanups and fixed broken binGeo
+
+2012-10-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Build system: re-added version information
+
+  * : Version bump and updated documentation
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Minor changes (PopGeo)
+
+2012-10-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regen Changeliog
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Small fix (pop geo)
+
+  * : Added experimental masking of vertex positions in the vertex shader for
+  PopGeometry
+
+2012-10-26  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] add LOD and Billboard support
+
+  * : [flash] fix switching render-flag bug
+
+2012-10-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added error msg
+
+2012-10-26  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : First example with real sorting of triangle data (non-indexed)... now,
+  the bit manipulation stuff inside the shader is all that's missing.
+
+2012-10-26  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix issue #116 PointLight: radius ignored
+
+2012-10-26  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added example file for PopGeometry
+
+2012-10-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanup of RSG code
+
+  * : check for obstacles when moving back
+
+2012-10-26  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : PopGeometry (although not progressive yet) renders something now :-)
+
+2012-10-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed wrong 'if' in multi-index mesh splitting
+
+2012-10-25  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added basic support for PopGeometry, however this is not working yet
+
+2012-10-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : bbox update on node insert
+
+2012-10-24  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix for issue #71
+
+  * : normal recalc for elevationGrid on set height
+
+  * : changed version
+
+  * : removed old stuff
+
+2012-10-23  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Integrated BitLODGeometry attribute for vlc index data.
+
+  * : First working version of variable-length index coding and on-the-fly
+  normal computation in webgl
+
+2012-10-22  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fixes, cleanups and texture cache
+
+2012-10-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : invisibleNodes field added
+
+2012-10-11  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Moved normalization to vertex shader for on-the-fly normal computation
+
+2012-10-09  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Buddha example with and without on-the-fly normal computation
+
+  * : Replaced the nonindexed example model with the smaller ben model
+
+2012-10-08  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added basic example using on-the-fly normal computation
+
+2012-10-08  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fixed support for altImg. The alternative image now displays as
+  background imge of the #create-init-failed div
+
+2012-10-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : right mouse button handling hor helicopter mode
+
+2012-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - integration of a completely new Shader management system - big WebGL
+  cleanup
+
+2012-09-27  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : replaced the lights uniform Array with single uniforms per light to fix
+  ticket #110. Switching back if Chrome have fixed this bug.
+
+2012-09-26  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] add support for compact BG and BG polar normals
+
+  * : [flash] static LoaderContext for checking policy file
+
+  * : [flash] IG check for policy file
+
+2012-09-25  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] fix IE 'const' bug
+
+2012-09-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : shader opts
+
+2012-09-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added basic multiTextureCoordinate support and fixed setting booleans
+
+  * : implemented handling of vertex/normal data in 8 byte; removed special
+  bitLod pick-shader that broke picking for other objects; generalized
+  setAttribute to cope with 'set_X'; improved setAttribute parser for booleans
+
+2012-09-21  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add BitLOD Color/Texture support - fix mobile BitLOD translation bug
+
+2012-09-19  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added pure webgl example using aopts output for bitlod vertex color
+  loading
+
+2012-09-17  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Minimal changes (pure webgl example of aopt exported textured bunny)
+
+2012-09-17  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : field added
+
+2012-09-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added getNear()/getFar() method
+
+  * : added tutorial slides
+
+2012-09-12  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added examples for comparison (binary paper)
+
+  * : Added examples for comparison (binary paper)
+
+  * : Added examples for comparison (binary paper)
+
+2012-09-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor fix
+
+2012-09-11  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] BinaryGeometry center/size fix
+
+2012-09-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. pick rectangle to get all objects in it
+
+2012-09-10  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [flash] BitLODGeometry implementation [flash] Interleaved BinaryGeometry
+  implementation [flash] Middle mouse button support
+
+2012-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : inline fixes
+
+  * : used float texture for shadows if available
+
+2012-09-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed flickering on mouse events in Chrome and updated docs
+
+2012-09-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed background and mfield parsing
+
+2012-09-07  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed small DL Manager issue, added textured bunny example using the new
+  bitcomposer structures.
+
+  * : RefinementJobManager and RefinementJobWorker are working fine, but
+  without using the download manager at the moment.
+
+2012-09-06  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Continued work on the new bit composer classes.
+
+2012-09-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor fixes
+
+2012-09-06  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added the first steps toward a more flexible re-implementation of the
+  BitComposer functionality, based on jobs and aiming for the use of multiple
+  workers for a single buffer, different refinement data formats for the same
+  result buffer and easy use of multiple refinement formats (e.g. for
+  coords+normals / texcoords).
+
+2012-09-04  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : removed SQUEEZE code
+
+2012-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : test
+
+  * : test
+
+2012-08-31  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Minimal vertex split implementation: trivial cut-edge encoding, just one
+  batch per program run.
+
+2012-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : started pick normal
+
+  * : started pick normal
+
+2012-08-31  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Very buggy uncollapse example
+
+2012-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more cleanups and fixes
+
+  * : more cleanups and fixes
+
+  * : cleanups
+
+  * : cleanups
+
+2012-08-30  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : (simplified model files)
+
+  * : Smaller fixes, trivial processing of multiple simplifications
+
+  * : Added a re-implementation of the SQUEEZE algorithm, currently only
+  containing the mesh simplification.
+
+2012-08-29  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : 16 bit IDs for picking
+
+  * : 16 bit IDs for picking
+
+2012-08-23  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : multiline text border improvement
+
+  * : multiline text border improvement
+
+  * : inline Reflection test improvement
+
+  * : inline Reflection test improvement
+
+2012-08-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added 6,7,8,9 keys for heli modification
+
+  * : added 6,7,8,9 keys for heli modification
+
+2012-08-22  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added textured bunny model for test purposes.
+
+  * : Added textured bunny model for test purposes.
+
+2012-08-22  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : multiline text
+
+  * : multiline text
+
+2012-08-22  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : BitLODWorker: Changed the deprecated use of BlobBuilder into the use of
+  the Blob() constructor.
+
+  * : BitLODWorker: Changed the deprecated use of BlobBuilder into the use of
+  the Blob() constructor.
+
+2012-08-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : started helicopter mode
+
+  * : started helicopter mode
+
+2012-08-21  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added basic structure for progressive mesh comparisons.
+
+  * : Added basic structure for progressive mesh comparisons.
+
+2012-08-17  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed shader update problem
+
+  * : fixed shader update problem
+
+  * : nicification
+
+  * : nicification
+
+2012-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed field update
+
+  * : fixed field update
+
+  * : added medx3dom example
+
+  * : added medx3dom example
+
+2012-08-07  John Congote <jcongote@gmail.com>
+
+  * : MPR NEW Node test
+
+  * : MPR NEW Node test
+
+2012-08-04  John Congote <jcongote@gmail.com>
+
+  * : MEDX3DOM WEB3D 2012
+
+  * : MEDX3DOM WEB3D 2012
+
+  * : MEDX3DOM for web3d 2012
+
+  * : MEDX3DOM for web3d 2012
+
+2012-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : try
+
+  * : try
+
+  * : reverted useless test
+
+  * : reverted useless test
+
+  * : yet another test
+
+  * : yet another test
+
+2012-08-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added debug info on pressing v
+
+  * : added debug info on pressing v
+
+  * : no upright in lookat
+
+  * : no upright in lookat
+
+  * : experimental field added
+
+  * : experimental field added
+
+2012-08-01  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : First version of html example template implemented in bunny-lod.html
+  test.
+
+  * : First version of html example template implemented in bunny-lod.html
+  test.
+
+2012-07-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : multi bitLODGeometry support
+
+  * : multi bitLODGeometry support
+
+2012-07-30  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed patch position and scale, colored patches of non-x3dom bitcomposer
+  buddha example.
+
+  * : Fixed patch position and scale, colored patches of non-x3dom bitcomposer
+  buddha example.
+
+  * : Added a patched buddha example, using multiple bitComposer objects (->
+  multiple workers).
+
+  * : Added a patched buddha example, using multiple bitComposer objects (->
+  multiple workers).
+
+  * : Small fixes (normal encoding in datagen.cpp, removed whitespace in '
+  undefined' in BitLODWorker.js
+
+  * : Small fixes (normal encoding in datagen.cpp, removed whitespace in '
+  undefined' in BitLODWorker.js
+
+2012-07-27  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedFaceSet Bug Fix - issue #68
+
+  * : IndexedFaceSet Bug Fix - issue #68
+
+2012-07-26  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix und foxi
+
+  * : fix und foxi
+
+2012-07-25  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added strict return order option in DownloadManager, used DownloadManager
+  for data retrieval of BitLODComposer, changed DownloadManager get method to
+  accept a list of urls/callbacks/priorities.
+
+  * : Added strict return order option in DownloadManager, used DownloadManager
+  for data retrieval of BitLODComposer, changed DownloadManager get method to
+  accept a list of urls/callbacks/priorities.
+
+2012-07-24  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Changed the style of the buddha example to match the examples.x3dom.org
+  unstructured binary examples' look, added some explanation with external
+  links.
+
+  * : Changed the style of the buddha example to match the examples.x3dom.org
+  unstructured binary examples' look, added some explanation with external
+  links.
+
+2012-07-24  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix Firefox BitLODGeometry Bug
+
+  * : fix Firefox BitLODGeometry Bug
+
+  * : make BlobBuilder avaible in all Browsers + some fixes
+
+  * : make BlobBuilder avaible in all Browsers + some fixes
+
+2012-07-23  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : modified the old bitcomposer examples to run with the new code.
+
+  * : modified the old bitcomposer examples to run with the new code.
+
+  * : AdMissing buddha bitload files.
+
+  * : AdMissing buddha bitload files.
+
+  * : Added happy buddha bitlod example, corrected bit order in datagen.cpp
+
+  * : Added happy buddha bitlod example, corrected bit order in datagen.cpp
+
+  * : Fixed encoding issue (used ANSI instead of UTF8), worked on BitLOD stuff.
+
+  * : Fixed encoding issue (used ANSI instead of UTF8), worked on BitLOD stuff.
+
+2012-07-23  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : start impl. BitLODGeometry
+
+  * : start impl. BitLODGeometry
+
+2012-07-20  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Fixed transferable issue (only working with Chrome), several smaller
+  changes
+
+  * : Fixed transferable issue (only working with Chrome), several smaller
+  changes
+
+2012-07-19  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Smaller changes.
+
+  * : Smaller changes.
+
+  * : Added webgl-loader example (decoding the buddha) and a a modification of
+  it, using the BitComposer method (for better comparison, both e examples now
+  use the same test program.
+
+  * : Added webgl-loader example (decoding the buddha) and a a modification of
+  it, using the BitComposer method (for better comparison, both e examples now
+  use the same test program.
+
+2012-07-18  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added interleaved output for BitComposer.
+
+  * : Added interleaved output for BitComposer.
+
+2012-07-17  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added some testing and optimization code for the synchronous and
+  asynchronous bit composer.
+
+  * : Added some testing and optimization code for the synchronous and
+  asynchronous bit composer.
+
+2012-07-16  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added BitComposerSync, for experimental comparison (using no worker).
+
+  * : Added BitComposerSync, for experimental comparison (using no worker).
+
+2012-07-13  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added mouse event handling (model rotation) a and an fps counter to the
+  bitwise refinement example application. This revealed a non-interactive
+  behaviour during loading.
+
+  * : Added mouse event handling (model rotation) a and an fps counter to the
+  bitwise refinement example application. This revealed a non-interactive
+  behaviour during loading.
+
+  * : Incredible 10x speedup for the bitcomposer by leaving out color or normal
+  data (one of them, which one doesn't matter). This needs to be
+  investigated...
+
+  * : Incredible 10x speedup for the bitcomposer by leaving out color or normal
+  data (one of them, which one doesn't matter). This needs to be
+  investigated...
+
+2012-07-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added BitComposer classes to build
+
+  * : added BitComposer classes to build
+
+2012-07-13  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : fix problem with jQuery and overwrite getElementsByTagName
+
+  * : fix problem with jQuery and overwrite getElementsByTagName
+
+2012-07-12  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added more test objects, fixed bug in cpp test data generator, Added
+  BitLODGeometry test html file.
+
+  * : Added more test objects, fixed bug in cpp test data generator, Added
+  BitLODGeometry test html file.
+
+  * : Changed BitComposer interface, Added new nodes in Geometry3D.js
+
+  * : Changed BitComposer interface, Added new nodes in Geometry3D.js
+
+  * : Saving state of work (BitComposerWorker: interleaved mode).
+
+  * : Saving state of work (BitComposerWorker: interleaved mode).
+
+  * : Renamed the init(..) function of the bitcomposer to run(..), removed its
+  first argument which was the attributes' ArrayBuffers (now created by the
+  worker).
+
+  * : Renamed the init(..) function of the bitcomposer to run(..), removed its
+  first argument which was the attributes' ArrayBuffers (now created by the
+  worker).
+
+  * : Moved experimental test programs out of the example directory (into
+  test/exploration).
+
+  * : Moved experimental test programs out of the example directory (into
+  test/exploration).
+
+  * : Added bitwise refinement monkey example.
+
+  * : Added bitwise refinement monkey example.
+
+2012-07-11  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added some comments.
+
+  * : Added some comments.
+
+  * : Made the DLManager recognize already requested urls, fixed bug in
+  BitComposer (by introducing refine_private).
+
+  * : Made the DLManager recognize already requested urls, fixed bug in
+  BitComposer (by introducing refine_private).
+
+2012-07-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed bug in rsg
+
+  * : fixed bug in rsg
+
+  * : interleaved data handling added
+
+  * : interleaved data handling added
+
+2012-07-10  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : A first working version of the bitcomposer, already tested with a small
+  blender monkey example.
+
+  * : A first working version of the bitcomposer, already tested with a small
+  blender monkey example.
+
+  * : Cleanups, renamed some variables, smaller fixes, full integration of
+  download manager. This first running version of the bitcomposer should now be
+  tested.
+
+  * : Cleanups, renamed some variables, smaller fixes, full integration of
+  download manager. This first running version of the bitcomposer should now be
+  tested.
+
+2012-07-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : basic stride/offset handling added
+
+  * : basic stride/offset handling added
+
+2012-07-09  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Added a BitComposer interface that wraps the communication with the web
+  worker. Still needs some improvements.
+
+  * : Added a BitComposer interface that wraps the communication with the web
+  worker. Still needs some improvements.
+
+  * : Added feature branch: bit composer worker for progressive / LOD approach.
+
+  * : Added feature branch: bit composer worker for progressive / LOD approach.
+
+2012-07-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cont'd BinGeo bit stuff
+
+  * : cont'd BinGeo bit stuff
+
+2012-07-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : copy and paste cleanups
+
+  * : copy and paste cleanups
+
+  * : extended BinGeo
+
+  * : extended BinGeo
+
+2012-07-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixes
+
+  * : fixes
+
+2012-07-05  unknown <mlimper@PC1700.ad.igd.fraunhofer.de>
+
+  * : Added download manager example.
+
+  * : Added download manager example.
+
+2012-07-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor improvements
+
+  * : minor improvements
+
+  * : first test
+
+  * : first test
+
+  * : DynamicLOD
+
+  * : DynamicLOD
+
+2012-07-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : optimizations
+
+  * : optimizations
+
+2012-07-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : double click for touch
+
+  * : double click for touch
+
+2012-06-25  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fixed CSS/layout of canvas painting test
+
+  * : Fixed CSS/layout of canvas painting test
+
+2012-06-25  unknown <mlimper@PC1700.ad.igd.fraunhofer.de>
+
+  * : Added XHR methods test example.
+
+  * : Added XHR methods test example.
+
+2012-06-17  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed renderedTexture
+
+  * : fixed renderedTexture
+
+2012-06-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixes
+
+  * : fixes
+
+2012-06-15  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : change onload and onerror to load and error by addEventListener
+
+  * : change onload and onerror to load and error by addEventListener
+
+  * : elememt.getElementsByTagName workaround
+
+  * : elememt.getElementsByTagName workaround
+
+2012-06-14  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : overwrite getElementsByTagName for Chrome
+
+  * : overwrite getElementsByTagName for Chrome
+
+2012-06-12  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed background bug
+
+  * : fixed background bug
+
+  * : fixed volume rendering
+
+  * : fixed volume rendering
+
+2012-06-08  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : inexedTriangleSet colorPerVertex and normalPerVertex
+
+  * : inexedTriangleSet colorPerVertex and normalPerVertex
+
+2012-05-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added touchpoint visualization
+
+  * : added touchpoint visualization
+
+  * : minor fixes
+
+  * : minor fixes
+
+2012-05-26  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [Flash] impl. SortType and SortKey
+
+  * : [Flash] impl. SortType and SortKey
+
+2012-05-25  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : [Flash] impl. BinaryGeometry
+
+  * : [Flash] impl. BinaryGeometry
+
+2012-05-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed wrong triangle ordering
+
+  * : fixed wrong triangle ordering
+
+2012-05-18  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : inline Reflection change url delete nodes
+
+  * : inline Reflection change url delete nodes
+
+2012-05-16  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : fix mobile recognition
+
+  * : fix mobile recognition
+
+2012-05-16  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented sortKey for defining rendering order
+
+  * : implemented sortKey for defining rendering order
+
+  * : minor things
+
+  * : minor things
+
+2012-05-15  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : implement sortType
+
+  * : implement sortType
+
+2012-05-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : collect fix in RSG
+
+  * : collect fix in RSG
+
+  * : fixes
+
+  * : fixes
+
+2012-05-10  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : fix problem with touchevent in Mozilla
+
+  * : fix problem with touchevent in Mozilla
+
+  * : fix problem unique geoCacheID
+
+  * : fix problem unique geoCacheID
+
+2012-05-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : minor changes
+
+  * : minor changes
+
+2012-05-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. getCenter runtime func, and some fixed
+
+  * : impl. getCenter runtime func, and some fixed
+
+2012-05-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added showObject runtime method
+
+  * : added showObject runtime method
+
+2012-05-04  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Mozilla Touch Fixes
+
+  * : Mozilla Touch Fixes
+
+2012-05-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : experimental RemoteSelectionGroup
+
+  * : experimental RemoteSelectionGroup
+
+2012-04-30  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added documentation for recently added
+  (#1f33a2990c6281ff44feeb1ce8fd0a1f13678524) Runtime methods
+
+  * : Added documentation for recently added
+  (#1f33a2990c6281ff44feeb1ce8fd0a1f13678524) Runtime methods
+
+2012-04-27  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : implement methods calcPagePos and calcClientPos
+
+  * : implement methods calcPagePos and calcClientPos
+
+2012-04-20  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : mousePosition(evt) instead of layerX/layerY and begin Multitouch
+
+  * : mousePosition(evt) instead of layerX/layerY and begin Multitouch
+
+2012-04-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix??
+
+  * : fix??
+
+  * : fieldChanged for IG children
+
+  * : fieldChanged for IG children
+
+2012-04-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed ccw order for triangle generation
+
+  * : fixed ccw order for triangle generation
+
+2012-04-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - some IG rendering optimizations
+
+  * : - some IG rendering optimizations
+
+2012-04-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : first hacky version of multi-touch interaction
+
+  * : first hacky version of multi-touch interaction
+
+2012-04-04  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexeedTriangleStripSet
+
+  * : IndexeedTriangleStripSet
+
+  * : onclick
+
+  * : onclick
+
+  * : inline events: onload and onerror
+
+  * : inline events: onload and onerror
+
+  * : marge
+
+  * : marge
+
+2012-04-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed CoR for touch and added some mobile checks
+
+  * : fixed CoR for touch and added some mobile checks
+
+  * : impl. vertexCount field for BinGeo
+
+  * : impl. vertexCount field for BinGeo
+
+2012-04-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implicitMeshSize now SFVec2f
+
+  * : implicitMeshSize now SFVec2f
+
+2012-04-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated Runtime documentation for showAll axis param
+
+  * : Updated Runtime documentation for showAll axis param
+
+2012-04-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more clean-ups and drawCall stats
+
+  * : more clean-ups and drawCall stats
+
+  * : fixes
+
+  * : fixes
+
+2012-03-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cont'd with IndexedTriangleStripSet
+
+  * : cont'd with IndexedTriangleStripSet
+
+  * : fixed broken coordinate interpolation
+
+  * : fixed broken coordinate interpolation
+
+  * : implemented binary colors, and point mode for binary mesh, fixed specular
+  + vertex color for mobile, and did some clean-ups
+
+  * : implemented binary colors, and point mode for binary mesh, fixed specular
+  + vertex color for mobile, and did some clean-ups
+
+2012-03-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : rename
+
+  * : rename
+
+2012-03-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fixed wrong vertexColor lighting (flash backend)
+
+  * : - fixed wrong vertexColor lighting (flash backend)
+
+2012-03-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : first test version of BinaryMesh
+
+  * : first test version of BinaryMesh
+
+2012-03-29  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : inline events onload and onerror (beginn)
+
+  * : inline events onload and onerror (beginn)
+
+2012-03-28  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : marge
+
+  * : marge
+
+2012-03-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added resources links to documentation
+
+  * : Added resources links to documentation
+
+  * : Added additional fieldChange checks, not sure I got em all (#84)
+
+  * : Added additional fieldChange checks, not sure I got em all (#84)
+
+2012-03-23  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : array access tests
+
+  * : array access tests
+
+  * : rename
+
+  * : rename
+
+  * : rename
+
+  * : rename
+
+  * : arg. i want the history
+
+  * : arg. i want the history
+
+  * : moved from refactoring_math
+
+  * : moved from refactoring_math
+
+2012-03-22  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : delete earthServer demo
+
+  * : delete earthServer demo
+
+  * : delete v-mast test
+
+  * : delete v-mast test
+
+2012-03-21  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : fieldChange bug
+
+  * : fieldChange bug
+
+2012-03-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add IG implicitMeshSize for larger IG_Textures
+
+  * : - add IG implicitMeshSize for larger IG_Textures
+
+2012-03-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Docs updated (runtime api)
+
+  * : Docs updated (runtime api)
+
+2012-03-19  yjung <yvonne.jung@igd.fraunhofer.de>
+
+  * : added highlight function
+
+  * : added highlight function
+
+2012-03-19  Yvonne Jung <yvonne.jung@igd.fraunhofer.de>
+
+  * : added render flag to shape node
+
+  * : added render flag to shape node
+
+2012-03-19  Yvonne Jung <yvonne@pc1919-local>
+
+  * : added render flag to shape node
+
+  * : added render flag to shape node
+
+2012-03-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : showAll now parameterizable with one of six base axes
+
+  * : showAll now parameterizable with one of six base axes
+
+2012-03-15  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedTriangleStripSet beginning of optimization
+
+  * : IndexedTriangleStripSet beginning of optimization
+
+2012-03-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. isA for runtime
+
+  * : impl. isA for runtime
+
+2012-03-15  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedTriangleStripSet and node._dirty.texCoords and node._dirty.normals
+
+  * : IndexedTriangleStripSet and node._dirty.texCoords and node._dirty.normals
+
+2012-03-14  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedTriangleStripSet
+
+  * : IndexedTriangleStripSet
+
+2012-03-13  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added dumpNodeTypeTree.html to build (docs/)
+
+  * : Added dumpNodeTypeTree.html to build (docs/)
+
+  * : Refactored EarClipping and Properties code to src/util since it's not a
+  extension to the JavasScript language but seperate libraries
+
+  * : Refactored EarClipping and Properties code to src/util since it's not a
+  extension to the JavasScript language but seperate libraries
+
+  * : Fix
+
+  * : Fix
+
+  * : Documentation now uses the source generated node type tree
+
+  * : Documentation now uses the source generated node type tree
+
+  * : Refactored live documentation methods into an optional component to keep
+  core small
+
+  * : Refactored live documentation methods into an optional component to keep
+  core small
+
+2012-03-12  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added 'DumpNodeTypeTree' functionality to runtime API.
+
+  * : Added 'DumpNodeTypeTree' functionality to runtime API.
+
+2012-03-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed shader field issues
+
+  * : fixed shader field issues
+
+2012-03-08  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedTriangleStripSet
+
+  * : IndexedTriangleStripSet
+
+  * : cross domain
+
+  * : cross domain
+
+2012-03-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed viewfrustum
+
+  * : fixed viewfrustum
+
+  * : shader fixes
+
+  * : shader fixes
+
+2012-03-07  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : bug fix face color and normal
+
+  * : bug fix face color and normal
+
+2012-03-01  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : earth demo
+
+  * : earth demo
+
+2012-02-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added test for texture pick mode (was A2 FEM example)
+
+  * : added test for texture pick mode (was A2 FEM example)
+
+  * : fixed broken shader stuff in html encoding
+
+  * : fixed broken shader stuff in html encoding
+
+2012-02-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed cracks in imageGeo
+
+  * : fixed cracks in imageGeo
+
+2012-02-16  unknown <kwilkosi@.ad.igd.fraunhofer.de>
+
+  * : earth demo
+
+  * : earth demo
+
+2012-02-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : finally got everything working again
+
+  * : finally got everything working again
+
+  * : fixed broken material handle caused by changes in addField
+
+  * : fixed broken material handle caused by changes in addField
+
+2012-02-10  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Ear Clipping fix
+
+  * : Ear Clipping fix
+
+  * : Earth server demo
+
+  * : Earth server demo
+
+2012-02-09  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : earth demo
+
+  * : earth demo
+
+  * : bug fix EarClipping
+
+  * : bug fix EarClipping
+
+2012-02-02  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : getElementById Bug fix for Firefox
+
+  * : getElementById Bug fix for Firefox
+
+2012-01-13  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : added viewpointChanged event (provides matrix, position, orientation);
+  TODO: better testing + performance improvements finished viewpointChanged
+  event implementation (still TODO: finish matrix decompose via getTransform)
+  readded buggy getTransform as long as new one not finished reimplementation
+  of getTransform method (based on OpenSG code)
+
+  * : added viewpointChanged event (provides matrix, position, orientation);
+  TODO: better testing + performance improvements finished viewpointChanged
+  event implementation (still TODO: finish matrix decompose via getTransform)
+  readded buggy getTransform as long as new one not finished reimplementation
+  of getTransform method (based on OpenSG code)
+
+2012-01-12  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : earth demo
+
+  * : earth demo
+
+  * : earth demo 3D
+
+  * : earth demo 3D
+
+  * : earth demo
+
+  * : earth demo
+
+2012-01-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : reimplementation of getTransform method (based on OpenSG code)
+
+  * : reimplementation of getTransform method (based on OpenSG code)
+
+2012-01-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : finished viewpointChanged event implementation (still TODO: finish matrix
+  decompose via getTransform)
+
+  * : finished viewpointChanged event implementation (still TODO: finish matrix
+  decompose via getTransform)
+
+2012-01-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added viewpointChanged event (provides matrix, position, orientation);
+  TODO: better testing + performance improvements
+
+  * : added viewpointChanged event (provides matrix, position, orientation);
+  TODO: better testing + performance improvements
+
+2011-12-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added node attribute setters so that operator= also works
+
+  * : added node attribute setters so that operator= also works
+
+2011-12-22  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : inline reflection mapping DEF to ID
+
+  * : inline reflection mapping DEF to ID
+
+  * : inliene reflection
+
+  * : inliene reflection
+
+  * : inline Reflection
+
+  * : inline Reflection
+
+  * : layerX / layerY Bug
+
+  * : layerX / layerY Bug
+
+2011-12-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Runtime fix
+
+  * : Runtime fix
+
+2011-12-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix #62 emissiveColor not supported by Flash backend
+
+  * : - fix #62 emissiveColor not supported by Flash backend
+
+  * : - prepare shaders for outsourcing - add ComposedCubeMap support - disable
+  ImageLoadManager
+
+  * : - prepare shaders for outsourcing - add ComposedCubeMap support - disable
+  ImageLoadManager
+
+2011-12-15  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : inline reflection
+
+  * : inline reflection
+
+  * : inline reflection
+
+  * : inline reflection
+
+  * : inline reflection
+
+  * : inline reflection
+
+2011-12-13  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Switching protoype based Runtime methods instead of object literals.
+  Should fix #61.
+
+  * : Switching protoype based Runtime methods instead of object literals.
+  Should fix #61.
+
+  * : Prepared implementation of #10, also includes tests
+
+  * : Prepared implementation of #10, also includes tests
+
+  * : Implemented #9. Use at own risk.
+
+  * : Implemented #9. Use at own risk.
+
+  * : Added disableRightDrag paramter to disable mousewheel/right button drag
+  functionality
+
+  * : Added disableRightDrag paramter to disable mousewheel/right button drag
+  functionality
+
+2011-12-08  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Ear Clipping Bug fix
+
+  * : Ear Clipping Bug fix
+
+2011-12-07  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix bug with reloading textures
+
+  * : - fix bug with reloading textures
+
+2011-12-06  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated download location
+
+  * : Updated download location
+
+  * : Camera aligend Billboard https://github.com/x3dom/x3dom/issues/38
+
+  * : Camera aligend Billboard https://github.com/x3dom/x3dom/issues/38
+
+2011-12-05  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : some multitouch cleanup
+
+  * : some multitouch cleanup
+
+2011-12-05  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added parameter to disable doubleClick action on viewport
+  (https://github.com/x3dom/x3dom/issues/24)
+
+  * : Added parameter to disable doubleClick action on viewport
+  (https://github.com/x3dom/x3dom/issues/24)
+
+  * : Limit params to known keys (https://github.com/x3dom/x3dom/issues/56)
+
+  * : Limit params to known keys (https://github.com/x3dom/x3dom/issues/56)
+
+  * : Added meta tag to Added meta tag to enable ChromeFram on IE
+
+  * : Added meta tag to Added meta tag to enable ChromeFram on IE
+
+  * : Added ChromeFrame meta tag to tests
+
+  * : Added ChromeFrame meta tag to tests
+
+  * : Refresh tests
+
+  * : Refresh tests
+
+2011-12-01  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Rectangle2D subdivision
+
+  * : Rectangle2D subdivision
+
+2011-11-30  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation of concave polygons performance optimization
+
+  * : triangulation of concave polygons performance optimization
+
+2011-11-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fix path
+
+  * : Fix path
+
+  * : Rename
+
+  * : Rename
+
+  * : Added GeoComponent exmaples
+
+  * : Added GeoComponent exmaples
+
+  * : Changed building scheme to build things differently...
+
+  * : Changed building scheme to build things differently...
+
+  * : Bye, bye Makefiles
+
+  * : Bye, bye Makefiles
+
+  * : Changed URL to release directory (moved it out of the x3dom checkout)
+
+  * : Changed URL to release directory (moved it out of the x3dom checkout)
+
+  * : Fixes to components doc
+
+  * : Fixes to components doc
+
+  * : Added --rebuild target to manage script
+
+  * : Added --rebuild target to manage script
+
+  * : Added description of the more.js contents
+
+  * : Added description of the more.js contents
+
+2011-11-28  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added the ability to build debug versions of X3DOM - unminified
+  unoptimized versions
+
+  * : Added the ability to build debug versions of X3DOM - unminified
+  unoptimized versions
+
+  * : Remove cruft, we don't need the Node.JS stuff anymore. Also CherryPy is
+  redundant, we are using the stdlib server (./manage.py --runserver)
+
+  * : Remove cruft, we don't need the Node.JS stuff anymore. Also CherryPy is
+  redundant, we are using the stdlib server (./manage.py --runserver)
+
+  * : Kill old toplevel Makefile. All tasks are now in ./manage.py; renamed
+  build.py to manage.py because it is more descriptive (does not only build
+  things)
+
+  * : Kill old toplevel Makefile. All tasks are now in ./manage.py; renamed
+  build.py to manage.py because it is more descriptive (does not only build
+  things)
+
+  * : Build script now builds component versions. Note that build location
+  changed to ROOT/dist instead of ROOT/src. However old buildfile remains for
+  now.
+
+  * : Build script now builds component versions. Note that build location
+  changed to ROOT/dist instead of ROOT/src. However old buildfile remains for
+  now.
+
+2011-11-24  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation concave polygons performance optimization
+
+  * : triangulation concave polygons performance optimization
+
+  * : triangulation concave polygons
+
+  * : triangulation concave polygons
+
+2011-11-23  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation concave polygons new indexes
+
+  * : triangulation concave polygons new indexes
+
+  * : triangulation concave polygons
+
+  * : triangulation concave polygons
+
+2011-11-22  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageTexture USE bug again
+
+  * : - fix ImageTexture USE bug again
+
+2011-11-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regenerated CHANGELOG; Fixes to the components doc
+
+  * : Regenerated CHANGELOG; Fixes to the components doc
+
+2011-11-16  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - change Texture priority assignment
+
+  * : - change Texture priority assignment
+
+2011-11-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added documentation link feature to tests. When the global variable
+  X3DOM_DOCS_LINK points to  an URL of the documentation the top nav bar shows
+  that link to related documentation chapter.
+
+  * : Added documentation link feature to tests. When the global variable
+  X3DOM_DOCS_LINK points to  an URL of the documentation the top nav bar shows
+  that link to related documentation chapter.
+
+  * : Added X3DOM_SECURITY_OFF switch to prevent execution of insecure code
+  (component loading)
+
+  * : Added X3DOM_SECURITY_OFF switch to prevent execution of insecure code
+  (component loading)
+
+  * : Time Sensor loop=false fix from
+  https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4566541
+
+  * : Time Sensor loop=false fix from
+  https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4566541
+
+2011-11-14  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : aplha version of multitouch for ipad
+
+  * : aplha version of multitouch for ipad
+
+2011-11-10  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation of concave polygons
+
+  * : triangulation of concave polygons
+
+2011-11-08  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Preliminary docs for component loading
+
+  * : Preliminary docs for component loading
+
+2011-11-03  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : identifyPointDirection
+
+  * : identifyPointDirection
+
+2011-10-31  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - generate all flash cubmap mipmaps to fix Flash Player 11 cubemap bug -
+  some flash code optimation
+
+  * : - generate all flash cubmap mipmaps to fix Flash Player 11 cubemap bug -
+  some flash code optimation
+
+2011-10-27  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Tests for Triangulation by Ear Clipping for MultiIndex
+
+  * : Tests for Triangulation by Ear Clipping for MultiIndex
+
+  * : Triangulation by Ear Clipping for MultiIndex
+
+  * : Triangulation by Ear Clipping for MultiIndex
+
+2011-10-25  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Namespace x3dom for DoublyLinkedList and clean up
+
+  * : Namespace x3dom for DoublyLinkedList and clean up
+
+  * : Ear Clipping Triangulation
+
+  * : Ear Clipping Triangulation
+
+2011-10-24  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated includes of tests
+
+  * : Updated includes of tests
+
+2011-10-22  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : documentation
+
+  * : documentation
+
+2011-10-21  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageTexture USE bug
+
+  * : - fix ImageTexture USE bug
+
+2011-10-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix in height calc
+
+  * : fix in height calc
+
+2011-10-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : elevation grid
+
+  * : elevation grid
+
+2011-10-20  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : DoublyLinkedList and optimize Ear Clipping Triangulation
+
+  * : DoublyLinkedList and optimize Ear Clipping Triangulation
+
+2011-10-19  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - allow Flash crossDomain access
+
+  * : - allow Flash crossDomain access
+
+  * : - add Flash multi prim-type support
+
+  * : - add Flash multi prim-type support
+
+2011-10-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - re-add activeDownloads
+
+  * : - re-add activeDownloads
+
+2011-10-16  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add caps - make ImageLoadManager global - some fixes
+
+  * : - add caps - make ImageLoadManager global - some fixes
+
+2011-10-14  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : bunch of fixes
+
+  * : bunch of fixes
+
+2011-10-13  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Triangulation of concave polygons (single index)
+
+  * : Triangulation of concave polygons (single index)
+
+  * : Triangulation of concave polygon
+
+  * : Triangulation of concave polygon
+
+2011-10-12  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : register transform event on transform nodes, related to issue #32
+
+  * : register transform event on transform nodes, related to issue #32
+
+2011-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : terrain check
+
+  * : terrain check
+
+2011-10-11  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add ImageGeometry multi-PrimType support
+
+  * : - add ImageGeometry multi-PrimType support
+
+2011-10-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+  * : cleanups
+
+2011-10-09  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : some game mode bricolages, no terrain following yet
+
+  * : some game mode bricolages, no terrain following yet
+
+2011-10-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added mode to disable blending
+
+  * : added mode to disable blending
+
+2011-10-05  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedFaceSet fieldChange
+
+  * : IndexedFaceSet fieldChange
+
+2011-10-05  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : hope to fix make on linux
+
+  * : hope to fix make on linux
+
+  * : add missing path
+
+  * : add missing path
+
+2011-10-02  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : fixed broken sky colors
+
+  * : fixed broken sky colors
+
+2011-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add viewMatrix for ComposedShader
+
+  * : - add viewMatrix for ComposedShader
+
+2011-09-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added field update stuff, removed second texCoord3d def
+
+  * : added field update stuff, removed second texCoord3d def
+
+2011-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - increase maximum image downloads to 32 - set ImageGeometry texture
+  priority higher
+
+  * : - increase maximum image downloads to 32 - set ImageGeometry texture
+  priority higher
+
+  * : - small ImageLoadManager fix
+
+  * : - small ImageLoadManager fix
+
+2011-09-29  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : fieldChange function for Plane and Sphere
+
+  * : fieldChange function for Plane and Sphere
+
+2011-09-28  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : missed
+
+  * : missed
+
+  * : * new version of googles closure compiler * cleanup of packer python
+  script * some cleanups in code to get closure compiler work again
+
+  * : * new version of googles closure compiler * cleanup of packer python
+  script * some cleanups in code to get closure compiler work again
+
+2011-09-27  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Refactored the <param> element behavior to be more consistent. Parameters
+  are now initialized onload and passed the the X3DDocument.
+
+  * : Refactored the <param> element behavior to be more consistent. Parameters
+  are now initialized onload and passed the the X3DDocument.
+
+  * : Naive hack to build: x3dom.js x3dom.min.js x3dom-core.js
+  x3dom-core.min.js
+
+  * : Naive hack to build: x3dom.js x3dom.min.js x3dom-core.js
+  x3dom-core.min.js
+
+  * : Added support for setting components in <param> element; Prepared Main.js
+  to use DOM to parse param elements instead of using a Node which is
+  initialized too late for pre-init settings.
+
+  * : Added support for setting components in <param> element; Prepared Main.js
+  to use DOM to parse param elements instead of using a Node which is
+  initialized too late for pre-init settings.
+
+2011-09-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added what could be componetized to satisfy p.c.
+
+  * : Added what could be componetized to satisfy p.c.
+
+  * : Added ability to load Components dynamically at runtime. Added functional
+  test and documentation patch. Converted geoPrimitives2D to HTML5.
+
+  * : Added ability to load Components dynamically at runtime. Added functional
+  test and documentation patch. Converted geoPrimitives2D to HTML5.
+
+  * : Rename of README so markup works
+
+  * : Rename of README so markup works
+
+2011-09-26  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : fix
+
+  * : fix
+
+2011-09-23  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : shader stuff
+
+  * : shader stuff
+
+  * : added basics to get started with volRen
+
+  * : added basics to get started with volRen
+
+2011-09-22  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : example for 2d primitives
+
+  * : example for 2d primitives
+
+2011-09-22  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - activate new ImageLoader with CORS support - change "scale to power of
+  two" default value from "false" to "true"
+
+  * : - activate new ImageLoader with CORS support - change "scale to power of
+  two" default value from "false" to "true"
+
+2011-09-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added image loader to global Makefile and updated test headers
+
+  * : Added image loader to global Makefile and updated test headers
+
+2011-09-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - small ImageLoadManager fix
+
+  * : - small ImageLoadManager fix
+
+2011-09-19  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Update NodeTypeTree dump and updated documentation to include a link to
+  it
+
+  * : Update NodeTypeTree dump and updated documentation to include a link to
+  it
+
+2011-09-17  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix dynamic ComposedShader update
+
+  * : - fix dynamic ComposedShader update
+
+2011-09-15  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Rectangle2D, Circle2D, Arc2D
+
+  * : implementation of Rectangle2D, Circle2D, Arc2D
+
+2011-09-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Moved content from the WIKI to the documentation and README. Preperation
+  for WIKI removal.
+
+  * : Moved content from the WIKI to the documentation and README. Preperation
+  for WIKI removal.
+
+2011-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add ImageLoadManager.js (Priority-Queue for image loading)
+
+  * : - Add ImageLoadManager.js (Priority-Queue for image loading)
+
+2011-09-08  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : starting at 2d primitivs
+
+  * : starting at 2d primitivs
+
+2011-08-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Simplification
+
+  * : Simplification
+
+  * : Housekeeping
+
+  * : Housekeeping
+
+  * : Gardening
+
+  * : Gardening
+
+  * : Added internals section to doc for X3DOM hackers
+
+  * : Added internals section to doc for X3DOM hackers
+
+  * : Getting rid of NaturalDocs dependency. The API documentation is now
+  maintained with the developer documentation. There is currently no need to
+  generate private API docs.
+
+  * : Getting rid of NaturalDocs dependency. The API documentation is now
+  maintained with the developer documentation. There is currently no need to
+  generate private API docs.
+
+  * : Fix in internal references
+
+  * : Fix in internal references
+
+  * : Removed tutorials/ directory. The Tutorials have been moved to the
+  official documentation.
+
+  * : Removed tutorials/ directory. The Tutorials have been moved to the
+  official documentation.
+
+  * : Added FAQ section to docs
+
+  * : Added FAQ section to docs
+
+  * : Started compatibility matrix chapter.
+
+  * : Started compatibility matrix chapter.
+
+2011-08-23  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Moved Developers guide one level up
+
+  * : Moved Developers guide one level up
+
+  * : Added Coform tutorial
+
+  * : Added Coform tutorial
+
+  * : Added Flash Mashup tutorial
+
+  * : Added Flash Mashup tutorial
+
+  * : Added WOW Export tutorial
+
+  * : Added WOW Export tutorial
+
+  * : Added Maya Tutorial
+
+  * : Added Maya Tutorial
+
+  * : Added 3ds max eport tutorial
+
+  * : Added 3ds max eport tutorial
+
+  * : Added Blender export tutorial
+
+  * : Added Blender export tutorial
+
+  * : Added the data conversion tutorial
+
+  * : Added the data conversion tutorial
+
+  * : Image sounds and movie formats tutorial added to docs
+
+  * : Image sounds and movie formats tutorial added to docs
+
+  * : Slight restructuruing of docs to seperate concerns and make the PDF look
+  more consistent ;)
+
+  * : Slight restructuruing of docs to seperate concerns and make the PDF look
+  more consistent ;)
+
+2011-08-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Converted Styling Tutorial to doc system
+
+  * : Converted Styling Tutorial to doc system
+
+2011-08-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. Plane geo
+
+  * : impl. Plane geo
+
+2011-08-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Converted and updated getting strated tutorial to documentation system
+
+  * : Converted and updated getting strated tutorial to documentation system
+
+2011-08-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+  * : fix
+
+2011-08-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add colorTexture - Add primType TRIANGLE_STRIP
+
+  * : - Add colorTexture - Add primType TRIANGLE_STRIP
+
+2011-08-16  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added link to tutorials on website until we have a basic getting started
+  tutorial
+
+  * : Added link to tutorials on website until we have a basic getting started
+  tutorial
+
+  * : Remove execute bit, damn cygwin ;)
+
+  * : Remove execute bit, damn cygwin ;)
+
+2011-08-16  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : Geospatial test
+
+  * : Geospatial test
+
+2011-08-16  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Better display of dev note in docs
+
+  * : Better display of dev note in docs
+
+  * : Added 'under development' notice to documentation
+
+  * : Added 'under development' notice to documentation
+
+  * : Work on CORS section
+
+  * : Work on CORS section
+
+2011-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. TextureProperties (at least the most important fields)
+
+  * : impl. TextureProperties (at least the most important fields)
+
+2011-08-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Simpler structure for documentation. Layout fixes.
+
+  * : Simpler structure for documentation. Layout fixes.
+
+  * : API docs started
+
+  * : API docs started
+
+  * : Added camera navigation section and fixed layout
+
+  * : Added camera navigation section and fixed layout
+
+  * : Updated TODO list
+
+  * : Updated TODO list
+
+  * : Fixes to getting started chapter
+
+  * : Fixes to getting started chapter
+
+  * : Started 'Getting started' section of guide
+
+  * : Started 'Getting started' section of guide
+
+2011-08-10  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Moved unit tests main page to test/unit/
+
+  * : Moved unit tests main page to test/unit/
+
+2011-08-09  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added tests
+
+  * : Added tests
+
+  * : Started building unit testsuite
+
+  * : Started building unit testsuite
+
+2011-08-08  unknown <yvonne@.ad.igd.fraunhofer.de>
+
+  * : color attrib update fix
+
+  * : color attrib update fix
+
+2011-08-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : hit event object now contains attribute 'hitObject' that refers to hit
+  shape
+
+  * : hit event object now contains attribute 'hitObject' that refers to hit
+  shape
+
+2011-08-03  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add indexed IG
+
+  * : - Add indexed IG
+
+2011-08-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : look around mode
+
+  * : look around mode
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+  * : fix
+
+2011-08-02  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add IG primType-Field('TRIANGLES', 'POINTS')
+
+  * : - Add IG primType-Field('TRIANGLES', 'POINTS')
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Ploished progress indicator. Prepared for the 'bar' mode.
+
+  * : Ploished progress indicator. Prepared for the 'bar' mode.
+
+  * : Added loading indicator
+
+  * : Added loading indicator
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added onerror
+
+  * : added onerror
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Committing unfinished work on binary/compresst transport (exploration
+  that should investiage and implement different approaches like gzip, EXI,
+  etc.). Project has been scrubbed.
+
+  * : Committing unfinished work on binary/compresst transport (exploration
+  that should investiage and implement different approaches like gzip, EXI,
+  etc.). Project has been scrubbed.
+
+2011-07-29  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Start IG Multi-Textures
+
+  * : - Start IG Multi-Textures
+
+2011-07-29  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add IG Picking
+
+  * : - Add IG Picking
+
+2011-07-27  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Doc formatting fixes
+
+  * : Doc formatting fixes
+
+2011-07-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Adding exploration for evaluating possibilities with compressed formats
+
+  * : Adding exploration for evaluating possibilities with compressed formats
+
+  * : Move zip stuff to seperate module
+
+  * : Move zip stuff to seperate module
+
+  * : Added deflate/inflate implementations
+
+  * : Added deflate/inflate implementations
+
+  * : Documentation format tweaks
+
+  * : Documentation format tweaks
+
+2011-07-26  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Fix Min/Max problem
+
+  * : - Fix Min/Max problem
+
+2011-07-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Started with testcaseses for dealing with compressed inline nodes
+
+  * : Started with testcaseses for dealing with compressed inline nodes
+
+  * : Using webserver of Python stdlib
+
+  * : Using webserver of Python stdlib
+
+2011-07-25  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fixed Popen parameters for version tag generation
+
+  * : Fixed Popen parameters for version tag generation
+
+2011-07-25  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : versioning string changed svn > git
+
+  * : versioning string changed svn > git
+
+2011-07-22  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : new build.py in root create dir (dist/x3dom.js) if not exist
+
+  * : new build.py in root create dir (dist/x3dom.js) if not exist
+
+2011-07-21  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Another GeometryImage Update
+
+  * : - Another GeometryImage Update
+
+  * : - Change GeometryImage Interface
+
+  * : - Change GeometryImage Interface
+
+2011-07-21  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v3.1
+
+  * : - GPU GeometryImage implementation v3.1
+
+2011-07-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v3.0
+
+  * : - GPU GeometryImage implementation v3.0
+
+2011-07-20  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v2.0
+
+  * : - GPU GeometryImage implementation v2.0
+
+2011-07-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Start GPU-based GeometryImage implementation
+
+  * : - Start GPU-based GeometryImage implementation
+
+2011-07-19  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added documentation and ideas for dealing with large models
+
+  * : Added documentation and ideas for dealing with large models
+
+2011-07-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add Flash GeometryImage implementation
+
+  * : - Add Flash GeometryImage implementation
+
+2011-07-05  aha <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added more doucmentaion, including release notes and licenses
+
+  * : Added more doucmentaion, including release notes and licenses
+
+2011-06-28  aha <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added troubleshooting section to users guide
+
+  * : Added troubleshooting section to users guide
+
+  * : Added copyright and license notice to source files
+
+  * : Added copyright and license notice to source files
+
+2011-06-25  Johannes Behr <johannes.behr@gmail.com>
+
+  * : additional authors added
+
+  * : additional authors added
+
+2011-06-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated ChangeLog generation task to use git instead of svn
+
+  * : Updated ChangeLog generation task to use git instead of svn
+
+2011-06-14  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Fix Webfont-Canvas Bug - Add unique Light ID's - Prepare Flash for
+  LightPrePass Rendering 
+
+  * : - Fix Webfont-Canvas Bug - Add unique Light ID's - Prepare Flash for
+  LightPrePass Rendering 
+
+2011-06-09  timmjd <timmjd@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Geo: uses geoOrigin to transform geoCoordinate 
+
+  * : Geo: uses geoOrigin to transform geoCoordinate 
+
+2011-06-06  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Re-Add IE-Body-Hack. Flash doesn't work without! 
+
+  * : - Re-Add IE-Body-Hack. Flash doesn't work without! 
+
+2011-06-06  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Doc system updates 
+
+  * : Doc system updates 
+
+  * : File rename 
+
+  * : File rename 
+
+2011-06-01  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-06-01  timmjd <timmjd@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : inital geo transformation code 
+
+  * : inital geo transformation code 
+
+2011-06-01  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2011-05-31  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Work on the guide 
+
+  * : Work on the guide 
+
+  * : Whoops 
+
+  * : Whoops 
+
+  * : Adding Sphinx Documentation System scaffolding 
+
+  * : Adding Sphinx Documentation System scaffolding 
+
+2011-05-30  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added showStat option to <param> overrideing the X3D element attribute 
+
+  * : Added showStat option to <param> overrideing the X3D element attribute 
+
+  * : Added showLog param to <param> element. 
+
+  * : Added showLog param to <param> element. 
+
+2011-05-30  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-05-26  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add Flash version detection script - Add Flex 4 ToolBuilder for
+  renaming FlashBackend.swf to x3dom.swf after build 
+
+  * : - Add Flash version detection script - Add Flex 4 ToolBuilder for
+  renaming FlashBackend.swf to x3dom.swf after build 
+
+  * : 
+
+  * : 
+
+2011-05-25  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add cubemap for Flash example 
+
+  * : - Add cubemap for Flash example 
+
+  * : - Add Flash ComposedCubeMapTexture rendering 
+
+  * : - Add Flash ComposedCubeMapTexture rendering 
+
+  * : 
+
+  * : 
+
+  * : - Fix Background Bug 
+
+  * : - Fix Background Bug 
+
+2011-05-24  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-05-24  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added example for param thing. Modified default values ofr
+  PrimitiveQuality setting 
+
+  * : Added example for param thing. Modified default values ofr
+  PrimitiveQuality setting 
+
+  * : back to stone-age typography 
+
+  * : back to stone-age typography 
+
+  * : Added PrimitiveQuality paramter and useage in Sphere node. Also added
+  test for param tag 
+
+  * : Added PrimitiveQuality paramter and useage in Sphere node. Also added
+  test for param tag 
+
+  * : Updating tests for param stuff 
+
+  * : Updating tests for param stuff 
+
+  * : Adapted makefiles for param stuff 
+
+  * : Adapted makefiles for param stuff 
+
+  * : Added <param> node to allow configruation via using a <param> tag 
+
+  * : Added <param> node to allow configruation via using a <param> tag 
+
+2011-05-23  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2011-05-23  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Adapted Makefiles for Geospatial nodes 
+
+  * : Adapted Makefiles for Geospatial nodes 
+
+2011-05-23  timmjd <timmjd@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : cleanup x3d names 
+
+  * : cleanup x3d names 
+
+2011-05-23  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Fixes to Geospatial nodes and updating tests 
+
+  * : Fixes to Geospatial nodes and updating tests 
+
+  * : Fixes to Geospatial-Node implementation 
+
+  * : Fixes to Geospatial-Node implementation 
+
+2011-05-23  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2011-05-22  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2011-05-17  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added classes to UML diagram 
+
+  * : Added classes to UML diagram 
+
+  * : Refacoring: Grouping nodes to nodes/Grouping.js 
+
+  * : Refacoring: Grouping nodes to nodes/Grouping.js 
+
+  * : Cleanup 
+
+  * : Cleanup 
+
+  * : Moved node setup stuff (like namespace and helper functions) to
+  Internals.js. Not sure if this is the right place to put it, but well. 
+
+  * : Moved node setup stuff (like namespace and helper functions) to
+  Internals.js. Not sure if this is the right place to put it, but well. 
+
+  * : Refreshed changelog and added build.py placeholder file 
+
+  * : Refreshed changelog and added build.py placeholder file 
+
+  * : Refactoring: NodeNameSpace to nodes/NodeNameSpace.js 
+
+  * : Refactoring: NodeNameSpace to nodes/NodeNameSpace.js 
+
+  * : Makefile fixes 
+
+  * : Makefile fixes 
+
+  * : Moved build_x3dom.bat to toplevel/build.bat 
+
+  * : Moved build_x3dom.bat to toplevel/build.bat 
+
+  * : Refactoring: BindableBag/Stack to node/Bindable.js 
+
+  * : Refactoring: BindableBag/Stack to node/Bindable.js 
+
+2011-05-16  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add DrawableObject.as 
+
+  * : - Add DrawableObject.as 
+
+  * : - Start Flash Def/Use implementation 
+
+  * : - Start Flash Def/Use implementation 
+
+2011-05-16  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Refactor: X3DCanvas and Runtime get their own files 
+
+  * : Refactor: X3DCanvas and Runtime get their own files 
+
+  * : DRYing: x3dom-internals.js to Internals.js and x3dmain.js to Main.js 
+
+  * : DRYing: x3dom-internals.js to Internals.js and x3dmain.js to Main.js 
+
+  * : Refactor: Shape nodes code -> node/Shape.js 
+
+  * : Refactor: Shape nodes code -> node/Shape.js 
+
+  * : Refacored Rendering nodes to node/Rendering.js 
+
+  * : Refacored Rendering nodes to node/Rendering.js 
+
+  * : Refactor Geometry3D nodes to node/Geometry3D.js 
+
+  * : Refactor Geometry3D nodes to node/Geometry3D.js 
+
+  * : Refactor Geometry3D nodes to node/Geometry3D.js 
+
+  * : Refactor Geometry3D nodes to node/Geometry3D.js 
+
+  * : Refactor Shadres Node to node/Shaders.js 
+
+  * : Refactor Shadres Node to node/Shaders.js 
+
+  * : Refactored Texturing nodes to node/Texturing.js 
+
+  * : Refactored Texturing nodes to node/Texturing.js 
+
+  * : Refactored Sound nodes to nodes/Sound.js 
+
+  * : Refactored Sound nodes to nodes/Sound.js 
+
+  * : Refactor Text node to nodes/Text.js 
+
+  * : Refactor Text node to nodes/Text.js 
+
+  * : Refactored Navigation node to nodes/Navigation.js 
+
+  * : Refactored Navigation node to nodes/Navigation.js 
+
+  * : Refresh tests to reflect refactoring changes 
+
+  * : Refresh tests to reflect refactoring changes 
+
+  * : Refactor Environmental Effects to nodes/EnvironmentalEffects.js 
+
+  * : Refactor Environmental Effects to nodes/EnvironmentalEffects.js 
+
+  * : Refactored: x3d.js -> nodes/Core.js (needs more cleanup and seperating of
+  components); Lighting code to nodes/Lighting.js 
+
+  * : Refactored: x3d.js -> nodes/Core.js (needs more cleanup and seperating of
+  components); Lighting code to nodes/Lighting.js 
+
+2011-05-16  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add Flash Color Picking 
+
+  * : - Add Flash Color Picking 
+
+2011-05-12  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-05-11  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fix Flash/XHTML/IE9 embeding 
+
+  * : - fix Flash/XHTML/IE9 embeding 
+
+2011-05-09  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Refactor: Time nodes to src/Time.js 
+
+  * : Refactor: Time nodes to src/Time.js 
+
+  * : Interpolator to nodes/Interpolator.js 
+
+  * : Interpolator to nodes/Interpolator.js 
+
+  * : Interpolator to nodes/Interpolator.js 
+
+  * : Interpolator to nodes/Interpolator.js 
+
+  * : Refactored: Networking nodes to nodes/Networking.js 
+
+  * : Refactored: Networking nodes to nodes/Networking.js 
+
+  * : Rename of tools/config to natural-docs-config 
+
+  * : Rename of tools/config to natural-docs-config 
+
+  * : Cleanup: meta.js -> version.js 
+
+  * : Cleanup: meta.js -> version.js 
+
+  * : Rename to uppercase 
+
+  * : Rename to uppercase 
+
+  * : Refactor mesh.js -> Mesh.js 
+
+  * : Refactor mesh.js -> Mesh.js 
+
+  * : Adopted naming convention to use same case in filenames as in code. i.e.
+  x3dom.Viewarea code goes to Viewarea.js or x3dom.X3DDocument goes into
+  X3DDocument.js 
+
+  * : Adopted naming convention to use same case in filenames as in code. i.e.
+  x3dom.Viewarea code goes to Viewarea.js or x3dom.X3DDocument goes into
+  X3DDocument.js 
+
+  * : Refactoring: follower nodes now in nodes/Follower.js 
+
+  * : Refactoring: follower nodes now in nodes/Follower.js 
+
+  * : Refactoring: Moved src/x3d.js:MatrixMixer code into src/MatrixMixer.js 
+
+  * : Refactoring: Moved src/x3d.js:MatrixMixer code into src/MatrixMixer.js 
+
+  * : Refacoting: Moved x3dom.Viewarea code from src/x3d.js to
+  src/x3d_viewarea.js 
+
+  * : Refacoting: Moved x3dom.Viewarea code from src/x3d.js to
+  src/x3d_viewarea.js 
+
+2011-05-08  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add Flash colorRGBA 
+
+  * : - Add Flash colorRGBA 
+
+  * : - Fix Flash low alpha discard 
+
+  * : - Fix Flash low alpha discard 
+
+  * : - Fix Flash vertex color alpha bug - Fix Flash solid bug 
+
+  * : - Fix Flash vertex color alpha bug - Fix Flash solid bug 
+
+  * : - Add Flash Text Rendering - Fix some Flash Shader Bugs 
+
+  * : - Add Flash Text Rendering - Fix some Flash Shader Bugs 
+
+2011-05-06  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fix Flash unreleased Buffer and Sampler bug - fix Flash vertexColor bug
+  - fix Flash alpha bending bug 
+
+  * : - fix Flash unreleased Buffer and Sampler bug - fix Flash vertexColor bug
+  - fix Flash alpha bending bug 
+
+  * : 
+
+  * : 
+
+  * : - Add Flash ShaderGenerator - Fix Flash non power of two bug - Fix Flash
+  scaling bug - Fix Flash texture bug 
+
+  * : - Add Flash ShaderGenerator - Fix Flash non power of two bug - Fix Flash
+  scaling bug - Fix Flash texture bug 
+
+2011-05-03  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Refactoring: Moved X3DDocument from x3d.js into src/x3d_document.js 
+
+  * : Refactoring: Moved X3DDocument from x3d.js into src/x3d_document.js 
+
+  * : Added test and fix to memory consumption with XHR requests 
+
+  * : Added test and fix to memory consumption with XHR requests 
+
+  * : Added test to check for memeory leaks 
+
+  * : Added test to check for memeory leaks 
+
+  * : Relocated jquery for examples to example/media/js instead of src/jQuery 
+
+  * : Relocated jquery for examples to example/media/js instead of src/jQuery 
+
+2011-05-02  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Updated local server to use root of project dir instead of tests to allow
+  loading files from src/ 
+
+  * : Updated local server to use root of project dir instead of tests to allow
+  loading files from src/ 
+
+  * : runtime.enterFrame can now be overwritten on X3D-element basis.
+  runtime.ready still is system wide only due to intititalization sequence. the
+  runtime object is only available onLoad, not before, because onLoad creates
+  the x3d element itself to which runtime is attached. 
+
+  * : runtime.enterFrame can now be overwritten on X3D-element basis.
+  runtime.ready still is system wide only due to intititalization sequence. the
+  runtime object is only available onLoad, not before, because onLoad creates
+  the x3d element itself to which runtime is attached. 
+
+2011-04-19  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : -Add missing JQuery files 
+
+  * : -Add missing JQuery files 
+
+2011-04-19  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added runtime.enterFrame() and runtime.ready() hooks to allow user
+  overwrites 
+
+  * : Added runtime.enterFrame() and runtime.ready() hooks to allow user
+  overwrites 
+
+  * : Added support to change Text via setAttribute() 
+
+  * : Added support to change Text via setAttribute() 
+
+2011-04-18  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added warning message of not implemented changeField() on text node 
+
+  * : Added warning message of not implemented changeField() on text node 
+
+2011-04-18  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2011-04-14  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add simple Flash skyColor Background 
+
+  * : - add simple Flash skyColor Background 
+
+  * : 
+
+  * : 
+
+2011-04-12  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Cleanup runtime api 
+
+  * : Cleanup runtime api 
+
+  * : Made API docs less verbose. 
+
+  * : Made API docs less verbose. 
+
+  * : Fixed getBindable thingy 
+
+  * : Fixed getBindable thingy 
+
+  * : Fixes with exmaple showing runtime 
+
+  * : Fixes with exmaple showing runtime 
+
+  * : Fixed runtime example to show a reduced set of runtime functionality 
+
+  * : Fixed runtime example to show a reduced set of runtime functionality 
+
+2011-04-11  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added example for runtime functionality. Also some fixes 
+
+  * : Added example for runtime functionality. Also some fixes 
+
+  * : Added inline documentation to the runtime functions 
+
+  * : Added inline documentation to the runtime functions 
+
+  * : Added more methods to the e.runtime object. 
+
+  * : Added more methods to the e.runtime object. 
+
+2011-04-06  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fix 
+
+  * : fix 
+
+2011-04-05  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added some runtime.* API methods and testcase 
+
+  * : Added some runtime.* API methods and testcase 
+
+  * : Moved slides and paper to doc directory 
+
+  * : Moved slides and paper to doc directory 
+
+  * : Fixes to tests 
+
+  * : Fixes to tests 
+
+  * : Updated tests to include flash backend 
+
+  * : Updated tests to include flash backend 
+
+  * : Added python script to update html includes with test/functional 
+
+  * : Added python script to update html includes with test/functional 
+
+2011-04-05  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : - Add Flash Backend Alpha 0.1 
+
+  * : - Add Flash Backend Alpha 0.1 
+
+2011-04-04  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Fixed problem in Makfile 
+
+  * : Fixed problem in Makfile 
+
+  * : Refactored x3dom.Mesh code to src/mesh.js. Also added script and
+  Makefileupdate to search and replace the script-includes in test/functioncal.
+  However tools/sedml.sh not working yet due to what seems to be encoding
+  problems. Need to crosscheck on a native unix machine 
+
+  * : Refactored x3dom.Mesh code to src/mesh.js. Also added script and
+  Makefileupdate to search and replace the script-includes in test/functioncal.
+  However tools/sedml.sh not working yet due to what seems to be encoding
+  problems. Need to crosscheck on a native unix machine 
+
+  * : More cleaning of src/ folder 
+
+  * : More cleaning of src/ folder 
+
+2011-03-29  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Removed old tests from src/ 
+
+  * : Removed old tests from src/ 
+
+  * : Removed old tests from src 
+
+  * : Removed old tests from src 
+
+  * : Moved rest of the tests to test/functional 
+
+  * : Moved rest of the tests to test/functional 
+
+  * : Moving textures for blinkingLight test 
+
+  * : Moving textures for blinkingLight test 
+
+  * : Moved a good deal more of tests from src/ to dedicated test/functional 
+
+  * : Moved a good deal more of tests from src/ to dedicated test/functional 
+
+  * : Moved a good deal more of tests from src/ to dedicated test/functional 
+
+  * : Moved a good deal more of tests from src/ to dedicated test/functional 
+
+  * : Moved some tests to test/functional 
+
+  * : Moved some tests to test/functional 
+
+  * : More tests moved to test/functional 
+
+  * : More tests moved to test/functional 
+
+  * : Converted two more tests to test/functional 
+
+  * : Converted two more tests to test/functional 
+
+  * : Updated canvas painting test (adapted to test/functional) 
+
+  * : Updated canvas painting test (adapted to test/functional) 
+
+2011-03-28  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Moved x3dom.isa() and defineClass() methods from x3d.js to
+  x3dom-internals.js 
+
+  * : Moved x3dom.isa() and defineClass() methods from x3d.js to
+  x3dom-internals.js 
+
+  * : Added blinkingLight test to test/functional/ 
+
+  * : Added blinkingLight test to test/functional/ 
+
+  * : Additional function test in test/ 
+
+  * : Additional function test in test/ 
+
+  * : Refactored static x3dom.getStyle() function to x3dom-internals.js and
+  added documentation 
+
+  * : Refactored static x3dom.getStyle() function to x3dom-internals.js and
+  added documentation 
+
+  * : Starting re-org of src/ tree. Tests in src/ will most likely break the
+  next couple of weeks. Tests in test/functional still work. 
+
+  * : Starting re-org of src/ tree. Tests in src/ will most likely break the
+  next couple of weeks. Tests in test/functional still work. 
+
+  * : Starting re-org of src/ tree. Tests in src/ will most likely break the
+  next couple of weeks. Tests in test/functional still work. 
+
+  * : Starting re-org of src/ tree. Tests in src/ will most likely break the
+  next couple of weeks. Tests in test/functional still work. 
+
+  * : Using camel case convetion with tests 
+
+  * : Using camel case convetion with tests 
+
+  * : Implemented x3dom._runtime.getActiveBindable(typeName). Please review 
+
+  * : Implemented x3dom._runtime.getActiveBindable(typeName). Please review 
+
+2011-03-22  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added the runtime object to each X3D element instead of using a system
+  wide object. 
+
+  * : Added the runtime object to each X3D element instead of using a system
+  wide object. 
+
+  * : API documentation 
+
+  * : API documentation 
+
+  * : Added support for generating API documentation using lean and mean
+  NaturalDocs.org system 
+
+  * : Added support for generating API documentation using lean and mean
+  NaturalDocs.org system 
+
+  * : Added x3dom.runtime stub 
+
+  * : Added x3dom.runtime stub 
+
+2011-03-14  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : More test cleanup 
+
+  * : More test cleanup 
+
+2011-03-07  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : More cleaning up of tests 
+
+  * : More cleaning up of tests 
+
+2011-03-01  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Started work on putting acceptance tests in seperate directory 
+
+  * : Started work on putting acceptance tests in seperate directory 
+
+2011-02-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : worked on mt 
+
+  * : worked on mt 
+
+2011-02-22  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : More work on multitouch. For now only FF is supported, and only
+  partially. Added a pinch-gesture to zoom scene. Partially working with FF
+  only 
+
+  * : More work on multitouch. For now only FF is supported, and only
+  partially. Added a pinch-gesture to zoom scene. Partially working with FF
+  only 
+
+  * : Adding multitouch examples (mock) 
+
+  * : Adding multitouch examples (mock) 
+
+2011-02-21  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Started to working on touch support 
+
+  * : Started to working on touch support 
+
+2011-02-15  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Lint errors down  to 'Dont make functions within a loop.' 
+
+  * : Lint errors down  to 'Dont make functions within a loop.' 
+
+  * : Down to 52 liniting errors 
+
+  * : Down to 52 liniting errors 
+
+  * : Lint error cleanup installment 2 
+
+  * : Lint error cleanup installment 2 
+
+  * : Fixed a whole slew of Lint errors 
+
+  * : Fixed a whole slew of Lint errors 
+
+  * : Making the Flipper test case work as HTML variant 
+
+  * : Making the Flipper test case work as HTML variant 
+
+  * : Using src/VERSION instead of version.txt 
+
+  * : Using src/VERSION instead of version.txt 
+
+2011-02-11  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Renaming the python module marker (.py not ,py) 
+
+  * : Renaming the python module marker (.py not ,py) 
+
+2011-02-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : try catch around python svn call 
+
+  * : try catch around python svn call 
+
+2011-02-08  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Regenerated ChangeLog 
+
+  * : Regenerated ChangeLog 
+
+  * : Merge branch 'buildsystem'  Conflicts: src/gfx_webgl.js 
+
+  * : Merge branch 'buildsystem'  Conflicts: src/gfx_webgl.js 
+
+  * : Added the use of webfonts in HTML to text examples (webfonts not rendered
+  on canvas if not displayed before in  plain HTML). Also switch back to
+  innerHTML() in logging because FF does not support innerText(). 
+
+  * : Added the use of webfonts in HTML to text examples (webfonts not rendered
+  on canvas if not displayed before in  plain HTML). Also switch back to
+  innerHTML() in logging because FF does not support innerText(). 
+
+  * : Making webfonts work 
+
+  * : Making webfonts work 
+
+2011-02-07  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Fixes to styles of exmaples 
+
+  * : Fixes to styles of exmaples 
+
+  * : Merge branch 'text' 
+
+  * : Merge branch 'text' 
+
+  * : Added link back to the examples index (in text exmaple) 
+
+  * : Added link back to the examples index (in text exmaple) 
+
+2011-02-03  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : CSS fixes (examples layout) 
+
+  * : CSS fixes (examples layout) 
+
+  * : Added CSS file and media directories for exmaples. Added basic text
+  exmaple 
+
+  * : Added CSS file and media directories for exmaples. Added basic text
+  exmaple 
+
+2011-02-01  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Some HTML cleanup 
+
+  * : Some HTML cleanup 
+
+2011-01-27  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add origChannelCount in x3dom_bmwConfig.html and x3dom_bmwConfig.xhtml 
+
+  * : - add origChannelCount in x3dom_bmwConfig.html and x3dom_bmwConfig.xhtml 
+
+2011-01-25  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Adding directionality to text, though noop working yet 
+
+  * : Adding directionality to text, though noop working yet 
+
+  * : Fixed bug appearning in in FF with textAlign value of text canvas
+  (NS_ERROR_ILLEGAL_VALUE). 
+
+  * : Fixed bug appearning in in FF with textAlign value of text canvas
+  (NS_ERROR_ILLEGAL_VALUE). 
+
+2011-01-18  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : More work on Text integration 
+
+  * : More work on Text integration 
+
+2011-01-18  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-01-18  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Text stuff 
+
+  * : Text stuff 
+
+  * : Better changelog 
+
+  * : Better changelog 
+
+  * : File cleanup 
+
+  * : File cleanup 
+
+  * : Started work on Text implementation 
+
+  * : Started work on Text implementation 
+
+2011-01-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-01-11  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Fixing links in tutorials files 
+
+  * : Fixing links in tutorials files 
+
+  * : Tutorial changes 
+
+  * : Tutorial changes 
+
+  * : Updated CSS styling tutorial 
+
+  * : Updated CSS styling tutorial 
+
+  * : Slicht re-org of styling tutorial 
+
+  * : Slicht re-org of styling tutorial 
+
+  * : Refactoring test dir according to bp 
+
+  * : Refactoring test dir according to bp 
+
+  * : Cleanup: Renaming unit test dir to test/ according to best practices. 
+
+  * : Cleanup: Renaming unit test dir to test/ according to best practices. 
+
+  * : Adding a better CHANGELOG file 
+
+  * : Adding a better CHANGELOG file 
+
+  * : rename example 
+
+  * : rename example 
+
+2011-01-07  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2011-01-04  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Updated some examples to use self-cleraing floats for a div which
+  contains the X3d element 
+
+  * : Updated some examples to use self-cleraing floats for a div which
+  contains the X3d element 
+
+  * : Updated some examples to use self-cleraing floats for a div which
+  contains the X3d element 
+
+  * : Updated some examples to use self-cleraing floats for a div which
+  contains the X3d element 
+
+  * : * added self-clearing float class to x3dom.css * updated some examples to
+  use self-cleraing floats for a div which contains the X3d element 
+
+  * : * added self-clearing float class to x3dom.css * updated some examples to
+  use self-cleraing floats for a div which contains the X3d element 
+
+  * : removed old styles test and added test_cssIntegration.html to the index 
+
+  * : removed old styles test and added test_cssIntegration.html to the index 
+
+  * : Updated teapot css to account for changes in x3dom.css due to removing
+  canvas-div 
+
+  * : Updated teapot css to account for changes in x3dom.css due to removing
+  canvas-div 
+
+  * : Fix for picking in FF (layout problem) 
+
+  * : Fix for picking in FF (layout problem) 
+
+2011-01-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl. skyColor field in Bgnd. and ColorInterpolator
+  nodetest_skyColor.xhtml 
+
+  * : impl. skyColor field in Bgnd. and ColorInterpolator
+  nodetest_skyColor.xhtml 
+
+2010-12-21  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Fixed FF not getting style changes (now working) 
+
+  * : Fixed FF not getting style changes (now working) 
+
+  * : More work on style integration. Strange problem:  * Webkit does not get
+  height syle change (always returns 0px) * Firefox does not get background
+  style change * Style change by switching classes still not detectable 
+
+  * : More work on style integration. Strange problem:  * Webkit does not get
+  height syle change (always returns 0px) * Firefox does not get background
+  style change * Style change by switching classes still not detectable 
+
+2010-12-16  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : A few renames and cleanup 
+
+  * : A few renames and cleanup 
+
+2010-12-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : started working on bgnd. 
+
+  * : started working on bgnd. 
+
+  * : added barcelona model 
+
+  * : added barcelona model 
+
+  * : fixes 
+
+  * : fixes 
+
+2010-12-12  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-12-11  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : walk 
+
+  * : walk 
+
+  * : fixes 
+
+  * : fixes 
+
+2010-12-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added simple billboard test 
+
+  * : added simple billboard test 
+
+  * : impl. fly mode 
+
+  * : impl. fly mode 
+
+2010-12-08  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-12-07  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add Common Surface Shader Normal Mapping (Beta 2.0) - add Common
+  Surface Shader Specular Mapping - add test_commonSurfaceShader01.xhtml - add
+  test_commonSurfaceShader02.xhtml 
+
+  * : - add Common Surface Shader Normal Mapping (Beta 2.0) - add Common
+  Surface Shader Specular Mapping - add test_commonSurfaceShader01.xhtml - add
+  test_commonSurfaceShader02.xhtml 
+
+2010-12-07  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : removed unnecessary matrix 
+
+  * : removed unnecessary matrix 
+
+2010-12-02  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-12-02  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : small/tiny version added 
+
+  * : small/tiny version added 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-12-02  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Pimp up of carousel example 
+
+  * : Pimp up of carousel example 
+
+2010-12-01  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add CommonSurfaceShader Normal Mapping (beta) - Add
+  test_cssNormalMapping.xhtml - Update test_commonSurface.xhtml 
+
+  * : - Add CommonSurfaceShader Normal Mapping (beta) - Add
+  test_cssNormalMapping.xhtml - Update test_commonSurface.xhtml 
+
+2010-12-01  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-11-30  juangabreil <juangabreil@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Billboard node implemented 
+
+  * : Billboard node implemented 
+
+2010-11-30  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : tutorials/ folder reorg 
+
+  * : tutorials/ folder reorg 
+
+  * : First (rough) draft of styling tutorial 
+
+  * : First (rough) draft of styling tutorial 
+
+  * : more work on styling tutorial 
+
+  * : more work on styling tutorial 
+
+  * : * more work on tutorial for styling 
+
+  * : * more work on tutorial for styling 
+
+  * : Rename tutorial files 
+
+  * : Rename tutorial files 
+
+  * : Started working on tutorial for styling x3d element 
+
+  * : Started working on tutorial for styling x3d element 
+
+2010-11-29  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : initial check-in 
+
+  * : initial check-in 
+
+2010-11-27  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-11-26  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-11-26  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-11-25  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Set svn:ignore property 
+
+  * : Set svn:ignore property 
+
+2010-11-25  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-11-25  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : * fullscreen example updated * refactor: using global 16ms timer to watch
+  for CSS changes 
+
+  * : * fullscreen example updated * refactor: using global 16ms timer to watch
+  for CSS changes 
+
+  * : * added watching of CSS change events to implement fullsize stuff. *
+  removed x3dom.css() and refactored to use x3dom.getStyle() (hidden in x3d.js)
+  * Updated fullscreen example (test_fullscreen.xhtml) 
+
+  * : * added watching of CSS change events to implement fullsize stuff. *
+  removed x3dom.css() and refactored to use x3dom.getStyle() (hidden in x3d.js)
+  * Updated fullscreen example (test_fullscreen.xhtml) 
+
+2010-11-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl. removeEventListener 
+
+  * : impl. removeEventListener 
+
+  * : removed warnings 
+
+  * : removed warnings 
+
+2010-11-23  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Styling, some properties work. 
+
+  * : Styling, some properties work. 
+
+2010-11-17  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : UI event handler for X3D element 
+
+  * : UI event handler for X3D element 
+
+2010-11-15  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Add test_FromMaxExportedCoordIntp.xhtml 
+
+  * : - Add test_FromMaxExportedCoordIntp.xhtml 
+
+2010-11-11  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Styles integration. At the moment the viewarea is not properly updated:
+  elements get stretched when canvas is of dynamic size (i.e. 45%) and browser
+  window is being resized. 
+
+  * : Styles integration. At the moment the viewarea is not properly updated:
+  elements get stretched when canvas is of dynamic size (i.e. 45%) and browser
+  window is being resized. 
+
+  * : Added test for CSS styles (styling of X3D element via styles property) 
+
+  * : Added test for CSS styles (styling of X3D element via styles property) 
+
+2010-11-09  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Started to work on styles 
+
+  * : Started to work on styles 
+
+2010-11-05  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : * Added a method to enable proper prototypical inheritance
+  (x3dom.extend()). If inheritance is desired, I should now be done like so: 
+  obj.prototype = x3dom.extend(new Array)  * Removed the _wrap() workaround *
+  Added jsdoc documentation to new x3dom.extend() method   
+
+  * : * Added a method to enable proper prototypical inheritance
+  (x3dom.extend()). If inheritance is desired, I should now be done like so: 
+  obj.prototype = x3dom.extend(new Array)  * Removed the _wrap() workaround *
+  Added jsdoc documentation to new x3dom.extend() method   
+
+2010-11-03  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fix originalChannelCount - add test_originalChannelCount.xhtml 
+
+  * : - fix originalChannelCount - add test_originalChannelCount.xhtml 
+
+2010-11-01  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-10-30  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : add bind to better name the example 
+
+  * : add bind to better name the example 
+
+2010-10-29  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : addEventListener 
+
+  * : addEventListener 
+
+  * : events as function 
+
+  * : events as function 
+
+2010-10-26  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : transitionType/-Time 
+
+  * : transitionType/-Time 
+
+2010-10-25  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-10-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : improved mouse event handling 
+
+  * : improved mouse event handling 
+
+2010-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-10-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : viewpoint next/prev switching added to key [ and ] 
+
+  * : viewpoint next/prev switching added to key [ and ] 
+
+2010-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : _nodeBag clean-up 
+
+  * : _nodeBag clean-up 
+
+2010-10-22  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fixed #32 Add support for ColorRGBA 
+
+  * : - fixed #32 Add support for ColorRGBA 
+
+2010-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-10-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-10-21  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - rename Iphone_Video from .ogm to .ogv for Firefox Beta 
+
+  * : - rename Iphone_Video from .ogm to .ogv for Firefox Beta 
+
+  * : - add IPhone Example 
+
+  * : - add IPhone Example 
+
+2010-10-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : movies are NPOT: repeatS='false' repeatT='false' 
+
+  * : movies are NPOT: repeatS='false' repeatT='false' 
+
+2010-10-19  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-10-18  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added x3dom.css again and integrated sculpture example 
+
+  * : added x3dom.css again and integrated sculpture example 
+
+2010-10-18  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : started with texcoord pickMode 
+
+  * : started with texcoord pickMode 
+
+2010-10-18  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : skulptur added 
+
+  * : skulptur added 
+
+  * : cleanup 
+
+  * : cleanup 
+
+2010-10-15  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-10-14  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : Styling der IX Seiten: Alle neuen haben hinten ein name_2_.html am Ende 
+
+  * : Styling der IX Seiten: Alle neuen haben hinten ein name_2_.html am Ende 
+
+2010-10-06  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-10-01  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : field test update 
+
+  * : field test update 
+
+2010-09-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-09-24  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : creaseAngle fixes 
+
+  * : creaseAngle fixes 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-09-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-09-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : iX examples 
+
+  * : iX examples 
+
+2010-09-22  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add NPOT Texture Scaling 
+
+  * : - add NPOT Texture Scaling 
+
+2010-09-15  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed matrix mixer 
+
+  * : fixed matrix mixer 
+
+2010-09-14  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : matrix log/exp 
+
+  * : matrix log/exp 
+
+  * : 2 high-poly models - EG dragon 
+
+  * : 2 high-poly models - EG dragon 
+
+2010-09-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-09-12  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-09-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-08-20  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl. scene field in RT 
+
+  * : impl. scene field in RT 
+
+2010-08-19  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : moved script to head 
+
+  * : moved script to head 
+
+2010-08-18  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fix for ticket #44 
+
+  * : fix for ticket #44 
+
+2010-08-17  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : first version of PixelTexture 
+
+  * : first version of PixelTexture 
+
+2010-08-17  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : moved src- timo do arch/timo-shaderComposer 
+
+  * : moved src- timo do arch/timo-shaderComposer 
+
+  * : added code to activate/deactivate stat-view with space-key 
+
+  * : added code to activate/deactivate stat-view with space-key 
+
+2010-08-09  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed log output 
+
+  * : fixed log output 
+
+2010-08-04  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : modified code to work with shader validation 
+
+  * : modified code to work with shader validation 
+
+2010-08-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : removed obsolete texture code 
+
+  * : removed obsolete texture code 
+
+2010-07-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : local ar links added 
+
+  * : local ar links added 
+
+2010-07-22  tobold <tobold@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-07-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : older gfx code that still works on n900 
+
+  * : older gfx code that still works on n900 
+
+2010-07-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : references local copy of jQuery 
+
+  * : references local copy of jQuery 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-07-22  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add test_blinkingLight.xhtml Scene 
+
+  * : - add test_blinkingLight.xhtml Scene 
+
+2010-07-21  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add test_animatedLights.xhtml 
+
+  * : - add test_animatedLights.xhtml 
+
+2010-07-20  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add rebuilding Shader on Light changes - add test_dynamicLights.xhtml -
+  delete normalMatrix 
+
+  * : - add rebuilding Shader on Light changes - add test_dynamicLights.xhtml -
+  delete normalMatrix 
+
+2010-07-20  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed missing fields in primive geo 
+
+  * : fixed missing fields in primive geo 
+
+2010-07-20  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add experimental Ventilator Scene 
+
+  * : - add experimental Ventilator Scene 
+
+2010-07-19  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add renderShape Function 
+
+  * : - add renderShape Function 
+
+  * : 
+
+  * : 
+
+2010-07-17  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-07-15  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-07-15  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fix alpha discard 
+
+  * : - fix alpha discard 
+
+  * : - scale streetLamp-Example textures to nearest power of 2 
+
+  * : - scale streetLamp-Example textures to nearest power of 2 
+
+  * : 
+
+  * : 
+
+  * : - some Shader changes 
+
+  * : - some Shader changes 
+
+2010-07-14  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : - change all shader booleans/integer to floats - clamp values after every
+  light calculation 
+
+  * : - change all shader booleans/integer to floats - clamp values after every
+  light calculation 
+
+2010-07-14  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 'nicefied' canvas example 
+
+  * : 'nicefied' canvas example 
+
+  * : 
+
+  * : 
+
+2010-07-13  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - add Shader-Generator-function 
+
+  * : - add Shader-Generator-function 
+
+2010-07-13  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : set_bind working 
+
+  * : set_bind working 
+
+2010-07-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : painter example (TODO: replace non-working jquery stuff) 
+
+  * : painter example (TODO: replace non-working jquery stuff) 
+
+  * : 
+
+  * : 
+
+  * : basic support for canvas as texture 
+
+  * : basic support for canvas as texture 
+
+2010-07-13  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - fix color picking - fix shininess 
+
+  * : - fix color picking - fix shininess 
+
+2010-07-12  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : - Merged new Rendercode 
+
+  * : - Merged new Rendercode 
+
+2010-07-08  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : video Texture child added - but only proof-of-concept yet as there are
+  still some problems 
+
+  * : video Texture child added - but only proof-of-concept yet as there are
+  still some problems 
+
+2010-07-07  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : yet another multi-index bug-fix 
+
+  * : yet another multi-index bug-fix 
+
+  * : transponed matrix 
+
+  * : transponed matrix 
+
+2010-07-07  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : addition output added 
+
+  * : addition output added 
+
+  * : 3d matrix support 
+
+  * : 3d matrix support 
+
+  * : css trans added 
+
+  * : css trans added 
+
+2010-07-04  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed memleak on node remove and implemented dynamic Texture node
+  add/removal 
+
+  * : fixed memleak on node remove and implemented dynamic Texture node
+  add/removal 
+
+2010-07-01  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-06-30  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : SField follower impl. (except isActive) 
+
+  * : SField follower impl. (except isActive) 
+
+  * : some dampers 
+
+  * : some dampers 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-06-29  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+2010-06-28  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : corrected node hierarchy 
+
+  * : corrected node hierarchy 
+
+  * : added node skeleton 
+
+  * : added node skeleton 
+
+2010-06-25  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : minor fixes 
+
+  * : minor fixes 
+
+  * : ColorRGBA added 
+
+  * : ColorRGBA added 
+
+  * : final fixes 
+
+  * : final fixes 
+
+  * : code working again 
+
+  * : code working again 
+
+2010-06-25  akustikkoppler <akustikkoppler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-06-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : partially working 
+
+  * : partially working 
+
+2010-06-08  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : pickMode 'color' added 
+
+  * : pickMode 'color' added 
+
+  * : example 
+
+  * : example 
+
+  * : added face and vertex count 
+
+  * : added face and vertex count 
+
+2010-04-28  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : restricted picking to tri-based geo 
+
+  * : restricted picking to tri-based geo 
+
+2010-04-26  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl. IndexedLineSet 
+
+  * : impl. IndexedLineSet 
+
+2010-04-09  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : changed to 1.1-alpha 
+
+  * : changed to 1.1-alpha 
+
+2010-03-24  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added on_maker_loss function in flash tracker 
+
+  * : added on_maker_loss function in flash tracker 
+
+  * : updates 
+
+  * : updates 
+
+2010-03-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : implemented VertexAttribute 
+
+  * : implemented VertexAttribute 
+
+2010-03-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : clean-ups 
+
+  * : clean-ups 
+
+  * : impl. MultiTexture (currently only for use in shaders) 
+
+  * : impl. MultiTexture (currently only for use in shaders) 
+
+2010-03-22  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : cleaned up. Modified function name 
+
+  * : cleaned up. Modified function name 
+
+2010-03-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed cube tex 
+
+  * : fixed cube tex 
+
+2010-03-19  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : cleaned up. renamed function from get to set. Canvas toggle is completly
+  done in JS now, not as before in flash 
+
+  * : cleaned up. renamed function from get to set. Canvas toggle is completly
+  done in JS now, not as before in flash 
+
+2010-03-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : updated version 
+
+  * : updated version 
+
+2010-03-19  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+2010-03-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : renamed example 
+
+  * : renamed example 
+
+  * : finished CubeTexture 
+
+  * : finished CubeTexture 
+
+2010-03-19  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : update of files names and folder structure 
+
+  * : update of files names and folder structure 
+
+2010-03-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed text, picking etc. 
+
+  * : fixed text, picking etc. 
+
+2010-03-19  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : 
+
+  * : Updating Demo. Added source files for FLARToolkit and new marker of fhg
+  logo 
+
+  * : Updating Demo. Added source files for FLARToolkit and new marker of fhg
+  logo 
+
+2010-03-18  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : generic download count 
+
+  * : generic download count 
+
+  * : only render on request 
+
+  * : only render on request 
+
+2010-03-17  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : implemented CubeMapTexture 
+
+  * : implemented CubeMapTexture 
+
+  * : implemented IndexedTriangleSet and fixed styling issues 
+
+  * : implemented IndexedTriangleSet and fixed styling issues 
+
+  * : removed outdated tests 
+
+  * : removed outdated tests 
+
+2010-03-15  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added experimental purely DOM-driven render update 
+
+  * : added experimental purely DOM-driven render update 
+
+2010-03-15  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : X3DOMFLAR Example structure 
+
+  * : X3DOMFLAR Example structure 
+
+2010-03-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : renamed field tag to uniform in webSG example 
+
+  * : renamed field tag to uniform in webSG example 
+
+2010-03-12  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : some fixes 
+
+  * : some fixes 
+
+  * : improved picking and a fix 
+
+  * : improved picking and a fix 
+
+  * : got the toon shader working in the ComposedShader node 
+
+  * : got the toon shader working in the ComposedShader node 
+
+2010-03-11  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : dynamic fields for shader 
+
+  * : dynamic fields for shader 
+
+  * : fix 
+
+  * : fix 
+
+  * : changes in styling 
+
+  * : changes in styling 
+
+2010-03-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : websg has no runtime anymore 
+
+  * : websg has no runtime anymore 
+
+  * : very first prototype of webSG proposal 
+
+  * : very first prototype of webSG proposal 
+
+2010-03-09  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : idBuf now default for picking 
+
+  * : idBuf now default for picking 
+
+2010-03-08  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Anchor and click working again (state as before) 
+
+  * : Anchor and click working again (state as before) 
+
+  * : worked on picking 
+
+  * : worked on picking 
+
+  * : added debug foregrounds 
+
+  * : added debug foregrounds 
+
+2010-03-07  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : first version of idBuffer for speeding-up picking 
+
+  * : first version of idBuffer for speeding-up picking 
+
+  * : even more HTML-like... 
+
+  * : even more HTML-like... 
+
+  * : added support for HTML/CSS colors to SFColor 
+
+  * : added support for HTML/CSS colors to SFColor 
+
+2010-03-06  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : HTML img element as Texture child 
+
+  * : HTML img element as Texture child 
+
+  * : minor fixes 
+
+  * : minor fixes 
+
+2010-03-05  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed attribute updates 
+
+  * : fixed attribute updates 
+
+2010-03-05  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added LOD 
+
+  * : added LOD 
+
+  * : onload speedup and setValueByStr for all MFields 
+
+  * : onload speedup and setValueByStr for all MFields 
+
+2010-03-05  keijen <keijen@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : adding Data folder 
+
+  * : adding Data folder 
+
+  * : adding FLARToolkit tracker version to demo 
+
+  * : adding FLARToolkit tracker version to demo 
+
+2010-03-04  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : now also colors can be changed 
+
+  * : now also colors can be changed 
+
+2010-02-25  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : x3dom flartoolkit ar example added 
+
+  * : x3dom flartoolkit ar example added 
+
+  * : x3dom flartoolkit ar example added 
+
+  * : x3dom flartoolkit ar example added 
+
+2010-02-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : shadows now much faster 
+
+  * : shadows now much faster 
+
+  * : fixed some stupid bugs 
+
+  * : fixed some stupid bugs 
+
+2010-02-24  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : mime-type fixed 
+
+  * : mime-type fixed 
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-02-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : toggle button for shadows in fanOut test 
+
+  * : toggle button for shadows in fanOut test 
+
+2010-02-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : removed non-working demo 
+
+  * : removed non-working demo 
+
+2010-02-23  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : FLARToolkit example 
+
+  * : FLARToolkit example 
+
+2010-02-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : major performance optimizations 
+
+  * : major performance optimizations 
+
+2010-02-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : image channes test added 
+
+  * : image channes test added 
+
+2010-02-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : online config 
+
+  * : online config 
+
+2010-02-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+2010-02-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : yet another webkit workaround 
+
+  * : yet another webkit workaround 
+
+2010-02-21  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed broken link in jQuery example 
+
+  * : fixed broken link in jQuery example 
+
+2010-02-20  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : inital check-in of car demo 
+
+  * : impl. TextureCoordinateGenerator (only sphere mode) 
+
+  * : dynamic texture update 
+
+2010-02-17  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : render-layer updates 
+
+2010-02-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added links to spec to nodetypetree 
+
+2010-02-13  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 2010 update elems added 
+
+2010-02-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : some fixes and improvements 
+
+2010-02-12  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : support for absolut/relative urls added 
+
+2010-02-12  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Now extracting svn revision info and version and writing it to
+  version.js. 
+
+2010-02-12  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : removed extra traversal for setAttribute workaround, fixes #17 
+
+2010-02-10  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+2010-02-09  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : sound test -- webkit seems to support only ogg, no wav 
+
+2010-02-06  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added sound file for comic example 
+
+2010-02-06  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+2010-02-05  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+2010-02-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : very primitive and basic integration of x3d shader nodes 
+
+  * : fixed wrong cube face assignment 
+
+2010-02-02  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : sky box background via cube texture 
+
+2010-01-31  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed ccw flag and smooth normal calculation for multi index meshes,
+  thereby made silhouette example work 
+
+  * : removed matrix hack 
+
+2010-01-30  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : moved mesh creation from ctor to nodeChanged for allowing to USE
+  Coordinate nodes etc 
+
+2010-01-30  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : _compName to node constructor added 
+
+2010-01-30  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : implemented Switch node 
+
+  * : continued working on code clean-up 
+
+2010-01-24  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : now in wp CMS 
+
+2010-01-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : worked on clean-up of internal structure 
+
+2010-01-20  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : MatrixTransform added 
+
+2010-01-19  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added a debug webpage for displaying the nodetype tree. The entries of
+  the x3dom.nodeType map now store the nodetype name. 
+
+2010-01-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : first version of MovieTexture 
+
+  * : re-added special matrix hack for AR demo 
+
+2010-01-18  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : field update now works for all single fields, provided that there is a
+  fieldChanged handler 
+
+  * : started to rename field methods more spec conformant and improved field
+  update mechanism 
+
+  * : removed some more syntax errors 
+
+2010-01-15  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : matrix parse method added 
+
+2010-01-14  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added shadow example 
+
+2010-01-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Der Flipper flippert... 
+
+  * : 
+
+2010-01-12  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 
+
+  * : shadowing 
+
+2010-01-11  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fix in rotFromTo 
+
+  * : quat negate fix 
+
+2010-01-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : pointset without color node now also possible 
+
+2010-01-09  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : minor improvements of text 
+
+2010-01-08  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : basic text support 
+
+  * : got text working 
+
+2010-01-07  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added comment about self-closing tags 
+
+  * : html/xhtml updates 
+
+2010-01-07  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : rescaled texture 
+
+2010-01-06  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed primitive render bug for webkit 
+
+2010-01-05  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fix: added also dummy nodes for TextureCoordinate and Normal 
+
+2010-01-05  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added HTML5 compatibility (new test test_betaGear.html).
+  test_lowercaseElements.xhtml will no longer work because XHTML5 is handled
+  strict now (in XHTML5 nodetype names must be camel case).  
+
+2009-12-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : finished pointset 
+
+2009-12-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : PointSet added 
+
+2009-12-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : implementented texture coords also for sphere 
+
+2009-12-11  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : workaround for blending bug in webkit and chrome 
+
+  * : check for null 
+
+2009-11-18  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added support for lowercase X3D elements. You can now mix lower/uppercase
+  element names. Attribute names must still be camel cased for now - discussion
+  needed on this topic. Added a test scene for lowercase elements (the test
+  mixes upper and lowercase elements).   
+
+2009-11-06  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Twittaround update 
+
+  * : TwittARound Example 
+
+2009-11-04  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : some more lint conformant changes 
+
+2009-11-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : raising onload event after scene setup 
+
+2009-11-03  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+2009-11-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : test for node insertions during runtime 
+
+2009-11-03  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : copyright comment changed 
+
+2009-11-03  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl. none navType and texture repeat 
+
+2009-11-02  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl TextureTransform 
+
+2009-11-02  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+2009-11-01  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : backgroup update 
+
+  * : added redBox.x3d to inline test 
+
+2009-11-01  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : check for light intensity 
+
+2009-10-31  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl Anchor 
+
+  * : got Inline running :-) 
+
+2009-10-31  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : moved dots and lines to texture generic 
+
+  * : initial checkin 
+
+2009-10-31  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : usage of directional light only if node defined and on true, also
+  creation of viewpoint/ background node on first request if not present for
+  simplifying code 
+
+2009-10-31  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Examples Update 
+
+  * : First Examples Update 
+
+  * : Example CSS 
+
+2009-10-30  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : not needed anymore  
+
+2009-10-29  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial checkin 
+
+  * : initial checkin 
+
+  * : replaced x3dom.js with x3dmain.js 
+
+2009-10-29  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added Dean Edwards js packer. Added packing script for X3DOM which
+  concatenates sources and minifies or packs them.   
+
+2009-10-29  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : move 
+
+2009-10-29  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added vertex colors and some fixes 
+
+2009-10-29  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Updated x3d canvas css. All aspects of x3dom should no be styleable via
+  CSS (except x,y,width and height of the canvas).  
+
+  * : Added basic x3dom css and updated test cases to use it. The goal is to
+  make every aspect of x3dom (canvas, canvas div, no x3d div, etc) CSS
+  stylable.  
+
+2009-10-29  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed find, needed for scalar interpolator 
+
+2009-10-28  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : intermediate checkin... 
+
+2009-10-28  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : CSS adjustments on canvas and canvasDiv. Need to rethink styling for
+  auto-generated elements to make it possible to fully style them using CSS.
+  Resolving this issue is a little bit tricky without firebug. 
+
+2009-10-27  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : changed fps to stat and added attrib for showLog 
+
+2009-10-27  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : moved tmp to arch 
+
+2009-10-27  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : started adding a light 
+
+  * : better handling if no gl 
+
+  * : added simple callback 
+
+2009-10-27  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Initial import of Python based standalone WSGI webserver for debugging
+  (e.g. INLINE). See README.testserver on how to use it. 
+
+2009-10-27  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : impl solid 
+
+  * : fixed typos 
+
+2009-10-26  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added method for _really_ activating console (otherwise without) 
+
+  * : new test 
+
+  * : code cleanups 
+
+2009-10-25  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : 'r' for reset view and some fixes 
+
+  * : started with picking for fixing pan 
+
+2009-10-24  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : moved projection calc to viewpoint and disabled context menu for canvas 
+
+  * : implemented PositionInterpolator, improved OrientationInterpolator, and
+  added some more Node interfaces for DirectionalLight etc (not yet eval.) 
+
+2009-10-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : check for keys on mouse evt 
+
+  * : hups, removed setting font style twice 
+
+  * : num objects in statistics 
+
+2009-10-23  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : inital checkin 
+
+2009-10-23  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Logo textures added. Rotating boxes exmple whitened. 
+
+2009-10-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : finished primitives 
+
+2009-10-23  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : timer-handler cleanup and better TimeSensor impl. 
+
+2009-10-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added cylinder 
+
+2009-10-23  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added fanOut to index.html 
+
+2009-10-23  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : added Torus primitive 
+
+  * : changed set_rotation to rotation for making route working (and some minor
+  other fixes) 
+
+2009-10-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : def/use fixes 
+
+2009-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : styles internally set 
+
+  * : speed improvements 
+
+2009-10-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : perect result added 
+
+2009-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : some docu 
+
+2009-10-22  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : test_imageFormats added 
+
+2009-10-22  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : name change 
+
+  * : fixed texCoords 
+
+  * : 
+
+2009-10-21  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : creation of attribute buffers only once on init 
+
+  * : now all textures are loaded 
+
+2009-10-20  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : tests renamed 
+
+  * : texture added 
+
+2009-10-19  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added new types and unit tests. 
+
+2009-10-19  jbehr <jbehr@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : shader code removed 
+
+2009-10-19  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : initial check in of more complex example 
+
+  * : lots of fixes 
+
+2009-10-19  michaelzoellner <michaelzoellner@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added website template 
+
+  * : Added website template 
+
+2009-10-18  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : minor fixes 
+
+  * : finally fixed navigation by calculating bboxes 
+
+2009-10-17  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed trackball navigation 
+
+2009-10-16  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : fixed texCoord upload 
+
+2009-10-15  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : improved rendering and finally managed to really transfer vertex attribs
+  to GPU 
+
+2009-10-15  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added SFColor and initial MFColor implementation. Also added unit tests
+  for the new types. Adopted Background node implementation to use new MFColor
+  field.  
+
+2009-10-14  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Initial import of unit test framework. Initial field tests in
+  fieldTests.html (only SFVec2 test for now).  
+
+2009-10-13  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : started impl texCoords 
+
+  * : impl ImageTexture 
+
+  * : fix 
+
+2009-10-12  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added an initial implementation of syncing DOM attributes to X3D fields
+  using DOM mutation events. Added two examples of scripting the DOM to animate
+  scale and diffuseColor. 
+
+2009-10-12  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : code for texturing - not yet integrated 
+
+  * : fixed indices and started impl. Background 
+
+  * : fixed wrong resolution 
+
+2009-10-11  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : implemented basic navigation functionality and added workaround for
+  missing index fields 
+
+2009-10-10  yjung <yjung@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : basic shader integration and xpath fix 
+
+2009-10-08  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Added fps display which can be positioned and styled via CSS (e.g. as an
+  overlay for the canvas). 
+
+  * : Now doing inplace rendering, i.e. a <canvas> element is created
+  automatically for every X3D scene in the page. x, y, width and height
+  attributes from the X3D element are passed to the created canvas element. 
+
+  * : Started documentation. Cleanup.  
+
+  * : Cleanup.  
+
+2009-10-06  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Moved fields into new field.js and into x3dom.fields namespace. Nodes are
+  currently direct attributes of the x3dom namespace but should be moved to
+  x3dom.nodes. Including math.js is currently no longer necessary. 
+
+2009-10-05  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Adoptions to new x3dom.debug logging framework. 
+
+  * : Some cleanup and initial test of debugging code.  
+
+2009-10-04  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Initial import of reworked taylor codebase. Still work in progress. Only
+  background color works, no geometry visible yet.  
+
+2009-09-30  peschler <peschler@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
+
+  * : Moved the existing code to trunk.  
