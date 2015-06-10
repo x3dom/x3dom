@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MV4503 DIS Simulation Manager - McBride/Beker</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+        
+        <style type="text/css">
+            html {height:100%}
+            body { height:100%; margin:0; padding:0 }
+            #map-canvas{height:100% }
+        </style>
+        
+        <!-- Binary DIS implementation, also coordinate system conversion utilities -->
+        <script type="text/javascript" src="javascript/dis.js"></script>   
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZihiWY3ho8hHfkhu9_6mcMSkxSvpjbTI&libraries=geometry&sensor=true"></script>
+  
+    </head>
+    <body>
+        <div id="map-canvas"></div> 
+        <div id="text_data" style="position: absolute; height: 90%; border: 4px solid black; overflow:scroll; background-color: #ffffff;">
+            <center>
+                <table  style="text-align: center;"> 
+                    <tr>
+                        <td style="width: 200px;"> Entity IDs </td>  
+                    </tr>
+                    <tr>
+                        <td style="width: 200px; text-align: left;" id="entityIDs">  </td> 
+                    </tr>
+                </table> 
+            </center>
+        </div>  
+        <SCRIPT type="text/javascript">
+            // localhost:8282/disSimulationManager.html 
+            /* For DEBUG Statements */
+            var DEBUG = true;
+            
+            /* Socket Data */
+            //var WEBSOCKET_URL="ws://172.20.146.75:8282";
+            var WEBSOCKET_URL="wss://track.nps.edu:443";
+            var websocket; 
+            
+            /* Map & Positions */
+            var map;  
+            var operationalAreaBounds; 
+            var iconColor = ["yellow","blue","red"]; // yellow: unknown, blue:friendly, red:enemy
+            
+            // Start Lat/Lon
+            var topLeft = new google.maps.LatLng(38.0, -123);
+            var bottomRight = new google.maps.LatLng(37.4, -121.9); 
+            var startLocationBounds = new google.maps.LatLngBounds(topLeft, bottomRight); 
+            
+            /* Entity & Markers */ 
+            var allEntities = {};  
+            
+            /* GLOBAL Parameters */   
+            var TIMEOUT = 30000; //Time in Milliseconds, used in Prune
+            var ROUNDMAXRANGE = 24000; //24km
+            var conversion = new dis.CoordinateConversion(); 
+            
+            // Set the  initialize function to run on page load
+            google.maps.event.addDomListener(window, 'load', initialize); 
+            
+            /*vInitialization Function */
+            function initialize()
+            {   
+                if(DEBUG) console.log("In initialize()");
+                
+                 // Setup Periodic function calls  
+                window.setInterval(prune, 60000);  //2 Minutes
+                window.setInterval(deadReckoningUpdate, 100);  // 100ms
+                
+                /* The region of the map that's visible, and where it's centered. */
+                var mapOptions = { 
+                  disableDoubleClickZoom: true,
+                  scaleControl: true,
+                  mapTypeId:google.maps.MapTypeId.TERRAIN
+                };
+                map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+                map.fitBounds(startLocationBounds);
+                
+                //Add accessibility to HTML div for displaying text  
+                var myControl = document.getElementById('text_data'); 
+                map.controls[google.maps.ControlPosition.RIGHT].push(myControl);   
+                
+                // Add depiction of the Area of Operations
+                operationalAreaBounds = new google.maps.Rectangle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.05, 
+                    clickable: false,
+                    map: map,
+                    bounds: new google.maps.LatLngBounds(topLeft, bottomRight)
+                });
+                
+                // Compatiability checks
+                if(DEBUG) console.log("About to open websocket at url: ", WEBSOCKET_URL);
+                if(window.WebSocket){
+                    websocket = new WebSocket(WEBSOCKET_URL); 
+                }else if(Window.MozWebSocket){
+                    websocket = new MozWebSocket(WEBSOCKET_URL);
+                }else{
+                    alert("This web browser does not support web sockets");
+                }
+                
+                if (DEBUG) console.log("WS Created:", websocket );
+                
+                // Set the format we want to use to receive binary messages
+                websocket.binaryType = 'arraybuffer';
+            
+                // Attach functions to the the web socket for various events
+                websocket.onopen =  function(evt){console.log("Opened websocket");};
+                websocket.onclose = function(evt){console.log("Websocket close", evt.data);};
+                websocket.onerror = function(evt){console.log("Websocket error", evt.data);};
+                websocket.onmessage = function(evt){
+                    
+                    // Factory object for creating new PDUs from binary data
+                    var pduFactory = new dis.PduFactory();               
+                    var disMessage = pduFactory.createPdu(evt.data);  
+                    
+                    //Pre-Filtering/Processing
+                    if( filter(disMessage) ) return;
+
+                    // Handle Incoming PDUs 
+                    switch(disMessage.pduType){
+                        case 1: 
+                            if(DEBUG) console.log("Entity State PDU Received");  
+                            handleESPDU(disMessage);
+                            break;
+                        case 2: 
+                            if(DEBUG) console.log("Fire PDU Received");
+                            handleFirePDU(disMessage);
+                            break;
+                        case 3:
+                            if(DEBUG) console.log("Detonation PDU Received");
+                            handleDetonationPDU(disMessage);
+                            break;
+                        default:
+                            console.log("Unknown PDU Received", disMessage);
+                            return;  
+                    }
+                    
+                }; // end of onmessage
+                
+                // This creates a position on map to get Lat/Long
+                google.maps.event.addListener(map, 'dblclick', function(event) { 
+                    var newLL = new google.maps.Marker({
+                        position: event.latLng,
+                        map: map,
+                        animation:google.maps.Animation.DROP,
+                        title: "Lat/Long Marker",
+                        icon:"http://maps.google.com/mapfiles/ms/icons/yellow-dot.png",
+                        visible: true
+                    });
+                    
+                    // Create Lat/Long message
+                    var contentString = "<b>Lat: "+ event.latLng.k +"<br> Long: " + event.latLng.D +"</b>";
+                    var infowindow = new google.maps.InfoWindow({content: contentString });
+                    
+                    // add a function to be called when the user clicks on the icon 
+                    google.maps.event.addListener(newLL, 'click', function(){ 
+                         infowindow.open(map,newLL);
+                    });
+                });// end listener 'dblclick'
+                
+                
+            }; // end initialize
+            
+            /** Updates HTML display of Entity IDs */
+            function updateEntityTableDisplay()
+            {  
+                if(DEBUG) console.log("In updateEntityTableDisplay()");
+                var tableString = "";
+                
+                for( entity in allEntities){  
+                    tableString = tableString + 
+                    allEntities[entity].lastEspdu.entityID.site + " - " +
+                    allEntities[entity].lastEspdu.entityID.application + " - " +
+                    allEntities[entity].lastEspdu.entityID.entity + " - " +
+                    allEntities[entity].lastEspdu.marking.getMarking() + " - Force " +
+                    allEntities[entity].lastEspdu.forceID + "<br>";
+                }
+                document.getElementById("entityIDs").innerHTML = tableString; 
+                
+            }; // end updateEntityTableDisplay()
+            
+             /** Removes single entity from map/dictionary */
+            function pruneEntity(entityID)
+            {
+                if(DEBUG) console.log("In pruneEntity()");
+                if(allEntities[entityID]){
+                    allEntities[entityID].marker.setMap(null);
+                    delete allEntities[entityID]; 
+                }
+                updateEntityTableDisplay();
+            }; // end pruneEntity()
+            
+            /**  Removes icons from the map if  we haven't heard from in a set amount of time */
+            function prune()
+            {
+                if(DEBUG) console.log("In prune()");
+                var now = new Date();
+                
+                for (var anEntity in allEntities)
+                {
+                    var entityInfo = allEntities[anEntity];
+                    if(now.getTime() - entityInfo.lastHeardFrom.getTime() > TIMEOUT)
+                    {
+                        pruneEntity(anEntity); 
+                    }
+                }                
+            }; // end prune()
+            
+            /** Dead Reckoning Movement */
+            function deadReckoningUpdate()
+            {    
+                // Create a time datapoint
+                var now = new Date(); 
+                
+                // Handle Dead Reckoning
+                for(entity in allEntities){    
+                    // Continue loop until the markers are created 
+                    if(allEntities[entity].marker === null) continue;
+                    if(allEntities[entity].lastEspdu === null) continue;
+                    if(allEntities[entity].lastEspdu.deadReckoningParameters.deadReckoningAlgorithm === 1) continue;
+                    
+                    // Get the change in time from the entity.lastHeardFrom and now (in seconds)
+                    var deltaTime = (now.getTime() - allEntities[entity].lastHeardFrom.getTime()) * 0.001;  
+                    
+                    // Calculate the position base on time (in seconds)
+                    var ahead = {};
+                    ahead.x = allEntities[entity].lastEspdu.entityLocation.x + (allEntities[entity].lastEspdu.entityLinearVelocity.x * deltaTime);
+                    ahead.y = allEntities[entity].lastEspdu.entityLocation.y + (allEntities[entity].lastEspdu.entityLinearVelocity.y * deltaTime);
+                    ahead.z = allEntities[entity].lastEspdu.entityLocation.z + (allEntities[entity].lastEspdu.entityLinearVelocity.z * deltaTime);
+                    
+                    // Convert that new position from XYZ to LATLONG
+                    var latLonAlt = conversion.convertDisToLatLongInDegrees(ahead); 
+                
+                    // Convert to a Google Lat/Long
+                    var projectedLocation = new google.maps.LatLng(latLonAlt.latitude, latLonAlt.longitude); 
+                                      
+                    // Set marker
+                    allEntities[entity].marker.setPosition(projectedLocation);   
+                }
+            }; // end deadReckoningUpdate()
+            
+            /** Key Access Codes */
+            function onKeyDown(evt)
+            { 
+                if(DEBUG) console.log("In onKeyDown()");
+		switch (evt.keyCode){ 
+                    default:
+                        if(DEBUG) console.log("\tKey Pressed: " + evt.keyCode);
+                        break;
+                }
+            }; // end onKeyDown()
+            
+            /** PDU Handler for ESPDU */
+            function handleESPDU( msg )
+            { 
+                if(DEBUG) console.log("In handleESPDU()", msg); 
+                
+                // Retrieve the entity ID from the DIS message, convert it to a JSON string  
+                var eidString = JSON.stringify(msg.entityID); 
+                
+                // Create object for converting DIS to LATLONG 
+                var latLonAlt = conversion.convertDisToLatLongInDegrees(msg.entityLocation); 
+                
+                // Entity Position
+                var entityLocation = new google.maps.LatLng(latLonAlt.latitude, latLonAlt.longitude);
+                
+                // Object loookup
+                var theMarker = allEntities[eidString];
+
+                // If it's not found, that means it's the first time we've heard of it. Create a new one.
+                if(theMarker === undefined)
+                {
+                    theMarker = {};
+
+                    var contentString = "<b>Marking:</b>" + msg.marking.getMarking() + " (Network)<br>";
+                    contentString = contentString + "<b>Entity ID:</b>" + JSON.stringify(msg.entityID) + "<br>";
+                    contentString = contentString + "<b>Entity Type:</b>" + JSON.stringify(msg.entityType) + "<br>";
+                    var infowindow = new google.maps.InfoWindow({content: contentString});
+                    
+                    // The marker (with the default icon) is automatically added to the map when created
+                    var marker = new google.maps.Marker({
+                        map:map,
+                        draggable:true,
+                        animation:google.maps.Animation.DROP,
+                        position: entityLocation,
+                        title:"Entity from Network",
+                        icon:{
+                            path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                            strokeColor : "black",
+                            strokeWeight: 0.25,
+                            fillColor: iconColor[msg.forceID] || "black", //black if it is uncategorized
+                            fillOpacity: 1, 
+                            scale: 3,
+                            rotation: msg.entityOrientation.psi * (180 /Math.PI)
+                        }
+                    });
+
+                    // add a function to be called when the user clicks on the icon 
+                    google.maps.event.addListener(marker, 'click', function(){
+                         infowindow.open(map,marker);
+                    });
+
+                    theMarker.marker = marker;
+                    theMarker.lastEspdu = msg;
+                    theMarker.lastHeardFrom = new Date(); 
+
+                    allEntities[eidString] = theMarker;   
+                    
+                    updateEntityTableDisplay();
+                }  
+                
+                // If entity is dead, change visual 
+                if(msg.entityAppearance === 24){
+                    var deadIcon = {
+                            path: "M 0,0 L 5,5 M 0,5 L 5,0",
+                            strokeColor : iconColor[msg.forceID] || "black", //black if it is uncategorized
+                            strokeWeight: 3,
+                            fillColor: iconColor[msg.forceID] || "black", //black if it is uncategorized
+                            fillOpacity: 0, 
+                            scale: 2,
+                            rotation: 0
+                    }
+                    theMarker.marker.icon = deadIcon;
+                }
+                
+                // Update icon data
+                var tempIcon = theMarker.marker.icon;
+                tempIcon.rotation = msg.entityOrientation.psi * (180 /Math.PI); 
+                theMarker.marker.setIcon(tempIcon);
+                
+                // Update the marker data
+                theMarker.marker.setPosition(entityLocation);  
+                theMarker.lastEspdu = msg;
+                theMarker.lastHeardFrom = new Date(); 
+                
+            };//end handleESPDU
+            
+            /** PDU Handler for FirePDU */
+            function handleFirePDU( msg )
+            { 
+                /* Function:  handleFirePDU()
+                 * Handles all actions of firePDUs from the game manager
+                 * perspective.
+                 * 
+                 * @param {type} msg
+                 * @returns {undefined}
+                 */
+                
+                /* Purpose:
+                 * The Fire PDU shall be used to communicate information
+                 * associated with the firing of a weapon or expendable. This
+                 * information is used to support visual and other sensors and
+                 * effects (e.g., aural, seismic, etc.) at the moment the firing
+                 * occurs. It is also used to identify the entity that fired the
+                 * weapon or expendable. There is no Fire PDU associated with
+                 * certain munitions, unintended-use detonations of a munition,
+                 * and for non-munition explosion [see item a9) of 5.4.3.3].
+                 * 
+                 * Receipt:
+                 * Upon receipt of a Fire PDU, a simulation shall update its 
+                 * representation of the entity to reflect the information in 
+                 * the PDU. For either a weapon or an expendable, this may be a
+                 * muzzle/canister flash, noise and accompanying smoke, water
+                 * perturbation in the case of a torpedo, or other effects. 
+                 * 
+                 * Components:
+                 * Fire PDU Components:
+                 * Item Name                   Bits
+                 * PDU Header Record           96	// Standard			
+                 * Firing Entity Id Record     48	// Firing EID			
+                 * Target Entity Id Record     48	// Target EID or TARGET_ID_ UNKNOWN			
+                 * Munition Id Record          48	// Munition EID or MUNITION _NOT _TRACKED			
+                 * Event Identifier Record     48	// Relates Fire to Det PDUs			
+                 * Fire Mission Index Field    32	// Of firing system or NO_FIRE_MISSION			
+                 * Location in World Record    192	// XYZ Of Shooter			
+                 * Burst Descriptor Record     128	// Munition type, warhead, fuse, quantity, and rate			
+                 * Velocity Record             96       // Muzzle velocity of round		
+                 * Range Field                 32	// Shooter calculated range
+                 */ 
+               
+                if(DEBUG) console.log("In handleFirePDU():", msg );
+                var firingEID = JSON.stringify(msg.firingEntityID);
+                var targetEID = JSON.stringify(msg.targetEntityID); 
+                var tempEID = '{"site":0,"application":0,"entity":0}'; 
+                
+                if(DEBUG) console.log("Fire PDU:",firingEID,"fired at", targetEID, msg, map);  
+                
+                // Setup Visualization Data
+                var startPoint = allEntities[firingEID].marker.position;
+                var endPoint =  google.maps.geometry.spherical.computeOffset( startPoint, ROUNDMAXRANGE, allEntities[firingEID].marker.icon.rotation);
+                
+                // Draw Circle around firing entity  
+                var firingCircle = new google.maps.Circle({
+                    strokeColor: 'black',
+                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                    fillColor: 'black',
+                    fillOpacity: 0,
+                    map: map,
+                    center: startPoint,
+                    radius: 1500,
+                    draggable: false,
+                    editable: false
+                });
+
+                // Draw Line
+                var path = new google.maps.Polyline({
+                    path: [startPoint, endPoint], 
+                    strokeColor: 'black',
+                    strokeOpacity: 1,
+                    strokeWeight: 2,
+                    map:map
+                });  
+                
+                window.setTimeout(function(){  
+                    if(firingCircle) firingCircle.setMap(null);   
+                    if(path) path.setMap(null);   
+                }, 10000); 
+                
+            };//end handleFirePDU
+            
+            /** PDU Handler for DetonationPDU */
+            function handleDetonationPDU( msg )
+            { 
+                /* Function:  handleDetonationPDU()
+                 * Handles all actions of detPDUs from the game manager
+                 * perspective.
+                 * 
+                 * @param {type} msg
+                 * @returns {undefined}
+                 */
+                
+                /* Purpose:
+                 * The Detonation PDU shall be used to communicate information
+                 * associated with the impact or detonation of a munition, a
+                 * non-munition explosion, or the burst or ignition of an
+                 * expendable.
+                 * 
+                 * Receipt:
+                 * Upon receipt of a Detonation PDU, a simulation shall use the
+                 * information therein as follows: If this is a munition
+                 * detonation or non-munition explosion, it shall determine
+                 * damage to its own entities and other objects and for
+                 * presenting any visual, seismic, aural, or other effects that
+                 * would be present.
+                 * 
+                 * Components: 
+                 * Item Name                               Bits
+                 * PDU Header Record                       96   // Standard				
+                 * Firing Entity ID Record                 48   // Firing EID				
+                 * Target Entity ID Record                 48   // Target EID or TARGET_ID_ UNKNOWN				
+                 * Munition ID Record                      48   // Munition EID or MUNITION _NOT _TRACKED				
+                 * Event Identifier Record                 48   // Relates Fire to Det PDUs				
+                 * Velocity Record                         96   // Velocity immediately before detonation/impact			
+                 * Location in World Record                192	// XYZ of Detonation			
+                 * Burst Descriptor Record                 128	// Detonation represented by Munition Descriptor		
+                 * Location in Entity Coordinates Record   96	// XYZ of Detonation on entity		
+                 * Detonation Result Field                 8	// Detonation Result			
+                 * Number of Articulation Parameters Field 8	// Number of Variable Parameter records	
+                 * Padding - 16bit Field                   16	// Padding		
+                 * Articulation Parameter Record           128  // Parameter values for each Variable Parameter
+                 */ 
+                
+                if(DEBUG) console.log("In handleDetonationPDU:", msg ); 
+                var targetEID = JSON.stringify(msg.targetEntityID);
+                var firingEID = JSON.stringify(msg.firingEntityID);  
+                var tempEID = '{"site":0,"application":0,"entity":0}'; 
+                
+                // Hit or Miss 
+                var hit = msg.detonationResult === 0 ? false : true;
+                var hitColor;
+                if (hit){
+                    if(DEBUG) console.log("Detonation PDU:", firingEID, "hit", targetEID, msg); 
+                    hitColor = "red";
+                }else{
+                    if(DEBUG) console.log("Detonation PDU:", firingEID, "missed", targetEID, msg); 
+                    hitColor = "yellow";
+                } 
+                
+                // Draw Circle around target
+                if(targetEID !== tempEID){    
+                    var targetPoint = allEntities[targetEID].marker.position; 
+                    var targetCircle = new google.maps.Circle({
+                        strokeColor: hitColor,
+                        strokeOpacity: 1,
+                        strokeWeight: 2,
+                        fillColor: hitColor,
+                        fillOpacity: 0,
+                        map: map,
+                        center: targetPoint,
+                        radius: 1500,
+                        draggable: false,
+                        editable: false
+                    });   
+                    
+                    window.setTimeout(function(){   
+                        if(targetCircle) targetCircle.setMap(null);   
+                    }, 10000); 
+                } 
+                 
+            };//end handleDetonationPDU  
+            
+            /** Simuation Filter */
+            function filter( msg )
+            { 
+                // Handle Incoming PDUs 
+                switch(msg.pduType){
+                    case 1: 
+                        // Check Position Bounds, filter out if NOT WITHIN AO BOUNDS
+                        // Google Lat Long:  Lat = k, Lon = D
+                        if(DEBUG) console.log("Filtering Fire PDU Received");
+                        var latLonAlt = conversion.convertDisToLatLongInDegrees(msg.entityLocation);  
+                        if( (latLonAlt.latitude < bottomRight.k || latLonAlt.latitude > topLeft.k) ||
+                            (latLonAlt.longitude < topLeft.D    || latLonAlt.longitude > bottomRight.D)){  
+                            return true; // True == filter out
+                        }
+                        break;
+                    case 2: 
+                        if(DEBUG) console.log("Filtering Fire PDU Received"); 
+                        break;
+                    case 3:
+                        if(DEBUG) console.log("Filtering Detonation PDU Received"); 
+                        break;
+                    default:
+                        if(DEBUG) console.log("Filtering Unknown PDU");
+                        return;  
+                } 
+                
+                // Else, packet is not filtered out
+                return false;
+                
+            }; // End filter()  
+            
+            window.onkeydown = onKeyDown;
+            
+        </SCRIPT>
+    </body>
+</html>

@@ -13,7 +13,9 @@
         
         <!-- Binary DIS implementation, also coordinate system conversion utilities -->
         <script type="text/javascript" src="dis.js"></script>   
-        <script type="text/javascript" src="https://raw.githubusercontent.com/dataarts/dat.gui/master/build/dat.gui.js"></script>
+        <!--script type="text/javascript" src="https://raw.githubusercontent.com/dataarts/dat.gui/master/build/dat.gui.js"></script-->
+        <script type="text/javascript" src="https://rawgit.com/dataarts/dat.gui/master/build/dat.gui.js"></script>
+
         <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZihiWY3ho8hHfkhu9_6mcMSkxSvpjbTI&libraries=geometry&sensor=true"></script>
   
     </head>
@@ -40,7 +42,7 @@
             var DEBUG = true;
             
             /* Socket Data */
-            var WEBSOCKET_URL="ws://localhost:8282"; // Change between localhost/IP
+            var WEBSOCKET_URL="wss://track.nps.edu:443"; // Change between localhost/IP
             var websocket; 
             
             /* Map */
