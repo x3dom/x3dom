@@ -226,9 +226,7 @@ x3dom.registerNodeType(
                 // needs to have current transform applied
                 // since the current transform only seems to affect the location and orientation
                 // hmm, CurrentTransform not updated yet ...
-                // force update ...
-                var parentTransform = x3dom.nodeTypes.X3DViewpointNode.prototype.getCurrentTransform.call(this);
-                this._vf.centerOfRotation = parentTransform.multMatrixPnt(this._vf.centerOfRotation); 
+                // this._vf.centerOfRotation = parentTransform.multMatrixPnt(this._vf.centerOfRotation); 
 
                 // borrowed from Viewpoint.js
             
@@ -271,7 +269,9 @@ x3dom.registerNodeType(
 
             getCenterOfRotation: function() {
                 // is already transformed to GC
-                return this._vf.centerOfRotation;
+                // return is expected in world coords.
+                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
+                // return this._vf.centerOfRotation;
             },
             
             getGeoCenterOfRotation: function(geoSystem, geoOrigin, geoCenterOfRotation) {
@@ -388,8 +388,8 @@ x3dom.registerNodeType(
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
                 // needs to have current transform applied
                 // since the current transform only seems to affect the location and orientation
-                this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
-
+                // this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
+                // revert to centerOfRotation having local coords
             },
 
             getNear: function() {
