@@ -114,7 +114,7 @@ x3dom.registerNodeType(
             },
 
             getCenterOfRotation: function() {
-                return this._vf.centerOfRotation;
+                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
             },
 
             getViewMatrix: function() {
