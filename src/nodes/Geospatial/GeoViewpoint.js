@@ -226,7 +226,9 @@ x3dom.registerNodeType(
                 // needs to have current transform applied
                 // since the current transform only seems to affect the location and orientation
                 // hmm, CurrentTransform not updated yet ...
-                this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation); 
+                // force update ...
+                var parentTransform = x3dom.nodeTypes.X3DViewpointNode.prototype.getCurrentTransform.call(this);
+                this._vf.centerOfRotation = parentTransform.multMatrixPnt(this._vf.centerOfRotation); 
 
                 // borrowed from Viewpoint.js
             
