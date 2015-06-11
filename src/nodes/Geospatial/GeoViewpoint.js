@@ -390,6 +390,11 @@ x3dom.registerNodeType(
                 // since the current transform only seems to affect the location and orientation
                 // this._vf.centerOfRotation = this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
                 // revert to centerOfRotation having local coords
+                
+                //Reset navigation helpers of the viewarea
+                if(this._nameSpace.doc._viewarea) {
+                    this._nameSpace.doc._viewarea.resetNavHelpers();
+                }
             },
 
             getNear: function() {
