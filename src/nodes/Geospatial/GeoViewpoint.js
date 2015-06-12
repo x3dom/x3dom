@@ -265,7 +265,8 @@ x3dom.registerNodeType(
 
             getCenterOfRotation: function() {
                 // is already transformed to GC
-                return this._vf.centerOfRotation;
+                // return is expected in world coords.
+                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
             },
             
             getGeoCenterOfRotation: function(geoSystem, geoOrigin, geoCenterOfRotation) {
@@ -380,6 +381,10 @@ x3dom.registerNodeType(
                 this._viewMatrix = this.getInitViewMatrix(this._vf.orientation, this._vf.geoSystem, this._cf.geoOrigin, this._vf.position);
                 // also reset center of Rotation; is not done for regular viewpoint
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
+                //Reset navigation helpers of the viewarea
+                if(this._nameSpace.doc._viewarea) {
+                    this._nameSpace.doc._viewarea.resetNavHelpers();
+                }
             },
 
             getNear: function() {
