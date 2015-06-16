@@ -4,37 +4,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Shadow Effects
+                </li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    &gt;
-    <a href="../../../index.html">documentation</a>    
-    &gt;
-    <a href="../../index.html">Tutorials</a>
-	&gt;
-    <a href="#">Shadow Effects</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../lights/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../ssao/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../lights/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../ssao/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Shadow Effects</h1>
+            <h2>Shadow Effects</h2>
         </div>            
         <br>
 		<p>	Until now you learned how you can import your own models, use textures and do some lighting. In order to make your scenes more realistic it's time to add some shadows, don't you think? </p>
@@ -45,14 +50,14 @@
 		To learn how to turn on lights please visit <a href="../lights/index.html">the previous tutorial</a>.
         </p>
 
-        <h2>Basic shadow settings</h2>
+        <h3>Basic shadow settings</h3>
         <p>Remember to set the <i>shadowIntensity</i> to a value higher than zero to turn on the shadows.</p>
         <p>One of the most important settings – both regarding the visual quality of the shadows and the performance – is the <span style="background-color: lightgrey">shadowMapSize</span> setting. A shadow map is a texture which captures the scene from a light’s point of view and is the basis for all shadow computations in X3DOM. 
         The size of the shadow map determines the resolution at which shadows are computed. The standard setting of 1024 should achieve good results in most cases, but depending on the situation you might want to change it anyway. In general, a higher shadow map resolution leads to more detailed shadows, but also to a significant drop in performance.</p>
         <p>Another option which has significant impact on the quality of the shadows is shadow map filtering. Filtering makes the edges of the shadows seem smoother. It can be controlled with the shadowFilterSize attribute. A higher filter size increases the amount of blurring that is applied to a shadow map. However, the effectivenes of this technique does not only depend on the filter size, but also on the resolution of the shadow map.
          A high-resolution shadow map requires a higher filter size setting for filtering to be effective.</p>
          
-         <h2>Cascading</h2>
+         <h3>Cascading</h3>
          <p>Another technique to improve shadow quality which is especially helpful in big scenes is called cascading: the visible area is parted along the z-axis and for each of the created divisions (cascades) shadows are computed independently. The number of cascades to be used can be set with the shadowCascades option. Cascading can be used with directional lights and spot lights, but not with point lights. Be advised that this technique is only effective, if the light covers a relatively big area. 
          Consequently, the main application scenario lies in the usage with a directional light.</p>
  
@@ -63,11 +68,11 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">Shadow demo scene</div>
+                <div class="text-muted">Shadow demo scene</div>
             </div>
         </div> 
         
-        <h2>Fine-tuning shadow effects</h2>
+        <h3>Fine-tuning shadow effects</h3>
         <p> With the right combination of <span style="background-color:lightgrey">shadowMapSize</span>, <span style="background-color:lightgrey">shadowFilterSize</span> and <span style="background-color:lightgrey">shadowCascades</span>
 	   a satisfyable shadow quality should be achievable in most cases. However, there are situations in which further adjustments might be needed, which is why an additional set of shadow options was introduced into X3DOM. 
 	   </p>
@@ -97,8 +102,8 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -106,16 +111,11 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
                 <li><a href="../../../author/Lighting/DirectionalLight.html">DirectionalLight</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>

@@ -4,37 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Animating Objects with Routes</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Animating Objects with Routes</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../viewpoint/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../onoutputchange/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../viewpoint/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../onoutputchange/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Animating Objects with Routes</h1>
+            <h2>Animating Objects with Routes</h2>
         </div>            
         <br>
 		
@@ -43,7 +47,7 @@
         </p>
 		<p>
 		For animating an object you first need a scene and a shape. Surround the shape with a transform tag 
-		and define a name which you use to address it later. If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html"> here</a> first.
+		and define a name which you use to address it later. If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html"> here</a> first.</p>
 		<pre class="prettyprint"><code class="language-html">
     &lt;x3d width='500px' height='400px'&gt; 
     &lt;scene&gt;
@@ -58,7 +62,7 @@
     &lt;/scene&gt; 
     &lt;/x3d&gt;           
         </code></pre>
-		</p>
+
 		 The next step is creating a timeSensor, which will start and loop the animation. The attribute "cycleInterval" specifies the duration 
 		 of the animation in seconds. The loop attributes default value is "true", but sometimes it leads to mistakes, so you should define it anyway.
 		 
@@ -91,19 +95,20 @@
         </code></pre>
 		<p>
 		Your animation should now work and you can modify and extend it as you want. If you want to manipulate the output data before sending it to the input field, check out the <a href="../onoutputchange/index.html">next tutorial about the OnOutputChange Event</a>.
-		<div style="text-align:center;">
+        </p>
+        <div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">My animated sphere</div>
+                <div class="text-muted">My animated sphere</div>
             </div>
         </div> 
-		</p>
+
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -111,7 +116,7 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
            		<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
 
@@ -122,11 +127,6 @@
 				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>

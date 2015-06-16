@@ -4,41 +4,45 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Simple Screen-Space Ambient Occlusion</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Simple Screen-Space Ambient Occlusion</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../shadows/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../gamma/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../shadows/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../gamma/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Simple Screen-Space Ambient Occlusion</h1>
+            <h2>Simple Screen-Space Ambient Occlusion</h2>
         </div>            
         <br>
 		
-		<h2>Using Screen-Space Ambient Occlusion (SSAO)</h2>
+		<h3>Using Screen-Space Ambient Occlusion (SSAO)</h3>
 		<p>Screen-Space Ambient Occlusion is a post-process that coarsely approximates a shadowing effect from ambient light.
 		Its practical effect is a better perception of spatial relations between objects in.
 		Screen-Space Ambient Occlusion can be enabled with the Environment node's attribute "SSAO".
@@ -50,11 +54,11 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='ssao_before_after.jpg'>
-                <div class="docuCaption">SSAO disabled (left) and enabled (right)</div>
+                <div class="text-muted">SSAO disabled (left) and enabled (right)</div>
             </div>
         </div>
 		<p>
-		<h2>How it works</h2>		
+		<h3>How it works</h3>
 		The post-processing shader measures the amount of occlusion for each pixel.
 		It does so by sampling a spherical kernel where the size of the kernel depends on the world-space distance of the pixel to the camera.
 		As a result, the radius in which the amount of ambient occlusion is determined is specified in world-space (attribute "SSAOradius").
@@ -67,8 +71,8 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -76,18 +80,13 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 				<li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
 				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
 				<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>

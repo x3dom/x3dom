@@ -4,37 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>>AOPT Optimized X3DOM Content</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">AOPT Optimized X3DOM Content</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../inline/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../thirdParty/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../inline/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../thirdParty/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Using AOPT to Create Optimized X3DOM Content</h1>
+            <h2>Using AOPT to Create Optimized X3DOM Content</h2>
         </div>            
         <br>
         <p>
@@ -55,16 +59,17 @@
 
 		<p>
 		While on Windows and Linux the aopt tool is simply located in Instant Reality’s bin folder, on Mac it is sort of hidden here:
-		
+        </p>
         <pre class="prettyprint">
         <code>
     /Applications/Instant Player.app/Contents/MacOS/aopt  
         </code></pre>        
-        </p>
-        
+
+        <p>
 		AOPT is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering “aopt” 
 		will provide you with a list of all available command line arguments and some examples of its usage.        
 		A very basic procedure, for example, would be to convert a file that InstantReality can open (e.g. in obj, ply or wrl format) into an X3D file:
+        </p>
         <pre class="prettyprint">
         <code>
     aopt –i myFile.foo -x myResult.x3d
@@ -81,7 +86,7 @@
         <code>
     aopt –i myModel.x3d -F Scene:"cacheopt(true)" -G binGeo/:c -N example.html
         </code></pre>
-        
+        <p>
         Here, two new commands have been used to process the model data.
         The "-F" command merges all parts with the same material together.
         It then performs a cache optimization by re-arranging geometry data for faster rendering,
@@ -89,19 +94,21 @@
         The second command, "-G", performs the actual conversion to X3DOM BinaryGeometry.
         It exports a compressed ("c" = "compact") version of the model, referring to binary files in the folder "binGeo".
         The resulting X3DOM nodes are contained in the "example.html" file.
-        
+        <br><br>
         You can, of course, also export to BinaryGeometry without previous optimization.
         By specifing and additional "a" flag (e.g., "-G binGeo/:ac"), the exporter will use a non-indexed version of the mesh automatically,
         in case the index limit of WebGL can not be met by the model data ("a" = "autoindex").
-        
+        <br><br>
         In the example file below, you can find an optimized model, created by the above AOPT example line, using the <i>BinaryGeometry</i> node.
-                
+        </p>
+
+
         <p>                       
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -109,7 +116,7 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
 				

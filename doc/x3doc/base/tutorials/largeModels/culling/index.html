@@ -4,44 +4,48 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Culling</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Culling</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../../lighting/mirror/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../BVHRefiner/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../lighting/mirror/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../BVHRefiner/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Culling Techniques</h1>
+            <h2>Culling Techniques</h2>
         </div>            
         <br>
 
         <p>
 		This tutorial explains the different parameters to adjust x3doms integrated culling techniques for your personal needs on quality and performance.
         </p>
-		<h2>The Environment-Bindable</h2>   
+		<h3>The Environment-Bindable</h3>
 		<p>All relevant parameters are included in the new Environment-Bindable. To change it’s settings it has to be added to the scene explicitly. 
 		For each culling technique there exists a boolean flag to enable/disable it and a list of more detailed settings if applicable. Each of the following sections explains the usage of a technique and it’s parameters. Their combination can lead to very different results which allows explicit performance tuning for a specific scene.
 		<pre class="prettyprint"><code class="language-html">
@@ -53,7 +57,7 @@
 		The most common culling technique is the viewfrustum culling controlled by the viewFrustumCulling flag. The bounding volumes of the nodes are tested to be intersecting the frustum defining the current view. The nodes of the scene are traversed recursively reusing already calculated intersection if possible. 
 		It is the only technique which is not dependent on additional parameters.
 		
-		<table border="1" width="550px"style="border-collapse:collapse">
+		<table class="table">
 <thead >
 <tr><th >Setting</th>
 <th>Usage</th>
@@ -70,12 +74,12 @@
 		
 		</p>
 		
-		<h2>Small Feature Culling</h2>
+		<h3>Small Feature Culling</h3>
 		<p>
 		Using the smallFeatureCulling flag this technique is activated. For each node the amount of pixels is calculated it’s bounding volume would cover in screen space. 
 		If the coverage is below the smallFeatureThreshold parameter the node (and subsequent shapes) is culled.
 		
-		<table border="1" width="550px"style="border-collapse:collapse">
+		<table class="table">
 <thead >
 <tr><th >Setting</th>
 <th>Usage</th>
@@ -120,13 +124,13 @@
 </table>
 </p-->
 		</p>
-		<h2>Low Priority Culling</h2>
+		<h3>Low Priority Culling</h3>
 		<p>
 		This is the only supported comparison-based culling technique. Triggered by the lowPriorityCulling the nodes which passed all previous (activated) culling techniques are sorted by their priority. 
 		Afterwards the part of this list defined by the lowPriorityTreshold is removed. At the moment the screen-space coverage is used as priority, later on there will be a more sophisticated calculation allowing the user to set priorities to mark his or her personally important nodes. 
 		Therefore by now the priority culling is very similar to the small feature method but culling a relative amount instead of comparing to an absolute threshold.
 		
-		<table border="1" width="550px"style="border-collapse:collapse">
+		<table class="table">
 <thead >
 <tr><th >Setting</th>
 <th>Usage</th>
@@ -175,7 +179,7 @@
         <br>
         <div style="text-align: center">
             <img class="docuFigure" src="asteroids.png" alt="Asteroids" width="400" height="300">
-            <div class="docuCaption">The example shows the effect of the different culling techniques on frame rate and visuals when rendering a field of asteroids. Please keep in mind, that <i>lowPriority culling</i> is only active when the camera is moving.<br>
+            <div class="text-muted">The example shows the effect of the different culling techniques on frame rate and visuals when rendering a field of asteroids. Please keep in mind, that <i>lowPriority culling</i> is only active when the camera is moving.<br>
             </div>
         </div>
 
@@ -185,8 +189,8 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -194,16 +198,11 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
                 <li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>

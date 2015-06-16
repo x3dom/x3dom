@@ -4,40 +4,44 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+	<div class="row">
+		<div class="col-xs-12">
+			<h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+		</div>
+	</div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+	<div class="row" style="margin-top:20px;">
+		<div class="col-xs-12">
+			<ol class="breadcrumb">
+				<li><a href="http://x3dom.org">x3dom.org</a></li>
+				<li><a href="../../../index.html">documentation</a></li>
+				<li><a href="../../index.html">Tutorials</a></li>
+				<li>Gamma Correction</li>
+			</ol>
+		</div>
+	</div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Gamma Correction</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../ssao/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../commonSurfaceShaderNode/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+	<div>
+		<a class="btn btn-primary" href="../ssao/index.html" style="float:left;">&#8592; Previous Section</a>
+		<a class="btn btn-primary" href="../commonSurfaceShaderNode/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Gamma Correction</h1>
+            <h2>Gamma Correction</h2>
         </div>            
         <br>
-		<h2>Short facts</h2>
+		<h3>Short facts</h3>
 		<p>If you know what gamma correction is, you may just want to know that:
 		Lighting in X3DOM can be gamma-correct or not, depending on the Environment node’s gammaCorrectionDefault field.
 		RGB Colors and textures are assumed to be gamma coded.
@@ -50,13 +54,15 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">gamma correction in action</div>
+                <div class="text-muted">gamma correction in action</div>
             </div>
         </div>
 		
 		
 		</p>
-		<h2>Slightly longer version</h2>
+
+
+		<h3>Slightly longer version</h3>
 		<p>
 		X3DOM lighting works based on X3D’s lighting equations. These are defined in the <a href="http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/lighting.html#Lightingequations" target="_blank">X3D standard document</a>.
 		However, there is some debate on how such equations might be implemented. 
@@ -77,7 +83,7 @@
 		X3DOM has a field in the Environment bindable to control how lighting equations are being implemented, the gammaCorrectionDefault field. 
 		This field therefore controls whether your lighting is to be calculated linear (gamma being compensated) or not (retaining gamma in all calculations).
 		<br><br>
-		The field may have one of three states:
+		The field may have one of three states:</p>
 		<ul>
 		<li>“linear” (default) The preferred gamma coefficient (2.2, close to the sRGB standard’s
 		and Rec. 709 transfer function) is applied. Sometimes called “gamma correct[ed]”.</li>
@@ -86,7 +92,7 @@
 		<li>“none” Do not correct for gamma coding, assume a gamma of 1.0.
 		Confusingly, this results in a linear (identity) degenerate gamma correction which causes results to be processes as (non-linear as) they are stored.</li>
 		</ul>
-		</p>
+
 		<p>All textures and RGB colors are assumed to be gamma coded (the norm for 99.9% of image material). Inherently linear values like intensity of lights, shadow intensity or shininess are assumed to be linear. The setting just controls how these assumptions are being implemented. This means that generally there is no need for big changes (like linearizing all colors) when switching to (or away from) gamma-correct lighting.
 		Note that while the setting affects how lighting information in the scene is being treated, the more important part is how it affects all the intermediaries in the lighting calculations that needs to be performed in other to light up your scene.
 		The “moon gamma” example shows how lighting is affected by gamma. Generally, gamma-correct renderings tend to be brighter because in the majority of cases, not accouting for gamma loses light energy. This is especially true in the mid tones which are important to many scenes. In principle the worst case is about 2.5 times less light than a corrected implementation, but under circumstances this bias can accumulate.
@@ -109,8 +115,8 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -118,7 +124,7 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 				<li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
 
@@ -143,11 +149,6 @@
 				<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>
