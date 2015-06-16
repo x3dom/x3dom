@@ -4,71 +4,76 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <title>X3DOM Documentation: Overview</title>    
-    <link type="text/css" rel="stylesheet" href="static/styles/x3dom-docs.css">
+    <title>X3DOM Documentation: Overview</title>
+    <link type="text/css" rel="stylesheet" href="static/styles/x3dom-docs-new.css">
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li>documentation</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="#">documentation</a>
-</div>
 
-<div id="main">
+<div class="container">
 
-    <section>
+
        
-            <h1>Welcome to the X3DOM Documentation!</h1>
-            
-            <div class="contentBox" style="float:right; margin:0 32px;">            
-                <h2>Quick Links</h2>          
-                    <h3><a href="gettingStarted/index.html">&#10152; Getting Started</a></h3>
-                    <h3><a href="tutorials/index.html">&#10152; Tutorials</a></h3>
-                    <h3><a href="author/index.html">&#10152; Scene Author API Documentation</a></h3>
-                    <h3><a href="developer/index.html">&#10152; Developer API Documentation</a></h3>
-            </div>
-                        
+            <h2>Welcome to the X3DOM Documentation!</h2>
+    <div class="well" style="float:right;margin-left:20px;">
+        <h4>Quick Links</h4>
+        <h4><a href="gettingStarted/index.html">&#10152; Getting Started</a></h4>
+        <h4><a href="tutorials/index.html">&#10152; Tutorials</a></h4>
+        <h4><a href="author/index.html">&#10152; Scene Author API Documentation</a></h4>
+        <h4><a href="developer/index.html">&#10152; Developer API Documentation</a></h4>
+    </div>
             <p>
             Below you will find links and short descriptions of different parts of the documentation. If you are new to X3DOM, we recommend to read the <a href="gettingStarted/index.html">Getting Started</a> guide first.            
 			</p>                      
             
             
-            <h2>Getting Started</h2>
+            <h3>Getting Started</h3>
             <p>
             How do I get an X3DOM example up and running on my server? How can I test X3DOM applications on my local machine? And which version of X3DOM is best suited for my purposes?
             You will find answers to questions like this in the <a href="gettingStarted/index.html">Getting Started</a> guide.                        
             </p>
 
-            <h2>Tutorials</h2>
+            <h3>Tutorials</h3>
             <p>
             The <a href="tutorials/index.html">X3DOM tutorials</a> are one of the best ways to get familiar with X3DOM and its most important Nodes.
             </p>
          
             
-            <h2>Scene Author API documentation</h2>
+            <h3>Scene Author API documentation</h3>
             <p>
             X3DOM, based on the ISO Standard X3D, is build around the concepts of individual <i>Nodes</i> inside a scenegraph. Node descriptions are placed in the HTML document (or included via the <code>inline</code> tag), as regular XML / HTML elements that have attributes, so-called <i>fields</i>. This way, you can build impressive 3D applications and, at the same time, write only a minimal amount of code, or even no code at all.
             The <a href="author/index.html">Scene Author API documentation</a> provides a list of all nodes that are currently available in X3DOM, along with detailed field descriptions for each node.
             </p>
             
             
-            <h2>Developer API Documentation</h2>            
+            <h3>Developer API Documentation</h3>
             <p>
             In contrast to the Scene Author API documentation, which provides you with information about the nodes and fields available in X3DOM, the <a href="developer/index.html">Developer API Documentation</a> goes one step further:
             Here, you will also find descriptions of X3DOM's internal JavaScript functions. This API is intended for developers of new nodes and components.            
             </p>
             
             
-            <h2>External Documentation Resources</h2><a name="X3DExternalDoc"></a>           
+            <h3>External Documentation Resources</h3><a name="X3DExternalDoc"></a>
             <p>
             Since X3DOM is partly based on the ISO standard X3D, you may also consider X3D-related documentation resources.
+            </p>
             <ul>
                 <li>The official <a href="http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/concepts.html">X3D specification</a> contains an exhaustive list of all possible X3D nodes and detailed descriptions of the corresponding fields. The style of writing is, of course, very formal, though.</li>
                 
@@ -76,32 +81,32 @@
                 
                 <li>The list of <a href="http://www.web3d.org/x3d/content/examples/X3dResources.html">X3D Resources</a> maintained by the Web3D Consortium contains many more useful items, including books and authoring tools.
             </ul>
-            </p>
+
             
             
-            <h2>Beyond this Documentation: Getting Help and Reporting Issues</h2>
+            <h3>Beyond this Documentation: Getting Help and Reporting Issues</h3>
             <p>
             If you have already browsed this online documentation resources, but still don't find what you're looking for, you might want to post a question to the X3DOM community.
             To do so, post your message to one of the following mailing lists:
+            </p>
             <ul>
                 <li>The <code><a href="https://lists.sourceforge.net/lists/listinfo/x3dom-users">x3dom-users</a></code> list deals with problems and questions related to using X3DOM nodes the right way.</li>
                 <li>The <code><a href="https://lists.sourceforge.net/lists/listinfo/x3dom-developers">x3dom-developers</a></code> list is meant for issues that are more closely related to the internals of X3DOM.</li>            
             </ul>
+            <p>
             If you think that you might have discovered a bug or something is not working as expected / described, first browse the <a href="https://github.com/x3dom/x3dom/issues">X3DOM GitHub page</a> for matching issues.
             If you don't discover the issue you ran into, feel free to create a new one.
             </p>
                         
-            <h2>Old documentation resources</h2>
+            <h3>Old documentation resources</h3>
             <p>
             If you are interested in the old documentation resources, created for x3dom versions older than 1.6, please visit <a href="http://x3dom.org/docs-old/">http://x3dom.org/docs-old/</a>.
             </p>
             <br>
-            
-    </section>
+
 
 </div>
 
-</div>
 
 </body>
 </html>
