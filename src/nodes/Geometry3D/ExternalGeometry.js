@@ -32,7 +32,7 @@ x3dom.registerNodeType(
              * Multiple urls specify alternatives (if downloading fails).
              *
              * @var {x3dom.fields.MFString} url
-             * @memberof x3dom.nodeTypes.Geometry3D
+             * @memberof x3dom.nodeTypes.ExternalGeometry
              * @initvalue []
              * @field x3dom
              * @instance
