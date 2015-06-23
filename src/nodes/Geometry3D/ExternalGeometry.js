@@ -90,7 +90,7 @@ x3dom.registerNodeType(
                 //post request
                 xhr = new XMLHttpRequest();
 
-                xhr.open("GET", this._vf['url'][this._currentURLIdx], true);
+                xhr.open("GET", shape._nameSpace.getURL(this._vf['url'][this._currentURLIdx]), true);
 
                 xhr.responseType = "arraybuffer";
 
