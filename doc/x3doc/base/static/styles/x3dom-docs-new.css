@@ -5913,3 +5913,86 @@ table .info a,
     margin: 16px 0;
     padding: 16px;
 }
+
+.inheritance-lvl-0
+{
+    margin-left: 0em;
+}
+
+.inheritance-lvl-1
+{
+    margin-left: 1em;
+}
+
+.inheritance-lvl-2
+{
+    margin-left: 2em;
+}
+
+.inheritance-lvl-3
+{
+    margin-left: 3em;
+}
+
+.inheritance-lvl-4
+{
+    margin-left: 4em;
+}
+
+.inheritance-lvl-5
+{
+    margin-left: 5em;
+}
+
+.method-container {
+    border-top:1px solid #aaaaaa;
+    border-left:1px solid #aaaaaa;
+    padding:5px 10px 0 10px;
+    margin-top:20px;
+    margin-bottom:40px;
+}
+
+.method-container > dd > table > tbody > tr:nth-child(odd) > td,
+.method-container > dd > table > tbody > tr:nth-child(odd) > th {
+    background-color: #f9f9f9;
+}
+.method-container > dd > table > tbody > tr:hover > td,
+.method-container > dd > table > tbody > tr:hover > th {
+    background-color: #f5f5f5;
+}
+
+.page-title {
+    text-align: center;
+}
+
+.dataMemberOverviewContainer  {
+    margin-top: 30px;
+}
+
+.status-full, .status-experimental, .status-unsupported
+{
+    display:inline;
+    border: 1px solid;
+    padding:1px 3px;
+}
+
+.status-full
+{
+    background: #69c467;
+    border-color: #1f7d1f;
+    color: #164d16;
+}
+
+.status-experimental
+{
+    background: #ffec59;
+    border-color: #D5B500;
+    color: #817c36;
+}
+
+.status-unsupported
+{
+    background: #ff5f62;
+    border-color: #c6413a;
+    color: #742828;
+}

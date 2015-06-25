@@ -19,47 +19,50 @@ var title = obj.title;
         if( fields.length ) {
     ?>
 
-        <div class="x3d-classification">
+        <div class="well" style="width:300px;float:right;margin-left: 20px;">
+            <table class="table" style="margin-bottom:0">
+            <tr>
             <?js
                 if (doc.x3d )
                 {
                     if(doc.x3d == "x.x")
                     {
             ?>
-            <div class="x3d-propdesc">
+            <td>
                 X3DOM
-            </div>
+            </td><td></td>
             <?js
                     }
                     else
                     {
                         var link = "http://www.web3d.org/files/specifications/19775-1/V"+ doc.x3d.toLowerCase() + "/Part01/components/" + doc.component.toLowerCase() +".html#"+doc.name;
              ?>
-            <div class="x3d-propdesc">
+            <tr><td>
                 X3D:
-                <div class="x3d-value ">
-                    <?js if(self.api == "developer"){ ?>
+                </td>
+                <td>
+                    <?js if(self.api == "developer") { ?>
                          <?js= doc.x3d ?>
                     <?js }else{ ?>
                         <a href="<?js= link ?>"><?js= doc.x3d ?></a>
                     <?js } ?>
-                </div>
-            </div>
+                </td>
+            </tr>
             <?js
                     }
                 }
             ?>
             <?js if (doc.component) { ?>
-            <div class="x3d-propdesc">
+            <tr><td>
                 Component:
-                <div class="x3d-component">
+                </td><td>
                     <?js if(self.api == "developer"){ ?>
                     <?js= doc.component ?>
                     <?js }else{ ?>
                     <a href="index.html"><?js= doc.component ?></a>
                     <?js } ?>
-                </div>
-            </div>
+                </td>
+            </tr>
             <?js } ?>
             <?js
             if (doc.status && doc.x3d != "x.x")
@@ -68,22 +71,25 @@ var title = obj.title;
                 ? "status-full"
                 : (doc.status == "experimental" ? "status-experimental" : "status-unsupported");
             ?>
-            <div class="x3d-propdesc">Status:
-                <div class="<?js= class ?>"><?js= (doc.status === 'full' ? 'fully implemented' : doc.status ) ?></div>
-            </div>
+            <tr><td>Status:</td>
+                <td><div class="<?js= class ?>"><?js= (doc.status === 'full' ? 'fully implemented' : doc.status ) ?></div></td>
+            </tr>
+
+
+
             <?js
             } ?>
+        </table>
         </div>
-
     <?js } ?>
 
-    <div class="overviewContainer">
+    <div class="well" style="width:300px;clear:right;float:right;margin-left: 20px;">
 
-        <h2>Quick Links</h2>
+        <h4>Quick Links</h4>
 
         <?js if( fields.length ) { ?>
 
-            <a href="#Fields"><h3>&#10152; Fields</h3></a>
+            <a href="#Fields">&#10152; Fields</a>
             <br>
 
         <?js
@@ -92,7 +98,7 @@ var title = obj.title;
             {
         ?>
 
-        <a href="#Properties"><h3>&#10152; Properties</h3></a>
+        <a href="#Properties">&#10152; Properties</a>
 
         <br>
 
