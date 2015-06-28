@@ -101,9 +101,10 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             
              /**
-             * The applyGeoOriginToChildren field is used to specify whether the scene omits GeoOrigin nodes in child nodes.
-             * The default is false which means that GeoOrigin nodes are expected in child nodes.
-             * A true value means that GeoOrigin nodes are expected to have been omitted from child nodes.
+             * The applyGeoOriginToChildren field specifies whether GeoOrigin nodes have been omitted from child nodes.
+             * The default is false which means that GeoOrigin nodes are expected to be provided to child nodes.
+             * A true value means that GeoOrigin nodes are expected to have been omitted from child nodes. In this case,
+             * the GeoOrigin of the GeoTransform is applied to the child nodes as if GeoOrigin nodes were provided to child nodes. 
              * @var {x3dom.fields.SFBool} applyGeoOriginToChildren
              * @memberof x3dom.nodeTypes.GeoTransform
              * @initvalue false
