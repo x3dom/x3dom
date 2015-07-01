@@ -4,6 +4,7 @@
  * http://www.x3dom.org
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * (C)2015 Andreas Plesch, Waltham, MA, U.S.A.
  * Dual licensed under the MIT and GPL
  */
 
@@ -101,16 +102,18 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             
              /**
-             * The applyGeoOriginToChildren field is used to specify whether the scene omits GeoOrigin nodes in child nodes.
-             * The default is false which means that GeoOrigin nodes are expected in child nodes.
-             * A true value means that GeoOrigin nodes are expected to have been omitted from child nodes.
-             * @var {x3dom.fields.SFBool} applyGeoOriginToChildren
-             * @memberof x3dom.nodeTypes.GeoTransform
-             * @initvalue false
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFBool(ctx, 'applyGeoOriginToChildren', false);
+            * The globalGeoOrigin field specifies whether a GeoOrigin should be applied to child nodes.
+            * The default is false which means that GeoOrigin nodes are expected to have been provided to child nodes.
+            * A true value means that GeoOrigin nodes are expected to have been omitted from child nodes. In this case,
+            * the GeoOrigin of the GeoTransform is applied to the child nodes as if GeoOrigin nodes had been provided to child nodes.
+            * A true value in combination with provided GeoOrigin in child nodes leads to undefined behaviour.
+            * @var {x3dom.fields.SFBool} globalGeoOrigin
+            * @memberof x3dom.nodeTypes.GeoTransform
+            * @initvalue false
+            * @field x3dom
+            * @instance
+            */
+            this.addField_SFBool(ctx, 'globalGeoOrigin', false);
         },
         {
             nodeChanged: function ()
@@ -121,6 +124,7 @@ x3dom.registerNodeType(
             getGeoTransform: function ()
             {
                 // OR x OT x C x GR x T x R x SR x S x -SR x -GR x -C x -OT x -OR
+                // based on regular Transform and geoCenter defined transforms in correct order
                 // OR: GeoOrigin Rotation
                 // OT: GeoOrigin Translation
                 // GR: GeoLocation Rotation with geoCenter
@@ -131,7 +135,7 @@ x3dom.registerNodeType(
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
                 geoCenter = this._vf.geoCenter;
-                skipGO = this._vf.applyGeoOriginToChildren;
+                skipGO = this._vf.globalGeoOrigin;
                 scaleOrientMat = this._vf.scaleOrientation.toMatrix();
                 coords = new x3dom.fields.MFVec3f();
                 coords.push(geoCenter);
