@@ -55,7 +55,10 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'slicesOverY', 0);
-        
+
+            this.addField_SFBool(ctx, 'compressed', false);
+
+            this.addField_MFString(ctx, 'fallbackUrl', []);
         }
     )
 );

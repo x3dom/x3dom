@@ -150,7 +150,7 @@ x3dom.Texture.prototype.updateTexture = function()
     var gl  = this.gl;
 	var doc = this.doc;
 	var tex = this.node;
-	
+
 	//Set sampler
 	this.samplerName = tex._type;
 
@@ -160,7 +160,7 @@ x3dom.Texture.prototype.updateTexture = function()
 	} else {
 		this.type = gl.TEXTURE_2D;
 	}
-	
+
 	//Set texture format
 	if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture)) {
 		switch (tex._vf.image.comp)
@@ -258,6 +258,22 @@ x3dom.Texture.prototype.updateTexture = function()
         }
 		gl.bindTexture(this.type, null);
 	}
+	/************************************************************************
+  *  Handle compressed textures
+  *  Copyrigth (C) 2014 TOSHIBA
+  *  Dual licensed under the MIT and GPL licenses.
+  *  Based on code originally provided by　http://www.x3dom.org
+	 ************************************************************************/
+	else if (tex._vf.compressed == true){
+    if(x3dom.caps.EXTENSIONS.indexOf('WEBGL_compressed_texture_s3tc') !== -1){
+      this.texture = this.cache.getCompressedTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
+                                           false, tex._vf.crossOrigin, this.genMipMaps);
+    }else{
+      x3dom.debug.logError("your browser does not support compressed textures, use fallback url: " + tex._vf.fallbackUrl[0]);
+      this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.fallbackUrl[0]),
+                                           false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
+    }
+	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
     {
         if (tex._webgl && tex._webgl.fbo) {
@@ -283,7 +299,7 @@ x3dom.Texture.prototype.updateTexture = function()
         this.texture.width  = tex._vf.image.width;
         this.texture.height = tex._vf.image.height;
         this.texture.ready = true;
-		
+
 		var pixelArr = tex._vf.image.array;//.toGL();
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
 
@@ -297,11 +313,11 @@ x3dom.Texture.prototype.updateTexture = function()
         }
 
 		var pixels = new Uint8Array(pixelArr);
-		
+
 		gl.bindTexture(this.type, this.texture);
 		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-        gl.texImage2D(this.type, 0, this.format, 
-                      tex._vf.image.width, tex._vf.image.height, 0, 
+        gl.texImage2D(this.type, 0, this.format,
+                      tex._vf.image.width, tex._vf.image.height, 0,
                       this.format, gl.UNSIGNED_BYTE, pixels);
         if (this.genMipMaps) {
             gl.generateMipmap(this.type);
@@ -353,7 +369,7 @@ x3dom.Texture.prototype.updateTexture = function()
         }
 
 		var updateMovie = function()
-		{	
+		{
 			gl.bindTexture(that.type, that.texture);
 			gl.texImage2D(that.type, 0, that.format, that.format, gl.UNSIGNED_BYTE, tex._video);
             if (that.genMipMaps) {
@@ -363,39 +379,39 @@ x3dom.Texture.prototype.updateTexture = function()
             that.texture.ready = true;
 			doc.needRender = true;
 		};
-		
+
 		var startVideo = function()
-		{       	
+		{
 			tex._video.play();
 			tex._intervalID = setInterval(updateMovie, 16);
 		};
-		
+
 		var videoDone = function()
 		{
-			clearInterval(tex._intervalID);		
+			clearInterval(tex._intervalID);
 			if (tex._vf.loop === true)
 			{
 				tex._video.play();
 				tex._intervalID = setInterval(updateMovie, 16);
 			}
 		};
-		
+
 		// Start listening for the canplaythrough event, so we do not
 		// start playing the video until we can do so without stuttering
 		tex._video.addEventListener("canplaythrough", startVideo, true);
 
 		// Start listening for the ended event, so we can stop the
 		// texture update when the video is finished playing
-		tex._video.addEventListener("ended", videoDone, true);	
+		tex._video.addEventListener("ended", videoDone, true);
 	}
-	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
+	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
 	{
-		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false, 
+		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false,
 		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
-	else 
+	else
 	{
-		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]), 
+		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
 		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
 };
@@ -403,10 +419,10 @@ x3dom.Texture.prototype.updateTexture = function()
 x3dom.Texture.prototype.updateText = function()
 {
 	var gl = this.gl;
-	
+
 	this.wrapS			= gl.CLAMP_TO_EDGE;
 	this.wrapT			= gl.CLAMP_TO_EDGE;
-	
+
 	var fontStyleNode = this.node._cf.fontStyle.node;
 
     var font_family = 'serif';
@@ -424,14 +440,14 @@ x3dom.Texture.prototype.updateText = function()
 		// clean attribute values and split in array
 		fonts = fonts.trim().replace(/\'/g,'').replace(/\,/, ' ');
 		fonts = fonts.split(" ");
-		
+
 		font_family = Array.map(fonts, function(s) {
 			if (s == 'SANS') { return 'sans-serif'; }
 			else if (s == 'SERIF') { return 'serif'; }
 			else if (s == 'TYPEWRITER') { return 'monospace'; }
-			else { return ''+s+''; }  //'Verdana' 
+			else { return ''+s+''; }  //'Verdana'
 		}).join(",");
-		
+
 		font_style = fontStyleNode._vf.style.toString().replace(/\'/g,'');
 		switch (font_style.toUpperCase()) {
 			case 'PLAIN': 		font_style = 'normal'; 		break;
@@ -440,13 +456,13 @@ x3dom.Texture.prototype.updateText = function()
 			case 'BOLDITALIC': 	font_style = 'italic bold'; break;
 			default: 			font_style = 'normal';
 		}
-		
+
 		var leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
 		var topToBottom = fontStyleNode._vf.topToBottom;
-		
+
 		// TODO: make it possible to use multiple values
 		font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
-		
+
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
 			case 'END': 	font_justify = 'right'; 	break;
@@ -466,19 +482,19 @@ x3dom.Texture.prototype.updateText = function()
             font_size = 2.3;
         }
 	}
-	
+
 	var textX, textY;
 	var paragraph = this.node._vf.string;
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
-	var textAlignment = font_justify;			
-	
+	var textAlignment = font_justify;
+
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
 
 	var text_ctx = text_canvas.getContext('2d');
-	
+
 	// calculate font font_size in px
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
@@ -505,9 +521,9 @@ x3dom.Texture.prototype.updateText = function()
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
-	
+
 	// write white text with black border
-	text_ctx.fillStyle = 'white';		
+	text_ctx.fillStyle = 'white';
 	text_ctx.lineWidth = 2.5;
 	text_ctx.strokeStyle = 'grey';
 	text_ctx.textBaseline = 'top';
@@ -517,25 +533,25 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i*textHeight;          
+		textY = i*textHeight;
 		text_ctx.fillText(paragraph[i], textX,  textY);
 	}
-	
+
 	if( this.texture === null )
 	{
 		this.texture = gl.createTexture();
 	}
-	
+
 	gl.bindTexture(this.type, this.texture);
 	gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, text_canvas);
 	gl.bindTexture(this.type, null);
-	
+
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
-	
+
 	var w = txtW / 100.0;
     	var h = txtH / 100.0;
-	
+
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
     this.node.invalidateVolume();
