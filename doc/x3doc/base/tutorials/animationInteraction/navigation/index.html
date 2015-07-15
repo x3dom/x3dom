@@ -4,38 +4,42 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Navigation</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    &gt;
-    <a href="../../../index.html">documentation</a>    
-    &gt;
-    <a href="../../index.html">Tutorials</a>
-	&gt;
-    <a href="#">Navigation</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../../models/thirdParty/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../viewpoint/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../models/thirdParty/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../viewpoint/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div>
              <div style="text-align:center;">
-                <h1>Navigation</h1>
+                <h2>Navigation</h2>
              </div>       
                     
         <p> X3DOM provides some generic interaction and navigation methods. Interactive objects will be handled by HTML-like events. Navigation can be user-defined or controlled by specific predefined modes.
@@ -51,12 +55,12 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">Explore navigation modes in <a href="example.html">this interactive example</a></div>
+                <div class="text-muted">Explore navigation modes in <a href="example.html">this interactive example</a></div>
             </div>
         </div> 
 		
 		
-<h2>Changing navigation mode with Javascript</h2>
+<h3>Changing navigation mode with Javascript</h3>
 
 <p>
 Of course you can switch modes not only by pressing the shortcuts/hotkeys but also with Javascript. The current mode is set as param <i>type</i> to the <i>NavigationInfo</i> node.
@@ -78,12 +82,12 @@ Type can be a single mode or also hold an array containing additional fallback m
 	
 </code></pre>		
 	
-<h2>Interactive camera</h2>
-<h3>Examine</h3>
+<h3>Interactive camera</h3>
+<h4>Examine</h4>
 <p>Activate this mode by pressing the "e" key.</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <tr>
-<th>Function</th>
+<th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 <tbody>
@@ -102,11 +106,11 @@ Type can be a single mode or also hold an array containing additional fallback m
 </tbody>
 </table>
 
-<h3>Walk</h3>
+<h4>Walk</h4>
 <p>Activate this mode by pressing the "w" key.</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 </thead>
@@ -120,11 +124,11 @@ Type can be a single mode or also hold an array containing additional fallback m
 </tbody>
 </table>
 
-<h3>Fly</h3>
+<h4>Fly</h4>
 <p>Activate this mode by pressing the "f" key.</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 </thead>
@@ -138,12 +142,12 @@ Type can be a single mode or also hold an array containing additional fallback m
 </tbody>
 </table>
 
-<h3>Helicopter</h3>
+<h4>Helicopter</h4>
 <p>Activate this mode by pressing the "h" key.<br>
 To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 </thead>
@@ -154,11 +158,11 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
-<h3>Look at</h3>
+<h4>Look at</h4>
 <p>Activate this mode by pressing the "l" key.</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 </thead>
@@ -172,12 +176,12 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
-<h3>Turntable</h3>
+<h4>Turntable</h4>
 <p>The allowed interactions are the same as in examine mode. With the third and fourth value of the typeParams-Parameter you can set the minimal and maximal vertical rotation angle. Accepted values are between 0 and PI, starting from +Y (0) down to -Y (PI).
 </p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <tr>
-<th>Function</th>
+<th width="40%">Function</th>
 <th>Mouse Button</th>
 </tr>
 <tbody>
@@ -196,11 +200,11 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
-<h3>Game</h3>
+<h4>Game</h4>
 <p>Activate this mode by pressing the "g" key. To look around (rotate view) move the mouse.</p>
-<table border='1' width='350px' style="border-collapse:collapse">
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Key</th>
 </tr>
 </thead>
@@ -220,10 +224,10 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
-<h2>Non-interactive camera movement</h2>
-<table border='1' width='350px' style="border-collapse:collapse">
+<h3>Non-interactive camera movement</h3>
+<table class="table table-striped">
 <thead>
-<tr><th >Function</th>
+<tr><th width="40%">Function</th>
 <th>Key</th>
 </tr>
 </thead>
@@ -240,7 +244,7 @@ To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</
 </tbody>
 </table>
 
-<h2>Mid-Button troubleshooting</h2>
+<h3>Mid-Button troubleshooting</h3>
 <p>If the web page has scroll bars and autoscrolling is enabled, Mid-Button currently does not work correctly. As a workaround, 
 you can disable autoscrolling by unchecking the "Use autoscrolling" checkbox in the Firefox browser options, as is shown in the screenshot below (for the Firefox case).</p>
 <img src="scrolling.png" width="450px">
@@ -255,8 +259,8 @@ you can disable autoscrolling by unchecking the "Use autoscrolling" checkbox in 
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -264,16 +268,11 @@ you can disable autoscrolling by unchecking the "Use autoscrolling" checkbox in 
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>		
 				<li><a href="../../../author/Navigation/NavigationInfo.html">NavigationInfo</a></li>
             </ul>
         </div>
-
-    </section>
-
-</div>
-
 </div>
 
 </body>

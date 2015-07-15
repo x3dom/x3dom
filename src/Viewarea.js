@@ -246,6 +246,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 {
     var navi = this._scene.getNavigationInfo();
     var navType = navi.getType();
+    var savedPickingInfo = null;
     
     var needNavAnim = (this._currentInputType == x3dom.InputTypes.NAVIGATION) &&
                       ( navType === "game" ||
@@ -256,9 +257,45 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                          navType.substr(0, 5) === "looka")) );
     
     this._deltaT = timeStamp - this._lastTS;
+    
+    var removeZeroMargin = function(val, offset) {
+        if (val > 0) {
+            if (val <= offset) {
+                return 0;
+            } else {
+                return val - offset;
+            }
+        } else if (val <= 0) {
+            if (val >= -offset) {
+                return 0;
+            } else {
+                return val + offset;
+            }
+        }
+    };
+    
+    // slightly increasing slope function
+    var humanizeDiff = function(scale, diff) {
+        return ((diff < 0) ? -1 : 1 ) * Math.pow(scale * Math.abs(diff), 1.65 /*lower is easier on the novice*/);
+    };
 
     if (needNavAnim)
     {
+
+        //Save picking info if available
+        if( this._pickingInfo.pickObj !== null ) {
+
+            savedPickingInfo = {
+                pickPos: this._pickingInfo.pickPos,
+                pickNorm: this._pickingInfo.pickNorm,
+                pickObj: this._pickingInfo.pickObj,
+                firstObj: this._pickingInfo.firstObj,
+                lastObj: this._pickingInfo.lastObj,
+                lastClickObj: this._pickingInfo.lastClickObj,
+                shadowObjectId: this._pickingInfo.shadowObjectId
+            };
+        }
+
         var avatarRadius = 0.25;
         var avatarHeight = 1.6;
         var avatarKnee = 0.75;  // TODO; check max. step size
@@ -268,18 +305,34 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             avatarHeight = navi._vf.avatarSize[1];
             avatarKnee = navi._vf.avatarSize[2];
         }
+        
+        
 
         // get current view matrix
         var currViewMat = this.getViewMatrix();
         var dist = 0;
+        
+        // estimate one screen size for motion puposes so navigation behaviour
+        // is less dependent on screen geometry. This makes no sense for very
+        // anisotropic cases, so it should probably be configurable.
+        var screenSize = Math.min(this._width, this._height);
+        var rdeltaX = removeZeroMargin((this._pressX - this._lastX) / screenSize, 0.01);
+        var rdeltaY = removeZeroMargin((this._pressY - this._lastY) / screenSize, 0.01);
+        
+        var userXdiff = humanizeDiff(1, rdeltaX);
+        var userYdiff = humanizeDiff(1, rdeltaY);
 
         // check if forwards or backwards (on right button)
         var step = (this._lastButton & 2) ? -1 : 1;
         step *= (this._deltaT * navi._vf.speed);
-
-        var phi = 2 * Math.PI * this._deltaT * (this._pressX - this._lastX) / this._width;
-        var theta = Math.PI * this._deltaT * (this._pressY - this._lastY) / this._height;
-
+        
+        // factor in delta time and the nav speed setting
+        var userXstep = this._deltaT * navi._vf.speed * userXdiff;
+        var userYstep = this._deltaT * navi._vf.speed * userYdiff;
+        
+        var phi = Math.PI * this._deltaT * userXdiff;
+        var theta = Math.PI * this._deltaT * userYdiff;
+        
         if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
@@ -383,26 +436,25 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             return needNavAnim;
         }   // game
-        else if (navType === "helicopter")
-        {
+        else if (navType === "helicopter") {
             var typeParams = navi.getTypeParams();
 
-            if (this._lastButton & 2)
-            {
-                var stepUp = this._deltaT * this._deltaT * navi._vf.speed;
-                stepUp *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
-                typeParams[1] += stepUp;
+            
 
+            if (this._lastButton & 2) // up/down levelling
+            {
+                var stepUp = 200 * userYstep;
+                typeParams[1] += stepUp;
                 navi.setTypeParams(typeParams);
             }
 
-            if (this._lastButton & 1) {
-                step *= 0.01 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+            if (this._lastButton & 1) {  // forward/backward motion
+                step = 300 * userYstep;
             }
             else {
                 step = 0;
             }
-
+            
             theta = typeParams[0];
             this._from.y = typeParams[1];
             this._at.y = this._from.y;
@@ -536,6 +588,13 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
 
         this._scene.getViewpoint().setView(this._flyMat.inverse());
+
+        //Restore picking info if available
+        if( savedPickingInfo !== null ) {
+
+            this._pickingInfo = savedPickingInfo;
+            
+        }
     }
 
     return needNavAnim;

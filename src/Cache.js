@@ -134,7 +134,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
     var shaderID = properties.id;
 
     if (this.shaders[shaderID] === undefined) {
-        var program;
+        var program = null;
         if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
         } else {
@@ -156,21 +156,26 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
     //Get shaderID
     var shaderID = properties.id;
 
-    if(pickMode != undefined || pickMode != null) {
+    if(pickMode !== undefined && pickMode !== null) {
         shaderID += pickMode;
     }
 
     if (this.shaders[shaderID] === undefined)
     {
-        var program;
-        if (properties.CSHADER != -1) {
-            program = new x3dom.shader.ComposedShader(gl, shape);
-        } else if(pickMode != undefined || pickMode != null) {
+        var program = null;
+
+        if (pickMode !== undefined && pickMode !== null) {
             program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
-        } else {
-            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
-                new x3dom.shader.DynamicShader(gl, properties);
         }
+        else if (properties.CSHADER != -1) {
+            program = new x3dom.shader.ComposedShader(gl, shape);
+        }
+        else {
+            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
+                        new x3dom.shader.DynamicMobileShader(gl, properties) :
+                        new x3dom.shader.DynamicShader(gl, properties);
+        }
+
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
 

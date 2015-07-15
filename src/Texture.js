@@ -126,7 +126,7 @@ x3dom.Texture.prototype.update = function()
 	}
 };
 
-x3dom.Texture.prototype.setPixel = function(x, y, pixel)
+x3dom.Texture.prototype.setPixel = function(x, y, pixel, update)
 {
     var gl  = this.gl;
 
@@ -139,8 +139,10 @@ x3dom.Texture.prototype.setPixel = function(x, y, pixel)
     gl.texSubImage2D(this.type, 0, x, y, 1, 1, this.format, gl.UNSIGNED_BYTE, pixels);
 
     gl.bindTexture(this.type, null);
-    
-    this.doc.needRender = true;
+
+    if(update) {
+        this.doc.needRender = true;
+    }
 };
 
 x3dom.Texture.prototype.updateTexture = function()
@@ -225,7 +227,9 @@ x3dom.Texture.prototype.updateTexture = function()
 
         if (this.samplerName == "displacementMap" ||
             this.samplerName == "multiDiffuseAlphaMap" ||
-            this.samplerName == "multiVisibilityMap")
+            this.samplerName == "multiVisibilityMap" ||
+            this.samplerName == "multiEmissiveAmbientMap" ||
+            this.samplerName == "multiSpecularShininessMap")
         {
             this.wrapS = gl.CLAMP_TO_EDGE;
             this.wrapT = gl.CLAMP_TO_EDGE;

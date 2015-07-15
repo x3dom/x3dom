@@ -9,21 +9,22 @@
          if (fields && fields.length )
          {
     ?>
-        <div class="head-row">
-            <span class="head-cell">Name</span>
-            <span class="head-cell">Type</span>
-            <span class="head-cell">Default Value</span>
-            <span class="head-cell">Range</span>
-            <span class="head-cell">Inheritance</span>
-            <span class="head-cell">Standard</span>
-            <span class="head-cell">Description</span>
-        </div>
+        <table class="table table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default Value</th>
+            <th>Range</th>
+            <th>Inheritance</th>
+            <th>Standard</th>
+            <th>Description</th>
+        </tr>
 
         <?js fields.forEach(function(f){ ?>
-        <div class="row">
-            <span class="cell table-fieldname"><?js= f.name ?></span>
+        <tr>
+            <td><?js= f.name ?></td>
 
-            <span class="cell">
+            <td>
                <?js
                 var type = ( f.type && f.type.names && f.type.names.length )
                             ? f.type.names[0] : null;
@@ -34,9 +35,9 @@
                 ?>
 
                 <?js= type ?>
-            </span>
+            </td>
 
-            <span class="cell">
+            <td>
                 <?js if(f.initvalue)
                 {
                     var fullInit = f.initvalue.split('.');
@@ -44,11 +45,11 @@
                 ?>
                 <?js= defVal ?></a>
                 <?js } ?>
-            </span>
+            </td>
 			
-            <span class="cell"><?js= (f.range ? f.range : '') ?></span>
+            <td><?js= (f.range ? f.range : '') ?></td>
 
-            <span class="cell">
+            <td>
                 <?js if(f.inherits)
                      {
                          var inherit = f.inherits.split('#');
@@ -61,18 +62,20 @@
                 ?>
                 <?js= link ?></a>
                 <?js }} ?>
-            </span>
+            </td>
 
-            <span class="cell">
+            <td>
                 <?js if (f.field == "x3d") { ?>
                     <img src="<?js= obj.backPath ?>../static/images/x3d.png">
                 <?js } else { ?>
                     <img src="<?js= obj.backPath ?>../static/images/x3dom.png">
                 <?js } ?>
-            </span>
+            </td>
 
-            <span class="cell"><?js= f.description ?></span>
-        </div>
+            <td><?js= f.description ?></td>
+        </tr>
         <?js }) ?>
+        </table>
     <?js }   ?>
+
 </div>

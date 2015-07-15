@@ -4,37 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Access Node Fields</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Access Node Fields</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../sound/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../../models/inline/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../sound/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../../models/inline/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Accessing and Manipulating Fields in X3DOM</h1>
+            <h2>Accessing and Manipulating Fields in X3DOM</h2>
         </div>            
         <br>
 		<p>
@@ -44,7 +48,7 @@
 		As shown in the <a href="../htmlCSS/index.html">JavaScript tutorial</a> you can use JavaScript on every DOM element, so you are able to manipulate x3DOM nodes by using 
 		"getAttribute()" and "setAttribute()". 
 		</p>
-		<h2>getAttribute and setAttribute</h2>
+		<h3>getAttribute and setAttribute</h3>
 <p>
 "getAttribute(fieldname") always returns the value of the field with the given name as a string. "setAttribute(fieldname, fieldvalue)" takes a String
 and sets the field with the given name to the given value. <br>
@@ -72,7 +76,9 @@ This color object gets converted to a string in order to compare it with another
 That seems a bit odd, doesn't it? Luckily X3DOM provides a more sophisticated way to manipulating values. 
 This is helpful especially when you want to change only a single value of that field, like a single channel of a color. 
 </p>
-<h2>getFieldValue and setFieldValue </h2>
+
+
+<h3>getFieldValue and setFieldValue </h3>
 <p>
 The getFieldValue method returns the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
 without cast it first. Corresponding works the setFieldValue method, which takes the fieldname as a string (because it really is one) and the fieldvalue
@@ -91,7 +97,9 @@ always involves copy operations which can slow down your application if field va
 Or if your field value is a large array of values.
 For those cases X3DOM has a requestFieldRef() method, which returns the original object by reference. 
 </p>
-<h2>requestFieldRef and releaseFieldRef</h2>
+
+
+<h3>requestFieldRef and releaseFieldRef</h3>
 <p>
  Please note that requestFieldRef is especially thought for such cases and does not work on fields that represent single, primitive javascript datatypes, such as SFFloat or SFString.
  With requestFielRef() you get the object by reference, so you should be aware that you are manipulating the original object used by X3DOM, and that any change you make to it will potentially directly be reflected in X3DOM's output. 
@@ -114,8 +122,8 @@ For those cases X3DOM has a requestFieldRef() method, which returns the original
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -123,17 +131,13 @@ For those cases X3DOM has a requestFieldRef() method, which returns the original
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 								
 				<li><a href="../../../author/Shape/Material.html">Material</a></li>
 				          
             </ul>
         </div>
-
-    </section>
-
-</div>
 
 </div>
 

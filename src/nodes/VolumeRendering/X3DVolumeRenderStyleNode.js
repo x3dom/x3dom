@@ -107,7 +107,7 @@ x3dom.registerNodeType(
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "gradEye.xyz, -positionE.xyz, ambient, diffuse, specular);\n";
+                    "grad.xyz, positionE.xyz, ambient, diffuse, specular);\n";
                 }
                 shaderText += "    value.rgb = ambient*value.rgb + diffuse*value.rgb + specular;\n"; // overwritten
                 return shaderText;

@@ -131,12 +131,32 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'sortKey', 0);
+			
+			/**
+             * Specify the threshold for the alpha clipping
+             * @var {x3dom.fields.SFFloat} alphaClipThreshold
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue 0.1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'alphaClipThreshold', 0.1);
 
             // shortcut to shader program
             this._shader = null;
         
         },
         {
+			fieldChanged: function(fieldName) {
+				if (fieldName == "alphaClipThreshold") {
+				
+					Array.forEach(this._parentNodes, function (shape) {
+						shape.setAppDirty();
+					});
+				
+				}
+			},
+		
             nodeChanged: function() {
                 //TODO delete this if all works fine
                 if (!this._cf.material.node) {

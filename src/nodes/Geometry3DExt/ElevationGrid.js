@@ -221,6 +221,7 @@ x3dom.registerNodeType(
                 }
 
                 var c = 0;
+                var faceCnt = 0;
 
                 for (y = 0; y <= suby; y++)
                 {
@@ -231,9 +232,11 @@ x3dom.registerNodeType(
                         this._mesh._positions[0].push(y * this._vf.zSpacing);
 
                         if (normals) {
-                            this._mesh._normals[0].push(normals[c].x);
-                            this._mesh._normals[0].push(normals[c].y);
-                            this._mesh._normals[0].push(normals[c].z);
+                            if(this._vf.normalPerVertex) {
+                                this._mesh._normals[0].push(normals[c].x);
+                                this._mesh._normals[0].push(normals[c].y);
+                                this._mesh._normals[0].push(normals[c].z);
+                            }
                         }
 
                         if (texCoords) {
@@ -249,11 +252,13 @@ x3dom.registerNodeType(
                         }
 
                         if (colors) {
-                            this._mesh._colors[0].push(colors[c].r);
-                            this._mesh._colors[0].push(colors[c].g);
-                            this._mesh._colors[0].push(colors[c].b);
-                            if (numColComponents === 4) {
-                                this._mesh._colors[0].push(colors[c].a);
+                            if(this._vf.colorPerVertex) {
+                                this._mesh._colors[0].push(colors[c].r);
+                                this._mesh._colors[0].push(colors[c].g);
+                                this._mesh._colors[0].push(colors[c].b);
+                                if (numColComponents === 4) {
+                                    this._mesh._colors[0].push(colors[c].a);
+                                }
                             }
                         }
 

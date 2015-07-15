@@ -38,11 +38,11 @@ x3dom.registerNodeType(
              * Determines whether offset values from previous drag gestures are remembered / accumulated.
              * @var {x3dom.fields.SFBool} autoOffset
              * @memberof x3dom.nodeTypes.X3DDragSensorNode
-             * @initvalue false
+             * @initvalue true
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoOffset', false);
+            this.addField_SFBool(ctx, 'autoOffset', true);
 
             //route-able output fields
             //this.addField_SFVec3f(ctx, 'trackPoint_changed', 0, 0, 0);

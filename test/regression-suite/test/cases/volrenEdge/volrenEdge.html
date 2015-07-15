@@ -1,0 +1,23 @@
+<html>
+<head>
+    <title>Volume Rendering EdgeEnhancementVolumeStyle</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+</head>
+<body>
+	<X3D id="x3d" xmlns='http://www.web3d.org/specifications/x3d-namespace'
+         showStat='false' showLog='false' width='800px' height='600px'>
+      <Scene>
+          <Background DEF='BG' skyColor='0.0 0.0 0.0' transparency='0'></Background> 
+          <Viewpoint description='Default' zNear='0.0001' zFar='100'></Viewpoint>
+          <Transform>
+              <VolumeData id='volume' dimensions='4.0 4.0 4.0'>
+                  <ImageTextureAtlas containerField='voxels' url='./aorta4096.png' numberOfSlices='96' slicesOverX='10' slicesOverY='10'></ImageTextureAtlas>
+                  <EdgeEnhancementVolumeStyle edgeColor='0 0 1' gradientThreshold='1.8'></EdgeEnhancementVolumeStyle>
+              </VolumeData>
+          </Transform>
+      </Scene>
+    </X3D>
+</body>
+</html>

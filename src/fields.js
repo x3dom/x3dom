@@ -1792,7 +1792,7 @@ x3dom.fields.Quaternion.axisAngle = function (axis, a) {
 };
 
 x3dom.fields.Quaternion.prototype.copy = function() {
-    return x3dom.fields.Quaternion(this);
+    return x3dom.fields.Quaternion.copy(this);
 };
 
 x3dom.fields.Quaternion.prototype.toMatrix = function () {

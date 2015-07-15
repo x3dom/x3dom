@@ -3,34 +3,37 @@
 <head>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Getting Started</title>    
-    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs.css">    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
     <script src="../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Picking an X3DOM Version</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../index.html">documentation</a>    
-    >
-    <a href="../index.html">Getting Started</a>
-    >
-    <a href="#">Picking an X3DOM Version</a>
-</div>
 
-<div id="main">
+<div class="container">
 
-    <section>
-       
-            <div>
-                <div class="simpleButton" style="float:left;"><a href="../basicX3D/index.html" style="float:right;">&#8678; Previous Section</a></div>
-                <div class="simpleButton" style="float:right;"><a href="../pythonSimpleHTTP/index.html" style="float:right;">Next Section &#8680;</a></div>
+
+    <div>
+        <a class="btn btn-primary" href="../basicX3D/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../pythonSimpleHTTP/index.html" style="float:right;">Next Section &#8594;</a>
                 <div style="clear:both;"></div>
             </div>
             <div style="text-align:center;">
@@ -41,9 +44,8 @@
             <h3>Versions and Components</h3>
             <p>
             There are several versions of X3DOM available, so you might be wondering which one is best for your particular purposes.
-            In general, we recommended to use the development version, since it always contains the latest features and fixes.
-            However, after you have finished the main development work for your Web application, you might like to deploy it along with a downloaded snapshot of the latest
-            version you used during development.
+            In general, we recommended to use the latest release version. However, if you require a new feature that is not yet available in the latest release, the dev version might also be interesting for you.
+			As soon as you have finished the main development work for your Web application, you might like to deploy it along with a downloaded snapshot of the version you used during development.
             You might, for some reasons, also be interested in using an older release, maybe because it contained some experimental features which you used in your application, which were removed in a later X3DOM version.
             </p>
             All X3DOM releases, including the development version, are each available as a package of one javascript file (e.g., <code>x3dom.js</code>),
@@ -101,10 +103,6 @@
             than the minified version. Therefore, it is not well-suited as a final version for the distribution of your Web application,
             but only for temporary debugging purposes during application development.
             </p>
-    </section>
-
-</div>
-
 </div>
 
 </body>

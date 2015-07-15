@@ -89,7 +89,7 @@ x3dom.registerNodeType(
                 // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/networking.html#Anchor
                 x3dom.debug.logInfo("Anchor url=" + url + ", target=" + target + ", #viewpoint=" + anchor);
 
-                if (target.length == 0 || target == "_blank") {
+                if(target.length !=0 || target != "_self") {
                     window.open(this._nameSpace.getURL(url), target);
                 }
                 else {

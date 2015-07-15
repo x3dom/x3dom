@@ -89,10 +89,10 @@ x3dom.registerNodeType(
             /**
              * Enable/disable directional light that always points in the direction the user is looking.
              * Removed in X3D V3.3. See NavigationInfo
-             * still supported but required changing default to undefined
+             * still supported but required changing default to undefined since could be already given by NavigationInfo
              * @var {x3dom.fields.SFBool} headlight
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue true; undefined since could be already given by NavigationInfo
+             * @initvalue undefined
              * @field x3dom
              * @instance
              */
@@ -101,10 +101,10 @@ x3dom.registerNodeType(
             /**
              * Specifies the navigation type.
              * Removed in X3D V3.3. See NavigationInfo
-             * still supported but required changing default to undefined
+             * still supported but required changing default to undefined since could be already given by NavigationInfo
              * @var {x3dom.fields.MFString} navType
              * @memberof x3dom.nodeTypes.GeoViewpoint
-             * @initvalue ['EXAMINE']; undefined since could be already given by NavigationInfo
+             * @initvalue undefined
              * @field x3dom
              * @instance
              */
@@ -265,7 +265,8 @@ x3dom.registerNodeType(
 
             getCenterOfRotation: function() {
                 // is already transformed to GC
-                return this._vf.centerOfRotation;
+                // return is expected in world coords.
+                return this.getCurrentTransform().multMatrixPnt(this._vf.centerOfRotation);
             },
             
             getGeoCenterOfRotation: function(geoSystem, geoOrigin, geoCenterOfRotation) {
@@ -339,12 +340,12 @@ x3dom.registerNodeType(
                         // could be a bit optimized since geoSystem does not change
                         // eg., move initial settings of GCtoGD outside 
                         var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
-                        var elevation = positionGD.z;
-                        // x3dom.debug.logInfo("Geoelevation is " + elevation);
                         // at 10m above ground a speed of 1 sounds about right; make positive if below ground                      
-                        navi._vf.speed = Math.abs(elevation/10.0) * this._vf.speedFactor * this._userSpeedFactor;
+                        var elevationSpeed = Math.abs(positionGD.z/10);
+                        // keep above 1 to be able to move close to the ground
+                        elevationSpeed = elevationSpeed > 1 ? elevationSpeed : 1;
+                        navi._vf.speed = elevationSpeed * this._vf.speedFactor * this._userSpeedFactor;
                         this._lastSpeed = navi._vf.speed;
-                        // x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed + "; ground position at: " + positionGD.y + ", " + positionGD.x);
                     }
                 }
                 return this._viewMatrix;
@@ -380,6 +381,10 @@ x3dom.registerNodeType(
                 this._viewMatrix = this.getInitViewMatrix(this._vf.orientation, this._vf.geoSystem, this._cf.geoOrigin, this._vf.position);
                 // also reset center of Rotation; is not done for regular viewpoint
                 this._vf.centerOfRotation = this.getGeoCenterOfRotation(this._vf.geoSystem, this._cf.geoOrigin, this._geoCenterOfRotation);
+                //Reset navigation helpers of the viewarea
+                if(this._nameSpace.doc._viewarea) {
+                    this._nameSpace.doc._viewarea.resetNavHelpers();
+                }
             },
 
             getNear: function() {

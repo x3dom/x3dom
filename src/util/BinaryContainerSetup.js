@@ -353,7 +353,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp0.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp0.response) : xmlhttp0.response;
 
             var geoNode = binGeo;
             var attribTypeStr = geoNode._vf.indexType;  //"Uint16"
@@ -427,7 +427,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp.response) : xmlhttp.response;
 
             var geoNode = binGeo;
             var attribTypeStr = geoNode._vf.coordType;
@@ -537,7 +537,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp1.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp1.response) : xmlhttp1.response;
 
             var geoNode = binGeo;
             var i = 0;
@@ -633,7 +633,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp2.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp2.response) : xmlhttp2.response;
 
             var attribTypeStr = binGeo._vf.normalType;
             shape._webgl.normalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
@@ -693,7 +693,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp3.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp3.response) : xmlhttp3.response;
 
             var attribTypeStr = binGeo._vf.texCoordType;
             shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
@@ -779,7 +779,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (!shape._webgl)
                 return;
 
-            var XHR_buffer = xmlhttp4.response;
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp4.response) : xmlhttp4.response;
 
             var attribTypeStr = binGeo._vf.colorType;
             shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);

@@ -164,6 +164,11 @@ function dumpFields(t, elem) {
     fieldInfo += "<tr align='left'><th>DataType</th><th>Name</th><th>DefaultValue</th></tr>";
 
     for (var fieldName in instance._vf) {
+        // initializing fields with non-X3D conform "undefined" (like in GeoViewpoint.js)
+        // is a rather bad idea!
+        if (instance._vf[fieldName] === undefined)
+            continue;
+
         isMultiField = (instance._vfFieldTypes[fieldName].charAt(0) == "M");
         var fieldValue = isMultiField ? "[" : "";
 

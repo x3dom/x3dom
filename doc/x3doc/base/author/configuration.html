@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+        <title>X3DOM Scene Author API Documentation: Configuration</title>
+
+    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs-new.css">
+    <script src="../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../index.html">documentation</a></li>
+                <li>Scene Author API</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="text-align: center">
+    <ul class="nav nav-pills" style="display: inline-block;">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="nodes.html">Nodes</a></li>
+        <li><a href="components.html">Components</a></li>
+        <li><a href="runtime.html">Runtime</a></li>
+        <li><a href="configuration.html" class="btn btn-primary">Configuration</a></li>
+    </ul>
+</div>
+
+<div class="container">
+                
+    <section>
+        <article>
+            
+            <h2 style="text-align: center;">Configuration</h2>
+            <p>
+                The X3D element supports attributes which allows to set configuration for the runtime.
+            </p>
+
+            <h3>Usage</h3>
+
+            <p>
+                The params behave just like any other HTML attribute. It must be added to the x3d canvas tag.
+            </p>
+
+            <pre class="prettyprint"><code class="language-html">
+    &lt;x3d showLog="true"&gt;
+        ...
+    &lt;/x3d&gt;
+            </code></pre>
+
+            <h3>Options</h3>
+
+            <p>
+                The following table lists the parameters currently supported.
+            </p>
+
+
+            <table class="table table-responsive table-striped">
+                <colgroup>
+                    <col width="17%" />
+                    <col width="23%" />
+                    <col width="10%" />
+                    <col width="50%" />
+                </colgroup>
+                <thead valign="bottom">
+                <tr><th>Parameter</th>
+                    <th class="head">Values</th>
+                    <th class="head">Default</th>
+                    <th class="head">Description</th>
+                </tr>
+                </thead>
+                <tbody valign="top">
+                <tr><td>showLog</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Hide or display the logging console</td>
+                </tr>
+                <tr><td>showStat</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Hide or display the statistics overlay</td>
+                </tr>
+                <tr><td>showProgress</td>
+                    <td>true, false</td>
+                    <td>true</td>
+                    <td>Hide or show the loading indicator.
+                </tr>
+                <tr><td>PrimitiveQuality</td>
+                    <td>High, Medium, Low, float</td>
+                    <td>High/1.0</td>
+                    <td>Render quality (tesselation level) for Box, Cone,
+                        Cylinder, Sphere.</td>
+                </tr>
+                </tbody>
+            </table>
+
+
+
+        </article>
+    
+        <br>
+
+    </section>
+
+    <footer>
+        This part of the X3DOM documentation is based upon the
+        <a href="http://x3dom.org/docs-old/configuration.html">configuration entry</a> in the old X3DOM documentation.
+    </footer>
+</div>
+
+</div>
+
+</body>
+</html>

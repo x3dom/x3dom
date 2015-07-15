@@ -727,6 +727,19 @@
                             }
                         }
                     ]
+            },     
+            {
+                "url"   : "/test/cases/mobileShader/mobileShader.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
             },            
             {
                 "url"   : "/test/cases/normalGen/normalGen.html",
@@ -1019,6 +1032,35 @@
                 "url"   : "/test/cases/volrenProjection/volrenProjection.html",
                 "steps" :
                     [
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
+            {
+                "url"   : "/test/cases/volrenEdge/volrenEdge.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"  :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "document.getElementById('x3d').runtime.triggerRedraw();"
+                            }
+                        },
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :

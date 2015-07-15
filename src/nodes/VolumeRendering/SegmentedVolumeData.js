@@ -145,7 +145,7 @@ x3dom.registerNodeType(
             },
 
             initializeValues: function() {
-                var initialValues ="float offset_s = 1.0/(2.0*maxSegments);\n";
+                var initialValues = "";
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){
                     if(this._cf.renderStyle.nodes[i].initializeValues != undefined){
@@ -162,9 +162,12 @@ x3dom.registerNodeType(
                 for (var i=0; i<n; i++){
                     styleText += this._cf.renderStyle.nodes[i].styleUniformsShaderText() + "\n";
                     if(this._cf.renderStyle.nodes[i]._cf.surfaceNormals && this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node != null){
-                        styleText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is proided
+                        styleText += "uniform sampler2D uSurfaceNormals;\n"; //Neccessary when gradient is provided
                         this.normalTextureProvided = true;
                         this.surfaceNormals = this._cf.renderStyle.nodes[i]._cf.surfaceNormals.node;
+                    }
+                    if(!x3dom.isa(this._cf.renderStyle.nodes[i], x3dom.nodeTypes.OpacityMapVolumeStyle)){
+                        this.surfaceNormalsNeeded = true;
                     }
                 }
                 return styleText;
@@ -184,17 +187,23 @@ x3dom.registerNodeType(
             inlineStyleShaderText: function(){
                 var inlineText = "";
                 if(this._cf.segmentIdentifiers.node){
-                    inlineText += "float t_id = cTexture3D(uSegmentIdentifiers, ray_pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
-                    "int s_id = int(floor((t_id-offset_s)*maxSegments));\n";
+                    inlineText += "    float t_id = cTexture3D(uSegmentIdentifiers, ray_pos, numberOfSlices, slicesOverX, slicesOverY).r;\n"+
+                    "    int s_id = int(clamp(floor(t_id*maxSegments-0.5),0.0,maxSegments));\n"+
+                    "    opacityFactor = 10.0;\n";
+                    if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                        inlineText += "    lightFactor = 1.0;\n";
+                    }else{
+                        inlineText += "    lightFactor = 1.2;\n";
+                    }
                 }else{
-                    inlineText += "int s_id = 0;\n";
+                    inlineText += "    int s_id = 0;\n";
                 }
                 //TODO Check if the segment identifier is going to be rendered or not. NYI!!
                 var n = this._cf.renderStyle.nodes.length;
                 for (var i=0; i<n; i++){ //TODO Check identifier and add the style
-                    inlineText += "if (s_id == "+i+"){\n"+
+                    inlineText += "    if (s_id == "+i+"){\n"+
                     this._cf.renderStyle.nodes[i].inlineStyleShaderText()+
-                    "}\n";
+                    "    }\n";
                 }
                 return inlineText;
             },

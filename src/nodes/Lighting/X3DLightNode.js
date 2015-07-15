@@ -179,7 +179,7 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent)
             {
-                if (this._parentNodes.length === 0) {
+                if (this._parentNodes.length === 1 && this._parentNodes[0] == parent) {
                     var doc = this.findX3DDoc();
 
                     for (var i=0, n=doc._nodeBag.lights.length; i<n; i++) {
@@ -188,6 +188,10 @@ x3dom.registerNodeType(
                         }
                     }
                 }
+            },
+            onRemove: function()
+            {
+                console.log("remove");
             }
         }
     )

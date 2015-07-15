@@ -75,7 +75,7 @@ x3dom.registerNodeType(
             },
 
             getCenterOfRotation: function() {
-                return this._centerOfRotation;  // this field is only a little helper for examine mode
+                return this.getCurrentTransform().multMatrixPnt(this._centerOfRotation);  // this field is only a little helper for examine mode
             },
 
             setCenterOfRotation: function(cor) {
