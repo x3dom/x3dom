@@ -27,6 +27,15 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
+            /**
+            * The texCoord field specifies per-vertex texture coordinates for the GeoElevationGrid node. If texCoord is NULL, default texture coordinates are applied to the geometry.
+            * @var {x3dom.fields.SFNode} texCoord
+            * @memberof x3dom.nodeTypes.GeoElevationGrid
+            * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
+            * @field x3d
+            * @instance
+            */
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
