@@ -64,7 +64,7 @@ x3dom.States = function (x3dElem) {
      */
     this.toFixed = function (value) {
         var fixed = (value < 1) ? 2 : (value < 10) ? 2 : 2;
-        return value.toFixed(fixed);
+        return parseFloat(value).toFixed(fixed);
     };
 
     /**
