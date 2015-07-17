@@ -273,8 +273,6 @@ x3dom.registerNodeType(
                     }
                 }
                 
-                if (texMode) {this._mesh.calcTexCoords(texMode);}
-                        
                 for (y = 1; y <= suby; y++) {
                     for (x = 0; x < subx; x++) {
                         this._mesh._indices[0].push((y - 1) * (subx + 1) + x);
@@ -293,6 +291,8 @@ x3dom.registerNodeType(
                 if (!normals)
                     this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
+                if (texMode) {this._mesh.calcTexCoords(texMode);}
+                
                 this.invalidateVolume();
                 this._mesh._numTexComponents = numTexComponents;
                 this._mesh._numColComponents = numColComponents;
