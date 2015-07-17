@@ -209,6 +209,7 @@ x3dom.registerNodeType(
                 var numTexComponents = 2;
 
                 var texCoordNode = this._cf.texCoord.node;
+                var texPoints;
                 if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
                     if (texCoordNode._cf.texCoord.nodes.length)
                         texCoordNode = texCoordNode._cf.texCoord.nodes[0];
