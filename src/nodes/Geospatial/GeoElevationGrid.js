@@ -251,8 +251,9 @@ x3dom.registerNodeType(
                             coord.y = x * xSpacing;
                         }
                         coord.z = height[(z*xDimension)+x] * yScale;
-                        coord = coord.add(geoGridOrigin);
-                        positions.push(coord);
+                        //coord = coord.add(geoGridOrigin);
+                        //somehow firefox did not use the updated coord below
+                        positions.push(coord.add(geoGridOrigin));
                     }
 
                 // indices
