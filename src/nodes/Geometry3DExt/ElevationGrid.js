@@ -196,7 +196,8 @@ x3dom.registerNodeType(
                 }
 
                 var numTexComponents = 2;
-
+                var texMode;
+                
                 var texCoordNode = this._cf.texCoord.node;
                 if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
                     if (texCoordNode._cf.texCoord.nodes.length)
@@ -210,6 +211,11 @@ x3dom.registerNodeType(
                             numTexComponents = 3;
                         }
                     }
+                    
+                    else if (texCoordNode._vf.mode) {
+                        texMode = texCoordNode._vf.mode;
+                    }
+                    //check for _vf.mode in case of TextureCoordinateGenerator
                 }
 
                 var numColComponents = 3;
@@ -246,6 +252,7 @@ x3dom.registerNodeType(
                                 this._mesh._texCoords[0].push(texCoords[c].z);
                             }
                         }
+                        
                         else {
                             this._mesh._texCoords[0].push(x / subx);
                             this._mesh._texCoords[0].push(y / suby);
@@ -265,7 +272,9 @@ x3dom.registerNodeType(
                         c++;
                     }
                 }
-
+                
+                if (texMode) {this._mesh.calcTexCoords(texMode);}
+                        
                 for (y = 1; y <= suby; y++) {
                     for (x = 0; x < subx; x++) {
                         this._mesh._indices[0].push((y - 1) * (subx + 1) + x);
