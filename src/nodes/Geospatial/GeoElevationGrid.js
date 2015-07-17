@@ -56,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'geoGridOrigin', 0, 0, 0);
 
             /**
              * The height array contains xDimension × zDimension floating point values that represent elevation above the ellipsoid or the geoid, as appropriate.
