@@ -225,20 +225,20 @@ x3dom.registerNodeType(
                 }
                 
                 var positions = new x3dom.fields.MFVec3f();
-                var coord = new x3dom.fields.SFVec3f();
                         
                 var texCoords = new x3dom.fields.MFVec2f();
-                var tex_coord = new x3dom.fields.SFVec2f();
                         
                 for(var z=0; z<zDimension; ++z)
                     for(var x=0; x<xDimension; ++x)
                     {
                         // texture coord
+                        var tex_coord = new x3dom.fields.SFVec2f();
                         tex_coord.x = x*delta_x;
                         tex_coord.y = z*delta_z;
                         texCoords.push(tex_coord);
 
                         // coord
+                        var coord = new x3dom.fields.SFVec3f();
                         if(longitude_first||easting_first)
                         {
                             coord.x = x * xSpacing;
@@ -251,9 +251,8 @@ x3dom.registerNodeType(
                             coord.y = x * xSpacing;
                         }
                         coord.z = height[(z*xDimension)+x] * yScale;
-                        //coord = coord.add(geoGridOrigin);
-                        //somehow firefox did not use the updated coord below
-                        positions.push(coord.add(geoGridOrigin));
+                        coord = coord.add(geoGridOrigin);
+                        positions.push(coord);
                     }
 
                 // indices
