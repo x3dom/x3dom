@@ -215,7 +215,6 @@ x3dom.registerNodeType(
                     else if (texCoordNode._vf.mode) {
                         texMode = texCoordNode._vf.mode;
                     }
-                    //check for _vf.mode in case of TextureCoordinateGenerator
                 }
 
                 var numColComponents = 3;
