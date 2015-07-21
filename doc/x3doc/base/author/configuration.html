@@ -5,50 +5,46 @@
 
         <title>X3DOM Scene Author API Documentation: Configuration</title>
 
-    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs.css">    
-    <link type="text/css" rel="stylesheet" href="../static/styles/jsdoc-x3dom.css">
+    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs-new.css">
     <script src="../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
-</div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    &gt;
-    <a href="../index.html">documentation</a>
-    &gt;
-    <a href="index.html">Scene Author API</a>
-</div>
-
-<div id="docu-navbar">
-    <a href="index.html">        
-        <div class="docu-navitem">Overview</div>
-    </a>
-    <a href="nodes.html">
-        <div class="docu-navitem">Nodes</div>
-    </a>
-    <a href="components.html">
-        <div class="docu-navitem">Components</div>
-    </a>
-    <a href="runtime.html">
-        <div class="docu-navitem">Runtime</div>
-    </a>
-    <a href="configuration.html">
-        <div class="docu-navitem docu-navitem-active">Configuration</div>
-    </a>
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../index.html">documentation</a></li>
+                <li>Scene Author API</li>
+            </ol>
+        </div>
+    </div>
 </div>
 
-<div id="main">
+<div class="container" style="text-align: center">
+    <ul class="nav nav-pills" style="display: inline-block;">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="nodes.html">Nodes</a></li>
+        <li><a href="components.html">Components</a></li>
+        <li><a href="runtime.html">Runtime</a></li>
+        <li><a href="configuration.html" class="btn btn-primary">Configuration</a></li>
+    </ul>
+</div>
+
+<div class="container">
                 
     <section>
         <article>
             
-            <h2>Configuration</h2>
+            <h2 style="text-align: center;">Configuration</h2>
             <p>
                 The X3D element supports attributes which allows to set configuration for the runtime.
             </p>
@@ -71,13 +67,8 @@
                 The following table lists the parameters currently supported.
             </p>
 
-            <style>
-                td {
-                    padding: 5px;
-                }
-            </style>
 
-            <table>
+            <table class="table table-responsive table-striped">
                 <colgroup>
                     <col width="17%" />
                     <col width="23%" />
@@ -85,7 +76,7 @@
                     <col width="50%" />
                 </colgroup>
                 <thead valign="bottom">
-                <tr style="background-color:#003D97;color: #ffffff;"><th>Parameter</th>
+                <tr><th>Parameter</th>
                     <th class="head">Values</th>
                     <th class="head">Default</th>
                     <th class="head">Description</th>
@@ -97,7 +88,7 @@
                     <td>false</td>
                     <td>Hide or display the logging console</td>
                 </tr>
-                <tr style="background-color:#DDDDDD;"><td>showStat</td>
+                <tr><td>showStat</td>
                     <td>true, false</td>
                     <td>false</td>
                     <td>Hide or display the statistics overlay</td>
@@ -107,7 +98,7 @@
                     <td>true</td>
                     <td>Hide or show the loading indicator.
                 </tr>
-                <tr style="background-color:#DDDDDD;"><td>PrimitiveQuality</td>
+                <tr><td>PrimitiveQuality</td>
                     <td>High, Medium, Low, float</td>
                     <td>High/1.0</td>
                     <td>Render quality (tesselation level) for Box, Cone,

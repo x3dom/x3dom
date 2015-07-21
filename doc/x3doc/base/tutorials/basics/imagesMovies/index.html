@@ -4,37 +4,41 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Using Images and Movies for Textures</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="../../../index.html">documentation</a>    
-    >
-    <a href="../../index.html">Tutorials</a>
-	>
-    <a href="#">Using Images and Movies for Textures</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../runtimeConfiguration/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../sound/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../runtimeConfiguration/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../sound/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Using Images and Movies for Textures</h1>
+            <h2>Using Images and Movies for Textures</h2>
         </div>            
         <br>
 		
@@ -51,7 +55,7 @@ PNG is more flexible for future content (e.g. 16-bit channels).
 <p>
 As shown in the previous examples we always need a html-document with a x3DOM context. If you don't know how to do that check our previous <a href="x3Dom/doc/x3doc/base/tutorials/basics/hello/index.html" target="_blank">tutorial</a>. 
 		</p>
-        <h2>Images</h2>
+        <h3>Images</h3>
 		<p>For using an image as texture we use the ImageTexture Node:</p>
 		
         <pre class="prettyprint"><code class="language-html">
@@ -67,7 +71,7 @@ As shown in the previous examples we always need a html-document with a x3DOM co
     &lt;/x3d&gt;           
         </code></pre>
 		
-		<h2>Movies</h2>
+		<h3>Movies</h3>
         <p>
         For using movies as textures we simply need to use the MovieTexture Node.
 		But one thing you need to keep in mind: 
@@ -96,20 +100,20 @@ The best solution right now is to encode your content as MP4 and OGV movie and p
         <div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">Image and movie texture on two cubes.</div>
+                <div class="text-muted">Image and movie texture on two cubes.</div>
             </div>
         </div>        
 		
- 
+ <p>
          You have now learned how you can use movies and images as texture. In our <a href="../inline/index.html"> next</a> tutorial we will show you how to include your own models in X3DOM.
-
+ </p>
 		       
         <p>               
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -117,7 +121,7 @@ The best solution right now is to encode your content as MP4 and OGV movie and p
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
 				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
 				
@@ -130,10 +134,6 @@ The best solution right now is to encode your content as MP4 and OGV movie and p
 				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>            
             </ul>
         </div>
-
-    </section>
-
-</div>
 
 </div>
 

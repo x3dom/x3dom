@@ -3,6 +3,34 @@
 Release notes
 =============
 
+Version 1.7
+-----------
+
+* CommonSurfaceShader now also supports object-space normal maps (in addition to already available tangent-space normal maps)
+
+* If a viewpoint gets transformed, its center of rotation now gets transformed accordingly (thanks to Andreas Plesch, Harvard University).
+
+* Improvements in geospatial components (support for easting_first, thanks to Andreas Plesch, Harvard University).
+
+* ExternalGeometry node now has a multi-field for the data URL (of type MFString), multiple URLs can be specified as fallback.
+  This is fully backwards compatible with old scenes that specify only a single string.
+  
+* alphaClipThreshold attribute to adapt the threshold for X3DOM's alpha test (for textures with transparency)
+
+* Basic TriangleSet implementation (thanks to Yvonne Jung, Fulda University of Applied Sciences)
+
+* Runtime documentation made available
+
+* New tutorial about runtime configuration
+
+* New tutorial about the experimental SSAO implementation
+
+* Some smaller documentation updates
+
+* Several fixes (thanks to Ander Arbelaiz, Andreas Plesch and Yvonne Jung)
+
+
+
 Version 1.6
 -----------
 Most important Changes:

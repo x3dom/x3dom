@@ -31,70 +31,77 @@
 
 
     <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/jsdoc-x3dom.css">
-    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/x3dom-docs-new.css">
 </head>
 
 <body>
-<div id="mainContainerDiv">
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="<?js= backPath ?>static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="<?js= backPath ?>index.html">documentation</a></li>
+                <li><?js if(this.api == "developer"){ ?>
+                        <a href="<?js= backPath ?>developer/index.html">Developer API</a>
+                        <?js }else{ ?>
+                        <a href="<?js= backPath ?>author/index.html">Scene Author API</a>
+                        <?js } ?>
+                </li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    >
-    <a href="<?js= backPath ?>index.html">documentation</a>
-    >
 
-    <?js if(this.api == "developer"){ ?>
-    <a href="<?js= backPath ?>developer/index.html">Developer API</a>
-    <?js }else{ ?>
-    <a href="<?js= backPath ?>author/index.html">Scene Author API</a>
-    <?js } ?>
 
-</div>
 
-<div id="docu-navbar">
-
-    <a href="<?js= backPath+ (this.api == 'author' ? 'author/' : 'developer/' )  ?>index.html">
-        <div class="docu-navitem <?js= (title == 'Overview'? 'docu-navitem-active' : '') ?>">Overview</div>
-    </a>
+<div class="container" style="text-align:center">
+    <ul class="nav nav-pills" style="display: inline-block;">
+    <li><a href="<?js= backPath+ (this.api == 'author' ? 'author/' : 'developer/' )  ?>index.html" class="<?js= (title == 'Overview'? 'btn btn-primary' : '') ?>">
+    Overview
+    </a></li>
 
     <?js if( this.api == "author"){ ?>
 
-    <a href="<?js= backPath ?>author/nodes.html">
-        <div class="docu-navitem <?js= (title == 'Nodes'? 'docu-navitem-active' : '') ?>">Nodes</div>
-    </a>
+    <li><a href="<?js= backPath ?>author/nodes.html" class="<?js= (title == 'Nodes'? 'btn btn-primary' : '') ?>">
+        Nodes
+    </a></li>
 
-    <a href="<?js= backPath ?>author/components.html">
-        <div class="docu-navitem <?js= (title == 'Components'? 'docu-navitem-active' : '') ?>">Components</div>
-    </a>
+    <li><a href="<?js= backPath ?>author/components.html" class="<?js= (title == 'Components'? 'btn btn-primary' : '') ?>">
+        Components
+    </a></li>
 
-    <a href="<?js= backPath ?>author/runtime.html">
-        <div class="docu-navitem">Runtime</div>
-    </a>
+    <li><a href="<?js= backPath ?>author/runtime.html">
+        Runtime
+    </a></li>
 
-    <a href="<?js= backPath ?>author/configuration.html">
-        <div class="docu-navitem">Configuration</div>
-    </a>
+    <li><a href="<?js= backPath ?>author/configuration.html">
+        Configuration
+    </a></li>
 
     <?js }else{ ?>
 
-    <a href="<?js= backPath ?>developer/classes.html">
-        <div class="docu-navitem <?js= (title == 'Classes' ? 'docu-navitem-active' : '') ?>">Classes</div>
-    </a>
+    <li><a href="<?js= backPath ?>developer/classes.html" class="<?js= (title == 'Classes'? 'btn btn-primary' : '') ?>">
+        Classes
+    </a></li>
 
-    <a href="<?js= backPath ?>developer/namespaces.html">
-        <div class="docu-navitem <?js= (title == 'Namespaces'? 'docu-navitem-active' : '') ?>">Namespaces</div>
-    </a>
+    <li><a href="<?js= backPath ?>developer/namespaces.html" class="<?js= (title == 'Namespaces'? 'btn btn-primary' : '') ?>">
+        Namespaces
+    </a></li>
     <?js } ?>
+    </ul>
 </div>
 
-<div id="main">
+<div class="container">
 
     <?js if (title != "Overview" && title != "Components" && title != "Classes" && title != "Namespaces" && title != "Nodes") { ?>
-        <h1 class="page-title"><?js= title ?></h1>
+        <h2 class="page-title"><?js= title ?></h2>
     <?js } ?>
 
     <?js= content ?>
@@ -102,11 +109,10 @@
 </div>
 
 
-
-<footer>
-    This X3DOM documentation was generated with the help of <a href="https://github.com/jsdoc3/jsdoc">JSDoc <?js= env.version.number ?></a> on <?js= (new Date()) ?>
-</footer>
-
+<div class="container">
+    <footer>
+        This X3DOM documentation was generated with the help of <a href="https://github.com/jsdoc3/jsdoc">JSDoc <?js= env.version.number ?></a> on <?js= (new Date()) ?>
+    </footer>
 </div>
 
 </body>

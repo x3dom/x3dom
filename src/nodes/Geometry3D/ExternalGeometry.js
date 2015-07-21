@@ -27,20 +27,27 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.ExternalGeometry.superClass.call(this, ctx);
 
             /**
-             * Defines the url to the Shape Resource Container. A suffix with a leading # can be used to reference single meshes inside a SRC: "path/to/data.src#mesh0".
-             * @var {x3dom.fields.SFString} url
-             * @memberof x3dom.nodeTypes.Geometry3D
-             * @initvalue ""
+             * Defines the url to the Shape Resource Container (SRC) file.
+             * A suffix with a leading # can be used to reference single meshes inside a SRC: "path/to/data.src#mesh0".
+             * Multiple urls specify alternatives (if downloading fails).
+             *
+             * @var {x3dom.fields.MFString} url
+             * @memberof x3dom.nodeTypes.ExternalGeometry
+             * @initvalue []
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'url',  "");
+            this.addField_MFString(ctx, 'url', []);
 
 
             //initialization of rendering-related X3DOM structures
             this._mesh._invalidate = false;
             this._mesh._numCoords  = 0;
             this._mesh._numFaces   = 0;
+
+
+            //index of the current URL, used to download data - if downloading fails, this index is increased
+            this._currentURLIdx = 0;
         },
         {
             //----------------------------------------------------------------------------------------------------------
@@ -61,7 +68,9 @@ x3dom.registerNodeType(
                 var that = this;
                 var xhr;
 
-                if (this._vf['url'] == "") {
+                if (this._vf['url'].length == 0 ||
+                    this._currentURLIdx >= this._vf['url'].length)
+                {
                     return;
                 }
 
@@ -81,14 +90,14 @@ x3dom.registerNodeType(
                 //post request
                 xhr = new XMLHttpRequest();
 
-                xhr.open("GET", this._vf['url'], true);
+                xhr.open("GET", shape._nameSpace.getURL(this._vf['url'][this._currentURLIdx]), true);
 
                 xhr.responseType = "arraybuffer";
 
                 xhr.send(null);
 
                 xhr.onerror = function() {
-                    x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
+                    x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'][that._currentURLIdx] + "\"");
                 };
 
                 //TODO: currently, we assume that the referenced file is always an SRC file
@@ -130,14 +139,42 @@ x3dom.registerNodeType(
                         }
                         else
                         {
-                            x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
-                                                 that._vf['url'] + "\"");
-                            return;
+                            if ((that._currentURLIdx + 1) < that._vf['url'].length)
+                            {
+                                x3dom.debug.logWarning("Invalid SRC data, loaded from URL \"" +
+                                                        that._vf['url'][that._currentURLIdx] +
+                                                        "\", trying next specified URL");
+
+                                //try next URL
+                                ++that._currentURLIdx;
+                                that.updateRenderData(shape, shaderProgram, gl, viewarea, context);
+                            }
+                            else
+                            {
+                                x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
+                                                     that._vf['url'][that._currentURLIdx] + "\"," +
+                                                     " no other URLs left to try.");
+                            }
                         }
                     }
                     else
                     {
-                        x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'] + "\"");
+                        if ((that._currentURLIdx + 1) < that._vf['url'].length)
+                        {
+                            x3dom.debug.logWarning("Invalid SRC data, loaded from URL \"" +
+                                                    that._vf['url'][that._currentURLIdx] +
+                                                    "\", trying next specified URL");
+
+                            //try next URL
+                            ++that._currentURLIdx;
+                            that.updateRenderData(shape, shaderProgram, gl, viewarea, context);
+                        }
+                        else
+                        {
+                            x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
+                            that._vf['url'][that._currentURLIdx] + "\"," +
+                            " no other URLs left to try.");
+                        }
                     }
                 };
             } ,

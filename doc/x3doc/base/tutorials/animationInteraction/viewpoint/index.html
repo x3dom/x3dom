@@ -4,44 +4,50 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta charset="utf-8">
     <title>X3DOM Documentation: Tutorials</title>    
-    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs.css">
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
     <script src="../../../static/scripts/prettify/run_prettify.js"></script>
 </head>
 
 <body>
 
-<div id="mainContainerDiv">
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
 
-<div id="header-decoration">
-    official x3<strong>dom</strong> documentation
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Viewpoint</li>
+            </ol>
+        </div>
+    </div>
 </div>
-<div id="header-navbar">
-    <a href="http://x3dom.org">x3dom.org</a>
-    &gt;
-    <a href="../../../index.html">documentation</a>    
-    &gt;
-    <a href="../../index.html">Tutorials</a>
-	&gt;
-    <a href="#">Viewpoint</a>
-</div>
-<div id="main">
 
-    <section>	
-        
-        <div>
-            <div class="simpleButton" style="float:left;"><a href="../navigation/index.html" style="float:right;">&#8678; Previous Section</a></div>
-            <div class="simpleButton" style="float:right;"><a href="../animate/index.html" style="float:right;">Next Section &#8680;</a></div>
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../navigation/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../animate/index.html" style="float:right;">Next Section &#8594;</a>
             <div style="clear:both;"></div>
         </div>
         <div style="text-align:center;">
-            <h1>Viewpoint</h1>
+            <h2>Viewpoint</h2>
         </div>            
         <br>
 		
         <p>
 		In this tutorial you will learn how to set different Viewpoints and some tricks about viewpoints in X3DOM. 
 		Sometimes you want to show you scene from different camera positions and angles. There are two different ways to do this, a simple and smooth one other way.
-		<h2>Getting great view directly from X3DOM</h2>
+
+
+        <h3>Getting great view directly from X3DOM</h3>
 		<p>Did you ever got the perfect camera settings while playing around within a scene and you wanted to save it but had no idea how?
 		Just press the "D"-key to go into the debug mode and then "V" to get your viewpoint printed on to the debug console. From the you can copy and paste it directly to your X3DOM scene.
 		But be aware you will get the complete viewpoint including the current near and far plane, which you should delete before using the viewpoint in your scene. Otherwise the clipping planes will be fixed and not recalculated
@@ -50,11 +56,11 @@
 		<div style="text-align:center;">
             <div class="docuFigureContainer">			
                 <img class="docuFigure" src='screenshot.png'>
-                <div class="docuCaption">Debug view </div>
+                <div class="text-muted">Debug view </div>
             </div>
         </div> 
 		
-		<h2>Including and activating viewpoints</h2>
+		<h3>Including and activating viewpoints</h3>
 		<p>
 		A scene can contain as many viewpoint as you want, but only one can be active.  To activate a viewport you just set "set_bind" to true. The camera will be automatically animated between the views. 
 		</p>
@@ -78,8 +84,8 @@
         <a href="#">Back to page top &#10548;</a>
         </p>    
         
-        <div class="contentBox">                        
-            <h2>Get this X3DOM example:</h2>
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
             <ul>
                 <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
                 <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example.html');"><img src="../../source.png">View example page source</a></li>                
@@ -87,7 +93,7 @@
             </ul>      
             <br>
             
-            <h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
             <ul>
            		<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
 
@@ -96,12 +102,6 @@
 				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>
             </ul>
         </div>
-
-    </section>
-
 </div>
-
-</div>
-
 </body>
 </html>
