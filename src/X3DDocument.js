@@ -20,6 +20,7 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
     this._scene = null;         // Scene root element
     this._viewarea = null;      // Viewport, handles rendering and interaction
     this.downloadCount = 0;     // Counter for objects to be loaded
+    this.previousDownloadCount = 0;
 
     // bag for pro-active (or multi-core-like) elements
     this._nodeBag = {
