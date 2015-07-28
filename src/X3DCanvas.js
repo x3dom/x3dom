@@ -1174,9 +1174,14 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
         x3dElem.addEventListener("downloadsfinished",
             function()
             {
+                var eventObject = {
+                    target: x3dElem,
+                    type: "downloadsfinished"
+                };
+
                 var funcStr = x3dElem.getAttribute("ondownloadsfinished");
                 var func = new Function('event', funcStr);
-                func.call(x3dElem, event);
+                func.call(x3dElem, eventObject);
             },
             true);
     }
