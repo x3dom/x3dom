@@ -2469,7 +2469,9 @@ x3dom.fields.SFImage.copy = function(that) {
     destination.width = that.width;
     destination.height = that.height;
     destination.comp = that.comp;
-    destination.setPixels(that.array);
+    //use instead slice?
+    //destination.array = that.array.slice();
+    destination.setPixels(that.getPixels());
     return destination;
 };
 
