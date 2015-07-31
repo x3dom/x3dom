@@ -35,11 +35,10 @@ x3dom.registerNodeType(
      // Constructor function
      function(ctx) 
      {         
-         // Call to superclass
-        // x3dom.nodeTypes.X3DNode.superClass.call(this, ctx);
+        // Call to superclass
         x3dom.nodeTypes.EspduTransform.superClass.call(this, ctx);
 
-         //console.log("In constructor for class EspduTransform");
+         //x3dom.debug.logWarning("In constructor for class EspduTransform");
          
          // Add fields that show up as attributes in the x3d node.
          // The field names here must match the attribute names used in 
@@ -306,29 +305,25 @@ x3dom.registerNodeType(
          // javascript objects. In this case the network singleton communicates
          // with the server to send and receive DIS. The args don't matter here;
          // the object should have already been created and initialized. I hope.
-         this.network = new NetworkSingleton(null, null);
-         
+         //this.network = new NetworkSingleton(null, null);
+         this.network = NetworkSingleton.getInstance();
          this.espdu = new dis.EntityStatePdu();
          
          this.disWriteIntervalTaskID = 0;
-        
-        //console.log("espdu transform after constructor is ", this);
-         
-         //console.log("Network singleton in EspduTransform:", this.network);
      },
       
      // The implementation object. Thas has function definitions for the Node's API.
      {
           
           fieldChanged: function(fieldName) {
-              console.log("in EspduTransform fieldChanged, field=:", fieldName);
+              //x3dom.debug.logWarning("in EspduTransform fieldChanged, field=:", fieldName);
               
               // There's a setInterval task to periodically call disWriteEvent.
               // Cancel the old interval, and set the new interval.
               
               if(fieldName === 'writeInterval' && this._vf.networkMode === 'networkWriter')
               {
-                  //console.log("writeInterval value changed");
+                  //x3dom.debug.logWarning("writeInterval value changed");
                   clearInterval(this.disWriteIntervalTaskID);
                   this.disWriteIntervalTaskID = setInterval(function(){self.disWriteEvent(self);}, this._vf.writeInterval);
               }
@@ -336,14 +331,14 @@ x3dom.registerNodeType(
             
             nodeChanged:function() {
                 
-                //console.log("in EspduTransform nodeChanged");
+                //x3dom.debug.logWarning("in EspduTransform nodeChanged");
                 
                 this.espdu.entityID.entity = this._vf.entityID;
                 this.espdu.entityID.site = this._vf.siteID;
                 var applicationID = NetworkSingleton.getInstance().entityManager._vf.applicationID;
                 this.espdu.entityID.application = applicationID;
                 
-                //console.log("state of node in nodeChanged:", this._vf);
+                //x3dom.debug.logWarning("state of node in nodeChanged:", this._vf);
                 this.espdu.entityType.entityKind = this._vf.entityKind;
                 this.espdu.entityType.domain = this._vf.entityDomain;
                 this.espdu.entityType.country = this._vf.entityCountry;
@@ -353,7 +348,7 @@ x3dom.registerNodeType(
                 this.espdu.entityType.extra = this._vf.entityExtra;
                 this.espdu.marking.setMarking(this._vf.marking);
                 
-                //console.log("Entity type after:" ,this.espdu.entityType);
+                //x3dom.debug.logWarning("Entity type after:" ,this.espdu.entityType);
                
                
                 var self = this;
@@ -374,7 +369,7 @@ x3dom.registerNodeType(
             
             updateField:function(field, msg) {
                
-                //console.log("EsdpudTransform updateField called:", field, ", ", msg);
+                //x3dom.debug.logWarning("EsdpudTransform updateField called:", field, ", ", msg);
                 // if writeInterval, clear old task using id disUpdateIntervalTaskID and create a new one
             },
 

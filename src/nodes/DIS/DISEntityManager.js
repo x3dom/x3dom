@@ -5,7 +5,7 @@
  *
  * (C)2014 Naval Postgraduate School MOVES Institute. BSD License.
  * 
- * @author DMcG
+ * @author DMcG, Byron Harder
  */
 
 

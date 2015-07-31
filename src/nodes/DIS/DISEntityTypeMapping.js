@@ -5,7 +5,7 @@
  *
  * (C)2014 Naval Postgraduate School MOVES Institute. BSD License.
  * 
- * @author DMcG
+ * @author DMcG, Byron Harder
  */
 
 
@@ -37,10 +37,9 @@ x3dom.registerNodeType(
      {     
          
          // Call to superclass
-         //x3dom.nodeTypes.X3DNode.call(this, ctx);
          x3dom.nodeTypes.DISEntityTypeMapping.superClass.call(this, ctx);
          
-         //console.log("In constructor for DISEntityTypeMapping");
+         //x3dom.debug.logWarning("In constructor for DISEntityTypeMapping");
          
          // Add fields that show up as attributes in the x3d node.
          // The field names here must match the attribute names used in 
@@ -81,12 +80,7 @@ x3dom.registerNodeType(
          /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
          
-         //console.log("DisEntityTypeMapping:", this._vf);
-         
-         //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
-
-         //this.addField_SFNode(ctx, "removedNodes", "x3dom.nodeTypes.X3DNode");
-         
+         //x3dom.debug.logWarning("DisEntityTypeMapping:", this._vf);
 },
       
      // The implementation object. Thas has function definitions for the Node API,
@@ -100,17 +94,7 @@ x3dom.registerNodeType(
            * @returns {undefined} nothing
            */
           fieldChanged: function(fieldName) {
-              //console.log("in DISEntityTypeMapping fieldChanged, field=:", fieldName);
             },
-            
-            /**
-             * DISEntityManager node changed
-             * 
-             * @returns {undefined}
-             */
-            //nodeChanged:function() {
-            //    console.log("DISEntityTypeMapping nodeChanged called");
-            //},
             
             /**
              * A field in DISEntityManager has been updated
@@ -118,14 +102,12 @@ x3dom.registerNodeType(
              * @param {type} msg
              * @returns {undefined}
              */
-            updateField:function(field, msg) {
-               
-                //console.log("DISEntityTypeMapping updateField called:", field, ", ", msg);
+            updateField:function(field, msg) 
+            {
             },
 
            testFromObject: function(aParam) 
            {
-               //console.log("DISEntityTypeMapping TestFromObject called");
            }
        }
      )
