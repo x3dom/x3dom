@@ -134,7 +134,7 @@ NetworkSingleton.prototype.DISEntityTypeMappingTagForEntityType = function(entit
     // Get a list of all the DISEntityTypeMapping tags in the DOM
     var typeMatchingTags = document.getElementsByTagName("DISEntityTypeMapping");
     var aTag;
-    
+        
     for(var idx = 0; idx < typeMatchingTags.length; idx++)
     {
         aTag = typeMatchingTags[idx];
@@ -149,7 +149,7 @@ NetworkSingleton.prototype.DISEntityTypeMappingTagForEntityType = function(entit
         var category = aTag.getAttribute("category");
         var subcategory = aTag.getAttribute("subcategory");
         var specific = aTag.getAttribute("specific");
-        var extra = aTag.getAttribute("extra");
+        //var extra = aTag.getAttribute("extra");
         var url = aTag.getAttribute("url");
         var matchFound = false;
         
@@ -158,8 +158,8 @@ NetworkSingleton.prototype.DISEntityTypeMappingTagForEntityType = function(entit
            entityType.country === parseInt(country) &&
            entityType.category === parseInt(category) &&
            entityType.subcategory === parseInt(subcategory) &&
-           entityType.spec === parseInt(specific) &&
-           entityType.extra === parseInt(extra) )
+           entityType.spec === parseInt(specific))
+           //entityType.extra === parseInt(extra) )
            {
                 matchFound = true;
                 break;
@@ -194,7 +194,8 @@ NetworkSingleton.prototype.DISEntityTypeMappingTagForEntityType = function(entit
 NetworkSingleton.prototype.urlForEntityType = function(entityType)
 {    
     var aTag = this.DISEntityTypeMappingTagForEntityType(entityType);
-    if(typeof aTag != undefined)
+    
+    if( aTag != null )
     {
         return aTag.getAttribute("url");
     }
@@ -233,9 +234,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       // convert from binary to javascript object
       var pduFactory = new dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
-      
-      //console.log("Recieved PDU from server");
-      
+            
       // If the factory can't correctly decode the message it will return null.
       // Really, the only option is to throw up our hands and punt.
       if(pdu === null)
@@ -248,7 +247,6 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
               break;
               
          case 2:  // Fire PDU
-              console.log("Got fire PDU");
               this.firePduReceived(pdu);
               break;
 
@@ -332,7 +330,6 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       // If we don't have the firing entity, we can't animate the shot
       if(typeof matchingEntity === 'undefined')
       {
-          console.log("  Couldn't find in database: ", this.remoteEntityDatabase);
           return;
       }
 
@@ -472,10 +469,12 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
     var displayName = this.displayName(espdu.entityType, espdu.entityID);
     var url = this.urlForEntityType(espdu.entityType);
 
-    if(url == undefined)
+    if(url == null)
     {
         x3dom.debug.logError("Cannot find a matching EntityType record URL for ", espdu.entityType);
-        xedom.debug.logError("");
+        x3dom.debug.logError("");
+        x3dom.debug.logError("Using a temporary URL of models/PirateMotherSkiff.x3d");
+        url = "models/PirateMotherSkiff.x3d";
     }
     var transform = document.createElement("transform");
 
