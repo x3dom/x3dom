@@ -69,7 +69,6 @@ x3dom.registerNodeType(
           */
          this.addField_MFDouble(ctx, "localCoordinateSystemOrigin", 0.0, 0.0, 0.0); 
          
-         //console.log("DISEntityManager constructor done ", this);
      },
       
      // The implementation object. Thas has function definitions for the Node API,
@@ -83,7 +82,6 @@ x3dom.registerNodeType(
            * @returns {undefined} nothing
            */
           fieldChanged: function(fieldName) {
-              //console.log("in DISEntityManager fieldChanged, field=:", fieldName);
             },
             
             /**
@@ -92,7 +90,6 @@ x3dom.registerNodeType(
              * @returns {undefined}
              */
             nodeChanged:function() {
-                //console.log("DISEntityManager nodeChanged called");
                 
              // Set up internal objects, not visible to XML. These are entirely
              // javascript objects. We do the network singleton here because this
@@ -108,12 +105,10 @@ x3dom.registerNodeType(
              */
             updateField:function(field, msg) {
                
-                //console.log("DISEntityManager updateField called:", field, ", ", msg);
             },
 
            testFromObject: function(aParam) 
            {
-               //console.log("DISEntityManager TestFromObject called");
            }
        }
      )
