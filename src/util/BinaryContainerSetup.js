@@ -43,30 +43,46 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     var binGeo = shape._cf.geometry.node;
     
     // check if buffers already have been created for this binarygeometry
-    if(binGeo.buffers && binGeo.buffers.length)
+    if(binGeo.buffers)
     {
         //provide buffers and metadata to the _webgl object
-        for(var i = 0; i < binGeo.buffers.length; ++i)
+        function useExistingBuffers()
         {
-            if(binGeo.buffers[i] !== undefined)
+            for(var i = 0; i < binGeo.buffers.length; ++i)
             {
-                shape._webgl.buffers[i] = binGeo.buffers[i];
-            }
-        }        
-        shape._webgl.binaryGeometry = binGeo.binaryGeometry;
+                if(binGeo.buffers[i] !== undefined)
+                {
+                    shape._webgl.buffers[i] = binGeo.buffers[i];
+                }
+            }        
+            shape._webgl.binaryGeometry = binGeo.binaryGeometry;
+            
+            if(binGeo.primType)
+                shape._webgl.primType = binGeo.primType;
+            if(binGeo.indexType)
+                shape._webgl.indexType = binGeo.indexType;
+            if(binGeo.coordType)
+                shape._webgl.coordType = binGeo.coordType;
+            if(binGeo.normalType)
+                shape._webgl.normalType = binGeo.normalType;
+            if(binGeo.texCoordType)
+                shape._webgl.texCoordType = binGeo.texCoordType;
+            if(binGeo.colorType)
+                shape._webgl.colorType = binGeo.colorType;
+            
+            shape._nameSpace.doc.needRender = true;   
+        }
         
-        if(binGeo.primType)
-            shape._webgl.primType = binGeo.primType;
-        if(binGeo.indexType)
-            shape._webgl.indexType = binGeo.indexType;
-        if(binGeo.coordType)
-            shape._webgl.coordType = binGeo.coordType;
-        if(binGeo.normalType)
-            shape._webgl.normalType = binGeo.normalType;
-        if(binGeo.texCoordType)
-            shape._webgl.texCoordType = binGeo.texCoordType;
-        if(binGeo.colorType)
-            shape._webgl.colorType = binGeo.colorType;
+        //interval to check if the buffers on the referenced binarygeometry are already loaded.
+        var interval = setInterval(function bufferCreationFinished()
+        {
+            if(binGeo.buffersLoaded)
+            {
+                clearInterval(interval);
+                useExistingBuffers();
+            }
+        }, 100);
+        
         
         
         return;
@@ -76,8 +92,8 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
     
     
     
-    
     binGeo.buffers = [];
+    binGeo.buffersLoaded = false;
 
     // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
     binGeo.binaryGeometry = shape._webgl.binaryGeometry = -1;
@@ -106,10 +122,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (--shape._webgl.internalDownloadCount == 0) {
                 if (this.coord)
                     this.createMesh();
-                shape._nameSpace.doc.needRender = true;
+                shape._nameSpace.doc.needRender = true;          
+                binGeo.buffersLoaded = true;
+                
             }
             if (--shape._nameSpace.doc.downloadCount == 0)
+            {                
                 shape._nameSpace.doc.needRender = true;
+                binGeo.buffersLoaded = true;
+            }
         },
 
         createMesh: function() {
@@ -439,7 +460,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
-                shape._nameSpace.doc.needRender = true;
+            {
+                shape._nameSpace.doc.needRender = true;                
+                binGeo.buffersLoaded = true;                
+            }
 
             that.checkError(gl);
 
@@ -547,7 +571,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
-                shape._nameSpace.doc.needRender = true;
+            {
+                shape._nameSpace.doc.needRender = true;                
+                binGeo.buffersLoaded = true;                
+            }
 
             that.checkError(gl);
 
@@ -643,7 +670,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
-                shape._nameSpace.doc.needRender = true;
+            {
+                shape._nameSpace.doc.needRender = true;                
+                binGeo.buffersLoaded = true;                
+            }
 
             that.checkError(gl);
 
@@ -700,8 +730,11 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
-                shape._nameSpace.doc.needRender = true;
-
+            {
+                shape._nameSpace.doc.needRender = true;                
+                binGeo.buffersLoaded = true;                
+            }
+            
             that.checkError(gl);
 
             var t11 = new Date().getTime() - t00;
@@ -789,7 +822,11 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
-                shape._nameSpace.doc.needRender = true;
+            {
+                shape._nameSpace.doc.needRender = true;                
+                binGeo.buffersLoaded = true;                
+            }
+                
 
             that.checkError(gl);
 
@@ -846,7 +883,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._nameSpace.doc.downloadCount -= 1;
             shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {                
                 shape._nameSpace.doc.needRender = true;
+                binGeo.buffersLoaded = true;
+            }
 
             that.checkError(gl);
 
