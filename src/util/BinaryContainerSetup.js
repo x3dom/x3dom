@@ -518,8 +518,6 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             if (geoNode._vf.texCoord.length > 0)
             {
-                console.log("YUPPIE");
-
                 binGeo.buffers[3] = shape._webgl.buffers[3] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
