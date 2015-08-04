@@ -468,12 +468,13 @@ x3dom.gfx_webgl = (function () {
                 var referencesLeft = false;
                 if(this._webgl.binaryGeometry !== 0)
                 {
-                    this._childNodes
-                        .some(function(childNode)
-                        {
-                            referencesLeft = childNode._mesh instanceof x3dom.Mesh && childNode._parentNodes && childNode._parentNodes.length > 1;
-                            return referencesLeft;
-                        })
+                    // check if one of the child nodes is a binaryGeometry and if so, check the amount of parents.
+                    // If there are parents left, it means that we still need the buffers.
+                    referencesLeft = this._childNodes
+                            .some(function(childNode)
+                            {
+                                return childNode._mesh instanceof x3dom.Mesh && childNode._parentNodes && childNode._parentNodes.length > 1;
+                            });
                 }
                 
                 // FIXME; what if complete tree is removed? Then _parentNodes.length may be greater 0.

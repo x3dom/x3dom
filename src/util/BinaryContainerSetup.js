@@ -42,17 +42,17 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
     var binGeo = shape._cf.geometry.node;
     
+    // check if buffers already have been created for this binarygeometry
     if(binGeo.buffers && binGeo.buffers.length)
     {
-        
+        //provide buffers and metadata to the _webgl object
         for(var i = 0; i < binGeo.buffers.length; ++i)
         {
             if(binGeo.buffers[i] !== undefined)
             {
                 shape._webgl.buffers[i] = binGeo.buffers[i];
             }
-        }
-        
+        }        
         shape._webgl.binaryGeometry = binGeo.binaryGeometry;
         
         if(binGeo.primType)
@@ -67,6 +67,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._webgl.texCoordType = binGeo.texCoordType;
         if(binGeo.colorType)
             shape._webgl.colorType = binGeo.colorType;
+        
         
         return;
     }
