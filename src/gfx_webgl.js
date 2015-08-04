@@ -465,10 +465,23 @@ x3dom.gfx_webgl = (function () {
         {
             shape._cleanupGLObjects = function (force, delGL)
             {
+                var referencesLeft = false;
+                if(this._webgl.binaryGeometry !== 0)
+                {
+                    this._childNodes
+                        .some(function(childNode)
+                        {
+                            referencesLeft = childNode._mesh instanceof x3dom.Mesh && childNode._parentNodes && childNode._parentNodes.length > 1;
+                            return referencesLeft;
+                        })
+                }
+                
                 // FIXME; what if complete tree is removed? Then _parentNodes.length may be greater 0.
-                if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
+                if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0) && !referencesLeft)
                 {
                     var sp = this._webgl.shader;
+                    
+                    
 
                     for (var q = 0; q < this._webgl.positions.length; q++) {
                         var q6 = 6 * q;
