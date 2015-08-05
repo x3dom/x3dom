@@ -55,13 +55,13 @@ function NetworkSingleton(theUrl, origin, entityManager)
     this.localCoordinateSystemOrigin = origin;
 
     /** Factory object for converting binary data to Javascript DIS objects */
-    this.pduFactory = new dis.PduFactory(); 
+    this.pduFactory = new x3dom.dis.PduFactory(); 
 
     /** The rangeCoordinates object converts to and from DIS global coordinates 
      * (origin at center of earth) to local coordinates (relative to a rectilinear
      * origin at a lat/lon/alt).
      * */
-    this.rangeCoordinates = new dis.RangeCoordinates(origin[0], origin[1], origin[2]);
+    this.rangeCoordinates = new x3dom.dis.RangeCoordinates(origin[0], origin[1], origin[2]);
 
     /** array of all the entities external to this page we have heard from. Key is the
      * JSON format EntityID field from the ESPDU. This is a triplet of site, application,
@@ -142,7 +142,7 @@ NetworkSingleton.prototype.DISEntityTypeMappingTagForEntityType = function(entit
         // Retrieve the various field values from the entity type record.
         // Note that these are in string format and we'll need to convert
         // these to numerics.
-        var etype = new dis.EntityType();
+        var etype = new x3dom.dis.EntityType();
         var kind = aTag.getAttribute("kind");
         var domain = aTag.getAttribute("domain");
         var country = aTag.getAttribute("country");
@@ -230,9 +230,9 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
    * @returns {undefined}
    */
   NetworkSingleton.prototype.onMessage = function(evt)
-  {      
+  {     
       // convert from binary to javascript object
-      var pduFactory = new dis.PduFactory();
+      var pduFactory = new x3dom.dis.PduFactory();
       var pdu = pduFactory.createPdu(evt.data);
             
       // If the factory can't correctly decode the message it will return null.
@@ -417,7 +417,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
 NetworkSingleton.prototype.sendDisUpdate = function(espduTransformNode)
 {          
     var dataBuffer = new ArrayBuffer(this.MAX_DIS_MESSAGE_SIZE);
-    var os = new dis.OutputStream(dataBuffer);
+    var os = new x3dom.dis.OutputStream(dataBuffer);
     espduTransformNode.espdu.entityID.application = this.entityManager._vf.applicationID;
 
     // Encode it to the DIS binary format, then trim it down to actual

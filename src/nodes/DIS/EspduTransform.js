@@ -307,7 +307,7 @@ x3dom.registerNodeType(
          // the object should have already been created and initialized. I hope.
          //this.network = new NetworkSingleton(null, null);
          this.network = NetworkSingleton.getInstance();
-         this.espdu = new dis.EntityStatePdu();
+         this.espdu = new x3dom.dis.EntityStatePdu();
          
          this.disWriteIntervalTaskID = 0;
      },
