@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='MidShips.x3d' name='title'/>
+    <meta content='Middle section of superstructure of Spruance' name='description'/>
+    <meta content='Josh Hansen' name='creator'/>
+    <meta content='17 September 2001' name='created'/>
+    <meta content='20 October 2001' name='modified'/>
+    <meta content='https://savage.nps.edu/Savage/ShipsMilitary/DD963-Spruance-UnitedStates/MidShips.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <Group>
+      <Transform>
+        <Shape>
+          <Box size='12 11 10'/>
+          <Appearance>
+            <Material diffuseColor='.6 .6 .6'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>

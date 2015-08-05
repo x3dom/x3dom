@@ -1,3 +1,5 @@
+/* Updated 2015-05-20 by Byron R. Harder, Naval Postgraduate School */
+
 if (typeof dis === "undefined")
    dis = {};
 
@@ -5174,7 +5176,11 @@ x3dom.dis.EntityStatePdu = function()
        this.timestamp = inputStream.readUInt();
        this.pduLength = inputStream.readUShort();
        this.padding = inputStream.readShort();
+<<<<<<< HEAD
        this.entityID.initFromBinary(inputStream);
+=======
+       this.entityID.initFromBinaryDIS(inputStream);
+>>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
        this.forceID = inputStream.readUByte();
        this.numberOfArticulationParameters = inputStream.readByte();
        this.entityType.initFromBinary(inputStream);
@@ -5204,7 +5210,11 @@ x3dom.dis.EntityStatePdu = function()
        outputStream.writeUInt(this.timestamp);
        outputStream.writeUShort(this.pduLength);
        outputStream.writeShort(this.padding);
+<<<<<<< HEAD
        this.entityID.encodeToBinary(outputStream);
+=======
+       this.entityID.encodeToBinaryDIS(outputStream);
+>>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
        outputStream.writeUByte(this.forceID);
        outputStream.writeByte(this.numberOfArticulationParameters);
        this.entityType.encodeToBinary(outputStream);

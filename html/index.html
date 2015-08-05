@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Web-enabled DIS Maps</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <h2>Web-Enabled DIS Maps with Websockets</h2>
+        This shows DIS-enabled maps using two software packages: Google Maps, 
+        and OpenLayers/OpenStreetMap.<p>
+            
+        DIS Manager: <a href="disSimulationManagerv2.html"> PDU Viewer </a><p></p>
+        DIS PDU Generator: <a href="disSimulationManagerPDUGeneratorv2.html"> PDU Generator </a><p></p>
+        X3DOM Simulation Viewer: <a href="SimulationViewerUpdatedv3.html"> 3D Simulation Viewer </a><p></p>
+        Google Maps: <a href="googleMaps.html">Google Maps Javascript API</a><p></p>
+        Open Layers 3.0: <a href="openStreetMap.html">OpenStreetMap</a><p>
+        
+            <b>Google Maps</b> The terms of the Google Maps Javascript API license allows use of low-volume demos making use of 
+            Google's map data for free. In this case the demo
+        code is using of a personal Google Maps API key. Any real deployment
+        would need an actual API key, and also require that you either have an internet
+        connection or have a license to a commercial google earth server that 
+        you can reach.<p>
+         
+            <b>OpenLayers/OpenStreetMap API</b> is a free and open source mapping implementation. 
+        You can, with enough elbow grease, install your own free map server within
+        your private, restricted network. This code is configured to use the 
+        public and free OpenStreetMap servers. The implementation here is as of this 
+        writing a little less polished than the google maps implementation, but
+        the basics are the same. It does not yet handle popup info boxes for the 
+        icons. There's some extra nonsense required to make that work, including
+        jquery, bootstrap.js, and so on.<p></p>
+       
+        Both implementations talk to the same Jetty gateway/bridge. This bridge
+        listens on the server's local network for DIS traffic on bcast port
+        3000. It then forwards the DIS data, in binary form, to the web pages
+        that have loaded content from the server, via a websocket. The web page
+        decodes the DIS using the Open-DIS javascript library, and adds an icon
+        to the page.<p>
+            
+        In both the Google Maps and OpenStreetMap implementations the HTML code
+        is configured to use "ws://localhost:8282" as the location for the web
+        page to contact the DIS websocket. If you are running the web page
+        on a host that is not the same as the websocket server, you must modify
+        this variable, called WEBSOCKET_URL in the Javascript HTML code.
+        
+    </body>
+</html>

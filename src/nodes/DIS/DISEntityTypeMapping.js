@@ -3,9 +3,14 @@
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
- * (C)2014 Naval Postgraduate School MOVES Institute. BSD License.
+ * (C)2015 Naval Postgraduate School MOVES Institute. BSD License.
  * 
+<<<<<<< HEAD
  * @author DMcG, Byron Harder
+=======
+ * @author DMcG
+ * @author Byron R. Harder
+>>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
  */
 
 
@@ -80,7 +85,19 @@ x3dom.registerNodeType(
          /** Subcategory [0..255]*/
          this.addField_SFInt32(ctx, 'specific', 0);
          
+<<<<<<< HEAD
          //x3dom.debug.logWarning("DisEntityTypeMapping:", this._vf);
+=======
+         /** Extra [0..255]*/
+         this.addField_SFInt32(ctx, 'extra', 0);
+         
+         //console.log("DisEntityTypeMapping:", this._vf);
+         
+         //this.addField_SFNode(ctx, "addedNodes", "x3dom.nodeTypes.X3DNode");
+
+         //this.addField_SFNode(ctx, "removedNodes", "x3dom.nodeTypes.X3DNode");
+         
+>>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
 },
       
      // The implementation object. Thas has function definitions for the Node API,

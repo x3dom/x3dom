@@ -1,0 +1,215 @@
+<html>
+<head>
+<title>DIS Websocket TEST</title>
+<!-- DIS library -->
+<script src="js/dis.js"></script>
+<script src="js/overlay.js"></script>
+<script>
+
+    var websocket;
+    
+	var ourEntity = {};
+	//overlay 
+	var infoOverlay;
+	var informationArray = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17"];
+	
+	var senderCounter = 0;
+	var receiveCounter = 0;
+	var sendArray = [];
+	var receiveArray = [];
+	var startMeasuring = false;
+	var sendPdu = false;
+	var startTime = new Date();;
+	var endTime = new Date();	
+	var stopTime = 0;
+	var totalSend = 0;
+	var totalReceive = 0;
+	var intervalIDArray = [];
+	
+	var dropTestArray = [];
+	
+	
+	function init()
+	{
+	informationOverlay = new infoOverlay();
+	informationOverlay.text.style.left = 8 + 'px';
+
+	
+	// Compatiability checks--not all web browsers support Websockets.
+    // note that to reach this web server from off-host you MUST change
+    // the localhost to an IP or DNS name.
+    if(window.WebSocket)
+        websocket = new WebSocket("ws://localhost:8282");
+        //websocket = new WebSocket("ws://172.20.158.194:8282");
+        //websocket = new WebSocket("ws://10.0.0.4:8282");
+        //websocket = new WebSocket("ws://172.20.81.123:8282");
+    else if(Window.MozWebSocket)
+        websocket = new MozWebSocket("ws://localhost:8282");//, "nve");
+        //websocket = new MozWebSocket("ws://172.20.158.194:8282");//, "nve");
+        //websocket = new MozWebSocket("ws://10.0.0.4:8282");//, "nve");
+        //websocket = new MozWebSocket("ws://172.20.81.123:8282");//, "nve");
+    else
+        alert("This web browser does not support web sockets");
+    // Set the format we want to use to receive binary messages
+    
+	//websocket.binaryType = 'arraybuffer';
+        
+	// Attach functions to the the web socket for various events
+
+	websocket.onopen = function(evt)
+	{					
+		informationArray.push('websocket_onopen');
+		informationArray.shift();
+		console.log("websocket onopen");
+		showText();
+	};
+	websocket.onclose = function(evt)
+	{
+		informationArray.push("websocket close");
+		informationArray.shift();
+		console.log("websocket close");
+		showText();
+	};
+	websocket.onerror = function(evt){console.log("websocket error");};  
+	
+	
+		
+	// Set the format we want to use to receive binary messages
+		websocket.binaryType = 'arraybuffer';
+ 
+        // Handle the messages sent from the server to us here
+		
+		websocket.onmessage = function(evt)
+		{
+			// Convert the JSON into a javascript object
+			// Use this to convert JSON message format
+			//var disMessage = eval('(' + evt.data + ')' );
+			//
+			// convert from binary to javascript object
+			//var inputStream = new dis.InputStream(evt.data);
+			//var pduType = inputStream.dataView.getUint8(2);
+			//var disMessage = createDisMessage(pduType);
+			
+			//var pduFactory = new dis.PduFactory();
+			//var newPdu = pduFactory.createPdu(evt.data);
+			
+			//console.log('newPdu.pduType',newPdu.pduType);
+			//var fastEntityStatePdu = new dis.FastEntityStatePdu();
+			//fastEntityStatePdu.initFromBinaryDIS(inputStream);
+			//if(newPdu.pduType === 1)
+			//{
+				receiveCounter++;
+				totalReceive ++;
+				/*
+				if(newPdu.entityAppearance !== totalReceive)
+				{
+					var gap = "gap between" + newPdu.entityAppearance+" and "+ totalReceive;
+					dropTestArray.push(gap);
+					totalReceive = newPdu.entityAppearance;
+				}
+				*/
+				if(receiveCounter % 10000 === 0)
+				{
+					var endTime = new Date();
+					var elapsedTime = endTime.getTime() - startTime.getTime();
+					
+					console.log("time:", elapsedTime, "receive packets:", receiveCounter);
+					//var receiveInfo= "time: " + elapsedTime + "    receive packets: " + receiveCounter;
+					//	informationArray.push(receiveInfo);
+					//	informationArray.shift();
+					//	showText();				
+
+					//var message = "time:"+ elapsedTime+ "receive packets:"+ receiveCounter;
+					//window.alert(message);
+					receiveCounter = 0;
+					startTime = new Date();
+				}
+			//}
+		};
+
+        function onKeyDown(evt)
+        {
+                switch (evt.keyCode) 
+                {
+						case 49: //'1' // senderCounter
+								
+								var totalInfo = 'totalSend: '+totalSend + ' ;totalReceive: '+totalReceive + ' ;intervalIDArray: '+intervalIDArray;
+								informationArray.push(totalInfo);
+								informationArray.shift();
+								showText();
+								console.log('totalSend',totalSend);
+								console.log('totalReceiving',totalReceive);	
+								console.log('intervalIDArray',intervalIDArray);
+								
+								break;
+						case 50: //'2' // senderCounter
+								var intendedIntervalID = intervalIDArray.shift();
+								clearInterval(intendedIntervalID);
+								break;
+						case 51: //'3' // senderCounter
+								console.log("dropTestArray",dropTestArray);
+								break;
+						case 52: //'4' // senderCounter
+								console.log("ourEntity.lastEspdu.entityAppearance",ourEntity.lastEspdu.entityAppearance);
+								break;								
+                        case 32: // spacebar
+                                //measureDIS();
+								
+                                var intervalID = setInterval(function(){ measureDIS(); } , 500);
+                                //console.log("intervalID:", intervalID);
+                                intervalIDArray.push(intervalID);
+								break;
+                }
+        };
+
+
+	window.onkeydown = onKeyDown;
+var  measureDIS = function()
+        {
+				ourEntity.lastEspdu = new dis.FastEntityStatePdu();
+				
+				//ourEntity.lastEspdu = new dis.CollisionPdu();
+				//ourEntity.lastEspdu.entityKind = 1;
+				//console.log("Entering into a period mesaureDIS function");
+								
+				startTime = new Date();
+				senderCounter = 0;
+				while(senderCounter < 10000)
+				{
+						
+						ourEntity.lastEspdu.entityAppearance = totalSend+1;
+						var dataBuffer = new ArrayBuffer(1500);
+						var outputStream = new dis.OutputStream(dataBuffer);
+						ourEntity.lastEspdu.encodeToBinaryDIS(outputStream);
+						var trimmedData = dataBuffer.slice(0, outputStream.currentPosition);
+						
+						websocket.send(trimmedData);
+						senderCounter ++;
+						totalSend ++;
+				}
+				endTime = new Date();
+				var elapsedTime = endTime.getTime() - startTime.getTime();
+				console.log("time:", elapsedTime, " send packets:", senderCounter);
+				//window.alert("time:", elapsedTime, " send packets:", senderCounter);
+        };
+
+	}
+	
+	var showText = function()
+	{
+	
+		informationOverlay.text.innerHTML = informationArray[0]+'<br>'+informationArray[1]
+		+'<br>'+informationArray[2]+'<br>'+informationArray[3]+'<br>'+informationArray[4]
+		+'<br>'+informationArray[5]+'<br>'+informationArray[6]+'<br>'+informationArray[7]
+		+'<br>'+informationArray[8]+'<br>'+informationArray[9]+'<br>'+informationArray[10]
+		+'<br>'+informationArray[11]+'<br>'+informationArray[12]+'<br>'+informationArray[13]
+		+'<br>'+informationArray[14]+'<br>'+informationArray[15]+'<br>'+informationArray[16];	
+	}
+window.onload = init;
+
+</script>
+</head>
+<body>
+
+</body>
+</html>

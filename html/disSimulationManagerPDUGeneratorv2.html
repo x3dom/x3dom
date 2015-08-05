@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>MV4503 DIS Simulation Manager PDU Generator - McBride/Beker</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
+        
+        <style type="text/css">
+            html {height:100%}
+            body { height:100%; margin:0; padding:0 }
+            #map-canvas{height:100% }
+        </style>
+        
+        <!-- Binary DIS implementation, also coordinate system conversion utilities -->
+        <script type="text/javascript" src="dis.js"></script>   
+        <!--script type="text/javascript" src="https://raw.githubusercontent.com/dataarts/dat.gui/master/build/dat.gui.js"></script-->
+        <script type="text/javascript" src="https://rawgit.com/dataarts/dat.gui/master/build/dat.gui.js"></script>
+
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAZihiWY3ho8hHfkhu9_6mcMSkxSvpjbTI&libraries=geometry&sensor=true"></script>
+  
+    </head>
+    <body>
+        <div id="map-canvas"></div> 
+        <div id="text_data" style="position: absolute; height: 90%; border: 4px solid black; overflow:scroll; background-color: #ffffff;">
+            <center>
+                <table style="text-align: center;"> 
+                    <tr>
+                        <td style="width: 200px;"> Entity IDs </td>  
+                    </tr>
+                    <tr>
+                        <td style="width: 200px; text-align: left;" id="entityIDs">  </td> 
+                    </tr>
+                </table> 
+            </center>
+        </div>  
+        <div id="gui-container"></div>
+        <SCRIPT type="text/javascript"> 
+            // localhost:8282/disSimulationManagerPDUGenerator.html 
+            console.log("Program started at", new Date());
+            
+            /* For DEBUG Statements */
+            var DEBUG = true;
+            
+            /* Socket Data */
+            var WEBSOCKET_URL="wss://track.nps.edu:443"; // Change between localhost/IP
+            var websocket; 
+            
+            /* Map */
+            var map;    
+            
+            // Start Lat/Lon
+            var topLeft = new google.maps.LatLng(38.0, -123);
+            var bottomRight = new google.maps.LatLng(37.4, -121.9); 
+            var startLocationBounds = new google.maps.LatLngBounds(topLeft, bottomRight);  
+            
+            // Test markers, data, and entities 
+            var iconColor = ["yellow","blue","red"]; // yellow: unknown, blue:friendly, red:enemy
+            var testMarkers = 5;  // Quantity of Markers to displace  
+            var myEntity;
+            var myGoal;
+            var polyline;  
+            
+            // Entity Data
+            var ROUNDMAXRANGE = 24000; //24Km (5-inch Gun)
+            var ROUNDVELOCITY = 800;// 800 meters per second (5-inch Gun)
+            var ENTITYVELOCITY = 10; //6.7056 meters per second (Equiv to 15 miles per hour)
+            var shotline; //Represents the azmuth & path if a round is fired.
+
+            // Marker data structure (holds espdu and marker objects)
+            var markerDictionary = {};   
+            
+            // Conversion global
+            var conversion = new dis.CoordinateConversion();
+            
+            // Set the initialize function to run on page load
+            google.maps.event.addDomListener(window, 'load', initialize);
+
+            /** Initialize the map and websocket */
+            function initialize()
+            {
+                if(DEBUG) console.log("In initialize()");
+                
+                // Create marker array
+                for(i=0; i < testMarkers; i++){
+                    var espdu = new dis.EntityStatePdu();
+                    
+                    // Other ESPDU data 
+                    espdu.timestamp = 1; 
+                    espdu.marking.setMarking( "Marker " + i ); 
+                    espdu.forceID = Math.floor(Math.random() * 3 );  // Random Force ID  0: unknown, 1: Friendly, 2:  Enemy
+                    
+                    // Create Entity ID
+                    espdu.entityID.site = 42;
+                    espdu.entityID.application = 17;
+                    espdu.entityID.entity = Math.round(Math.random() * 16000); // Unique (ish) ID
+
+                    // Create Entity Type
+                    espdu.entityType.entityKind = 1;    // Platform
+                    espdu.entityType.domain = 3;        // Surface
+                    espdu.entityType.extra = 0;         // N/A  
+                    if (espdu.forceID == 0) {
+                        espdu.entityType.country = 225;     // US
+                        espdu.entityType.category = 81;     // Dry Cargo Ship (Group 2 Merchant)
+                        espdu.entityType.subcategory = 3;   // Container Ship
+                        espdu.entityType.spec = Math.floor(Math.random() * 3 + 1); // 1 is Small, 2 is Medium, 3 is Large
+                    } else if (espdu.forceID == 1) {
+                        espdu.entityType.country = 225;     // US
+                        espdu.entityType.category = 5;     // Destroyer (DD)
+                        espdu.entityType.subcategory = 1;   // Always 1
+                        espdu.entityType.spec = 2; // Medium
+                    } else if (espdu.forceID == 2) {
+                        espdu.entityType.country = 0;     // No country
+                        espdu.entityType.category = 0;     // Arbitrary setting for now
+                        espdu.entityType.subcategory = 0;   // Arbitrary setting for now
+                        espdu.entityType.spec = 1; // Small
+                    }
+                    
+                    // Entity Velocity
+                    //espdu.entityLinearVelocity;         // Linear Velocity of entity in meters/second
+                   
+                    // Entity Orientation  
+                    espdu.entityOrientation.psi = (Math.random() * 360) * (Math.PI/180);  // around z 
+                    espdu.entityOrientation.theta = 0;  // around y 
+                    espdu.entityOrientation.phi = 0;    // around x 
+                    
+                    // Entity Dead Reckoning
+                    espdu.deadReckoningParameters.deadReckoningAlgorithm = 4; // Moving 
+                    
+                    var espduEID = JSON.stringify(espdu.entityID);
+                    
+                    markerDictionary[espduEID] = {espdu:espdu, marker:null, lastHeardFrom: new Date()};  // Add element to storage array  
+                }
+                
+                // Update HTML ESPDU Table Display
+                updateEntityTableDisplay();
+                
+                // System Updates
+                window.setInterval(heartbeat, 5000);// 5 seconds 
+                window.setInterval(deadReckoningUpdate, 100);  // 100 ms
+                window.setInterval(entityUpdate, 100);  // 100 ms
+                
+                // The region of the map that's visible, and where it's centered.
+                var mapOptions = {  
+                  disableDoubleClickZoom: true,
+                  scaleControl: true,
+                  mapTypeId:google.maps.MapTypeId.TERRAIN
+                };
+                map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+                map.fitBounds(startLocationBounds);
+                
+                //Add accessibility to HTML div for displaying text
+                var myControl = document.getElementById('text_data'); 
+                map.controls[google.maps.ControlPosition.RIGHT].push(myControl); 
+                var myControl2 = document.getElementById('gui-container'); 
+                map.controls[google.maps.ControlPosition.BOTTOM].push(myControl2); 
+                
+                
+                // Add depiction of the Area of Operations
+                var operationalAreaBounds = new google.maps.Rectangle({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.05, 
+                    clickable: false,
+                    map: map,
+                    bounds: new google.maps.LatLngBounds(topLeft, bottomRight)
+                });
+                             
+                // Compatiability checks 
+                if(window.WebSocket)
+                    websocket = new WebSocket(WEBSOCKET_URL);
+                else if(Window.MozWebSocket)
+                    websocket = new MozWebSocket(WEBSOCKET_URL);
+                else
+                    alert("This web browser does not support web sockets");
+
+                // Set the format we want to use to receive binary messages
+                websocket.binaryType = 'arraybuffer'; 
+                
+                
+                if (DEBUG) console.log("WS Created:", websocket );
+                
+                // Attach functions to the the web socket for various events
+                websocket.onopen =  function(evt){console.log("Opened websocket");};
+                websocket.onclose = function(evt){console.log("Websocket close", evt.data);};
+                websocket.onerror = function(evt){console.log("Websocket error", evt.data);};
+                websocket.onmessage = function(evt){
+                    
+                    // Factory object for creating new PDUs from binary data
+                    var pduFactory = new dis.PduFactory();               
+                    var disMessage = pduFactory.createPdu(evt.data);  
+                    
+                    // Handle Incoming PDUs 
+                    switch(disMessage.pduType){
+                        case 1: 
+                            if(DEBUG) console.log("Entity State PDU Received");  
+                            //handleESPDU(disMessage);
+                            break;
+                        case 2: 
+                            if(DEBUG) console.log("Fire PDU Received");
+                            //handleFirePDU(disMessage);
+                            break;
+                        case 3:
+                            if(DEBUG) console.log("Detonation PDU Received");
+                            //handleDetonationPDU(disMessage);
+                            break;
+                        default:
+                            if(DEBUG) console.log("Unknown PDU Received", disMessage);
+                            return;  
+                    } 
+                }; // end of onmessage
+                // 
+                // This creates a position to move to / towards
+                google.maps.event.addListener(map, 'dblclick', function(evt) {
+                    // Clear previous data 
+                    if(polyline) polyline.setMap(null); 
+                    
+                    // Create instance of "invisible" marker to move toward
+                    if(myGoal == null){ 
+                        myGoal = new google.maps.Marker({
+                            position: evt.latLng,
+                            map: map, 
+                            title:"Order To Position", 
+                            visible: false
+                        }); 
+                    }
+                    
+                    // Set position of "invisible" marker
+                    myGoal.setPosition(evt.latLng); 
+                    
+                    // Calc Route to "invisible" marker
+                    calcRoute();
+                });// end listener 'dblclick'
+                
+            };  // end initialize()
+
+            /** Called periodicaly to send out an update of our position. */
+            function heartbeat()
+            {
+                if(DEBUG) console.log("In heartbeat()");  
+         
+                // Iterate through markerDictionary to send all ESPDUs for markers
+                for(entity in markerDictionary)
+                {     
+                    // Create marker if it doesn't exist
+                    if(markerDictionary[entity].marker === null)
+                    {    
+                        //Create Random Entity inside bounds
+                        var boxLength = topLeft.lat() - bottomRight.lat();
+                        var boxWidth  = topLeft.lng() - bottomRight.lng();
+                        var randomLat  = Math.random() * boxLength + bottomRight.lat();
+                        var randomLong = Math.random() * boxWidth + bottomRight.lng(); 
+                        var newPos = new google.maps.LatLng(randomLat, randomLong);  
+
+                        // Create marker positions  
+                        var marker  = new google.maps.Marker({
+                            map: map, 
+                            animation: google.maps.Animation.DROP,
+                            position: newPos,
+                            title: "Marker "+ entity,  
+                            icon:{
+                                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+                                strokeColor : "black",
+                                strokeWeight: 0.25,
+                                fillColor: iconColor[markerDictionary[entity].espdu.forceID] || "black", //Black is unrecognized
+                                fillOpacity: 1, 
+                                scale: 3,
+                                rotation: markerDictionary[entity].espdu.entityOrientation.psi * (180 /Math.PI)
+                            }
+                        }); 
+                        
+                        // Create Info Window
+                        var contentString = "<b>Entity ID:</b> " + JSON.stringify(markerDictionary[entity].espdu.entityID) + " <br>";
+                        contentString = contentString + "<b>Marking:</b> " + markerDictionary[entity].espdu.marking.getMarking() + " <br>";
+                        contentString = contentString + "<b>Entity Type:</b> " + JSON.stringify(markerDictionary[entity].espdu.entityType) + " <br>";
+                        var infoWindow = new google.maps.InfoWindow({content: contentString});
+                       
+                        // Create a Listener (code from http://toddgallimore.com/creating-event-handlers-inside-loop/
+                        google.maps.event.addListener( marker, 'click', function(pointer, markerIndex, data) 
+                        {
+                            return function() {
+				//data.open(map, pointer);  This will display InfoWindow  
+                                
+                                // If the selected entity is dead, return
+                                if(markerDictionary[markerIndex].espdu.entityAppearance === 24) return;
+                                
+                                // If an entity is selected, clear previous data
+                                if(myEntity){ 
+                                    if(polyline) polyline.setMap(null); 
+                                    if(myGoal) myGoal = null;
+                                    myEntity.marker.icon.fillColor = iconColor[myEntity.espdu.forceID] || "black";
+                                    myEntity.espdu.deadReckoningParameters.deadReckoningAlgorithm = 4;
+                                    myEntity.marker.setIcon(myEntity.marker.icon); 
+                                } 
+                                
+                                // Set the entity and update visual cues
+                                myEntity = markerDictionary[markerIndex];
+                                myEntity.marker.icon.fillColor = "black";
+                                myEntity.espdu.deadReckoningParameters.deadReckoningAlgorithm = 1;
+                                myEntity.marker.setIcon(myEntity.marker.icon); 
+                            };
+                        }(marker, entity, infoWindow));   
+                        
+                        // Save Marker
+                        markerDictionary[entity].marker = marker;
+                        
+                        // Save XYZ coordinates
+                        setEntityLocationXYZ(markerDictionary[entity].espdu.entityLocation, newPos.lat(), newPos.lng(), 0.0 );  
+                    }    
+                    
+                    // Update timestamp
+                    markerDictionary[entity].espdu.timestamp++;    
+                    
+                    // Marshal out the PDU
+                    var dataBuffer = new ArrayBuffer(1000); // typically 144 bytes, make it bigger for safety
+                    var outputStream = new dis.OutputStream(dataBuffer);
+                    markerDictionary[entity].espdu.encodeToBinaryDIS(outputStream); 
+                    
+                    // Trim to fit
+                    var trimmedData = dataBuffer.slice(0, outputStream.currentPosition);
+                    websocket.send(trimmedData);  
+                }
+                
+            }; //end heartbeat()
+            
+            /** Entity Movement Update */
+            function entityUpdate()
+            {   
+                // Create a time datapoint
+                var now = new Date(); 
+                
+                // Handle Dead Reckoning
+                for(entity in markerDictionary){     
+                    // Continue loop until the markers are created
+                    if(markerDictionary[entity].marker === null) continue;
+                    if(markerDictionary[entity].espdu === null) continue;
+                    if(markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm === 1){
+                        markerDictionary[entity].lastHeardFrom = now;
+                        continue;
+                    }
+                    
+                    // Get the change in time from the entity.lastHeardFrom and now (in seconds) 
+                    var deltaTime = (now.getTime() - markerDictionary[entity].lastHeardFrom.getTime()) * 0.001;  
+                    markerDictionary[entity].lastHeardFrom = now;
+                    
+                    // Calculate the position base on time (in seconds) 
+                    markerDictionary[entity].espdu.entityLocation.x += (markerDictionary[entity].espdu.entityLinearVelocity.x * deltaTime);
+                    markerDictionary[entity].espdu.entityLocation.y += (markerDictionary[entity].espdu.entityLinearVelocity.y * deltaTime);
+                    markerDictionary[entity].espdu.entityLocation.z += (markerDictionary[entity].espdu.entityLinearVelocity.z * deltaTime);
+                    
+                    // Convert that new position from XYZ to LATLONG
+                    var latLonAlt = conversion.convertDisToLatLongInDegrees(markerDictionary[entity].espdu.entityLocation); 
+                
+                    // Convert to a Google Lat/Long
+                    var projectedLocation = new google.maps.LatLng(latLonAlt.latitude, latLonAlt.longitude); 
+                    
+                    // Handle "hooked" entity
+                    if(markerDictionary[entity] === myEntity){
+                        // Handle moving hook 
+                        var distance = ENTITYVELOCITY * deltaTime;
+                        var delta = google.maps.geometry.spherical.computeDistanceBetween(projectedLocation, myGoal.position); 
+                        if(delta < distance){   
+                            projectedLocation = myGoal.position;
+                            myGoal = null;
+                            polyline.setMap(null);
+                            markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1; 
+                        }
+                    }
+                    
+                    // Check Bounds
+                    if( projectedLocation.lat() < bottomRight.lat() ){ // Bottom bound 
+                        newProjectedLocation = new google.maps.LatLng(bottomRight.lat(), projectedLocation.lng()); 
+                        projectedLocation = newProjectedLocation;
+                        markerDictionary[entity].espdu.entityOrientation.psi = (Math.PI) - markerDictionary[entity].espdu.entityOrientation.psi;
+                        if(markerDictionary[entity] === myEntity){
+                            myGoal = null;
+                            polyline.setMap(null);
+                            markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1;
+                        };
+                        setEntityLocationXYZ(markerDictionary[entity].espdu.entityLocation, newProjectedLocation.lat(), newProjectedLocation.lng(), 0.0 );
+                    }else if( projectedLocation.lat() > topLeft.lat()){ // Top Bound 
+                        newProjectedLocation = new google.maps.LatLng(topLeft.lat(), projectedLocation.lng()); 
+                        projectedLocation = newProjectedLocation;
+                        markerDictionary[entity].espdu.entityOrientation.psi = (Math.PI) - markerDictionary[entity].espdu.entityOrientation.psi;
+                        if(markerDictionary[entity] === myEntity){
+                            myGoal = null;
+                            polyline.setMap(null);
+                            markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1;
+                        };
+                        setEntityLocationXYZ(markerDictionary[entity].espdu.entityLocation, newProjectedLocation.lat(), newProjectedLocation.lng(), 0.0 );
+                    }else if( projectedLocation.lng() < topLeft.lng() ){ // Left Bound 
+                        newProjectedLocation = new google.maps.LatLng(projectedLocation.lat(), topLeft.lng()); 
+                        projectedLocation = newProjectedLocation;
+                        markerDictionary[entity].espdu.entityOrientation.psi = (2*Math.PI) - markerDictionary[entity].espdu.entityOrientation.psi;
+                        if(markerDictionary[entity] === myEntity){
+                            myGoal = null;
+                            polyline.setMap(null);
+                            markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1;
+                        };
+                        setEntityLocationXYZ(markerDictionary[entity].espdu.entityLocation, newProjectedLocation.lat(), newProjectedLocation.lng(), 0.0 );
+                    }else if(projectedLocation.lng() > bottomRight.lng()){ // Right Bound 
+                        newProjectedLocation = new google.maps.LatLng(projectedLocation.lat(), bottomRight.lng()); 
+                        projectedLocation = newProjectedLocation;
+                        markerDictionary[entity].espdu.entityOrientation.psi = (2*Math.PI) - markerDictionary[entity].espdu.entityOrientation.psi;
+                        if(markerDictionary[entity] === myEntity){
+                            myGoal = null;
+                            polyline.setMap(null);
+                            markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1;
+                        };
+                        setEntityLocationXYZ(markerDictionary[entity].espdu.entityLocation, newProjectedLocation.lat(), newProjectedLocation.lng(), 0.0 );
+                    }  
+
+                    // Set icon
+                    var tempIcon = markerDictionary[entity].marker.icon;
+                    tempIcon.rotation = markerDictionary[entity].espdu.entityOrientation.psi * (180 /Math.PI); 
+                    markerDictionary[entity].marker.setIcon(tempIcon);   
+                    
+                    // Set marker
+                    markerDictionary[entity].marker.setPosition(projectedLocation); 
+                    
+                    // Set Dead Reckoning Parameters  
+                    if( markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm === 4)
+                    {   
+                        var tempPosition= markerDictionary[entity].marker.position;
+                        var tempHeading = markerDictionary[entity].espdu.entityOrientation.psi * (180 /Math.PI);
+                        var tempDistance = ENTITYVELOCITY;
+                        
+                        // Compute future location (in meters per second)
+                        var ahead = google.maps.geometry.spherical.computeOffset(tempPosition, tempDistance, tempHeading);
+                        
+                        // Convert Lat/Long to XYZ
+                        var latLonAlt = {}; 
+                        latLonAlt.lat = ahead.lat();
+                        latLonAlt.lon = ahead.lng();
+                        latLonAlt.alt = 0.0;  
+
+                        // Convert Lat/Long to Earth Centered Coord 
+                        var disCoordinates = conversion.getXYZfromLatLonAltDegrees(latLonAlt);  
+                        
+                        // Save to Entity Velocity (Future Position - Current Position = Velocity)
+                        markerDictionary[entity].espdu.entityLinearVelocity.x = disCoordinates.x - markerDictionary[entity].espdu.entityLocation.x;
+                        markerDictionary[entity].espdu.entityLinearVelocity.y = disCoordinates.y - markerDictionary[entity].espdu.entityLocation.y;
+                        markerDictionary[entity].espdu.entityLinearVelocity.z = disCoordinates.z - markerDictionary[entity].espdu.entityLocation.z;
+                    }else{
+                        markerDictionary[entity].espdu.entityLinearVelocity.x = 0.0;
+                        markerDictionary[entity].espdu.entityLinearVelocity.y = 0.0;
+                        markerDictionary[entity].espdu.entityLinearVelocity.z = 0.0;
+                    }
+                } 
+                
+            }; // end entityUpdate() 
+            
+            /** Dead Reckoning Movement: We only set entity location, psi, and deadReckoning algorithm if the entity hits a boundary or goal.*/
+            function deadReckoningUpdate()
+            {   
+                // Create a time datapoint
+                var now = new Date(); 
+                
+                // Handle Dead Reckoning
+                for(entity in markerDictionary){     
+                    // Continue loop until the markers are created
+                    if(markerDictionary[entity].marker === null) continue;
+                    if(markerDictionary[entity].espdu === null) continue;
+                    if(markerDictionary[entity].espdu.deadReckoningParameters.deadReckoningAlgorithm === 1) continue;
+                    
+                    // Get the change in time from the entity.lastHeardFrom and now (in seconds)
+                    var deltaTime = (now.getTime() - markerDictionary[entity].lastHeardFrom.getTime()) * 0.001;  
+                    
+                    // Calculate the position base on time (in seconds)
+                    var ahead = {};
+                    ahead.x = markerDictionary[entity].espdu.entityLocation.x + (markerDictionary[entity].espdu.entityLinearVelocity.x * deltaTime);
+                    ahead.y = markerDictionary[entity].espdu.entityLocation.y + (markerDictionary[entity].espdu.entityLinearVelocity.y * deltaTime);
+                    ahead.z = markerDictionary[entity].espdu.entityLocation.z + (markerDictionary[entity].espdu.entityLinearVelocity.z * deltaTime);
+                    
+                    // Convert that new position from XYZ to LATLONG
+                    var latLonAlt = conversion.convertDisToLatLongInDegrees(ahead); 
+                
+                    // Convert to a Google Lat/Long
+                    var projectedLocation = new google.maps.LatLng(latLonAlt.latitude, latLonAlt.longitude); 
+                    
+                    // Set marker
+                    markerDictionary[entity].marker.setPosition(projectedLocation);
+                } 
+                
+            }; // end deadReckoningUpdate()
+                
+            /** Set ESPDU Entity Location from LatLong to XYZ */
+            function setEntityLocationXYZ( entityLocationXYZ, pLat, pLong, pAlt )
+            {  
+                // Setup Data Structures
+                var latLonAlt = {}; 
+                latLonAlt.lat = pLat;
+                latLonAlt.lon = pLong;
+                latLonAlt.alt = pAlt;  
+
+                // Convert Lat/Long to Earth Centered Coord 
+                var disCoordinates = conversion.getXYZfromLatLonAltDegrees(latLonAlt);  
+
+                // Save to Entity Velocity (Future Position - Current Position = Velocity)
+                entityLocationXYZ.x = disCoordinates.x;
+                entityLocationXYZ.y = disCoordinates.y;
+                entityLocationXYZ.z = disCoordinates.z;
+                
+            }; // end setEntityLocationXYZ()
+                    
+            /** Updates HTML display of Entity IDs */
+            function updateEntityTableDisplay()
+            {  
+                var tableString = "";
+                
+                for(entity in markerDictionary){  
+                    tableString = tableString + 
+                    markerDictionary[entity].espdu.entityID.site + " - " +
+                    markerDictionary[entity].espdu.entityID.application + " - " +
+                    markerDictionary[entity].espdu.entityID.entity + " - " +
+                    markerDictionary[entity].espdu.marking.getMarking() +  " - Force " +
+                    markerDictionary[entity].espdu.forceID + "<br>";
+                }
+                document.getElementById("entityIDs").innerHTML = tableString; 
+                
+            } // end updateEntityTableDisplay()
+           
+            /** Key Access Codes */
+            function onKeyDown(evt)
+            { 
+                if(DEBUG) console.log("In onKeyDown()");
+                
+		switch (evt.keyCode){
+                    case 65: //"A"
+                        if(DEBUG) console.log("\tRotate Left...");  
+                        if(myEntity){
+                            myEntity.espdu.entityOrientation.psi -= (Math.PI/180);  
+                            myEntity.marker.icon.rotation = myEntity.espdu.entityOrientation.psi * (180/Math.PI) ; 
+                            myEntity.marker.setIcon(myEntity.marker.icon);
+                        }
+                        break;  
+                    case 68: //"D"
+                        if(DEBUG) console.log("\tRotate Right...");  
+                        if(myEntity){
+                            myEntity.espdu.entityOrientation.psi += (Math.PI/180);  
+                            myEntity.marker.icon.rotation = myEntity.espdu.entityOrientation.psi * (180/Math.PI) ; 
+                            myEntity.marker.setIcon(myEntity.marker.icon);
+                        }
+                        break;   
+                    case 32: //Spacebar = Shoot
+                        if(DEBUG) console.log("\tShooting...");
+                        shoot();
+                        break;  
+                    case 27: //Escape
+                        if(DEBUG) console.log("\tUnhook...");  
+                        if(polyline) polyline.setMap(null); 
+                        if(myGoal) myGoal = null;
+                        if(myEntity){
+                            myEntity.marker.icon.fillColor = iconColor[myEntity.espdu.forceID] || "black";
+                            myEntity.espdu.deadReckoningParameters.deadReckoningAlgorithm = 4;
+                            myEntity.marker.setIcon(myEntity.marker.icon); 
+                            myEntity = null;
+                        } 
+                        break;
+                    default:
+                        console.log("\tOther Key Pressed: " + evt.keyCode);
+                        break;
+                }
+            }; // end onKeyDown()
+            
+            /** Calc Route IAW arrow Keys */
+            function calcRoute()
+            {  
+                if(DEBUG) console.log("In calcRoute()"); 
+                
+                // Check that we exist
+                if(myEntity != null){
+                    // Clear the line if it exists
+                    if(polyline) polyline.setMap(null); 
+                    
+                    // Create a line that displays movement
+                    polyline = new google.maps.Polyline({
+                        path: [ myEntity.marker.position, myGoal.position ],
+                        clickable     : false,
+                        geodesic      : true,
+                        strokeColor   : 'black',
+                        strokeOpacity : .6,
+                        strokeWeight  :  3,
+                        map           : map
+                    });  
+                    myEntity.espdu.deadReckoningParameters.deadReckoningAlgorithm = 4;
+                    myEntity.espdu.entityOrientation.psi = google.maps.geometry.spherical.computeHeading(myEntity.marker.position, myGoal.position) * (Math.PI/180);
+                }
+            };// end calcRoute() 
+            
+            /** shoot() */
+            function shoot()
+            {
+                if(DEBUG) console.log("In shoot()");
+                
+                if(myEntity){   
+                    var start = myEntity.marker.position; 
+                    var end;
+                    var range;
+                    var heading; 
+                    var closestEntity = "TARGET_ID_UNKNOWN"; 
+                    var closestRange = ROUNDMAXRANGE;   
+
+                    // Test all entities
+                    for(var entity in markerDictionary){  
+                        // Continue loop if we are testing ourselves
+                        if(markerDictionary[entity].marker === null) continue;
+                        
+                        if(DEBUG) console.log("\tTesting Entity:", entity, markerDictionary[entity]);
+                        
+                        // Test Entity Position
+                        end = markerDictionary[entity].marker.position; 
+
+                        // Test Range
+                        range = google.maps.geometry.spherical.computeDistanceBetween(start, end); 
+                        
+                        // Test heading 
+                        heading = google.maps.geometry.spherical.computeHeading(start, end);
+                        var headingLeft = myEntity.marker.icon.rotation - 0.5;
+                        var headingRight = myEntity.marker.icon.rotation + 0.5;
+                        
+                        
+                        if(range <= ROUNDMAXRANGE && heading > headingLeft && heading < headingRight ){
+                            if(DEBUG) console.log("\t\tIn Range and On Heading:",range, heading);
+                            
+                            if(range < closestRange){
+                                closestRange = range;
+                                closestEntity = JSON.stringify(markerDictionary[entity].espdu.entityID);
+                            }
+                        }   
+                    } 
+ 
+                    // Call function to create/send PDU
+                    createFirePDU({ 
+                        targetEID: closestEntity,
+                        targetRange: ROUNDMAXRANGE
+                    });
+
+                    // Endpoint for for drawing a representative line  
+                    var endpoint =  google.maps.geometry.spherical.computeOffset( 
+                        myEntity.marker.position, 
+                        ROUNDMAXRANGE, 
+                        myEntity.marker.icon.rotation
+                    );
+             
+                    var shotline = new google.maps.Polyline({
+                        path: [myEntity.marker.position, endpoint], 
+                        strokeColor: 'red',
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    shotline.setMap(map); 
+
+                    window.setTimeout(function(){ shotline.setMap(null); }, 250);
+                }
+            }; // end shoot() 
+            
+            /** createFirePDU() */
+            function createFirePDU(data)
+            {   /*
+                Fire PDU Components:
+                Item Name                   Bits
+                PDU Header Record           96	// Standard			
+                Firing Entity Id Record     48	// Firing EID			
+                Target Entity Id Record     48	// Target EID or TARGET_ID_UNKNOWN			
+                Munition Id Record          48	// Munition EID or MUNITION _NOT _TRACKED			
+                Event Identifier Record     48	// Relates Fire to Det PDUs			
+                Fire Mission Index Field    32	// Of firing system			
+                Location in World Record    192	// XYZ Of Shooter			
+                Burst Descriptor Record     128	// Munition type, warhead, fuse, quantity, and rate			
+                Velocity Record             96  // Muzzle velocity of round		
+                Range Field                 32	// Shooter calculated range
+                */
+                       
+                if(DEBUG) console.log("In createFirePDU():", data); 
+                var firingEID = JSON.stringify(data.firingEntityID);
+                var targetEID = JSON.stringify(data.targetEntityID); 
+                
+                // Class Object
+                var firepdu = new dis.FirePdu();    
+                
+                // Object Properties 
+                firepdu.firingEntityID = myEntity.espdu.entityID;
+                firepdu.targetEntityID = data.targetEID === "TARGET_ID_UNKNOWN" ? firepdu.targetEntityID : markerDictionary[data.targetEID].espdu.entityID;
+                //firepdu.munitionID; 
+                firepdu.eventID.site = myEntity.espdu.entityID.site;
+                firepdu.eventID.application = myEntity.espdu.entityID.application;
+                firepdu.eventID.eventNumber = myEntity.espdu.timestamp; //Psudo
+                //firepdu.fireMissionIndex;
+                firepdu.locationInWorldCoordinates = myEntity.espdu.entityLocation;
+                firepdu.burstDescriptor.fuse = 100; //Multi
+                firepdu.burstDescriptor.quantity = 1; //Quantity of Fire
+                firepdu.burstDescriptor.rate = 1; //Rate of Fire
+                firepdu.burstDescriptor.warhead = 5000; //Multi
+                firepdu.burstDescriptor.munition.entityKind = 2; //Munition
+                firepdu.burstDescriptor.munition.domain = 2; 
+                firepdu.burstDescriptor.munition.country = 225; 
+                firepdu.burstDescriptor.munition.category = 2;      
+                firepdu.burstDescriptor.munition.subcategory = 3;   
+                firepdu.burstDescriptor.munition.spec = 2;          
+                firepdu.burstDescriptor.munition.extra = 0;
+                //firepdu.rangeToTarget = data.targetEID === "TARGET_ID_UNKNOWN" ? 0 : data.targetRange;
+                firepdu.rangeToTarget = data.targetRange
+                
+                // Set firepdu.velocity; setup variables
+                var tempPosition = myEntity.marker.position;
+                var tempHeading = myEntity.espdu.entityOrientation.psi * (180 /Math.PI);
+                var tempDistance = ROUNDVELOCITY;
+                var ahead = google.maps.geometry.spherical.computeOffset(tempPosition, tempDistance, tempHeading);
+
+                // Convert Lat/Long to XYZ
+                var latLonAlt = {}; 
+                latLonAlt.lat = ahead.lat();
+                latLonAlt.lon = ahead.lng();
+                latLonAlt.alt = 0.0;  
+
+                // Convert Lat/Long to Earth Centered Coord 
+                var disCoordinates = conversion.getXYZfromLatLonAltDegrees(latLonAlt);  
+
+                // Save to Entity Velocity (Future Position - Current Position = Velocity)
+                var currentPos = firepdu.locationInWorldCoordinates;
+                if(DEBUG) {
+                    console.log("Computing velocity");
+                    console.log("  From : ", myEntity.marker.position);
+                    console.log("  To   : ", latLonAlt);
+                }
+                firepdu.velocity.x = disCoordinates.x - currentPos.x;
+                firepdu.velocity.y = disCoordinates.y - currentPos.y;
+                firepdu.velocity.z = disCoordinates.z - currentPos.z; 
+                
+                if(DEBUG) console.log("Fire PDU Created:",firepdu);
+                
+                //Buffer for sending
+                var dataBuffer = new ArrayBuffer(1000); // typically 144 bytes, make it bigger for safety
+                var outputStream = new dis.OutputStream(dataBuffer);
+                firepdu.encodeToBinaryDIS(outputStream);
+
+                // Trim to fit
+                var trimmedData = dataBuffer.slice(0, outputStream.currentPosition);
+                websocket.send(trimmedData); 
+                
+                // Call function to create Detonation PDU
+                createDetonationPDU(firepdu);
+                
+            }; //end createFirePDU()
+            
+            /** createDetonationPDU() */
+            function createDetonationPDU( data )
+            {
+                if (DEBUG) console.log("In createDetonationPDU():", data);  
+                var firingEID = JSON.stringify(data.firingEntityID);
+                var targetEID = JSON.stringify(data.targetEntityID);
+                var tempEID = '{"site":0,"application":0,"entity":0}';   
+                
+                // Detresult:  Friendly == 0 or 5;  Enemy == 5 
+                var detOptions = [0,5];
+                var detResult = detOptions[Math.floor(Math.random() * detOptions.length)];
+                
+                if(targetEID === tempEID){
+                    detResult = 0;
+                }else{
+                    if(myEntity.espdu.forceID === 2){
+                        detResult = 5;
+                    }
+                    
+                    if(detResult === 5){  
+                        markerDictionary[targetEID].espdu.entityAppearance = 24; // Coordinated "Death" appearance
+                        markerDictionary[targetEID].espdu.deadReckoningParameters.deadReckoningAlgorithm = 1; // Don't move
+                        
+                        var tempIcon = {
+                            path: "M 0,0 L 5,5 M 0,5 L 5,0",
+                            strokeColor : iconColor[markerDictionary[targetEID].espdu.forceID] || "black", //black if it is uncategorized
+                            strokeWeight: 3,
+                            fillColor: iconColor[markerDictionary[targetEID].espdu.forceID] || "black", //black if it is uncategorized
+                            fillOpacity: 0, 
+                            scale: 2,
+                            rotation: 0
+                        }
+                        markerDictionary[targetEID].marker.setIcon(tempIcon);
+                    }
+                } 
+                
+                // Class Object
+                var detpdu = new dis.DetonationPdu();
+                
+                // Object Properties
+                detpdu.firingEntityID = data.firingEntityID;
+                detpdu.targetEntityID = data.targetEntityID; 
+                detpdu.munitionID = data.munitionID;  
+                detpdu.eventID = data.eventID;
+                detpdu.velocity = data.velocity;
+                
+                // Set locationInWorldCoordinates;  Checks if the target entity exists or not
+                if(targetEID === tempEID){
+                    var tempPosition = markerDictionary[firingEID].marker.position;
+                    var tempHeading = markerDictionary[firingEID].espdu.entityOrientation.psi * (180 /Math.PI);
+                    var tempDistance = ROUNDVELOCITY;
+                    var ahead = google.maps.geometry.spherical.computeOffset(tempPosition, tempDistance, tempHeading);
+
+                    // Convert Lat/Long to XYZ
+                    var latLonAlt = {}; 
+                    latLonAlt.lat = ahead.lat();
+                    latLonAlt.lon = ahead.lng();
+                    latLonAlt.alt = 0.0;  
+
+                    // Convert Lat/Long to Earth Centered Coord 
+                    var disCoordinates = conversion.getXYZfromLatLonAltDegrees(latLonAlt);  
+
+                    detpdu.locationInWorldCoordinates.x = disCoordinates.x;
+                    detpdu.locationInWorldCoordinates.y = disCoordinates.y;
+                    detpdu.locationInWorldCoordinates.z = disCoordinates.z;
+                }else{
+                    detpdu.locationInWorldCoordinates = markerDictionary[targetEID].espdu.entityLocation;
+                } 
+                
+                detpdu.burstDescriptor = data.burstDescriptor; 
+                //detpdu.locationInEntityCoordinates;
+                detpdu.detonationResult = detResult;
+                
+                if(DEBUG) console.log("Detonation PDU Created:",detpdu,"\tDetonation Result:",detResult);
+                
+                //Buffer for sending
+                var dataBuffer = new ArrayBuffer(1000); // typically 144 bytes, make it bigger for safety
+                var outputStream = new dis.OutputStream(dataBuffer);
+                detpdu.encodeToBinaryDIS(outputStream);
+
+                // Trim to fit
+                var trimmedData = dataBuffer.slice(0, outputStream.currentPosition);
+                websocket.send(trimmedData); 
+            }; //end createDetonationPDU()  
+            
+            window.onkeydown = onKeyDown;
+            
+            window.onload = function(){ 
+                
+                var guiControl = {
+                    Velocity: ENTITYVELOCITY,
+                    Note: "6.7056m/s = 15mph"
+                }; 
+                
+                var gui = new dat.GUI({ autoPlace: false, width: 200}); 
+                var customContainer = document.getElementById('gui-container');
+                customContainer.appendChild(gui.domElement);
+                
+                
+                
+                gui.add(guiControl, 'Velocity', 0, 3000).onFinishChange(
+                    function() {ENTITYVELOCITY = guiControl.Velocity;} 
+                );
+                 gui.add(guiControl,'Note');
+        
+            }; 
+        </SCRIPT>
+    </body>
+</html>

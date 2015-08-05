@@ -1,0 +1,762 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='MerchantLivestockCarrier.x3d' name='title'/>
+    <meta content='AL MESSILAH, Kuwait, Livestock carrier' name='description'/>
+    <meta content='Harold Valentine' name='creator'/>
+    <meta content='1 September 2000' name='created'/>
+    <meta content='28 September 2002' name='modified'/>
+    <meta content='https://savage.nps.edu/Savage/ShipsCivilian/MerchantLivestockCarrier/MerchantLivestockCarrier.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <Viewpoint description='STBD Side View' position='0 0 65'/>
+    <Viewpoint description='Elevated Forward STBD Quarter' orientation='-0.334753 0.923048 0.189534 1.10042' position='50 25 25'/>
+    <Viewpoint description='Forward STBD Quarter Aspect' orientation='0 1 0 1.0' position='65 0 27'/>
+    <Viewpoint description='Bow Aspect' orientation='0 1 0 1.57' position='65 0 0'/>
+    <Viewpoint description='Forward Port Quarter Aspect' orientation='0 1 0 2.1' position='65 0 -25'/>
+    <Viewpoint description='Elevated Forward Port Quarter' orientation='-0.234753 0.923048 0.189534 2.10042' position='50 25 -25'/>
+    <Viewpoint description='PORT Side View' orientation='0 1 0 3.14' position='0 0 -65'/>
+    <Viewpoint description='Stern' orientation='0 1 0 -1.57' position='-100 0 0'/>
+    <Transform translation='15 0 0'>
+      <Transform>
+        <Shape>
+          <Extrusion creaseAngle='1.57' crossSection='0 0 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 0 0' orientation='0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 -0.5' scale='4 4 4 4 4 4 4 .1' solid='false' spine='-46.84 0 0 0 0 0 10 0 0 18 0.25 0'/>
+          <Appearance>
+            <Material diffuseColor='.5 0 0' emissiveColor='0.2 0 0'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-16.1 1 0'>
+        <Shape>
+          <Box size='50 2 8'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='6 1 2' translation='11.5 -3 0'>
+        <Shape>
+          <Sphere/>
+          <Appearance>
+            <Material diffuseColor='0.5 0 0' emissiveColor='0.2 0 0'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 .3' scale='1 1.05 3.8' translation='8.75 0.7 0'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 .3' scale='1 1.05 4' translation='8 2.77 0'>
+        <Shape>
+          <Box size='0.5 0.5 2'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='6.659 2.85 0'>
+        <Shape>
+          <Box size='3 .5 8'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='5.71 2.3 0'>
+        <Shape>
+          <Box size='7 0.6 8'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 .3' translation='8.8475 2.1 0'>
+        <Shape>
+          <Box size='1 .73 8'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 .78' scale='1.5 1.05 4' translation='5.075 2.65 0'>
+        <Shape>
+          <Box size='0.5 0.5 2'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 .78' scale='1.25 1.05 1' translation='2.033 1.8875 0'>
+        <Shape>
+          <Box size='1 .73 8'/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='2.4 3. 0'>
+        <Shape>
+          <Box size='11.5 2 6'/>
+          <Appearance>
+            <Material diffuseColor='1 1 1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='5.9 0.3 3' translation='2.55 4 0'>
+        <Shape>
+          <Extrusion crossSection='-1.0 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0' scale='1.0 1.0 0.95 0.95' spine='0 0 0 0 1 0'/>
+          <Appearance>
+            <Material diffuseColor='1 1 1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='5.75 1.0 3' translation='2.675 3 0'>
+        <Shape>
+          <Extrusion crossSection='-1.0 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0' scale='0.95 0.95 1.0 1.0' spine='0 0 0 0 1 0'/>
+          <Appearance>
+            <Material diffuseColor='1 1 1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='1.4 3 0.5' translation='-39.7 2 -3'>
+        <Shape>
+          <Extrusion crossSection='-1.0 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0' scale='1.0 1.0 0.7 0.7' spine='0 0 0 0 1 0'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='1.4 3 0.5' translation='-39.7 2 3'>
+        <Shape>
+          <Extrusion crossSection='-1.0 1.0 1.0 1.0 1.0 -1.0 -1.0 -1.0 -1.0 1.0' scale='1.0 1.0 0.7 0.7' spine='0 0 0 0 1 0'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-39.75 5 -3'>
+        <Shape>
+          <Box size='1.5 .2 .5'/>
+          <Appearance>
+            <Material diffuseColor='0 0 0'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-39.75 5 3'>
+        <Shape>
+          <Box size='1.5 .2 .5'/>
+          <Appearance>
+            <Material diffuseColor='0 0 0'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-46.95 0.8 0'>
+        <Shape>
+          <Box size='0.1 5 4'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.3' translation='-46.775 3.86 0'>
+        <Shape>
+          <Box size='0.075 1.2 4'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.15' translation='-46 3.2 0'>
+        <Shape>
+          <Cylinder height='6.5' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-45.45 4.75 0'>
+        <Shape>
+          <Cylinder height='.55' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-36 2.5 -3'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 0.78' translation='-36.34 3.32 -3'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-36 2.5 3'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 0.78' translation='-36.34 3.32 3'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 0.2' translation='5 3.86 0'>
+        <Shape>
+          <Cylinder height='10' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.15' translation='4 3.2 0'>
+        <Shape>
+          <Cylinder height='6.5' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.15' translation='3.5 3.2 0'>
+        <Shape>
+          <Cylinder height='9.35' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.15' translation='3.75 3.2 0'>
+        <Shape>
+          <Cylinder height='7.9' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.15' translation='4.25 3.2 0'>
+        <Shape>
+          <Cylinder height='5.05' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='0.5 .1 0.5' translation='4.1 8.25 0'>
+        <Shape>
+          <Sphere/>
+          <Appearance>
+            <Material diffuseColor='1 1 1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='4.75 7 0'>
+        <Shape>
+          <Cylinder height='.75' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='5 6.3 0'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='5.45 6.42 0'>
+        <Shape>
+          <Cylinder height='.25' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform>
+        <Transform rotation='1 0 0 -1.578' scale='.1 .1 .1' translation='4.6 7.35 0.8'>
+          <Transform rotation='0 0 1 -1.578' scale='1 10 1' translation='0 8 0'>
+            <Transform DEF='RADAR1'>
+              <Shape>
+                <Extrusion creaseAngle='1.57' crossSection='0 0 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 0 0' orientation='0 1 0 0 0 0 1 -0.5' spine='0 0 0 0 1 0'/>
+                <Appearance>
+                  <Material diffuseColor='1 1 1' emissiveColor='0.2 0 0'/>
+                </Appearance>
+              </Shape>
+            </Transform>
+          </Transform>
+        </Transform>
+      </Transform>
+      <Transform rotation='1 0 0 -1.578' scale='.1 .1 .1' translation='4.95 6.65 0.8'>
+        <Transform rotation='0 0 1 -1.578' scale='1 10 1' translation='0 8 0'>
+          <Shape>
+            <Extrusion creaseAngle='1.57' crossSection='0 0 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 0 0' orientation='0 1 0 0 0 0 1 -0.5' spine='0 0 0 0 1 0'/>
+            <Appearance>
+              <Material diffuseColor='1 1 1' emissiveColor='0.2 0 0'/>
+            </Appearance>
+          </Shape>
+        </Transform>
+      </Transform>
+      <Transform rotation='1 0 0 -1.578' scale='.1 .1 .1' translation='4.95 6.65 0.8'>
+        <Transform rotation='0 0 1 -1.578' scale='1 10 1' translation='0 8 0'>
+          <Shape>
+            <Extrusion creaseAngle='1.57' crossSection='0 0 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 0 0' orientation='0 1 0 0 0 0 1 -0.5' spine='0 0 0 0 1 0'/>
+            <Appearance>
+              <Material diffuseColor='1 1 1' emissiveColor='0.2 0 0'/>
+            </Appearance>
+          </Shape>
+        </Transform>
+      </Transform>
+      <Transform translation='-2.8 3.2 0'>
+        <Shape>
+          <Cylinder height='6.5' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 0.3' translation='-1.82 3.32 0'>
+        <Shape>
+          <Cylinder height='6.5' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-2.57 5 0'>
+        <Shape>
+          <Cylinder height='.45' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-2.53 4.75 0'>
+        <Shape>
+          <Cylinder height='.54' radius='.05'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-2.61 5.25 0'>
+        <Shape>
+          <Cylinder height='.38' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-2.65 5.5 0'>
+        <Shape>
+          <Cylinder height='.3' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.578' translation='-2.68 5.75 0'>
+        <Shape>
+          <Cylinder height='.22' radius='.05'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-4 2.5 0'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 0.78' translation='-4.35 3.325 0'>
+        <Shape>
+          <Cylinder height='1' radius='.075'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.2 .5 .4' translation='-2.25 2.5 3.55'>
+        <Shape>
+          <Extrusion creaseAngle='1.57' crossSection='0 0 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 0 0' orientation='0 1 0 0 0 1 0 0 0 1 0 0 0 0 1 -0.5' scale='1 1 1 1 1 1 1 .1' solid='false' spine='-1 0 0 0 0 0 10 0 0 15 0.25 0'/>
+          <Appearance>
+            <Material diffuseColor='.5 0 0' emissiveColor='0.2 0 0'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -0.3' scale='1 1.05 3.85' translation='-40.5 0.7 0'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0.5 0.5 0.5'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.3' scale='.25 .25 .25' translation='8.04 3.5 0'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.3' scale='.25 .25 .25' translation='8.04 3.5 1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.3' scale='.25 .25 .25' translation='8.04 3.5 -1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.3' scale='.25 .25 .25' translation='8.04 3.5 2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.3' scale='.25 .25 .25' translation='8.04 3.5 -2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='7 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='6 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='4 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='3 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='2 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-1 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-2 3.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='7 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='6 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='4 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='3 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='2 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-1 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-2 3.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='1 2.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-0 2.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-1 2.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-2 2.5 2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='1 2.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-0 2.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-2 2.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-1 2.5 -2.86'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-45 0.5 4.05'>
+        <Shape>
+          <Box size='1.5 3 0.1'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform rotation='1 0 0 -0.3' translation='-45 2.2 3.975'>
+        <Shape>
+          <Box size='1.5 .5 0.1'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='-45 -0.625 3.5'>
+        <Shape>
+          <Box size='1.5 .75 1'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 2.5 -2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 2.5 -1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 2.5 1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 2.5 2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 3.5 -2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 3.5 2'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 3.5 1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 3.5 -1'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='.15 .15 .15' translation='-3.22 3.5 0'>
+        <Shape>
+          <Box/>
+          <Appearance>
+            <Material diffuseColor='0 0 1' emissiveColor='0 0 0.5' shininess='1'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform translation='13 0.2 0'>
+        <Shape>
+          <Cylinder height='1' radius='.3'/>
+          <Appearance>
+            <Material diffuseColor='0.3 0.3 0.3'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='1 .2 1' translation='13 0.2 0'>
+        <Shape>
+          <Sphere radius='.4'/>
+          <Appearance>
+            <Material diffuseColor='0.3 0.3 0.3'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+      <Transform scale='1 .2 1' translation='13 0.7 0'>
+        <Shape>
+          <Sphere radius='.4'/>
+          <Appearance>
+            <Material diffuseColor='0.3 0.3 0.3'/>
+          </Appearance>
+        </Shape>
+      </Transform>
+    </Transform>
+    <Group>
+      <TimeSensor DEF='RADARTIMER' cycleInterval='4' enabled='false' loop='true'/>
+      <OrientationInterpolator DEF='RADARROT' key='0 .25 .5 .75 1' keyValue='1 0 0 0 1 0 0 1.571 1 0 0 3.142 1 0 0 4.757 1 0 0 6.284'/>
+    </Group>
+    <ROUTE fromField='fraction_changed' fromNode='RADARTIMER' toField='set_fraction' toNode='RADARROT'/>
+    <ROUTE fromField='value_changed' fromNode='RADARROT' toField='set_rotation' toNode='RADAR1'/>
+  </Scene>
+</X3D>

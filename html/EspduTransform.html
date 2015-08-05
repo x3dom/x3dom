@@ -15,21 +15,12 @@
 
    <h1>EspduTransform Hello World</h1>
                 <p>
-                Connects to a websocket server on the network. The websocket server can forward
-                native network DIS PDUs to the page, and forward PDUs sent by the entities defined
-                in this page to the native network.
+                With X3DOM-namespace and lower-case element/node names. Does not work with self closing tags (e.g viewpoint and material) right now.
                 </p>
 
-                <x3d xmlns="http://www.x3dom.org/x3dom" showStat="true" showLog="false" x="0px" y="0px" width="400px" height="400px" altImg="helloX3D-alt.png">
+                <x3d xmlns="http://www.x3dom.org/x3dom" showStat="false" showLog="false" x="0px" y="0px" width="400px" height="400px" altImg="helloX3D-alt.png">
           <scene>
             <viewpoint position='0 0 10' ></viewpoint>
-            
-            <!-- Just a tag to give us a place to add entities, espduTransform nodes
-                 for messages recieved from the network
-            -->
-            <Transform id="networkEntities">
-            </Transform>
-            
             
             <DisEntityManager websocketUrl="ws://localhost:8282"
                         localCoordinateSystemOrigin="36.0 -121.0 1.0">

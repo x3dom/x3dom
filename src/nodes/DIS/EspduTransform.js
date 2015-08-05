@@ -183,6 +183,9 @@ x3dom.registerNodeType(
          /** [0..64k] */
          this.addField_SFInt32(ctx, "firingRate", 0);
          
+         /** [0..64k] */
+         this.addField_SFInt32(ctx, "forceID", 0);         
+         
          /** [0..255] */
          this.addField_SFInt32(ctx, "fuse", 0);
          

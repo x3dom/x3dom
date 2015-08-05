@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='Bridge.x3d' name='title'/>
+    <meta content='Spruance Bridge' name='description'/>
+    <meta content='LT Josh Hansen' name='creator'/>
+    <meta content='17 September 2001' name='created'/>
+    <meta content='20 October 2001' name='modified'/>
+    <meta content='https://savage.nps.edu/Savage/ShipsMilitary/DD963-Spruance-UnitedStates/Bridge.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <Group>
+      <Transform>
+        <Shape>
+          <Extrusion crossSection='0 0 5.5 0 7.5 1 7.5 13 -7.5 13 -7.5 1 -5.5 0 0 0' solid='false' spine='0 0 0 0 12 0'/>
+          <Appearance>
+            <Material diffuseColor='.6 .6 .6'/>
+          </Appearance>
+        </Shape>
+        <Transform translation='0 12 0'>
+          <Shape>
+            <Extrusion beginCap='false' crossSection='-5.5 0 -7.5 1 -7.5 13 -7.4 13 -7.4 1.1 -5.5 .1 -5.5 0' endCap='false' solid='false' spine='0 0 0 0 2 0'/>
+            <Appearance>
+              <Material diffuseColor='.6 .6 .6'/>
+            </Appearance>
+          </Shape>
+          <Shape>
+            <Extrusion beginCap='false' crossSection='5.5 0 7.5 1 7.5 13 7.4 13 7.4 1.1 5.5 .1 5.5 0' endCap='false' solid='false' spine='0 0 0 0 2 0'/>
+            <Appearance>
+              <Material diffuseColor='.6 .6 .6'/>
+            </Appearance>
+          </Shape>
+          <Shape>
+            <Extrusion beginCap='false' crossSection='0 0 5.5 0 5.5 13 -5.5 13 -5.5 0 0 0' endCap='false' solid='false' spine='0 0 0 0 2 0'/>
+            <Appearance>
+              <Material diffuseColor='.6 .6 .6'/>
+            </Appearance>
+          </Shape>
+          <Transform rotation='0 1 0 3.14' translation='0 3.25 13'>
+            <Shape>
+              <Extrusion beginCap='false' crossSection='0 0 5.5 0 5.5 13 -5.5 13 -5.5 0 0 0' scale='1 1 1 1 1 1.05' solid='false' spine='0 0 0 0 1 0 0 2 0'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='0 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='2 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='4 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.5 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.5 2.6 2'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.5 2.6 4'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.5 2.6 6'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.5 2.6 8'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='5.4 2.6 11'>
+            <Shape>
+              <Box size='.2 1.3 4'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.4 2.6 11'>
+            <Shape>
+              <Box size='.2 1.3 4'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-2 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-4 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.5 2.6 0'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.5 2.6 2'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.5 2.6 4'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.5 2.6 6'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+          <Transform translation='-5.5 2.6 8'>
+            <Shape>
+              <Box size='.2 1.25 .1'/>
+              <Appearance>
+                <Material diffuseColor='.6 .6 .6'/>
+              </Appearance>
+            </Shape>
+          </Transform>
+        </Transform>
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>

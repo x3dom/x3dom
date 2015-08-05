@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='YBaseRaydome.x3d' name='title'/>
+    <meta content='Kevin Anderson' name='creator'/>
+    <meta content='1 October 2000' name='created'/>
+    <meta content='10 November 2002' name='modified'/>
+    <meta content='YBaseRaydome for use with Sovremennny and/or other Russian Warships. Designed to photos supplied by Janes Online.' name='description'/>
+    <meta content='https://savage.nps.edu/Savage/ShipsMilitary/Destroyer-Sovremenny-Russia/YBaseRaydome.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <!-- Y Shaped Base Raydome -->
+    <Group DEF='Base'>
+      <Shape>
+        <Extrusion creaseAngle='.7' crossSection='1.00 0.00 0.92 -0.38 0.71 -0.71 0.38 -0.92 0.00 -1.00 -0.38 -0.92 -0.71 -0.71 -0.92 -0.38 -1.00 0.00 -0.92 0.38 -0.71 0.71 -0.38 0.92 0.00 1.00 0.38 0.92 0.71 0.71 0.92 0.38 1.00 0.00' scale='.6 .6 .4 .4' spine='0 0 0 0 .2 0'/>
+        <Appearance DEF='Gray'>
+          <Material diffuseColor='.55 .53 .5'/>
+        </Appearance>
+      </Shape>
+      <Transform translation='0 .7 0'>
+        <Shape>
+          <Appearance USE='Gray'/>
+          <Cylinder height='1' radius='.15'/>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 -1.106' translation='.4 1.3 0'>
+        <Shape DEF='AngleArm'>
+          <Appearance USE='Gray'/>
+          <Box size='.12 .94 .3'/>
+        </Shape>
+      </Transform>
+      <Transform rotation='0 0 1 1.1064' translation='-.4 1.3 0'>
+        <Shape USE='AngleArm'/>
+      </Transform>
+      <Transform translation='.794 1.81 0'>
+        <Shape DEF='VerticalArm'>
+          <Appearance USE='Gray'/>
+          <Box size='.12 .7 .3'/>
+        </Shape>
+      </Transform>
+      <Transform translation='-.794 1.81 0'>
+        <Shape USE='VerticalArm'/>
+      </Transform>
+    </Group>
+    <Group DEF='T-RayDome'>
+      <Transform rotation='1 0 0 1.45' translation='0 2 0'>
+        <Shape>
+          <Appearance DEF='White'>
+            <Material diffuseColor='.9 .9 .9'/>
+          </Appearance>
+          <Cylinder height='1.2' radius='.6'/>
+        </Shape>
+        <Transform scale='1 .4 1' translation='0 .6 0'>
+          <Shape DEF='DomeEnd'>
+            <Appearance USE='White'/>
+            <Sphere radius='.6'/>
+          </Shape>
+        </Transform>
+        <Transform scale='1 .6 1' translation='0 -.6 0'>
+          <Shape USE='DomeEnd'/>
+        </Transform>
+        <Transform rotation='0 0 1 1.57'>
+          <Shape>
+            <Appearance USE='Gray'/>
+            <Cylinder height='1.6' radius='.1'/>
+          </Shape>
+        </Transform>
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>
