@@ -490,9 +490,6 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
         case 13: /* return */
             x3dom.toggleFullScreen();
             break;
-        case 27: /* ESC */
-            window.history.back(); // emulate good old ESC key
-            break;
         case 33: /* page up */
             stack = this._scene.getViewpoint()._stack;
 
