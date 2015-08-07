@@ -23,17 +23,14 @@ if(typeof x3domDIS === 'undefined')  x3domDIS = {};
  * 
  * @author DMcG, Byron Harder
  * 
- * @param theUrl URL of the websocket server
+ * @param theUrl URL of the websocket server endpoint
  * @param origin array of three floats with lat/lon/alt (degrees and meters)
  * @param entityManager DISEntityManager node, link back to the node that created us
  */
 function NetworkSingleton(theUrl, origin, entityManager)
-{
-    //console.log("Retrieving singleton instance of NetworkSingleton");
-    
+{    
     if(NetworkSingleton.prototype._singletonInstance)
     {
-        //console.log("Returing already created instance of NetworkSingleton");
         return NetworkSingleton.prototype._singletonInstance;
     }
     
@@ -202,8 +199,6 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
     
     return null;
 };
-<<<<<<< HEAD
-=======
   
 /** 
  * Builds a string using the name from the DISEntityTypeMapping and the entityID fields.
@@ -214,81 +209,20 @@ NetworkSingleton.prototype.urlForEntityType = function(entityType)
  */
 NetworkSingleton.prototype.displayName = function(entityType, entityID)
 {
-    //console.log("in displayName");
     
     var typeString = "Unknown Entity Type";
     var entityIDString = ":" + entityID.site + ":" + entityID.application + ":" + entityID.entity;
     
-    var typeMatchingTags = document.getElementsByTagName("DISEntityTypeMapping");
-    //console.log(typeMatchingTags);
+    var aTag = this.DISEntityTypeMappingTagForEntityType(entityType);
     
-    for(var idx = 0; idx < typeMatchingTags.length; idx++)
+    if(aTag != null)
     {
-        
-        aTag = typeMatchingTags[idx];
-        
-        //console.log("Tag:", aTag, " entity type:", entityType);
-           
-        var etype = new dis.EntityType();
-        
-        var kind = aTag.getAttribute("kind");
-        var domain = aTag.getAttribute("domain");
-        var country = aTag.getAttribute("country");
-        var category = aTag.getAttribute("category");
-        var subcategory = aTag.getAttribute("subcategory");
-        var specific = aTag.getAttribute("specific");
-        var extra = aTag.getAttribute("extra");
-        var matchFound = false;
-       
-       /*
-       console.log("entityKind:", entityType.entityKind, ", ", kind);
-        if(entityType.entityKind === parseInt(kind))
-            console.log("match on kind");
-        
-        console.log("domain:", entityType.domain, ", ", domain);
-        if(entityType.domain === parseInt(domain))
-            console.log("match on domain");
-        
-        console.log("country:", entityType.country, ", ", country);
-        if(entityType.country === parseInt(country))
-            console.log("match on country");
-        
-        console.log("category:", entityType.category, ", ", category);
-        if(entityType.category === parseInt(category))
-            console.log("match on category");
-        
-        console.log("subcategory:", entityType.subcategory, ", ", subcategory);
-        if(entityType.subcategory === parseInt(subcategory))
-            console.log("match on subcategory");
-        
-        console.log("specific:", entityType.spec, ", ", specific);
-        if(entityType.spec === parseInt(specific))
-            console.log("match on specific");
-        
-        console.log("extra:", entityType.extra, ", ", extra);
-        if(entityType.extra === parseInt(extra))
-            console.log("match on extra");
-        */
-        
-        if(entityType.entityKind === parseInt(kind) &&
-           entityType.domain === parseInt(domain) &&
-           entityType.country === parseInt(country) &&
-           entityType.category === parseInt(category) &&
-           entityType.subcategory === parseInt(subcategory) &&
-           entityType.spec === parseInt(specific) &&
-           entityType.extra === parseInt(extra) )
-           {
-                matchFound = true;
-                typeString = aTag.getAttribute("name");        
-                break;
-           };
-    };
+        typeString = aTag.getAttribute("name"); 
+    }
     
-    //console.log("Returning URL", matchingUrl, " for entity type " + entityType);
     return typeString + entityIDString;
 };
 
-  
   /**
    * An object that should be informed when a new message from the server arrives.
    * @param {object} listener
@@ -298,17 +232,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
   {
       this.newRemoteEntityListeners.push(listener);
   };
-  
-  /**
-   * Remove a listener object, so that it is no longer informed when a message arrives
-   * 
-   * @param {object} listener
-   * @returns {undefined}
-   */
-  NetworkSingleton.prototype.unregisterNewEntityListener = function(listener)
-  {
->>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
-
+ 
 /** 
  * Builds a string using the name from the DISEntityTypeMapping and the entityID fields.
  * 
@@ -384,10 +308,6 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       // document.
       if(typeof matchingEntity === 'undefined')
       {
-<<<<<<< HEAD
-=======
-          console.log("**********Adding new espduTransfrom in reponse to msg from network ", anEspdu, " Pre addition database is ", this.remoteEntityDatabase);
->>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
           newEntityFound = true;
           matchingEntity = this.addNewEspduTransformNode(anEspdu);
           this.remoteEntityDatabase[jsonEid] = matchingEntity;
@@ -438,7 +358,7 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       }
       
       // Set the position of the graphics object in local coordinates
-      //   to the previous location so it can be animated to the new one
+      // to the previous location so it can be animated to the new one
         graphicsGeometry.setAttribute("translation", 
             matchingEntity.location.x + " " + 
             matchingEntity.location.y + " " + 
@@ -453,21 +373,11 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       //Restart the time sensor
       matchingEntity.timeSensorNode.setAttribute("startTime", new Date()/1000);
       matchingEntity.timeSensorNode.setAttribute("enabled", "true");
-      /*
-      console.log("enabled: " + matchingEntity.timeSensorNode.getAttribute("enabled"));
-      console.log("startTime: " + matchingEntity.timeSensorNode.getAttribute("startTime"));
-      console.log("stopTime: " + matchingEntity.timeSensorNode.getAttribute("stopTime"));
-      console.log("cycleInterval: " + matchingEntity.timeSensorNode.getAttribute("cycleInterval"));
-      console.log("elapsedTime: " + matchingEntity.timeSensorNode.getAttribute("elapsedTime"));
-      console.log("fractionChanged: " + matchingEntity.timeSensorNode.getAttribute("fractionChanged"));
-      console.log("isActive: " + matchingEntity.timeSensorNode.getAttribute("isActive"));
-      */
+      
       matchingEntity.positionInterpolatorNode.setAttribute("keyValue", 
             graphicsGeometry.getAttribute("translation") + " " +
             localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
-      
-      
-      
+    
       //Update the most recent espdu and location
       matchingEntity.espdu = anEspdu;
       matchingEntity.location = localCoordinates;
@@ -557,7 +467,6 @@ NetworkSingleton.prototype.displayName = function(entityType, entityID)
       this.notifyNewEntityListeners(aFirepdu);
   };
 
-  
   /**
    * A fire pdu has been received from the server over the websocket. Process
    * it by creating a red line (actually a long, thin cylinder) from shooter to 
@@ -817,16 +726,6 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
 
     return newEntity;
 };
-
-  /**
-   * An object that should be informed when a new message from the server arrives.
-   * @param {object} listener
-   * @returns {undefined}
-   */
-  NetworkSingleton.prototype.registerNewEntityListener = function(listener)
-  {
-      this.newRemoteEntityListeners.push(listener);
-  };
   
   /**
    * Remove a listener object, so that it is no longer informed when a message arrives
@@ -839,12 +738,10 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
 
       for(var idx = 0; idx < this.newRemoteEntityListeners.length; idx++)
       {
-<<<<<<< HEAD
           if(this.newRemoteEntityListeners[idx] === listener)
           {
               this.newRemoteEntityListeners.slice(idx);
-              //console.log("unregistered new remote entity listener");
-=======
+
           case 1: // Entity State PDU
               this.espduReceived(pdu);
               break;
@@ -856,12 +753,10 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
               
           case 3: // Detonation PDU
               //console.log("Got detonation PDU");
->>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
               break;
           };        
       };
   };
-<<<<<<< HEAD
   
   /**
    * Notify all listeners that a DIS message has arrived, and hand off the PDU.
@@ -877,6 +772,151 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
       };
   };
 
+
+        
+/**
+ * 
+ * @param {type} espduTransformNode The EspduTransformNode sending an update
+ * @returns {undefined} void
+ */
+NetworkSingleton.prototype.sendDisUpdate = function(espduTransformNode)
+{          
+    var dataBuffer = new ArrayBuffer(1500);
+    var os = new dis.OutputStream(dataBuffer);
+    espduTransformNode.espdu.entityID.application = this.entityManager._vf.applicationID;
+
+    espduTransformNode.espdu.encodeToBinaryDIS(os);
+    var trimmedData = dataBuffer.slice(0, os.currentPosition);
+    this.websocketConnection.send(trimmedData);
+ };
+      
+/**
+ * Adds a new EspduTransform node to the scenegraph as a result of a 
+ * new entity from the network being heard from
+ * 
+ * @param {type} espdu from a newly discovered entity from the network
+ * @returns {entity} object with properties of espdu, x3d espdu transform node, and date last heard from
+ */
+NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
+{
+    var newEspduTransformNode = document.createElement("EspduTransform");
+    var displayName = this.displayName(espdu.entityType, espdu.entityID);
+    newEspduTransformNode.setAttribute("networkMode", "reader");
+    newEspduTransformNode.setAttribute("siteID", espdu.entityID.site);
+    newEspduTransformNode.setAttribute("applicationID", espdu.entityID.application);
+    newEspduTransformNode.setAttribute("entityID", espdu.entityID.entity);
+    newEspduTransformNode.setAttribute("displayName", displayName);
+    newEspduTransformNode.setAttribute("forceID", espdu.forceID);
+
+    //console.log("newly created espdu transform node:", newEspduTransformNode);
+    //newEspduTransformNode.espdu.entityType = espdu.entityType;
+
+    var url = this.urlForEntityType(espdu.entityType);
+
+    var transform = document.createElement("transform");
+
+    //we'll need a unique DEF to connect animation routes to each other
+    var transformDEF = displayName + ":transform";
+    transform.setAttribute("DEF", transformDEF);
+
+    // Convert from global (earth-centered) coordinates 
+    var localCoordinates = this.rangeCoordinates.ECEFtoENU(espdu.entityLocation.x, 
+                                                           espdu.entityLocation.y, 
+                                                           espdu.entityLocation.z);
+
+    //console.log("Entity position in local coordinates:", localCoordinates);
+    // The right way is to do geotranslation to local coords, as here. For debugging
+    // we add it near the origin.
+    transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+    //transform.setAttribute("translation", 3 + Math.random(), " ", 2 + Math.random(), " ", 4 + Math.random() );
+
+    transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
+    //for debugging:
+    //transform.setAttribute("scale", 10 + " " + 10 + " " + 10);
+    transform.setAttribute("rotation", "1 0 0 1.570796"); //orient to xy plane
+    //a hack until ESPDUtransform and transform are the same object:
+    transform.setAttribute("forceID", espdu.forceID);
+
+    //console.log(transform);
+    var innerTransform = document.createElement("transform");
+    var inlineModel = document.createElement("inline");
+    inlineModel.setAttribute("url", url);
+    var shape = document.createElement("Shape");
+    var appearance = document.createElement("Appearance");
+    var material = document.createElement("Material");
+    material.setAttribute("diffuseColor", "0.603 0.1 0.1");
+    var box = document.createElement("Box");
+
+    //var modelUrl = this.urlForEntityType(espdu.entityType);
+    //console.log("Have model of ", modelUrl, ' for entityType', espdu.entityType);
+
+    // The following elements will be used to animate the entity from one point to the next
+    // Time sensor will tell the pos interpolator how much time has passed
+    var timeSensor = document.createElement("timeSensor");
+    var timeSensorDEF = displayName + ":timeSensor";
+    timeSensor.setAttribute("DEF", timeSensorDEF);
+    timeSensor.setAttribute("loop", "false");
+    // Pos interpolator will tell the transform how far it has moved
+    var positionInterpolator = document.createElement("PositionInterpolator");
+    var positionInterpolatorDEF = displayName + ":positionInterpolator";
+    positionInterpolator.setAttribute("DEF", positionInterpolatorDEF);
+    positionInterpolator.setAttribute("key", "0 1");
+    //initial value is (x y z) to (x y z) i.e. zero velocity
+    positionInterpolator.setAttribute("keyValue", 
+         localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z + " " +
+         localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
+    //route the time sensor output to the pos interpolator
+    var timePosRoute = document.createElement("Route");
+    timePosRoute.setAttribute("DEF", displayName + ":timePosRoute");
+    timePosRoute.setAttribute("fromNode", timeSensorDEF);
+    timePosRoute.setAttribute("fromField", "fraction_changed");
+    timePosRoute.setAttribute("toNode", positionInterpolatorDEF);
+    timePosRoute.setAttribute("toField", "set_fraction");
+    //route the pos interpolator output to the transform
+    var posTransformRoute = document.createElement("Route");
+    posTransformRoute.setAttribute("DEF", displayName + ":posTransformRoute");
+    posTransformRoute.setAttribute("fromNode", positionInterpolatorDEF);
+    posTransformRoute.setAttribute("fromField", "value_changed");
+    posTransformRoute.setAttribute("toNode", transformDEF);
+    posTransformRoute.setAttribute("toField", "translation");           
+
+    appearance.appendChild(material);
+    shape.appendChild(appearance);
+    shape.appendChild(box);
+    innerTransform.appendChild(inlineModel);
+    transform.appendChild(innerTransform);
+
+    // The espduTransform constructor doesn't fire until it's added
+    // to the document
+    var root = document.getElementById('networkEntities');
+    //console.log("Root node for added networked entities is ", root);
+    root.appendChild(newEspduTransformNode);
+    //newEspduTransformNode.addChild(transform);
+    //once the following works, try putting these all inside the transform
+    //  to make it easier to delete them
+    root.appendChild(transform);
+    root.appendChild(timeSensor);
+    root.appendChild(positionInterpolator);
+    root.appendChild(timePosRoute);
+    root.appendChild(posTransformRoute);
+
+
+    // Create a new "entity" object, with properties for the last time
+    // it was heard from, the last espdu received, and the graphics
+    // associated with the object.
+    var newEntity = {};
+    newEntity.espdu = espdu;
+    newEntity.espduTransformNode = newEspduTransformNode;
+    newEntity.transformNode = transform;
+    newEntity.timeSensorNode = timeSensor;
+    newEntity.positionInterpolatorNode = positionInterpolator;
+    newEntity.timePosRouteNode = timePosRoute;
+    newEntity.posTransformRouteNode = posTransformRoute;
+    newEntity.location = localCoordinates;           
+
+    return newEntity;
+};
+
 /**
  * This is the approved way to get an instance of the singleton object. It's actually
  * created elsewhere, in DISEntityManager.
@@ -890,197 +930,4 @@ NetworkSingleton.getInstance = function()
     }
     return NetworkSingleton.prototype._singletonInstance;
 };
-=======
-        
-      /**
-       * 
-       * @param {type} espduTransformNode The EspduTransformNode sending an update
-       * @returns {undefined} void
-       */
-      NetworkSingleton.prototype.sendDisUpdate = function(espduTransformNode)
-      {          
-          var dataBuffer = new ArrayBuffer(1500);
-          var os = new dis.OutputStream(dataBuffer);
-          espduTransformNode.espdu.entityID.application = this.entityManager._vf.applicationID;
-          
-          espduTransformNode.espdu.encodeToBinaryDIS(os);
-          var trimmedData = dataBuffer.slice(0, os.currentPosition);
-          this.websocketConnection.send(trimmedData);
-          //console.log("Sent espdu from entity", espduTransformNode.espdu.entityID);
-       };
-       
-       /**
-        * Test code, not used.
-        * 
-        * @returns {undefined}
-        */
-       NetworkSingleton.prototype.addSimpleBox = function()
-       {
-         x = Math.random() * 6 - 3;
-         y = Math.random() * 6 - 3;
-         z = Math.random() * 6 - 3;
-
-         s0 = Math.random() + 0.5;
-         s1 = Math.random() + 0.5;
-         s2 = Math.random() + 0.5;
-                
-        var t = document.createElement('Transform');
-        t.setAttribute("translation", x + " " + y + " " + z );
-        t.setAttribute("scale", s0 + " " + s1 + " " + s2 );
-        var s = document.createElement('Shape');
-		
-		// Appearance Node
-		var app = document.createElement('Appearance');
-		
-		// Material Node
-		var mat = document.createElement('Material');
-		
-		app.appendChild(mat);
-		
-		s.appendChild(app);
-		
-        t.appendChild(s);
-        var b = document.createElement('Box');
-        s.appendChild(b);
-        
-        var ot = document.getElementById('networkEntities');
-        ot.appendChild(t);
-        };
-        
-       /**
-        * Adds a new EspduTransform node to the scenegraph as a result of a 
-        * new entity from the network being heard from
-        * 
-        * @param {type} espdu from a newly discovered entity from the network
-        * @returns {entity} object with properties of espdu, x3d espdu transform node, and date last heard from
-        */
-       NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
-       {
-           var newEspduTransformNode = document.createElement("EspduTransform");
-           var displayName = this.displayName(espdu.entityType, espdu.entityID);
-           newEspduTransformNode.setAttribute("networkMode", "reader");
-           newEspduTransformNode.setAttribute("siteID", espdu.entityID.site);
-           newEspduTransformNode.setAttribute("applicationID", espdu.entityID.application);
-           newEspduTransformNode.setAttribute("entityID", espdu.entityID.entity);
-           newEspduTransformNode.setAttribute("displayName", displayName);
-           newEspduTransformNode.setAttribute("forceID", espdu.forceID);
-           
-           //console.log("newly created espdu transform node:", newEspduTransformNode);
-           //newEspduTransformNode.espdu.entityType = espdu.entityType;
-          
-           var url = this.urlForEntityType(espdu.entityType);
-           
-           var transform = document.createElement("transform");
-           
-           //we'll need a unique DEF to connect animation routes to each other
-           var transformDEF = displayName + ":transform";
-           transform.setAttribute("DEF", transformDEF);
-
-           // Convert from global (earth-centered) coordinates 
-           var localCoordinates = this.rangeCoordinates.ECEFtoENU(espdu.entityLocation.x, 
-                                                                  espdu.entityLocation.y, 
-                                                                  espdu.entityLocation.z);
-           
-           //console.log("Entity position in local coordinates:", localCoordinates);
-           // The right way is to do geotranslation to local coords, as here. For debugging
-           // we add it near the origin.
-           transform.setAttribute("translation", localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
-           //transform.setAttribute("translation", 3 + Math.random(), " ", 2 + Math.random(), " ", 4 + Math.random() );
-         
-           transform.setAttribute("scale", 1 + " " + 1 + " " + 1);
-           //for debugging:
-           //transform.setAttribute("scale", 10 + " " + 10 + " " + 10);
-           transform.setAttribute("rotation", "1 0 0 1.570796"); //orient to xy plane
-           //a hack until ESPDUtransform and transform are the same object:
-           transform.setAttribute("forceID", espdu.forceID);
-           
-           //console.log(transform);
-           var innerTransform = document.createElement("transform");
-           var inlineModel = document.createElement("inline");
-           inlineModel.setAttribute("url", url);
-           var shape = document.createElement("Shape");
-           var appearance = document.createElement("Appearance");
-           var material = document.createElement("Material");
-           material.setAttribute("diffuseColor", "0.603 0.1 0.1");
-           var box = document.createElement("Box");
-           
-           //var modelUrl = this.urlForEntityType(espdu.entityType);
-           //console.log("Have model of ", modelUrl, ' for entityType', espdu.entityType);
-           
-           // The following elements will be used to animate the entity from one point to the next
-           // Time sensor will tell the pos interpolator how much time has passed
-           var timeSensor = document.createElement("timeSensor");
-           var timeSensorDEF = displayName + ":timeSensor";
-           timeSensor.setAttribute("DEF", timeSensorDEF);
-           timeSensor.setAttribute("loop", "false");
-           // Pos interpolator will tell the transform how far it has moved
-           var positionInterpolator = document.createElement("PositionInterpolator");
-           var positionInterpolatorDEF = displayName + ":positionInterpolator";
-           positionInterpolator.setAttribute("DEF", positionInterpolatorDEF);
-           positionInterpolator.setAttribute("key", "0 1");
-           //initial value is (x y z) to (x y z) i.e. zero velocity
-           positionInterpolator.setAttribute("keyValue", 
-                localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z + " " +
-                localCoordinates.x + " " + localCoordinates.y + " " + localCoordinates.z);
-           //route the time sensor output to the pos interpolator
-           var timePosRoute = document.createElement("Route");
-           timePosRoute.setAttribute("DEF", displayName + ":timePosRoute");
-           timePosRoute.setAttribute("fromNode", timeSensorDEF);
-           timePosRoute.setAttribute("fromField", "fraction_changed");
-           timePosRoute.setAttribute("toNode", positionInterpolatorDEF);
-           timePosRoute.setAttribute("toField", "set_fraction");
-           //route the pos interpolator output to the transform
-           var posTransformRoute = document.createElement("Route");
-           posTransformRoute.setAttribute("DEF", displayName + ":posTransformRoute");
-           posTransformRoute.setAttribute("fromNode", positionInterpolatorDEF);
-           posTransformRoute.setAttribute("fromField", "value_changed");
-           posTransformRoute.setAttribute("toNode", transformDEF);
-           posTransformRoute.setAttribute("toField", "translation");           
-
-           appearance.appendChild(material);
-           shape.appendChild(appearance);
-           shape.appendChild(box);
-           innerTransform.appendChild(inlineModel);
-           transform.appendChild(innerTransform);
- 
-           // The espduTransform constructor doesn't fire until it's added
-           // to the document
-           var root = document.getElementById('networkEntities');
-           //console.log("Root node for added networked entities is ", root);
-           root.appendChild(newEspduTransformNode);
-           //newEspduTransformNode.addChild(transform);
-           //once the following works, try putting these all inside the transform
-           //  to make it easier to delete them
-           root.appendChild(transform);
-           root.appendChild(timeSensor);
-           root.appendChild(positionInterpolator);
-           root.appendChild(timePosRoute);
-           root.appendChild(posTransformRoute);
-           
-           
-           // Create a new "entity" object, with properties for the last time
-           // it was heard from, the last espdu received, and the graphics
-           // associated with the object.
-           var newEntity = {};
-           newEntity.espdu = espdu;
-           newEntity.espduTransformNode = newEspduTransformNode;
-           newEntity.transformNode = transform;
-           newEntity.timeSensorNode = timeSensor;
-           newEntity.positionInterpolatorNode = positionInterpolator;
-           newEntity.timePosRouteNode = timePosRoute;
-           newEntity.posTransformRouteNode = posTransformRoute;
-           newEntity.location = localCoordinates;           
-           
-           return newEntity;
-       };
-       
-       NetworkSingleton.getInstance = function()
-       {
-           if(NetworkSingleton.prototype._singletonInstance === undefined)
-           {
-               console.log("***** attempting to retrieve network singleton before it is constructed");
-               return;
-           }
-           return NetworkSingleton.prototype._singletonInstance;
-       };
->>>>>>> d2430b27b82244a42909a34674b7aacd4fe4c05d
+    

@@ -1,8 +1,7 @@
-/* Updated 2015-05-20 by Byron R. Harder, Naval Postgraduate School */
-
 if (typeof dis === "undefined")
    dis = {};
 
+// Set up dis as a lower level psuedo-namespace with x3dom
 x3dom.dis = dis;
  
 // Support for node.js style modules; ignore if not using node.js require
@@ -209,6 +208,7 @@ x3dom.dis.DisAppearance.prototype.getBitField = function(startPosition, finishPo
     // do some sanity checks
     if(startPosition < 0 || startPosition > 31 || finishPosition < 0 || finishPosition > 31 || startPosition > finishPosition)
     {
+        console.log("invalid start or finish for bitfield values: ", startPosition, " ", finishPosition);
         return 0;
     }
     
@@ -322,6 +322,8 @@ x3dom.dis.InputStream = function(binaryData)
     
     x3dom.dis.InputStream.prototype.readLong = function()
     {
+        console.log("Problem in x3dom.dis.InputStream. Javascript cannot natively handle 64 bit ints");
+        console.log("Returning 0 from read, which is almost certainly wrong");
         this.currentPosition = this.currentPosition + 8;
         return 0;
     };
@@ -394,6 +396,8 @@ x3dom.dis.OutputStream = function(binaryDataBuffer)
     
     x3dom.dis.OutputStream.prototype.writeLong = function(userData)
     {
+        console.log("Problem in x3dom.dis.outputStream. Javascript cannot natively handle 64 bit ints");
+        console.log("writing 0, which is almost certainly wrong");
         this.dataView.setInt32(this.currentPosition, 0);
         this.dataView.setInt32(this.currentPosition + 4, 0);
         this.currentPosition = this.currentPosition + 8;
