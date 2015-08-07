@@ -741,21 +741,8 @@ NetworkSingleton.prototype.addNewEspduTransformNode = function(espdu)
           if(this.newRemoteEntityListeners[idx] === listener)
           {
               this.newRemoteEntityListeners.slice(idx);
-
-          case 1: // Entity State PDU
-              this.espduReceived(pdu);
-              break;
-              
-          case 2:  // Fire PDU
-              console.log("Got fire PDU");
-              this.firepduReceived(pdu);
-              break;
-              
-          case 3: // Detonation PDU
-              //console.log("Got detonation PDU");
-              break;
-          };        
-      };
+          }
+      }
   };
   
   /**
