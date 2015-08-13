@@ -64,6 +64,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     {
         this.__setAttribute(attrName, newVal);
 
+        // scale resolution so device pixel are used rather then css pixels
+        if(window.devicePixelRatio;)
+            newVal = parseInt(newVal) * window.devicePixelRatio;
+
         switch(attrName) {
 
             case "width":
