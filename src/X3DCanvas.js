@@ -74,7 +74,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
-                    that.doc.needRender =F true;
+                    that.doc.needRender = true;
                 }
                 break;
 
