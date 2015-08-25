@@ -127,7 +127,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
 
 	//Textures
-	if(properties.TEXTURED || properties.CSSHADER) {
+	if(properties.TEXTURED) {
 		shader += "varying vec2 fragTexcoord;\n";
 		if(!properties.SPHEREMAPPING) {
 			if(properties.IMAGEGEOMETRY) {
@@ -164,17 +164,19 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
             shader += "uniform float displacementAxis;\n";
         }
         if (properties.DIFFPLACEMENTMAP) {
-            shader += "uniform sampler2D diffuseDisplacementMap;\n";
-            shader += "uniform float displacementFactor;\n";
-            shader += "uniform float displacementWidth;\n";
-            shader += "uniform float displacementHeight;\n";
-            shader += "uniform float displacementAxis;\n";
-        }
-        if (properties.MULTIDIFFALPMAP || properties.MULTIVISMAP) {
-            shader += "attribute float id;\n";
-            shader += "varying float fragID;\n";
-        }
+			shader += "uniform sampler2D diffuseDisplacementMap;\n";
+			shader += "uniform float displacementFactor;\n";
+			shader += "uniform float displacementWidth;\n";
+			shader += "uniform float displacementHeight;\n";
+			shader += "uniform float displacementAxis;\n";
+		}
 	}
+
+	if (properties.VERTEXID) {
+		shader += "attribute float id;\n";
+		shader += "varying float fragID;\n";
+	}
+
     if (properties.IS_PARTICLE) {
         shader += "attribute vec3 particleSize;\n";
     }
@@ -255,7 +257,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 		
 		//TexCoords
-		if(properties.TEXTURED || properties.CSSHADER) {
+		if(properties.TEXTURED) {
 			shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoords, IG_texCoord );\n";
 			shader += "vec2 vertTexCoord;";
 			shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);\n";
@@ -330,7 +332,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 		
 		//TexCoords
-		if( (properties.TEXTURED || properties.CSSHADER) && !properties.SPHEREMAPPING) {
+		if( (properties.TEXTURED) && !properties.SPHEREMAPPING) {
             if (properties.IS_PARTICLE) {
                 shader += "vec2 vertTexCoord = vec2(0.0);\n";
             }
@@ -400,7 +402,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
     
 	//Textures
-	if(properties.TEXTURED || properties.CSSHADER){
+	if(properties.TEXTURED){
 		if(properties.CUBEMAP) {
 			shader += "fragViewDir = (viewMatrix[3].xyz);\n";
 		} else if (properties.SPHEREMAPPING) {
@@ -513,9 +515,35 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     {
         shader += "uniform mat4 modelViewMatrixInverse;\n";
     }
+
+	//VertexID
+	if (properties.VERTEXID) {
+		shader += "varying float fragID;\n";
+
+		if (properties.MULTIDIFFALPMAP) {
+			shader += "uniform sampler2D multiDiffuseAlphaMap;\n";
+			shader += "uniform float multiDiffuseAlphaWidth;\n";
+			shader += "uniform float multiDiffuseAlphaHeight;\n";
+		}
+		if (properties.MULTIEMIAMBMAP) {
+			shader += "uniform sampler2D multiEmissiveAmbientMap;\n";
+			shader += "uniform float multiEmissiveAmbientWidth;\n";
+			shader += "uniform float multiEmissiveAmbientHeight;\n";
+		}
+		if (properties.MULTISPECSHINMAP) {
+			shader += "uniform sampler2D multiSpecularShininessMap;\n";
+			shader += "uniform float multiSpecularShininessWidth;\n";
+			shader += "uniform float multiSpecularShininessHeight;\n";
+		}
+		if (properties.MULTIVISMAP) {
+			shader += "uniform sampler2D multiVisibilityMap;\n";
+			shader += "uniform float multiVisibilityWidth;\n";
+			shader += "uniform float multiVisibilityHeight;\n";
+		}
+	}
 	
 	//Textures
-	if(properties.TEXTURED || properties.CSSHADER) {
+	if(properties.TEXTURED) {
 		shader += "varying vec2 fragTexcoord;\n";
 		if((properties.TEXTURED || properties.DIFFUSEMAP) && !properties.CUBEMAP) {
 			shader += "uniform sampler2D diffuseMap;\n";
@@ -539,29 +567,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform sampler2D diffuseDisplacementMap;\n";
             shader += "uniform float displacementWidth;\n";
             shader += "uniform float displacementHeight;\n";
-        }
-        if (properties.MULTIDIFFALPMAP || properties.MULTIVISMAP) {
-            shader += "varying float fragID;\n";
-        }
-        if (properties.MULTIDIFFALPMAP) {
-            shader += "uniform sampler2D multiDiffuseAlphaMap;\n";
-            shader += "uniform float multiDiffuseAlphaWidth;\n";
-            shader += "uniform float multiDiffuseAlphaHeight;\n";
-        }
-        if (properties.MULTIEMIAMBMAP) {
-            shader += "uniform sampler2D multiEmissiveAmbientMap;\n";
-            shader += "uniform float multiEmissiveAmbientWidth;\n";
-            shader += "uniform float multiEmissiveAmbientHeight;\n";
-        }
-        if (properties.MULTISPECSHINMAP) {
-            shader += "uniform sampler2D multiSpecularShininessMap;\n";
-            shader += "uniform float multiSpecularShininessWidth;\n";
-            shader += "uniform float multiSpecularShininessHeight;\n";
-        }
-        if (properties.MULTIVISMAP) {
-            shader += "uniform sampler2D multiVisibilityMap;\n";
-            shader += "uniform float multiVisibilityWidth;\n";
-            shader += "uniform float multiVisibilityHeight;\n";
         }
         if(properties.NORMALMAP){
             shader += "uniform sampler2D normalMap;\n";
