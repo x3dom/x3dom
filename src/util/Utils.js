@@ -316,7 +316,7 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.TEXTURE_2D, dtex, 0);
     }
     else {
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, fb);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
     }
 
     var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
