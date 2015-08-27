@@ -64,6 +64,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     {
         this.__setAttribute(attrName, newVal);
 
+        // scale resolution so device pixel are used rather then css pixels
+        if(window.devicePixelRatio)
+            newVal = parseInt(newVal) * window.devicePixelRatio;
+
         switch(attrName) {
 
             case "width":
@@ -1168,6 +1172,24 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
         };
     }
 
+    //add element-specific (global) events for the X3D tag
+    if (x3dElem.hasAttribute("ondownloadsfinished"))
+    {
+        x3dElem.addEventListener("downloadsfinished",
+            function()
+            {
+                var eventObject = {
+                    target: x3dElem,
+                    type: "downloadsfinished"
+                };
+
+                var funcStr = x3dElem.getAttribute("ondownloadsfinished");
+                var func = new Function('event', funcStr);
+                func.call(x3dElem, eventObject);
+            },
+            true);
+    }
+
     x3dElem.appendChild(canvas);
 
     // If the X3D element has an id attribute, append "_canvas"
@@ -1293,6 +1315,8 @@ x3dom.X3DCanvas.prototype.mousePosition = function(evt)
  */
 x3dom.X3DCanvas.prototype.tick = function()
 {
+    var that = this;
+
     var runtime = this.x3dElem.runtime;
     var d = new Date().getTime();
     var diff = d - this.lastTimeFPSWasTaken;
@@ -1364,6 +1388,23 @@ x3dom.X3DCanvas.prototype.tick = function()
             this.progressDiv.style.display = 'none';
         }
     }
+
+    //fire downloadsfinished event, if necessary
+    if (this.doc.downloadCount == 0 && this.doc.previousDownloadCount > 0)
+    {
+        var evt;
+        if (document.createEvent) {
+            evt = document.createEvent("Events");
+            evt.initEvent("downloadsfinished", true, true);
+            that.x3dElem.dispatchEvent(evt);
+        } else if (document.createEventObject) {
+            evt = document.createEventObject();
+            // http://stackoverflow.com/questions/1874866/how-to-fire-onload-event-on-document-in-ie
+            that.x3dElem.fireEvent("ondownloadsfinished", evt);
+        }
+    }
+
+    this.doc.previousDownloadCount = this.doc.downloadCount;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

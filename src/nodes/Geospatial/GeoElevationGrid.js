@@ -27,6 +27,15 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
+            /**
+            * The texCoord field specifies per-vertex texture coordinates for the GeoElevationGrid node. If texCoord is NULL, default texture coordinates are applied to the geometry.
+            * @var {x3dom.fields.SFNode} texCoord
+            * @memberof x3dom.nodeTypes.GeoElevationGrid
+            * @initvalue x3dom.nodeTypes.X3DTextureCoordinateNode
+            * @field x3d
+            * @instance
+            */
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
@@ -47,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'geoGridOrigin', 0, 0, 0);
 
             /**
              * The height array contains xDimension × zDimension floating point values that represent elevation above the ellipsoid or the geoid, as appropriate.
@@ -195,15 +204,37 @@ x3dom.registerNodeType(
                 // coords, texture coords
                 var delta_x = 1 / (xDimension-1);
                 var delta_z = 1 / (zDimension-1);
+                
+                //from elevationgrid.js
+                var numTexComponents = 2;
 
+                var texCoordNode = this._cf.texCoord.node;
+                var texPoints;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        texPoints = texCoordNode._vf.point;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
+                            numTexComponents = 3;
+                        }
+                    }
+                }
+                
                 var positions = new x3dom.fields.MFVec3f();
+                        
                 var texCoords = new x3dom.fields.MFVec2f();
-
+                        
                 for(var z=0; z<zDimension; ++z)
                     for(var x=0; x<xDimension; ++x)
                     {
                         // texture coord
-                        var tex_coord = new x3dom.fields.SFVec2f(x*delta_x, z*delta_z);
+                        var tex_coord = new x3dom.fields.SFVec2f();
+                        tex_coord.x = x*delta_x;
+                        tex_coord.y = z*delta_z;
                         texCoords.push(tex_coord);
 
                         // coord
@@ -221,7 +252,6 @@ x3dom.registerNodeType(
                         }
                         coord.z = height[(z*xDimension)+x] * yScale;
                         coord = coord.add(geoGridOrigin);
-
                         positions.push(coord);
                     }
 
@@ -271,11 +301,16 @@ x3dom.registerNodeType(
                     (function (){
                         var indicesFlat   = new x3dom.fields.MFInt32(),
                             positionsFlat = new x3dom.fields.MFVec3f(),
-                            texCoordsFlat = new x3dom.fields.MFVec3f();
+                            texCoordsFlat = new x3dom.fields.MFVec2f(); //typo? was 3f
 
-                        that.generateNonIndexedTriangleData(indices, transformed, null, texCoords, null,
+                        if (texPoints) {
+                            that.generateNonIndexedTriangleData(indices, transformed, null, texPoints, null,
                             positionsFlat, null, texCoordsFlat, null);
-
+                        }
+                        else {
+                            that.generateNonIndexedTriangleData(indices, transformed, null, texCoords, null,
+                            positionsFlat, null, texCoordsFlat, null);
+                        }
                         for (var i = 0; i < positionsFlat.length; ++i) {
                             indicesFlat.push(i);
                         }
@@ -283,6 +318,7 @@ x3dom.registerNodeType(
                         that._mesh._indices[0]   = indicesFlat.toGL();
                         that._mesh._positions[0] = positionsFlat.toGL();
                         that._mesh._texCoords[0] = texCoordsFlat.toGL();
+                        that._mesh._numTexComponents = 2; //3 not yet generated
                     })();
 
                     this._mesh.calcNormals(0);
@@ -291,8 +327,9 @@ x3dom.registerNodeType(
                 else {
                     this._mesh._indices[0]   = indices.toGL();
                     this._mesh._positions[0] = transformed.toGL();
-                    this._mesh._texCoords[0] = texCoords.toGL();
-
+                    if (texPoints)  {this._mesh._texCoords[0] = texPoints.toGL();}
+                    else            {this._mesh._texCoords[0] = texCoords.toGL();}
+                    this._mesh._numTexComponents = numTexComponents;
                     this._mesh.calcNormals(Math.PI);
                 }
 
@@ -345,9 +382,9 @@ x3dom.registerNodeType(
                             t1 = new x3dom.fields.SFVec2f(),
                             t2 = new x3dom.fields.SFVec2f();
 
-                        t0.setValues(texCoords[i0]);
+                        t0.setValues(texCoords[i0]);//ignores .z if 3d
                         t1.setValues(texCoords[i1]);
-                        t1.setValues(texCoords[i2]);
+                        t2.setValues(texCoords[i2]); //typo? was t1
 
                         newTexCoords.push(t0);
                         newTexCoords.push(t1);

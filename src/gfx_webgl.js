@@ -1530,7 +1530,7 @@ x3dom.gfx_webgl = (function () {
             sp.sceneSize = sceneSize;
 
             // Set shadow ids if available
-            if(s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) {
+            if((s_gl.binaryGeometry != 0 || s_gl.externalGeometry != 0) && s_geo._vf["idsPerVertex"] == true) {
                 sp.shadowIDs = (shape._vf.idOffset + x3dom.nodeTypes.Shape.objectID + 2);
             }
 
@@ -1618,7 +1618,7 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-            else if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex) { //MultiPart
+            else if ((s_gl.binaryGeometry != 0 || s_gl.externalGeometry != 0) && s_geo._vf["idsPerVertex"] == true) { //MultiPart
                 var shader = s_app._shader;
                 if(shader && x3dom.isa(s_app._shader, x3dom.nodeTypes.CommonSurfaceShader)) {
                     if (shader.getMultiVisibilityMap()) {
@@ -1742,7 +1742,7 @@ x3dom.gfx_webgl = (function () {
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
                     //texture coordinate hack for IDs
-                    if (s_gl.binaryGeometry != 0 && s_geo._vf["idsPerVertex"] == true)
+                    if ((s_gl.binaryGeometry != 0 || s_gl.externalGeometry != 0) && s_geo._vf["idsPerVertex"] == true)
                     {
                         gl.vertexAttribPointer(sp.id,
                             1, gl.FLOAT, false,
@@ -2426,7 +2426,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
 
                 //texture coordinate hack for IDs
-                if (s_gl.binaryGeometry != 0 && s_geo._vf.idsPerVertex == true)
+                if ((s_gl.binaryGeometry != 0 || s_gl.externalGeometry != 0) && s_geo._vf["idsPerVertex"] == true)
                 {
                     gl.vertexAttribPointer(sp.id,
                         1, gl.FLOAT, false, 4, 0);

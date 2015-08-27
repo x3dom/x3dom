@@ -84,7 +84,8 @@ x3dom.registerNodeType(
                 texture: true,
                 material: true,
                 text: true,
-                shader: true
+                shader: true,
+                ids: true
             };
 
             // FIXME; move somewhere else and allow generic values!!!
@@ -92,6 +93,7 @@ x3dom.registerNodeType(
             this._normalStrideOffset = [0, 0];
             this._texCoordStrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
+            this._idStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
         },
