@@ -12,7 +12,7 @@ x3dom.registerNodeType(
     "ImageTextureAtlas",
     "Texturing",
     defineClass(x3dom.nodeTypes.Texture,
-        
+
         /**
          * Constructor for ImageTextureAtlas
          * @constructs x3dom.nodeTypes.ImageTextureAtlas
@@ -56,9 +56,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFInt32(ctx, 'slicesOverY', 0);
 
-            this.addField_SFBool(ctx, 'compressed', false);
-
-            this.addField_MFString(ctx, 'fallbackUrl', []);
         }
     )
 );

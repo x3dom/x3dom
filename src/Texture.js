@@ -258,22 +258,7 @@ x3dom.Texture.prototype.updateTexture = function()
         }
 		gl.bindTexture(this.type, null);
 	}
-	/************************************************************************
-  *  Handle compressed textures
-  *  Copyrigth (C) 2014 TOSHIBA
-  *  Dual licensed under the MIT and GPL licenses.
-  *  Based on code originally provided by　http://www.x3dom.org
-	 ************************************************************************/
-	else if (tex._vf.compressed == true){
-    if(x3dom.caps.EXTENSIONS.indexOf('WEBGL_compressed_texture_s3tc') !== -1){
-      this.texture = this.cache.getCompressedTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
-                                           false, tex._vf.crossOrigin, this.genMipMaps);
-    }else{
-      x3dom.debug.logError("your browser does not support compressed textures, use fallback url: " + tex._vf.fallbackUrl[0]);
-      this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.fallbackUrl[0]),
-                                           false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
-    }
-	}
+
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
     {
         if (tex._webgl && tex._webgl.fbo) {

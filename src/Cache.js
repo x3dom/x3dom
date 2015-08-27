@@ -28,26 +28,6 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, 
     return this.textures[textureIdentifier];
 };
 
-/*****************************************************************************
-*  Returns a Texture 2D from an S3TC compressed files.
-*  Copyrigth (C) 2014 TOSHIBA
-*  Dual licensed under the MIT and GPL licenses.
-*  Based on code originally provided by
-*  http://www.x3dom.org
-*****************************************************************************/
-
-x3dom.Cache.prototype.getCompressedTexture2D = function (gl, doc, url, bgnd, crossOrigin, genMipMaps) {
-    var textureIdentifier = url;
-
-    if (this.textures[textureIdentifier] === undefined) {
-        this.textures[textureIdentifier] = x3dom.Utils.createCompressedTexture2D(
-                                           gl, doc, url, bgnd, crossOrigin, genMipMaps);
-    }
-
-    return this.textures[textureIdentifier];
-};
-
-
 /**
  * Returns a Texture 2D
  */

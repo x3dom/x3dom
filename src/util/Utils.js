@@ -135,9 +135,26 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 		doc.needRender = true;
 	};
 
-	image.onerror = function() {
-		x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
-		doc.downloadCount--;
+	image.onerror = function(error) {
+    // Try loading the image as a compressed texture, if the extension is provided
+    // by the platform.
+    // Copyrigth (C) 2014 TOSHIBA
+    // Dual licensed under the MIT and GPL licenses.
+    // Based on code originally provided by　http://www.x3dom.org
+
+   if(x3dom.caps.EXTENSIONS.indexOf('WEBGL_compressed_texture_s3tc') !== -1){
+  		x3dom.Utils.tryCompressedTexture2D(texture, gl, doc, src, bgnd,
+  		    crossOrigin, genMipMaps, function(success){
+  		  if(success){
+	      }else{
+          x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
+		    }
+        doc.downloadCount--;
+		  });
+	  }else{
+      x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
+	    doc.downloadCount--;
+    }
 	};
 
 	return texture;
@@ -196,6 +213,36 @@ x3dom.Utils.createCompressedTexture2D = function(gl, doc, src, bgnd, crossOrigin
   ddsXhr.send(null);
 
   return texture;
+};
+
+x3dom.Utils.tryCompressedTexture2D = function(texture, gl, doc, src, bgnd, crossOrigin, genMipMaps, cb)
+{
+  //start loading
+
+  ddsXhr = new XMLHttpRequest();
+
+  var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
+
+  ddsXhr.open('GET', src, true);
+  ddsXhr.responseType = "arraybuffer";
+  ddsXhr.onload = function() {
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      var mipmaps = uploadDDSLevels(gl, ext, this.response);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+
+      texture.ready = true;
+
+      doc.needRender = true;
+
+      cb(true);
+  };
+
+  ddsXhr.onerror = function() {
+      cb(false);
+  };
+
+  ddsXhr.send(null);
 };
 
 
