@@ -69,7 +69,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'transparency', 0.7); // 0.0 ~ 1.0
+            this.addField_SFFloat(ctx, 'transparency', 1.0); // 0.0 ~ 1.0
             
             /**
              * The brightness field specifies a multiplier for the RGB values of the output color.
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'accumFactor', 0.1); // 0.2 ~ 
+            this.addField_SFFloat(ctx, 'accumFactor', 0.2); // 0.2 ~ 
             
             /**
              * The intensityLimits field scales voxel intensities lying in (intensityLimits[0] ~ intensityLimits[1]) to (0.0 ~ 1.0) using : (xx - intensityLimits[0])/(intensityLimits[1]-intensityLimits[0])
@@ -313,8 +313,6 @@ x3dom.registerNodeType(
                     "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
                     "  cam_pos = cam_pos/dimensions+0.5;\n"+
                     
-                    "  const float steps = 200.0;\n"+ // take care! ANGLE does loop unrolling, setting this too high might not give any compile error but could give weird results
-                    
                     "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
                     "  texC = 0.5*texC + 0.5;\n";
                 
@@ -324,7 +322,7 @@ x3dom.registerNodeType(
                         "  float depth_ray = 0.0;\n"+
                         "  vec3 ray_start_ec = position_eye.xyz;\n"+ // ray start in eye coordinates
                         "  vec3 ray_dir_ec = uCubeSize * normalize(ray_start_ec);\n"+ // since camera is at (0,0,0) in eye_coords
-                        "  vec3 step_ec = 1.7321*ray_dir_ec/steps;\n"; // multiplying by sqrt(3.0)
+                        "  vec3 step_ec = 1.7321*ray_dir_ec/Steps;\n"; // multiplying by sqrt(3.0)
                 }
                 shaderLoop +=
                     
@@ -335,11 +333,11 @@ x3dom.registerNodeType(
                     "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     
-                    "  vec3 step = 1.7321*ray_dir/steps;\n"; // multiplying by sqrt(3.0)
+                    "  vec3 step = 1.7321*ray_dir/Steps;\n"; // multiplying by sqrt(3.0)
                     
                 // classical shader
                 shaderLoop +=
-                    "  for(float i = 0.0; i < steps; i+=1.0)\n"+
+                    "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
                     "  {\n";
                     
                 if (this._cf.depthTexture.node) {
@@ -372,14 +370,15 @@ x3dom.registerNodeType(
                 if (this._cf.transferFunction.node) {
                     shaderLoop +=
                         "       value = texture2D(uTransferFunction, vec2((sample.a-uIntensityLimits[0])/(uIntensityLimits[1]-uIntensityLimits[0]),0.5));\n"+
-                        "       accum.rgb = sample.rgb * value.rgb * (1.0-accum.a)*uAccumFactor + accum.rgb;\n";
+                        "       accum.rgb = sample.rgb * value.rgb * (1.0-accum.a)*uAccumFactor + accum.rgb;\n"+
+                        "       accum.a = uAccumFactor * value.a * (1.0-accum.a) + accum.a;\n";
                 }
                 else {
                     shaderLoop +=
-                        "       accum.rgb = sample.rgb * (1.0-accum.a) * uAccumFactor + accum.rgb;\n";
+                        "       accum.rgb = sample.rgb * (1.0-accum.a) * uAccumFactor + accum.rgb;\n"+
+                        "       accum.a = uAccumFactor * (1.0-accum.a) + accum.a;\n";
                 }
                 shaderLoop +=
-                    "       accum.a = uAccumFactor * (1.0-accum.a) + accum.a;\n"+
                     "    }\n"+
                     "  }\n";
                                 

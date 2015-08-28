@@ -298,7 +298,7 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
             rb = gl.createRenderbuffer();
             
             gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
-            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT, w, h);
+            gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
             gl.bindRenderbuffer(gl.RENDERBUFFER, null);
         }
     }
