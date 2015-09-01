@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" ></meta>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" ></meta>
+
+    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
+    <script type="text/javascript" src="../../../../x3dom_include.js"></script>
+    <title>Compressed texture</title>
+
+  </head>
+
+  <body>
+    <x3d showLog="false" showProgress="false" id="x3d_element" width="800" height="600">
+      <Scene id="x3d_scene" render="true">
+        <transform translation="-2 0 0">
+          <shape>
+            <appearance>
+              <imageTexture url="lena_dxt5.dds"><imageTexture>
+            </appearance>
+            <box></box>
+          </shape>
+          <transform translation="0 2 0" scale="0.6 0.6 0.6">
+            <shape>
+              <appearance>
+                <material diffuseColor="black"></material>
+              </appearance>
+              <text string="Compressed"></text>
+            </shape>
+          </transform>
+        </transform>
+        <transform translation="2 0 0">
+          <shape>
+            <appearance>
+              <imageTexture url="lena_jpeg.jpg"><imageTexture>
+            </appearance>
+            <box></box>
+          </shape>
+          <transform translation="0 2 0" scale="0.6 0.6 0.6">
+            <shape>
+              <appearance>
+                <material diffuseColor="black"></material>
+              </appearance>
+              <text string="Not Compressed"></text>
+            </shape>
+          </transform>
+        </transform>
+      </Scene>
+    </x3d>
+  </body>
+
+</html>
