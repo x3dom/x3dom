@@ -510,7 +510,7 @@ x3dom.Texture.prototype.updateText = function()
 	// write white text with black border
 	text_ctx.fillStyle = 'white';
 	text_ctx.lineWidth = 2.5;
-	text_ctx.strokeStyle = 'grey';
+	text_ctx.strokeStyle = 'black';
 	text_ctx.textBaseline = 'top';
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
