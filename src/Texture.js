@@ -492,7 +492,7 @@ x3dom.Texture.prototype.updateText = function()
 		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
-	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
+	var canvas_scale = oversample * 1.1; //needed for some fonts that are higher than the textHeight
 	text_canvas.width = maxWidth * canvas_scale;
 	text_canvas.height = textHeight * paragraph.length * canvas_scale;
 
@@ -538,8 +538,8 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	//document.body.removeChild(text_canvas);
 
-	var w = txtW / 100.0;
-    	var h = txtH / 100.0;
+	var w = txtW / (oversample * 100.0);
+    	var h = txtH / (oversample * 100.0);
 
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
