@@ -456,7 +456,7 @@ x3dom.Texture.prototype.updateText = function()
 			default: 		font_justify = 'left'; 		break;
 		}
 
-		font_size 	= 2*fontStyleNode._vf.size;
+		font_size 	= fontStyleNode._vf.size;
 		font_spacing 	= fontStyleNode._vf.spacing;
 		font_horizontal = fontStyleNode._vf.horizontal;
 		font_language 	= fontStyleNode._vf.language;
@@ -509,7 +509,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	// write white text with black border
 	text_ctx.fillStyle = 'white';
-	text_ctx.lineWidth = 2.5;
+	text_ctx.lineWidth = 0;
 	text_ctx.strokeStyle = 'black';
 	text_ctx.textBaseline = 'top';
 
