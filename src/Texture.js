@@ -509,8 +509,8 @@ x3dom.Texture.prototype.updateText = function()
 
 	// write white text with black border
 	text_ctx.fillStyle = 'white';
-	text_ctx.lineWidth = 0;
-	text_ctx.strokeStyle = 'black';
+	text_ctx.lineWidth = 1.5;
+	text_ctx.strokeStyle = 'grey';
 	text_ctx.textBaseline = 'top';
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
@@ -532,7 +532,7 @@ x3dom.Texture.prototype.updateText = function()
 	gl.bindTexture(this.type, null);
 
 	//remove canvas after Texture creation
-	document.body.removeChild(text_canvas);
+	//document.body.removeChild(text_canvas);
 
 	var w = txtW / 100.0;
     	var h = txtH / 100.0;
