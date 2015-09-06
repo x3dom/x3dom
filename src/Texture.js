@@ -481,9 +481,6 @@ x3dom.Texture.prototype.updateText = function()
 
 	var text_ctx = text_canvas.getContext('2d');
 	
-	//oversample
-	text_ctx.scale(oversample, oversample);
-
 	// calculate font font_size in px
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
@@ -507,6 +504,9 @@ x3dom.Texture.prototype.updateText = function()
 
 	var txtW =  text_canvas.width;
 	var txtH = text_canvas.height;
+	
+	//oversample
+	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
