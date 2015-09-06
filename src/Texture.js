@@ -480,7 +480,10 @@ x3dom.Texture.prototype.updateText = function()
 	document.body.appendChild(text_canvas);
 
 	var text_ctx = text_canvas.getContext('2d');
-	
+
+	//oversample
+	text_ctx.scale(oversample, oversample);
+
 	// calculate font font_size in px
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
@@ -492,7 +495,7 @@ x3dom.Texture.prototype.updateText = function()
 		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
-	var canvas_scale = oversample * 1.1; //needed for some fonts that are higher than the textHeight
+	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
 	text_canvas.width = maxWidth * canvas_scale;
 	text_canvas.height = textHeight * paragraph.length * canvas_scale;
 
@@ -505,7 +508,7 @@ x3dom.Texture.prototype.updateText = function()
 	var txtW =  text_canvas.width;
 	var txtH = text_canvas.height;
 	
-	//oversample
+	//scale was reset by .width above
 	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
