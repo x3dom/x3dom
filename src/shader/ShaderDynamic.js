@@ -830,7 +830,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - transparency);\n";
 		}
 		
-		if(properties.TEXTURED || properties.DIFFUSEMAP){
+		if(properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT )){
             if (properties.PIXELTEX) {
                 shader += "vec2 texCoord = fragTexcoord;\n";
             } else {
