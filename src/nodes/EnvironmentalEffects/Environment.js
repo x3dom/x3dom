@@ -50,7 +50,7 @@ x3dom.registerNodeType(
              * The gamma correction to apply by default, see lighting and gamma tutorial
              * @var {x3dom.fields.SFString} gammaCorrectionDefault
              * @memberof x3dom.nodeTypes.Environment
-             * @initvalue "none"
+             * @initvalue "linear"
              * @field x3dom
              * @instance
              */

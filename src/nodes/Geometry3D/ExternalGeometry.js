@@ -355,6 +355,7 @@ x3dom.registerNodeType(
                                 x3domShortTypeID = "Id";
                                 shape._webgl.buffers[ID_BUFFER_IDX + bufferOffset] =
                                     viewIDsToGLBufferIDs[attributeView["bufferView"]];
+                                shape._cf.geometry.node._vf.idsPerVertex = true;
                                 break;
                         }
 
@@ -372,6 +373,8 @@ x3dom.registerNodeType(
 
 
                 //4. notify renderer
+
+                shape._dirty.shader = true;
 
                 shape._nameSpace.doc.needRender = true;
 

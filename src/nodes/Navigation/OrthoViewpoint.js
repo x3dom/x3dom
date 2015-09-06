@@ -131,7 +131,7 @@ x3dom.registerNodeType(
                 this._viewMatrix = this._viewMatrix.mult(offset).inverse();
 				
 				//Reset navigation helpers of the viewarea
-                if(this._nameSpace.doc._viewarea) {
+                if (this._nameSpace && this._nameSpace.doc._viewarea) {
                     this._nameSpace.doc._viewarea.resetNavHelpers();
                 }
             },

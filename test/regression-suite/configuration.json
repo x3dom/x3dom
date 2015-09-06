@@ -20,6 +20,27 @@
     "tests" :
         [
         	{
+        		"url"   : "/test/cases/compressedTexture/compressedTexture.html",
+	        	"steps" :
+	                [
+	                   {
+	                       "type"      :   "ExecuteCommand",
+	                       "params"    :
+	                       {
+	                           "x3d"       :   "x3d",
+	                           "command"   :   "auto();"
+	                       }
+	                    },
+	                    {
+	                    	"type"		: "CompareScreenshot",
+	                    	"params"	:
+	                    	{
+	                    		"x3d"	: "x3d"
+	                    	}
+	                    }
+	                 ]
+	        },
+        	{
         		"url"   : "/test/cases/splinePositionInterpolator/splinePositionInterpolator.html",
 	        	"steps" :
 	                [
@@ -171,7 +192,7 @@
                             }
                         }
                     ]
-            },          
+            },
             {
                 "url"   : "/test/cases/changeShaderAndDOM/changeShaderAndDOM.html",
                 "steps" :
@@ -318,7 +339,7 @@
                             }
                         }
                     ]
-            },               
+            },
               {
                 "url"   : "/test/cases/defUse/defUse.html",
                 "steps" :
@@ -338,7 +359,7 @@
                             }
                         }
                     ]
-            },                        
+            },
             {
                 "url"   : "/test/cases/displacementMapping/displacementMapping.html",
                 "steps" :
@@ -587,7 +608,7 @@
                             }
                         }
                     ]
-            }, 
+            },
              {
                 "url"   : "/test/cases/imageFormats/imageFormats.html",
                 "steps" :
@@ -608,7 +629,7 @@
                             }
                         }
                     ]
-            }, 
+            },
             {
                 "url"   : "/test/cases/inlineEvents/inlineEvents.html",
                 "steps" :
@@ -643,7 +664,7 @@
                             }
                         }
                     ]
-            },           
+            },
              {
                 "url"   : "/test/cases/lightRadius/lightRadius.html",
                 "steps" :
@@ -686,7 +707,7 @@
                             }
                         }
                     ]
-            },        
+            },
             {
                 "url"   : "/test/cases/lod/lod.html",
                 "steps" :
@@ -727,7 +748,7 @@
                             }
                         }
                     ]
-            },     
+            },
             {
                 "url"   : "/test/cases/mobileShader/mobileShader.html",
                 "steps" :
@@ -740,7 +761,7 @@
                             }
                         }
                     ]
-            },            
+            },
             {
                 "url"   : "/test/cases/normalGen/normalGen.html",
                 "steps" :
@@ -753,7 +774,7 @@
                             }
                         }
                     ]
-            },          
+            },
              {
                 "url"   : "/test/cases/pixelTexture/pixelTexture.html",
                 "steps" :
@@ -831,7 +852,7 @@
                             }
                         }
                     ]
-            },     
+            },
             {
                 "url"   : "/test/cases/routes/routes.html",
                 "steps" :
@@ -867,7 +888,7 @@
                             }
                         }
                     ]
-            },            
+            },
             {
                 "url"   : "/test/cases/reload/reload.html",
                 "steps" :
@@ -991,7 +1012,7 @@
                             }
                         }
                     ]
-            }, 
+            },
             {
                 "url"   : "/test/cases/surfaceShader/surfaceShader.html",
                 "steps" :
@@ -1005,7 +1026,7 @@
                             }
                         }
                     ]
-            },            
+            },
             {
                 "url"   : "/test/cases/volrenOpacity/volrenOpacity.html",
                 "steps" :
@@ -1069,7 +1090,7 @@
                             }
                         }
                     ]
-            }           
+            }
         ]
 }
 

@@ -952,6 +952,15 @@ x3dom.registerNodeType(
                 if(multiVisibility) textures.push(multiVisibility);
 
                 return textures;
+            },
+
+            needTexcoords: function()
+            {
+
+               return ( this.getDiffuseMap()      || this.getNormalMap()    ||
+                        this.getSpecularMap()     || this.getShininessMap() ||
+                        this.getDisplacementMap() || this.getDiffuseDisplacementMap() ) ? true : false;
+
             }
         }
     )

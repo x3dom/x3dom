@@ -76,6 +76,14 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "url") {
+
+                    //Remove the childs of the x3domNode
+                    for (var i=0; i<this._childNodes.length; i++)
+                    {
+                        this.removeChild(this._childNodes[i]);
+                    }
+
+                    //if reflected to DOM remove the childs of the domNode
                     if (this._vf.nameSpaceName.length != 0) {
                         var node = this._xmlNode;
                         if (node && node.hasChildNodes())
