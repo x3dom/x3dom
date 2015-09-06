@@ -456,7 +456,7 @@ x3dom.Texture.prototype.updateText = function()
 			default: 		font_justify = 'left'; 		break;
 		}
 
-		font_size 		= fontStyleNode._vf.size;
+		font_size 	= 2*fontStyleNode._vf.size;
 		font_spacing 	= fontStyleNode._vf.spacing;
 		font_horizontal = fontStyleNode._vf.horizontal;
 		font_language 	= fontStyleNode._vf.language;
