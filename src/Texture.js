@@ -528,6 +528,7 @@ x3dom.Texture.prototype.updateText = function()
 	for(i = 0; i < paragraph.length; i++) {
 		textY = i*textHeight; //TODO: font_spacing
 		text_ctx.fillText(paragraph[i], textX,  textY);
+		text_ctx.strokeText(paragraph[i], textX,  textY);
 	}
 
 	if( this.texture === null )
