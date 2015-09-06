@@ -453,7 +453,7 @@ x3dom.Texture.prototype.updateText = function()
 			case 'END': 	font_justify = 'right'; 	break;
 			case 'FIRST': 	font_justify = 'left'; 		break; // not clear what to do with this one
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
-			default: 		font_justify = 'left'; 		break;
+			default: 	font_justify = 'left'; 		break;
 		}
 
 		font_size 	= fontStyleNode._vf.size;
@@ -475,7 +475,10 @@ x3dom.Texture.prototype.updateText = function()
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
 	var oversample = 2;
-
+	//var oversanple = this.node._vf.quality;
+	//oversample = Math.max(0.5, oversample);
+	//oversample = Math.min(10, oversample);
+	
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
 
@@ -495,7 +498,7 @@ x3dom.Texture.prototype.updateText = function()
 	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
 	canvas_scale *= oversample; //scale up to fit oversampling
 	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * paragraph.length * canvas_scale;
+	text_canvas.height = textHeight * paragraph.length * canvas_scale; //TODO: font_spacing
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
@@ -523,7 +526,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i*textHeight;
+		textY = i*textHeight; //TODO: font_spacing
 		text_ctx.fillText(paragraph[i], textX,  textY);
 	}
 
@@ -537,10 +540,10 @@ x3dom.Texture.prototype.updateText = function()
 	gl.bindTexture(this.type, null);
 
 	//remove canvas after Texture creation
-	//document.body.removeChild(text_canvas);
+	document.body.removeChild(text_canvas);
 
 	var w = txtW / (oversample * 100.0);
-    	var h = txtH / (oversample * 100.0);
+	var h = txtH / (oversample * 100.0);
 
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
