@@ -453,10 +453,10 @@ x3dom.Texture.prototype.updateText = function()
 			case 'END': 	font_justify = 'right'; 	break;
 			case 'FIRST': 	font_justify = 'left'; 		break; // not clear what to do with this one
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
-			default: 	font_justify = 'left'; 		break;
+			default: 		font_justify = 'left'; 		break;
 		}
 
-		font_size 	= fontStyleNode._vf.size;
+		font_size 		= fontStyleNode._vf.size;
 		font_spacing 	= fontStyleNode._vf.spacing;
 		font_horizontal = fontStyleNode._vf.horizontal;
 		font_language 	= fontStyleNode._vf.language;
