@@ -120,6 +120,18 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'topToBottom', true);
+            
+            /**
+             * Sets the quality of the text rendering as an oversampling factor.
+             * @var {x3dom.fields.SFFloat} quality
+             * @range [0, inf]
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 2.0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'quality', 2.0);
+
         
         },
         {
