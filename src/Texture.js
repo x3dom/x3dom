@@ -112,7 +112,8 @@ x3dom.Texture.dashVideoScriptFile = "dash.all.js";
 x3dom.Texture.loadDashVideos = [];
 x3dom.Texture.textNum = 0;
 x3dom.Texture.clampFontSize = false;
-
+x3dom.Texture.minFontQuality = 0.5;
+x3dom.Texture.maxFontQuality = 10;
 
 x3dom.Texture.prototype.update = function()
 {
@@ -474,10 +475,9 @@ x3dom.Texture.prototype.updateText = function()
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
-	var oversample = 2;
-	//var oversanple = this.node._vf.quality;
-	//oversample = Math.max(0.5, oversample);
-	//oversample = Math.min(10, oversample);
+	var oversample = 2;//this.node._vf.quality;
+	oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
+	oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
 	
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
