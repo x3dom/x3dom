@@ -475,7 +475,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
-	var oversample = 2;//this.node._vf.quality;
+	var oversample = fontStyleNode._vf.quality;
 	oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
 	oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
 	
