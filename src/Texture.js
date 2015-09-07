@@ -502,7 +502,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
-		case "center": 	textX = text_canvas.width/2; 	break; 
+		case "center": 	textX = text_canvas.width/2; 	break;
 		case "right": 	textX = text_canvas.width;		break;
 	}
 	
