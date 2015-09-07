@@ -488,7 +488,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
 	var maxWidth = text_ctx.measureText(paragraph[0]).width;
-        var i;
+    var i;
 
 	// calculate maxWidth
 	for(i = 1; i < paragraph.length; i++) {
