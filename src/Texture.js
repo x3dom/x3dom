@@ -502,12 +502,14 @@ x3dom.Texture.prototype.updateText = function()
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
-		case "center": 	textX = (text_canvas.width/2)/oversample; 	break; //needs to be in unscaled units
-		case "right": 	textX = text_canvas.width/oversample;		break;
+		case "center": 	textX = text_canvas.width/2; 	break; 
+		case "right": 	textX = text_canvas.width;		break;
 	}
+	
+	textX /= oversample; //needs to be in unscaled units
 
-	var txtW = text_canvas.width;
-	var txtH = text_canvas.height;
+	var txtW = text_canvas.width/oversample;
+	var txtH = text_canvas.height/oversample;
 	
 	//.scale was reset by .width above
 	text_ctx.scale(oversample, oversample);
@@ -542,8 +544,8 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var w = txtW / (oversample * 100.0);
-	var h = txtH / (oversample * 100.0);
+	var w = txtW / 100.0;
+	var h = txtH / 100.0;
 
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
