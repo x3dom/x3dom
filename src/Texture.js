@@ -448,7 +448,7 @@ x3dom.Texture.prototype.updateText = function()
 		var leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
 		var topToBottom = fontStyleNode._vf.topToBottom;
 
-		// TODO: make it possible to use multiple values
+		// TODO: make it possible to use both values
 		font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
@@ -458,13 +458,18 @@ x3dom.Texture.prototype.updateText = function()
 			default: 		font_justify = 'left'; 		break;
 		}
 		
-		minor_alignment = fontStyleNode._vf.justify[1].toString().replace(/\'/g,'');
-		switch (minor_alignment.toUpperCase()) {
-			case 'BEGIN': 		minor_alignment = 'BEGIN'; 		break;
-			case 'FIRST': 		minor_alignment = 'FIRST'; 		break;
-			case 'MIDDLE': 		minor_alignment = 'MIDDLE'; 	break;
-			case 'END': 		minor_alignment = 'END'; 		break;
-			default: 			minor_alignment = 'FIRST'; 		break;
+		if (fontStyleNode._vf.justify[1] === undefined) {
+			minor_alignment = 'FIRST';
+		}
+		else {
+			minor_alignment = fontStyleNode._vf.justify[1].toString().replace(/\'/g,'');
+			switch (minor_alignment.toUpperCase()) {
+				case 'BEGIN': 		minor_alignment = 'BEGIN'; 		break;
+				case 'FIRST': 		minor_alignment = 'FIRST'; 		break;
+				case 'MIDDLE': 		minor_alignment = 'MIDDLE'; 	break;
+				case 'END': 		minor_alignment = 'END'; 		break;
+				default: 			minor_alignment = 'FIRST'; 		break;
+			}
 		}
 		
 		font_size 		= fontStyleNode._vf.size;
