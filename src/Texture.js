@@ -561,11 +561,45 @@ x3dom.Texture.prototype.updateText = function()
 
 	var w = txtW / 50.0;
 	var h = txtH / 50.0;
-
-	//this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
-	this.node._mesh._positions[0] = [0, -h, 0,  w, -h, 0,  w, 0, 0,  -w, 0, 0];
 	
+	var x_offset = 0, y_offset = 0;
+	
+	//x_offset
+	switch (font_justify) {
+		case "center":	 
+			x_offset = -w/2;
+			break;
+		case "left":
+			x_offset = leftToRight === 'ltr' ? 0 : -w;
+			break;
+		case "right":
+			x_offset = leftToRight === 'ltr' ? -w : 0;
+			break;
+	}
 
+	//y_offset
+	switch (minor_alignment) {
+		case "MIDDLE":
+			y_offset = h/2;
+			break;
+		case "BEGIN":
+			y_offset = topToBottom ? 0 : h;
+			break;
+		case "FIRST":
+			y_offset = topToBottom ? textHeight * font_spacing : h;
+			break;
+		case "END":
+			y_offset = topToBottom ? h : 0;
+			break;
+	}
+	
+	//this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
+	this.node._mesh._positions[0] = [
+		0 + x_offset, -h + y_offset, 0,
+		w + x_offset, -h + y_offset, 0,
+		w + x_offset,  0 + y_offset, 0,
+		0 + x_offset,  0 + y_offset, 0];
+	
     this.node.invalidateVolume();
     Array.forEach(this.node._parentNodes, function (node) {
         node.setAllDirty();
