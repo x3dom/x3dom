@@ -54,6 +54,16 @@ x3dom.registerNodeType(
             //this.addField_SFBool(ctx, 'swapped', false);
             //this.addField_SFVec3f(ctx, 'sliceThickness', 1, 1, 1);
 
+            /**
+             * Allow to locate the viewpoint inside the volume.
+             * @var {x3dom.fields.SFBool} allowViewpointInside
+             * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'allowViewpointInside', true)
+
             //Neccesary for counting the textures which are added on each style, number of textures can be variable
             this._textureID = 0;
             this._first = true;
