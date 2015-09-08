@@ -112,7 +112,8 @@ x3dom.Texture.dashVideoScriptFile = "dash.all.js";
 x3dom.Texture.loadDashVideos = [];
 x3dom.Texture.textNum = 0;
 x3dom.Texture.clampFontSize = false;
-
+x3dom.Texture.minFontQuality = 0.5;
+x3dom.Texture.maxFontQuality = 10;
 
 x3dom.Texture.prototype.update = function()
 {
@@ -474,7 +475,10 @@ x3dom.Texture.prototype.updateText = function()
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
-
+	var oversample = fontStyleNode._vf.quality;
+	oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
+	oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
+	
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
 
@@ -492,25 +496,31 @@ x3dom.Texture.prototype.updateText = function()
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
 	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
+	canvas_scale *= oversample; //scale up to fit oversampling
 	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * paragraph.length * canvas_scale;
+	text_canvas.height = textHeight * paragraph.length * canvas_scale; //TODO: font_spacing
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
 		case "center": 	textX = text_canvas.width/2; 	break;
 		case "right": 	textX = text_canvas.width;		break;
 	}
+	
+	textX /= oversample; //needs to be in unscaled units
 
-	var txtW =  text_canvas.width;
-	var txtH = text_canvas.height;
+	var txtW = text_canvas.width/oversample;
+	var txtH = text_canvas.height/oversample;
+	
+	//.scale was reset by .width above
+	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
 
 	// write white text with black border
 	text_ctx.fillStyle = 'white';
-	text_ctx.lineWidth = 2.5;
-	text_ctx.strokeStyle = 'grey';
+	text_ctx.lineWidth = 2.5; // not used ?
+	text_ctx.strokeStyle = 'grey'; // not used ?
 	text_ctx.textBaseline = 'top';
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
@@ -518,7 +528,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i*textHeight;
+		textY = i*textHeight; //TODO: font_spacing
 		text_ctx.fillText(paragraph[i], textX,  textY);
 	}
 
@@ -535,7 +545,7 @@ x3dom.Texture.prototype.updateText = function()
 	document.body.removeChild(text_canvas);
 
 	var w = txtW / 100.0;
-    	var h = txtH / 100.0;
+	var h = txtH / 100.0;
 
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 
