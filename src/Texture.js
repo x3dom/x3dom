@@ -419,6 +419,7 @@ x3dom.Texture.prototype.updateText = function()
     var font_horizontal = true;
     var font_language = "";
     var oversample = 2.0;
+    var minor_alignment = 'FIRST';
 
     if ( fontStyleNode !== null )
 	{
@@ -449,7 +450,6 @@ x3dom.Texture.prototype.updateText = function()
 
 		// TODO: make it possible to use multiple values
 		font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
-
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
 			case 'END': 	font_justify = 'right'; 	break;
@@ -457,7 +457,16 @@ x3dom.Texture.prototype.updateText = function()
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
 			default: 		font_justify = 'left'; 		break;
 		}
-
+		
+		minor_alignment = fontStyleNode._vf.justify[1].toString().replace(/\'/g,'');
+		switch (minor_alignment.toUpperCase()) {
+			case 'BEGIN': 		minor_alignment = 'BEGIN'; 		break;
+			case 'FIRST': 		minor_alignment = 'FIRST'; 		break;
+			case 'MIDDLE': 		minor_alignment = 'MIDDLE'; 	break;
+			case 'END': 		minor_alignment = 'END'; 		break;
+			default: 			minor_alignment = 'FIRST'; 		break;
+		}
+		
 		font_size 		= fontStyleNode._vf.size;
 		font_spacing 	= fontStyleNode._vf.spacing;
 		font_horizontal = fontStyleNode._vf.horizontal;
@@ -545,10 +554,12 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var w = txtW / 100.0;
-	var h = txtH / 100.0;
+	var w = txtW / 50.0;
+	var h = txtH / 50.0;
 
-	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
+	//this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
+	this.node._mesh._positions[0] = [0, -h, 0,  w, -h, 0,  w, 0, 0,  -w, 0, 0];
+	
 
     this.node.invalidateVolume();
     Array.forEach(this.node._parentNodes, function (node) {
