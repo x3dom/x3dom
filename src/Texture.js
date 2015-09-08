@@ -559,8 +559,9 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var w = txtW / 50.0;
-	var h = txtH / 50.0;
+	var pxToX3d = 1/50.0;
+	var w = txtW * pxToX3d;
+	var h = txtH * pxToX3d;
 	
 	var x_offset = 0, y_offset = 0;
 	
@@ -586,7 +587,7 @@ x3dom.Texture.prototype.updateText = function()
 			y_offset = topToBottom ? 0 : h;
 			break;
 		case "FIRST":
-			y_offset = topToBottom ? textHeight * font_spacing : h;
+			y_offset = topToBottom ? textHeight * font_spacing * pxToX3d : h;
 			break;
 		case "END":
 			y_offset = topToBottom ? h : 0;
