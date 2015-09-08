@@ -409,9 +409,9 @@ x3dom.Texture.prototype.updateText = function()
 	this.wrapS			= gl.CLAMP_TO_EDGE;
 	this.wrapT			= gl.CLAMP_TO_EDGE;
 
-	var fontStyleNode = this.node._cf.fontStyle.node;
+	var fontStyleNode = this.node._cf.fontStyle.node; // should always exist
 
-    var font_family = 'serif';
+    var font_family = 'serif'; //should be dealt with by default fontStyleNode?
     var font_style = 'normal';
     var font_justify = 'left';
     var font_size = 1.0;
@@ -419,7 +419,7 @@ x3dom.Texture.prototype.updateText = function()
     var font_horizontal = true;
     var font_language = "";
 
-    if ( fontStyleNode !== null )
+    if ( fontStyleNode !== null ) 
 	{
 		var fonts = fontStyleNode._vf.family.toString();
 
@@ -452,7 +452,7 @@ x3dom.Texture.prototype.updateText = function()
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
 			case 'END': 	font_justify = 'right'; 	break;
-			case 'FIRST': 	font_justify = 'left'; 		break; // not clear what to do with this one
+			case 'FIRST': 	font_justify = 'left'; 		break; // relevant only in justify[1]
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
 			default: 		font_justify = 'left'; 		break;
 		}
@@ -498,7 +498,7 @@ x3dom.Texture.prototype.updateText = function()
 	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
 	canvas_scale *= oversample; //scale up to fit oversampling
 	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * paragraph.length * canvas_scale; //TODO: font_spacing
+	text_canvas.height = textHeight * font_spacing * paragraph.length * canvas_scale; //font_spacing
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
@@ -528,7 +528,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i*textHeight; //TODO: font_spacing
+		textY = i * textHeight * font_spacing; //font_spacing
 		text_ctx.fillText(paragraph[i], textX,  textY);
 	}
 
