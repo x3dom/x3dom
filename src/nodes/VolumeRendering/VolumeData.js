@@ -212,6 +212,7 @@ x3dom.registerNodeType(
                 if (!this._cf.geometry.node) {
                     this.addChild(new x3dom.nodeTypes.Box());
 
+                    this._cf.geometry.node._vf.solid = false;
                     this._cf.geometry.node._vf.hasHelperColors = false;
                     this._cf.geometry.node._vf.size = new x3dom.fields.SFVec3f(
                         this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
