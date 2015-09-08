@@ -409,17 +409,18 @@ x3dom.Texture.prototype.updateText = function()
 	this.wrapS			= gl.CLAMP_TO_EDGE;
 	this.wrapT			= gl.CLAMP_TO_EDGE;
 
-	var fontStyleNode = this.node._cf.fontStyle.node; // should always exist
+	var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
-    var font_family = 'serif'; //should be dealt with by default fontStyleNode?
+    var font_family = 'serif'; // should be dealt with by default fontStyleNode?
     var font_style = 'normal';
     var font_justify = 'left';
     var font_size = 1.0;
     var font_spacing = 1.0;
     var font_horizontal = true;
     var font_language = "";
+    var oversample = 2.0;
 
-    if ( fontStyleNode !== null ) 
+    if ( fontStyleNode !== null )
 	{
 		var fonts = fontStyleNode._vf.family.toString();
 
@@ -452,7 +453,7 @@ x3dom.Texture.prototype.updateText = function()
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
 			case 'END': 	font_justify = 'right'; 	break;
-			case 'FIRST': 	font_justify = 'left'; 		break; // relevant only in justify[1]
+			case 'FIRST': 	font_justify = 'left'; 		break; // relevant only in justify[1], eg. minor alignment
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
 			default: 		font_justify = 'left'; 		break;
 		}
@@ -461,7 +462,10 @@ x3dom.Texture.prototype.updateText = function()
 		font_spacing 	= fontStyleNode._vf.spacing;
 		font_horizontal = fontStyleNode._vf.horizontal;
 		font_language 	= fontStyleNode._vf.language;
-
+		oversample = fontStyleNode._vf.quality;
+		oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
+		oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
+	
         if (font_size < 0.1) font_size = 0.1;
         if(x3dom.Texture.clampFontSize && font_size > 2.3)
         {
@@ -475,9 +479,6 @@ x3dom.Texture.prototype.updateText = function()
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
-	var oversample = fontStyleNode._vf.quality;
-	oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
-	oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
 	
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
