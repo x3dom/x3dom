@@ -587,8 +587,8 @@ x3dom.Texture.prototype.updateText = function()
 			y_offset = topToBottom ? 0 : h;
 			break;
 		case "FIRST":
-			//special case of BEGIN;
-			//0.75 factor: on average cap height is about 70% of size
+			//special case of BEGIN
+			//0.75 : on average cap height is about 70% of size; for Times it about 75%
 			y_offset = topToBottom ? 0.75 * textHeight * font_spacing * pxToX3d : h;
 			break;
 		case "END":
