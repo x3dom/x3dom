@@ -559,7 +559,7 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var pxToX3d = 1/50.0;
+	var pxToX3d = 1/42.0;
 	var w = txtW * pxToX3d;
 	var h = txtH * pxToX3d;
 	
@@ -588,8 +588,8 @@ x3dom.Texture.prototype.updateText = function()
 			break;
 		case "FIRST":
 			//special case of BEGIN;
-			//0.7 factor: on average cap height is about 70% of size
-			y_offset = topToBottom ? 0.7 * textHeight * font_spacing * pxToX3d : h;
+			//0.75 factor: on average cap height is about 70% of size
+			y_offset = topToBottom ? 0.75 * textHeight * font_spacing * pxToX3d : h;
 			break;
 		case "END":
 			y_offset = topToBottom ? h : 0;
