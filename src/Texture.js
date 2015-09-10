@@ -489,6 +489,8 @@ x3dom.Texture.prototype.updateText = function()
 
 	var textX, textY;
 	var paragraph = this.node._vf.string;
+	var maxExtent = this.node._vf.maxExtent;
+	var lengths = [];
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
 	var textHeight = font_size * 42; // pixel size relative to local coordinate system
@@ -502,18 +504,25 @@ x3dom.Texture.prototype.updateText = function()
 	// calculate font font_size in px
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
-	var maxWidth = text_ctx.measureText(paragraph[0]).width;
+	var maxWidth = 0, pWidth, pLength;
     var i;
 
-	// calculate maxWidth
-	for(i = 1; i < paragraph.length; i++) {
-		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
-			maxWidth = text_ctx.measureText(paragraph[i]).width;
+	// calculate maxWidth and sanitize lengths
+	for(i = 0; i < paragraph.length; i++) {
+		pWidth = text_ctx.measureText( paragraph[i] ).width; 
+		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
+		pLength = this.node._vf.length[i] | 0;
+		lengths[i] = pLength <= 0 ? pWidth + 1 : pLength;
+		//if ( pLength > pWidth || pLength == 0 ) { lengths[i] = pWidth + 1; }
 	}
+	
+	//shrink maxWidth to max. of lengths
+	//var maxLength = Math.max.apply(lengths);
+	//maxWidth = maxWidth
 	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
 	canvas_scale *= oversample; //scale up to fit oversampling
 	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * font_spacing * paragraph.length * canvas_scale; //font_spacing
+	text_canvas.height = textHeight * font_spacing * paragraph.length * canvas_scale;
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
@@ -543,8 +552,8 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i * textHeight * font_spacing; //font_spacing
-		text_ctx.fillText(paragraph[i], textX,  textY);
+		textY = i * textHeight * font_spacing;
+		text_ctx.fillText(paragraph[i], textX,  textY, lengths[i]);
 	}
 
 	if( this.texture === null )
