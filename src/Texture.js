@@ -493,7 +493,8 @@ x3dom.Texture.prototype.updateText = function()
 	var lengths = [];
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
-	var textHeight = font_size * 42; // pixel size relative to local coordinate system
+	var x3dToPx = 42;
+	var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
 	
 	// needed to make webfonts work
@@ -512,7 +513,7 @@ x3dom.Texture.prototype.updateText = function()
 		pWidth = text_ctx.measureText( paragraph[i] ).width; 
 		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
 		pLength = this.node._vf.length[i] | 0;
-		lengths[i] = pLength <= 0 ? pWidth + 1 : pLength;
+		lengths[i] = pLength <= 0 ? pWidth + 1 : pLength * x3dToPx;
 		//if ( pLength > pWidth || pLength == 0 ) { lengths[i] = pWidth + 1; }
 	}
 	
