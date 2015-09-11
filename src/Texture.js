@@ -508,12 +508,13 @@ x3dom.Texture.prototype.updateText = function()
 	var maxWidth = 0, pWidth, pLength;
     var i;
 
-	// calculate maxWidth and sanitize lengths
+	// calculate maxWidth and length scaling; sanitize lengths
 	for(i = 0; i < paragraph.length; i++) {
 		pWidth = text_ctx.measureText( paragraph[i] ).width; 
 		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
 		pLength = this.node._vf.length[i] | 0;
 		lengths[i] = pLength <= 0 ? pWidth + 1 : pLength * x3dToPx;
+		//lengths[i] = pLength <=0 ? 1 : pLength * x3dToPx / pWidth; // enable for .scale use
 		//if ( pLength > pWidth || pLength == 0 ) { lengths[i] = pWidth + 1; }
 	}
 	
@@ -533,10 +534,11 @@ x3dom.Texture.prototype.updateText = function()
 	
 	textX /= oversample; //needs to be in unscaled units
 
-	var txtW = text_canvas.width/oversample;
-	var txtH = text_canvas.height/oversample;
+	var txtW = text_canvas.width / oversample;
+	var txtH = text_canvas.height / oversample;
 	
 	//.scale was reset by .width above
+	//move below for length scaling
 	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
@@ -554,7 +556,13 @@ x3dom.Texture.prototype.updateText = function()
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
 		textY = i * textHeight * font_spacing;
+		//maxWidth does not work for expanding if necessary
+		//redo with .scale(factor, 1)
+		//text_ctx.scale(oversample * lengths[i], oversample);
+		//text_ctx.fillText(paragraph[i], textX / lengths[i],  textY)
 		text_ctx.fillText(paragraph[i], textX,  textY, lengths[i]);
+		//text_ctx.setTransform(1, 0, 0, 1, 0, 0);
+		//reset .transform
 	}
 
 	if( this.texture === null )
