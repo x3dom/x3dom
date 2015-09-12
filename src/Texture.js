@@ -540,50 +540,52 @@ x3dom.Texture.prototype.updateText = function()
 	var txtW = text_canvas.width / oversample;
 	var txtH = text_canvas.height / oversample;
 	
-	var pxToX3d = 1/42.0;
-	var w = txtW * pxToX3d;
-	var h = txtH * pxToX3d;
-	
 	var x_offset = 0, y_offset = 0; baseLine = 'top';
 	
 	//Todo: make into lookup object
 	//x_offset
 	switch (font_justify) {
 		case "center":	 
-			x_offset = -w/2;
+			x_offset = -txtW/2;
 			break;
 		case "left":
-			x_offset = leftToRight === 'ltr' ? 0 : -w;
+			x_offset = leftToRight === 'ltr' ? 0 : -txtW;
 			break;
 		case "right":
-			x_offset = leftToRight === 'ltr' ? -w : 0;
+			x_offset = leftToRight === 'ltr' ? -txtW : 0;
 			break;
 	}
 
 	//y_offset, baseline and first Y
 	switch (minor_alignment) {
 		case "MIDDLE":
-			y_offset = h/2;
+			y_offset = txtH/2;
 			break;
 		case "BEGIN":
-			y_offset = topToBottom ? textHeight * pxToX3d : h;
+			y_offset = topToBottom ? textHeight : txtH;
 			baseLine = topToBottom ? 'top' : 'bottom';
 			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
 		case "FIRST":
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
-			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
+			y_offset = topToBottom ? textHeight : txtH - textHeight; //0.75 * textHeight * font_spacing * pxToX3d : h;
 			baseLine = topToBottom ? 'alphabetic' : 'bottom';
 			textY = topToBottom ? textHeight : textHeight; // start there to have space
 			break;
 		case "END":
-			y_offset = topToBottom ? h : textHeight * pxToX3d;
+			y_offset = topToBottom ? txtH : textHeight;
 			baseLine = topToBottom ? 'bottom' : 'top';
 			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
 	}
-		
+	
+	var pxToX3d = 1/42.0;
+	var w = txtW * pxToX3d;
+	var h = txtH * pxToX3d;
+	x_offset *= pxToX3d;
+	y_offset *= pxToX3d;
+	
 	//.scale was reset by .width above
 	//move below for length scaling
 	text_ctx.scale(oversample, oversample);
