@@ -541,6 +541,45 @@ x3dom.Texture.prototype.updateText = function()
 	var txtW = text_canvas.width / oversample;
 	var txtH = text_canvas.height / oversample;
 	
+	var pxToX3d = 1/42.0;
+	var w = txtW * pxToX3d;
+	var h = txtH * pxToX3d;
+	
+	var x_offset = 0, y_offset = 0; baseLine = 'top';
+	
+	//Todo: make into lookup object
+	//x_offset
+	switch (font_justify) {
+		case "center":	 
+			x_offset = -w/2;
+			break;
+		case "left":
+			x_offset = leftToRight === 'ltr' ? 0 : -w;
+			break;
+		case "right":
+			x_offset = leftToRight === 'ltr' ? -w : 0;
+			break;
+	}
+
+	//y_offset and baseline
+	switch (minor_alignment) {
+		case "MIDDLE":
+			y_offset = h/2;
+			break;
+		case "BEGIN":
+			y_offset = topToBottom ? 0 : h;
+			break;
+		case "FIRST":
+			//special case of BEGIN
+			//0.75 : on average cap height is about 70% of size; for Times it about 75%
+			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
+			baseLine = 'alphabetic';
+			break;
+		case "END":
+			y_offset = topToBottom ? h : 0;
+			break;
+	}
+		
 	//.scale was reset by .width above
 	//move below for length scaling
 	text_ctx.scale(oversample, oversample);
@@ -552,8 +591,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.fillStyle = 'white';
 	text_ctx.lineWidth = 2.5; // not used ?
 	text_ctx.strokeStyle = 'grey'; // not used ?
-	text_ctx.textBaseline = 
-		minor_alignment == 'FIRST' && topToBottom ? 'alphabetic' : 'top';
+	text_ctx.textBaseline = baseLine;
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 	text_ctx.textAlign = textAlignment;
@@ -583,43 +621,7 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var pxToX3d = 1/42.0;
-	var w = txtW * pxToX3d;
-	var h = txtH * pxToX3d;
-	
-	var x_offset = 0, y_offset = 0;
-	
-	//x_offset
-	switch (font_justify) {
-		case "center":	 
-			x_offset = -w/2;
-			break;
-		case "left":
-			x_offset = leftToRight === 'ltr' ? 0 : -w;
-			break;
-		case "right":
-			x_offset = leftToRight === 'ltr' ? -w : 0;
-			break;
-	}
 
-	//y_offset
-	switch (minor_alignment) {
-		case "MIDDLE":
-			y_offset = h/2;
-			break;
-		case "BEGIN":
-			y_offset = topToBottom ? 0 : h;
-			break;
-		case "FIRST":
-			//special case of BEGIN
-			//0.75 : on average cap height is about 70% of size; for Times it about 75%
-			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
-			break;
-		case "END":
-			y_offset = topToBottom ? h : 0;
-			break;
-	}
-	
 	//this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 	this.node._mesh._positions[0] = [
 		0 + x_offset, -h + y_offset, 0,
