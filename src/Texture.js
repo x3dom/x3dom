@@ -560,23 +560,27 @@ x3dom.Texture.prototype.updateText = function()
 			break;
 	}
 
-	//y_offset and baseline
+	//y_offset, baseline and first Y
 	switch (minor_alignment) {
 		case "MIDDLE":
 			y_offset = h/2;
 			break;
 		case "BEGIN":
-			y_offset = topToBottom ? 0 : h;
+			y_offset = topToBottom ? textHeight * pxToX3d : h;
+			baseLine = topToBottom ? 'top' : 'bottom';
+			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
 		case "FIRST":
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
 			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
-			baseLine = topToBottom ? 'alphabetic' : 'top';
-			textY = topToBottom ? textHeight : 0; // start there to have space
+			baseLine = topToBottom ? 'alphabetic' : 'bottom';
+			textY = topToBottom ? textHeight : textHeight; // start there to have space
 			break;
 		case "END":
-			y_offset = topToBottom ? h : 0;
+			y_offset = topToBottom ? h : textHeight * pxToX3d;
+			baseLine = topToBottom ? 'bottom' : 'top';
+			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
 	}
 		
