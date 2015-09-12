@@ -521,7 +521,7 @@ x3dom.Texture.prototype.updateText = function()
 	//shrink maxWidth to max. of lengths
 	//var maxLength = Math.max.apply(lengths);
 	//maxWidth = maxWidth
-	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
+	var canvas_scale = 1.0; //needed for some fonts that are higher than the textHeight
 	canvas_scale *= oversample; //scale up to fit oversampling
 	text_canvas.width = maxWidth * canvas_scale;
 	text_canvas.height = textHeight * font_spacing * paragraph.length * canvas_scale;
@@ -569,7 +569,7 @@ x3dom.Texture.prototype.updateText = function()
 		case "FIRST":
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
-			y_offset = topToBottom ? textHeight : txtH + textHeight; //0.75 * textHeight * font_spacing * pxToX3d : h;
+			y_offset = topToBottom ? textHeight : txtH ; //0.75 * textHeight * font_spacing * pxToX3d : h;
 			baseLine = topToBottom ? 'alphabetic' : 'bottom';
 			textY = topToBottom ? textHeight : textHeight; // start there to have space
 			break;
