@@ -531,11 +531,13 @@ x3dom.Texture.prototype.updateText = function()
 	//textY = topToBottom ? 0 : text_canvas.height / oversample;
 	//font_spacing = topToBottom ? font_spacing : -font_spacing;
 	
+	/*
 	switch(textAlignment) {
 		case "left": 	textX = 0; 			break;
 		case "center": 	textX = txtW/2; 	break;
 		case "right": 	textX = txtW;		break;
 	}
+	*/
 	
 	var x_offset = 0, y_offset = 0; baseLine = 'top';
 	
@@ -544,12 +546,15 @@ x3dom.Texture.prototype.updateText = function()
 	switch (font_justify) {
 		case "center":	 
 			x_offset = -txtW/2;
+			textX = txtW/2;
 			break;
 		case "left":
 			x_offset = leftToRight === 'ltr' ? 0 : -txtW;
+			textX = 0;
 			break;
 		case "right":
 			x_offset = leftToRight === 'ltr' ? -txtW : 0;
+			textX = txtW;
 			break;
 	}
 
