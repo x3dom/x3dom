@@ -565,7 +565,7 @@ x3dom.Texture.prototype.updateText = function()
 		//text_ctx.scale(oversample * lengths[i], oversample);
 		//text_ctx.fillText(paragraph[i], textX / lengths[i],  textY)
 		j = topToBottom ? i : paragraph.length - i - 1;
-		text_ctx.fillText(paragraph[j], textX,  textY, lengths[i]);
+		text_ctx.fillText(paragraph[j], textX,  textY, lengths[j]);
 		//text_ctx.setTransform(1, 0, 0, 1, 0, 0);
 		//reset .transform
 		textY += textHeight * font_spacing;
