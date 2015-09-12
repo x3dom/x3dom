@@ -523,22 +523,19 @@ x3dom.Texture.prototype.updateText = function()
 	//maxWidth = maxWidth
 	var canvas_extra = 0.1 * textHeight; //needed for some fonts that are higher than the textHeight
 	//canvas_scale *= oversample; //scale up to fit oversampling
-	text_canvas.width = maxWidth * oversample;
-	text_canvas.height = (textHeight * font_spacing * paragraph.length + canvas_extra) * oversample ;
+	var txtW = maxWidth ;
+	var txtH = textHeight * font_spacing * paragraph.length + canvas_extra ;
 
-	switch(textAlignment) {
-		case "left": 	textX = 0; 						break;
-		case "center": 	textX = text_canvas.width/2; 	break;
-		case "right": 	textX = text_canvas.width;		break;
-	}
-	
-	textX /= oversample; //needs to be in unscaled units
+	textX = 0; //needs to be in unscaled units
 	textY = 0;
 	//textY = topToBottom ? 0 : text_canvas.height / oversample;
 	//font_spacing = topToBottom ? font_spacing : -font_spacing;
 	
-	var txtW = text_canvas.width / oversample;
-	var txtH = text_canvas.height / oversample;
+	switch(textAlignment) {
+		case "left": 	textX = 0; 			break;
+		case "center": 	textX = txtW/2; 	break;
+		case "right": 	textX = txtW;		break;
+	}
 	
 	var x_offset = 0, y_offset = 0; baseLine = 'top';
 	
@@ -588,6 +585,9 @@ x3dom.Texture.prototype.updateText = function()
 	
 	//.scale was reset by .width above
 	//move below for length scaling
+	text_canvas.width = txtW * oversample ;
+	text_canvas.height = txtH * oversample ;
+
 	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
