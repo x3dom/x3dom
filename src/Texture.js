@@ -533,8 +533,7 @@ x3dom.Texture.prototype.updateText = function()
 	}
 	
 	textX /= oversample; //needs to be in unscaled units
-	textY = minor_alignment == 'FIRST' && topToBottom ? textHeight : 0; // start there to have space
-
+	textY = 0;
 	//textY = topToBottom ? 0 : text_canvas.height / oversample;
 	//font_spacing = topToBottom ? font_spacing : -font_spacing;
 	
@@ -573,7 +572,8 @@ x3dom.Texture.prototype.updateText = function()
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
 			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
-			baseLine = 'alphabetic';
+			baseLine = topToBottom ? 'alphabetic' : 'top';
+			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
 		case "END":
 			y_offset = topToBottom ? h : 0;
