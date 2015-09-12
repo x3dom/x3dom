@@ -506,7 +506,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
 	var maxWidth = 0, pWidth, pLength;
-    var i;
+    var i, j;
 
 	// calculate maxWidth and length scaling; sanitize lengths
 	for(i = 0; i < paragraph.length; i++) {
@@ -533,7 +533,11 @@ x3dom.Texture.prototype.updateText = function()
 	}
 	
 	textX /= oversample; //needs to be in unscaled units
+	textY = minor_alignment == 'FIRST' && topToBottom ? textHeight : 0; // start there to have space
 
+	//textY = topToBottom ? 0 : text_canvas.height / oversample;
+	//font_spacing = topToBottom ? font_spacing : -font_spacing;
+	
 	var txtW = text_canvas.width / oversample;
 	var txtH = text_canvas.height / oversample;
 	
@@ -556,14 +560,15 @@ x3dom.Texture.prototype.updateText = function()
 
 	// create the multiline text
 	for(i = 0; i < paragraph.length; i++) {
-		textY = i * textHeight * font_spacing;
 		//maxWidth does not work for expanding if necessary
 		//redo with .scale(factor, 1)
 		//text_ctx.scale(oversample * lengths[i], oversample);
 		//text_ctx.fillText(paragraph[i], textX / lengths[i],  textY)
-		text_ctx.fillText(paragraph[i], textX,  textY, lengths[i]);
+		j = topToBottom ? i : paragraph.length - j - 1;
+		text_ctx.fillText(paragraph[j], textX,  textY, lengths[i]);
 		//text_ctx.setTransform(1, 0, 0, 1, 0, 0);
 		//reset .transform
+		textY += textHeight * font_spacing;
 	}
 
 	if( this.texture === null )
@@ -608,7 +613,7 @@ x3dom.Texture.prototype.updateText = function()
 		case "FIRST":
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
-			y_offset = topToBottom ? 0 : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
+			y_offset = topToBottom ? textHeight * pxToX3d : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
 			break;
 		case "END":
 			y_offset = topToBottom ? h : 0;
