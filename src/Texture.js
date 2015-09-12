@@ -521,10 +521,10 @@ x3dom.Texture.prototype.updateText = function()
 	//shrink maxWidth to max. of lengths
 	//var maxLength = Math.max.apply(lengths);
 	//maxWidth = maxWidth
-	var canvas_scale = 1.0; //needed for some fonts that are higher than the textHeight
-	canvas_scale *= oversample; //scale up to fit oversampling
-	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * font_spacing * paragraph.length * canvas_scale;
+	var canvas_extra = 0.1; //needed for some fonts that are higher than the textHeight
+	//canvas_scale *= oversample; //scale up to fit oversampling
+	text_canvas.width = maxWidth * oversample;
+	text_canvas.height = (textHeight * font_spacing * paragraph.length + canvas_extra * textHeight) * oversample ;
 
 	switch(textAlignment) {
 		case "left": 	textX = 0; 						break;
