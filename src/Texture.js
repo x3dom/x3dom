@@ -548,7 +548,8 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.fillStyle = 'white';
 	text_ctx.lineWidth = 2.5; // not used ?
 	text_ctx.strokeStyle = 'grey'; // not used ?
-	text_ctx.textBaseline = 'top';
+	text_ctx.textBaseline = 
+		minor_alignment == 'FIRST' && topToBottom ? 'alphabetic' : 'top';
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 	text_ctx.textAlign = textAlignment;
@@ -607,7 +608,7 @@ x3dom.Texture.prototype.updateText = function()
 		case "FIRST":
 			//special case of BEGIN
 			//0.75 : on average cap height is about 70% of size; for Times it about 75%
-			y_offset = topToBottom ? 0.75 * textHeight * font_spacing * pxToX3d : h;
+			y_offset = topToBottom ? 0 : h; //0.75 * textHeight * font_spacing * pxToX3d : h;
 			break;
 		case "END":
 			y_offset = topToBottom ? h : 0;
