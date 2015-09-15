@@ -138,7 +138,7 @@ x3dom.getFieldValue = function(fieldName)
  */
 x3dom.setFieldValue = function(fieldName, fieldvalue) {
     var x3dNode = this._x3domNode;
-    if (x3dNode && x3dNode._vf[fieldName]) {
+    if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
 
         // SF/MF object types are cloned based on a copy function
         if(fieldvalue instanceof Object && 'copy' in fieldvalue)
