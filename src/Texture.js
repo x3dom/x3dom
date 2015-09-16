@@ -502,7 +502,7 @@ x3dom.Texture.prototype.updateText = function()
 
 	var text_ctx = text_canvas.getContext('2d');
 
-	// calculate font font_size in px
+	// calculate font_size in px
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
 	var maxWidth = 0, pWidth, pLength;
@@ -513,7 +513,10 @@ x3dom.Texture.prototype.updateText = function()
 		pWidth = text_ctx.measureText( paragraph[i] ).width; 
 		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
 		pLength = this.node._vf.length[i] | 0;
-		lengths[i] = pLength <= 0 ? pWidth + 1 : pLength * x3dToPx;
+		if (maxExtent > 0 && pLength > maxExtent) {
+			pLength = maxExtent;	
+		}
+		lengths[i] = pLength <= 0 ? pWidth : pLength * x3dToPx;
 		//lengths[i] = pLength <=0 ? 1 : pLength * x3dToPx / pWidth; // enable for .scale use
 		//if ( pLength > pWidth || pLength == 0 ) { lengths[i] = pWidth + 1; }
 	}
@@ -585,6 +588,7 @@ x3dom.Texture.prototype.updateText = function()
 	var pxToX3d = 1/42.0;
 	var w = txtW * pxToX3d;
 	var h = txtH * pxToX3d;
+	
 	x_offset *= pxToX3d;
 	y_offset *= pxToX3d;
 	
@@ -594,7 +598,6 @@ x3dom.Texture.prototype.updateText = function()
 	text_canvas.height = txtH * oversample ;
 	text_canvas.dir = leftToRight;
 	
-
 	text_ctx.scale(oversample, oversample);
 
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
@@ -633,7 +636,6 @@ x3dom.Texture.prototype.updateText = function()
 
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
-
 
 	//this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 	this.node._mesh._positions[0] = [
