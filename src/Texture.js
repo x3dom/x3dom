@@ -513,7 +513,7 @@ x3dom.Texture.prototype.updateText = function()
 		pWidth = text_ctx.measureText( paragraph[i] ).width; 
 		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
 		pLength = this.node._vf.length[i] | 0;
-		if (maxExtent > 0 && pLength > maxExtent) {
+		if (maxExtent > 0 && (pLength > maxExtent || pLength == 0)) {
 			pLength = maxExtent;	
 		}
 		lengths[i] = pLength <= 0 ? pWidth : pLength * x3dToPx;
