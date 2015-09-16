@@ -592,6 +592,8 @@ x3dom.Texture.prototype.updateText = function()
 	//move below for length scaling
 	text_canvas.width = txtW * oversample ;
 	text_canvas.height = txtH * oversample ;
+	text_canvas.dir = leftToRight;
+	
 
 	text_ctx.scale(oversample, oversample);
 
