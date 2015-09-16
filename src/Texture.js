@@ -576,7 +576,7 @@ x3dom.Texture.prototype.updateText = function()
 			textY = topToBottom ? textHeight : textHeight; // start there to have space
 			break;
 		case "END":
-			y_offset = topToBottom ? txtH - canvas_extra: textHeight;
+			y_offset = topToBottom ? txtH - canvas_extra: 0;
 			baseLine = topToBottom ? 'bottom' : 'top';
 			textY = topToBottom ? textHeight : 0; // start there to have space
 			break;
