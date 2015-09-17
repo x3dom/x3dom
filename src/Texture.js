@@ -410,8 +410,8 @@ x3dom.Texture.prototype.updateText = function()
 	this.wrapT			= gl.CLAMP_TO_EDGE;
 	this.type = gl.TEXTURE_2D;
     this.format = gl.RGBA;
-    this.magFilter = gl.LINEAR;
-    this.minFilter = gl.LINEAR;
+	this.magFilter = gl.LINEAR;
+	this.minFilter = gl.LINEAR;
     
 	var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
@@ -507,7 +507,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
 	var maxWidth = 0, pWidth, pLength;
-    var i, j;
+	var i, j;
 
 	// calculate maxWidth and length scaling; sanitize lengths
 	for(i = 0; i < paragraph.length; i++) {
@@ -619,9 +619,8 @@ x3dom.Texture.prototype.updateText = function()
 		w + x_offset,  0 + y_offset, 0,
 		0 + x_offset,  0 + y_offset, 0];
 	
-    this.node.invalidateVolume();
-    Array.forEach(this.node._parentNodes, function (node) {
-        node.setAllDirty();
+	this.node.invalidateVolume();
+	Array.forEach(this.node._parentNodes, function (node) {
+    	node.setAllDirty();
     });
 };
-
