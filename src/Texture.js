@@ -409,7 +409,7 @@ x3dom.Texture.prototype.updateText = function()
 	this.wrapS			= gl.CLAMP_TO_EDGE;
 	this.wrapT			= gl.CLAMP_TO_EDGE;
 	this.type = gl.TEXTURE_2D;
-    this.format = gl.RGBA;
+	this.format = gl.RGBA;
 	this.magFilter = gl.LINEAR;
 	this.minFilter = gl.LINEAR;
     
