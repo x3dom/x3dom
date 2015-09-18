@@ -48,7 +48,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'horizontal', true);
 
             /**
-             * Specifies where the text is anchored.
+             * Specifies where the text is anchored. The default of ["MIDDLE", "MIDDLE"] deviates from the ISO spec. default
+             * of ["BEGIN", "FIRST"] for backward compatibiliy reasons. 
              * @var {x3dom.fields.MFString} justify
              * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
@@ -56,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'justify', ['BEGIN']);
+            this.addField_MFString(ctx, 'justify', ['MIDDLE', 'MIDDLE']);
 
             /**
              * The language field specifies the context of the language for the text string in the form of a language and a country in which that language is used.
@@ -140,7 +141,9 @@ x3dom.registerNodeType(
                     fieldName == 'language' || fieldName == 'leftToRight' || fieldName == 'size' ||
                     fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
                     Array.forEach(this._parentNodes, function (node) {
-                        node.fieldChanged(fieldName);
+                        Array.forEach(node._parentNodes, function (textnode) {
+                            textnode.setAllDirty();
+                        });
                     });
                 }
             }

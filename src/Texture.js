@@ -408,16 +408,22 @@ x3dom.Texture.prototype.updateText = function()
 
 	this.wrapS			= gl.CLAMP_TO_EDGE;
 	this.wrapT			= gl.CLAMP_TO_EDGE;
+	this.type = gl.TEXTURE_2D;
+	this.format = gl.RGBA;
+	this.magFilter = gl.LINEAR;
+	this.minFilter = gl.LINEAR;
+    
+	var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
-	var fontStyleNode = this.node._cf.fontStyle.node;
-
-    var font_family = 'serif';
+    var font_family = 'serif'; // should be dealt with by default fontStyleNode?
     var font_style = 'normal';
     var font_justify = 'left';
     var font_size = 1.0;
     var font_spacing = 1.0;
     var font_horizontal = true;
     var font_language = "";
+    var oversample = 2.0;
+    var minor_alignment = 'FIRST';
 
     if ( fontStyleNode !== null )
 	{
@@ -446,24 +452,39 @@ x3dom.Texture.prototype.updateText = function()
 		var leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
 		var topToBottom = fontStyleNode._vf.topToBottom;
 
-		// TODO: make it possible to use multiple values
 		font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
-
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
 			case 'END': 	font_justify = 'right'; 	break;
-			case 'FIRST': 	font_justify = 'left'; 		break; // not clear what to do with this one
+			case 'FIRST': 	font_justify = 'left'; 		break; // relevant only in justify[1], eg. minor alignment
 			case 'MIDDLE': 	font_justify = 'center'; 	break;
 			default: 		font_justify = 'left'; 		break;
 		}
-
+		
+		if (fontStyleNode._vf.justify[1] === undefined) {
+			minor_alignment = 'FIRST';
+		}
+		else {
+			minor_alignment = fontStyleNode._vf.justify[1].toString().replace(/\'/g,'');
+			switch (minor_alignment.toUpperCase()) {
+				case 'BEGIN': 		minor_alignment = 'BEGIN'; 		break;
+				case 'FIRST': 		minor_alignment = 'FIRST'; 		break;
+				case 'MIDDLE': 		minor_alignment = 'MIDDLE'; 	break;
+				case 'END': 		minor_alignment = 'END'; 		break;
+				default: 			minor_alignment = 'FIRST'; 		break;
+			}
+		}
+		
 		font_size 		= fontStyleNode._vf.size;
 		font_spacing 	= fontStyleNode._vf.spacing;
-		font_horizontal = fontStyleNode._vf.horizontal;
+		font_horizontal = fontStyleNode._vf.horizontal; //TODO: vertical needs canvas support
 		font_language 	= fontStyleNode._vf.language;
-
+		oversample = fontStyleNode._vf.quality;
+		oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
+		oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
+	
         if (font_size < 0.1) font_size = 0.1;
-        if(x3dom.Texture.clampFontSize && font_size > 2.3)
+        if (x3dom.Texture.clampFontSize && font_size > 2.3)
         {
             font_size = 2.3;
         }
@@ -471,68 +492,116 @@ x3dom.Texture.prototype.updateText = function()
 
 	var textX, textY;
 	var paragraph = this.node._vf.string;
+	var maxExtent = this.node._vf.maxExtent;
+	var lengths = [];
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
-	var textHeight = font_size * 42; // pixel size relative to local coordinate system
+	var x3dToPx = 42;
+	var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;
-	var oversample = fontStyleNode._vf.quality;
-	oversample = Math.max(x3dom.Texture.minFontQuality, oversample);
-	oversample = Math.min(x3dom.Texture.maxFontQuality, oversample);
 	
 	// needed to make webfonts work
 	document.body.appendChild(text_canvas);
-
 	var text_ctx = text_canvas.getContext('2d');
-
-	// calculate font font_size in px
+	
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
-	var maxWidth = text_ctx.measureText(paragraph[0]).width;
-    var i;
+	var maxWidth = 0, pWidth, pLength;
+	var i, j;
 
-	// calculate maxWidth
-	for(i = 1; i < paragraph.length; i++) {
-		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
-			maxWidth = text_ctx.measureText(paragraph[i]).width;
-	}
-	var canvas_scale = 1.1; //needed for some fonts that are higher than the textHeight
-	canvas_scale *= oversample; //scale up to fit oversampling
-	text_canvas.width = maxWidth * canvas_scale;
-	text_canvas.height = textHeight * paragraph.length * canvas_scale; //TODO: font_spacing
+	// calculate maxWidth and length scaling; sanitize lengths
+	for(i = 0; i < paragraph.length; i++) {
 
-	switch(textAlignment) {
-		case "left": 	textX = 0; 						break;
-		case "center": 	textX = text_canvas.width/2; 	break;
-		case "right": 	textX = text_canvas.width;		break;
+		pWidth = text_ctx.measureText( paragraph[i] ).width; 
+		if ( pWidth > maxWidth ) { maxWidth = pWidth; }
+
+		pLength = this.node._vf.length[i] | 0;
+		if (maxExtent > 0 && (pLength > maxExtent || pLength == 0)) {
+			pLength = maxExtent;			
+		}
+		lengths[i] = pLength <= 0 ? pWidth : pLength * x3dToPx;
 	}
 	
-	textX /= oversample; //needs to be in unscaled units
+	var canvas_extra = 0.1 * textHeight; //single line, some fonts are higher than textHeight
+	var txtW = maxWidth ;
+	var txtH = textHeight * font_spacing * paragraph.length + canvas_extra ;
 
-	var txtW = text_canvas.width/oversample;
-	var txtH = text_canvas.height/oversample;
+	textX = 0;
+	textY = 0;
 	
-	//.scale was reset by .width above
+	var x_offset = 0, y_offset = 0, baseLine = 'top';
+	
+	//x_offset and starting X
+	switch (font_justify) {
+		case "center":	 
+			x_offset = -txtW/2;
+			textX = txtW/2;
+			break;
+		case "left":
+			x_offset = leftToRight == 'ltr' ? 0 : -txtW;
+			textX = 0;
+			break;
+		case "right":
+			x_offset = leftToRight == 'ltr' ? -txtW : 0;
+			textX = txtW;
+			break;
+	}
+
+	//y_offset, baseline and first Y
+	switch (minor_alignment) {
+		case "MIDDLE":
+			y_offset = txtH/2;
+			break;
+		case "BEGIN":
+			y_offset = topToBottom ? 0 : txtH - canvas_extra;
+			baseLine = topToBottom ? 'top' : 'bottom';
+			textY = topToBottom ? 0 : textHeight; // adjust for baseline
+			break;
+		case "FIRST":
+			//special case of BEGIN
+			y_offset = topToBottom ? textHeight : txtH - canvas_extra ;
+			baseLine = topToBottom ? 'alphabetic' : 'bottom';
+			textY = topToBottom ? textHeight : textHeight;
+			break;
+		case "END":
+			y_offset = topToBottom ? txtH - canvas_extra: 0;
+			baseLine = topToBottom ? 'bottom' : 'top';
+			textY = topToBottom ? textHeight : 0;
+			break;
+	}
+	
+	var pxToX3d = 1/42.0;
+	var w = txtW * pxToX3d;
+	var h = txtH * pxToX3d;
+	
+	x_offset *= pxToX3d;
+	y_offset *= pxToX3d;
+	
+	text_canvas.width = txtW * oversample ;
+	text_canvas.height = txtH * oversample ;
+	text_canvas.dir = leftToRight;
+	
 	text_ctx.scale(oversample, oversample);
-
+	
+	// transparent background
 	text_ctx.fillStyle = 'rgba(0,0,0,0)';
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
 
 	// write white text with black border
 	text_ctx.fillStyle = 'white';
-	text_ctx.lineWidth = 2.5; // not used ?
-	text_ctx.strokeStyle = 'grey'; // not used ?
-	text_ctx.textBaseline = 'top';
+	text_ctx.textBaseline = baseLine;
 
 	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 	text_ctx.textAlign = textAlignment;
 
-	// create the multiline text
-	for(i = 0; i < paragraph.length; i++) {
-		textY = i*textHeight; //TODO: font_spacing
-		text_ctx.fillText(paragraph[i], textX,  textY);
+	// create the multiline text always top down
+	for (i = 0; i < paragraph.length; i++) {
+		j = topToBottom ? i : paragraph.length - 1 - i;
+		text_ctx.fillText(paragraph[j], textX,  textY, lengths[j]);
+		textY += textHeight * font_spacing;
 	}
 
-	if( this.texture === null )
+	if ( this.texture === null )
 	{
 		this.texture = gl.createTexture();
 	}
@@ -544,13 +613,14 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 
-	var w = txtW / 100.0;
-	var h = txtH / 100.0;
-
-	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
-
-    this.node.invalidateVolume();
-    Array.forEach(this.node._parentNodes, function (node) {
-        node.setAllDirty();
+	this.node._mesh._positions[0] = [
+		0 + x_offset, -h + y_offset, 0,
+		w + x_offset, -h + y_offset, 0,
+		w + x_offset,  0 + y_offset, 0,
+		0 + x_offset,  0 + y_offset, 0];
+	
+	this.node.invalidateVolume();
+	Array.forEach(this.node._parentNodes, function (node) {
+    	node.setAllDirty();
     });
 };
