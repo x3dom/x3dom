@@ -53,7 +53,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.MFString} justify
              * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
-             * @initvalue ['BEGIN']
+             * @initvalue ['MIDDLE', 'MIDDLE']
              * @field x3d
              * @instance
              */
