@@ -940,6 +940,78 @@ x3dom.Runtime.prototype.helicopter = function() {
     viewarea._needNavigationMatrixUpdate = true;
     this.canvas.doc.needRender = true;
  };
+ 
+ /**
+ * APIFunction: disableKeys
+ *
+ * Disable keys
+ */
+x3dom.Runtime.prototype.disableKeys = function() {
+    this.canvas.disableKeys = true;
+};
+
+ /**
+ * APIFunction: enableKeys
+ *
+ * Enable keys
+ */
+x3dom.Runtime.prototype.enableKeys = function() {
+    this.canvas.disableKeys = false;
+};
+
+ /**
+ * APIFunction: disableLeftDrag
+ *
+ * Disable left drag
+ */
+x3dom.Runtime.prototype.disableLeftDrag = function() {
+    this.canvas.disableLeftDrag = true;
+};
+
+ /**
+ * APIFunction: enableLeftDrag
+ *
+ * Enable left drag
+ */
+x3dom.Runtime.prototype.enableLeftDrag = function() {
+    this.canvas.disableLeftDrag = false;
+};
+
+ /**
+ * APIFunction: disableRightDrag
+ *
+ * Disable right drag
+ */
+x3dom.Runtime.prototype.disableRightDrag = function() {
+    this.canvas.disableRightDrag = true;
+};
+
+ /**
+ * APIFunction: enableRightDrag
+ *
+ * Enable right drag
+ */
+x3dom.Runtime.prototype.enableRightDrag = function() {
+    this.canvas.disableRightDrag = false;
+};
+
+ /**
+ * APIFunction: disableMiddleDrag
+ *
+ * Disable middle drag
+ */
+x3dom.Runtime.prototype.disableMiddleDrag = function() {
+    this.canvas.disableMiddleDrag = true;
+};
+
+ /**
+ * APIFunction: enableMiddleDrag
+ *
+ * Enable right drag
+ */
+x3dom.Runtime.prototype.enableMiddleDrag = function() {
+    this.canvas.disableMiddleDrag = false;
+};
 
 /**
  * Function: togglePoints
