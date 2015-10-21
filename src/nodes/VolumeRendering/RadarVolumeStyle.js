@@ -7,20 +7,20 @@
  * Dual licensed under the MIT and GPL.
  */
 
-/* ### DepthMappedVolumeStyle ### */
+/* ### RadarVolumeStyle ### */
 x3dom.registerNodeType(
-    "DepthMappedVolumeStyle",
+    "RadarVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
         /**
-         * Constructor for DepthMappedVolumeStyle
-         * @constructs x3dom.nodeTypes.DepthMappedVolumeStyle
+         * Constructor for RadarVolumeStyle
+         * @constructs x3dom.nodeTypes.RadarVolumeStyle
          * @x3d n/a
          * @component VolumeRendering
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The DepthMappedVolumeStyle generates a volume rendering based on ray casting.
+         * @classdesc The RadarVolumeStyle generates a volume rendering based on ray casting.
          * The rays terminate when they encounter a polygonal object inside the volume. Depth upto 
          * which a particular ray can travel inside the volume is calculated from the depth buffer 
          * of the polygonal objects in the volume.
@@ -28,12 +28,12 @@ x3dom.registerNodeType(
          * at arbitrary positions. 
          */
         function (ctx) {
-            x3dom.nodeTypes.DepthMappedVolumeStyle.superClass.call(this, ctx);
+            x3dom.nodeTypes.RadarVolumeStyle.superClass.call(this, ctx);
             
             /**
              * depthTexture holds the depth limits for ray termination.
              * @var {x3dom.fields.SFNode} depthTexture
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * The transferFunction field is a texture that is going to be used to map each voxel value to a specific color output.
              * Voxel intensities from 0.0 to 1.0 are mapped linearly and horizontally to the texture.
              * @var {x3dom.fields.SFNode} transferFunction
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
             /**
              * The isoSurfaceCutoffValue field is specifies a threshold such that data with intensity below this is ignored during ray casting.
              * @var {x3dom.fields.SFFloat} isoSurfaceCutoffValue
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.4
              * @field x3dom
              * @instance
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
             /**
              * The transparency field specifies a multiplier for the alpha value of the output color.
              * @var {x3dom.fields.SFFloat} transparency
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.7
              * @field x3dom
              * @instance
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
             /**
              * The brightness field specifies a multiplier for the RGB values of the output color.
              * @var {x3dom.fields.SFFloat} brightness
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 1.2
              * @field x3dom
              * @instance
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
             /**
              * The accumFactor field specifies a multiplier for the color and intensity accumulated as the ray traverses the volume data in case of alpha composting based volume rendering (renderMode 2).
              * @var {x3dom.fields.SFFloat} accumFactor
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.2
              * @field x3dom
              * @instance
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
             /**
              * The intensityLimits field scales voxel intensities lying in (intensityLimits[0] ~ intensityLimits[1]) to (0.0 ~ 1.0) using : (xx - intensityLimits[0])/(intensityLimits[1]-intensityLimits[0])
              * @var {x3dom.fields.SFVec2f} intensityLimits
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.1, 0.75
              * @field x3dom
              * @instance
@@ -105,7 +105,7 @@ x3dom.registerNodeType(
              * The xSectionOrientation field defines the rotation for plane used for cutting data. Given the bounding cube for the data is a unit cube centred at (0,0,0), the field provides a plane that intersects the bounding box.
              * Data on positive side of the plane is rendered.
              * @var {x3dom.fields.SFVec4f} xSectionOrientation
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.0, 0.0, 0.0, 0.0
              * @field x3dom
              * @instance
@@ -116,7 +116,7 @@ x3dom.registerNodeType(
              * The xSectionPosition field defines the position of the cutting plane along an axis passing through (0,0,0) and perpendicular to the plane. Given the bounding cube for the data is a unit cube centred at (0,0,0), the field provides a plane that intersects the bounding box.
              * Data on positive side of the plane is rendered.
              * @var {x3dom.fields.SFFloat} xSectionPosition
-             * @memberof x3dom.nodeTypes.DepthMappedVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 0.5
              * @field x3dom
              * @instance
@@ -202,7 +202,7 @@ x3dom.registerNodeType(
                             this.volumeDataParent = this.volumeDataParent._parentNodes[0];
                         }
                         if(x3dom.isa(this.volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) == false){
-                            x3dom.debug.logError("[VolumeRendering][DepthMappedVolumeStyle] No VolumeData parent found!");
+                            x3dom.debug.logError("[VolumeRendering][RadarVolumeStyle] No VolumeData parent found!");
                             this.volumeDataParent = null;
                         }
                     }

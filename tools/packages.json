@@ -317,7 +317,7 @@
                     {"file": "SilhouetteEnhancementVolumeStyle.js"},
                     {"file": "StippleVolumeStyle.js"},
                     {"file": "ToneMappedVolumeStyle.js"},
-                    {"file": "DepthMappedVolumeStyle.js"},
+                    {"file": "RadarVolumeStyle.js"},
                     {"file": "VolumeData.js"}
                 ]},
                 {"name": "CADGeometry", "filePrefix": "nodes/CADGeometry/", "files":[

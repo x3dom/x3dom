@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Volume Rendering DepthMappedVolumeStyle</title>
+    <title>Volume Rendering RadarVolumeStyle</title>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"></meta>
     <link rel="stylesheet" type="text/css" href="x3dom.css"></link>
@@ -55,7 +55,7 @@
                     <VolumeData dimensions='4.0 4.0 4.0'>
                         <ImageTextureAtlas containerField="voxels" url="aorta4096.png" numberOfSlices="97" slicesOverX="10" slicesOverY="10">
                         </ImageTextureAtlas>
-                        <DepthMappedVolumeStyle id="vs" DEF="VOLREN3D" isoSurfaceCutoffValue="0.3" transparency="0.9" intensityLimits="0.0 1.0">
+                        <RadarVolumeStyle id="vs" DEF="VOLREN3D" isoSurfaceCutoffValue="0.3" transparency="0.9" intensityLimits="0.0 1.0">
                             <ImageTexture containerField='transferFunction' url='color_transfer.png'></ImageTexture>
                             <RenderedTexture containerField='depthTexture' update="always" dimensions="512 512 4" depthMap="true">
                                 <Viewpoint USE="vp"></Viewpoint>
@@ -64,7 +64,7 @@
                                     <group USE="polygon"></group>
                                 </Transform>
                             </RenderedTexture>
-                        </DepthMappedVolumeStyle>
+                        </RadarVolumeStyle>
                     </VolumeData>
                     <ROUTE fromField='rotation_changed' fromNode='SPHSENSOR' toField='xSectionOrientation' toNode='VOLREN3D'></ROUTE>
                 </Group>
