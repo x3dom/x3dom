@@ -263,7 +263,10 @@ x3dom.Texture.prototype.updateTexture = function()
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
     {
         if (tex._webgl && tex._webgl.fbo) {
-		    this.texture = tex._webgl.fbo.tex;
+            if(tex._webgl.fbo.dtex && tex._vf.depthMap)
+                this.texture = tex._webgl.fbo.dtex;
+            else
+                this.texture = tex._webgl.fbo.tex;
         }
         else {
             this.texture = null;

@@ -136,7 +136,7 @@ x3dom.registerNodeType(
 
                     // here goes the volume shader
                     this.vrcSinglePassShaderVertex._vf.type = 'vertex';
-                    this.vrcSinglePassShaderVertex._vf.url[0]=this.vertexShaderText();
+                    this.vrcSinglePassShaderVertex._vf.url[0]=this.vertexShaderText(x3dom.isa(this._cf.renderStyle.node, x3dom.nodeTypes.RadarVolumeStyle));
 
                     this.vrcSinglePassShaderFragment._vf.type = 'fragment';
                     var shaderText = "";

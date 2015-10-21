@@ -97,14 +97,14 @@ x3dom.registerNodeType(
             },
 
             //Common vertex shader text for all volume data nodes
-            vertexShaderText: function(){
+            vertexShaderText: function(needEyePosition){
                 var shader = 
                 "attribute vec3 position;\n"+
                 "uniform vec3 dimensions;\n"+
                 "uniform mat4 modelViewProjectionMatrix;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "varying vec4 pos;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                     shader += "uniform mat4 modelViewMatrix;\n"+
                     "varying vec4 position_eye;\n";
                 }
@@ -112,7 +112,7 @@ x3dom.registerNodeType(
                 "void main()\n"+
                 "{\n"+
                 "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                    shader += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
                 }
                 shader += 
@@ -122,7 +122,7 @@ x3dom.registerNodeType(
                 return shader;
             },
 
-            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY, needEyePosition){
                var uniformsText = 
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 dimensions;\n"+
@@ -131,7 +131,7 @@ x3dom.registerNodeType(
                 "uniform mat4 modelViewMatrixInverse;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "varying vec4 pos;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                     uniformsText += "varying vec4 position_eye;\n";
                 }
                 //LIGHTS

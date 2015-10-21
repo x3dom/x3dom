@@ -19,6 +19,65 @@
     },
     "tests" :
         [
+            {
+                "url"   : "/test/cases/depthVolren/depthVolren.html",
+                "steps" :
+                    [
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"   :   "x3d",
+                                "time"  :   "1200"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "document.getElementById('x3d').runtime.triggerRedraw();"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "setThreshold(0.6);"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        },
+                        {
+                            "type"      :   "ExecuteCommand",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "command"   :   "setPosition(0.5);"
+                            }
+                        },
+                        {
+                            "type"      :   "CompareScreenshot",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d"
+                            }
+                        }
+                    ]
+            },
         	{
         		"url"   : "/test/cases/compressedTexture/compressedTexture.html",
 	        	"steps" :
