@@ -336,7 +336,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                     pixelBack.b = color.b;
 
                     parts.emissiveMap.setPixel(xFront, yFront, pixelFront);
-                    parts.emissiveMap.setPixel(xback, yBack, pixelBack);
+                    parts.emissiveMap.setPixel(xBack, yBack, pixelBack);
                 }
             }
         }

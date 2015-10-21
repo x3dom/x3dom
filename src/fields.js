@@ -3162,7 +3162,7 @@ x3dom.fields.MFString.parse = function(str) {
     if (str.length && str[0] == '"') {
         var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ((m = re.exec(str))) {
-            var s = m[1].replace(/\\([\\"])/, "$1");
+            var s = m[1].replace(/\\([\\"])/g, "$1");
             if (s !== undefined) {
                 arr.push(s);
             }

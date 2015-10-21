@@ -174,6 +174,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     // disable touch events
     this.disableTouch = x3dElem.getAttribute("disableTouch");
     this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
+	
+	this.disableKeys = x3dElem.getAttribute("keysEnabled");
+	this.disableKeys = this.disableKeys ? (this.disableKeys.toLowerCase() == "true") : false;
+	
+	this.disableRightDrag = x3dElem.getAttribute("disableRightDrag");
+	this.disableRightDrag = this.disableRightDrag ? (this.disableRightDrag.toLowerCase() == "true") : false;
+	
+	this.disableLeftDrag = x3dElem.getAttribute("disableLeftDrag");
+	this.disableLeftDrag = this.disableLeftDrag ? (this.disableLeftDrag.toLowerCase() == "true") : false;
+	
+	this.disableMiddleDrag = x3dElem.getAttribute("disableMiddleDrag");
+	this.disableMiddleDrag = this.disableMiddleDrag ? (this.disableMiddleDrag.toLowerCase() == "true") : false;
 
 
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
@@ -295,7 +307,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     this.mouse_drag_y = pos.y;
 
                     if (this.mouse_dragging) {
-                        this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+						
+						if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
+							 this.mouse_button == 2 && !this.parent.disableRightDrag ||
+							 this.mouse_button == 4 && !this.parent.disableMiddleDrag ) 
+						{
+							this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+						}
                     }
                     else {
                         this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
@@ -345,8 +363,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
         // Key Events
         this.canvas.addEventListener('keypress', function (evt) {
-            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
+            if (!this.parent.disableKeys) {
                 this.parent.doc.onKeyPress(evt.charCode);
             }
             this.parent.doc.needRender = true;
@@ -354,16 +371,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
         // in webkit special keys are only handled on key-up
         this.canvas.addEventListener('keyup', function (evt) {
-            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
+            if (!this.parent.disableKeys) {
                 this.parent.doc.onKeyUp(evt.keyCode);
             }
             this.parent.doc.needRender = true;
         }, true);
 
         this.canvas.addEventListener('keydown', function (evt) {
-            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
+            if (!this.parent.disableKeys) {
                 this.parent.doc.onKeyDown(evt.keyCode);
             }
             this.parent.doc.needRender = true;
