@@ -98,7 +98,8 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
         //with all planes of the frustum
         else if (planeMask == 0)
         {
-            planeMask = MASK_SET;
+            //TODO: check this again!
+            planeMask = 1;
         }
     }
     else {
