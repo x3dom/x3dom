@@ -4011,7 +4011,15 @@ x3dom.fields.FrustumVolume = function(clipMat)
     this.directionIndex[1] = updateDirectionIndex(this.planeNormals[1]);
 };
 
-/** Check the volume against the frustum. */
+/**
+*  Check the volume against the frustum.
+*  Return values > 0 indicate a plane mask that was used to identify
+*  the object as "inside".
+*  Return value -1 means the object has been culled (i.e., is outside
+*  with respect to at least one plane).
+*  Return value 0 is a rare case, indicating that the object intersects
+*  with all planes of the frustum.
+*/
 x3dom.fields.FrustumVolume.prototype.intersect = function(vol, planeMask)
 {
     if (this.planeNormals.length < 6) {
