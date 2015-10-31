@@ -88,8 +88,17 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         if (planeMask < MASK_SET)
             planeMask = this.viewFrustum.intersect(wvol, planeMask);
-        if (planeMask <= 0) {
-            return -1;      // if culled return -1; 0 should never happen
+
+        //-1 indicates that the object has been culled
+        if (planeMask == -1)
+        {
+            return -1;
+        }
+        //"0" is a rare case, indicating that the object intersects
+        //with all planes of the frustum
+        else if (planeMask == 0)
+        {
+            planeMask = MASK_SET;
         }
     }
     else {
