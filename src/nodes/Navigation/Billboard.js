@@ -55,7 +55,7 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask <= 0) {
+                if (planeMask < 0) {
                     return;
                 }
 
