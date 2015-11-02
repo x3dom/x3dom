@@ -654,7 +654,7 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
         if (!readyState || !childrenReadyState)
             updateLoadingState(drawableCollection, nodeTransformation);
 
-        if (readyState && planeMask > 0) {
+        if (readyState && planeMask >= 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(nodeTransformation.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
