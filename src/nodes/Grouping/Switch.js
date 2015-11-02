@@ -79,7 +79,7 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 if (this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
-                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) <= 0) {
+                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) < 0) {
                     return;
                 }
 
