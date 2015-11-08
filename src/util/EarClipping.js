@@ -53,7 +53,7 @@ x3dom.EarClipping = {
 			}
 			
 			//if (count < 0) {
-			if (z < 0) {
+			if (z > 0) {
 				linklist.invert();
 				return true;
 			}	
