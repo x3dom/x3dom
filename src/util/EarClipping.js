@@ -35,7 +35,7 @@ x3dom.EarClipping = {
 					//z = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
 					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
 				} else if(plane == 'XZ') {
-					z  += (nodel.point.x - nodei.point.x) * (nodel.point.z + nodei.point.z);
+					z  += (nodel.point.z - nodei.point.z) * (nodel.point.x + nodei.point.x);
 					//z = (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
 					//z -= (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
 				} else {
@@ -53,7 +53,7 @@ x3dom.EarClipping = {
 			}
 			
 			//if (count < 0) {
-			if (z > 0) {
+			if (z < 0) {
 				linklist.invert();
 				return true;
 			}	
