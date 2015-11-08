@@ -692,7 +692,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
     }
 
-    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && dur != 0 && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
             prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).

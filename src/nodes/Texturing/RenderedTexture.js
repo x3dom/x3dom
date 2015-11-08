@@ -139,6 +139,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
+            
+            /** 
+             * Determines if textures shall be treated as depth map.
+             * If it is TRUE, then the generated texture will also contain the depth buffer.
+             * @var {x3dom.fields.SFBool} depthMap
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'depthMap', false);
 
             /**
              * Very experimental field to change between DK1 and DK2.
@@ -164,7 +175,12 @@ x3dom.registerNodeType(
                 "RenderedTexture.dimensions requires at least 3 entries.");
             this._clearParents = true;
             this._needRenderUpdate = true;
-        
+            
+            this.checkDepthTextureSupport = function() {
+                if(this._vf.depthMap && x3dom.caps.DEPTH_TEXTURE === null)
+                    x3dom.debug.logWarning("RenderedTexture Node: depth texture extension not supported");
+            };
+            this.checkDepthTextureSupport();
         },
         {
             nodeChanged: function()
@@ -186,6 +202,10 @@ x3dom.registerNodeType(
                             this._needRenderUpdate = true;
                         }
                         break;
+                    case "depthMap":
+                        this.checkDepthTextureSupport();
+                        this._x3domTexture.updateTexture();
+                        this._needRenderUpdate = true;
                     default:
                         // TODO: dimensions
                         break;

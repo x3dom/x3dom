@@ -136,7 +136,7 @@ x3dom.registerNodeType(
 
                     // here goes the volume shader
                     this.vrcSinglePassShaderVertex._vf.type = 'vertex';
-                    this.vrcSinglePassShaderVertex._vf.url[0]=this.vertexShaderText();
+                    this.vrcSinglePassShaderVertex._vf.url[0]=this.vertexShaderText(x3dom.isa(this._cf.renderStyle.node, x3dom.nodeTypes.RadarVolumeStyle));
 
                     this.vrcSinglePassShaderFragment._vf.type = 'fragment';
                     var shaderText = "";
@@ -212,6 +212,7 @@ x3dom.registerNodeType(
                 if (!this._cf.geometry.node) {
                     this.addChild(new x3dom.nodeTypes.Box());
 
+                    this._cf.geometry.node._vf.solid = false;
                     this._cf.geometry.node._vf.hasHelperColors = false;
                     this._cf.geometry.node._vf.size = new x3dom.fields.SFVec3f(
                         this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);

@@ -48,15 +48,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'horizontal', true);
 
             /**
-             * Specifies where the text is anchored.
+             * Specifies where the text is anchored. The default of ["MIDDLE", "MIDDLE"] deviates from the ISO spec. default
+             * of ["BEGIN", "FIRST"] for backward compatibiliy reasons. 
              * @var {x3dom.fields.MFString} justify
              * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
-             * @initvalue ['BEGIN']
+             * @initvalue ['MIDDLE', 'MIDDLE']
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'justify', ['BEGIN']);
+            this.addField_MFString(ctx, 'justify', ['MIDDLE', 'MIDDLE']);
 
             /**
              * The language field specifies the context of the language for the text string in the form of a language and a country in which that language is used.
@@ -120,6 +121,18 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool(ctx, 'topToBottom', true);
+            
+            /**
+             * Sets the quality of the text rendering as an oversampling factor.
+             * @var {x3dom.fields.SFFloat} quality
+             * @range [0, inf]
+             * @memberof x3dom.nodeTypes.FontStyle
+             * @initvalue 2.0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'quality', 2.0);
+
         
         },
         {
@@ -128,7 +141,9 @@ x3dom.registerNodeType(
                     fieldName == 'language' || fieldName == 'leftToRight' || fieldName == 'size' ||
                     fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
                     Array.forEach(this._parentNodes, function (node) {
-                        node.fieldChanged(fieldName);
+                        Array.forEach(node._parentNodes, function (textnode) {
+                            textnode.setAllDirty();
+                        });
                     });
                 }
             }

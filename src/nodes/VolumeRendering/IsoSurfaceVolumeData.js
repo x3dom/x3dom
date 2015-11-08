@@ -338,11 +338,17 @@ x3dom.registerNodeType(
                     this.lightEquationShaderText();
                     shaderText += "void main()\n"+
                     "{\n"+
-                    "  bool out_box = all(bvec2(any(greaterThan(pos.xyz, vec3(1.0))), any(lessThan(pos.xyz, vec3(0.0)))));\n"+
-                    "  if(out_box) discard;\n"+
                     "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                    "  vec3 dir = normalize(pos.xyz-(cam_pos/dimensions+0.5));\n"+
-                    "  vec3 ray_pos = pos.xyz;\n"+
+                    "  vec3 cam_cube = cam_pos/dimensions+0.5;\n"+
+                    "  vec3 dir = normalize(pos.xyz-cam_cube);\n";
+                    if(this._vf.allowViewpointInside){
+                        shaderText +=
+                        "  float cam_inside = float(all(bvec2(all(lessThan(cam_cube, vec3(1.0))),all(greaterThan(cam_cube, vec3(0.0))))));\n"+
+                        "  vec3 ray_pos = mix(pos.xyz, cam_cube, cam_inside);\n";
+                    }else{
+                        shaderText += "  vec3 ray_pos = pos.xyz;\n";
+                    }
+                    shaderText +=
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                     "  float sample = 0.0;\n"+
                     "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
@@ -461,6 +467,7 @@ x3dom.registerNodeType(
                 if (!this._cf.geometry.node) {
                     this.addChild(new x3dom.nodeTypes.Box());
 
+                    this._cf.geometry.node._vf.solid = false;
                     this._cf.geometry.node._vf.hasHelperColors = false;
                     this._cf.geometry.node._vf.size = new x3dom.fields.SFVec3f(
                         this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);

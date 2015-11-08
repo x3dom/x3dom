@@ -405,7 +405,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	if(properties.TEXTURED){
 		if(properties.CUBEMAP) {
 			shader += "fragViewDir = (viewMatrix[3].xyz);\n";
-		} else if (properties.SPHEREMAPPING) {
+		}
+		if (properties.SPHEREMAPPING) {
 			shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;\n";
 		} else if(properties.TEXTRAFO) {
 			shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
@@ -545,10 +546,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Textures
 	if(properties.TEXTURED) {
 		shader += "varying vec2 fragTexcoord;\n";
-		if((properties.TEXTURED || properties.DIFFUSEMAP) && !properties.CUBEMAP) {
+		if((properties.TEXTURED || properties.DIFFUSEMAP)) {
 			shader += "uniform sampler2D diffuseMap;\n";
-		} else if(properties.CUBEMAP) {
-			shader += "uniform samplerCube cubeMap;\n";
+		}
+		if(properties.CUBEMAP) {
+			shader += "uniform samplerCube environmentMap;\n";
 			shader += "varying vec3 fragViewDir;\n";
 
 		}
@@ -788,20 +790,21 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         }
 		
 		//Textures
-		if(properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT )){
+		if(properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT || properties.CUBEMAP)){
 			if(properties.CUBEMAP) {
 				shader += "vec3 viewDir = normalize(fragViewDir);\n";
-				shader += "vec3 reflected = reflect(viewDir, normal);\n";
-				shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n";
-				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "textureCube(cubeMap, reflected)") + ";\n";
-				shader += "color.a *= texColor.a;\n";
+				shader += "vec3 reflected = reflect(-eye, normal);\n";
+				shader += "reflected = (modelViewMatrixInverse * vec4(reflected, 0.0)).xyz;\n";
+				shader += "vec4 envColor = " + x3dom.shader.decodeGamma(properties, "textureCube(environmentMap, reflected)") + ";\n";
+				shader += "color.a *= envColor.a;\n";
 			}
-            else if (properties.DIFFPLACEMENTMAP)
+
+			if (properties.DIFFPLACEMENTMAP)
             {
                 shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
                 shader += "vec4 texColor = texture2D(diffuseDisplacementMap, texCoord);\n";
             }
-            else
+            else if(properties.DIFFUSEMAP)
             {
                 if (properties.PIXELTEX) {
                     shader += "vec2 texCoord = fragTexcoord;\n";
@@ -811,12 +814,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 				shader += "color.a *= texColor.a;\n";
 			}
+
 			if(properties.BLENDING){
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor);\n";
-				if(properties.CUBEMAP) {
-					shader += "color.rgb = mix(color.rgb, texColor.rgb, vec3(0.75));\n";
-				} else {
+
+				if(properties.DIFFUSEMAP) {
 					shader += "color.rgb *= texColor.rgb;\n";
+				}
+				if(properties.CUBEMAP) {
+					shader += "color.rgb *= envColor.rgb;\n";
 				}
 			}else{
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*_specularColor);\n";
@@ -830,7 +836,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - transparency);\n";
 		}
 		
-		if(properties.TEXTURED || properties.DIFFUSEMAP){
+		if(properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT )){
             if (properties.PIXELTEX) {
                 shader += "vec2 texCoord = fragTexcoord;\n";
             } else {

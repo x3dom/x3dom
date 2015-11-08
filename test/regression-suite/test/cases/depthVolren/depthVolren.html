@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <title>Volume Rendering RadarVolumeStyle</title>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"></meta>
+    <link rel="stylesheet" type="text/css" href="x3dom.css"></link>
+    <script type="text/javascript" src="../../../../x3dom-full_include.js"></script>
+  </head>
+  
+  <script type="text/javascript">
+  </script>
+  
+  <body style="background:white">
+    <div style="position:absolute; top:0px; left:0px">
+        <X3D id="x3d" xmlns='http://www.web3d.org/specifications/x3d-namespace'
+            showStat='false' showLog='false' width='512px' height='512px'>
+            <Scene>
+                <Background DEF="bg" transparency ='0.0' skyColor='0 0 0'></Background>
+                <Viewpoint DEF="vp" description='Default' position="0 0 13" zNear='0.1' zFar='100.0' fieldOfView="0.5"></Viewpoint>
+                <Group>
+                    <Group DEF="polygon">
+                        <Group DEF="cut">
+                            <SphereSensor id="SPHSENSOR" DEF='SPHSENSOR' autoOffset='true' description='click and drag to rotate'></SphereSensor>
+                            <Transform DEF="SPHROT" id="cut_plane_rotation">
+                                <Transform DEF="SPHTRANS" id="cut_plane_translation" translation="0.0 0.0 -2.0">
+                                    <Shape DEF="cut_plane">
+                                        <Appearance>
+                                            <BlendMode></BlendMode>
+                                            <Material id="x3hprycjk" emissiveColor='0.2 0.2 0.2'></Material>
+                                        </Appearance>
+                                        <IndexedLineSet onmouseover='document.getElementById("x3hprycjk").setAttribute("emissiveColor", "0.1 0.1 0.9");'  onmouseout='document.getElementById("x3hprycjk").setAttribute("emissiveColor", "0.2 0.2 0.2");' coordIndex='0 1 2 3 0 -1'>
+                                            <Coordinate DEF='TurnPoints_2' point='-2 -2 0 2 -2 0 2 2 0 -2 2 0'></Coordinate>
+                                        </IndexedLineSet>
+                                    </Shape>
+                                    <Transform rotation="0 0 1 1.57"><Shape use="cut_plane"></Transform>
+                                    <Transform rotation="0 0 1 3.142"><Shape use="cut_plane"></Transform>
+                                    <Transform rotation="0 0 1 -1.57"><Shape use="cut_plane"></Transform>
+                                </Transform>
+                            </Transform>
+                            <ROUTE fromField='rotation_changed' fromNode='SPHSENSOR' toField='set_rotation' toNode='SPHROT'></ROUTE>
+                        </Group>
+                        
+                        <Transform rotation='0.0 0.0 1.0 1.57'>
+                            <Transform translation='-0.30 -0.50 0.0'>
+                                <shape>
+                                    <Appearance>
+                                        <Material diffuseColor="0.7 0.7 0.7" specularColor=".5 .5 .5"></Material>
+                                    </Appearance>
+                                    <Box size="0.075 0.3 0.3"></Box>
+                                </shape>
+                            </Transform>
+                        </Transform>
+                    </Group>
+                    
+                    <VolumeData dimensions='4.0 4.0 4.0'>
+                        <ImageTextureAtlas containerField="voxels" url="aorta4096.png" numberOfSlices="97" slicesOverX="10" slicesOverY="10">
+                        </ImageTextureAtlas>
+                        <RadarVolumeStyle id="vs" DEF="VOLREN3D" isoSurfaceCutoffValue="0.3" transparency="0.9" intensityLimits="0.0 1.0">
+                            <ImageTexture containerField='transferFunction' url='color_transfer.png'></ImageTexture>
+                            <RenderedTexture containerField='depthTexture' update="always" dimensions="512 512 4" depthMap="true">
+                                <Viewpoint USE="vp"></Viewpoint>
+                                <Background USE="bg"></Background>
+                                <Transform>
+                                    <group USE="polygon"></group>
+                                </Transform>
+                            </RenderedTexture>
+                        </RadarVolumeStyle>
+                    </VolumeData>
+                    <ROUTE fromField='rotation_changed' fromNode='SPHSENSOR' toField='xSectionOrientation' toNode='VOLREN3D'></ROUTE>
+                </Group>
+            </Scene>
+        </X3D>
+    </div>
+    
+    <p>Threshold:</p>
+    <input id="iso" type="range" min="0" max="1" step="0.01" ></input>
+    
+    <p>Move Plane:</p>
+    <input id="mcp" type="range" min="0" max="1" step="0.01" ></input>
+    
+    <script>
+        function setThreshold(val) {
+            document.getElementById("vs").setAttribute("isoSurfaceCutoffValue", val);
+
+        }
+        
+
+        function setPosition(val) {
+            document.getElementById("cut_plane_translation").setAttribute("translation", "0.0 0.0 " + 4.0*(val - 0.5));
+            document.getElementById("vs").setAttribute("xSectionPosition", val);
+
+        };
+    </script>
+  </body>
+</html>

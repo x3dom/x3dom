@@ -54,6 +54,16 @@ x3dom.registerNodeType(
             //this.addField_SFBool(ctx, 'swapped', false);
             //this.addField_SFVec3f(ctx, 'sliceThickness', 1, 1, 1);
 
+            /**
+             * Allow to locate the viewpoint inside the volume.
+             * @var {x3dom.fields.SFBool} allowViewpointInside
+             * @memberof x3dom.nodeTypes.X3DVolumeDataNode
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'allowViewpointInside', true)
+
             //Neccesary for counting the textures which are added on each style, number of textures can be variable
             this._textureID = 0;
             this._first = true;
@@ -87,14 +97,14 @@ x3dom.registerNodeType(
             },
 
             //Common vertex shader text for all volume data nodes
-            vertexShaderText: function(){
+            vertexShaderText: function(needEyePosition){
                 var shader = 
                 "attribute vec3 position;\n"+
                 "uniform vec3 dimensions;\n"+
                 "uniform mat4 modelViewProjectionMatrix;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "varying vec4 pos;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                     shader += "uniform mat4 modelViewMatrix;\n"+
                     "varying vec4 position_eye;\n";
                 }
@@ -102,7 +112,7 @@ x3dom.registerNodeType(
                 "void main()\n"+
                 "{\n"+
                 "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                    shader += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
                 }
                 shader += 
@@ -112,7 +122,7 @@ x3dom.registerNodeType(
                 return shader;
             },
 
-            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
+            defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY, needEyePosition){
                var uniformsText = 
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 dimensions;\n"+
@@ -121,7 +131,7 @@ x3dom.registerNodeType(
                 "uniform mat4 modelViewMatrixInverse;\n"+
                 "varying vec4 vertexPosition;\n"+
                 "varying vec4 pos;\n";
-                if(x3dom.nodeTypes.X3DLightNode.lightID>0){
+                if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                     uniformsText += "varying vec4 position_eye;\n";
                 }
                 //LIGHTS
@@ -194,11 +204,17 @@ x3dom.registerNodeType(
                 initializeValues = typeof initializeValues !== 'undefined' ? initializeValues : ""; //default value, empty string
                 var shaderLoop = "void main()\n"+
                 "{\n"+
-                "  bool out_box = all(bvec2(any(greaterThan(pos.xyz, vec3(1.0))), any(lessThan(pos.xyz, vec3(0.0)))));\n"+
-                "  if(out_box) discard;\n"+
                 "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                "  vec3 dir = normalize(pos.xyz-(cam_pos/dimensions+0.5));\n"+
-                "  vec3 ray_pos = pos.xyz;\n"+
+                "  vec3 cam_cube = cam_pos/dimensions+0.5;\n"+
+                "  vec3 dir = normalize(pos.xyz-cam_cube);\n";
+                if(this._vf.allowViewpointInside){
+                    shaderLoop +=
+                    "  float cam_inside = float(all(bvec2(all(lessThan(cam_cube, vec3(1.0))),all(greaterThan(cam_cube, vec3(0.0))))));\n"+
+                    "  vec3 ray_pos = mix(pos.xyz, cam_cube, cam_inside);\n";
+                }else{
+                    shaderLoop += "  vec3 ray_pos = pos.xyz;\n";
+                }
+                shaderLoop +=
                 "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+

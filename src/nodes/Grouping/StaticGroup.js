@@ -122,7 +122,7 @@ x3dom.registerNodeType(
 
                 // check if sub-graph can be culled away or render flag was set to false
                 planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask <= 0) {
+                if (planeMask < 0) {
                     return;
                 }
 

@@ -408,7 +408,7 @@ x3dom.shader.TBNCalculation = function() {
         "    // assume N, the interpolated vertex normal and\n" +
         "    // V, the view vector (vertex to eye)\n" +
         "    vec3 map = texture2D(normalMap, texcoord ).xyz;\n" +
-        "    map = map * 255./127. - 128./127.;\n" +
+		"    map = 2.0 * map - 1.0;\n" +
         "    mat3 TBN = cotangent_frame(N, -V, texcoord);\n" +
         "    return normalize(TBN * map);\n" +
         "}\n\n";
