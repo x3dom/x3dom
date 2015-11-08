@@ -41,7 +41,8 @@ x3dom.EarClipping = {
 					z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 				}
 				
-				if (z < 0) {
+				//if (z < 0) {
+				if (z > 0) {
 					count--;
 				} else {
 					count++;
