@@ -67,7 +67,7 @@ x3dom.EarClipping = {
 			
 		var isEar = true;
 		
-		while(linklist.length >= 3 && count < 15) {
+		while(linklist.length >= 3 && count < 150) {
 			next = node.next;
 			for(var i = 0; i < linklist.length; i++) {
 				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
