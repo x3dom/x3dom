@@ -81,13 +81,11 @@ x3dom.EarClipping = {
 					isEar = false;
 				}
 			}
-			//x3dom.debug.logInfo(isEar,node.prev.point_index, node.point_index, node.next.point_index);
 			if(isEar) {
 				if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {
 					indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 					linklist.deleteNode(node);
 				} else {
-					//x3dom.debug.logInfo("not ear");
 					count++;
 				}
 			}
