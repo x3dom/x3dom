@@ -31,29 +31,31 @@ x3dom.EarClipping = {
 				nodek = linklist.getNode(k); 
 				// use standard shoelace			
 				if(plane == 'YZ') {
-					z  += (nodel.point.y - nodei.point.y) * (nodel.point.z + nodei.point.z);
-					//z = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
-					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
+					//z  += (nodel.point.y - nodei.point.y) * (nodel.point.z + nodei.point.z);
+					z = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
+					z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
 				} else if(plane == 'XZ') {
-					z  += (nodel.point.z - nodei.point.z) * (nodel.point.x + nodei.point.x);
+					//z  += (nodel.point.z - nodei.point.z) * (nodel.point.x + nodei.point.x);
 					//z = (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
 					//z -= (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
+					z = (nodel.point.z - nodei.point.z) * (nodek.point.x - nodel.point.x);
+					z -= (nodel.point.z - nodei.point.z) * (nodek.point.x - nodel.point.x);
 				} else {
-					z  += (nodel.point.x - nodei.point.x) * (nodel.point.y + nodei.point.y);
-					//z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
-					//z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
+					//z  += (nodel.point.x - nodei.point.x) * (nodel.point.y + nodei.point.y);
+					z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
+					z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 				}
 				
-				//if (z < 0) {
-				if (z > 0) {
+				if (z < 0) {
+				//if (z > 0) {
 					count--;
 				} else {
 					count++;
 				}
 			}
 			
-			//if (count < 0) {
-			if (z > 0) {
+			if (count < 0) {
+			//if (z > 0) {
 				linklist.invert();
 				return true;
 			}	
