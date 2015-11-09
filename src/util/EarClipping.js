@@ -42,8 +42,8 @@ x3dom.EarClipping = {
 					z -= (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
 				} else {
 					//z  += (nodel.point.x - nodei.point.x) * (nodel.point.y + nodei.point.y);
-					z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
-					z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
+					z  = -(nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
+					z += (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 				}
 				
 				if (z < 0) {
