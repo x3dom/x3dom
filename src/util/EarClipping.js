@@ -74,12 +74,12 @@ x3dom.EarClipping = {
 		var isEar = true;
 		// count counts concave ears; seems to be fail safe ?
 		// why 15? (upped from 10 originally), increase to 1000?
-		while(linklist.length >= 3 && count < 150) {
+		while(linklist.length >= 3 && count < 1000) {
 			next = node.next;
-			for(var i = 0; i < linklist.length; i++) {
+			for(var i = 0; i < linklist.length && isEar; i++) {
 				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
 					isEar = false;
-					break; // one point in triangle suffices
+					//break; // one point in triangle suffices
 				}
 			}
 			if(isEar) {
@@ -87,7 +87,7 @@ x3dom.EarClipping = {
 					indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 					linklist.deleteNode(node);
 					//restart count ?
-					//count = 0;
+					count = 0;
 				} else {
 					count++;
 				}
@@ -120,14 +120,14 @@ x3dom.EarClipping = {
 			
 		var isEar = true;
 		// count < 1000?
-		while(linklist.length >= 3  && count < 150) {
+		while(linklist.length >= 3  && count < 1000) {
 			
 			next = node.next;
-			for(var i = 0; i < linklist.length; i++) {
+			for(var i = 0; i < linklist.length && isEar; i++) {
 				
 			if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
 					isEar = false;
-					break;
+					//break;
 				}
 			}
 			if(isEar) {
@@ -154,7 +154,8 @@ x3dom.EarClipping = {
 											node.next.texCoords); 
 					}
 					linklist.deleteNode(node);
-					//count = 0;
+					//reset count
+					count = 0;
 				}  else {
 					count++;
 				}
