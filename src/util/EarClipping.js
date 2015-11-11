@@ -24,31 +24,37 @@ x3dom.EarClipping = {
 			
 			for (var i = 0; i < linklist.length; i++) {
 				l = (i + 1) % linklist.length;
-				k = (i + 2) % linklist.length;
+				//k = (i + 2) % linklist.length;
 				
 				nodei = linklist.getNode(i);
 				nodel = linklist.getNode(l);
-				nodek = linklist.getNode(k); 
-							
+				//nodek = linklist.getNode(k); 
+				// use standard shoelace			
 				if(plane == 'YZ') {
-					z  = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
-					z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
+					z  += (nodel.point.y - nodei.point.y) * (nodel.point.z + nodei.point.z);
+					//z = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
+					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
 				} else if(plane == 'XZ') {
-					z  = (nodel.point.z - nodei.point.z) * (nodek.point.x - nodel.point.x);
-					z -= (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
+					z  += (nodel.point.z - nodei.point.z) * (nodel.point.x + nodei.point.x);
+					//z = (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
+					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.x - nodel.point.x);
 				} else {
-					z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
-					z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
+					z  += (nodel.point.x - nodei.point.x) * (nodel.point.y + nodei.point.y);
+					//z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
+					//z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 				}
-				
+				/*
 				if (z < 0) {
 					count--;
 				} else {
 					count++;
 				}
+				*/
 			}
 			
-			if (count < 0) {
+			//if (count < 0) {
+			//if counterclockwise
+			if (z > 0) {
 				linklist.invert();
 				return true;
 			}	
@@ -66,19 +72,22 @@ x3dom.EarClipping = {
 		var count = 0;	
 			
 		var isEar = true;
-		
-		while(linklist.length >= 3 && count < 15) {
+		// count counts concave ears; seems to be fail safe ?
+		// why 15? (upped from 10 originally), increase to 1000?
+		while(linklist.length >= 3 && count < 150) {
 			next = node.next;
 			for(var i = 0; i < linklist.length; i++) {
 				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
 					isEar = false;
+					break; // one point in triangle suffices
 				}
 			}
-			
 			if(isEar) {
 				if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {
 					indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 					linklist.deleteNode(node);
+					//restart count ?
+					//count = 0;
 				} else {
 					count++;
 				}
@@ -110,13 +119,15 @@ x3dom.EarClipping = {
 		var count = 0;
 			
 		var isEar = true;
-		while(linklist.length >= 3  && count < 15) {
+		// count < 1000?
+		while(linklist.length >= 3  && count < 150) {
 			
 			next = node.next;
 			for(var i = 0; i < linklist.length; i++) {
 				
 			if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
 					isEar = false;
+					break;
 				}
 			}
 			if(isEar) {
@@ -143,6 +154,7 @@ x3dom.EarClipping = {
 											node.next.texCoords); 
 					}
 					linklist.deleteNode(node);
+					//count = 0;
 				}  else {
 					count++;
 				}
