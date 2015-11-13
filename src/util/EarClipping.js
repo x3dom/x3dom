@@ -4,6 +4,7 @@
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
  * Dual licensed under the MIT and GPL
+ * (C)2015 improvements by Andreas Plesch
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -14,7 +15,6 @@ x3dom.EarClipping = {
 	
 	reversePointDirection: function (linklist, plane) {
 			var l, k;
-			var count = 0;
 			var z = 0;
 			var nodei, nodel, nodek;
 			
@@ -24,35 +24,18 @@ x3dom.EarClipping = {
 			
 			for (var i = 0; i < linklist.length; i++) {
 				l = (i + 1) % linklist.length;
-				//k = (i + 2) % linklist.length;
 				
 				nodei = linklist.getNode(i);
 				nodel = linklist.getNode(l);
-				//nodek = linklist.getNode(k); 
 				// use standard shoelace			
 				if(plane == 'YZ') {
 					z  += (nodel.point.y - nodei.point.y) * (nodel.point.z + nodei.point.z);
-					//z = (nodel.point.y - nodei.point.y) * (nodek.point.z - nodel.point.z);
-					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.y - nodel.point.y);
 				} else if(plane == 'XZ') {
 					z  += (nodel.point.z - nodei.point.z) * (nodel.point.x + nodei.point.x);
-					//z = (nodel.point.x - nodei.point.x) * (nodek.point.z - nodel.point.z);
-					//z -= (nodel.point.z - nodei.point.z) * (nodek.point.x - nodel.point.x);
 				} else {
 					z  += (nodel.point.x - nodei.point.x) * (nodel.point.y + nodei.point.y);
-					//z  = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
-					//z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 				}
-				/*
-				if (z < 0) {
-					count--;
-				} else {
-					count++;
-				}
-				*/
 			}
-			
-			//if (count < 0) {
 			//if counterclockwise
 			if (z > 0) {
 				linklist.invert();
@@ -60,7 +43,7 @@ x3dom.EarClipping = {
 			}	
 			return false;
 	}, 
-
+	
 	getIndexes: function (linklist) {
 		var node = linklist.first.next;
 		var plane = this.identifyPlane(node.prev.point, node.point, node.next.point);
@@ -69,33 +52,29 @@ x3dom.EarClipping = {
 		var indexes = [];
 		node = linklist.first.next;
 		var next = null;
-		var count = 0;	
+		var timeout = 5000;
+		var t0 = Date.now();
 			
 		var isEar = true;
-		// count counts concave ears; seems to be fail safe ?
-		// why 15? (upped from 10 originally), increase to 1000?
-		while(linklist.length >= 3 && count < 150) {
+		while(linklist.length >= 3)  {
 			next = node.next;
-			for(var i = 0; i < linklist.length; i++) {
-				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
-					isEar = false;
-					break; // one point in triangle suffices
+			if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {
+				for(var i = 0; i < linklist.length; i++) {
+					if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
+						isEar = false;
+						break; // one point in triangle suffices
+					}
 				}
-			}
-			if(isEar) {
-				if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {
+				if(isEar) {
 					indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 					linklist.deleteNode(node);
-					//restart count ?
-					//count = 0;
-				} else {
-					count++;
 				}
 			}
-
 			node = next;
 			isEar = true;
+			if (Date.now() - t0 > timeout) { x3dom.debug.logError("Ear clipping timed out."); break; }
 		}
+		
 		if(invers){
 			return indexes.reverse();
 		} else {
@@ -116,54 +95,39 @@ x3dom.EarClipping = {
 		data.texCoords = [];
 		node = linklist.first.next;
 		var next = null;
-		var count = 0;
-			
+		var timeout = 5000;
+		var t0 = Date.now();
+		
 		var isEar = true;
-		// count < 1000?
-		while(linklist.length >= 3  && count < 150) {
-			
+		while(linklist.length >= 3) {
 			next = node.next;
-			for(var i = 0; i < linklist.length; i++) {
-				
-			if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
-					isEar = false;
-					break;
+			if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {
+				for(var i = 0; i < linklist.length; i++) {
+					if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
+						isEar = false;
+						break;
+					}
 				}
-			}
-			if(isEar) {
-				
-				if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {				
+				if(isEar) {
 					data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
-					data.point.push(node.prev.point,
-									node.point,
-									node.next.point);
+					data.point.push(node.prev.point, node.point, node.next.point);
 					if(node.normals) {					
-						data.normals.push(node.prev.normals,
-										  node.normals,
-										  node.next.normals);
-					
+						data.normals.push(node.prev.normals, node.normals, node.next.normals);
 					}
 					if(node.colors){
-						data.colors.push(node.prev.colors,
-										node.colors,
-										node.next.colors);
+						data.colors.push(node.prev.colors, node.colors,	node.next.colors);
 					}
 					if(node.texCoords){
-						data.texCoords.push(node.prev.texCoords,
-											node.texCoords,
-											node.next.texCoords); 
+						data.texCoords.push(node.prev.texCoords, node.texCoords, node.next.texCoords); 
 					}
 					linklist.deleteNode(node);
-					//count = 0;
-				}  else {
-					count++;
 				}
 			}
-
 			node = next;
 			isEar = true;
+			//abort if too long
+			if (Date.now() - t0 > timeout) { x3dom.debug.logError("Earclipping timed out."); break; }
 		}
-		
 		if(invers){	
 			data.indices = data.indices.reverse();
 			data.point = data.point.reverse();
@@ -171,9 +135,8 @@ x3dom.EarClipping = {
 			data.colors = data.colors.reverse();
 			data.texCoords = data.texCoords.reverse();
 		}
-
 		return data;
-	}, 
+	},
 	
 	isNotEar: function (ap1, tp1, tp2, tp3, plane) {
 		var b0, b1, b2, b3;
