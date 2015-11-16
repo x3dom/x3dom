@@ -804,7 +804,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                 shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
                 shader += "vec4 texColor = texture2D(diffuseDisplacementMap, texCoord);\n";
             }
-            else if(properties.DIFFUSEMAP)
+            else if(properties.DIFFUSEMAP || properties.TEXT)
             {
                 if (properties.PIXELTEX) {
                     shader += "vec2 texCoord = fragTexcoord;\n";
@@ -818,7 +818,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			if(properties.BLENDING){
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor);\n";
 
-				if(properties.DIFFUSEMAP) {
+				if(properties.DIFFUSEMAP || properties.TEXT) {
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 				if(properties.CUBEMAP) {

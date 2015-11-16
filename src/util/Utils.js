@@ -1062,7 +1062,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
-        console.log(property);
+        //console.log(property);
 	}
 
 	property.toIdentifier = function() {
