@@ -15,7 +15,6 @@ x3dom.EarClipping = {
 		
 		var node = linklist.first.next;
 		var plane = this.identifyPlane(node.prev.point, node.point, node.next.point);
-		console.log(plane);
 		var i, points, x, y;
 		points = [];
 		point_indexes = [];
