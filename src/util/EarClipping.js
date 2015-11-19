@@ -105,6 +105,7 @@ x3dom.EarClipping = {
 };
 
 //TODO: adjust to directly use x3dom linked list
+//      move to separate file
 x3dom.EarCut = {
 
 	triangulate: function mapEarcut (data, holes, dim) {
