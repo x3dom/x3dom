@@ -105,6 +105,7 @@ x3dom.EarClipping = {
 	}
 };
 
+//TODO: adjust to directly use x3dom linked list
 x3dom.EarCut = {
 
 	triangulate: function mapEarcut (data, holes, dim) {
@@ -153,11 +154,9 @@ function earcut(data, holeIndices, dim) {
         // minX, minY and size are later used to transform coords into integers for z-order calculation
         size = Math.max(maxX - minX, maxY - minY);
     }
-
-    earcutLinked(outerNode, triangles, dim, minX, minY, size);
-		console.log(clockwise);
-    if (clockwise === false) {triangles.reverse();}
-    return triangles;
+	earcutLinked(outerNode, triangles, dim, minX, minY, size);
+	if (clockwise === false) {triangles.reverse();}
+	return triangles;
 }
 
 // calculate original winding order of a polygon ring
