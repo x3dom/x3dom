@@ -53,7 +53,8 @@ x3dom.EarClipping = {
 		
 		points = [];
 		
-		for (i = linklist.length-1; i >= 0; i--) {
+		//for (i = linklist.length-1; i >= 0; i--) {
+		for (i = 0; i < linklist.length; i++) {
 			node = linklist.getNode(i);
 			switch (plane) {
 				case "XY": { x = node.point.x; y = node.point.y; break; }
