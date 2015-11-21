@@ -1813,14 +1813,29 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
                 else
                 {
+                    
+	        //Minimum/maximum zoom inside examine mode
+	        //To be set in HTML Typeparams
+	        //Parameter 4 = min zoom distance, parameter 5 = max zoom distance
+	        if (navi._vf.typeParams.length >= 4 && navi._vf.typeParams[4] > 0 && navi._vf.typeParams[5] > 0)
+	        {
+	
+                    var min = -navi._vf.typeParams[ 4 ];
+                    var max =  navi._vf.typeParams[ 5 ];
+	                                        
+                    this._movement.z = Math.min( Math.max( this._movement.z, min ), max );
+	                                    
+	        }
+                    
                     this._movement = this._movement.add(vec);
                     mat = this.getViewpointMatrix().mult(this._transMat);
+                    
                     //TODO; move real distance along viewing ray
                     this._transMat = mat.inverse().
                                      mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                                      mult(mat);
-                }
-            }
+                                     
+            	}
 
             this._isMoving = true;
         }
