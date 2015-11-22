@@ -126,8 +126,9 @@ function earcut(data, holeIndices, dim) {
 
     var hasHoles = holeIndices && holeIndices.length,
         outerLen = hasHoles ? holeIndices[0] * dim : data.length,
-        clockwise = windingOrder(data, 0, outerLen, dim),
         //outerNode = filterPoints(linkedList(data, 0, outerLen, dim, true, clockwise)),
+        //AP: remember winding order
+        clockwise = windingOrder(data, 0, outerLen, dim),
         outerNode = linkedList(data, 0, outerLen, dim, true, clockwise),
         triangles = [];
         
@@ -155,11 +156,13 @@ function earcut(data, holeIndices, dim) {
         size = Math.max(maxX - minX, maxY - minY);
     }
 	earcutLinked(outerNode, triangles, dim, minX, minY, size);
+	//AP: preserve winding order
 	if (clockwise === false) {triangles.reverse();}
 	return triangles;
 }
 
 // calculate original winding order of a polygon ring
+// AP: separated to get original winding order
 function windingOrder(data, start, end, dim) {
 	var sum = 0;
     for (i = start, j = end - dim; i < end; i += dim) {
@@ -171,6 +174,7 @@ function windingOrder(data, start, end, dim) {
 }
 
 // create a circular doubly linked list from polygon points in the specified winding order
+// AP: oclockwise = original winding order
 function linkedList(data, start, end, dim, clockwise, oclockwise) {
     var i, j, last;
 
