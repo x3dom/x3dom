@@ -31,7 +31,7 @@ x3dom.EarClipping = {
 			point_indexes.push(node.point_index);
 		}
 		var triangles = x3dom.EarCut.triangulate(points, null, 2);
-		triangles = triangles.map(function(el) {return point_indexes[el];}) ;
+		triangles = triangles.map(function(m) {return point_indexes[m];}) ;
 		return triangles;
 	},
 
@@ -53,7 +53,6 @@ x3dom.EarClipping = {
 		
 		points = [];
 		
-		//for (i = linklist.length-1; i >= 0; i--) {
 		for (i = 0; i < linklist.length; i++) {
 			node = linklist.getNode(i);
 			switch (plane) {
@@ -71,11 +70,11 @@ x3dom.EarClipping = {
 		}
 		
 		var triangles = x3dom.EarCut.triangulate(points, null, 2);
-		data.indices = triangles.map(function(el) {return mapped.indices[el];}) ;
-		data.point = triangles.map(function(el) {return mapped.point[el];}) ;
-		data.normals = triangles.map(function(el) {return mapped.normals[el];}) ;
-		data.colors = triangles.map(function(el) {return mapped.colors[el];}) ;
-		data.texCoords = triangles.map(function(el) {return mapped.texCoords[el];}) ;
+		data.indices = triangles.map(function(m) {return mapped.indices[m];}) ;
+		data.point = triangles.map(function(m) {return mapped.point[m];}) ;
+		if (node.normals) data.normals = triangles.map(function(m) {return mapped.normals[m];}) ;
+		if (node.colors) data.colors = triangles.map(function(m) {return mapped.colors[m];}) ;
+		if (node.texCoords) data.texCoords = triangles.map(function(m) {return mapped.texCoords[m];}) ;
 		return data;
 	}, 
 	
