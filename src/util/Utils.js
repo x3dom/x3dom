@@ -1016,13 +1016,14 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.VERTEXID         = ((property.BINARYGEOMETRY || property.EXTERNALGEOMETRY) && geometry._vf.idsPerVertex) ? 1 : 0;
         property.IS_PARTICLE      = (x3dom.isa(geometry, x3dom.nodeTypes.ParticleSet)) ? 1 : 0;
 
-        property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
+
         property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.TwoSidedMaterial)) ? 1 : 0;
         property.SEPARATEBACKMAT  = ( property.TWOSIDEDMAT && material._vf.separateBackColor) ? 1 : 0;
         property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
         property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
         property.CSSHADER         = (appearance && appearance._shader &&
                                      x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
+        property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
         property.LIGHTS           = (!property.POINTLINE2D && appearance && shape.isLit() && (material || property.CSSHADER)) ?
                                      viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
         property.TEXTURED         = (texture || property.TEXT || ( property.CSSHADER && appearance._shader.needTexcoords() ) ) ? 1 : 0;
