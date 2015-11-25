@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'colorPerVertex', true);
 
             /**
-             * If normalPerVertex is FALSE, colours are applied to each face. If normalPerVertex is true, normals are applied to each vertex.
+             * If normalPerVertex is FALSE, normals are applied to each face. If normalPerVertex is true, normals are applied to each vertex.
              * @var {x3dom.fields.SFBool} normalPerVertex
              * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
              * @initvalue true
