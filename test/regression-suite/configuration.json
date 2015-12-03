@@ -82,14 +82,14 @@
         		"url"   : "/test/cases/compressedTexture/compressedTexture.html",
 	        	"steps" :
 	                [
-	                   {
-	                       "type"      :   "ExecuteCommand",
-	                       "params"    :
-	                       {
-	                           "x3d"       :   "x3d",
-	                           "command"   :   "auto();"
-	                       }
-	                    },
+                        {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"  :   "1200"
+                            }
+                        },
 	                    {
 	                    	"type"		: "CompareScreenshot",
 	                    	"params"	:
@@ -1091,6 +1091,14 @@
                 "steps" :
                     [
                         {
+                            "type"      :   "Wait",
+                            "params"    :
+                            {
+                                "x3d"       :   "x3d",
+                                "time"  :   "1200"
+                            }
+                        },
+                        {
                             "type"      :   "ExecuteClick",
                             "params"    :
                             {
@@ -1112,6 +1120,14 @@
                 "url"   : "/test/cases/volrenProjection/volrenProjection.html",
                 "steps" :
                     [
+                        {
+                        "type"      :   "Wait",
+                        "params"    :
+                        {
+                            "x3d"       :   "x3d",
+                            "time"  :   "1200"
+                        }
+                        },
                         {
                             "type"      :   "CompareScreenshot",
                             "params"    :
