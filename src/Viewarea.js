@@ -182,15 +182,17 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
                 this._scene.getViewpoint().setView(mat);
             }
             else {
-                this._mixer._beginTime = 0;
-                this._mixer._endTime = 0;
+                //this._mixer._beginTime = 0;
+                //this._mixer._endTime = 0;
+                this._mixer.reset();
 
                 this._scene.getViewpoint().setView(this._mixer._endMat);
             }
         }
         else {
-            this._mixer._beginTime = 0;
-            this._mixer._endTime = 0;
+            //this._mixer._beginTime = 0;
+            //this._mixer._endTime = 0;
+            this._mixer.reset();
             
             this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
