@@ -634,7 +634,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     //gamma-adjusting actively before doing lighting computations. At the end
     //the color value is encoded again. See shader propery GAMMACORRECTION.
     shader += "vec4 color;\n";
-
 	shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffuseColor") + ";\n";
 	shader += "color.a = 1.0 - transparency;\n";
 
@@ -642,6 +641,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     shader += "float _shininess        = shininess;\n";
     shader += "vec3 _specularColor     = specularColor;\n";
     shader += "float _ambientIntensity = ambientIntensity;\n";
+	shader += "float _transparency     = transparency;\n";
 
     if (properties.MULTIVISMAP || properties.MULTIDIFFALPMAP || properties.MULTISPECSHINMAP || properties.MULTIEMIAMBMAP) {
         shader += "vec2 idCoord;\n";
@@ -664,6 +664,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "idCoord.y = floor(roundedIDMaterial / multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
         shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, idCoord );\n";
         shader += "color.rgb = " + x3dom.shader.decodeGamma(properties, "diffAlpha.rgb") + ";\n";
+		shader += "_transparency = 1.0 - diffAlpha.a;\n";
         shader += "color.a = diffAlpha.a;\n";
     }
 
@@ -754,6 +755,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "  if(!gl_FrontFacing) {\n";
             shader += "    color.rgb = " + x3dom.shader.decodeGamma(properties, "backDiffuseColor") + ";\n";
             shader += "    color.a = 1.0 - backTransparency;\n";
+			shader += "    _transparency = 1.0 - backTransparency;\n";
             shader += "    _shininess = backShininess;\n";
             shader += "    _emissiveColor = backEmissiveColor;\n";
             shader += "    _specularColor = backSpecularColor;\n";
@@ -804,7 +806,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                 shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
                 shader += "vec4 texColor = texture2D(diffuseDisplacementMap, texCoord);\n";
             }
-            else if(properties.DIFFUSEMAP)
+            else if(properties.DIFFUSEMAP || properties.TEXT)
             {
                 if (properties.PIXELTEX) {
                     shader += "vec2 texCoord = fragTexcoord;\n";
@@ -818,7 +820,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			if(properties.BLENDING){
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor);\n";
 
-				if(properties.DIFFUSEMAP) {
+				if(properties.DIFFUSEMAP || properties.TEXT) {
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 				if(properties.CUBEMAP) {
@@ -833,7 +835,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR) {
-			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - transparency);\n";
+			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - _transparency);\n";
 		}
 		
 		if(properties.TEXTURED && ( properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP || properties.TEXT )){
@@ -877,13 +879,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "    color.rgb = cappingColor;\n";
         shader += "}\n";
     }
-	
+
 	//Kill pixel
 	if(properties.TEXT) {
 		shader += "if (color.a <= 0.5) discard;\n";
 	} else {
 		shader += "if (color.a <= " + properties.ALPHATHRESHOLD + ") discard;\n";
 	}
+
+
 
     //Output the gamma encoded result.
     shader += "color = clamp(color, 0.0, 1.0);\n";

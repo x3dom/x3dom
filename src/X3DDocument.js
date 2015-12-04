@@ -611,7 +611,12 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             nav.setType("lookat", this._viewarea);
             break;
         case 109: /* m, toggle "points" attribute */
-            this._viewarea._points = ++this._viewarea._points % 3;
+            //"0" = triangles
+            //"1" = points
+            //"2" = lines
+	    //TODO: here, as option "2", we originally rendered triangle meshes as lines
+            //	    instead, we should create a separate line buffer and render it
+            this._viewarea._points = ++this._viewarea._points % 2;
             break;
         case 110: /* n, turntable */
             nav.setType("turntable", this._viewarea);

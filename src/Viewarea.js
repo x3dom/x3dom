@@ -182,15 +182,17 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
                 this._scene.getViewpoint().setView(mat);
             }
             else {
-                this._mixer._beginTime = 0;
-                this._mixer._endTime = 0;
+                //this._mixer._beginTime = 0;
+                //this._mixer._endTime = 0;
+                this._mixer.reset();
 
                 this._scene.getViewpoint().setView(this._mixer._endMat);
             }
         }
         else {
-            this._mixer._beginTime = 0;
-            this._mixer._endTime = 0;
+            //this._mixer._beginTime = 0;
+            //this._mixer._endTime = 0;
+            this._mixer.reset();
             
             this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
@@ -1813,6 +1815,15 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
                 else
                 {
+                    if ( navi._vf.typeParams.length >= 6 ) {
+
+                        var min = -navi._vf.typeParams[ 5 ];
+                        var max =  navi._vf.typeParams[ 4 ];
+
+                        this._movement.z = Math.min( Math.max( this._movement.z, min ), max );
+
+                    }
+
                     this._movement = this._movement.add(vec);
                     mat = this.getViewpointMatrix().mult(this._transMat);
                     //TODO; move real distance along viewing ray
