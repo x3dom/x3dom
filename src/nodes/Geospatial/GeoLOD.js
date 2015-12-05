@@ -140,12 +140,10 @@ x3dom.registerNodeType(
             //MFNode per spec. but this makes the custom SFNodes below impossible
             this.addField_MFNode('rootNode', x3dom.nodeTypes.X3DChildNode);
 
-            // need to add field from x3dlodnode
-            
              /**
              * The center field is a translation offset in the local coordinate system that specifies the centre of the LOD node for distance calculations. The level of detail is switched depending upon whether the user is closer or farther than range length base units from the geospatial coordinate center. The center field should be specified as described in 25.2.4 Specifying geospatial coordinates.
              * @var {x3dom.fields.SFVec3f} center
-             * @memberof x3dom.nodeTypes.X3DLODNode
+             * @memberof x3dom.nodeTypes.GeoLOD
              * @initvalue 0,0,0
              * @field x3d
              * @instance
@@ -224,7 +222,7 @@ x3dom.registerNodeType(
               this._rootNodeLoaded = true;
               this._childUrlNodesLoaded = false;
               //figure out how to copy
-              this._x3dcenter = new x3dom.fields.SFVec3f(0, 0, 0); 
+              //this._x3dcenter = new x3dom.fields.SFVec3f(0, 0, 0); 
               
               //this._rootNode = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
               //this._rootNode = this._cf.rootNode;
