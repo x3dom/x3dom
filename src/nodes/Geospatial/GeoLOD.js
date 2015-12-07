@@ -214,13 +214,13 @@ x3dom.registerNodeType(
              Shape nodes add themselves to the current drawablecollection
              collectDrawableCollection is called for every frame
              */
-              this._lastRangePos = -1;
+              //this._lastRangePos = -1;
               this._child1added = false;
               this._child2added = false;
               this._child3added = false;
               this._child4added = false;
               this._rootNodeLoaded = true;
-              this._childUrlNodesLoaded = false;
+              //this._childUrlNodesLoaded = false;
               //figure out how to copy
               //this._x3dcenter = new x3dom.fields.SFVec3f(0, 0, 0); 
               
@@ -273,6 +273,13 @@ x3dom.registerNodeType(
                 }
                 this._lastRangePos = i;
                 */
+                
+                //TODO: preload when close = 0.9 * range
+                //- just load but do not add to drawables
+                //- then at range just add to drawable
+                //TODO: unload inlines if out of range and after (configurable) timeout (1 minute?)
+                // - loaded = false and childurlnodes = null, childurlnodes = new mfnode should suffice ?
+                
                 if (len > this._vf.range) {
                     
                     if(!this._rootNodeLoaded) {
@@ -291,7 +298,12 @@ x3dom.registerNodeType(
                     /*
                     if (this._childUrlNodesLoaded) {
                         this._childUrlNodesLoaded = false;
+                        this._child1added = false;
+                        this._child2added = false;
+                        this._child3added = false;
+                        this._child4added = false;
                         this._childUrlNodes = null;
+                        this._childUrlNodes = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
                     }
                     */
                     //rootNode already has rootUrl node if empty, see nodeChanged()
