@@ -121,8 +121,19 @@ x3dom.getFieldValue = function(fieldName)
 {
     var x3dNode = this._x3domNode;
 
-    if (x3dNode && x3dNode._vf[fieldName]) {
-        return x3dNode._vf[fieldName].copy();
+    if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
+
+        var fieldValue = x3dNode._vf[fieldName];
+
+        if(fieldValue instanceof Object && 'copy' in fieldValue)
+        {
+            return x3dNode._vf[fieldName].copy();
+        }
+        else
+        {
+            //f.i. SFString SFBool aren't objects
+            return x3dNode._vf[fieldName];
+        }
     }
 
     return null;
