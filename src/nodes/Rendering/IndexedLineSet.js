@@ -151,8 +151,7 @@ x3dom.registerNodeType(
 
                 var i, t, cnt, lineCnt;
                 var p0, p1, c0, c1;
-                var loopCounter = Math.min(indexes.length, positions.length);
-
+                
                 // Found MultiIndex Mesh OR LineSet with too many vertices for 16 bit
                 if ( (hasColor && hasColorInd) || positions.length > x3dom.Utils.maxIndexableCoords )
                 {
@@ -160,10 +159,14 @@ x3dom.registerNodeType(
                     cnt = 0;
                     lineCnt = 0;
 
-
-
-                    for (i=0; i < loopCounter; ++i)
+                    for (i=0; i < indexes.length; ++i)
                     {
+                        //Ignore out of Range Indices
+                        if(indexes[i] > positions.length-1)
+                        {
+                            continue;
+                        }
+
                         if (indexes[i] === -1) {
                             t = 0;
                             continue;
