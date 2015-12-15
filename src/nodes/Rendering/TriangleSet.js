@@ -31,7 +31,7 @@ x3dom.registerNodeType(
 
         },
         {
-            nodeChanged: function()
+            _buildGeometry: function()
             {
                 var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
@@ -41,6 +41,13 @@ x3dom.registerNodeType(
 
                 var coordNode = this._cf.coord.node;
                 x3dom.debug.assert(coordNode);
+
+                if(!coordNode || coordNode._vf.point.length < 3)
+                {
+                    this._vf.render = false;
+                    return;
+                }
+
                 positions = coordNode._vf.point;
 
                 var normalNode = this._cf.normal.node;
@@ -150,18 +157,19 @@ x3dom.registerNodeType(
                 this._mesh._numCoords = positions.length;
 
                 this.invalidateVolume();
+
+            },
+
+            nodeChanged: function()
+            {
+                this._buildGeometry();
             },
 
             fieldChanged: function(fieldName)
             {
-                var pnts = this._cf.coord.node._vf.point;
-
                 if (fieldName == "coord")
                 {
-                    this._mesh._positions[0] = pnts.toGL();
-
-                    // tells the mesh that its bbox requires update
-                    this.invalidateVolume();
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
@@ -170,11 +178,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "color")
                 {
-                    pnts = this._cf.color.node._vf.color;
-
-                    if (this._vf.colorPerVertex) {
-                        this._mesh._colors[0] = pnts.toGL();
-                    }
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
@@ -182,11 +186,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "normal")
                 {
-                    pnts = this._cf.normal.node._vf.vector;
-
-                    if (this._vf.normalPerVertex) {
-                        this._mesh._normals[0] = pnts.toGL();
-                    }
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.normals = true;
@@ -194,15 +194,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "texCoord")
                 {
-                    var texCoordNode = this._cf.texCoord.node;
-                    if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
-                        if (texCoordNode._cf.texCoord.nodes.length)
-                            texCoordNode = texCoordNode._cf.texCoord.nodes[0];
-                    }
-
-                    pnts = texCoordNode._vf.point;
-
-                    this._mesh._texCoords[0] = pnts.toGL();
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.texcoords = true;

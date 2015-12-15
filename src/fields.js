@@ -2884,7 +2884,7 @@ x3dom.fields.MFVec3f = function(vec3Array) {
     }
 };
 
-x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
+x3dom.fields.MFVec3f.prototype = x3dom.extend(Array);
 
 x3dom.fields.MFVec3f.copy = function(vec3Array) {
     var destination = new x3dom.fields.MFVec3f();
