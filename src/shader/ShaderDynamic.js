@@ -352,7 +352,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	
 	//Normals
 	if(properties.LIGHTS) {
-        if (properties.DISPLACEMENTMAP || properties.DIFFPLACEMENTMAP && !properties.NORMALMAP) {
+        if ((properties.DISPLACEMENTMAP || properties.DIFFPLACEMENTMAP) && !properties.NORMALMAP) {
           //Map-Tile Size
           shader += "float dx = 1.0 / displacementWidth;\n";
           shader += "float dy = 1.0 / displacementHeight;\n";
