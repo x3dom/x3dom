@@ -48,7 +48,7 @@ x3dom.registerNodeType(
 
                 this.handleAttribs();
 
-                var colPerVert = this._vf.colorPerVertex;
+                var colPerVert  = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
 
                 var indexes = this._vf.index;
@@ -121,7 +121,8 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if (!normPerVert || posMax > x3dom.Utils.maxIndexableCoords)
+                //resolve indices, if necessary
+                if (!normPerVert || !colPerVert || posMax > x3dom.Utils.maxIndexableCoords)
                 {
                     t = 0;
                     cnt = 0;
