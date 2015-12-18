@@ -361,20 +361,26 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             if (navType === "helicopter")
                 this._at.y = this._from.y;
 
-            //lookat, lookaround
-            if (navType.substr(0, 5) === "looka")
-            {
-                this._up = this._flyMat.e1();
-            }
-            //all other modes
-            else
-            {
-                //initially read up-vector from current orientation and keep it
-                if (typeof this._up == 'undefined')
-                {
-                    this._up = this._flyMat.e1();
-                }
-            }
+            /*
+
+             //lookat, lookaround
+             if (navType.substr(0, 5) === "looka")
+             {
+             this._up = this._flyMat.e1();
+             }
+             //all other modes
+             else
+             {
+             //initially read up-vector from current orientation and keep it
+             if (typeof this._up == 'undefined')
+             {
+             this._up = this._flyMat.e1();
+             }
+             }
+
+             */
+
+            this._up = this._flyMat.e1();
 
             this._pitch = angleX * 180 / Math.PI;
             this._yaw = angleY * 180 / Math.PI;
