@@ -80,7 +80,7 @@ from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
-from tools.packages import FULL_PROFILE, CORE_PROFILE, EXTENSIONS, COMPRESSED_EXT_LIBS, prefix_path
+from tools.packages import FULL_PHYS_PROFILE, FULL_PROFILE, CORE_PROFILE, EXTENSIONS, COMPRESSED_EXT_LIBS, prefix_path
 
 
 PROJECT_ROOT = os.path.dirname(__file__)
@@ -102,15 +102,20 @@ def build(mode='production'):
     
     # building compressed files
     packer.build(CORE_PROFILE, "dist/x3dom.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
-    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)    
+    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
+    packer.build(FULL_PHYS_PROFILE, "dist/x3dom-full-physics.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT) 	
     # add compressed external libraries to full release
-    packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full.js", ["../dist/x3dom-full.js"])], "dist/x3dom-full.js", 'none', src_prefix_path=SRC_ROOT)
+    packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full-physics.js", ["../dist/x3dom-full-physics.js"])], "dist/x3dom-full-physics.js", 'none', src_prefix_path=SRC_ROOT)
     
         
     if not mode == 'no-debug':
         # building plain files (debug)
+        packer.build(FULL_PHYS_PROFILE, "dist/x3dom-full-physics.debug.js", 'none', src_prefix_path=SRC_ROOT)
         packer.build(FULL_PROFILE, "dist/x3dom-full.debug.js", 'none', src_prefix_path=SRC_ROOT)
         packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
+        # add compressed external libraries to full release
+        packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full-physics.debug.js", ["../dist/x3dom-full-physics.debug.js"])], "dist/x3dom-full-physics.debug.js", 'none', src_prefix_path=SRC_ROOT)
+    
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     print("\nBundling extensions...")
