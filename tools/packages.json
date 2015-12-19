@@ -38,14 +38,14 @@
                 {"path": "shader/ShaderParts.js"},
                 {"path": "shader/ShaderDynamic.js"},
                 {"path": "shader/ShaderDynamicMobile.js"},
-		{"path": "shader/ShaderDynamicPicking.js"},
+		        {"path": "shader/ShaderDynamicPicking.js"},
+				{"path": "shader/ShaderDynamicShadow.js"},
                 {"path": "shader/ShaderComposed.js"},
                 {"path": "shader/ShaderNormal.js"},
                 {"path": "shader/ShaderFrontgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundSkyTexture.js"},
                 {"path": "shader/ShaderBackgroundCubeTexture.js"},
-                {"path": "shader/ShaderShadow.js"},
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
@@ -317,6 +317,7 @@
                     {"file": "SilhouetteEnhancementVolumeStyle.js"},
                     {"file": "StippleVolumeStyle.js"},
                     {"file": "ToneMappedVolumeStyle.js"},
+                    {"file": "RadarVolumeStyle.js"},
                     {"file": "VolumeData.js"}
                 ]},
                 {"name": "CADGeometry", "filePrefix": "nodes/CADGeometry/", "files":[
@@ -366,12 +367,34 @@
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
                 ]}                
-            ]},
-            {"group": "COMPRESSED_EXT_LIBS",
+            ]
+		},
+		{"group": "PHYSIC_EXTENSIONS",
+            "data": [
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
+                    {"file": "RigidBodyPhysics.js"},
+                    {"file": "RigidBodyCollection.js"},
+                    {"file": "RigidBody.js"},
+                    {"file": "X3DNBodyCollidableNode.js"},
+                    {"file": "CollidableShape.js"},
+                    {"file": "CollisionCollection.js"},
+                    {"file": "CollisionSensor.js"},
+                    {"file": "X3DRigidJointNode.js"},
+                    {"file": "BallJoint.js"},
+                    {"file": "MotorJoint.js"},
+                    {"file": "SliderJoint.js"},
+                    {"file": "UniversalJoint.js"},
+                    {"file": "SingleAxisHingeJoint.js"},
+                    {"file": "DoubleAxisHingeJoint.js"}
+                ]}
+			]
+		},
+        {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
                     {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
                         {"file": "ammo.js"}
                     ]}
-            ]}
+            ]
+		}
     ]
 }

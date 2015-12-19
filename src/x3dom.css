@@ -9,12 +9,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-body {
-  background-color: white;
-  font-family: Helvetica, sans-serif;
-  font-size: 12px;
-}
-
 X3D, x3d {
   position:relative;    /* in order to be able to position stat-div within X3D */
   float:left;           /* float the element so it has the same size like the canvas */

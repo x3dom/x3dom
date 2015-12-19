@@ -77,7 +77,7 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 if (!this._cf.shape.node ||
-                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) <= 0) {
+                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) < 0) {
                     return;
                 }
 

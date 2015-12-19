@@ -151,7 +151,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 /**
  * Returns a dynamic generated shader program by properties
  */
-x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, pickMode) {
+x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, pickMode, shadows) {
 
     //Get shaderID
     var shaderID = properties.id;
@@ -160,12 +160,19 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
         shaderID += pickMode;
     }
 
+    if(shadows !== undefined && shadows !== null) {
+        shaderID += "S";
+    }
+
     if (this.shaders[shaderID] === undefined)
     {
         var program = null;
 
         if (pickMode !== undefined && pickMode !== null) {
             program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
+        }
+        else if (shadows !== undefined && shadows !== null) {
+            program = new x3dom.shader.DynamicShadowShader(gl, properties);
         }
         else if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);

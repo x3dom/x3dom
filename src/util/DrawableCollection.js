@@ -54,6 +54,10 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 };
 
 /**
+ * Returns the result of the culling process, including view frustum culling and small feature culling.
+ * A value > 0 identifies a plane mask, indicating that the object is inside the frustum with respect to
+ * the respective planes (and large enough), -1 means the object was culled
+ * "0" is a rare case, indicating that the object intersects with all planes of the frustum
  *  graphState = {
  *     boundedNode:  backref to bounded node object
  *     localMatrix:  mostly identity
@@ -68,7 +72,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
     var node = graphState.boundedNode;  // get ref to SG node
 
     if (!node || !node._vf.render) {
-        return 0;   // <0 outside, >0 inside, but can't tell in this case
+        return -1;
     }
 
     var volume = node.getVolume();      // create on request
@@ -88,8 +92,11 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         if (planeMask < MASK_SET)
             planeMask = this.viewFrustum.intersect(wvol, planeMask);
-        if (planeMask <= 0) {
-            return -1;      // if culled return -1; 0 should never happen
+
+        //-1 indicates that the object has been culled
+        if (planeMask == -1)
+        {
+            return -1;
         }
     }
     else {
@@ -114,14 +121,14 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         if (this.smallFeatureThreshold > 0 && graphState.coverage < this.smallFeatureThreshold && 
             graphState.needCulling) {
-            return 0;   // differentiate between outside and this case
+            return -1;
         }
     }
 
     // not culled, incr node cnt
     this.numberOfNodes++;
     
-    return planeMask;   // >0, inside
+    return planeMask;   // >= 0 means inside or overlap
 };
 
 /**

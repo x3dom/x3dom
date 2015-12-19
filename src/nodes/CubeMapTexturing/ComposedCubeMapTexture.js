@@ -87,7 +87,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFNode('right',  x3dom.nodeTypes.Texture);
-            this._type = "cubeMap";
+            this._type = "environmentMap";
         
         },
         {

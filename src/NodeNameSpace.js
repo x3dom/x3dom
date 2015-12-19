@@ -121,8 +121,19 @@ x3dom.getFieldValue = function(fieldName)
 {
     var x3dNode = this._x3domNode;
 
-    if (x3dNode && x3dNode._vf[fieldName]) {
-        return x3dNode._vf[fieldName].copy();
+    if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
+
+        var fieldValue = x3dNode._vf[fieldName];
+
+        if(fieldValue instanceof Object && 'copy' in fieldValue)
+        {
+            return x3dNode._vf[fieldName].copy();
+        }
+        else
+        {
+            //f.i. SFString SFBool aren't objects
+            return x3dNode._vf[fieldName];
+        }
     }
 
     return null;
@@ -138,7 +149,7 @@ x3dom.getFieldValue = function(fieldName)
  */
 x3dom.setFieldValue = function(fieldName, fieldvalue) {
     var x3dNode = this._x3domNode;
-    if (x3dNode && x3dNode._vf[fieldName]) {
+    if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
 
         // SF/MF object types are cloned based on a copy function
         if(fieldvalue instanceof Object && 'copy' in fieldvalue)
