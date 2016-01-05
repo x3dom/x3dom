@@ -350,23 +350,7 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
-                ]},
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
-                    {"file": "RigidBodyPhysics.js"},
-                    {"file": "RigidBodyCollection.js"},
-                    {"file": "RigidBody.js"},
-                    {"file": "X3DNBodyCollidableNode.js"},
-                    {"file": "CollidableShape.js"},
-                    {"file": "CollisionCollection.js"},
-                    {"file": "CollisionSensor.js"},
-                    {"file": "X3DRigidJointNode.js"},
-                    {"file": "BallJoint.js"},
-                    {"file": "MotorJoint.js"},
-                    {"file": "SliderJoint.js"},
-                    {"file": "UniversalJoint.js"},
-                    {"file": "SingleAxisHingeJoint.js"},
-                    {"file": "DoubleAxisHingeJoint.js"}
-                ]}                
+                ]}              
             ]
 		},
 		{"group": "PHYSIC_EXTENSIONS",
