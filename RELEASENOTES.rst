@@ -3,6 +3,17 @@
 Release notes
 =============
 
+Version 1.7.1
+-------------
+
+* Maintenance release, with lot of bug fixes.
+* Compressed Texture Support
+* Integration of the Mapbox Earcut library for better polygon triangulation
+* DepthMappedVolumeStyle Node + DepthMap Support
+* Improved text quality
+* Move the ammo.js from x3dom-full.js to the new x3dom-full-physics.js to reduce the download size.
+* and many small other fixes and enhancements.
+
 Version 1.7
 -----------
 
