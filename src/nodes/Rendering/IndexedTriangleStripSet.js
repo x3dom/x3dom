@@ -58,6 +58,11 @@ x3dom.registerNodeType(
                 var normPerVert = this._vf.normalPerVertex;
 
                 var indexes = this._vf.index;
+                //Last index value should be -1.
+                if (indexes.length && indexes[indexes.length-1] != -1)
+                {
+                    indexes.push(-1);
+                }
                 var positions, normals, texCoords, colors;
 
                 var coordNode = this._cf.coord.node;
