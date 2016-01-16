@@ -52,6 +52,12 @@ x3dom.registerNodeType(
             // shortcut to shader parts
             this._vertex = null;
             this._fragment = null;
+            
+            /**
+             * Identifies the ComposedShader by concatenating three strings: a fixed string (for debugging purposes), 
+             * the vertex shader URL, and the fragment shader URL.
+             * @type {string}
+             */
             this._id = null;
 
             if (!x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown) {
@@ -74,24 +80,66 @@ x3dom.registerNodeType(
         
         },
         {
-            nodeChanged: function()
+           /**
+            * Return `url` in canonical form
+            * @param {string} url
+            */
+            canonicalUrl: function( url )
             {
+              // warxing do this by using "this._namespace.GetURL"
+              // TODO: Convert to canonical form
+              return url;
+            },
+            
+            /**
+             * Calculate the ID of this shader and update _vertex and _fragment.
+             */
+            updateIdAndPartReferences : function()
+            {
+                var numVertexParts = 0;
+                var numFragmentParts = 0;
+                
+                var vertexUrl = '';
+                var fragmentUrl = '';
+              
                 var i, n = this._cf.parts.nodes.length;
 
                 for (i=0; i<n; i++)
                 {
-                    if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {
+                    if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {                      
                         this._vertex = this._cf.parts.nodes[i];
-                        this._id = this._cf.parts.nodes[i]._id;
+                        vertexUrl = this._vertex.shaderUrl;
+                        numVertexParts++;                        
                     }
                     else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
                         this._fragment = this._cf.parts.nodes[i];
-                        this._id += " - " + this._cf.parts.nodes[i]._id;
+                        fragmentUrl = this._fragment.shaderUrl;
+                        numFragmentParts++;
                     }
+                }   
+                
+                if( numVertexParts != 1 )
+                {
+                    x3dom.debug.logError ( 'ComposedShader element has ' 
+                      + numVertexParts 
+                      + ' vertex shader parts but should have only one.' );                  
                 }
+                if( numFragmentParts != 1 )
+                {
+                    x3dom.debug.logError ( 'ComposedShader element has ' 
+                      + numFragmentParts 
+                      + ' fragment shader parts but should have only one.' );                  
+                }                
+
+                this._id = 'ComposedShaderID: ' + this.canonicalUrl( vertexUrl ) + ' - ' + this.canonicalUrl( fragmentUrl );              
+            },
+            
+            nodeChanged: function()
+            {
+                this.updateIdAndPartReferences();                
 
                 var ctx = {};
-                n = this._cf.fields.nodes.length;
+                var i, n = this._cf.fields.nodes.length;
 
                 for (i=0; i<n; i++)
                 {
@@ -165,8 +213,15 @@ x3dom.registerNodeType(
                     }
                 }
 
-                if (field === 'url')
+                // TODO: Put in code that warns user if she for some reason make a uniform variable named "url,"
+                // because this could result in strange behavior due to the following if statement.
+                if (fieldName === 'url')
                 {
+                    // If one of the shader parts' urls has changed, then the id of this 
+                    // shader is altered, which will mean loading a different already-compiled                    
+                    // shader or fetching a new one from the indicated sources.
+                    this.updateIdAndPartReferences();                                    
+                  
                     Array.forEach(this._parentNodes, function (app) {
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.shader = true;

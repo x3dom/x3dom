@@ -49,7 +49,14 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString(ctx, 'type', "VERTEX");
-
+            
+            /**
+             * The URL of the shader.
+             * @type {string}
+             */
+             // warxing this should be absolute... right?
+            this.shaderUrl = '';
+            
             this._id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ?
                 ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
@@ -58,8 +65,12 @@ x3dom.registerNodeType(
                                "Unknown shader part type!");
         },
         {
-            nodeChanged: function()
-            {
+          
+            /**
+             * Store the URL and fetch the shader code located at this location.
+             */
+            handleNewUrl: function()
+            {      
                 var ctx = {};
                 ctx.xmlNode = this._xmlNode;
 
@@ -69,8 +80,13 @@ x3dom.registerNodeType(
 
                     if (that._vf.url.length && that._vf.url[0].indexOf('\n') == -1)
                     {
+                        // Store the actual URL.   
+                        var url = that._nameSpace.getURL(that._vf.url[0]);
+                        that.shaderUrl = url;
+                      
+                        // Fetch the shader text.
                         var xhr = new XMLHttpRequest();
-                        xhr.open("GET", that._nameSpace.getURL(that._vf.url[0]), false);
+                        xhr.open("GET", url, false);
                         xhr.onload = function() {
                             that._vf.url = new x3dom.fields.MFString( [] );
                             that._vf.url.push(xhr.response);
@@ -101,10 +117,15 @@ x3dom.registerNodeType(
                             } );
                         }
                     }
-                }
+                }              
+            },
+          
+            nodeChanged: function()
+            {     
+                this.handleNewUrl();
                 // else hope that url field was already set somehow
 
-                Array.forEach(this._parentNodes, function (shader) {
+                Array.forEach(this._parentNodes, function (shader) {                  
                     shader.nodeChanged();
                 });
             },
@@ -112,6 +133,7 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName === "url") {
+                    this.handleNewUrl();
                     Array.forEach(this._parentNodes, function (shader) {
                         shader.fieldChanged("url");
                     });
