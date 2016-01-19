@@ -117,20 +117,7 @@ x3dom.registerNodeType(
                         fragmentUrl = this._fragment.shaderUrl;
                         numFragmentParts++;
                     }
-                }   
-                
-                if( numVertexParts != 1 )
-                {
-                    x3dom.debug.logError ( 'ComposedShader element has ' 
-                      + numVertexParts 
-                      + ' vertex shader parts but should have only one.' );                  
-                }
-                if( numFragmentParts != 1 )
-                {
-                    x3dom.debug.logError ( 'ComposedShader element has ' 
-                      + numFragmentParts 
-                      + ' fragment shader parts but should have only one.' );                  
-                }                
+                }                                
 
                 this._id = 'ComposedShaderID: ' + this.canonicalUrl( vertexUrl ) + ' - ' + this.canonicalUrl( fragmentUrl );              
             },
