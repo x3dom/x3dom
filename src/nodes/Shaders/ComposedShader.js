@@ -82,12 +82,13 @@ x3dom.registerNodeType(
         {
            /**
             * Return `url` in canonical form
-            * @param {string} url
+            * @param {string} A relative or absolute URL
             */
             canonicalUrl: function( url )
             {
-              // warxing do this by using "this._namespace.GetURL"
-              // TODO: Convert to canonical form
+              // TODO: Convert to canonical form, preferably absolute form. Not sure of a fast
+              // way to convert a url to absolute that doesn't involve bringing in another library
+              // or using non-general hacks that involve creating and then deleting DOM elements.
               return url;
             },
             

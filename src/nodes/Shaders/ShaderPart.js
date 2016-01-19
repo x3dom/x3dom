@@ -50,11 +50,12 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'type', "VERTEX");
             
+            // TODO: At the moment, this might be absolute or relative. It would be nicer if 
+            // it was always absolute.
             /**
-             * The URL of the shader.
+             * The URL of the shader. At the moment, this could be an absolute or relative URL,           
              * @type {string}
              */
-             // warxing this should be absolute... right?
             this.shaderUrl = '';
             
             this._id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ?
