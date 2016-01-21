@@ -97,6 +97,24 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
+            
+            /**
+             * Specifies whether gl.deleteTexture() should be called on the current texture
+             * if this node gets deleted or it switches to representing a new texture image.
+             *
+             * Warning, this field should only be set to "true" if the relevant texture
+             * is used within one Shape node (preferably within a single X3DTextureNode inside
+             * that Shape). If another Shape references the same texture by using the same
+             * texture URL, then when a DOM modification to the first Shape causes the texture to be
+             * deleted, the second Shape might display incorrectly.
+             *
+             * @var {x3dom.fields.SFBool} cleanGLObjectsUponModifyOrDelete
+             * @memberof x3dom.nodeTypes.X3DTextureNode
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'cleanGLObjectsUponModifyOrDelete', false);                        
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
@@ -106,6 +124,8 @@ x3dom.registerNodeType(
         
         },
         {
+            // TODO: This name is misleading, since calling invalidateGLObject() does not 
+            // necessarily lead to a texture actually getting deleted.
             invalidateGLObject: function ()
             {
                 Array.forEach(this._parentNodes, function (app) {
@@ -115,7 +135,7 @@ x3dom.registerNodeType(
                             shape._dirty.texture = true;
                         }
                         else {
-                            // Texture maybe in MultiTexture or CommonSurfaceShader
+                            // Texture may be in MultiTexture or CommonSurfaceShader
                             Array.forEach(shape._parentNodes, function (realShape) {
                                 if (x3dom.isa(realShape, x3dom.nodeTypes.X3DShapeNode)) {
                                     realShape._dirty.texture = true;
@@ -165,15 +185,20 @@ x3dom.registerNodeType(
                     }
                 });
             },
+            
+            cleanGLObjectsUponModifyOrDelete : function() 
+            {
+              return this._vf.cleanGLObjectsUponModifyOrDelete;
+            },
 
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url" || fieldName ==  "origChannelCount" ||
                     fieldName == "repeatS" || fieldName == "repeatT" ||
                     fieldName == "scale" || fieldName == "crossOrigin")
-                {
+                {                  
                     var that = this;
-
+                    
                     Array.forEach(this._parentNodes, function (app) {
                         if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
                             app.nodeChanged();
@@ -202,7 +227,7 @@ x3dom.registerNodeType(
                                     if(app._volumeDataParent){
                                         app._volumeDataParent._dirty.texture = true;
                                     }else{
-                                        //Texture maybe under a ComposedVolumeStyle
+                                        // Texture may be under a ComposedVolumeStyle
                                         var volumeDataParent = app._parentNodes[0];
                                         while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) && x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
                                             volumeDataParent = volumeDataParent._parentNodes[0];

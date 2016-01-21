@@ -15,7 +15,8 @@ x3dom.Cache = function () {
 };
 
 /**
- * Returns a Texture 2D
+ * Returns the existing texture identified by "url" or generates and returns 
+ * a new texture to be hereafter identified by the key "url."
  */
 x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps) {
     var textureIdentifier = url;
@@ -29,6 +30,13 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, 
 };
 
 /**
+ * Returns the texture identified by "url" or returns undefined if there is no such texture.
+ */
+x3dom.Cache.prototype.getTexture2DByUrl = function ( url ) {    
+    return this.textures[url];
+}
+
+/**
  * Returns a Texture 2D
  */
 x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
@@ -39,6 +47,16 @@ x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
     }
 
     return this.textures[textureIdentifier];
+};
+
+/**
+ * Deletes the texture identified by "url" or does nothing if there is no such texture.
+ */
+x3dom.Cache.prototype.deleteTexture2DByUrl = function ( gl, url ) {    
+    if( this.textures[url] !== undefined ) {
+      gl.deleteTexture( this.textures[url] );
+      delete this.textures[url];
+    }
 };
 
 /**
