@@ -126,7 +126,7 @@ x3dom.registerNodeType(
                 this.handleNewUrl();
                 // else hope that url field was already set somehow
 
-                Array.forEach(this._parentNodes, function (shader) {                  
+                Array.forEach(this._parentNodes, function (shader) {
                     shader.nodeChanged();
                 });
             },

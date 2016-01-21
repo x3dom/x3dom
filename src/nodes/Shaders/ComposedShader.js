@@ -56,9 +56,15 @@ x3dom.registerNodeType(
             /**
              * Identifies the ComposedShader by concatenating three strings: a fixed string (for debugging purposes), 
              * the vertex shader URL, and the fragment shader URL.
-             * @type {string}
+             * @type {?string}
              */
             this._id = null;
+            
+            /**
+             * A name that no shader's uniform variable should have.
+             * @type {string}
+             */
+            this._forbiddenUniformName = 'url';
 
             if (!x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown) {
                 x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
@@ -79,27 +85,12 @@ x3dom.registerNodeType(
             }
         
         },
-        {
-           /**
-            * Return `url` in canonical form
-            * @param {string} A relative or absolute URL
-            */
-            canonicalUrl: function( url )
-            {
-              // TODO: Convert to canonical form, preferably absolute form. Not sure of a fast
-              // way to convert a url to absolute that doesn't involve bringing in another library
-              // or using non-general hacks that involve creating and then deleting DOM elements.
-              return url;
-            },
-            
+        {                      
             /**
              * Calculate the ID of this shader and update _vertex and _fragment.
              */
             updateIdAndPartReferences : function()
-            {
-                var numVertexParts = 0;
-                var numFragmentParts = 0;
-                
+            {                
                 var vertexUrl = '';
                 var fragmentUrl = '';
               
@@ -110,28 +101,33 @@ x3dom.registerNodeType(
                     if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {                      
                         this._vertex = this._cf.parts.nodes[i];
                         vertexUrl = this._vertex.shaderUrl;
-                        numVertexParts++;                        
                     }
                     else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
                         this._fragment = this._cf.parts.nodes[i];
                         fragmentUrl = this._fragment.shaderUrl;
-                        numFragmentParts++;
                     }
-                }                                
+                }  
 
-                this._id = 'ComposedShaderID: ' + this.canonicalUrl( vertexUrl ) + ' - ' + this.canonicalUrl( fragmentUrl );              
+                // TODO: Convert to absolute URLs.
+                this._id = 'ComposedShaderID: ' + vertexUrl + ' - ' + fragmentUrl;
             },
             
             nodeChanged: function()
             {
                 this.updateIdAndPartReferences();                
-
+                
                 var ctx = {};
-                var i, n = this._cf.fields.nodes.length;
+                var n = this._cf.fields.nodes.length;
 
-                for (i=0; i<n; i++)
+                for ( var i = 0; i < n; i++ )
                 {
-                    var fieldName = this._cf.fields.nodes[i]._vf.name;
+                    var fieldName = this._cf.fields.nodes[i]._vf.name;                    
+                    if( fieldName === this._forbiddenUniformName ) {
+                        x3dom.debug.logWarning( 'Do not use the uniform variable name \"'
+                            + fieldName 
+                            + '\" or unexpected behavior could result.' );
+                    }                    
+                    
                     ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
 
                     var needNode = false;
@@ -165,11 +161,11 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                var i, n = this._cf.fields.nodes.length;
+                var n = this._cf.fields.nodes.length;
 
-                for (i=0; i<n; i++)
+                for ( var i = 0; i < n; i++ )
                 {
-                    var field = this._cf.fields.nodes[i]._vf.name;
+                    var field = this._cf.fields.nodes[i]._vf.name;                    
 
                     if (field === fieldName)
                     {
@@ -201,13 +197,11 @@ x3dom.registerNodeType(
                     }
                 }
 
-                // TODO: Put in code that warns user if she for some reason make a uniform variable named "url,"
-                // because this could result in strange behavior due to the following if statement.
                 if (fieldName === 'url')
                 {
-                    // If one of the shader parts' urls has changed, then the id of this 
-                    // shader is altered, which will mean loading a different already-compiled                    
-                    // shader or fetching a new one from the indicated sources.
+                    // If one of the URLs for the shader has changed, then the id of the shader changes,
+                    // which means loading a different already-compiled shader or fetching a new one 
+                    // from the indicated sources.
                     this.updateIdAndPartReferences();                                    
                   
                     Array.forEach(this._parentNodes, function (app) {
