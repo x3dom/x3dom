@@ -4,6 +4,7 @@
  * http://www.x3dom.org
  *
  * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * (C)2016 Andreas Plesch, Waltham, MA, U.S.A
  * Dual licensed under the MIT and GPL
  */
 
@@ -148,90 +149,25 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
             */
+            
+            // loosely based on LOD implementation
+            
             this.addField_SFVec3f(ctx, "center", 0, 0, 0);
-
-            /**
-             *
-             * @var {x3dom.fields.SFNode} privateChild1Node
-             * @memberof x3dom.nodeTypes.GeoLOD
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
-             * @instance
-             */
-            //this.addField_SFNode('privateChild1Node', x3dom.nodeTypes.X3DChildNode);
-
-            /**
-             *
-             * @var {x3dom.fields.SFNode} privateChild2Node
-             * @memberof x3dom.nodeTypes.GeoLOD
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
-             * @instance
-             */
-            //this.addField_SFNode('privateChild2Node', x3dom.nodeTypes.X3DChildNode);
-
-            /**
-             *
-             * @var {x3dom.fields.SFNode} privateChild3Node
-             * @memberof x3dom.nodeTypes.GeoLOD
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
-             * @instance
-             */
-            //this.addField_SFNode('privateChild3Node', x3dom.nodeTypes.X3DChildNode);
-
-            /**
-             *
-             * @var {x3dom.fields.SFNode} privateChild4Node
-             * @memberof x3dom.nodeTypes.GeoLOD
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
-             * @instance
-             */
-            //this.addField_SFNode('privateChild4Node', x3dom.nodeTypes.X3DChildNode);
-
-            /**
-             *
-             * @var {x3dom.fields.SFNode} privateRootNode
-             * @memberof x3dom.nodeTypes.GeoLOD
-             * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
-             * @instance
-             */
-            //this.addField_SFNode('privateRootNode', x3dom.nodeTypes.X3DChildNode);
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0); //from X3DLODNode
             
             this._x3dcenter = new x3dom.fields.SFVec3f(0, 0, 0); 
             
-            /**
-             check range
-             if closer do childurls
-                make childnodes
-                visit all
-             else visit root node
-             
-             Shape nodes add themselves to the current drawablecollection
-             collectDrawableCollection is called for every frame
-             */
-              //this._lastRangePos = -1;
-              this._child1added = false;
-              this._child2added = false;
-              this._child3added = false;
-              this._child4added = false;
-              this._rootNodeLoaded = true;
-              //this._childUrlNodesLoaded = false;
-              //figure out how to copy
-              //this._x3dcenter = new x3dom.fields.SFVec3f(0, 0, 0); 
-              
-              //this._rootNode = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
-              //this._rootNode = this._cf.rootNode;
-              //this._rootNodeOrig = this._rootNode;
-              this._childUrlNodes = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
+            this._child1added = false;
+            this._child2added = false;
+            this._child3added = false;
+            this._child4added = false;
+            this._rootNodeLoaded = true;
+            this._childUrlNodes = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
               
         },
         {
-             collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
                 {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -244,35 +180,17 @@ x3dom.registerNodeType(
                 // at the moment, no caching here as children may change every frame
                 singlePath = false;
                 this.visitChildren(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
-                //out.LODs.push( [transform, this] );
                 },
                 
             visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
                 {
-                //child node is root node
-                //check if rooturl
-                //and load and add child node as root node
-                //
                 var i=0, n=0, cnodes, cnode;
                 var mat_view = drawableCollection.viewMatrix;
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
                 //transform eye point to the LOD node's local coordinate system
                 this._eye = transform.inverse().multMatrixPnt(center);
-                //replace with this._x3dcenter
                 var len = this._x3dcenter.subtract(this._eye).length();
-                /*
-                //calculate range check for viewer distance d (with range in local coordinates)
-                //N+1 children nodes for N range values (L0, if d < R0, ... Ln-1, if d >= Rn-1)
-                while (i < this._vf.range.length && len > this._vf.range[i]) {
-                    i++;
-                }
-                
-                if (i && i >= n) {
-                    i = n - 1;
-                }
-                this._lastRangePos = i;
-                */
                 
                 //TODO: preload when close = 0.9 * range
                 //- just load but do not add to drawables
@@ -283,29 +201,8 @@ x3dom.registerNodeType(
                 if (len > this._vf.range) {
                     
                     if(!this._rootNodeLoaded) {
-                        //this._rootNode = this._cf.rootNode;
-                        //var that = this;
-                        //this._rootNode not a copy ...
-                        //n = that._rootNode.nodes.length;
-                        //for (i=0; i<n; i++) {
-                            //this.addChild(that._rootNode.nodes[i]);
-                        //}
-                        //this.invalidateVolume();
-                        //this._cf.rootNode = this._rootNode;
                         this._rootNodeLoaded = true;
                     }
-                    
-                    /*
-                    if (this._childUrlNodesLoaded) {
-                        this._childUrlNodesLoaded = false;
-                        this._child1added = false;
-                        this._child2added = false;
-                        this._child3added = false;
-                        this._child4added = false;
-                        this._childUrlNodes = null;
-                        this._childUrlNodes = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
-                    }
-                    */
                     //rootNode already has rootUrl node if empty, see nodeChanged()
                     cnodes = this._cf.rootNode.nodes;
                 }
@@ -331,13 +228,7 @@ x3dom.registerNodeType(
                     
                     if (this._rootNodeLoaded) {
                         this._rootNodeLoaded = false;
-                        //this._rootNode = null;
-                        //var that = this;
-                        //n = that._cf.rootNode.nodes.length;
-                        //for (i=0; i<n; i++) {
-                            //this.removeChild(that._cf.rootNode.nodes[i]);
-                        //}
-                        //this.invalidateVolume();
+                        //never null rootNode (?)
                     }
                     
                     cnodes = this._childUrlNodes.nodes;
@@ -351,7 +242,7 @@ x3dom.registerNodeType(
                     {
                         var childTransform = this.transformMatrix(transform);
                         
-                        /* not in original LOD
+                        /* not in original LOD, may work for GeoLOD as well
                         
                         if (x3dom.nodeTypes.ClipPlane.count > 0) {
                             var localClipPlanes = [];
@@ -366,13 +257,11 @@ x3dom.registerNodeType(
                         }
                         */
                         
-                        for (i=0; i<n; i++) {
+                        for (i = 0; i < n; i++) {
                             if ( (cnode = cnodes[i]) ) {
                             cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                             }
                         }
-                    
-                    //cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                     }
                 },
             
@@ -399,20 +288,11 @@ x3dom.registerNodeType(
             getVolume: function()
             {
                 var vol = this._graph.volume;
+                //below may not apply for GeoLOD
                 if (!this.volumeValid() && this._vf.render)
                 {
                     var child, childVol;
-                    //TODO RangePos, eg. optimize
-                    /*
-                    if (this._lastRangePos >= 0) {
-                        child = this._childNodes[this._lastRangePos];
-                        childVol = (child && child._vf.render === true) ? child.getVolume() : null;
-                        if (childVol && childVol.isValid())
-                            vol.extendBounds(childVol.min, childVol.max);
-                    }
-                
-                    else { // first time we're here
-                    */
+                    // use childUrlNodes ?
                         for (var i=0, n=this._childNodes.length; i<n; i++)
                         {
                         if (!(child = this._childNodes[i]) || child._vf.render !== true)
@@ -434,6 +314,7 @@ x3dom.registerNodeType(
                 coords.push(this._vf.center);
                 this._x3dcenter = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem,this._cf.geoOrigin, coords)[0];
                 
+                //only rootNodes are ever shapes; childUrls have their own rootNodes
                 //append rootnode field with inline rooturl if empty
                 if (!this._cf.rootNode.nodes.length) {
                     var inline = this.newInlineNode(this._vf.rootUrl);
@@ -441,14 +322,12 @@ x3dom.registerNodeType(
                 }
                 
                 this.invalidateVolume();
-                //this.invalidateCache();
             },
             
             fieldChanged: function(fieldName) {
                 //this._needReRender = true;
                 if (fieldName == "render" || fieldName == "range") {
                     this.invalidateVolume();
-                    //this.invalidateCache();
                 }
                 if (fieldname == "center") {                
                     var coords = new x3dom.fields.MFVec3f();
@@ -456,7 +335,6 @@ x3dom.registerNodeType(
                     this._x3dcenter = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem,this._cf.geoOrigin, coords)[0];
                 
                     this.invalidateVolume();
-                    //this.invalidateCache();
                 }
             }
         }
