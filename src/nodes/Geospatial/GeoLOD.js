@@ -96,8 +96,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFString(ctx, 'child4Url', []);
-            //this.addField_SFVec3d(ctx, 'center', 0, 0, 0);
-
+            
             /**
              * The level of detail is switched depending upon whether the user is closer or farther than range length base units from the geospatial coordinate center.
              * @var {x3dom.fields.SFFloat} range
@@ -137,8 +136,6 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            //this.addField_SFNode('rootNode', x3dom.nodeTypes.X3DChildNode);
-            //MFNode per spec. but this makes the custom SFNodes below impossible
             this.addField_MFNode('rootNode', x3dom.nodeTypes.X3DChildNode);
 
              /**
@@ -150,9 +147,9 @@ x3dom.registerNodeType(
              * @instance
             */
             
-            // loosely based on LOD implementation
-            
             this.addField_SFVec3f(ctx, "center", 0, 0, 0);
+            
+            // loosely based on LOD implementation
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0); //from X3DLODNode
             
