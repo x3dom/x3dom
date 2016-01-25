@@ -12,7 +12,7 @@ x3dom.registerNodeType(
     "X3DComposedGeometryNode",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+
         /**
          * Constructor for X3DComposedGeometryNode
          * @constructs x3dom.nodeTypes.X3DComposedGeometryNode
@@ -112,7 +112,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
-        
+
         },
         {
             handleAttribs: function()
@@ -120,7 +120,11 @@ x3dom.registerNodeType(
                 //var time0 = new Date().getTime();
 
                 // TODO; handle case that more than 2^16-1 attributes are to be referenced
-                var i, n = this._cf.attrib.nodes.length;
+                var i, j, k, n = this._cf.attrib.nodes.length;
+                var val, index, numComponents, nb_index;
+                // Test if the geometry has indices as index or coordIndex
+                var indices = this._vf.index;;
+                if (!indices) { indices = this._vf.coordIndex; }
 
                 for (i=0; i<n; i++)
                 {
@@ -142,10 +146,25 @@ x3dom.registerNodeType(
                             break;
                         default:
                             this._mesh._dynamicFields[name] = {};
-                            this._mesh._dynamicFields[name].numComponents =
-                                this._cf.attrib.nodes[i]._vf.numComponents;
-                            this._mesh._dynamicFields[name].value =
-                                this._cf.attrib.nodes[i]._vf.value.toGL();
+                            numComponents = this._cf.attrib.nodes[i]._vf.numComponents;
+                            this._mesh._dynamicFields[name].numComponents = numComponents;
+
+                            if (indices) {
+                                this._mesh._dynamicFields[name].value =[];
+                                for (j = 0, nb_index = indices.length; j < nb_index; j++) {
+                                    if (indices[j] != -1 ){
+                                        index = indices[j]*numComponents;
+                                        for (k=0; k< numComponents; k++) {
+                                            val = this._cf.attrib.nodes[i]._vf.value[index+k];
+                                            this._mesh._dynamicFields[name].value.push(val);
+                                        }
+                                    }
+                                }
+                            }
+                            else {
+                                this._mesh._dynamicFields[name].value =
+                                    this._cf.attrib.nodes[i]._vf.value.toGL();
+                            }
                             break;
                     }
                 }
