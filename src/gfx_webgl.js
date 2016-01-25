@@ -406,8 +406,29 @@ x3dom.gfx_webgl = (function () {
                                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(szArr), gl.STATIC_DRAW);
                             }
 
-                            shape._dirty.specialAttribs = false;
                         }
+                        // Special attribs is FloatVertexAttribute
+                        var AttribNodes = geoNode._mesh._dynamicFields;
+                        var attribNode, attribName;
+                        for (attribName in  AttribNodes) {
+                            attribNode = AttribNodes[attribName];
+                            if (attribNode !== undefined && attribNode.value.length) {
+                                // Remove old attribute buffer
+                                var attribs = new Float32Array(attribNode.value);
+                                var attribWebGLNode = shape._webgl.dynamicFields.find(
+                                    function(a){ return a.name == attribName;});
+                                if (attribWebGLNode.buf.toString() == "[object WebGLBuffer]")
+                                    gl.deleteBuffer(attribWebGLNode.buf);
+                                gl.deleteBuffer(attribWebGLNode.buf);
+                                attribWebGLNode.buf = gl.createBuffer();
+
+                                gl.bindBuffer(gl.ARRAY_BUFFER, attribWebGLNode.buf);
+                                gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);
+
+                                attribs = null;
+                            }
+                        }
+                        shape._dirty.specialAttribs = false;
                         // Maybe other special attribs here, though e.g. AFAIK only BG (which not handled here) has ids.
                     }
                 }
