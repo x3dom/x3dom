@@ -61,7 +61,7 @@ x3dom.Texture = function (gl, doc, cache, node) {
     this.ready = false;
 
     this.dashtexture = false;
-    this.lastUrlUsedForTextureCreation = undefined;
+    this.lastUrlUsedForTextureCreation = null;
 
     var tex = this.node;
     var suffix = "mpd";
@@ -138,8 +138,8 @@ x3dom.Texture.prototype.cleanGLObjects = function()
 {
   if ( x3dom.isa( this.node, x3dom.nodeTypes.ImageTexture ) ) {
       var textureUrl = this.lastUrlUsedForTextureCreation;
-      if( textureUrl === undefined ) {
-          x3dom.debug.logError( 'cleanGLObjects cannot delete texture by url since lastUrlUsedForTextureCreation is undefined' );
+      if( textureUrl === null ) {
+          x3dom.debug.logError( 'cleanGLObjects cannot delete texture by url since lastUrlUsedForTextureCreation is null' );
       } else {
           var textureHandle = this.cache.getTexture2DByUrl( textureUrl );
           if( textureHandle === undefined || textureHandle !== this.texture ) { 
@@ -425,13 +425,13 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
 	{
-    this.lastUrlUsedForTextureCreation = tex.getTexUrl();
+		this.lastUrlUsedForTextureCreation = tex.getTexUrl();
 		this.texture = this.cache.getTextureCube( gl, doc, this.lastUrlUsedForTextureCreation, false,
 		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
 	else
 	{
-    this.lastUrlUsedForTextureCreation = this.getUrlForBasicTexture();
+		this.lastUrlUsedForTextureCreation = this.getUrlForBasicTexture();
 		this.texture = this.cache.getTexture2D( gl, doc, this.lastUrlUsedForTextureCreation,
 		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
