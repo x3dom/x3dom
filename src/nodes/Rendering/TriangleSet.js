@@ -33,6 +33,7 @@ x3dom.registerNodeType(
         {
             _buildGeometry: function()
             {
+                this.handleAttribs();
                 var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
 
@@ -198,6 +199,14 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.texcoords = true;
+                    });
+                }
+                else if (fieldName.startsWith("attrib"))
+                {
+                    this._buildGeometry();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.specialAttribs = true;
                     });
                 }
             }
