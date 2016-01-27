@@ -633,7 +633,7 @@ x3dom.registerNodeType(
             {
                 if (fieldName != "coord" && fieldName != "normal" &&
                     fieldName != "texCoord" && fieldName != "color" &&
-                    fieldName != "coordIndex")
+                    fieldName != "coordIndex" && !fieldName.startsWith("attrib_"))
                 {
                     x3dom.debug.logWarning("IndexedFaceSet: fieldChanged for " +
                         fieldName + " not yet implemented!");
@@ -791,8 +791,21 @@ x3dom.registerNodeType(
                         hasColor = false;
                     }
                     this._mesh._numColComponents = numColComponents;
+                    if (fieldName.startsWith("attrib")) {
+                        var attrName = fieldName.slice(7);
+                        var attrNode = this._cf.attrib.nodes.find(
+                            function (a) {return a._vf.name == attrName;}
+                        );
+                        if (attrNode) {
+                            var attr_data = attrNode._vf.value;
+                            var attr_numComp = attrNode._vf.numComponents;
+                            var hasAttributes = this._mesh._dynamicFields[attrName] !== undefined;
+                            this._mesh._dynamicFields[attrName].numComponents = attr_numComp;
+                            this._mesh._dynamicFields[attrName].value = [];
+                        }
+                    }
 
-                    var i, j, t, cnt, faceCnt;
+                    var i, j, k, t, cnt, faceCnt;
                     var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                     if(this._vf.convex) {
@@ -930,6 +943,16 @@ x3dom.registerNodeType(
                                             this._mesh._texCoords[0].push(texCoords[t2].z);
                                         }
                                     }
+                                    if (hasAttributes) {
+                                        var pInd = [p0,p1,p2];
+                                        for (j=0;j<3;j++) {
+                                            for (k = 0; k < attr_numComp; k++){
+                                                this._mesh._dynamicFields[attrName].value.push(
+                                                    attr_data[attr_numComp*pInd[j]+k]
+                                                );
+                                            }
+                                        }
+                                    }
                                     p1 = p2;
                                     t1 = t2;
 
@@ -1042,6 +1065,7 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setGeoDirty();
+                        if (hasAttributes) node._dirty.specialAttribs = true;
                     });
                 }
                 else {
