@@ -93,11 +93,82 @@ x3dom.registerNodeType(
         
         },
         {
+            handleAttribs: function(test)
+            {
+                var i, j, k, n = this._cf.attrib.nodes.length;
+                var val, index, numComponents, nb_index;
+                // Test if the geometry has indices as index or coordIndex
+                var indices = this._vf.index;;
+                if (!indices) { indices = this._vf.coordIndex; }
+
+                for (i=0; i<n; i++)
+                {
+                    var name = this._cf.attrib.nodes[i]._vf.name;
+                    var out_data = this._mesh._dynamicFields[name];
+                    switch (name.toLowerCase())
+                    {
+                    case "position":
+                        this._mesh._positions[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "normal":
+                        this._mesh._normals[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "texcoord":
+                        this._mesh._texCoords[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "color":
+                        this._mesh._colors[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    default:
+                        this._mesh._dynamicFields[name] = {};
+                        this._mesh._dynamicFields[name].numComponents =
+                            this._cf.attrib.nodes[i]._vf.numComponents;
+                        numComponents = this._cf.attrib.nodes[i]._vf.numComponents;
+                        this._mesh._dynamicFields[name].numComponents = numComponents;
+                        if (indices && test) {
+                            this._mesh._dynamicFields[name].value =[];
+                            // The parsing of IndexedTriangleStripSet is special
+                            var count = 0;
+                            index = [0, 0, 0];
+                            for (j = 0, nb_index = indices.length; j < nb_index; j++) {
+                                switch (count) {
+                                case 0:
+                                    index[0] = indices[j]*numComponents;
+                                    count++;
+                                    break;
+                                case 1:
+                                    index[1] = indices[j]*numComponents;
+                                    count++;
+                                    break;
+                                case -1:
+                                    count = 0;
+                                    break;
+                                default:
+                                    index[2] = indices[j]*numComponents;
+                                    for (var l=0; l< 3; l++)
+                                    for (k=0; k< numComponents; k++) {
+                                        val = this._cf.attrib.nodes[i]._vf.value[index[l]+k];
+                                        this._mesh._dynamicFields[name].value.push(val);
+                                    }
+                                    index[1] = index[2];
+                                    count = indices[j+1] ==-1? -1: count+1;
+                                    break;
+                                }
+                            }
+                        }
+                        else { // case : creaseAngle > x3dom.fields.Eps
+                            this._mesh._dynamicFields[name].value =
+                                this._cf.attrib.nodes[i]._vf.value.toGL();
+                        }
+
+                        break;
+                    }
+                }
+            },
             nodeChanged: function()
             {
                 var time0 = new Date().getTime();
 
-                this.handleAttribs();
 
                 var indexes = this._vf.coordIndex;
 
@@ -196,12 +267,13 @@ x3dom.registerNodeType(
 
                 var i, j, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
-
-                if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                    (positions.length > x3dom.Utils.maxIndexableCoords) ||
-                    (hasNormal && hasNormalInd) ||
-                    (hasTexCoord && hasTexCoordInd) ||
-                    (hasColor && hasColorInd) )
+                var test = (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
+                        (positions.length > x3dom.Utils.maxIndexableCoords) ||
+                        (hasNormal && hasNormalInd) ||
+                        (hasTexCoord && hasTexCoordInd) ||
+                        (hasColor && hasColorInd) ;
+                this.handleAttribs(test);
+                if ( test)
                 {
                     if (this._vf.creaseAngle <= x3dom.fields.Eps)
                         x3dom.debug.logWarning('Fallback to inefficient multi-index mode since creaseAngle=0.');
