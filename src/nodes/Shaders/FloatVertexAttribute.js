@@ -53,6 +53,16 @@ x3dom.registerNodeType(
              */
             this.addField_MFFloat(ctx, 'value', []);
         
+        },
+        {
+            fieldChanged: function (fieldName) {
+                var that = this;
+                if (fieldName == "value" ||  fieldName == "numComponents") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("attrib_"+that._vf.name);
+                    });
+                }
+            }
         }
     )
 );
