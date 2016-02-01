@@ -333,8 +333,6 @@ x3dom.registerNodeType(
                         "  vec3 step_ec = 1.7321*ray_dir_ec/Steps;\n"; // multiplying by sqrt(3.0)
                 }
                 shaderLoop +=
-                    
-                    //"  vec3 ray_start = pos.xyz;\n"+
                     "  vec3 ray_dir = normalize(pos.xyz-cam_pos);\n"+
                     
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
@@ -373,7 +371,6 @@ x3dom.registerNodeType(
                     
                     "    sample = cTexture3D(uVolData, ray_start, numberOfSlices, slicesOverX, slicesOverY);\n"+
                     "    sample = vec4(sample.rgb,(0.299*sample.r)+(0.587*sample.g)+(0.114*sample.b));\n"+
-
                     "    // Calculate maximum intensity\n"+
                     "    if(sample.a > uIsoSurfaceCutoffValue) {\n";
                 if (this._cf.transferFunction.node) {
