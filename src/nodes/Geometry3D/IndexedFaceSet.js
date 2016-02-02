@@ -98,9 +98,7 @@ x3dom.registerNodeType(
                 var i, j, k, n = this._cf.attrib.nodes.length;
                 var val, index, numComponents, nb_index;
                 // Test if the geometry has indices as index or coordIndex
-                var indices = this._vf.index;;
-                if (!indices) { indices = this._vf.coordIndex; }
-
+                var indices = this._vf.coordIndex;
                 for (i=0; i<n; i++)
                 {
                     var name = this._cf.attrib.nodes[i]._vf.name;
@@ -125,7 +123,7 @@ x3dom.registerNodeType(
                             this._cf.attrib.nodes[i]._vf.numComponents;
                         numComponents = this._cf.attrib.nodes[i]._vf.numComponents;
                         this._mesh._dynamicFields[name].numComponents = numComponents;
-                        if (indices && test) {
+                        if (indices && indices.length && test) {
                             this._mesh._dynamicFields[name].value =[];
                             // The parsing of IndexedTriangleStripSet is special
                             var count = 0;
@@ -151,7 +149,7 @@ x3dom.registerNodeType(
                                         this._mesh._dynamicFields[name].value.push(val);
                                     }
                                     index[1] = index[2];
-                                    count = indices[j+1] ==-1? -1: count+1;
+                                    if (indices[j+1] ==-1) count = -1;
                                     break;
                                 }
                             }
