@@ -955,6 +955,12 @@ x3dom.registerNodeType(
                                     }
                                     p1 = p2;
                                     t1 = t2;
+                                    if (normPerVert) {
+                                        n1 = n2;
+                                    }
+                                    if (colPerVert) {
+                                        c1 = c2;
+                                    }
 
                                     //faceCnt++;
                                     break;
