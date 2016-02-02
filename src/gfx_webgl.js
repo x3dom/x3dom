@@ -417,6 +417,7 @@ x3dom.gfx_webgl = (function () {
                                 var attribs = new Float32Array(attribNode.value);
                                 var attribWebGLNode = shape._webgl.dynamicFields.find(
                                     function(a){ return a.name == attribName;});
+                                if (!attribWebGLNode) continue;
                                 if (attribWebGLNode.buf.toString() == "[object WebGLBuffer]")
                                     gl.deleteBuffer(attribWebGLNode.buf);
                                 gl.deleteBuffer(attribWebGLNode.buf);
