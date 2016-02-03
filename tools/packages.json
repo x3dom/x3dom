@@ -229,6 +229,7 @@
                 ]},
                 {"name": "Shaders", "filePrefix": "nodes/Shaders/", "files":[
                     {"file": "Uniform.js"},
+                    {"file": "Varying.js"},
                     {"file": "SurfaceShaderTexture.js"},
                     {"file": "X3DShaderNode.js"},
                     {"file": "CommonSurfaceShader.js"},
