@@ -71,6 +71,16 @@ x3dom.registerNodeType(
              */
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
+            /**
+             * If the custom nodes
+             * @var {x3dom.fields.MFNode} attrib
+             * @memberof x3dom.nodeTypes.X3DComposedGeometryNode
+             * @initvalue x3dom.nodeTypes.X3DVertexAttributeNode
+             * @field x3dom
+             * @instance
+             */
+            this.addField_MFNode('customAttributes', x3dom.nodeTypes.CustomAttributeNode);
+
 
             /**
              * Contains a Coordinate node.
