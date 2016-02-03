@@ -1063,6 +1063,24 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
+        property.CUSTOM_ATTR = [];
+        for (var i = 0, n = geometry._cf.attrib.nodes.length; i < n ; i++) {
+            property.CUSTOM_ATTR.push({
+                "name": geometry._cf.attrib.nodes[i]._vf.name,
+                "numComponents":geometry._cf.attrib.nodes[i]._vf.numComponents});
+        }
+        property.CUSTOM_ATTRIBUTES = {
+            "vertexShaderPartInit":"",   "vertexShaderPartMain":"",
+            "fragmentShaderPartInit":"", "fragmentShaderPartMain":""
+        };
+        for (i = 0, n = geometry._cf.customAttributes.nodes.length; i < n ; i++) {
+            var shaders = geometry._cf.customAttributes.nodes[i]._vf;
+            property.CUSTOM_ATTRIBUTES.vertexShaderPartInit += shaders.vertexShaderPartInit;
+            property.CUSTOM_ATTRIBUTES.vertexShaderPartMain += shaders.vertexShaderPartMain;
+            property.CUSTOM_ATTRIBUTES.fragmentShaderPartInit += shaders.fragmentShaderPartInit;
+            property.CUSTOM_ATTRIBUTES.fragmentShaderPartMain += shaders.fragmentShaderPartMain;
+        }
+
         //console.log(property);
 	}
 
