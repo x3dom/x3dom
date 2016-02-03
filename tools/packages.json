@@ -113,6 +113,7 @@
                     {"file": "Color.js"},
                     {"file": "ColorRGBA.js"},
                     {"file": "ParticleSet.js"},
+                    {"file": "CustomAttributeNode.js"},
                     {"file": "ClipPlane.js"}
                 ]},
                 {"name": "Shape", "filePrefix": "nodes/Shape/", "files":[
