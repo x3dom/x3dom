@@ -2057,6 +2057,18 @@ x3dom.gfx_webgl = (function () {
             sp.bgPrecisionNorMax = 1;
         }
 
+        var n = s_geo._cf.customAttributes.nodes.length;
+        var node,j, uniform, name;
+        for (i=0; i<n ; i++){
+            node = s_geo._cf.customAttributes.nodes[i];
+            for (j=0; j < node._cf.uniforms.nodes.length; j++){
+                uniform = node._cf.uniforms.nodes[i];
+                name = uniform._vf.name;
+                sp[uniform._vf.name] = uniform._vf.value;
+            }
+        }
+
+
         if (s_gl.imageGeometry != 0) {
             sp.IG_bboxMin = s_geo.getMin().toGL();
             sp.IG_bboxMax = s_geo.getMax().toGL();
