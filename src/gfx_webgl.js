@@ -2062,7 +2062,7 @@ x3dom.gfx_webgl = (function () {
         for (i=0; i<n ; i++){
             node = s_geo._cf.customAttributes.nodes[i];
             for (j=0; j < node._cf.uniforms.nodes.length; j++){
-                uniform = node._cf.uniforms.nodes[i];
+                uniform = node._cf.uniforms.nodes[j];
                 name = uniform._vf.name;
                 sp[uniform._vf.name] = uniform._vf.value;
             }
