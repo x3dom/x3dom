@@ -36,15 +36,9 @@ x3dom.registerNodeType(
              */
             this.addField_MFNode('uniforms', x3dom.nodeTypes.Uniform);
 
-            /**
-             * Part of the vertex shaders to set the attributes and varing
-             * @var {x3dom.fields.SFString} type
-             * @memberof x3dom.nodeTypes.Field
-             * @initvalue ""
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFString(ctx, 'vertexShaderPartInit', "");
+
+            this.addField_MFNode('varyings', x3dom.nodeTypes.Varying);
+
             /**
              * Part of the vertex shaders main
              * @var {x3dom.fields.SFString} type
@@ -54,15 +48,7 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFString(ctx, 'vertexShaderPartMain', "");
-            /**
-             * Part of the fragment shaders to set the attributes and varing
-             * @var {x3dom.fields.SFString} type
-             * @memberof x3dom.nodeTypes.Field
-             * @initvalue ""
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFString(ctx, 'fragmentShaderPartInit', "");
+
             /**
              * Part of the fragment shaders main
              * @var {x3dom.fields.SFString} type
