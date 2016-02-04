@@ -206,11 +206,33 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		shader += "uniform float bgPrecisionTexMax;\n";
 	}
 
+    if(properties.CUSTOM_ATTR) {
+        var type;
+        for (var j = 0, n = properties.CUSTOM_ATTR.length; j < n ; j++) {
+            switch (properties.CUSTOM_ATTR[j].numComponents) {
+            case 2:
+                type = "vec2 ";
+                break;
+            case 3:
+                type = "vec3 ";
+                break;
+            case 4:
+                type = "vec4 ";
+                break;
+            default:
+                type = "float ";
+                break;
+            }
+            shader += "attribute "+type+properties.CUSTOM_ATTR[j].name+";\n";
+        }
+    }
+    shader += properties.CUSTOM_ATTRIBUTES.vertexShaderPartInit+"\n";
       
 	/*******************************************************************************
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
+	shader += properties.CUSTOM_ATTRIBUTES.vertexShaderPartMain+"\n";
   
 	/*******************************************************************************
 	* Start of special Geometry switch
@@ -618,12 +640,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     // Declare gamma correction for color computation (see property "GAMMACORRECTION")
     shader += x3dom.shader.gammaCorrectionDecl(properties);
  
+    shader +=  properties.CUSTOM_ATTRIBUTES.fragmentShaderPartInit+"\n";
  
 	/*******************************************************************************
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
 
+	shader +=  properties.CUSTOM_ATTRIBUTES.fragmentShaderPartMain+"\n";
 
     if(properties.CLIPPLANES)
     {
