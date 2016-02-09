@@ -232,7 +232,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
-	shader += properties.CUSTOM_ATTRIBUTES.vertexShaderPartMain+"\n";
   
 	/*******************************************************************************
 	* Start of special Geometry switch
@@ -483,6 +482,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
         shader += "gl_PointSize = 2.0;\n";
     }
   
+	shader +=  properties.CUSTOM_ATTRIBUTES.vertexShaderPartMain+"\n";
 	//END OF SHADER
 	shader += "}\n";
 	
