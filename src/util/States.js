@@ -95,21 +95,23 @@ x3dom.States = function (x3dElem) {
 
         //Create list items
         for (var m in measurements) {
-            infoItem = document.createElement('li');
-            infoItem.className = 'x3dom-states-item';
+			if( measurements.hasOwnProperty( m ) ) {
+				infoItem = document.createElement('li');
+				infoItem.className = 'x3dom-states-item';
 
-            infoTitle = document.createElement('div');
-            infoTitle.className = 'x3dom-states-item-title';
-            infoTitle.appendChild(document.createTextNode(m));
+				infoTitle = document.createElement('div');
+				infoTitle.className = 'x3dom-states-item-title';
+				infoTitle.appendChild(document.createTextNode(m));
 
-            infoValue = document.createElement('div');
-            infoValue.className = 'x3dom-states-item-value';
-            infoValue.appendChild(document.createTextNode(this.toFixed(measurements[m])));
+				infoValue = document.createElement('div');
+				infoValue.className = 'x3dom-states-item-value';
+				infoValue.appendChild(document.createTextNode(this.toFixed(measurements[m])));
 
-            infoItem.appendChild(infoTitle);
-            infoItem.appendChild(infoValue);
+				infoItem.appendChild(infoTitle);
+				infoItem.appendChild(infoValue);
 
-            this.measureList.appendChild(infoItem);
+				this.measureList.appendChild(infoItem);
+			}
         }
 
         //Clear info list
@@ -117,21 +119,23 @@ x3dom.States = function (x3dElem) {
 
         //Create list items
         for (var i in infos) {
-            var infoItem = document.createElement('li');
-            infoItem.className = 'x3dom-states-item';
+			if( infos.hasOwnProperty( i ) ) {
+				var infoItem = document.createElement('li');
+				infoItem.className = 'x3dom-states-item';
 
-            var infoTitle = document.createElement('div');
-            infoTitle.className = 'x3dom-states-item-title';
-            infoTitle.appendChild(document.createTextNode(i));
+				var infoTitle = document.createElement('div');
+				infoTitle.className = 'x3dom-states-item-title';
+				infoTitle.appendChild(document.createTextNode(i));
 
-            var infoValue = document.createElement('div');
-            infoValue.className = 'x3dom-states-item-value';
-            infoValue.appendChild(document.createTextNode(this.thousandSeperator(infos[i])));
+				var infoValue = document.createElement('div');
+				infoValue.className = 'x3dom-states-item-value';
+				infoValue.appendChild(document.createTextNode(this.thousandSeperator(infos[i])));
 
-            infoItem.appendChild(infoTitle);
-            infoItem.appendChild(infoValue);
+				infoItem.appendChild(infoTitle);
+				infoItem.appendChild(infoValue);
 
-            this.infoList.appendChild(infoItem);
+				this.infoList.appendChild(infoItem);
+			}
         }
     };
 
