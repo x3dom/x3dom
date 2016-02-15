@@ -73,7 +73,7 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);
 
-            this._mesh._positions[0] = [];
+            this._mesh._positions[0] = [0,0,0, 1,0,0, 1,1,0, 0,1,0];
             this._mesh._normals[0]   = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
             this._mesh._texCoords[0] = [0,0, 1,0, 1,1, 0,1];
             this._mesh._colors[0] 	 = [];
