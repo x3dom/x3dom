@@ -420,7 +420,6 @@ x3dom.gfx_webgl = (function () {
                                 if (!attribWebGLNode) continue;
                                 if (attribWebGLNode.buf.toString() == "[object WebGLBuffer]")
                                     gl.deleteBuffer(attribWebGLNode.buf);
-                                gl.deleteBuffer(attribWebGLNode.buf);
                                 attribWebGLNode.buf = gl.createBuffer();
 
                                 gl.bindBuffer(gl.ARRAY_BUFFER, attribWebGLNode.buf);
