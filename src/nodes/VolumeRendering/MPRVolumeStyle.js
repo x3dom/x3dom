@@ -61,9 +61,20 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'positionLine', 0.2);
 
+            /**
+             * The transferFunction field is a texture that is going to be used to map each voxel value to a specific color output.
+             * @var {x3dom.fields.SFNode} transferFunction
+             * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue x3dom.nodeTypes.Texture
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
+
             this.uniformVec3fOriginLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformVec3fFinalLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatPosition = new x3dom.nodeTypes.Uniform(ctx);
+            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
         
         },
         {
@@ -101,12 +112,34 @@ x3dom.registerNodeType(
                 this.uniformFloatPosition._vf.type = 'SFFloat';
                 this.uniformFloatPosition._vf.value = this._vf.positionLine;
                 unis.push(this.uniformFloatPosition);
+
+                if (this._cf.transferFunction.node) {
+                    this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction';
+                    this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
+                    this.uniformSampler2DTransferFunction._vf.value = this._volumeDataParent._textureID++;
+                    unis.push(this.uniformSampler2DTransferFunction);
+                }
   
                 return unis;
             },
 
+            textures: function() {
+                var texs = [];
+                var tex = this._cf.transferFunction.node;
+                if (tex) {
+                    tex._vf.repeatS = false;
+                    tex._vf.repeatT = false;
+                    texs.push(tex);
+                }
+                return texs;
+            },
+
             styleUniformsShaderText: function(){
-                return "uniform vec3 originLine;\nuniform vec3 finalLine;\nuniform float positionLine;\n";
+                var uniformShaderText = "uniform vec3 originLine;\nuniform vec3 finalLine;\nuniform float positionLine;\n";
+                if (this._cf.transferFunction.node) {
+                    uniformShaderText += "uniform sampler2D uTransferFunction;\n";
+                }
+                return uniformShaderText;
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
@@ -126,8 +159,13 @@ x3dom.registerNodeType(
                 "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
                 "  vec3 pos = d*dir+pos.rgb;\n"+
                 "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
-                "    color = vec4(cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb,1.0);\n"+
-                "  }\n"+
+                "    vec3 intesity = cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb;\n";
+                if (this._cf.transferFunction.node){
+                    shader += "    color = vec4(texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgb, 1.0);\n";
+                }else{
+                    shader += "    color = vec4(intesity,1.0);\n";
+                }
+                shader += "  }\n"+
                 "  gl_FragColor = color;\n"+
                 "}";
                 return shader;

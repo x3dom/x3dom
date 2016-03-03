@@ -189,6 +189,14 @@ x3dom.registerNodeType(
                                 });
                             });
                         }
+                        else if (x3dom.isa(app, x3dom.nodeTypes.ComposedCubeMapTexture)) {
+                            Array.forEach(app._parentNodes, function (realApp) {
+                                realApp.nodeChanged();
+                                Array.forEach(realApp._parentNodes, function (shape) {
+                                    shape._dirty.texture = true;
+                                });
+                            });
+                        }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
                             var cf = null;
                             if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {

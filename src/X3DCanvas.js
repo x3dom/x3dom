@@ -172,8 +172,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     // touch visualization
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
-    this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
-    //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
+    this.showTouchpoints = this.showTouchpoints ? this.showTouchpoints : false;
 
     // disable touch events
     this.disableTouch = x3dElem.getAttribute("disableTouch");
