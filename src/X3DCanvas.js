@@ -48,7 +48,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.lastTimeFPSWasTaken = 0;
     this.framesSinceLastTime = 0;
 
+    this._totalTime = 0;
+    this._elapsedTime = 0;
+
     this.doc = null;
+
+    this.devicePixelRatio = window.devicePixelRatio || 1;
 
     this.lastMousePos = { x: 0, y: 0 };
     //try to determine behavior of certain DOMNodeInsertedEvent:
@@ -65,8 +70,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         this.__setAttribute(attrName, newVal);
 
         // scale resolution so device pixel are used rather then css pixels
-        if(window.devicePixelRatio)
-            newVal = parseInt(newVal) * window.devicePixelRatio;
+        newVal = parseInt(newVal) * that.devicePixelRatio;
 
         switch(attrName) {
 
@@ -1321,16 +1325,21 @@ x3dom.X3DCanvas.prototype.mousePosition = function(evt)
         x3dom.debug.logError('NO getBoundingClientRect');
     }
 
-    return new x3dom.fields.SFVec2f(x, y);
+
+    return new x3dom.fields.SFVec2f(x*this.devicePixelRatio, y*this.devicePixelRatio);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Is called in the main loop after every frame
  */
-x3dom.X3DCanvas.prototype.tick = function()
+x3dom.X3DCanvas.prototype.tick = function(timestamp)
 {
     var that = this;
+
+    this._elapsedTime = (this._totalTime) ? timestamp - this._totalTime : 0;
+
+    this._totalTime = timestamp;
 
     var runtime = this.x3dElem.runtime;
     var d = new Date().getTime();
@@ -1361,7 +1370,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             runtime.isReady = true;
         }
 
-        runtime.enterFrame();
+        runtime.enterFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
 
         if (this.backend == 'flash') {
             if (this.isFlashReady) {
@@ -1380,7 +1389,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 runtime.removeMeasurement('PICKING');
         }
 
-        runtime.exitFrame();
+        runtime.exitFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
     }
 
     if (this.progressDiv) {
@@ -1439,10 +1448,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
         if (x3dCanvas.hasRuntime) {
 
 			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
-			(function mainloop(){
+			(function mainloop(timestamp){
                 if (x3dCanvas.doc && x3dCanvas.x3dElem.runtime) {
                     x3dCanvas._watchForResize();
-                    x3dCanvas.tick();
+                    x3dCanvas.tick(timestamp);
                     window.requestAnimFrame(mainloop, x3dCanvas);
                 }
 		    })();
