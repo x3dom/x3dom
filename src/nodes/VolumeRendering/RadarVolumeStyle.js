@@ -311,8 +311,16 @@ x3dom.registerNodeType(
                     "void main()\n"+
                     "{\n"+
                     "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+
-                    "  cam_pos = cam_pos/dimensions+0.5;\n"+
-                    
+                    "  cam_pos = cam_pos/dimensions+0.5;\n";
+                if(this._parentNodes[0]._vf.allowViewpointInside){
+                    shaderLoop +=
+                        "  float cam_inside = float(all(bvec2(all(lessThan(cam_pos, vec3(1.0))),all(greaterThan(cam_pos, vec3(0.0))))));\n"+
+                        "  vec3 ray_start = mix(pos.xyz, cam_pos, cam_inside);\n";
+                }else{
+                    shaderLoop +=
+                        "  vec3 ray_start = pos.xyz;\n";
+                }
+                shaderLoop +=
                     "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
                     "  texC = 0.5*texC + 0.5;\n";
                 
@@ -325,8 +333,6 @@ x3dom.registerNodeType(
                         "  vec3 step_ec = 1.7321*ray_dir_ec/Steps;\n"; // multiplying by sqrt(3.0)
                 }
                 shaderLoop +=
-                    
-                    "  vec3 ray_start = pos.xyz;\n"+
                     "  vec3 ray_dir = normalize(pos.xyz-cam_pos);\n"+
                     
                     "  vec4 accum  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
