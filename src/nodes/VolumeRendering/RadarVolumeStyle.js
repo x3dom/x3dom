@@ -15,8 +15,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
         
         /**
-         * Constructor for YouCanEnterVolumeStyle
-         * @constructs x3dom.nodeTypes.YouCanEnterVolumeStyle
+         * Constructor for RadarVolumeStyle
+         * @constructs x3dom.nodeTypes.RadarVolumeStyle
          * @x3d x.x
          * @component VolumeRendering
          * @status experimental
@@ -32,7 +32,7 @@ x3dom.registerNodeType(
             /**
              * The transferFunction field is a texture that is going to be used to map each voxel value to a specific color output.
              * @var {x3dom.fields.SFNode} transferFunction
-             * @memberof x3dom.nodeTypes.YouCanEnterVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue x3dom.nodeTypes.Texture
              * @field x3dom
              * @instance
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
             /**
              * NYI!!
              * @var {x3dom.fields.SFString} type
-             * @memberof x3dom.nodeTypes.YouCanEnterVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue "simple"
              * @field x3dom
              * @instance
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
             /**
              * The opacityFactor field is a factor to specify the amount of opacity to be considered on each sampled point along the ray traversal.
              * @var {x3dom.fields.SFFloat} opacityFactor
-             * @memberof x3dom.nodeTypes.YouCanEnterVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 6.0
              * @field x3dom
              * @instance
@@ -62,7 +62,7 @@ x3dom.registerNodeType(
             /**
              * The lightFactor field is a factor to specify the amount of global light to be considered on each sampled point along the ray traversal.
              * @var {x3dom.fields.SFFloat} lightFactor
-             * @memberof x3dom.nodeTypes.YouCanEnterVolumeStyle
+             * @memberof x3dom.nodeTypes.RadarVolumeStyle
              * @initvalue 1.2
              * @field x3dom
              * @instance
