@@ -635,8 +635,9 @@ x3dom.Runtime.prototype.showAll = function(axis) {
  *
  * Parameter:
  *     obj  - the scene-graph element on which to focus
+ *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
  */
-x3dom.Runtime.prototype.showObject = function(obj)
+x3dom.Runtime.prototype.showObject = function(obj, axis)
 {
     if (obj && obj._x3domNode)
     {
@@ -657,7 +658,18 @@ x3dom.Runtime.prototype.showObject = function(obj)
         var focalLen = (viewarea._width < viewarea._height) ?
                         viewarea._width : viewarea._height;
 
-        var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
+        var n0;    // facingDir
+
+        switch( axis )
+        {
+            case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0); break;
+            case "negX": n0 = new x3dom.fields.SFVec3f(-1,  0,  0); break;
+            case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0); break;
+            case "negY": n0 = new x3dom.fields.SFVec3f( 1, -1,  0); break;
+            case "posZ": n0 = new x3dom.fields.SFVec3f( 0,  0,  1); break;
+            case "negZ": n0 = new x3dom.fields.SFVec3f( 0,  0, -1); break;
+        }
+
         var viewpoint = this.canvas.doc._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView() / 2.0;
         var ta = Math.tan(fov);
