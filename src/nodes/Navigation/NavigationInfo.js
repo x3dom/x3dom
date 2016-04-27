@@ -237,8 +237,10 @@ x3dom.registerNodeType(
                var params = [theta, height, minAngle, maxAngle];
                if (length >= 5)
                {
-                   params.push(this._vf.typeParams[4]);
+                   // adding rest parameters
+                   params.push(...this._vf.typeParams.slice(4));
                }
+               console.log(params);
                return params;
             },
 

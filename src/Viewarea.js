@@ -1191,7 +1191,10 @@ x3dom.Viewarea.prototype.resetView = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
+    if(navi.getType() === "specialTurntable")
+    {
+        navi.resetView(this);
+    } else if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         this._mixer._beginTime = this._lastTS;
         this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
@@ -1204,8 +1207,7 @@ x3dom.Viewarea.prototype.resetView = function()
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
 
         this._mixer.setEndMatrix(target);
-    }
-    else
+    } else
     {
         this._scene.getViewpoint().resetView();
     }
@@ -1459,9 +1461,10 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     {
         var navi = this._scene.getNavigationInfo();
 
-        if (navi.getType() === "turntable") {
+        if (navi.getType() === "turntable") 
             this.initTurnTable(navi, false);
-        }
+        else if(navi.getType() === "specialTurntable")
+            navi.onMousePress(this, false);
     }
 };
 
@@ -1841,6 +1844,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
             this._isMoving = true;
         }
+        else if(navType === "specialTurntable"){                
+            navi.onDrag(this, dx,dy,buttonState);
+        }        
         else if (navType === "turntable")   // requires that y is up vector in world coords
         {
             if (!this._flyMat)
@@ -1874,8 +1880,10 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 // FIXME: very experimental HACK to switch between both versions (clamp to CoR and CoR translation)
                 if (navi._vf.typeParams.length >= 5 && navi._vf.typeParams[4] > 0)
                 {
+                    console.log("Zoom Amount "+zoomAmount+" | lastDirL "+(lastDirL- navi._vf.typeParams[4]));
                     // maintain minimum distance (value given in typeParams[4]) to prevent orientation flips
                     var newDist = Math.min(zoomAmount, lastDirL - navi._vf.typeParams[4]);
+                    newDist = Math.min(newDist, navi._vf.typeParams[5]);
 
                     // move along viewing ray, scaled with zoom factor
                     this._from = this._from.addScaled(lastDir, newDist);
@@ -1894,7 +1902,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
 
                 // move along viewing ray, scaled with zoom factor
-                this._from = this._from.addScaled(lastDir, zoomAmount);
+                //this._from = this._from.addScaled(lastDir, zoomAmount);
 
                 // update camera matrix with lookAt() and invert again
                 this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, cor, this._up);
@@ -1913,13 +1921,13 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 var s = this._flyMat.e0();
 
                 // add xy offset to camera position for pan
-                this._from = this._from.addScaled(this._up, ty);
-                this._from = this._from.addScaled(s, tx);
+                this._from = this._from.addScaled(new x3dom.fields.SFVec3f(0,1,0), ty);
+                this._from = this._from.addScaled(new x3dom.fields.SFVec3f(1,0,0), tx);
 
                 // add xy offset to look-at position
                 cor = viewpoint.getCenterOfRotation();
-                cor = cor.addScaled(this._up, ty);
-                cor = cor.addScaled(s, tx);
+                cor = cor.addScaled(new x3dom.fields.SFVec3f(0,1,0), ty);
+                cor = cor.addScaled(new x3dom.fields.SFVec3f(1,0,0), tx);                
                 viewpoint.setCenterOfRotation(cor);
 
                 // update camera matrix with lookAt() and invert
@@ -1957,6 +1965,9 @@ x3dom.Viewarea.prototype.calcOrbit = function (alpha, beta, navi)
     // clamp theta
     var typeParams = navi.getTypeParams();
     theta = Math.max(typeParams[2], Math.min(typeParams[3], theta));
+
+    if(typeParams.length >= 6)
+        phi = Math.max(typeParams[6], Math.min(typeParams[7], phi));
 
     var radius = offset.length();
 
