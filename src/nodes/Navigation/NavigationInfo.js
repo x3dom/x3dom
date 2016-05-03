@@ -143,9 +143,15 @@ x3dom.registerNodeType(
                 "fly", "freefly", "lookat", "lookaround",
                 "walk", "game", "helicopter", "any"
             ];
+            
+            this._typeMapping = {
+              "examine":x3dom.DefaultNavigation,
+              "turntable":x3dom.TurntableNavigation  
+            };
+            
             this._heliUpdated = false;
 
-            var type = this.checkType(this.getType());
+            var type = this.setType(this.getType());
             x3dom.debug.logInfo("NavType: " + type);
         
         },
@@ -155,25 +161,7 @@ x3dom.registerNodeType(
                     this._heliUpdated = false;
                 }
                 else if (fieldName == "type") {
-                    var type = this.checkType(this.getType());
-
-                    switch (type) {
-                        case 'game':
-                            this._nameSpace.doc._viewarea.initMouseState();
-                            break;
-                        case 'helicopter':
-                            this._heliUpdated = false;
-                            break;
-                        case "turntable":
-                            this._nameSpace.doc._viewarea.initMouseState();
-                            this._nameSpace.doc._viewarea.initTurnTable(this);
-                            break;
-                        default:
-                            break;
-                    }
-
-                    this._vf.type[0] = type;
-                    x3dom.debug.logInfo("Switch to " + type + " mode.");
+                    this.setType(this.getType());
                 }
             },
 
@@ -181,34 +169,32 @@ x3dom.registerNodeType(
                 var navType = this.checkType(type.toLowerCase());
                 var oldType = this.checkType(this.getType());
 
-                switch (navType) {
-                    case 'game':
-                        if (oldType !== navType) {
+                if(oldType !== navType || this._impl == null){
+                    this._impl = new this._typeMapping[navType](this);                    
+                    
+                    switch (navType) {
+                        case 'game':
                             if (viewarea)
                                 viewarea.initMouseState();
                             else
                                 this._nameSpace.doc._viewarea.initMouseState();
-                        }
-                        break;
-                    case 'helicopter':
-                        if (oldType !== navType) {
+                            break;
+                        case 'helicopter':
                             this._heliUpdated = false;
-                        }
-                        break;
-                    case "turntable":
-                        if (oldType !== navType) {
+                            break;
+                        case "turntable":
                             if (viewarea) {
                                 viewarea.initMouseState();
-                                viewarea.initTurnTable(this);
                             }
-                            else {
+                            else if(this._nameSpace.doc._viewarea){
                                 this._nameSpace.doc._viewarea.initMouseState();
-                                this._nameSpace.doc._viewarea.initTurnTable(this);
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
+                    if (this._nameSpace.doc._viewarea)
+                        this._impl.init(this._nameSpace.doc._viewarea, false);
                 }
 
                 this._vf.type[0] = navType;

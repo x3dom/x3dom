@@ -541,15 +541,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if (touches.examineNavType == 1) {
                 for(i = 0; i < evt.touches.length; i++) {
                     pos = this.parent.mousePosition(evt.touches[i]);
-                    doc.onPick(that.gl, pos.x, pos.y);
+                    doc.onPick(doc.gl, pos.x, pos.y);
                     doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
                     doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
                 }
-            }
+            } 
             else if (evt.touches.length) {
                 pos = this.parent.mousePosition(evt.touches[0]);
                 doc.onMousePress(that.gl, pos.x, pos.y, 1);     // 1 means left mouse button
             }
+            
+            var navi = doc._scene.getNavigationInfo();
+            navi._impl.onTouchStart(doc._viewarea, evt, touches);
 
             doc.needRender = true;
         };
@@ -586,78 +589,50 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
             var touch0, touch1, distance, middle, squareDistance, deltaMiddle, deltaZoom, deltaMove;
 
-            if (touches.examineNavType == 1) {
-                /*
-                 if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
-                 for(var i = 0; i < evt.touches.length; i++) {
-                 pos = this.parent.mousePosition(evt.touches[i]);
-                 doc.onPick(that.gl, pos.x, pos.y);
+            // one finger: x/y rotation
+            if(evt.touches.length == 1) {
+                var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 
-                 doc._viewarea.handleMoveEvt(pos.x, pos.y, 1);
-                 }
-                 }
-                 */
+                var deltaDrag = currentDrag.subtract(touches.lastDrag);
+                touches.lastDrag = currentDrag;
+                touches.deltaDrag = deltaDrag;
+                
+                var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
+                var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
+                rotMatrix = mx.mult(my);
 
-                // one finger: x/y rotation
-                if(evt.touches.length == 1) {
-                    var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 
-                    var deltaDrag = currentDrag.subtract(touches.lastDrag);
-                    touches.lastDrag = currentDrag;
 
-                    var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
-                    var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
-                    rotMatrix = mx.mult(my);
-
-                    doc.onMoveView(that.gl, null, rotMatrix);
-                }
-                // two fingers: scale, translation, rotation around view (z) axis
-                else if(evt.touches.length >= 2) {
-                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
-
-                    distance = touch1.subtract(touch0);
-                    middle = distance.multiply(0.5).add(touch0);
-                    squareDistance = distance.dot(distance);
-
-                    deltaMiddle = middle.subtract(touches.lastMiddle);
-                    deltaZoom = squareDistance - touches.lastSquareDistance;
-
-                    deltaMove = new x3dom.fields.SFVec3f(
-                                deltaMiddle.x / screen.width, -deltaMiddle.y / screen.height,
-                                deltaZoom / (screen.width * screen.height * 0.2));
-
-                    var rotation = touches.calcAngle(distance);
-                    var angleDelta = touches.lastAngle - rotation;
-                    touches.lastAngle = rotation;
-
-                    rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
-
-                    touches.lastMiddle = middle;
-                    touches.lastSquareDistance = squareDistance;
-
-                    doc.onMoveView(that.gl, deltaMove, rotMatrix);
-                }
+                doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
             }
-            else if (evt.touches.length) {
-                if (touches.examineNavType == 2 && evt.touches.length >= 2) {
-                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+            // two fingers: scale, translation, rotation around view (z) axis
+            else if(evt.touches.length >= 2) {
+                touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
 
-                    distance = touch1.subtract(touch0);
-                    squareDistance = distance.dot(distance);
-                    deltaZoom = (squareDistance - touches.lastSquareDistance) / (0.1 * (screen.width + screen.height));
+                distance = touch1.subtract(touch0);
+                middle = distance.multiply(0.5).add(touch0);
+                squareDistance = distance.dot(distance);
 
-                    touches.lastPos.y += deltaZoom;
-                    touches.lastSquareDistance = squareDistance;
+                deltaMiddle = middle.subtract(touches.lastMiddle);
+                deltaZoom = squareDistance - touches.lastSquareDistance;
 
-                    doc.onDrag(that.gl, touches.lastPos.x, touches.lastPos.y, 2);
-                }
-                else {
-                    pos = this.parent.mousePosition(evt.touches[0]);
+                deltaMove = new x3dom.fields.SFVec3f(
+                            deltaMiddle.x / screen.width, -deltaMiddle.y / screen.height,
+                            deltaZoom / (screen.width * screen.height * 0.2));
 
-                    doc.onDrag(that.gl, pos.x, pos.y, 1);
-                }
+                var rotation = touches.calcAngle(distance);
+                var angleDelta = touches.lastAngle - rotation;
+                
+                touches.lastAngle = rotation;
+                touches.deltaAngle = angleDelta;
+                
+                rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
+
+                touches.lastMiddle = middle;
+                touches.lastSquareDistance = squareDistance;
+
+                doc.onMoveView(that.gl, evt, touches, deltaMove, rotMatrix);
             }
 
             doc.needRender = true;
@@ -741,11 +716,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     touches.firstTouchTime = now;
                     touches.firstTouchPoint = touches.lastDrag;
                 }
-            }
+            }   
             else if (touches.lastLayer.length) {
                 pos = touches.lastLayer[0][1];
                 doc.onMouseRelease(that.gl, pos.x, pos.y, 0, 1);
             }
+
+            var navi = doc._scene.getNavigationInfo();
+            navi._impl.onTouchEnd(doc._viewarea, evt, touches);
 
             doc.needRender = true;
         };

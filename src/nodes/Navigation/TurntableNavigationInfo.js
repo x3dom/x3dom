@@ -131,6 +131,8 @@ x3dom.registerNodeType(
             
             this.addField_MFFloat(ctx, 'angularRestrictions', [-3.15, 3.15, -3.15, 3.15]);
 
+            this.addField_MFFloat(ctx, 'distanceRestrictions', [3.0, 10.0]);
+
             var type = this.setType(this.getType());
             x3dom.debug.logInfo("NavType: " + type);
         
@@ -244,7 +246,7 @@ x3dom.registerNodeType(
                 view._up = view._flyMat.e1();
                 
                 view._flyMat = x3dom.fields.SFMatrix4f.lookAt(view._from, view._at, view._up);
-                view._flyMat = view.calcOrbit(0, 0, this);                
+                view._flyMat = this.calcOrbit(view, 0, 0);                
             },
             
             onDrag: function(view, dx, dy,buttonState)
@@ -281,28 +283,12 @@ x3dom.registerNodeType(
                     
                     var zoomAmount = d * (dx + dy) / view._height;
                     
-                    // FIXME: very experimental HACK to switch between both versions (clamp to CoR and CoR translation)
-                    if (this._vf.typeParams.length >= 5 && this._vf.typeParams[4] > 0)
-                    {
-                        // maintain minimum distance (value given in typeParams[4]) to prevent orientation flips
-                        var newDist = Math.min(zoomAmount, lastDirL - this._vf.typeParams[4]);
-                        newDist = Math.min(newDist, this._vf.typeParams[5]);
-
-                        // move along viewing ray, scaled with zoom factor
-                        view._from = view._from.addScaled(lastDir, newDist);
-                    }
-                    else
-                    {
-                        // add z offset to look-at position, alternatively clamp
-                        var diff = zoomAmount - lastDirL + 0.01;
-                        if (diff >= 0) {
-                            cor = cor.addScaled(lastDir, diff);
-                            view._at = cor;
-                        }
-
-                        // move along viewing ray, scaled with zoom factor
-                        view._from = view._from.addScaled(lastDir, zoomAmount);
-                    }
+                    // maintain minimum distance (value given in typeParams[4]) to prevent orientation flips
+                    var newDist = Math.min(zoomAmount, lastDirL - this._vf.distanceRestrictions[0]);
+                    newDist = Math.max(newDist, lastDirL - this._vf.distanceRestrictions[1]);
+                    
+                    // move along viewing ray, scaled with zoom factor
+                    view._from = view._from.addScaled(lastDir, newDist);
 
                     // move along viewing ray, scaled with zoom factor
                     //view._from = view._from.addScaled(lastDir, zoomAmount);
@@ -392,8 +378,8 @@ x3dom.registerNodeType(
                 theta -= alpha;
 
                 // clamp theta
-                theta = Math.max(this._vf.angularRestrictions[0], Math.min(this._vf.angularRestrictions[1], theta));
-                phi = Math.max(this._vf.angularRestrictions[2], Math.min(this._vf.angularRestrictions[3], phi));
+                theta = Math.max(this._vf.typeParams[2], Math.min(this._vf.typeParams[3], theta));
+                phi = Math.max(this._vf.typeParams[6], Math.min(this._vf.typeParams[7], phi));
 
                 var radius = offset.length();
 
@@ -417,6 +403,21 @@ x3dom.registerNodeType(
                     up = up.negate();
 
                 return x3dom.fields.SFMatrix4f.lookAt(offset, view._at, up);
+            },
+            
+            onTouchStart: function(view, touchInfo)
+            {
+                
+            },
+            
+            onTouchDrag: function(view, touchInfo)
+            {
+                
+            },
+            
+            onTouchEnd: function(view, touchInfo)
+            {
+                
             }
         }
     )

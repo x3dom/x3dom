@@ -19,6 +19,8 @@
                 {"path": "util/DrawableCollection.js"},
 				{"path": "util/Moveable.js"},
 				{"path": "util/Zlib.js"},
+                {"path": "navigation/DefaultNavigation.js"},
+                {"path": "navigation/TurntableNavigation.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
