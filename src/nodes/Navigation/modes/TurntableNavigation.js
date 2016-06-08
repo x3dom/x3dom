@@ -68,8 +68,10 @@ x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
 x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
 {
-    /*
-    var target = document.getElementById(navi._vf.target);        
+    if(this.target == null)
+        return;
+        
+    var target = this.target;        
     var bbox  = target._x3domNode.getVolume();
     
     var viewpoint = view._scene.getViewpoint();
@@ -100,7 +102,7 @@ x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
     // update camera matrix with lookAt() and invert
     view._flyMat = x3dom.fields.SFMatrix4f.lookAt(view._from, cor, view._up);
     viewpoint.setViewAbsolute(view._flyMat.inverse());
-    */
+    
 };
 
 x3dom.TurntableNavigation.prototype.rotate = function(view, alpha, beta)
