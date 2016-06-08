@@ -516,10 +516,7 @@ x3dom.DefaultNavigation.prototype.resetView = function(view)
 {
     var navi = this.navi;
 
-    if(navi.getType() === "specialTurntable")
-    {
-        navi.resetView(view);
-    } else if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         view._mixer._beginTime = view._lastTS;
         view._mixer._endTime = view._lastTS + navi._vf.transitionTime;
@@ -684,4 +681,45 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view,evt, touches, tran
 x3dom.DefaultNavigation.prototype.onTouchEnd = function(evt, touches)
 {
     
+};
+
+x3dom.DefaultNavigation.prototype.onDoubleClick = function (view, x, y)
+{
+    if (view._doc._x3dElem.hasAttribute('disableDoubleClick') &&
+        view._doc._x3dElem.getAttribute('disableDoubleClick') === 'true') {
+        return;
+    }
+    
+    var navi = view._scene.getNavigationInfo();
+    
+    if (navi.getType() == "none") {
+        return;
+    }
+
+    var pickMode = view._scene._vf.pickMode.toLowerCase();
+
+    if ((pickMode == "color" || pickMode == "texcoord")) {
+         return;
+    }
+
+    var viewpoint = view._scene.getViewpoint();
+
+    viewpoint.setCenterOfRotation(view._pick);
+    x3dom.debug.logInfo("New center of Rotation:  " + view._pick);
+
+    var mat = view.getViewMatrix().inverse();
+
+    var from = mat.e3();
+    var at = view._pick;
+    var up = mat.e1();
+
+    var norm = mat.e0().cross(up).normalize();
+    // get distance between look-at point and viewing plane
+    var dist = norm.dot(view._pick.subtract(from));
+    
+    from = at.addScaled(norm, -dist);
+    mat = x3dom.fields.SFMatrix4f.lookAt(from, at, up);
+    
+    x3dom.debug.logInfo("New camera position:  " + from);
+    view.animateTo(mat.inverse(), viewpoint);
 };

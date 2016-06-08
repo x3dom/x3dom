@@ -68,6 +68,7 @@ x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
 x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
 {
+    /*
     var target = document.getElementById(navi._vf.target);        
     var bbox  = target._x3domNode.getVolume();
     
@@ -99,6 +100,7 @@ x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
     // update camera matrix with lookAt() and invert
     view._flyMat = x3dom.fields.SFMatrix4f.lookAt(view._from, cor, view._up);
     viewpoint.setViewAbsolute(view._flyMat.inverse());
+    */
 };
 
 x3dom.TurntableNavigation.prototype.rotate = function(view, alpha, beta)
@@ -125,8 +127,8 @@ x3dom.TurntableNavigation.prototype.zoom = function(view, zoomAmount)
     lastDir = lastDir.normalize();
     
     // maintain minimum distance (value given in typeParams[4]) to prevent orientation flips
-    var newDist = Math.min(zoomAmount, lastDirL - navi._vf.typeParams[4]);
-    newDist = Math.max(newDist, lastDirL - navi._vf.typeParams[5]);
+    var newDist = Math.min(zoomAmount, lastDirL - navi._vf.typeParams[6]);
+    newDist = Math.max(newDist, lastDirL - navi._vf.typeParams[7]);
     
     // move along viewing ray, scaled with zoom factor
     view._from = view._from.addScaled(lastDir, newDist);
@@ -159,7 +161,14 @@ x3dom.TurntableNavigation.prototype.calcOrbit = function (view, alpha, beta)
 
     // clamp theta
     theta = Math.max(navi._vf.typeParams[2], Math.min(navi._vf.typeParams[3], theta));
-    phi = Math.max(navi._vf.typeParams[6], Math.min(navi._vf.typeParams[7], phi));
+    
+    if(navi._vf.typeParams[4] <= navi._vf.typeParams[5])
+        phi = Math.max(navi._vf.typeParams[4], Math.min(navi._vf.typeParams[5], phi));
+    else{
+        if(beta > 0 && phi < navi._vf.typeParams[4] && phi > navi._vf.typeParams[5]) phi = navi._vf.typeParams[4];
+        else if(beta < 0 && phi > navi._vf.typeParams[5] && phi < navi._vf.typeParams[4]) phi = navi._vf.typeParams[5];     
+   }
+        
 
     var radius = offset.length();
 
@@ -267,10 +276,12 @@ x3dom.TurntableNavigation.prototype.updateFlyMat = function(view, nextViewpoint)
 x3dom.TurntableNavigation.prototype.animateTo = function(view, target, prev, dur)
 {
     var navi = this.navi;
+    var targetMat;
     
     if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
         targetMat = x3dom.fields.SFMatrix4f.lookAt(target._vf.position, target.getCenterOfRotation(), new x3dom.fields.SFVec3f(0,1,0));        
-    }
+    }else
+        targetMat = target;
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && dur != 0 && navi.getType() !== "game")
     {
@@ -310,7 +321,7 @@ x3dom.TurntableNavigation.prototype.animateTo = function(view, target, prev, dur
     this.updateFlyMat(view, target);
 }
 
-x3dom.DefaultNavigation.prototype.onTouchStart = function(view, evt, touches)
+x3dom.TurntableNavigation.prototype.onTouchStart = function(view, evt, touches)
 {
     console.log("touchStart "+evt.touches.length);
     console.log(evt);
@@ -347,7 +358,7 @@ x3dom.TurntableNavigation.prototype.onTouchDrag = function(view, evt, touches, t
     }
 };
 
-x3dom.DefaultNavigation.prototype.onTouchEnd = function(view, evt, touches)
+x3dom.TurntableNavigation.prototype.onTouchEnd = function(view, evt, touches)
 {
     console.log("touchEnd "+evt.touches.length);
     console.log(evt);
@@ -359,3 +370,8 @@ x3dom.DefaultNavigation.prototype.onTouchEnd = function(view, evt, touches)
     
     view._numTouches = evt.touches.length;
 };
+
+x3dom.TurntableNavigation.prototype.onDoubleClick = function (view, x, y)
+{
+    
+}

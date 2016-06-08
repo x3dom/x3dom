@@ -145,7 +145,7 @@ x3dom.registerNodeType(
             ];
             
             this._typeMapping = {
-              "examine":x3dom.DefaultNavigation,
+              "default":x3dom.DefaultNavigation,
               "turntable":x3dom.TurntableNavigation  
             };
             
@@ -170,7 +170,10 @@ x3dom.registerNodeType(
                 var oldType = this.checkType(this.getType());
 
                 if(oldType !== navType || this._impl == null){
-                    this._impl = new this._typeMapping[navType](this);                    
+                    if(this._typeMapping[navType] == null)
+                        this._impl = new this._typeMapping['default'](this);    
+                    else
+                        this._impl = new this._typeMapping[navType](this);                    
                     
                     switch (navType) {
                         case 'game':
