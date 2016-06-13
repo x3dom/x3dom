@@ -389,12 +389,12 @@ x3dom.TurntableNavigation.prototype.onDoubleClick = function (view, x, y)
     
 }
 
-x3dom.TurntableNavigation.prototype.setPanTarget(target)
+x3dom.TurntableNavigation.prototype.setPanTarget = function(target)
 {
     this.target = target;
 }
 
-x3dom.TurntableNavigation.prototype.setPanAxis(a, b)
+x3dom.TurntableNavigation.prototype.setPanAxis = function(a, b)
 {
     this.panAxisX = a;
     this.panAxisY = b;
