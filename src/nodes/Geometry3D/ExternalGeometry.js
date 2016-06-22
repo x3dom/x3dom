@@ -105,37 +105,19 @@ x3dom.registerNodeType(
                     shape._webgl.internalDownloadCount  = 0;
                     shape._nameSpace.doc.downloadCount  = 0;
 
-                    var responseBeginUint32 = new Uint32Array(xhr.response, 0, 12);
+                    var header = that._readHeader(xhr.response);
+                    
 
-                    var srcHeaderSize, srcBodySize, srcBodyOffset;
-                    var srcHeaderView, srcBodyView;
-
-                    var srcHeaderObj;
-
-                    if ((xhr.status == 200 || xhr.status == 0) && responseBeginUint32.length >= 3) {
-
-                        srcHeaderSize = responseBeginUint32[2];
-                        srcBodyOffset = srcHeaderSize + 12;
-                        srcBodySize   = xhr.response.byteLength - srcBodyOffset;
-
-                        if (srcHeaderSize > 0 &&  srcBodySize >= 0)
+                    if ((xhr.status == 200 || xhr.status == 0)) {
+                        if (header.sceneLength > 0)
                         {
-                            srcHeaderView = new Uint8Array(xhr.response, 12,            srcHeaderSize);
-                            srcBodyView   = new Uint8Array(xhr.response, srcBodyOffset, srcBodySize  );
+                            var scene = that._readScene(xhr.response, header);
+                            scene.header = header;
+                            scene.header.bodyOffset = header.sceneLength + 20;
 
-                            //decode SRC header
-                            //currently, we assume ASCII JSON encoding
-                            try
-                            {
-                                srcHeaderObj = JSON.parse(String.fromCharCode.apply(null, srcHeaderView));
-                            }
-                            catch (exc)
-                            {
-                                x3dom.debug.logError("Unable to parse SRC header: " + exc);
-                                return;
-                            }
+                            var body = that._readBody(xhr.response, header);
 
-                            that._updateRenderDataFromSRC(shape, shaderProgram, gl, srcHeaderObj, srcBodyView);
+                            that._updateRenderData(shape, shaderProgram, gl, scene, body);
                         }
                         else
                         {
@@ -185,7 +167,91 @@ x3dom.registerNodeType(
             // PRIVATE FUNCTIONS
             //----------------------------------------------------------------------------------------------------------
 
-            //TODO: we currently assume that we always read data from exactly one SRC (i.e., no Source nodes)
+            _updateRenderData: function(shape, shaderProgram, gl, json, body)
+            {
+                var defaultScene = json["scene"];
+                var scene = json.scenes[defaultScene];
+
+                var nodes = scene["nodes"];
+
+                for(var i = 0; i<nodes.length;++i)
+                {
+                    var nodeID = nodes[i];
+                    this._traverseNode(shape, shaderProgram, gl, json, body, json.nodes[nodeID]);
+                }
+                   
+            },
+
+            _traverseNode: function(shape, shaderProgram, gl, json, body, node)
+            {
+                var children = node["children"];
+                if(children!=null)
+                    for(var i = 0; i<children.length;++i)
+                    {
+                        var childID = children[i];
+                        this._traverseNode(shape, shaderProgram, gl, json, body, json.nodes[childID]);
+                    }
+
+                var meshes = node["meshes"];
+                if(meshes != null && meshes.length > 0)
+                    for(var i = 0; i<meshes.length;++i)
+                    {
+                        var meshID = meshes[i];
+                        this._updateMesh(shape, shaderProgram, gl, json, body, json.meshes[meshID]);
+                    }
+            },
+            
+            _updateMesh: function(shape, shaderProgram, gl, json, body, mesh)
+            {
+                console.log(mesh);
+
+                var primitives = mesh["primitives"];
+                for(var i = 0; i<primitives.length; ++i){
+                    var pimitive = primitives[i];
+
+                    if(pimitive.indices != null && pimitive.indices != ""){
+                        var indicesAccessor = json.accessors[pimitive.indices];
+                        console.log(indicesAccessor);
+                    }
+                }
+            },
+
+            _loadBufferViews: function(gl, json, body)
+            {
+                var buffers = {};
+
+                var bufferViews = json.bufferViews;
+                for(var bufferId in bufferViews)
+                {
+                    if(!bufferViews.hasOwnProperty(bufferId)) continue;
+
+                    var bufferView = bufferViews[bufferId];
+
+                    // do not use Buffer for Skin or animation data
+                    if(bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
+                        continue;
+
+                    var data = new Uint8Array(body.buffer,
+                                            json.header.bodyOffset + bufferView["byteOffset"],
+                                            bufferView["byteLength"]);
+
+                    var newBuffer = gl.createBuffer();
+                    gl.bindBuffer(bufferType, newBuffer);
+
+                    //upload all chunk data to GPU
+                    gl.bufferData(bufferType, data, gl.STATIC_DRAW);
+
+                    buffers[id] = newBuffer;
+                }
+
+                return buffers;
+            },
+
+
+            _loadAccessor: function(gl, json, body, accessor)
+            {
+
+            },
             /**
              * Helper function, updating the render data, stored in the given objects,
              * with data read from the given SRC.
@@ -209,7 +275,7 @@ x3dom.registerNodeType(
                 var MAX_NUM_BUFFERS_PER_DRAW = 6;
 
                 var indexViews = srcHeaderObj["accessors"]["indexViews"];
-                var indexViewID, indexView;
+
 
                 var attributeViews = srcHeaderObj["accessors"]["attributeViews"];
                 var attributes;
@@ -221,27 +287,13 @@ x3dom.registerNodeType(
                 var meshIdx, bufferOffset;
 
 
-                //the meta data object is currently unused
-                //var metadataObj = srcHeaderObj["meta"];
-
-
                 //1. create GL buffers for bufferChunks / bufferViews
 
                 //create buffers and GL buffer views, and store their identifiers in a map
                 var viewIDsToGLBufferIDs = {};
 
-                //due to the differentiation between targets ARRAY and ELEMENT_ARRAY, we need to check the usage
-                //of the buffer view objects here first, before uploading them for the matching target
-                var indexViewBufferIDs = {};
-                for (indexViewID in indexViews)
-                {
-                    indexView = indexViews[indexViewID];
-                    indexViewBufferIDs[indexView["bufferView"]] = true;
-                }
-
-                this._createGLBuffersFromSRCChunks(gl,
-                                                   srcHeaderObj["bufferChunks"], srcHeaderObj["bufferViews"],
-                                                   srcBodyView, indexViewBufferIDs, viewIDsToGLBufferIDs);
+                this._createGLBuffersFromSRCChunks(gl, srcHeaderObj["bufferViews"],
+                                                   srcBodyView, viewIDsToGLBufferIDs);
 
 
                 //2. remember GL index buffer properties, if any
@@ -388,14 +440,13 @@ x3dom.registerNodeType(
              * The result is stored in the given map from bufferView IDs to GL buffer IDs.
              *
              * @param {Object} gl - WebGL context
-             * @param {Object} bufferChunksObj - the SRC header's bufferChunks object
              * @param {Object} bufferViewsObj - the SRC header's bufferViews object
              * @param {Uint8Array} srcBodyView - a typed array view on the body of the SRC file
              * @param {Object} indexViewBufferIDs - an object which holds the IDs of all index data bufferViews
              * @param {Object} viewIDsToGLBufferIDs - map that will be filled with a GL buffer ID for each bufferView ID
              * @private
              */
-            _createGLBuffersFromSRCChunks: function(gl, bufferChunksObj, bufferViewsObj, srcBodyView,
+            _createGLBuffersFromSRCChunks: function(gl, bufferViewsObj, srcBodyView,
                                                     indexViewBufferIDs, viewIDsToGLBufferIDs)
             {
                 var i;
@@ -496,7 +547,48 @@ x3dom.registerNodeType(
                 }
 
                 return vol;
+            },
+
+            _readHeader: function(response)
+            {
+                var header = {};
+                var magicBytes = new Uint8Array(response, 0, 4);
+                var versionBytes = new Uint32Array(response, 4, 1);
+                var lengthBytes = new Uint32Array(response, 8, 1);
+                var sceneLengthBytes = new Uint32Array(response, 12, 1);
+                var sceneFormatBytes = new Uint32Array(response, 16, 1);
+
+                header.magic = new TextDecoder("ascii").decode(magicBytes);
+                if(versionBytes[0] == 1)
+                    header.version = "Version 1";
+                
+                header.length = lengthBytes[0];
+                header.sceneLength = sceneLengthBytes[0];
+
+                if(sceneFormatBytes[0] == 0)
+                    header.sceneFormat = "JSON";
+
+                console.log(header);
+
+                return header;
+            },
+
+            _readScene: function(response, header)
+            {
+                var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
+
+                var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
+
+                return json;
+            },
+            _readBody: function(response, header)
+            {
+                var offset = header.sceneLength + 20;
+                var body = new Uint8Array(response, offset, header.length-offset);
+
+                return body;
             }
+
 
             //----------------------------------------------------------------------------------------------------------
 
@@ -523,7 +615,7 @@ x3dom.registerNodeType(
                 }
             }*/
 
-        }
+        }        
     )
 );
 
