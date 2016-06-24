@@ -1317,10 +1317,8 @@ x3dom.X3DCanvas.prototype.mousePosition = function(evt)
         var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
         var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
 
-        // account for scaled canvas element
-        var devicePixelRatio = window.devicePixelRatio || 1.0;
-        x = Math.round(devicePixelRatio * (evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrollLeft)));
-        y = Math.round(devicePixelRatio * (evt.pageY - (box.top + paddingTop + borderTopWidth + scrollTop)));
+        x = Math.round( evt.pageX - ( box.left + paddingLeft + borderLeftWidth + scrollLeft ) );
+        y = Math.round( evt.pageY - ( box.top  + paddingTop  + borderTopWidth  + scrollTop  ) );
     }
     else {
         x3dom.debug.logError('NO getBoundingClientRect');
