@@ -105,6 +105,10 @@ x3dom.registerNodeType(
                     shape._webgl.internalDownloadCount  = 0;
                     shape._nameSpace.doc.downloadCount  = 0;
 
+                    shape._webgl.primType    = [];
+                    shape._webgl.indexOffset = [];
+                    shape._webgl.drawCount   = [];
+
                     var header = that._readHeader(xhr.response);
                     
 
@@ -112,12 +116,19 @@ x3dom.registerNodeType(
                         if (header.sceneLength > 0)
                         {
                             var scene = that._readScene(xhr.response, header);
-                            scene.header = header;
-                            scene.header.bodyOffset = header.sceneLength + 20;
-
                             var body = that._readBody(xhr.response, header);
 
-                            that._updateRenderData(shape, shaderProgram, gl, scene, body);
+                            var glTF = {};
+                            glTF.header = header;
+                            glTF.json = scene;
+
+                            glTF.body = body;
+
+                            glTF.loaded = {};
+                            glTF.loaded.meshes = {};
+                            glTF.loaded.meshCount = 0;
+
+                            that._updateRenderData(shape, shaderProgram, gl, glTF);
                         }
                         else
                         {
@@ -167,60 +178,155 @@ x3dom.registerNodeType(
             // PRIVATE FUNCTIONS
             //----------------------------------------------------------------------------------------------------------
 
-            _updateRenderData: function(shape, shaderProgram, gl, json, body)
+            _updateRenderData: function(shape, shaderProgram, gl, glTF)
             {
-                var defaultScene = json["scene"];
-                var scene = json.scenes[defaultScene];
+                shape._webgl.externalGeometry = -1;
+                glTF.loaded.bufferViews = this._loadBufferViews(shape, gl, glTF);
+
+                var defaultScene = glTF.json["scene"];
+                var scene = glTF.json.scenes[defaultScene];
 
                 var nodes = scene["nodes"];
 
                 for(var i = 0; i<nodes.length;++i)
                 {
                     var nodeID = nodes[i];
-                    this._traverseNode(shape, shaderProgram, gl, json, body, json.nodes[nodeID]);
+                    this._traverseNode(shape, shaderProgram, gl, glTF, glTF.json.nodes[nodeID]);
                 }
                    
             },
 
-            _traverseNode: function(shape, shaderProgram, gl, json, body, node)
+            _traverseNode: function(shape, shaderProgram, gl, glTF, node)
             {
                 var children = node["children"];
                 if(children!=null)
                     for(var i = 0; i<children.length;++i)
                     {
                         var childID = children[i];
-                        this._traverseNode(shape, shaderProgram, gl, json, body, json.nodes[childID]);
+                        this._traverseNode(shape, shaderProgram, gl, glTF, glTF.json.nodes[childID]);
                     }
 
                 var meshes = node["meshes"];
                 if(meshes != null && meshes.length > 0)
-                    for(var i = 0; i<meshes.length;++i)
-                    {
+                    for (var i = 0; i < meshes.length; ++i) {
                         var meshID = meshes[i];
-                        this._updateMesh(shape, shaderProgram, gl, json, body, json.meshes[meshID]);
+                        if (glTF.loaded.meshes[meshID] == null) {
+                            this._updateMesh(shape, shaderProgram, gl, glTF, glTF.json.meshes[meshID]);
+                            glTF.loaded.meshes[meshID] = 1;
+                        }
                     }
             },
-            
-            _updateMesh: function(shape, shaderProgram, gl, json, body, mesh)
+
+            _updateMesh: function(shape, shaderProgram, gl, glTF, mesh)
             {
                 console.log(mesh);
 
                 var primitives = mesh["primitives"];
                 for(var i = 0; i<primitives.length; ++i){
-                    var pimitive = primitives[i];
-
-                    if(pimitive.indices != null && pimitive.indices != ""){
-                        var indicesAccessor = json.accessors[pimitive.indices];
-                        console.log(indicesAccessor);
-                    }
+                    this._loadPrimitive(shape, shaderProgram, gl, glTF, primitives[i]);                    
                 }
             },
 
-            _loadBufferViews: function(gl, json, body)
+            _loadPrimitive: function(shape, shaderProgram, gl, glTF, primitive)
+            {
+                var INDEX_BUFFER_IDX    = 0;
+                var POSITION_BUFFER_IDX = 1;
+                var NORMAL_BUFFER_IDX   = 2;
+                var TEXCOORD_BUFFER_IDX = 3;
+                var COLOR_BUFFER_IDX    = 4;
+
+                var x3domTypeID, x3domShortTypeID;
+
+                var meshIdx = glTF.loaded.meshCount;
+                var bufferOffset = meshIdx * 6;
+                shape._webgl.primType[meshIdx] = primitive["mode"];
+
+                var indexed = (primitive.indices != null && primitive.indices != "");
+
+                if(indexed == true){
+                    var indicesAccessor = glTF.json.accessors[primitive.indices];
+
+                    shape._webgl.indexOffset[meshIdx] = indicesAccessor["byteOffset"];
+                    shape._webgl.drawCount[meshIdx]   = indicesAccessor["count"];
+
+                    shape._webgl.buffers[INDEX_BUFFER_IDX + bufferOffset] =
+                        glTF.loaded.bufferViews[indicesAccessor["bufferView"]];
+
+                    //TODO: add support for LINES and POINTS
+                    this._mesh._numFaces += indicesAccessor["count"] / 3;
+                }
+
+                var attributes = primitive["attributes"];
+
+                for (var attributeID in attributes)
+                {
+                    var accessorName = attributes[attributeID];
+                    var accessor = glTF.json.accessors[accessorName];
+
+                    //the current renderer does not support generic vertex attributes, so simply look for useable cases
+                    switch (attributeID)
+                    {
+                        case "POSITION":
+                            x3domTypeID      = "coord";
+                            x3domShortTypeID = "Pos";
+                            shape._webgl.buffers[POSITION_BUFFER_IDX + bufferOffset] =
+                                glTF.loaded.bufferViews[accessor["bufferView"]];
+                            //for non-indexed rendering, we assume that all attributes have the same count
+                            if (indexed == false)
+                            {
+                                shape._webgl.drawCount[meshIdx] = accessor["count"];
+                                //TODO: add support for LINES and POINTS
+                                this._mesh._numFaces += accessor["count"] / 3;
+                            }
+                            this._mesh._numCoords += accessor["count"];
+                            break;
+
+                        case "NORMAL":
+                            x3domTypeID      = "normal";
+                            x3domShortTypeID = "Norm";
+                            shape._webgl.buffers[NORMAL_BUFFER_IDX + bufferOffset] =
+                                glTF.loaded.bufferViews[accessor["bufferView"]];
+                            break;
+
+                        case "TEXCOORD_0":
+                            x3domTypeID      = "texCoord";
+                            x3domShortTypeID = "Tex";
+                            shape._webgl.buffers[TEXCOORD_BUFFER_IDX + bufferOffset] =
+                                glTF.loaded.bufferViews[accessor["bufferView"]];
+                            break;
+
+                        case "COLOR":
+                            x3domTypeID      = "color";
+                            x3domShortTypeID = "Col";
+                            shape._webgl.buffers[COLOR_BUFFER_IDX + bufferOffset] =
+                                glTF.loaded.bufferViews[accessor["bufferView"]];
+                            break;
+                    }
+
+                    if(x3domTypeID != null){
+                        shape["_" + x3domTypeID + "StrideOffset"][meshIdx] = [];
+
+                        shape["_" + x3domTypeID + "StrideOffset"][meshIdx][0] = accessor["byteStride"];
+                        shape["_" + x3domTypeID + "StrideOffset"][meshIdx][1] = accessor["byteOffset"];
+                        shape._webgl[x3domTypeID + "Type"]           = accessor["componentType"];
+
+                        var numComponents = x3dom.nodeTypes.ExternalGeometry._findNumComponentsForSRCAccessorType(accessor["type"]);
+                        this._mesh["_num" + x3domShortTypeID + "Components"] = numComponents;
+                    }
+                }
+
+                glTF.loaded.meshCount += 1;
+
+                shape._dirty.shader = true;
+                shape._nameSpace.doc.needRender = true;
+                x3dom.BinaryContainerLoader.checkError(gl);
+            },
+
+            _loadBufferViews: function(shape, gl, glTF)
             {
                 var buffers = {};
 
-                var bufferViews = json.bufferViews;
+                var bufferViews = glTF.json.bufferViews;
                 for(var bufferId in bufferViews)
                 {
                     if(!bufferViews.hasOwnProperty(bufferId)) continue;
@@ -228,30 +334,28 @@ x3dom.registerNodeType(
                     var bufferView = bufferViews[bufferId];
 
                     // do not use Buffer for Skin or animation data
-                    if(bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
+                    if(bufferView.target == null && bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
                         continue;
 
-                    var data = new Uint8Array(body.buffer,
-                                            json.header.bodyOffset + bufferView["byteOffset"],
+                    if(bufferView.target == gl.ELEMENT_ARRAY_BUFFER)
+                        shape._webgl.externalGeometry = 1;
+
+                    var data = new Uint8Array(glTF.body.buffer,
+                                            glTF.header.bodyOffset + bufferView["byteOffset"],
                                             bufferView["byteLength"]);
 
                     var newBuffer = gl.createBuffer();
-                    gl.bindBuffer(bufferType, newBuffer);
+                    gl.bindBuffer(bufferView["target"], newBuffer);
 
                     //upload all chunk data to GPU
-                    gl.bufferData(bufferType, data, gl.STATIC_DRAW);
+                    gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
 
-                    buffers[id] = newBuffer;
+                    buffers[bufferId] = newBuffer;
                 }
 
                 return buffers;
             },
 
-
-            _loadAccessor: function(gl, json, body, accessor)
-            {
-
-            },
             /**
              * Helper function, updating the render data, stored in the given objects,
              * with data read from the given SRC.
@@ -568,6 +672,9 @@ x3dom.registerNodeType(
                 if(sceneFormatBytes[0] == 0)
                     header.sceneFormat = "JSON";
 
+
+                header.bodyOffset = header.sceneLength + 20;
+
                 console.log(header);
 
                 return header;
@@ -588,32 +695,6 @@ x3dom.registerNodeType(
 
                 return body;
             }
-
-
-            //----------------------------------------------------------------------------------------------------------
-
-            /*nodeChanged: function()
-            {
-                Array.forEach(this._parentNodes, function (node) {
-                    node._dirty.positions = true;
-                    node._dirty.normals = true;
-                    node._dirty.texcoords = true;
-                    node._dirty.colors = true;
-                });
-                this._vol.invalidate();
-            },
-
-            fieldChanged: function(fieldName)
-            {
-                if (fieldName == "index" ||fieldName == "coord" || fieldName == "normal" ||
-                    fieldName == "texCoord" || fieldName == "color") {
-                    this._dirty[fieldName] = true;
-                    this._vol.invalidate();
-                }
-                else if (fieldName == "implicitMeshSize") {
-                    this._vol.invalidate();
-                }
-            }*/
 
         }        
     )
