@@ -1446,13 +1446,7 @@ x3dom.gfx_webgl = (function () {
                     indicesReady = true;
                 }
 
-                if (sp.position !== undefined && s_gl.buffers[q6 + 1]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
-                    gl.vertexAttribPointer(sp.position,
-                        s_msh._numPosComponents, s_gl.coordType, false,
-                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.position);
-                }
+                this.setVertexAttribPointerPosition(gl, shape, q6, q);
 
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
 
@@ -1824,27 +1818,14 @@ x3dom.gfx_webgl = (function () {
                     indicesReady = true;
                 }
 
-                if (sp.position !== undefined && s_gl.buffers[q6 + 1]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
-                    gl.vertexAttribPointer(sp.position,
-                        s_msh._numPosComponents, s_gl.coordType, false,
-                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.position);
-                }
-                if (pickMode == 1 && sp.color !== undefined && s_gl.buffers[q6 + 4]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
-                    gl.vertexAttribPointer(sp.color,
-                        s_msh._numColComponents, s_gl.colorType, false,
-                        shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.color);
+                this.setVertexAttribPointerPosition(gl, shape, q6, q);
+
+                if (pickMode == 1) {
+                    this.setVertexAttribPointerColor(gl, shape, q6, q);
                 }
 
                 if (pickMode == 2 && sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
-                    gl.vertexAttribPointer(sp.texcoord,
-                        s_msh._numTexComponents, s_gl.texCoordType, false,
-                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.texcoord);
+                    this.setVertexAttribPointerTexCoord(gl,shape,q6, q);
                 }
 
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
@@ -2506,36 +2487,13 @@ x3dom.gfx_webgl = (function () {
 				indicesReady = true;
             }
 
-            if (sp.position !== undefined && s_gl.buffers[q6 + 1]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
-                gl.vertexAttribPointer(sp.position,
-                    s_msh._numPosComponents, s_gl.coordType, false,
-                    shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-                gl.enableVertexAttribArray(sp.position);
-            }
-            if (sp.normal !== undefined && s_gl.buffers[q6 + 2]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 2]);
-                gl.vertexAttribPointer(sp.normal,
-                    s_msh._numNormComponents, s_gl.normalType, false,
-                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-                gl.enableVertexAttribArray(sp.normal);
-            }
-            if (sp.texcoord !== undefined && s_gl.buffers[q6 + 3]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 3]);
-                gl.vertexAttribPointer(sp.texcoord,
-                    s_msh._numTexComponents, s_gl.texCoordType, false,
-                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-                gl.enableVertexAttribArray(sp.texcoord);
-            }
-            if (sp.color !== undefined && s_gl.buffers[q6 + 4]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 4]);
-                gl.vertexAttribPointer(sp.color,
-                    s_msh._numColComponents, s_gl.colorType, false,
-                    shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
-                gl.enableVertexAttribArray(sp.color);
-            }
-            if ((sp.id !== undefined || sp.particleSize !== undefined) && s_gl.buffers[q6 + 5]) {
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
+            this.setVertexAttribPointerPosition(gl, shape, q6, q);
+            this.setVertexAttribPointerNormal(gl, shape, q6, q);
+            this.setVertexAttribPointerTexCoord(gl, shape, q6, q);
+            this.setVertexAttribPointerColor(gl, shape, q6, q);
+
+            if ((sp.id !== undefined || sp.particleSize !== undefined) && shape._webgl.buffers[q6 + 5]) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 5]);
                 //texture coordinate hack for IDs
                 if ((s_gl.binaryGeometry != 0 || s_gl.externalGeometry != 0) && s_geo._vf["idsPerVertex"] == true)
                 {
@@ -4237,21 +4195,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q6]);
                 }
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 1]);
-
-                gl.vertexAttribPointer(sp.position,
-                    s_msh._numPosComponents, s_gl.coordType, false,
-                    shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-                gl.enableVertexAttribArray(sp.position);
-
-                if (sp.normal !== undefined && s_gl.buffers[q6 + 2]) {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 2]);
-
-                    gl.vertexAttribPointer(sp.normal,
-                        s_msh._numNormComponents, s_gl.normalType, false,
-                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.normal);
-                }
+                this.setVertexAttribPointerPosition(gl, shape, q6, q);
+                this.setVertexAttribPointerNormal(gl, shape, q6, q);
 
                 // draw mesh
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
@@ -4596,6 +4541,110 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
 		this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 	};
+
+    Context.prototype.setVertexAttribPointerPosition = function(gl, shape, q6, q)
+    {
+        var sp = shape._webgl.shader;
+        if (sp.position !== undefined && shape._webgl.buffers[q6 + 1])
+        {
+            var s_geo = shape._cf.geometry.node;
+
+            if(shape._webgl.externalGeometry != 0)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 1]);
+                gl.vertexAttribPointer(sp.position,
+                    s_geo._mesh._numPosComponents, shape._webgl.coordType, false,
+                    shape._coordStrideOffset[q][0], shape._coordStrideOffset[q][1]);
+                gl.enableVertexAttribArray(sp.position);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 1]);
+                gl.vertexAttribPointer(sp.position,
+                    s_geo._mesh._numPosComponents, shape._webgl.coordType, false,
+                    shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.position);
+            }
+        }
+    };
+
+    Context.prototype.setVertexAttribPointerNormal = function(gl, shape, q6, q)
+    {
+        var sp = shape._webgl.shader;
+        if (sp.normal !== undefined && shape._webgl.buffers[q6 + 2])
+        {
+            var s_geo = shape._cf.geometry.node;
+
+            if(shape._webgl.externalGeometry != 0)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 2]);
+                gl.vertexAttribPointer(sp.normal,
+                    s_geo._mesh._numNormComponents, shape._webgl.normalType, false,
+                    shape._normalStrideOffset[q][0], shape._normalStrideOffset[q][1]);
+                gl.enableVertexAttribArray(sp.normal);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 2]);
+                gl.vertexAttribPointer(sp.normal,
+                    s_geo._mesh._numNormComponents, shape._webgl.normalType, false,
+                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.normal);
+            }
+        }
+    };
+
+    Context.prototype.setVertexAttribPointerTexCoord = function(gl, shape, q6, q)
+    {
+        var sp = shape._webgl.shader;
+        if (sp.texcoord !== undefined && shape._webgl.buffers[q6 + 3])
+        {
+            var s_geo = shape._cf.geometry.node;
+
+            if(shape._webgl.externalGeometry != 0)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 3]);
+                gl.vertexAttribPointer(sp.texcoord,
+                    s_geo._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[q][0], shape._texCoordStrideOffset[q][1]);
+                gl.enableVertexAttribArray(sp.texcoord);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 3]);
+                gl.vertexAttribPointer(sp.texcoord,
+                    s_geo._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.texcoord);
+            }
+        }
+    };
+
+    Context.prototype.setVertexAttribPointerColor = function(gl, shape, q6, q)
+    {
+        var sp = shape._webgl.shader;
+        if (sp.color !== undefined && shape._webgl.buffers[q6 + 4])
+        {
+            var s_geo = shape._cf.geometry.node;
+
+            if(shape._webgl.externalGeometry != 0)
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 4]);
+                gl.vertexAttribPointer(sp.color,
+                    s_geo._mesh._numColComponents, shape._webgl.colorType, false,
+                    shape._colorStrideOffset[q][0], shape._colorStrideOffset[q][1]);
+                gl.enableVertexAttribArray(sp.color);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 4]);
+                gl.vertexAttribPointer(sp.color,
+                    s_geo._mesh._numColComponents, shape._webgl.colorType, false,
+                    shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.color);
+            }
+        }
+    };
 	
     return setupContext;
 
