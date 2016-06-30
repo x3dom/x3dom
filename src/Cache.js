@@ -167,7 +167,7 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
     if (this.shaders[shaderID] === undefined)
     {
         var program = null;
-
+        
         if (pickMode !== undefined && pickMode !== null) {
             program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
         }
@@ -176,6 +176,9 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
         }
         else if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
+        }else if(properties.KHR_MATERIAL_COMMONS != 0)
+        {
+            program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
         }
         else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
