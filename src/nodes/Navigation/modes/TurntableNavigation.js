@@ -3,8 +3,10 @@ x3dom.TurntableNavigation = function(navigationNode)
 {
     x3dom.DefaultNavigation.call(this, navigationNode);
 
-    this.panAxisX = new x3dom.fields.SFVec3f(0,1,0);
-    this.panAxisY = new x3dom.fields.SFVec3f(1,0,0);
+    this.panAxisX = null;
+    this.panAxisY = null;
+
+    this.panEnabled = true;
 };
 
 x3dom.TurntableNavigation.prototype = Object.create(x3dom.DefaultNavigation.prototype);
@@ -27,7 +29,7 @@ x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
     var dx = x - view._lastX;
     var dy = y - view._lastY;
     
-    var d, vec, cor, mat = null;
+    var d = null;
     var alpha, beta;
 
     buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
@@ -48,7 +50,7 @@ x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
         this.zoom(view, zoomAmount);        
     }
-    else if (buttonState & 4) //middle
+    else if ((buttonState & 4) && this.panEnabled == true) //middle
     {
         
         d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
@@ -67,48 +69,67 @@ x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
     view._lastX = x;
     view._lastY = y;
-}
+};
 
 x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
 {
-    if(this.target != null)
-    {            
-        var target = this.target;        
-        var bbox  = target._x3domNode.getVolume();
-        
+    if(this.target != null) {
+        var target = this.target;
+        var bbox = target._x3domNode.getVolume();
+
         var viewpoint = view._scene.getViewpoint();
-        
-        view._up   = view._flyMat.e1();
+
+        view._up = view._flyMat.e1();
         view._from = view._flyMat.e3(); // eye
-        var s = view._flyMat.e0();                   
 
         // add xy offset to look-at position  ^
-        cor = view._at;     
-                    
+        var cor = view._at;
+
         cor = cor.addScaled(this.panAxisX, ty);
         var temp = cor;
-        if(cor.y > bbox.max.y || cor.y < bbox.min.y )
+        if (cor.y > bbox.max.y || cor.y < bbox.min.y)
             temp = view._at;
         else
             view._from = view._from.addScaled(this.panAxisX, ty);
-        
-        
-        cor = temp.addScaled(this.panAxisY, tx); 
-        if(cor.x > bbox.max.x || cor.x < bbox.min.x )
+
+
+        cor = temp.addScaled(this.panAxisY, tx);
+        if (cor.x > bbox.max.x || cor.x < bbox.min.x)
             cor = temp;
         else
             view._from = view._from.addScaled(this.panAxisY, tx);
-                        
+
         view._at = cor;
-        
+
+        // update camera matrix with lookAt() and invert
+        view._flyMat = x3dom.fields.SFMatrix4f.lookAt(view._from, cor, view._up);
+        viewpoint.setViewAbsolute(view._flyMat.inverse());
+    } else if(this.panAxisX != null && this.panAxisY != null) {
+        var viewpoint = view._scene.getViewpoint();
+
+        view._up = view._flyMat.e1();
+        view._from = view._flyMat.e3(); // eye
+
+        // add xy offset to look-at position  ^
+        var cor = view._at;
+
+        cor = cor.addScaled(this.panAxisY, ty);
+        var temp = cor;
+        view._from = view._from.addScaled(this.panAxisY, ty);
+
+        cor = temp.addScaled(this.panAxisX, tx);
+        view._from = view._from.addScaled(this.panAxisX, tx);
+
+        view._at = cor;
+
         // update camera matrix with lookAt() and invert
         view._flyMat = x3dom.fields.SFMatrix4f.lookAt(view._from, cor, view._up);
         viewpoint.setViewAbsolute(view._flyMat.inverse());
     }else{
-        vec = new x3dom.fields.SFVec3f(-tx * navi._vf.speed, -ty * navi._vf.speed, 0);
+        var vec = new x3dom.fields.SFVec3f(-tx * navi._vf.speed, -ty * navi._vf.speed, 0);
 
         view._movement = view._movement.add(vec);
-        mat = view.getViewpointMatrix().mult(view._transMat);
+        var mat = view.getViewpointMatrix().mult(view._transMat);
         view._transMat = mat.inverse().
                             mult(x3dom.fields.SFMatrix4f.translation(view._movement)).
                             mult(mat);
@@ -205,7 +226,7 @@ x3dom.TurntableNavigation.prototype.calcOrbit = function (view, alpha, beta)
         up = up.negate();
 
     return x3dom.fields.SFMatrix4f.lookAt(offset, view._at, up);
-}
+};
 
 x3dom.TurntableNavigation.prototype.initTurnTable = function(view, flyTo)
 {
@@ -387,15 +408,20 @@ x3dom.TurntableNavigation.prototype.onTouchEnd = function(view, evt, touches)
 x3dom.TurntableNavigation.prototype.onDoubleClick = function (view, x, y)
 {
     
-}
+};
 
 x3dom.TurntableNavigation.prototype.setPanTarget = function(target)
 {
     this.target = target;
-}
+};
 
 x3dom.TurntableNavigation.prototype.setPanAxis = function(a, b)
 {
     this.panAxisX = a;
     this.panAxisY = b;
-}
+};
+
+x3dom.TurntableNavigation.prototype.setPanEnabled = function(enabled)
+{
+    this.panEnabled = enabled;
+};
