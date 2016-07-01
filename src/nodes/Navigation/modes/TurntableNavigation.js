@@ -85,19 +85,19 @@ x3dom.TurntableNavigation.prototype.pan = function(view, tx, ty)
         // add xy offset to look-at position  ^
         var cor = view._at;
 
-        cor = cor.addScaled(this.panAxisX, ty);
+        cor = cor.addScaled(this.panAxisY, ty);
         var temp = cor;
         if (cor.y > bbox.max.y || cor.y < bbox.min.y)
             temp = view._at;
         else
-            view._from = view._from.addScaled(this.panAxisX, ty);
+            view._from = view._from.addScaled(this.panAxisY, ty);
 
 
-        cor = temp.addScaled(this.panAxisY, tx);
+        cor = temp.addScaled(this.panAxisX, tx);
         if (cor.x > bbox.max.x || cor.x < bbox.min.x)
             cor = temp;
         else
-            view._from = view._from.addScaled(this.panAxisY, tx);
+            view._from = view._from.addScaled(this.panAxisX, tx);
 
         view._at = cor;
 
