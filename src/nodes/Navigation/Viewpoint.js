@@ -151,7 +151,7 @@ x3dom.registerNodeType(
                     mult(this._vf.orientation.toMatrix()).inverse();
 
 				//Reset navigation helpers of the viewarea
-                if(this._nameSpace.doc._viewarea) {
+                if (this._vf.isActive && this._nameSpace && this._nameSpace.doc._viewarea) {
                     this._nameSpace.doc._viewarea.resetNavHelpers();
                 }
             },

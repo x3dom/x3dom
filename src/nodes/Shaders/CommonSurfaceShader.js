@@ -752,6 +752,21 @@ x3dom.registerNodeType(
                 }
             },
 
+            getEnvironmentMap: function()
+            {
+                if(this._cf.environmentTexture.node) {
+                    if (x3dom.isa(this._cf.environmentTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                        this._cf.environmentTexture.node._cf.texture.node._type = "environmentMap";
+                        return this._cf.environmentTexture.node._cf.texture.node;
+                    } else {
+                        this._cf.environmentTexture.node._type = "environmentMap";
+                        return this._cf.environmentTexture.node;
+                    }
+                } else {
+                    return null;
+                }
+            },
+
             getNormalMap: function()
             {
                 if(this._cf.normalTexture.node) {
@@ -933,6 +948,9 @@ x3dom.registerNodeType(
                 var shin = this.getShininessMap();
                 if(shin) textures.push(shin);
 
+                var env = this.getEnvironmentMap();
+                if(env) textures.push(env);
+
                 var displacement = this.getDisplacementMap();
                 if(displacement) textures.push(displacement);
 
@@ -959,7 +977,8 @@ x3dom.registerNodeType(
 
                return ( this.getDiffuseMap()      || this.getNormalMap()    ||
                         this.getSpecularMap()     || this.getShininessMap() ||
-                        this.getDisplacementMap() || this.getDiffuseDisplacementMap() ) ? true : false;
+                        this.getDisplacementMap() || this.getDiffuseDisplacementMap() ||
+                        this.getEnvironmentMap() ) ? true : false;
 
             }
         }

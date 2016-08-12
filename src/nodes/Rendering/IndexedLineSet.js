@@ -103,7 +103,8 @@ x3dom.registerNodeType(
         
         },
         {
-            nodeChanged: function()
+
+            _buildGeometry: function ()
             {
                 var time0 = new Date().getTime();
 
@@ -117,7 +118,7 @@ x3dom.registerNodeType(
                 // TODO; implement colorPerVertex also for single index
                 var colPerVert = this._vf.colorPerVertex;
 
-                if (colorInd.length > 0)
+                if (colorInd.length == indexes.length)
                 {
                     hasColorInd = true;
                 }
@@ -150,7 +151,7 @@ x3dom.registerNodeType(
 
                 var i, t, cnt, lineCnt;
                 var p0, p1, c0, c1;
-
+                
                 // Found MultiIndex Mesh OR LineSet with too many vertices for 16 bit
                 if ( (hasColor && hasColorInd) || positions.length > x3dom.Utils.maxIndexableCoords )
                 {
@@ -160,6 +161,12 @@ x3dom.registerNodeType(
 
                     for (i=0; i < indexes.length; ++i)
                     {
+                        //Ignore out of Range Indices
+                        if(indexes[i] > positions.length-1)
+                        {
+                            continue;
+                        }
+
                         if (indexes[i] === -1) {
                             t = 0;
                             continue;
@@ -284,17 +291,18 @@ x3dom.registerNodeType(
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
             },
 
+            nodeChanged: function()
+            {
+                this._buildGeometry();
+            },
+
             fieldChanged: function(fieldName)
             {
                 var pnts = null;
 
                 if (fieldName == "coord")
                 {
-                    pnts = this._cf.coord.node._vf.point;
-
-                    this._mesh._positions[0] = pnts.toGL();
-
-                    this.invalidateVolume();
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
@@ -303,37 +311,25 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "color")
                 {
-                    pnts = this._cf.color.node._vf.color;
-
-                    this._mesh._colors[0] = pnts.toGL();
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
                     });
                 }
                 else if (fieldName == "coordIndex") {
-                    this._mesh._indices[0] = [];
-
-                    var indexes = this._vf.coordIndex;
-                    var p0, p1, t = 0;
-
-                    for (var i=0, n=indexes.length; i < n; ++i) {
-                        if (indexes[i] == -1) {
-                            t = 0;
-                        }
-                        else {
-                            switch (t) {
-                                case 0: p0 = +indexes[i]; t = 1; break;
-                                case 1: p1 = +indexes[i]; t = 2; this._mesh._indices[0].push(p0, p1); break;
-                                case 2: p0 = p1; p1 = +indexes[i]; this._mesh._indices[0].push(p0, p1); break;
-                            }
-                        }
-                    }
-
-                    this.invalidateVolume();
+                    this._buildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.indexes = true;
+                        node.invalidateVolume();
+                    });
+                }
+                else if (fieldName == "colorIndex") {
+                    this._buildGeometry();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
                         node.invalidateVolume();
                     });
                 }

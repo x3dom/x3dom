@@ -182,15 +182,17 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
                 this._scene.getViewpoint().setView(mat);
             }
             else {
-                this._mixer._beginTime = 0;
-                this._mixer._endTime = 0;
+                //this._mixer._beginTime = 0;
+                //this._mixer._endTime = 0;
+                this._mixer.reset();
 
                 this._scene.getViewpoint().setView(this._mixer._endMat);
             }
         }
         else {
-            this._mixer._beginTime = 0;
-            this._mixer._endTime = 0;
+            //this._mixer._beginTime = 0;
+            //this._mixer._endTime = 0;
+            this._mixer.reset();
             
             this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
@@ -359,20 +361,26 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             if (navType === "helicopter")
                 this._at.y = this._from.y;
 
-            //lookat, lookaround
-            if (navType.substr(0, 5) === "looka")
-            {
-                this._up = this._flyMat.e1();
-            }
-            //all other modes
-            else
-            {
-                //initially read up-vector from current orientation and keep it
-                if (typeof this._up == 'undefined')
-                {
-                    this._up = this._flyMat.e1();
-                }
-            }
+            /*
+
+             //lookat, lookaround
+             if (navType.substr(0, 5) === "looka")
+             {
+             this._up = this._flyMat.e1();
+             }
+             //all other modes
+             else
+             {
+             //initially read up-vector from current orientation and keep it
+             if (typeof this._up == 'undefined')
+             {
+             this._up = this._flyMat.e1();
+             }
+             }
+
+             */
+
+            this._up = this._flyMat.e1();
 
             this._pitch = angleX * 180 / Math.PI;
             this._yaw = angleY * 180 / Math.PI;
@@ -692,7 +700,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
     }
 
-    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && dur != 0 && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
             prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).
@@ -1813,6 +1821,15 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
                 else
                 {
+                    if ( navi._vf.typeParams.length >= 6 ) {
+
+                        var min = -navi._vf.typeParams[ 5 ];
+                        var max =  navi._vf.typeParams[ 4 ];
+
+                        this._movement.z = Math.min( Math.max( this._movement.z, min ), max );
+
+                    }
+
                     this._movement = this._movement.add(vec);
                     mat = this.getViewpointMatrix().mult(this._transMat);
                     //TODO; move real distance along viewing ray

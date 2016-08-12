@@ -103,7 +103,7 @@ x3dom.registerNodeType(
              */
             setViewAbsolute: function(newView)
             {
-                this._viewMatrix = newView
+                this._viewMatrix = newView;
             },
 
             setProjectionMatrix: function(matrix)
