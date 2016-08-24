@@ -35,6 +35,7 @@ x3dom.registerNodeType(
             {
                 var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
+                var ccw = this._vf.ccw;
 
                 var hasNormal = false, hasTexCoord = false, hasColor = false;
                 var positions, normals, texCoords, colors;
@@ -137,7 +138,7 @@ x3dom.registerNodeType(
                     this._mesh._normals[0] = normals.toGL();
                 }
                 else {
-                    this._mesh.calcNormals(normPerVert ? Math.PI : 0);
+                    this._mesh.calcNormals(normPerVert ? Math.PI : 0, ccw);
                 }
 
                 if (hasTexCoord) {
