@@ -50,6 +50,7 @@ x3dom.registerNodeType(
 
                 var colPerVert  = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
+                var ccw = this._vf.ccw;
 
                 var indexes = this._vf.index;
 
@@ -263,6 +264,8 @@ x3dom.registerNodeType(
 
                     if (!hasNormal) {
                         this._mesh.calcNormals(normPerVert ? Math.PI : 0);
+                        //normalsPerFace case needs testing
+                        //this._mesh.calcNormals(normPerVert ? Math.PI : 0, ccw);
                     }
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords(texMode);
@@ -304,7 +307,7 @@ x3dom.registerNodeType(
                         this._mesh._normals[0] = normals.toGL();
                     }
                     else {
-                        this._mesh.calcNormals(normPerVert ? Math.PI : 0);
+                        this._mesh.calcNormals(normPerVert ? Math.PI : 0, ccw);
                     }
 
                     if (hasTexCoord) {
