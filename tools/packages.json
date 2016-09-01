@@ -190,7 +190,9 @@
                     {"file": "Collision.js"},
                     {"file": "X3DLODNode.js"},
                     {"file": "LOD.js"},
-                    {"file": "DynamicLOD.js"}
+                    {"file": "DynamicLOD.js"},
+                    {"file": "modes/DefaultNavigation.js"},
+                    {"file": "modes/TurntableNavigation.js"}
                 ]},
                 {"name": "Text", "filePrefix": "nodes/Text/", "files":[
                     {"file": "X3DFontStyleNode.js"},
