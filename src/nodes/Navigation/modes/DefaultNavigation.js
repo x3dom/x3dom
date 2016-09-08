@@ -512,6 +512,19 @@ x3dom.DefaultNavigation.prototype.animateTo = function(view, target, prev, dur)
     view._needNavigationMatrixUpdate = true;
 };
 
+x3dom.DefaultNavigation.prototype.orthoAnimateTo = function( view, target, prev, duration )
+{
+    var navi = this.navi;
+
+    duration = duration || navi._vf.transitionTime;
+
+    view._interpolator.beginValue = prev;
+    view._interpolator.endValue = target;
+
+    view._interpolator.beginTime = view._lastTS;
+    view._interpolator.endTime = view._lastTS + duration;
+};
+
 x3dom.DefaultNavigation.prototype.resetView = function(view)
 {
     var navi = this.navi;
@@ -598,11 +611,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
         if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
         {
-            viewpoint._vf.fieldOfView[0] += vec.z;
-            viewpoint._vf.fieldOfView[1] += vec.z;
-            viewpoint._vf.fieldOfView[2] -= vec.z;
-            viewpoint._vf.fieldOfView[3] -= vec.z;
-            viewpoint._projMatrix = null;
+            viewpoint.setZoom( Math.abs( viewpoint._vf.fieldOfView[0] ) - vec.z );
         }
         else
         {

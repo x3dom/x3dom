@@ -269,14 +269,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
 x3dom.Viewarea.prototype.orthoAnimateTo = function( target, prev, duration )
 {
     var navi = this._scene.getNavigationInfo();
-
-    duration = duration || navi._vf.transitionTime;
-
-    this._interpolator.beginValue = prev;
-    this._interpolator.endValue = target;
-
-    this._interpolator.beginTime = this._lastTS;
-    this._interpolator.endTime = this._lastTS + duration;
+    navi._impl.orthoAnimateTo(this, target, prev, duration);
 };
 
 x3dom.Viewarea.prototype.getLights = function () {
