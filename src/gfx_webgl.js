@@ -618,7 +618,7 @@ x3dom.gfx_webgl = (function () {
                     positionBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + 1] = positionBuffer;
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
+                    
                     vertices = new Float32Array(shape._webgl.positions[q]);
 
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -2087,6 +2087,7 @@ x3dom.gfx_webgl = (function () {
                                    shader._vf.ambientFactor.y +
                                    shader._vf.ambientFactor.z) / 3;
             sp.transparency = 1.0 - shader._vf.alphaFactor;
+            sp.environmentFactor = shader._vf.environmentFactor.x;
 
             if (shader.getDisplacementMap()) {
               tex = x3dom.Utils.findTextureByName(s_gl.texture, "displacementMap");
@@ -2132,6 +2133,7 @@ x3dom.gfx_webgl = (function () {
             sp.shininess = mat._vf.shininess;
             sp.ambientIntensity = mat._vf.ambientIntensity;
             sp.transparency = mat._vf.transparency;
+            sp.environmentFactor = 0.0;
             if (x3dom.isa(mat, x3dom.nodeTypes.TwoSidedMaterial)) {
                 twoSidedMat = true;
                 sp.backDiffuseColor = mat._vf.backDiffuseColor.toGL();
@@ -2373,10 +2375,11 @@ x3dom.gfx_webgl = (function () {
             this.stateManager.disable(gl.CULL_FACE);
         }
 
-
         // transformation matrices
         var model_view = mat_view.mult(transform);
         var model_view_inv = model_view.inverse();
+
+        sp.isOrthoView = ( mat_proj._33 == 1 ) ? 1.0 : 0.0;
 
         sp.modelViewMatrix = model_view.toGL();
         sp.viewMatrix = mat_view.toGL();

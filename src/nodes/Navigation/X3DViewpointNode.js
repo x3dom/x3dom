@@ -133,6 +133,10 @@ x3dom.registerNodeType(
 
             getProjectionMatrix: function(aspect) {
                 return null;
+            },
+
+            setZoom: function( value ) {
+                
             }
         }
     )

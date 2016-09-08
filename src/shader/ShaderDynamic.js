@@ -499,7 +499,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Material
     shader += x3dom.shader.material();
 
-    if (properties.TWOSIDEDMAT ) {
+    if (properties.TWOSIDEDMAT) {
         shader += x3dom.shader.twoSidedMaterial();
     }
 	
@@ -552,6 +552,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.CUBEMAP) {
 			shader += "uniform samplerCube environmentMap;\n";
 			shader += "varying vec3 fragViewDir;\n";
+            shader += "uniform float environmentFactor;\n";
 
 		}
 		if(properties.SPECMAP){
@@ -597,6 +598,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     if(properties.LIGHTS || properties.CLIPPLANES)
     {
         shader += "varying vec4 fragPosition;\n";
+        shader += "uniform float isOrthoView;\n";
     }
 
 	//Lights
@@ -688,7 +690,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
-        shader += "vec3 eye 	  = -fragPosition.xyz;\n";
+        shader += "vec3 eye;\n";
+        shader += "if ( isOrthoView > 0.0 ) {\n";
+        shader += "    eye = vec3(0.0, 0.0, 1.0);\n";
+        shader += "} else {\n";
+        shader += "    eye = -fragPosition.xyz;\n";
+        shader += "}\n";
 
 		if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
 			shader += "vec3 normal  = vec3(0.0, 0.0, 0.0);\n";
@@ -824,7 +831,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 				if(properties.CUBEMAP) {
-					shader += "color.rgb *= envColor.rgb;\n";
+					shader += "color.rgb *= mix(vec3(1.0,1.0,1.0), envColor.rgb, environmentFactor);\n";
 				}
 			}else{
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*_specularColor);\n";

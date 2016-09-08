@@ -144,6 +144,16 @@ x3dom.registerNodeType(
                 return this._vf.zFar;
             },
 
+            setZoom: function( value ) {
+                this._vf.fieldOfView[0] = -value;
+                this._vf.fieldOfView[1] = -value;
+                this._vf.fieldOfView[2] =  value;
+                this._vf.fieldOfView[3] =  value;
+
+                this._projMatrix = null;   // trigger refresh
+                //this.resetView();
+            },
+
             getProjectionMatrix: function(aspect)
             {
                 if (this._projMatrix == null || this._lastAspect != aspect)

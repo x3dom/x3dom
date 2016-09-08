@@ -150,6 +150,7 @@ x3dom.Viewarea = function (document, scene) {
     this._isMoving = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
+	this._interpolator = new x3dom.FieldInterpolator();
 
     this.arc = null;
 };
@@ -169,40 +170,23 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
         this.arc = new x3dom.arc.AdaptiveRenderControl(this._scene);
     }
 
-    if (this._mixer._beginTime > 0)
+    if (this._mixer.isActive() )
     {
-        needMixAnim = true;
-
-        if (timeStamp >= this._mixer._beginTime)
-        {
-            if (timeStamp <= this._mixer._endTime)
-            {
-                var mat = this._mixer.mix(timeStamp);
-
-                this._scene.getViewpoint().setView(mat);
-            }
-            else {
-                //this._mixer._beginTime = 0;
-                //this._mixer._endTime = 0;
-                this._mixer.reset();
-
-                this._scene.getViewpoint().setView(this._mixer._endMat);
-            }
-        }
-        else {
-            //this._mixer._beginTime = 0;
-            //this._mixer._endTime = 0;
-            this._mixer.reset();
-            
-            this._scene.getViewpoint().setView(this._mixer._beginMat);
-        }
+		var mat = this._mixer.mix( timeStamp );
+		this._scene.getViewpoint().setView( mat );
     }
+	
+	if ( this._interpolator.isActive() )
+	{
+		var value = this._interpolator.interpolate( timeStamp );
+		this._scene.getViewpoint().setZoom( value );
+	}
 
     var needNavAnim = this.navigateTo(timeStamp);
     var lastIsAnimating = this._isAnimating;
 
     this._lastTS = timeStamp;
-    this._isAnimating = (needMixAnim || needNavAnim);
+    this._isAnimating = (this._mixer.isMixing || this._interpolator.isInterpolating || needNavAnim);
 
     if (this.arc != null )
     {
@@ -706,18 +690,18 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
             prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).
                          mult(this._transMat).mult(this._rotMat);
 
-            this._mixer._beginTime = this._lastTS;
+            this._mixer.beginTime = this._lastTS;
 
             if (arguments.length >= 3) {
                 // for lookAt to assure travel speed of 1 m/s
-                this._mixer._endTime = this._lastTS + dur;
+                this._mixer.endTime = this._lastTS + dur;
             }
             else {
-                this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+                this._mixer.endTime = this._lastTS + navi._vf.transitionTime;
             }
 
-            this._mixer.setBeginMatrix (prev);
-            this._mixer.setEndMatrix (target);
+            this._mixer.setBeginMatrix(prev);
+            this._mixer.setEndMatrix(target);
             
             this._scene.getViewpoint().setView(prev);
         }
@@ -734,6 +718,19 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
     this._needNavigationMatrixUpdate = true;
+};
+
+x3dom.Viewarea.prototype.orthoAnimateTo = function( target, prev, duration )
+{
+    var navi = this._scene.getNavigationInfo();
+
+    duration = duration || navi._vf.transitionTime;
+
+    this._interpolator.beginValue = prev;
+    this._interpolator.endValue = target;
+
+    this._interpolator.beginTime = this._lastTS;
+    this._interpolator.endTime = this._lastTS + duration;
 };
 
 x3dom.Viewarea.prototype.getLights = function () {
@@ -1137,6 +1134,16 @@ x3dom.Viewarea.prototype.showAll = function(axis)
     var viewmat = quat.toMatrix();
     viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.negate()));
 
+    if ( x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint) )
+    {
+        this.orthoAnimateTo( dist1, Math.abs(viewpoint._vf.fieldOfView[0]) );
+        this.animateTo( viewmat, viewpoint );
+    }
+    else
+    {
+        this.animateTo( viewmat, viewpoint );
+    }
+
     this.animateTo(viewmat, viewpoint);
 };
 
@@ -1174,12 +1181,8 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
 
     if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
     {
-        viewpoint._vf.fieldOfView[0] = -dist;
-        viewpoint._vf.fieldOfView[1] = -dist;
-        viewpoint._vf.fieldOfView[2] = dist;
-        viewpoint._vf.fieldOfView[3] = dist;
-        viewpoint._projMatrix = null;
-        this.animateTo(viewmat, viewpoint, 0);
+        this.orthoAnimateTo( dist, Math.abs(viewpoint._vf.fieldOfView[0]) );
+        this.animateTo( viewmat, viewpoint );
     }
     else
     {
@@ -1193,8 +1196,8 @@ x3dom.Viewarea.prototype.resetView = function()
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
-        this._mixer._beginTime = this._lastTS;
-        this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+        this._mixer.beginTime = this._lastTS;
+        this._mixer.endTime = this._lastTS + navi._vf.transitionTime;
 
         this._mixer.setBeginMatrix(this.getViewMatrix());
 
@@ -1813,11 +1816,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
                 if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
                 {
-                    viewpoint._vf.fieldOfView[0] += vec.z;
-                    viewpoint._vf.fieldOfView[1] += vec.z;
-                    viewpoint._vf.fieldOfView[2] -= vec.z;
-                    viewpoint._vf.fieldOfView[3] -= vec.z;
-                    viewpoint._projMatrix = null;
+                    viewpoint.setZoom( Math.abs( viewpoint._vf.fieldOfView[0] ) - vec.z );
                 }
                 else
                 {

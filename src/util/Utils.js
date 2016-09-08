@@ -434,6 +434,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 				}
 
 				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
+
 				gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
 				gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 				gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
