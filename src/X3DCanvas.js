@@ -482,7 +482,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         var touchStartHandler = function(evt, doc)
         {
             this.isMulti = true;
-            evt.preventDefault();
+
             touches.visualizeTouches(evt);
 
             this.focus();
@@ -555,6 +555,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             navi._impl.onTouchStart(doc._viewarea, evt, touches);
 
             doc.needRender = true;
+
         };
 
         var touchStartHandlerMoz = function(evt)
@@ -578,7 +579,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            evt.preventDefault();
             touches.visualizeTouches(evt);
 
             if (doc == null)
@@ -653,7 +653,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         var touchEndHandler = function(evt, doc)
         {
             this.isMulti = false;
-            evt.preventDefault();
             touches.visualizeTouches(evt);
 
             if (doc == null)
