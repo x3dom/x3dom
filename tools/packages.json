@@ -12,7 +12,7 @@
                 {"path": "util/Properties.js"},
                 {"path": "util/DoublyLinkedList.js"},
                 {"path": "util/EarClipping.js"},
-                {"path": "util/Fieldinterpolator.js"},
+                {"path": "util/FieldInterpolator.js"},
                 {"path": "util/Utils.js"},
                 {"path": "util/States.js"},
                 {"path": "util/StateManager.js"},
