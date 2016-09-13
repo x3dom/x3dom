@@ -226,8 +226,12 @@ x3dom.registerNodeType(
                var params = [theta, height, minAngle, maxAngle];
                if (length >= 5)
                {
+                   // SPREAD OPERATOR KILLS IE
                    // adding rest parameters
-                   params.push(...this._vf.typeParams.slice(4));
+                   //params.push(...this._vf.typeParams.slice(4));
+                   
+                   params = params.concat( this._vf.typeParams.slice(4) );
+                   
                }
                console.log(params);
                return params;
