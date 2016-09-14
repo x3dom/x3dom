@@ -1276,3 +1276,34 @@ x3dom.Utils.forbiddenBySOP = function (uri_string) {
     Scheme = Scheme || document.location.protocol;
     return !(Port === originPort && Host === document.location.host && Scheme === document.location.protocol);
 };
+
+/**
+ * @param {x3dom.fields.SFVec3f}    source
+ * @param {x3dom.fields.SFMatrix4f} projection
+ * @param {x3dom.fields.SFMatrix4f} view
+ * @param {x3dom.fields.SFMatrix4f} model
+ * @returns {x3dom.fields.SFVec3f}
+ */
+x3dom.Utils.unproject = function (source, projection, view, model) {
+
+ var result = new x3dom.fields.SFVec4f();
+
+ result.x = source.x;
+ result.y = source.y;
+ result.z = source.z;
+
+ result.w = 1.0;
+
+ var projectionInv = projection.inverse();
+ var viewInv       = view.inverse();
+ var modelInv      = model.inverse();
+
+ result = projectionInv.multMatrixPnt(result);
+ result = viewInv.multMatrixPnt(result);
+ result = modelInv.multMatrixPnt(result);
+
+ result = result.divide(result.w);
+
+ return new x3dom.fields.SFVec3f( result.x, result.y, result.z);
+
+ };
