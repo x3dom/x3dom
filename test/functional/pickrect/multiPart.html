@@ -31,7 +31,7 @@
                 top: 0;
                 right: 300px;
                 z-index: 9000;
-                width: 200px;
+                width: 400px;
             }
 			
 			.box {
@@ -46,7 +46,16 @@
 	</head>
 	<body>	
 		<textarea id="eventLog" style="position:absolute; top:0; left:0; z-index: 1000; width:250px; height:100%; padding:2px; background: rgba(0,0,0,0.7);"></textarea>
-		<div style="position:absolute; left:25%;top:25;bottom:25%;width:50%;height:50%;background: rgba(0,0,0,0.4);z-index: 1000;" ></div>
+		<div style="position:absolute; left:25%;top:25;bottom:25%;width:50%;height:50%;background: rgba(0,0,0,0.4);z-index: 1000;" >
+			<div>Everything in this Rectangle will be clipped by clicking the pickRect Button</div>
+			<div class="buttonWrapper">
+				<button onclick="pickRect()">PickRect</button>
+				<button onclick="showAll()">Show All</button>
+				<p />
+				<button onclick="highlightRect()">Select Rect (Slow)</button>
+				<button onclick="unhighlightAll()">Deselect All (Slow)</button>
+			</div>
+		</div>
 		<x3d id="x3d">
 			<scene id="sceneObject">
                 <directionallight id="directionallight" color="1,1,1" shadowIntensity="0.0" direction="-0.7, -1, -1"></directionallight>
@@ -68,9 +77,7 @@
 			</scene>
 		</x3d>
 		
-		<div class="buttonWrapper">
-            <button onclick="pickRect()">PickRect</button>
-        </div>
+
         
 	</body>
     
@@ -176,6 +183,21 @@
 			var parts = multipart.getPartsByRect(canvas.width / 2 - canvas.width / 4, canvas.width / 2 + canvas.width / 4, canvas.height / 2 - canvas.height / 4, canvas.height / 2 + canvas.height / 4);
 			if(parts != null)
 				parts.setVisibility(false);
+		}
+
+		function showAll(){
+			multipart.getParts().setVisibility(true);
+		}
+
+		function highlightRect() {
+			var canvas = document.getElementsByTagName("canvas")[0];
+			var parts = multipart.getPartsByRect(canvas.width / 2 - canvas.width / 4, canvas.width / 2 + canvas.width / 4, canvas.height / 2 - canvas.height / 4, canvas.height / 2 + canvas.height / 4);
+			if(parts != null)
+				parts.highlight("0 1 0");
+		}
+
+		function unhighlightAll(){
+			multipart.getParts().unhighlight();
 		}
 		
 		function registerMultipartListener() {

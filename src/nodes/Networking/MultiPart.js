@@ -785,6 +785,15 @@ x3dom.registerNodeType(
                     }
                 };
 
+                /**
+                 *
+                 *
+                 * @param left border position in screen pixel
+                 * @param right border position in screen pixel
+                 * @param bottom border position in screen pixel
+                 * @param top border position in screen pixel
+                 * @returns selected Parts
+                 */
                 this._xmlNode.getPartsByRect = function (left, right, bottom, top)
                 {
                     var viewarea = multiPart._nameSpace.doc._viewarea;
@@ -829,7 +838,6 @@ x3dom.registerNodeType(
 
                     var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
                     //viewpoint._projMatrix = projMatrix;
-                    //viewpoint._viewMatrix = viewMatrix;
 
                     //return null;
 
@@ -848,8 +856,6 @@ x3dom.registerNodeType(
                     var emissiveMap = multiPart._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
                     var specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                     var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
-
-                    console.log(selection);
 
                     if ( selection.length == 0) {
                         return null;
