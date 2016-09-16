@@ -88,7 +88,7 @@ x3dom.registerNodeType(
                                 that._cf.geometry.node._mesh[key] = glTF._mesh[key];
                             }
 
-                            glTF.loadShaderProgram(gl, "program_0");
+                            //glTF.loadShaderProgram(gl, "program_0");
                         }
                         else
                         {

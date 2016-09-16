@@ -389,7 +389,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         var uint8Array = new Uint8Array(this.body.buffer, this.header.bodyOffset + bufferView.byteOffset, bufferView.byteLength);
 
         var blob = new Blob([uint8Array], {
-            type : mimeType
+            type : ext.mimeType
         });
         var blobUrl = window.URL.createObjectURL(blob);
 
@@ -397,6 +397,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         image.src = blobUrl;
 
         this.loaded.images[imageNodeName] = image;
+        document.body.appendChild(image);
 
         return image;
     }
@@ -404,7 +405,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
     return null;
 };
 
-x3dom.glTF.glTFLoader.prototype.loadTexture = function(textureNode)
+x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
 {
     var format = textureNode.format;
     var internalFormat = textureNode.internalFormat;
@@ -423,7 +424,7 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(textureNode)
     var target = textureNode.target;
     var type = textureNode.type;
 
-    var glTFTexture = new x3dom.glTF.glTFTexture(format, internalFormat, sampler, target, type, image);
+    var glTFTexture = new x3dom.glTF.glTFTexture(gl, format, internalFormat, sampler, target, type, image);
 
     return glTFTexture;
 };
@@ -452,7 +453,22 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
         var material = new x3dom.glTF.glTFMaterial(technique);
         material.program = program;
 
-        //return material;
+        for(var key in materialNode.values)
+            if(materialNode.values.hasOwnProperty(key))
+            {
+                var value = materialNode.values[key];
+                if(typeof value === 'string')
+                {
+                    var textureNode = this.scene.textures[value];
+                    material.textures[key] = this.loadTexture(gl, textureNode);
+                }
+                else
+                {
+                    material.values[key] = value;
+                }
+            }
+
+        return material;
     }
 
     return new x3dom.glTF.glTFKHRMaterialCommons();
