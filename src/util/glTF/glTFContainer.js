@@ -82,7 +82,7 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
         gl.drawArrays(polyMode, 0, this.drawCount);
 };
 
-x3dom.glTF.glTFTexture = function(format, internalFormat, sampler, target, type, image)
+x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
 {
     this.format = format;
     this.internalFormat = internalFormat;
@@ -91,15 +91,26 @@ x3dom.glTF.glTFTexture = function(format, internalFormat, sampler, target, type,
     this.type = type;
     this.image = image;
 
-    this.unit = 0;
+    this.created = false;
+
+    this.create(gl);
+};
+
+x3dom.glTF.glTFTexture.prototype.isPowerOfTwo = function(x)
+{
+    var powerOfTwo = !(x == 0) && !(x & (x - 1));
+    return powerOfTwo;
 };
 
 x3dom.glTF.glTFTexture.prototype.create = function(gl)
 {
+    if(this.image.complete == false)
+        return;
+
     this.glTexture = gl.createTexture();
 
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.image, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, this.image);
 
     if(this.sampler.magFilter != null)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
@@ -107,15 +118,29 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
     if(this.sampler.minFilter != null)
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
 
-    gl.generateMipmap(gl.TEXTURE_2D);
+    //if(!this.isPowerOfTwo(this.image.width)||!this.isPowerOfTwo(this.image.height)){
+        // gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        // Prevents s-coordinate wrapping (repeating).
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        // Prevents t-coordinate wrapping (repeating).
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    //}
+
+    //gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
+
+    this.created = true;
 };
 
-x3dom.glTF.glTFTexture.prototype.bind = function(gl, shaderProgram, uniformName)
+x3dom.glTF.glTFTexture.prototype.bind = function(gl, textureUnit, shaderProgram, uniformName)
 {
-    gl.activeTexture(gl.TEXTURE0);
+    if(!this.created)
+        this.create(gl);
+
+    gl.activeTexture(gl.TEXTURE0+textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), 0);
+    gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), textureUnit);
 };
 
 
@@ -173,9 +198,10 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
 x3dom.glTF.glTFMaterial = function(technique)
 {
     this.technique = technique;
-    this.parameter = {};
+    this.values = {};
     this.semanticMapping = {};
     this.attributeMapping = {};
+    this.textures = {};
 
     for(var key in this.technique.uniforms)
     {
@@ -244,8 +270,13 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderProgram)
     for(var key in this.technique.uniforms)
         if(this.technique.uniforms.hasOwnProperty(key))
         {
-            if(this.parameter[this.technique.uniforms[key]] != null)
-                shaderProgram[key] = this.parameter[this.technique.uniforms[key]];
+            var uniformName = this.technique.uniforms[key];
+            if(this.textures[uniformName] != null){
+                var texture = this.textures[uniformName];
+                texture.bind(gl, 0, shaderProgram.program, key);
+            }
+            else if(this.values[uniformName] != null)
+                shaderProgram[key] = this.values[uniformName];
         }
 };
 
