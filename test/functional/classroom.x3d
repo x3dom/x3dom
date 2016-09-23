@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <scene DEF='scene2'>
+
+    <group DEF='theScene' id="test">
+      <shape DEF='_G_0'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_0'
+          vertexCount='39268 42234'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.5 1.73999583721 -5.62500476837'
+          size='7 3.52000808716 11.2500095367'
+          index='binGeoClassroom/BG_0_indexBinary.bin'
+          coord='binGeoClassroom/BG_0_coordBinary.bin'
+          normal='binGeoClassroom/BG_0_normalBinary.bin'
+          color='binGeoClassroom/BG_0_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+      <shape DEF='_G_1'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_1'
+          vertexCount='47266 36978'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.46249985695 1.7399777174 -5.5'
+          size='7.07499980927 3.48003673553 11'
+          index='binGeoClassroom/BG_1_indexBinary.bin'
+          coord='binGeoClassroom/BG_1_coordBinary.bin'
+          normal='binGeoClassroom/BG_1_normalBinary.bin'
+          color='binGeoClassroom/BG_1_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+      <shape DEF='_G_2'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_2' vertexCount='19026 4968'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.56500005722 1.73996007442 -5.55000257492'
+          size='6.86999988556 3.51999878883 11.4000043869'
+          index='binGeoClassroom/BG_2_indexBinary.bin'
+          coord='binGeoClassroom/BG_2_coordBinary.bin'
+          normal='binGeoClassroom/BG_2_normalBinary.bin'
+          color='binGeoClassroom/BG_2_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+    </group>
+
+</scene>
+</X3D>

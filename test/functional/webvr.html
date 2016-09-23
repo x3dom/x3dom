@@ -1,0 +1,148 @@
+﻿<!doctype html>
+<html>
+<head>
+  <meta http-equiv='X-UA-Compatible' content='chrome=1'/>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
+  <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+  <title>WebVR</title>
+<!--
+<script src="http://www.x3dom.org/download/dev/x3dom.js"></script>
+<link rel="stylesheet" href="http://www.x3dom.org/download/dev/x3dom.css">
+-->
+<link rel="stylesheet" href="css/x3dom.css">
+<style>
+
+body {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+#x3dElement {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#enter-vr-btn {
+  background: rgba(0, 0, 0, .35) url("icon-goggles-white.svg") 50% 50% no-repeat;
+  background-size: 70% 70%;
+  color: #fff;
+  height: 50px;
+  width: 60px;
+  border: none;
+  background-color: rgba(120, 120, 120, .35);
+  padding: 1px 6px;
+  position:absolute;
+  top:10px;
+  left:10px;
+  cursor: pointer;
+}
+
+#enter-vr-btn:hover {
+  background-color: rgba(120, 120, 120, .65);
+}
+
+.goggles {
+  height: 30px;
+  text-align: center;
+  color: buttontext;
+}
+
+</style>
+
+<script src="js/x3dom.js"></script>
+
+</head>
+<body>
+
+<x3d id='x3dElement' showStat='false' showLog='false'>
+<scene id='scene'>
+
+  <Environment frustumCulling="false"></Environment>
+  <worldInfo
+    info='"Created using RenderPark (http://www.cs.kuleuven.ac.be/cwis/research/graphics/RENDERPARK/)"'
+    title='Some nice model'></worldInfo>
+  <navigationInfo headlight='false' type='"EXAMINE" "WALK"'></navigationInfo>
+  <viewpoint id='vpp' def='vp'
+    description='ViewPoint 1'
+    centerofrotation='3.4625 1.73998 -5.55'
+    orientation='0 1 0 2.99229'
+    position='4.17102 1.00905 -6.97228'
+    znear="0.001" zfar="300"></viewpoint>
+  <viewpoint def='AOPT_CAM'
+    centerofrotation='3.4625 1.73998 -5.55'
+    position='3.4625 1.73998 8.69028'></viewpoint>
+  <background DEF='bgnd' skyColor="0 0 0"></background>
+
+  <group id='root' render='false'>
+
+    <group DEF='theScene'>
+      <shape DEF='_G_0'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_0'
+          vertexCount='39268 42234'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.5 1.73999583721 -5.62500476837'
+          size='7 3.52000808716 11.2500095367'
+          index='binGeoClassroom/BG_0_indexBinary.bin'
+          coord='binGeoClassroom/BG_0_coordBinary.bin'
+          normal='binGeoClassroom/BG_0_normalBinary.bin'
+          color='binGeoClassroom/BG_0_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+      <shape DEF='_G_1'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_1'
+          vertexCount='47266 36978'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.46249985695 1.7399777174 -5.5'
+          size='7.07499980927 3.48003673553 11'
+          index='binGeoClassroom/BG_1_indexBinary.bin'
+          coord='binGeoClassroom/BG_1_coordBinary.bin'
+          normal='binGeoClassroom/BG_1_normalBinary.bin'
+          color='binGeoClassroom/BG_1_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+      <shape DEF='_G_2'>
+        <appearance>
+          <material diffuseColor='1 1 1'></material>
+        </appearance>
+        <binaryGeometry DEF='BG_2' vertexCount='19026 4968'
+          primType='"TRIANGLESTRIP" "TRIANGLES"'
+          position='3.56500005722 1.73996007442 -5.55000257492'
+          size='6.86999988556 3.51999878883 11.4000043869'
+          index='binGeoClassroom/BG_2_indexBinary.bin'
+          coord='binGeoClassroom/BG_2_coordBinary.bin'
+          normal='binGeoClassroom/BG_2_normalBinary.bin'
+          color='binGeoClassroom/BG_2_colorBinary.bin'>
+        </binaryGeometry>
+      </shape>
+    </group>
+
+  </group>
+
+</scene>
+</x3d>
+
+<script src="webvr.js"></script>
+<script>
+WebVRSupport.initialize({
+  x3dEl: 'x3dElement',
+  viewpoint: 'vpp',
+  background: 'bgnd',
+  scene: 'theScene'
+});
+</script>
+
+</body>
+</html>

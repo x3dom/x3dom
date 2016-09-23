@@ -1,0 +1,71 @@
+<group id="Webvr__stereoRt" render="true">
+  <group def="left">
+    <shape>
+      <appearance>
+        <renderedtexture id="Webvr__rtLeft"
+          stereoMode="LEFT_EYE" update="ALWAYS"
+          dimensions="1024 1024 4" repeatS="false" repeatT="false">
+          <viewpoint  use="$VIEWPOINT"  containerfield="viewpoint"></viewpoint>
+          <background use="$BACKGROUND" containerfield="background"></background>
+          <group      use="$SCENE"      containerfield="scene"></group>
+        </renderedtexture>
+        <composedshader>
+          <field name="tex" type="SFInt32" value="0"></field>
+          <field name="eye" type="SFInt32" value="-1.0"></field>
+          <shaderpart def="vert" type="VERTEX">
+          attribute vec3 position;
+          attribute vec2 texcoord;
+
+          uniform mat4 modelViewProjectionMatrix;
+          uniform float eye;
+          varying vec2 fragTexCoord;
+
+          void main()
+          {
+            vec2 pos = sign(position.xy);
+            fragTexCoord = texcoord;
+
+            gl_Position = vec4((pos.x + 1.0 * eye) / 2.0, pos.y, 0.0, 1.0);
+          }
+          </shaderpart>
+          <shaderpart def="frag" type="FRAGMENT">
+          #ifdef GL_ES
+          precision highp float;
+          #endif
+
+          uniform sampler2D tex;
+          varying vec2 fragTexCoord;
+
+          void main()
+          {
+            gl_FragColor = texture2D(tex, fragTexCoord);
+          }
+          </shaderpart>
+        </composedshader>
+      </appearance>
+      <plane solid="false"></plane>
+    </shape>
+  </group>
+  <group def="right">
+    <shape>
+      <appearance>
+        <renderedtexture id="Webvr__rtRight"
+          stereoMode="RIGHT_EYE" update="ALWAYS"
+          dimensions="1024 1024 4" repeatS="false" repeatT="false">
+          <viewpoint  use="$VIEWPOINT"  containerfield="viewpoint"></viewpoint>
+          <background use="$BACKGROUND" containerfield="background"></background>
+          <group      use="$SCENE"      containerfield="scene"></group>
+        </renderedtexture>
+        <composedshader>
+          <field name="tex" type="SFInt32" value="0"></field>
+          <field name="eye" type="SFInt32" value="1.0"></field>
+          <shaderpart use="vert" type="VERTEX">
+          </shaderpart>
+          <shaderpart use="frag" type="FRAGMENT">
+          </shaderpart>
+        </composedshader>
+      </appearance>
+      <plane solid="false"></plane>
+    </shape>
+  </group>
+</group>
