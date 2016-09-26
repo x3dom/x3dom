@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Measure Scale example</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+	<style>
+		ul.plain { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
+		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap}
+	</style>
+</head>
+<body >
+    <h1><code>runtime measure scale</code> example</h1>
+    <p>Testing the getPixelScale() function of the <tt>runtime</tt> object.</p>
+    <div class="group">
+    <x3d id="the_element" showProgress="true" showStat="true" showLog="true" width="512px" height="512px">
+    <!--<div id="spinner" class="loader">Loading...</div>-->
+    <scene>
+           <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
+           <orthoviewpoint position='2 0 15' description="Camera 0"></orthoviewpoint>
+           <orthoviewpoint position='-2 0 5' description="Camera 1"></orthoviewpoint>
+           <viewpoint position='2 0 15' description="Camera 2"></viewpoint>
+           <transform translation="0 0 1" rotation="0 1 0 0.5">
+           <shape>
+                <appearance>
+                    <material diffuseColor='1 0 0' ></material>
+                </appearance>
+                <box id='box' ></box>
+            </shape>
+            <transform translation="5 1 0">
+                <shape id="foo">
+                    <appearance>
+                        <material diffuseColor='0 1 0'></material>
+                    </appearance>
+                    <sphere></sphere>
+                </shape>
+            </transform>
+           </transform>
+    </scene>
+    </x3d>
+
+    	<ul class="plain">
+            <li><em>Measure Scale</em>
+                <ul>
+                    <li><a href="#" onClick="printPixelScale();">Print Pixel Scale</a></li>
+                </ul>
+            </li>
+		    <li><em>Viewpoint</em>
+            	<ul>
+                    <li><span id="ab_info"></span></li>
+		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo('X3DViewpointNode');return false;">Next view</a> [via <tt>runtime.nextView()</tt>]</li>
+		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo('Viewpoint');return false;">Prev view</a></li>
+			    	<li><a href="#" onClick="$element.runtime.resetView();return false;">Reset current view</a></li>
+
+				</ul>
+            </li>
+
+			<li>
+				<em>Debug</em>
+            	<ul>
+				    <li><a href="#" onClick="toggleDebug(this);">Hide debug</a></li>
+				    <li><a href="#" onClick="toggleStats(this);">Hide stats</a> </li>
+    		    </ul>
+            </li>
+
+            <li>
+         	    <em>Node Types Dump</em>
+                <ul>
+         		    <li><a href="#" onClick="dumpTree();">Dump Types</a></li>
+                    <li><a href="#" onClick="dumpComponents();">Dump Components</a></li>
+             	</ul>
+            </li>
+	    </ul>
+    </div>
+    <div id="types" class="group"></div>
+
+    <script>
+	// simplify access to the X3D element
+	var $element = document.getElementById('the_element');
+	var debug = true;
+
+    function printPixelScale(){
+        var scale = $element.runtime.getPixelScale();
+        if(scale != null)
+            x3dom.debug.logInfo(scale);
+    }
+    
+    function updateAbInfo(typeName) {
+		var bindable = $element.runtime.getActiveBindable(typeName);
+		ab_info = document.getElementById('ab_info');
+		ab_info.innerHTML = bindable.tagName + " / " + bindable.getAttribute('description');
+	}
+    
+	function toggleStats(link) {
+		stats = $element.runtime.statistics();
+		if (stats) {
+			$element.runtime.statistics(false);
+			link.innerHTML = 'Show statistics';
+		} else {
+			$element.runtime.statistics(true);
+			link.innerHTML = 'Hide statistics';
+		}
+	}
+
+	function toggleDebug(link) {
+		if (debug) {
+			$element.runtime.debug(false);
+			link.innerHTML = 'Show debug';
+		} else {
+			$element.runtime.debug(true);
+			link.innerHTML = 'Hide debug';
+		}
+		debug = !debug
+	}
+
+    function dumpTree() {
+        if (x3dom.docs) {
+            document.getElementById('types').innerHTML = x3dom.docs.getNodeTreeInfo();
+        } else {
+            alert("Documentation module not loaded")
+        }
+    }
+
+    function dumpComponents() {
+        if (x3dom.docs) {
+            document.getElementById('types').innerHTML =x3dom.docs.getComponentInfo();
+        } else {
+            alert("Documentation module not loaded")
+
+        }
+    }
+
+</script>
+</body>
+</html>
