@@ -83,10 +83,6 @@ x3dom.registerNodeType(
                 shape._webgl.internalDownloadCount  = 1;
                 shape._nameSpace.doc.downloadCount  = 1;
 
-                //TODO: check this object - when is it called, where is it really needed?
-                //shape._webgl.makeSeparateTris = {...};
-
-
                 //post request
                 xhr = new XMLHttpRequest();
 
@@ -109,7 +105,7 @@ x3dom.registerNodeType(
                     shape._webgl.drawCount   = [];
 
                     if ((xhr.status == 200 || xhr.status == 0)) {
-                        var glTF = new x3dom.glTF.glTFLoader(xhr.response);
+                        var glTF = new x3dom.glTF.glTFLoader(xhr.response, true);
 
                         if (glTF.header.sceneLength > 0)
                         {
@@ -215,7 +211,6 @@ x3dom.registerNodeType(
 
                 return vol;
             }
-
         }        
     )
 );

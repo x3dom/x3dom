@@ -59,6 +59,23 @@ x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointer = function(gl, shaderProgr
     }
 };
 
+x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointerPosition = function(gl, shaderProgram, useMaterial)
+{
+    if(this.buffers[glTF_BUFFER_IDX.INDEX]){
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[glTF_BUFFER_IDX.INDEX].idx);
+    }
+
+    if(useMaterial == true && this.material != null && this.material.attributeMapping != null)
+    {
+        var mapping = this.material.attributeMapping;
+        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
+    }
+    else
+    {
+        this._bindVertexAttribPointer(gl, shaderProgram.position, this.buffers[glTF_BUFFER_IDX.POSITION]);
+    }
+};
+
 x3dom.glTF.glTFMesh.prototype._bindVertexAttribPointer = function(gl, shaderPosition, buffer)
 {
     if(shaderPosition!=null && buffer != null)

@@ -176,7 +176,7 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
         }
         else if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
-        }else if(properties.KHR_MATERIAL_COMMONS != 0)
+        }else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
         {
             program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
         }

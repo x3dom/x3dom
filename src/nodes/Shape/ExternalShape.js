@@ -171,6 +171,14 @@ x3dom.registerNodeType(
                 properties.USE_EMISSION_TEX = 0;
 
                 return properties;
+            },
+
+            nodeChanged: function ()
+            {
+                if (!this._objectID) {
+                    this._objectID = ++x3dom.nodeTypes.Shape.objectID;
+                    x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
+                }
             }
         }
     )

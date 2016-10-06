@@ -5,8 +5,10 @@
 if(x3dom.glTF == null)
     x3dom.glTF = {};
 
-x3dom.glTF.glTFLoader = function(response)
+x3dom.glTF.glTFLoader = function(response, meshOnly)
 {
+    this.meshOnly = meshOnly;
+
     this.header = this.readHeader(response);
 
     if (this.header.sceneLength > 0) {
@@ -275,7 +277,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
     shape._nameSpace.doc.needRender = true;
     x3dom.BinaryContainerLoader.checkError(gl);
 
-    if(primitive.material != null)
+    if(primitive.material != null && !this.meshOnly)
         mesh.material = this.loadMaterial(gl, this.scene.materials[primitive.material]);
 
     if(shape.meshes == null)
