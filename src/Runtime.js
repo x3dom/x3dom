@@ -1232,3 +1232,35 @@ x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
     
     return inherits;
 };
+
+/**
+ * APIMethod getPixelScale
+ *
+ * Returns the virtual scale of one pixel for the current orthographic viewpoint.
+ * The returned vector contains scale values for the x and y direction. The z value is always null.
+ *
+ * Parameters:
+ *
+ *  Returns:
+ *    x3dom.fields.SFVec3f or null if non orthographic view
+ */
+x3dom.Runtime.prototype.getPixelScale = function(){
+    var vp = this.viewpoint();
+    if(!x3dom.isa(vp, x3dom.nodeTypes.OrthoViewpoint)){
+        x3dom.debug.logError("getPixelScale is only implemented for orthographic Viewpoints");
+        return null;
+    }
+
+    var left = vp._vf.fieldOfView[0];
+    var bottom = vp._vf.fieldOfView[1];
+    var right = vp._vf.fieldOfView[2];
+    var top = vp._vf.fieldOfView[3];
+
+    var x = right - left;
+    var y = top - bottom;
+
+    var pixelScaleX = x / this.getWidth();
+    var pixelScaleY = y / this.getHeight();
+
+    return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
+};

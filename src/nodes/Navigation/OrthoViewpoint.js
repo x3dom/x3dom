@@ -143,6 +143,10 @@ x3dom.registerNodeType(
             getFar: function() {
                 return this._vf.zFar;
             },
+            
+            getFieldOfView: function() {
+                return 0.785;
+            },
 
             setZoom: function( value ) {
                 this._vf.fieldOfView[0] = -value;
@@ -168,6 +172,7 @@ x3dom.registerNodeType(
 
                     this._projMatrix = x3dom.fields.SFMatrix4f.ortho(left, right, bottom, top, near, far, aspect);
                 }
+                
                 this._lastAspect = aspect;
 
                 return this._projMatrix;

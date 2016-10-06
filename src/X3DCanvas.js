@@ -190,6 +190,177 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	this.disableMiddleDrag = x3dElem.getAttribute("disableMiddleDrag");
 	this.disableMiddleDrag = this.disableMiddleDrag ? (this.disableMiddleDrag.toLowerCase() == "true") : false;
 
+    this.bindEventListeners();
+};
+
+
+x3dom.X3DCanvas.prototype.bindEventListeners = function() {
+    var that = this;
+
+    this.onMouseDown = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+            this.classList.add('x3dom-canvas-mousedown');
+
+            switch(evt.button) {
+                case 0:  this.mouse_button = 1; break;  //left
+                case 1:  this.mouse_button = 4; break;  //middle
+                case 2:  this.mouse_button = 2; break;  //right
+                default: this.mouse_button = 0; break;
+            }
+
+            if (evt.shiftKey) { this.mouse_button = 1; }
+            if (evt.ctrlKey)  { this.mouse_button = 4; }
+            if (evt.altKey)   { this.mouse_button = 2; }
+
+            var pos = this.parent.mousePosition(evt);
+            this.mouse_drag_x = pos.x;
+            this.mouse_drag_y = pos.y;
+
+            this.mouse_dragging = true;
+
+            this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseUp = function (evt) {
+        if(!this.isMulti) {
+            var prev_mouse_button = this.mouse_button;
+            this.classList.remove('x3dom-canvas-mousedown');
+
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+
+            this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button, prev_mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseOver = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+
+            this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseAlt = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+            this.classList.remove('x3dom-canvas-mousedown');
+
+            this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onDoubleClick = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+
+            var pos = this.parent.mousePosition(evt);
+            this.mouse_drag_x = pos.x;
+            this.mouse_drag_y = pos.y;
+
+            this.mouse_dragging = false;
+
+            this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseMove = function (evt) {
+        if(!this.isMulti) {
+
+            var pos = this.parent.mousePosition(evt);
+            
+            if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
+                that.lastMousePos = pos;
+                if (evt.shiftKey) { this.mouse_button = 1; }
+                if (evt.ctrlKey)  { this.mouse_button = 4; }
+                if (evt.altKey)   { this.mouse_button = 2; }
+
+                this.mouse_drag_x = pos.x;
+                this.mouse_drag_y = pos.y;
+
+                if (this.mouse_dragging) {
+                    
+                    if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
+                         this.mouse_button == 2 && !this.parent.disableRightDrag ||
+                         this.mouse_button == 4 && !this.parent.disableMiddleDrag ) 
+                    {
+                        this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                    }
+                }
+                else {
+                    this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                }
+
+                this.parent.doc.needRender = true;
+
+                // deliberately different for performance reasons
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        }
+    }
+
+    this.onDOMMouseScroll = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+
+            var originalY = this.parent.mousePosition(evt).y;
+
+            this.mouse_drag_y += 2 * evt.detail;
+
+            this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
+            this.parent.doc.needRender = true;
+
+            evt.preventDefault();
+            evt.stopPropagation();
+        }
+    }
+
+    this.onKeyPress = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyPress(evt.charCode);
+        }
+        this.parent.doc.needRender = true;
+    }
+
+    this.onMouseWheel = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+
+            var originalY = this.parent.mousePosition(evt).y;
+
+            this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+
+            this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
+            this.parent.doc.needRender = true;
+
+            evt.preventDefault();
+            evt.stopPropagation();
+        }
+    }
+
+    this.onKeyUp = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyUp(evt.keyCode);
+        }
+        this.parent.doc.needRender = true;
+    }
+
+    this.onKeyDown = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyDown(evt.keyCode);
+        }
+        this.parent.doc.needRender = true;
+    }
 
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
         // event handler for mouse interaction
@@ -219,173 +390,30 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
 
         // Mouse Events
-        this.canvas.addEventListener('mousedown', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-                this.classList.add('x3dom-canvas-mousedown');
+        this.canvas.addEventListener('mousedown', this.onMouseDown , false);
 
-                switch(evt.button) {
-                    case 0:  this.mouse_button = 1; break;  //left
-                    case 1:  this.mouse_button = 4; break;  //middle
-                    case 2:  this.mouse_button = 2; break;  //right
-                    default: this.mouse_button = 0; break;
-                }
+        this.canvas.addEventListener('mouseup', this.onMouseUp, false);
 
-                if (evt.shiftKey) { this.mouse_button = 1; }
-                if (evt.ctrlKey)  { this.mouse_button = 4; }
-                if (evt.altKey)   { this.mouse_button = 2; }
+        this.canvas.addEventListener('mouseover', this.onMouseOver, false);
 
-                var pos = this.parent.mousePosition(evt);
-                this.mouse_drag_x = pos.x;
-                this.mouse_drag_y = pos.y;
+        this.canvas.addEventListener('mouseout', this.onMouseOut, false);
 
-                this.mouse_dragging = true;
+        this.canvas.addEventListener('dblclick', this.onDoubleClick, false);
 
-                this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
+        this.canvas.addEventListener('mousemove', this.onMouseMove, false);
 
-        this.canvas.addEventListener('mouseup', function (evt) {
-            if(!this.isMulti) {
-                var prev_mouse_button = this.mouse_button;
-                this.classList.remove('x3dom-canvas-mousedown');
+        this.canvas.addEventListener('DOMMouseScroll', this.onDOMMouseScroll, false);
 
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-
-                this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button, prev_mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mouseover', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-
-                this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mouseout', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-                this.classList.remove('x3dom-canvas-mousedown');
-
-                this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('dblclick', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-
-                var pos = this.parent.mousePosition(evt);
-                this.mouse_drag_x = pos.x;
-                this.mouse_drag_y = pos.y;
-
-                this.mouse_dragging = false;
-
-                this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mousemove', function (evt) {
-            if(!this.isMulti) {
-
-                var pos = this.parent.mousePosition(evt);
-                
-                if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
-                    that.lastMousePos = pos;
-                    if (evt.shiftKey) { this.mouse_button = 1; }
-                    if (evt.ctrlKey)  { this.mouse_button = 4; }
-                    if (evt.altKey)   { this.mouse_button = 2; }
-
-                    this.mouse_drag_x = pos.x;
-                    this.mouse_drag_y = pos.y;
-
-                    if (this.mouse_dragging) {
-						
-						if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
-							 this.mouse_button == 2 && !this.parent.disableRightDrag ||
-							 this.mouse_button == 4 && !this.parent.disableMiddleDrag ) 
-						{
-							this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-						}
-                    }
-                    else {
-                        this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                    }
-
-                    this.parent.doc.needRender = true;
-
-                    // deliberately different for performance reasons
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                }
-            }
-        }, false);
-
-        this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-
-                var originalY = this.parent.mousePosition(evt).y;
-
-                this.mouse_drag_y += 2 * evt.detail;
-
-                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
-                this.parent.doc.needRender = true;
-
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        }, false);
-
-        this.canvas.addEventListener('mousewheel', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-
-                var originalY = this.parent.mousePosition(evt).y;
-
-                this.mouse_drag_y -= 0.1 * evt.wheelDelta;
-
-                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
-                this.parent.doc.needRender = true;
-
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        }, false);
+        this.canvas.addEventListener('mousewheel', this.onMouseWheel, false);
 
 
         // Key Events
-        this.canvas.addEventListener('keypress', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyPress(evt.charCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keypress', this.onKeyPress, true);
 
         // in webkit special keys are only handled on key-up
-        this.canvas.addEventListener('keyup', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyUp(evt.keyCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keyup', this.onKeyUp, true);
 
-        this.canvas.addEventListener('keydown', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyDown(evt.keyCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keydown', this.onKeyDown, true);
 
 
         // Multitouch Events
@@ -541,18 +569,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             if (touches.examineNavType == 1) {
                 for(i = 0; i < evt.touches.length; i++) {
                     pos = this.parent.mousePosition(evt.touches[i]);
-                    doc.onPick(doc.gl, pos.x, pos.y);
+                    doc.onPick(that.gl, pos.x, pos.y);
                     doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
                     doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
                 }
-            } 
+            }
             else if (evt.touches.length) {
                 pos = this.parent.mousePosition(evt.touches[0]);
                 doc.onMousePress(that.gl, pos.x, pos.y, 1);     // 1 means left mouse button
             }
-            
-            var navi = doc._scene.getNavigationInfo();
-            navi._impl.onTouchStart(doc._viewarea, evt, touches);
 
             doc.needRender = true;
         };
@@ -589,50 +614,78 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
             var touch0, touch1, distance, middle, squareDistance, deltaMiddle, deltaZoom, deltaMove;
 
-            // one finger: x/y rotation
-            if(evt.touches.length == 1) {
-                var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+            if (touches.examineNavType == 1) {
+                /*
+                 if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
+                 for(var i = 0; i < evt.touches.length; i++) {
+                 pos = this.parent.mousePosition(evt.touches[i]);
+                 doc.onPick(that.gl, pos.x, pos.y);
 
-                var deltaDrag = currentDrag.subtract(touches.lastDrag);
-                touches.lastDrag = currentDrag;
-                touches.deltaDrag = deltaDrag;
-                
-                var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
-                var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
-                rotMatrix = mx.mult(my);
+                 doc._viewarea.handleMoveEvt(pos.x, pos.y, 1);
+                 }
+                 }
+                 */
 
+                // one finger: x/y rotation
+                if(evt.touches.length == 1) {
+                    var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 
+                    var deltaDrag = currentDrag.subtract(touches.lastDrag);
+                    touches.lastDrag = currentDrag;
 
-                doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
+                    var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
+                    var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
+                    rotMatrix = mx.mult(my);
+
+                    doc.onMoveView(that.gl, null, rotMatrix);
+                }
+                // two fingers: scale, translation, rotation around view (z) axis
+                else if(evt.touches.length >= 2) {
+                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+
+                    distance = touch1.subtract(touch0);
+                    middle = distance.multiply(0.5).add(touch0);
+                    squareDistance = distance.dot(distance);
+
+                    deltaMiddle = middle.subtract(touches.lastMiddle);
+                    deltaZoom = squareDistance - touches.lastSquareDistance;
+
+                    deltaMove = new x3dom.fields.SFVec3f(
+                                deltaMiddle.x / screen.width, -deltaMiddle.y / screen.height,
+                                deltaZoom / (screen.width * screen.height * 0.2));
+
+                    var rotation = touches.calcAngle(distance);
+                    var angleDelta = touches.lastAngle - rotation;
+                    touches.lastAngle = rotation;
+
+                    rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
+
+                    touches.lastMiddle = middle;
+                    touches.lastSquareDistance = squareDistance;
+
+                    doc.onMoveView(that.gl, deltaMove, rotMatrix);
+                }
             }
-            // two fingers: scale, translation, rotation around view (z) axis
-            else if(evt.touches.length >= 2) {
-                touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-                touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+            else if (evt.touches.length) {
+                if (touches.examineNavType == 2 && evt.touches.length >= 2) {
+                    touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+                    touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
 
-                distance = touch1.subtract(touch0);
-                middle = distance.multiply(0.5).add(touch0);
-                squareDistance = distance.dot(distance);
+                    distance = touch1.subtract(touch0);
+                    squareDistance = distance.dot(distance);
+                    deltaZoom = (squareDistance - touches.lastSquareDistance) / (0.1 * (screen.width + screen.height));
 
-                deltaMiddle = middle.subtract(touches.lastMiddle);
-                deltaZoom = squareDistance - touches.lastSquareDistance;
+                    touches.lastPos.y += deltaZoom;
+                    touches.lastSquareDistance = squareDistance;
 
-                deltaMove = new x3dom.fields.SFVec3f(
-                            deltaMiddle.x / screen.width, -deltaMiddle.y / screen.height,
-                            deltaZoom / (screen.width * screen.height * 0.2));
+                    doc.onDrag(that.gl, touches.lastPos.x, touches.lastPos.y, 2);
+                }
+                else {
+                    pos = this.parent.mousePosition(evt.touches[0]);
 
-                var rotation = touches.calcAngle(distance);
-                var angleDelta = touches.lastAngle - rotation;
-                
-                touches.lastAngle = rotation;
-                touches.deltaAngle = angleDelta;
-                
-                rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
-
-                touches.lastMiddle = middle;
-                touches.lastSquareDistance = squareDistance;
-
-                doc.onMoveView(that.gl, evt, touches, deltaMove, rotMatrix);
+                    doc.onDrag(that.gl, pos.x, pos.y, 1);
+                }
             }
 
             doc.needRender = true;
@@ -716,14 +769,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     touches.firstTouchTime = now;
                     touches.firstTouchPoint = touches.lastDrag;
                 }
-            }   
+            }
             else if (touches.lastLayer.length) {
                 pos = touches.lastLayer[0][1];
                 doc.onMouseRelease(that.gl, pos.x, pos.y, 0, 1);
             }
-
-            var navi = doc._scene.getNavigationInfo();
-            navi._impl.onTouchEnd(doc._viewarea, evt, touches);
 
             doc.needRender = true;
         };
@@ -761,7 +811,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-};
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
