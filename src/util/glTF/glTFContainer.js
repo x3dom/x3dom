@@ -190,17 +190,17 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
     shaderProgram.bind();
 
     if(this.diffuseTex != null)
-        shaderProgram.diffuseTex = this.diffuseTex.unit;
+        this.diffuseTex.bind(gl, 0, shaderProgram.program, "diffuseTex");
     else
         shaderProgram.diffuse = this.diffuse;
 
     if(this.emissionTex != null)
-        shaderProgram.emissionTex = this.emissionTex.unit;
+        this.emissionTex.bind(gl, 0, shaderProgram.program, "emissionTex");
     else
         shaderProgram.emission = this.emission;
 
     if(this.specularTex != null)
-        shaderProgram.specularTex = this.specularTex.unit;
+        this.specularTex.bind(gl, 0, shaderProgram.program, "specularTex");
     else
         shaderProgram.specular = this.specular;
 

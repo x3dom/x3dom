@@ -204,7 +204,6 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
 {
     "use strict";
 
-    console.log(primitive);
     var mesh = new x3dom.glTF.glTFMesh();
 
     mesh.primitiveType = primitive["mode"];
@@ -316,6 +315,8 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
         buffers[bufferId] = newBuffer;
     }
 
+
+
     return buffers;
 };
 
@@ -351,6 +352,8 @@ x3dom.glTF.glTFLoader.prototype.readScene = function(response,header)
     var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
 
     var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
+
+    console.log(json);
 
     return json;
 };
@@ -444,7 +447,18 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 
         for(var key in materialNode.values)
             if(materialNode.values.hasOwnProperty(key))
-                material[key] = materialNode.values[key];
+            {
+                var value = materialNode.values[key];
+                if(typeof value === 'string')
+                {
+                    var textureNode = this.scene.textures[value];
+                    material[key+"Tex"] = this.loadTexture(gl, textureNode);
+                }
+                else
+                {
+                    material[key] = value;
+                }
+            }
 
         return material;
     }else

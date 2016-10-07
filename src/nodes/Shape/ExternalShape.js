@@ -166,7 +166,7 @@ x3dom.registerNodeType(
                 properties.CSHADER = -1;
 
                 properties.KHR_MATERIAL_COMMONS = 1;
-                properties.USE_DIFFUSE_TEX = 0;
+                properties.USE_DIFFUSE_TEX = 1;
                 properties.USE_SPECULAR_TEX = 0;
                 properties.USE_EMISSION_TEX = 0;
 
