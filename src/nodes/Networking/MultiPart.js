@@ -784,6 +784,86 @@ x3dom.registerNodeType(
                         return new x3dom.Parts(multiPart, selection, colorMap, emissiveMap, specularMap, visibilityMap);
                     }
                 };
+
+                /**
+                 *
+                 *
+                 * @param left border position in screen pixel
+                 * @param right border position in screen pixel
+                 * @param bottom border position in screen pixel
+                 * @param top border position in screen pixel
+                 * @returns selected Parts
+                 */
+                this._xmlNode.getPartsByRect = function (left, right, bottom, top)
+                {
+                    var viewarea = multiPart._nameSpace.doc._viewarea;
+                    var viewpoint = viewarea._scene.getViewpoint();
+
+                    var origViewMatrix    = viewarea.getViewMatrix();
+                    var origProjMatrix    = viewarea.getProjectionMatrix();
+
+                    var upDir   = new x3dom.fields.SFVec3f(origViewMatrix._01, origViewMatrix._11, origViewMatrix._21);
+                    var viewDir = new x3dom.fields.SFVec3f(origViewMatrix._02, origViewMatrix._12, origViewMatrix._22);
+                    var pos = new x3dom.fields.SFVec3f(origViewMatrix._03, origViewMatrix._13, origViewMatrix._23);
+
+                    var normalizedLeft   = (left   - viewarea._width  / 2) / (viewarea._width  / 2);
+                    var normalizedRight  = (right  - viewarea._width  / 2) / (viewarea._width  / 2);
+                    var normalizedTop    = (top    - viewarea._height / 2) / (viewarea._height / 2);
+                    var normalizedBottom = (bottom - viewarea._height / 2) / (viewarea._height / 2);
+
+                    /*
+                        For any given distance Z from the camera,
+                        the shortest distance D from the center point of a plane
+                        perpendicular to the viewing vector at Z to one of its borders
+                        above or below the center (really, the intersection of the plane and frustum)
+                        is D = tan(FOV / 2) * Z . Add and subtract D from the center point's Y component
+                        to get the maximum and minimum Y extents.
+                    */
+
+                    var fov = viewpoint._vf.fieldOfView;
+                    var factorH = Math.tan(fov/2) * viewpoint._zNear;
+                    var factorW = Math.tan(fov/2)* viewpoint._lastAspect * viewpoint._zNear;
+
+                    var projMatrix = x3dom.fields.SFMatrix4f.perspectiveFrustum(
+                        normalizedLeft * factorW,
+                        normalizedRight * factorW,
+                        normalizedBottom * factorH,
+                        normalizedTop * factorH,
+                        viewpoint.getNear(),
+                        viewpoint.getFar());
+
+                    var viewMatrix = x3dom.fields.SFMatrix4f.lookAt(pos,
+                        pos.subtract(viewDir.multiply(5.0)),
+                        upDir);
+
+                    var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
+                    //viewpoint._projMatrix = projMatrix;
+
+                    //return null;
+
+                    var selection = [];
+                    var volumes = this._x3domNode._partVolume;
+                    for(id in volumes){
+                        if(!volumes.hasOwnProperty(id))
+                            continue;
+
+                        var intersect = frustum.intersect(volumes[id], 0);
+                        if(intersect > 0)
+                            selection.push(id);
+                    }
+
+                    var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                    var emissiveMap = multiPart._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
+                    var specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
+                    var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
+
+                    if ( selection.length == 0) {
+                        return null;
+                    } else {
+                        return new x3dom.Parts(multiPart, selection, colorMap, emissiveMap, specularMap, visibilityMap);
+                    }
+
+                };
             },
 
             loadInline: function ()

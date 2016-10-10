@@ -1091,7 +1091,7 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
             for ( i=0; i < parts.ids.length; i++ ) {
                 partID = parts.ids[i];
                 pixelIDFront = partID;
-                pixelIDBack  = partID + this.widthTwo;
+                pixelIDBack  = (parseInt(partID) + parseInt(this.widthTwo)).toString();
 
                 if( !this.multiPart._materials[partID]._highlighted )
                 {
