@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+	    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+		<script type="text/javascript" src="../../x3dom_include.js"></script>
+	    
+		<style>
+			html, body, x3d {
+				width: 100%;
+				height: 100%;
+				margin: 0;
+				padding: 0;
+				overflow: hidden;
+			}
+			
+			textarea {
+				position:absolute; 
+				top:0; 
+				left:0; 
+				z-index: 1000; 
+				width:250px; 
+				height: 100%;
+				padding:20px;
+				background: rgba(0,0,0,0.7);
+				color: white;
+			}
+
+            .buttonWrapper {
+                position: absolute;
+                top: 0;
+                right: 300px;
+                z-index: 9000;
+                width: 400px;
+            }
+			
+			.box {
+				position: absolute;
+				width: 200px;
+				height: 200px;
+				top: 0;
+				left: 0;
+				background-color: rgba(255,0,0,0.7);
+			}
+		</style>
+	</head>
+	<body>	
+		<textarea id="eventLog" style="position:absolute; top:0; left:0; z-index: 1000; width:250px; height:100%; padding:2px; background: rgba(0,0,0,0.7);"></textarea>
+		<div style="position:absolute; left:25%;top:25;bottom:25%;width:50%;height:50%;background: rgba(0,0,0,0.4);z-index: 1000;" >
+			<div>Everything in this Rectangle will be clipped by clicking the pickRect Button</div>
+			<div class="buttonWrapper">
+				<button onclick="pickRect()">PickRect</button>
+				<button onclick="showAll()">Show All</button>
+				<p />
+				<button onclick="highlightRect()">Select Rect (Slow)</button>
+				<button onclick="unhighlightAll()">Deselect All (Slow)</button>
+			</div>
+		</div>
+		<x3d id="x3d">
+			<scene id="sceneObject">
+                <directionallight id="directionallight" color="1,1,1" shadowIntensity="0.0" direction="-0.7, -1, -1"></directionallight>
+                
+				<Transform>
+					<MultiPart id="multipart" url="FaceModel.x3d" urlIDMap="idmap.json" onload='registerMultipartListener()'></MultiPart>				
+				</Transform>
+                
+				<Transform id="boxTrafo" translation="0 0 0">
+					<shape id="shape">
+						<appearance>
+							<material diffuseColor="1 0.5 0" transparency="0.7"></material>
+						</appearance>
+						<indexedFaceSet id="ifs" coordIndex="0 1 2 2 3 0" solid="false">
+							<Coordinate id="pointList" point="-25.481925958731154 6.6449141956689255 36.1705 -25.738404885453807 6.6449141956689255 36.1705 -25.738404885453807 6.38843526894627 36.1705 -25.481925958731154 6.38843526894627 36.1705"></Coordinate> 
+						</indexedFaceSet>
+					</shape>
+				</Transform>
+			</scene>
+		</x3d>
+		
+
+        
+	</body>
+    
+    <script>
+	
+		var colors = ["1 0 0", "0 1 0", "0 0 1"];
+		var colorIndex = 0;
+		var log = document.getElementById("eventLog");
+        var multipart = null;
+        log.value = "";
+        first = true;
+		
+		
+		function sceneClick( e )
+		{
+            if( first ) 
+            {
+                first = true;
+                var canvas = document.getElementsByTagName("canvas")[0];
+                
+                /*var rect = document.getElementById("rect");
+                rect.style.top = e.clientY + "px";
+                rect.style.left = e.clientX + "px";*/
+                
+                //var p = multipart.getPartsByRect(e.clientX, e.clientY, e.clientX + 1920/8, e.clientY + 600/8);
+                
+                //console.log(p);
+                //document.getElementById("pointList").setAttribute("point", p);
+                /*
+                var ifs = document.createElement("IndexedFaceSet");
+                ifs.setAttribute("coordIndex", "0 1 2 2 3 0");
+                ifs.setAttribute("solid", "false");
+                ifs.setAttribute("id", "ifs");
+                
+                var coord = document.createElement("Coordinate");
+                coord.setAttribute("point", p);
+                
+                ifs.appendChild(coord);
+                
+                var old = document.getElementById("ifs");
+                
+                old.parentNode.replaceChild(ifs, old);	*/
+                
+                //console.log(p);
+                //document.getElementById("boxTrafo").setAttribute("translation", p.x + " " + p.y + " " + p.z);*/
+            }
+		}
+		
+        function registerSceneListener() {
+			var scene = document.getElementById('sceneObjects');
+			document.addEventListener('click', sceneClick, false);
+		}
+		
+		registerSceneListener();
+
+        function highlight() {
+            var parts = multipart.getParts();
+            parts.highlight("0 1 0");
+        }
+
+        function unhighlight() {
+            var parts = multipart.getParts();
+            parts.unhighlight();
+        }
+
+        function setDiffuseFront() {
+            var parts = multipart.getParts();
+            parts.setDiffuseColor("1 0.5 0.7");
+        }
+
+        function setDiffuseBack() {
+            var parts = multipart.getParts();
+            parts.setDiffuseColor("0.5 0.8 0.2", false);
+        }
+
+        function setTransFront() {
+            var parts = multipart.getParts();
+            parts.setTransparency("0.5");
+        }
+
+        function setTransBack() {
+            var parts = multipart.getParts();
+            parts.setTransparency("0.5", false);
+        }
+
+        function setEmiFront() {
+            var parts = multipart.getParts();
+            parts.setEmissiveColor("0.9 0.7 0.2");
+        }
+
+        function setEmiBack() {
+            var parts = multipart.getParts();
+            parts.setEmissiveColor("0.9 0.7 0.2", false);
+        }
+
+        function reset() {
+            var parts = multipart.getParts();
+            parts.resetColor();
+        }
+		
+		function pickRect() {
+			var canvas = document.getElementsByTagName("canvas")[0];
+			var parts = multipart.getPartsByRect(canvas.width / 2 - canvas.width / 4, canvas.width / 2 + canvas.width / 4, canvas.height / 2 - canvas.height / 4, canvas.height / 2 + canvas.height / 4);
+			if(parts != null)
+				parts.setVisibility(false);
+		}
+
+		function showAll(){
+			multipart.getParts().setVisibility(true);
+		}
+
+		function highlightRect() {
+			var canvas = document.getElementsByTagName("canvas")[0];
+			var parts = multipart.getPartsByRect(canvas.width / 2 - canvas.width / 4, canvas.width / 2 + canvas.width / 4, canvas.height / 2 - canvas.height / 4, canvas.height / 2 + canvas.height / 4);
+			if(parts != null)
+				parts.highlight("0 1 0");
+		}
+
+		function unhighlightAll(){
+			multipart.getParts().unhighlight();
+		}
+		
+		function registerMultipartListener() {
+			multipart = document.getElementById('multipart');
+			
+			multipart.addEventListener( 'click', function ( event ) {
+				log.value += "Click\n";
+				log.scrollTop = log.scrollHeight;
+                event.part.setVisibility(false);
+			}, false);
+			
+			multipart.addEventListener( 'mouseenter', function ( event ) {
+				log.value += "MouseEnter\n";
+				log.scrollTop = log.scrollHeight;
+                event.part.highlight("0 1 0");
+
+			}, false);
+			
+			multipart.addEventListener( 'mouseleave', function ( event ) {
+				log.value += "MouseLeave\n";
+				log.scrollTop = log.scrollHeight;
+                event.part.unhighlight();
+			}, false);
+			
+			multipart.addEventListener( 'mouseup', function ( event ) {
+				log.value += "MouseUp\n";
+				log.scrollTop = log.scrollHeight;
+			}, false);
+			
+			multipart.addEventListener( 'mousedown', function ( event ) {
+				log.value += "MouseDown\n";
+				log.scrollTop = log.scrollHeight;
+			}, false);
+        }
+    </script>
+</html>
