@@ -2455,10 +2455,12 @@ x3dom.gfx_webgl = (function () {
                 if(mesh.material!=null){
                     if(mesh.material.program!=null){
                         exGeomShaderProgram = mesh.material.program;
-                        mesh.material.updateTransforms(mat_view, mat_scene, mat_proj, transform);
                     }
 
-                    mesh.material.bind(gl, exGeomShaderProgram);
+                    if(mesh.material.setShader != null)
+                        mesh.material.setShader(gl,this.cache, shape, shape.getShaderProperties(viewarea));
+
+                    mesh.material.bind(gl, sp, this.cache, shape.getShaderProperties(viewarea));
                 }
 
                 mesh.bindVertexAttribPointer(gl, exGeomShaderProgram);
@@ -2469,7 +2471,6 @@ x3dom.gfx_webgl = (function () {
                     polyMode = (renderMode == 1) ? gl.POINTS : gl.LINES;
 
                 mesh.render(gl, polyMode);
-                sp.bind();
             }
             else
                 if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )

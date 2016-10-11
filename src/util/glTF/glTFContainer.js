@@ -166,7 +166,7 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
     this.diffuse = [0.3,0.1,0.1,1];
     this.diffuseTex = null;
 
-    this.emission = [0.4,0.0,0.0,1];
+    this.emission = [0.0,0.0,0.0,1];
     this.emissionTex = null;
 
     this.specular = [0.8,0.8,0.8,1];
@@ -185,31 +185,69 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
     this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.BLINN;
 };
 
-x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
+x3dom.glTF.glTFKHRMaterialCommons.prototype.setShader = function(gl, cache, shape, properties)
 {
-    shaderProgram.bind();
+
+    properties.EMPTY_SHADER = 0;
+
+    properties.KHR_MATERIAL_COMMONS = 1;
 
     if(this.diffuseTex != null)
-        this.diffuseTex.bind(gl, 0, shaderProgram.program, "diffuseTex");
+        properties.USE_DIFFUSE_TEX = 1;
     else
-        shaderProgram.diffuse = this.diffuse;
+        properties.USE_DIFFUSE_TEX = 0;
 
     if(this.emissionTex != null)
-        this.emissionTex.bind(gl, 0, shaderProgram.program, "emissionTex");
+        properties.USE_SPECULAR_TEX = 1;
     else
-        shaderProgram.emission = this.emission;
+        properties.USE_SPECULAR_TEX = 0;
 
     if(this.specularTex != null)
-        this.specularTex.bind(gl, 0, shaderProgram.program, "specularTex");
+        properties.USE_EMISSION_TEX = 1;
     else
-        shaderProgram.specular = this.specular;
+        properties.USE_EMISSION_TEX = 0;
 
-    shaderProgram.shininess = this.shininess;
-    shaderProgram.transparency = this.transparency;
-    shaderProgram.globalAmbient = this.globalAmbient;
-    shaderProgram.lightVector = this.lightVector;
+    properties.toIdentifier();
 
-    shaderProgram.technique = this.technique;
+    this.program = cache.getShaderByProperties(gl, shape, properties);
+
+};
+
+x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
+{
+    this.program.bind();
+
+
+    // set all used Shader Parameter
+    for(var key in shaderProgram){
+        if(!shaderProgram.hasOwnProperty(key))
+            continue;
+
+        if(this.program.hasOwnProperty(key))
+            this.program[key] = shaderProgram[key];
+    }
+
+    if(this.diffuseTex != null)
+        this.diffuseTex.bind(gl, 0, this.program.program, "diffuseTex");
+    else
+        this.program.diffuse = this.diffuse;
+
+    if(this.emissionTex != null)
+        this.emissionTex.bind(gl, 0, this.program.program, "emissionTex");
+    else
+        this.program.emission = this.emission;
+
+    if(this.specularTex != null)
+        this.specularTex.bind(gl, 0, this.program.program, "specularTex");
+    else
+        this.program.specular = this.specular;
+
+    this.program.shininess = this.shininess;
+    this.program.transparency = this.transparency;
+    this.program.globalAmbient = this.globalAmbient;
+    this.program.lightVector = this.lightVector;
+
+    this.program.technique = this.technique;
 };
 
 x3dom.glTF.glTFMaterial = function(technique)
@@ -232,13 +270,13 @@ x3dom.glTF.glTFMaterial = function(technique)
                         this.semanticMapping["modelViewMatrix"] = key;
                         break;
                     case "MODELVIEWINVERSETRANSPOSE":
-                        this.semanticMapping["normalMatrix"] = key;
+                        this.semanticMapping["modelViewInverseTransposeMatrix"] = key;
                         break;
                     case "PROJECTION":
                         this.semanticMapping["projectionMatrix"] = key;
                         break;
                     case "MODEL":
-                        this.semanticMapping["model"] = key;
+                        this.semanticMapping["modelMatrix"] = key;
                         break;
                     case "MODELVIEWPROJECTION":
                         this.semanticMapping["modelViewProjectionMatrix"] = key;
@@ -247,7 +285,7 @@ x3dom.glTF.glTFMaterial = function(technique)
                         this.semanticMapping["viewMatrix"] = key;
                         break;
                     case "MODELVIEWINVERSE":
-                        this.semanticMapping["modelViewMatrixInverse"] = key;
+                        this.semanticMapping["modelViewInverseMatrix"] = key;
                         break;
                     default:
                         break;
@@ -279,10 +317,12 @@ x3dom.glTF.glTFMaterial = function(technique)
     }
 };
 
-x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderProgram)
+x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 {
     if(this.program != null)
         this.program.bind();
+
+    this.updateTransforms(shaderParameter);
 
     for(var key in this.technique.uniforms)
         if(this.technique.uniforms.hasOwnProperty(key))
@@ -290,48 +330,47 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderProgram)
             var uniformName = this.technique.uniforms[key];
             if(this.textures[uniformName] != null){
                 var texture = this.textures[uniformName];
-                texture.bind(gl, 0, shaderProgram.program, key);
+                texture.bind(gl, 0, this.program.program, key);
             }
             else if(this.values[uniformName] != null)
-                shaderProgram[key] = this.values[uniformName];
+                this.program[key] = this.values[uniformName];
         }
 };
 
-x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(mat_view, mat_scene, mat_proj, transform)
+x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 {
     if(this.program != null)
     {
         this.program.bind();
 
-        var model_view = mat_view.mult(transform);
-        var model_view_inv = model_view.inverse();
-
         if(this.semanticMapping["modelViewMatrix"] != null)
-            this.program[this.semanticMapping["modelViewMatrix"]] = model_view.toGL();
+            this.program[this.semanticMapping["modelViewMatrix"]] = shaderParameter.modelViewMatrix;
 
         if(this.semanticMapping["viewMatrix"] != null)
-            this.program[this.semanticMapping["viewMatrix"]] = mat_view.toGL();
+            this.program[this.semanticMapping["viewMatrix"]] = shaderParameter.viewMatrix;
 
-        if(this.semanticMapping["normalMatrix"] != null) {
-            var mat = model_view_inv.transpose()
-            var model_view_inv_gl = [mat._00, mat._10, mat._20,
-                                    mat._01, mat._11, mat._21,
-                                    mat._02, mat._12, mat._22];
+        if(this.semanticMapping["modelViewInverseTransposeMatrix"] != null) {
+            var mat = shaderParameter.normalMatrix;
 
-            this.program[this.semanticMapping["normalMatrix"]] = model_view_inv_gl;
+            var model_view_inv_gl =
+                [mat[0], mat[1], mat[2],
+                mat[4],mat[5],mat[6],
+                mat[8],mat[9],mat[10]];
+
+            this.program[this.semanticMapping["modelViewInverseTransposeMatrix"]] = model_view_inv_gl;
         }
 
-        if(this.semanticMapping["modelViewMatrixInverse"] != null)
-            this.program[this.semanticMapping["modelViewMatrixInverse"]] = model_view_inv.toGL();
-
+        if(this.semanticMapping["modelViewInverseMatrix"] != null)
+            this.program[this.semanticMapping["modelViewInverseMatrix"]] = shaderParameter.modelViewMatrixInverse;
 
         if(this.semanticMapping["modelViewProjectionMatrix"] != null)
-            this.program[this.semanticMapping["modelViewProjectionMatrix"]] = mat_scene.mult(transform).toGL();
+            this.program[this.semanticMapping["modelViewProjectionMatrix"]] = shaderParameter.modelViewProjectionMatrix;
 
-        if(this.semanticMapping["model"] != null)
-            this.program[this.semanticMapping["model"]] = transform.toGL();
+        if(this.semanticMapping["modelMatrix"] != null)
+            this.program[this.semanticMapping["modelMatrix"]] = shaderParameter.model;
 
         if(this.semanticMapping["projectionMatrix"] != null)
-            this.program[this.semanticMapping["projectionMatrix"]] = mat_proj.toGL();
+            this.program[this.semanticMapping["projectionMatrix"]] = shaderParameter.projectionMatrix;
     }
+
 };

@@ -402,7 +402,6 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         image.src = blobUrl;
 
         this.loaded.images[imageNodeName] = image;
-        document.body.appendChild(image);
 
         return image;
     }
