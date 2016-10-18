@@ -35,6 +35,7 @@ x3dom.registerNodeType(
 
             this._currentURLIdx = 0;
             this._cf.geometry.node = new x3dom.nodeTypes.X3DSpatialGeometryNode(ctx);
+            this.loaded = false;
         },
         {
             update: function(shape, shaderProgram, gl, viewarea, context) {
@@ -88,7 +89,6 @@ x3dom.registerNodeType(
                                 that._cf.geometry.node._mesh[key] = glTF._mesh[key];
                             }
 
-                            //glTF.loadShaderProgram(gl, "program_0");
                         }
                         else
                         {
@@ -156,14 +156,16 @@ x3dom.registerNodeType(
                 this._clipPlanes = clipPlanes;
 
                 drawableCollection.addShape(this, transform, graphState);
-
                 return true;
             },
 
             getShaderProperties: function(viewarea)
             {
+                
                 var properties = x3dom.Utils.generateProperties(viewarea, this);
                 properties.CSHADER = -1;
+
+                properties.LIGHTS = viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight);
 
                 properties.EMPTY_SHADER = 1;
 

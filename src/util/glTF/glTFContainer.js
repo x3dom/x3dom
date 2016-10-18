@@ -90,6 +90,9 @@ x3dom.glTF.glTFMesh.prototype._bindVertexAttribPointer = function(gl, shaderPosi
 
 x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
 {
+    if(this.material != null && !this.material.created())
+        return;
+
     if(polyMode == null)
         polyMode = this.primitiveType;
 
@@ -183,6 +186,20 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
     this.doubleSided = false;
 
     this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.BLINN;
+};
+
+x3dom.glTF.glTFKHRMaterialCommons.prototype.created = function()
+{
+    if(this.diffuseTex != null && this.diffuseTex.created != true)
+        return false;
+
+    if(this.emissionTex != null && this.emissionTex.created != true)
+        return false;
+
+    if(this.specularTex != null && this.specularTex.created != true)
+        return false;
+
+    return true;
 };
 
 x3dom.glTF.glTFKHRMaterialCommons.prototype.setShader = function(gl, cache, shape, properties)
@@ -315,6 +332,18 @@ x3dom.glTF.glTFMaterial = function(technique)
                 }
         }
     }
+};
+
+x3dom.glTF.glTFMaterial.prototype.created = function()
+{
+    for(var key in this.textures){
+      if(!this.textures.hasOwnProperty(key)) continue;
+
+      if(this.textures[key].created != true)
+          return false;
+    }
+
+    return true;
 };
 
 x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)

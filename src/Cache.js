@@ -179,7 +179,7 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
         else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
             program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
         else if(properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0)
-            return {};
+            return {"shaderID": shaderID};
         else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
                         new x3dom.shader.DynamicMobileShader(gl, properties) :

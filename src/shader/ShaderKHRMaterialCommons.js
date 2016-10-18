@@ -61,6 +61,24 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
     "uniform vec4 lightVector;\n"+
     "uniform vec4 ambient;\n";
 
+    if(properties.LIGHTS || properties.CLIPPLANES)
+    {
+        shader += "varying vec4 fragPosition;\n";
+        shader += "uniform float isOrthoView;\n";
+    }
+
+    //Lights
+    if(properties.LIGHTS) {
+
+        if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
+            //do nothing
+        } else {
+            shader += "varying vec3 fragNormal;\n";
+        }
+
+        shader += x3dom.shader.light(properties.LIGHTS);
+    }
+
     if(properties.USE_DIFFUSE_TEX == 0)
         shader += "uniform vec4 diffuse;\n";
     else
@@ -76,9 +94,11 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
     else
         shader += "uniform sampler2D specularTex;\n";
 
+
     shader +=
     "uniform float shininess;\n"+
     "uniform float transparency;\n"+
+    "uniform float ambientIntensity;\n"+
     "uniform vec4 ambientLight;\n"+
     "uniform int technique;\n"+
     "void main(void)\n"+
@@ -94,9 +114,9 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "vec4 _diffuse = texture2D(diffuseTex, v_texcoord.xy);\n";
 
         if(properties.USE_SPECULAR_TEX == 0)
-            shader += "vec4 _specular = specular;\n";
+            shader += "vec4 _specularColor = specular;\n";
         else
-            shader += "vec4 _specular = texture2D(specularTex, v_texcoord.xy);\n";
+            shader += "vec4 _specularColor = texture2D(specularTex, v_texcoord.xy);\n";
 
         if(properties.USE_EMISSION_TEX == 0)
             shader += "vec4 _emission = emission;\n";
@@ -104,26 +124,66 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "vec4 _emission = texture2D(emissionTex, v_texcoord.xy);\n";
 
         shader +=
-        "vec4 color;\n"+
-        "if(technique == 0) // BLINN\n"+
-        "{\n"+
-            "vec4 H = normalize(I+L);\n"+
-            "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specular * pow(max(dot(H,N),0.0),shininess);\n"+
-        "}\n"+
-        "else if(technique==1) // PHONG\n"+
-        "{\n"+
-            "vec4 R = -reflect(L,N);\n"+
-            "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specular * pow(max(dot(R,I),0.0),shininess);\n"+
-        "}\n"+
-        "else if(technique==2) // LAMBERT\n"+
-        "{\n"+
-            "color = _emission + ambient * al + _diffuse * max(dot(N,L), 0.0);\n"+
-        "}\n"+
-        "else if(technique==3) // CONSTANT\n"+
-        "{\n"+
-            "color = _emission + ambient * al;\n"+
-        "}\n"+
-        "gl_FragColor = vec4(color.xyz, 1.0-transparency);\n"+
+            "vec4 color;\n"+
+            "if(technique == 0) // BLINN\n"+
+            "{\n"+
+                "vec4 H = normalize(I+L);\n"+
+                "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specularColor * pow(max(dot(H,N),0.0),shininess);\n"+
+            "}\n"+
+            "else if(technique==1) // PHONG\n"+
+            "{\n"+
+                "vec4 R = -reflect(L,N);\n"+
+                "color = _emission + ambient * al + _diffuse * max(dot(N,L),0.0) + _specularColor * pow(max(dot(R,I),0.0),shininess);\n"+
+            "}\n"+
+            "else if(technique==2) // LAMBERT\n"+
+            "{\n"+
+                "color = _emission + ambient * al + _diffuse * max(dot(N,L), 0.0);\n"+
+            "}\n"+
+            "else if(technique==3) // CONSTANT\n"+
+            "{\n"+
+                "color = _emission + ambient * al;\n"+
+            "}\n";
+
+        //Calculate lights
+        if (properties.LIGHTS) {
+            shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
+            shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
+            shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
+            shader += "vec3 eye;\n";
+            shader += "if ( isOrthoView > 0.0 ) {\n";
+            shader += "    eye = vec3(0.0, 0.0, 1.0);\n";
+            shader += "} else {\n";
+            shader += "    eye = -v_eye.xyz;\n";
+            shader += "}\n";
+
+            shader += "vec3 ads;\n";
+
+            for(var l=0; l<properties.LIGHTS; l++) {
+                var lightCol = "light"+l+"_Color";
+                shader += "ads = lighting(light"+l+"_Type, " +
+                    "light"+l+"_Location, " +
+                    "light"+l+"_Direction, " +
+                    lightCol + ", " +
+                    "light"+l+"_Attenuation, " +
+                    "light"+l+"_Radius, " +
+                    "light"+l+"_Intensity, " +
+                    "light"+l+"_AmbientIntensity, " +
+                    "light"+l+"_BeamWidth, " +
+                    "light"+l+"_CutOffAngle, " +
+                    "v_normal, eye, shininess, ambientIntensity);\n";
+                shader += "ambient  += " + lightCol + " * ads.r;\n" +
+                    "diffuse  += " + lightCol + " * ads.g;\n" +
+                    "specular += " + lightCol + " * ads.b;\n";
+            }
+
+            shader += "ambient = max(ambient, 0.0);\n";
+            shader += "diffuse = max(diffuse, 0.0);\n";
+            shader += "specular = max(specular, 0.0);\n";
+
+            shader += "color.rgb = (_emission.rgb + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor.rgb);\n";
+        }
+
+        shader += "gl_FragColor = vec4(color.rgb, 1.0-transparency);\n"+
     "}";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
