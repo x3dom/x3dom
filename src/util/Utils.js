@@ -591,6 +591,18 @@ x3dom.Utils.getFileName = function(url)
 /*****************************************************************************
 *
 *****************************************************************************/
+x3dom.Utils.isWebGL2Enabled = function()
+{
+	var canvas = document.createElement("canvas");
+	
+	var webgl2 = canvas.getContext("webgl2") || getContext("experimental-webgl2");
+	
+	return ( webgl2 ) ? true : false;
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
 x3dom.Utils.findTextureByName = function(texture, name)
 {
 	for ( var i=0; i<texture.length; ++i )

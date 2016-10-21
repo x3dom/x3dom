@@ -66,6 +66,7 @@ x3dom.gfx_webgl = (function () {
 
         for (var i = 0; i < validContextNames.length; i++) {
             try {
+				
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
 
                 //If context creation fails, retry the creation with failIfMajorPerformanceCaveat = false
@@ -108,10 +109,16 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.STD_DERIVATIVES = ctx.getExtension("OES_standard_derivatives");
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
+						x3dom.caps.DEPTH_TEXTURE = ctx.getExtension("WEBGL_depth_texture");
                         x3dom.caps.DEBUGRENDERINFO = ctx.getExtension("WEBGL_debug_renderer_info");
-                        x3dom.caps.DEPTH_TEXTURE = ctx.getExtension("WEBGL_depth_texture");
-                        x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
-
+						x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
+						
+						//Enabled WebGL2 breaks picking if we use the depth_texture extension for the picking fbo
+						if ( x3dom.Utils.isWebGL2Enabled() )
+						{
+							x3dom.caps.DEPTH_TEXTURE = null;
+						}
+                        
                         if ( x3dom.caps.DEBUGRENDERINFO ) {
                             x3dom.caps.UNMASKED_RENDERER_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_RENDERER_WEBGL );
                             x3dom.caps.UNMASKED_VENDOR_WEBGL = ctx.getParameter( x3dom.caps.DEBUGRENDERINFO.UNMASKED_VENDOR_WEBGL );
