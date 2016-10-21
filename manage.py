@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 from __future__ import with_statement
 # -------------------------------------------------------------------
 # NOTE:
@@ -68,9 +69,9 @@ from __future__ import with_statement
 try:
     import argparse
 except:
-    print "\nYou need to install argparse. Please run the following command:"
-    print "on your command line and try again:\n"
-    print "    easy_install argparse\n"
+    print("\nYou need to install argparse. Please run the following command:")
+    print("on your command line and try again:\n")
+    print("    easy_install argparse\n")
     exit()
 
 import os
@@ -143,7 +144,7 @@ def build(mode='production'):
             """
 #            shutil.copy(src, nodes_dest)
         except:
-            print "  Error copying file to %s" % component
+            print("  Error copying file to %s" % component)
     # done with components
     
     # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,8 +178,12 @@ def release(version='snapshot'):
     _zipdir(DIST_ROOT, 'dist/x3dom-%s.zip' % version)
 
 def runserver():
-    import SimpleHTTPServer
-    import SocketServer
+    try:
+        import http.server as SimpleHTTPServer
+        import socketserver as SocketServer
+    except ImportError:
+        import SimpleHTTPServer
+        import SocketServer
 
     print("Starting development server...")
     print("Open your browser and visit http://localhost:8080/")

@@ -1,6 +1,8 @@
 
 def prefix_path(lst, path):
-    return [path + '/' + entry for entry in lst]
+    return [path + '/' + x for entry in lst for y in entry if type(y) == list for x in y]
+    #return [path + '/' + entry for entry in lst]
+
 
 
 def getPathTuples(data):
