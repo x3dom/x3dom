@@ -109,6 +109,10 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 	doc.downloadCount++;
 
 	image.onload = function() {
+		
+		texture.originalWidth  = image.width;
+		texture.originalHeight = image.height;
+		
         if (scale)
 		    image = x3dom.Utils.scaleImage( image );
 
@@ -479,7 +483,8 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
  * Initialize framebuffer object and associated texture(s)
  *****************************************************************************/
 x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
-    var tex = gl.createTexture();
+    
+	var tex = gl.createTexture();
     tex.width  = w;
     tex.height = h;
 
@@ -548,12 +553,13 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
     }
 
     var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+	
     if (status != gl.FRAMEBUFFER_COMPLETE) {
         x3dom.debug.logWarning("[Utils|InitFBO] FBO-Status: " + status);
     }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
+	
     return {
         fbo: fbo, dtex: dtex, rbo: rb,
         tex: tex, texTargets: mrts,

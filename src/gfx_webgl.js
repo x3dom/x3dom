@@ -786,7 +786,7 @@ x3dom.gfx_webgl = (function () {
                 url = bgnd._nameSpace.getURL(url[0]);
 
                 bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.crossOrigin, true, false);
+                    true, bgnd._vf.crossOrigin, false, false);
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 
@@ -1099,6 +1099,22 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+					
+					if ( bgnd._vf.scaling && bgnd._webgl.texture.ready )
+					{
+						var viewport    = new x3dom.fields.SFVec2f(that.canvas.width, that.canvas.height);
+						var texture     = new x3dom.fields.SFVec2f(bgnd._webgl.texture.width, bgnd._webgl.texture.height);
+						var scale       = viewport.divideComponents( texture );
+						var translation = texture.subtract( viewport ).multiply( 0.5 ).divideComponents( texture );
+					}
+					else
+					{
+						var scale       = new x3dom.fields.SFVec2f(1.0, 1.0);
+						var translation = new x3dom.fields.SFVec2f(0.0, 0.0);
+					}
+					
+					sp.scale = scale.toGL();
+					sp.translation = translation.toGL();
                 }
 
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);

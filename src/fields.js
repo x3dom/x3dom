@@ -1509,6 +1509,10 @@ x3dom.fields.SFVec2f.prototype.multiply = function (n) {
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
 };
 
+x3dom.fields.SFVec2f.prototype.divideComponents = function (that) {
+    return new x3dom.fields.SFVec2f(this.x/that.x, this.y/that.y);
+};
+
 x3dom.fields.SFVec2f.prototype.divide = function (n) {
     var denom = n ? (1.0 / n) : 1.0;
     return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom);
