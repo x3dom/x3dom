@@ -595,7 +595,7 @@ x3dom.Utils.isWebGL2Enabled = function()
 {
 	var canvas = document.createElement("canvas");
 	
-	var webgl2 = canvas.getContext("webgl2") || getContext("experimental-webgl2");
+	var webgl2 = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
 	
 	return ( webgl2 ) ? true : false;
 };
