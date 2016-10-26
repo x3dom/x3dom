@@ -657,7 +657,7 @@ x3dom.Viewarea.prototype.showAll = function(axis)
     var viewpoint = scene.getViewpoint();
     var fov = viewpoint.getFieldOfView();
 
-    var dia = max.subtract(min);
+    var dia = max.subtract(min); 
 
     var diaz2 = dia[z] / 2.0, tanfov2 = Math.tan(fov / 2.0);
 
@@ -675,7 +675,7 @@ x3dom.Viewarea.prototype.showAll = function(axis)
 
     if ( x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint) )
     {
-        this.orthoAnimateTo( dist1, Math.abs(viewpoint._vf.fieldOfView[0]) );
+        this.orthoAnimateTo( dist1, Math.abs(viewpoint._fieldOfView[0]) );
         this.animateTo( viewmat, viewpoint );
     }
     else
@@ -718,7 +718,7 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
 
     if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
     {
-        this.orthoAnimateTo( dist, Math.abs(viewpoint._vf.fieldOfView[0]) );
+        this.orthoAnimateTo( dist, Math.abs(viewpoint._fieldOfView[0]) );
         this.animateTo( viewmat, viewpoint );
     }
     else
