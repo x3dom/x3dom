@@ -1251,10 +1251,12 @@ x3dom.Runtime.prototype.getPixelScale = function(){
         return null;
     }
 
-    var left = vp._vf.fieldOfView[0];
-    var bottom = vp._vf.fieldOfView[1];
-    var right = vp._vf.fieldOfView[2];
-    var top = vp._vf.fieldOfView[3];
+    var zoomLevel = vp.getZoom();
+    
+    var left   = zoomLevel[0];
+    var bottom = zoomLevel[1];
+    var right  = zoomLevel[2];
+    var top    = zoomLevel[3];
 
     var x = right - left;
     var y = top - bottom;

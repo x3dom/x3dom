@@ -1109,8 +1109,23 @@ x3dom.gfx_webgl = (function () {
 					
 					if ( bgnd._vf.scaling && bgnd._webgl.texture.ready )
 					{
+                        var ratio       = 1.0;
 						var viewport    = new x3dom.fields.SFVec2f(that.canvas.width, that.canvas.height);
 						var texture     = new x3dom.fields.SFVec2f(bgnd._webgl.texture.width, bgnd._webgl.texture.height);
+                                          
+                        if ( viewport.x > viewport.y )
+                        {
+                            ratio = viewport.x / texture.x
+                            texture.x = viewport.x;
+                            texture.y = texture.y * ratio;
+                        }
+                        else
+                        {
+                            ratio = viewport.y / texture.y
+                            texture.y = viewport.y;
+                            texture.x = texture.x * ratio;
+                        }
+                        
 						var scale       = viewport.divideComponents( texture );
 						var translation = texture.subtract( viewport ).multiply( 0.5 ).divideComponents( texture );
 					}

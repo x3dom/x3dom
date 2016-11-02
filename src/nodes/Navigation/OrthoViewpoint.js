@@ -164,6 +164,10 @@ x3dom.registerNodeType(
                 this._projMatrix = null;   // trigger refresh
                 //this.resetView();
             },
+            
+            getZoom: function( value ) {
+                return this._fieldOfView;
+            },
 
             getProjectionMatrix: function(aspect)
             {
