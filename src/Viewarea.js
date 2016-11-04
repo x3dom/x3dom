@@ -618,10 +618,14 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y, mat)
     return new x3dom.fields.Ray(from, dir);
 };
 
-x3dom.Viewarea.prototype.showAll = function(axis)
+x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation)
 {
     if (axis === undefined)
         axis = "negZ";
+
+    if (updateCenterOfRotation === undefined) {
+        updateCenterOfRotation = false;
+    }
 
     var scene = this._scene;
     scene.updateVolume();
@@ -658,6 +662,12 @@ x3dom.Viewarea.prototype.showAll = function(axis)
     var fov = viewpoint.getFieldOfView();
 
     var dia = max.subtract(min); 
+    var dia2 = dia.multiply(0.5);
+    var center = min.add(dia2);
+
+    if (updateCenterOfRotation) {
+        viewpoint.setCenterOfRotation(center);
+    }
 
     var diaz2 = dia[z] / 2.0, tanfov2 = Math.tan(fov / 2.0);
 

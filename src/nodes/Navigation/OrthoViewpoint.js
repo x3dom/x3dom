@@ -187,8 +187,8 @@ x3dom.registerNodeType(
 					var dist1 = (dia.y / 2.0) / tanfov2 + dia.z;
 					var dist2 = (dia.x / 2.0) / tanfov2 + dia.z;
 					
-					znear = (dist1 > dist2) ? dist1 * -2 : dist2 * -2;
-					zfar = (dist1 > dist2) ? dist1 * 2 : dist2 * 2;
+					znear = 0.1;
+					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
                 }
 				
                 if (this._projMatrix == null || this._lastAspect != aspect ||

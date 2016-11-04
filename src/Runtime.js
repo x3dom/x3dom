@@ -622,10 +622,11 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
  *
  * Parameter:
  *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ *     updateCenterOfRotation - sets the center of rotation to the center of the scene volume
  *
  */
-x3dom.Runtime.prototype.showAll = function(axis) {
-    this.canvas.doc._viewarea.showAll(axis);
+x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
+    this.canvas.doc._viewarea.showAll(axis, updateCenterOfRotation);
 };
 
 /**
