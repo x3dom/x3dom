@@ -531,10 +531,17 @@ x3dom.DefaultNavigation.prototype.resetView = function(view)
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
+		var viewpoint = view._scene.getViewpoint();
+		
         view._mixer.beginTime = view._lastTS;
         view._mixer.endTime = view._lastTS + navi._vf.transitionTime;
 
         view._mixer.setBeginMatrix(view.getViewMatrix());
+		
+		if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+		{
+			this.orthoAnimateTo(view, Math.abs(viewpoint._vf.fieldOfView[0]), Math.abs(viewpoint._fieldOfView[0]));
+		}
 
         var target = view._scene.getViewpoint();
         target.resetView();
@@ -611,7 +618,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
         if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
         {
-            viewpoint.setZoom( Math.abs( viewpoint._vf.fieldOfView[0] ) - vec.z );
+            viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
         }
         else
         {

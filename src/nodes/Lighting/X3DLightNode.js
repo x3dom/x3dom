@@ -191,7 +191,7 @@ x3dom.registerNodeType(
             },
             onRemove: function()
             {
-                console.log("remove");
+                //console.log("remove");
             }
         }
     )

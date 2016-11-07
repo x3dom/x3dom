@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zNear', 0.1);
+            this.addField_SFFloat(ctx, 'zNear', -1);
 
             /**
              * z-far position; used for clipping
@@ -89,11 +89,16 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zFar', 10000);
+            this.addField_SFFloat(ctx, 'zFar', -1);
 
             this._viewMatrix = null;
             this._projMatrix = null;
             this._lastAspect = 1.0;
+			
+			this._zRatio = 10000;
+            this._zNear = this._vf.zNear;
+            this._zFar = this._vf.zFar;
+			this._fieldOfView = this._vf.fieldOfView.slice(0); 
 
             this.resetView();
         
@@ -128,7 +133,9 @@ x3dom.registerNodeType(
 
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
                     mult(this._vf.orientation.toMatrix());
-                this._viewMatrix = this._viewMatrix.mult(offset).inverse();
+                this._viewMatrix = this._viewMatrix.inverse();
+				
+				this._projMatrix = null;
 				
 				//Reset navigation helpers of the viewarea
                 if (this._vf.isActive && this._nameSpace && this._nameSpace.doc._viewarea) {
@@ -143,31 +150,61 @@ x3dom.registerNodeType(
             getFar: function() {
                 return this._vf.zFar;
             },
+            
+            getFieldOfView: function() {
+                return 0.785;
+            },
 
             setZoom: function( value ) {
-                this._vf.fieldOfView[0] = -value;
-                this._vf.fieldOfView[1] = -value;
-                this._vf.fieldOfView[2] =  value;
-                this._vf.fieldOfView[3] =  value;
+                this._fieldOfView[0] = -value;
+                this._fieldOfView[1] = -value;
+                this._fieldOfView[2] =  value;
+                this._fieldOfView[3] =  value;
 
                 this._projMatrix = null;   // trigger refresh
                 //this.resetView();
             },
+            
+            getZoom: function( value ) {
+                return this._fieldOfView;
+            },
 
             getProjectionMatrix: function(aspect)
             {
-                if (this._projMatrix == null || this._lastAspect != aspect)
-                {
-                    var near = this.getNear();
-                    var far = this.getFar();
+				var fov = this.getFieldOfView();
+                var zfar = this._vf.zFar;
+                var znear = this._vf.zNear;
 
-                    var left = this._vf.fieldOfView[0];
-                    var bottom = this._vf.fieldOfView[1];
-                    var right = this._vf.fieldOfView[2];
-                    var top = this._vf.fieldOfView[3];
+                if (znear <= 0 || zfar <= 0)
+                {
+                    var scene = this._nameSpace.doc._viewarea._scene;
+                    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+                    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
+									
+                    var dia = max.subtract(min);					
+					var tanfov2 = Math.tan(fov / 2.0);
+					
+					var dist1 = (dia.y / 2.0) / tanfov2 + dia.z;
+					var dist2 = (dia.x / 2.0) / tanfov2 + dia.z;
+					
+					znear = 0.1;
+					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
+                }
+				
+                if (this._projMatrix == null || this._lastAspect != aspect ||
+				    this._zNear != znear || this._zFar != zfar)
+                {
+                    var near = this._zNear = znear;
+					var far  = this._zFar = zfar; 
+
+                    var left   = this._fieldOfView[0];
+                    var bottom = this._fieldOfView[1];
+                    var right  = this._fieldOfView[2];
+                    var top    = this._fieldOfView[3];
 
                     this._projMatrix = x3dom.fields.SFMatrix4f.ortho(left, right, bottom, top, near, far, aspect);
                 }
+                
                 this._lastAspect = aspect;
 
                 return this._projMatrix;

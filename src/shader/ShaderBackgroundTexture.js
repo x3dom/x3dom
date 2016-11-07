@@ -37,10 +37,12 @@ x3dom.shader.BackgroundTextureShader.prototype.generateVertexShader = function(g
 {
 	var shader = 	"attribute vec3 position;\n" +
 					"varying vec2 fragTexCoord;\n" +
+					"uniform vec2 scale;\n" +
+					"uniform vec2 translation;\n" +
 					"\n" +
 					"void main(void) {\n" +
 					"    vec2 texCoord = (position.xy + 1.0) * 0.5;\n" +
-					"    fragTexCoord = texCoord;\n" +
+					"    fragTexCoord = texCoord * scale + translation;\n" +
 					"    gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
 					"}\n";
 

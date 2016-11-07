@@ -109,6 +109,10 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 	doc.downloadCount++;
 
 	image.onload = function() {
+		
+		texture.originalWidth  = image.width;
+		texture.originalHeight = image.height;
+		
         if (scale)
 		    image = x3dom.Utils.scaleImage( image );
 
@@ -479,7 +483,8 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
  * Initialize framebuffer object and associated texture(s)
  *****************************************************************************/
 x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
-    var tex = gl.createTexture();
+    
+	var tex = gl.createTexture();
     tex.width  = w;
     tex.height = h;
 
@@ -548,12 +553,13 @@ x3dom.Utils.initFBO = function(gl, w, h, type, mipMap, needDepthBuf, numMrt) {
     }
 
     var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+	
     if (status != gl.FRAMEBUFFER_COMPLETE) {
         x3dom.debug.logWarning("[Utils|InitFBO] FBO-Status: " + status);
     }
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-
+	
     return {
         fbo: fbo, dtex: dtex, rbo: rb,
         tex: tex, texTargets: mrts,
@@ -580,6 +586,18 @@ x3dom.Utils.getFileName = function(url)
 	}
 
 	return filename;
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
+x3dom.Utils.isWebGL2Enabled = function()
+{
+	var canvas = document.createElement("canvas");
+	
+	var webgl2 = canvas.getContext("webgl2") || canvas.getContext("experimental-webgl2");
+	
+	return ( webgl2 ) ? true : false;
 };
 
 /*****************************************************************************
@@ -1044,7 +1062,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.MULTISPECSHINMAP = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiSpecularShininessMap()) ? 1 : 0;
         property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
 
-        property.BLENDING         = (property.TEXT || property.CUBEMAP || (texture && texture._blending)) ? 1 : 0;
+        property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
         property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
         property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;
