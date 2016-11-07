@@ -580,6 +580,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             }
 
             doc.needRender = true;
+
         };
 
         var touchStartHandlerMoz = function(evt)
