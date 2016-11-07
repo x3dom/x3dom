@@ -604,8 +604,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            touches.visualizeTouches(evt);
             evt.preventDefault();
+            touches.visualizeTouches(evt);
 
             if (doc == null)
                 doc = this.parent.doc;
@@ -707,8 +707,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         var touchEndHandler = function(evt, doc)
         {
             this.isMulti = false;
-            touches.visualizeTouches(evt);
             evt.preventDefault();
+            touches.visualizeTouches(evt);
 
             if (doc == null)
                 doc = this.parent.doc;
