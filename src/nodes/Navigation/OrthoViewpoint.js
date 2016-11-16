@@ -108,8 +108,12 @@ x3dom.registerNodeType(
                 if (fieldName == "position" || fieldName == "orientation") {
                     this.resetView();
                 }
-                else if (fieldName == "fieldOfView" ||
-                    fieldName == "zNear" || fieldName == "zFar") {
+                else if(fieldName == "fieldOfView")
+                {
+                    this._fieldOfView = this._vf.fieldOfView;
+                    this._projMatrix = null;
+                }
+                else if (fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // trigger refresh
                     this.resetView();
                 }

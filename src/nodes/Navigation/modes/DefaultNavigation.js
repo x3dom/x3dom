@@ -20,6 +20,41 @@ x3dom.DefaultNavigation.prototype.init = function(view, flyTo)
     
 };
 
+x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
+{
+    var navi = this.navi;
+
+    var viewpoint = view._scene.getViewpoint();
+
+    var d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+    d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+
+    vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
+
+    if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+    {
+        viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
+    }
+    else
+    {
+        if ( navi._vf.typeParams.length >= 6 ) {
+
+            var min = -navi._vf.typeParams[ 5 ];
+            var max =  navi._vf.typeParams[ 4 ];
+
+            view._movement.z = Math.min( Math.max( view._movement.z, min ), max );
+
+        }
+
+        view._movement = view._movement.add(vec);
+        mat = view.getViewpointMatrix().mult(view._transMat);
+        //TODO; move real distance along viewing ray
+        view._transMat = mat.inverse().
+                            mult(x3dom.fields.SFMatrix4f.translation(view._movement)).
+                            mult(mat);
+    }
+}
+
 x3dom.DefaultNavigation.prototype.moveForward = function(view)
 {
      var navi = this.navi;
@@ -611,8 +646,8 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     }
     if (buttonState & 2) //right
     {
-            d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
-            d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
+        d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+        d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
         vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/view._height);
 

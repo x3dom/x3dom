@@ -272,6 +272,12 @@ x3dom.Viewarea.prototype.orthoAnimateTo = function( target, prev, duration )
     navi._impl.orthoAnimateTo(this, target, prev, duration);
 };
 
+x3dom.Viewarea.prototype.zoom = function( zoomAmount )
+{
+    var navi = this._scene.getNavigationInfo();
+    navi._impl.zoom(this, zoomAmount);
+};
+
 x3dom.Viewarea.prototype.getLights = function () {
     var enabledLights = [];
     for (var i=0; i<this._doc._nodeBag.lights.length; i++)

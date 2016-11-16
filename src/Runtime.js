@@ -1129,6 +1129,19 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
 };
 
 /**
+ * APIFunction: zoom
+ *
+ *	Modifies the zoom of current viewpoint with the specified zoom value.
+ *
+ * Parameters:
+ *		zoomAmount - The zoom amount
+ *
+ */
+x3dom.Runtime.prototype.zoom = function(zoomAmount) {
+    this.canvas.doc._viewarea.zoom( zoomAmount );  
+};
+
+/**
  * APIFunction: statistics
  *
  * Get or set statistics info. If parameter is omitted, this method
