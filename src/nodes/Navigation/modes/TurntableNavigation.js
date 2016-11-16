@@ -385,7 +385,8 @@ x3dom.TurntableNavigation.prototype.onTouchDrag = function(view, evt, touches, t
         }
         else if(evt.touches.length >= 2)
         {
-            this.pan(view, -translation.x * 4.0, -translation.y * 4.0);
+            if(this.panEnabled == true)
+                this.pan(view, -translation.x * 4.0, -translation.y * 4.0);
             
             this.zoom(view, translation.z * 4.0);
         }
