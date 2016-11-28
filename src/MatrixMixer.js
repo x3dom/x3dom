@@ -13,6 +13,7 @@ x3dom.MatrixMixer = function( beginTime, endTime )
 {
     this.beginTime = beginTime || 0;
     this.endTime = endTime || 1;
+    this.isMixing = false;
 
     this._beginMat = x3dom.fields.SFMatrix4f.identity();
     this._beginInvMat = x3dom.fields.SFMatrix4f.identity();
@@ -62,6 +63,7 @@ x3dom.MatrixMixer.prototype._reset = function()
     this.beginTime = 0;
     this.endTime = 0;
     this._useQuaternion = false;
+    this.isMixing = false;
 };
 
 x3dom.MatrixMixer.prototype.isActive = function()
