@@ -1138,7 +1138,8 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
  *
  */
 x3dom.Runtime.prototype.zoom = function(zoomAmount) {
-    this.canvas.doc._viewarea.zoom( zoomAmount );  
+    this.canvas.doc._viewarea.zoom( zoomAmount );
+    this.canvas.doc.needRender = true;
 };
 
 /**
