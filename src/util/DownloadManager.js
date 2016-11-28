@@ -21,7 +21,7 @@
  */
 
 /// a small Request class
-var Request = function(url, onloadCallback, priority){
+x3dom.Request = function(url, onloadCallback, priority){
 	this.url 	  		     = url;	
 	this.priority 		   = priority;
 	this.xhr 	  		     = new XMLHttpRequest();
@@ -55,7 +55,7 @@ var Request = function(url, onloadCallback, priority){
 };
 
 
-Request.prototype.send = function() {
+x3dom.Request.prototype.send = function() {
 	this.xhr.open('GET', encodeURI(this.url), true); //asynchronous	
 	
 	//at the moment, ArrayBuffer is the only possible return type
@@ -246,9 +246,9 @@ x3dom.DownloadManager = {
           }
         
           if (!found) {
-            r = new Request(url, onloadCallback, priority);
+            r = new x3dom.Request(url, onloadCallback, priority);
             
-            if (this.requests[priority]) {
+            if (this.requests[priority] != undefined) {
               this.requests[priority].push(r);
             }
             else {
@@ -270,9 +270,9 @@ x3dom.DownloadManager = {
         
         for ( var i = 0; i < this.requests.length; i++ )
         {
-            if ( this.requests[ i ] )
+            if ( this.requests[ i ] != undefined )
             {
-                for ( var j = 0; j < this.requests.length; j++ )
+                for ( var j = 0; j < this.requests[ i ].length; j++ )
                 {
                     //Get Request
                     request = this.requests[i][j];
