@@ -112,13 +112,13 @@ x3dom.MatrixMixer.prototype.mix = function( time )
 {
 	if ( time <= this.beginTime )
 	{
-		return x3dom.fields.SFMatrix4f.copy( this._beginLogMat ).exp().mult( this._beginMat );
+		return this._beginMat;
 	}
 	else if ( time >= this.endTime )
 	{
 		this._reset();
 		
-		return x3dom.fields.SFMatrix4f.copy( this._endLogMat ).exp().mult( this._beginMat );
+		return this._endMat;
 	}
 	else
 	{
