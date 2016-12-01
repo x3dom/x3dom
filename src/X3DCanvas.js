@@ -638,7 +638,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                     var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
                     rotMatrix = mx.mult(my);
 
-                    doc.onMoveView(that.gl, null, rotMatrix);
+                    doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
                 }
                 // two fingers: scale, translation, rotation around view (z) axis
                 else if(evt.touches.length >= 2) {
@@ -665,7 +665,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                     touches.lastMiddle = middle;
                     touches.lastSquareDistance = squareDistance;
 
-                    doc.onMoveView(that.gl, deltaMove, rotMatrix);
+                    doc.onMoveView(that.gl, evt, touches, deltaMove, rotMatrix);
                 }
             }
             else if (evt.touches.length) {
