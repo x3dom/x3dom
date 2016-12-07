@@ -3565,7 +3565,14 @@ x3dom.fields.BoxVolume.prototype.getScalarValue = function()
 
 x3dom.fields.BoxVolume.copy = function(other)
 {
-    return new x3dom.fields.BoxVolume(other.min, other.max);
+    var volume = new x3dom.fields.BoxVolume(other.min, other.max);
+    volume.valid = other.valid;
+    return volume;
+};
+
+x3dom.fields.BoxVolume.prototype.equals = function(other)
+{
+    return ( this.min.equals(other.min, 0.000000000001) && this.max.equals( other.max, 0.000000000001) );
 };
 
 x3dom.fields.BoxVolume.prototype.updateInternals = function()
@@ -3630,6 +3637,7 @@ x3dom.fields.BoxVolume.prototype.invalidate = function()
     this.valid = false;
     this.min = new x3dom.fields.SFVec3f(0, 0, 0);
     this.max = new x3dom.fields.SFVec3f(0, 0, 0);
+    this.updateInternals();
 };
 
 x3dom.fields.BoxVolume.prototype.isValid = function()

@@ -66,6 +66,7 @@ x3dom.registerNodeType(
                 localMatrix:  x3dom.fields.SFMatrix4f.identity(),   // usually identity
                 globalMatrix: null,    // new x3dom.fields.SFMatrix4f();
                 volume:       new x3dom.fields.BoxVolume(),     // local bbox
+                lastVolume:   new x3dom.fields.BoxVolume(),     // local bbox
                 worldVolume:  new x3dom.fields.BoxVolume(),     // global bbox
                 center:       new x3dom.fields.SFVec3f(0,0,0),  // center in eye coords
                 coverage:     -1,       // currently approx. number of pixels on screen
@@ -114,6 +115,19 @@ x3dom.registerNodeType(
                     }
                 }
 
+                if ( !vol.equals( this._graph.lastVolume ) )
+                {
+                    this._graph.lastVolume = x3dom.fields.BoxVolume.copy( vol );
+
+                    var event = {
+                        target: this._xmlNode,
+                        type: "volumechanged",   // event only called onxxx if used as old-fashioned attribute
+                        volume: x3dom.fields.BoxVolume.copy( vol )
+                    };
+
+                    this.callEvtHandler("onvolumechanged", event);
+                }
+
                 return vol;
             },
 
@@ -130,7 +144,7 @@ x3dom.registerNodeType(
                 // set parent volumes invalid, too
                 for (var i=0, n=this._parentNodes.length; i<n; i++) {
                     var node = this._parentNodes[i];
-                    if (node && node.volumeValid())
+                    if (node)
                         node.invalidateVolume();
                 }
             },

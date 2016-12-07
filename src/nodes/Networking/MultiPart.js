@@ -151,6 +151,19 @@ x3dom.registerNodeType(
                             vol.extendBounds(childVol.min, childVol.max);
                     }
                 }
+
+                if ( !vol.equals( this._graph.lastVolume ) )
+                {
+                    this._graph.lastVolume = x3dom.fields.BoxVolume.copy( vol );
+
+                    var event = {
+                        target: this._xmlNode,
+                        type: "volumechanged",   // event only called onxxx if used as old-fashioned attribute
+                        volume: x3dom.fields.BoxVolume.copy( vol )
+                    };
+
+                    this.callEvtHandler("onvolumechanged", event);
+                }
                 
                 return vol;
             },
