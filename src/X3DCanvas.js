@@ -1328,34 +1328,14 @@ x3dom.X3DCanvas.prototype._createProgressDiv = function() {
 /** Helper that converts a point from node coordinates to page coordinates
  FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
  */
-x3dom.X3DCanvas.prototype.mousePosition = function(evt)
+x3dom.X3DCanvas.prototype.mousePosition = function( evt )
 {
-    var x = 0, y = 0;
+    var rect = evt.target.getBoundingClientRect();
 
-    if ( "getBoundingClientRect" in document.documentElement ) {
-        var elem = evt.target.offsetParent;    // should be x3dElem
-        var box = elem.getBoundingClientRect();
+    var offsetX = Math.round( evt.clientX - rect.left ) * this.devicePixelRatio;
+    var offsetY = Math.round( evt.clientY - rect.top  ) * this.devicePixelRatio;
 
-        var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        var scrollTop  = window.pageYOffset || document.documentElement.scrollTop;
-
-        var compStyle = document.defaultView.getComputedStyle(elem, null);
-
-        var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
-        var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
-
-        var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
-        var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
-
-        x = Math.round( evt.pageX - ( box.left + paddingLeft + borderLeftWidth + scrollLeft ) );
-        y = Math.round( evt.pageY - ( box.top  + paddingTop  + borderTopWidth  + scrollTop  ) );
-    }
-    else {
-        x3dom.debug.logError('NO getBoundingClientRect');
-    }
-
-
-    return new x3dom.fields.SFVec2f(x*this.devicePixelRatio, y*this.devicePixelRatio);
+    return new x3dom.fields.SFVec2f( offsetX, offsetY );
 };
 
 //----------------------------------------------------------------------------------------------------------------------

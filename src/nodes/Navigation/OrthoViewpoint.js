@@ -191,7 +191,7 @@ x3dom.registerNodeType(
 					var dist1 = (dia.y / 2.0) / tanfov2 + dia.z;
 					var dist2 = (dia.x / 2.0) / tanfov2 + dia.z;
 					
-					znear = 0.1;
+					znear = 0.00001;
 					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
                 }
 				
