@@ -1281,3 +1281,46 @@ x3dom.Runtime.prototype.getPixelScale = function(){
 
     return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
 };
+
+x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
+{
+    var dist;
+    var factor = 2.2;
+    var runtime = document.getElementById("x3d").runtime;
+    var navInfo = runtime.canvas.doc._scene.getNavigationInfo();
+    var speed = navInfo._vf.transitionTime;
+    var persp = document.getElementById(perspViewID)._x3domNode;
+    var ortho = document.getElementById(orthoViewID)._x3domNode;
+
+    navInfo._vf.transitionTime = 0;
+
+    ortho._bindAnimation = false;
+    persp._bindAnimation = false;
+
+    if (persp._vf.isActive) {
+        ortho._viewMatrix = persp._viewMatrix;
+
+        document.getElementById(orthoViewID).setAttribute("set_bind", "true");
+
+        dist = persp._viewMatrix.e3().length() / factor;
+
+        ortho.setZoom(dist);
+    }
+    else if (ortho._vf.isActive) {
+        persp._viewMatrix = ortho._viewMatrix;
+
+        document.getElementById(perspViewID).setAttribute("set_bind", "true");
+
+        dist = ortho._fieldOfView[2] * factor;
+        var translation = ortho._viewMatrix.e3().normalize().multiply(dist);
+
+        persp._viewMatrix.setTranslate(translation);
+    }
+
+    navInfo._vf.transitionTime = speed;
+
+    ortho._bindAnimation = true;
+    persp._bindAnimation = true;
+
+    return (persp._vf.isActive) ? 0 : 1;
+};

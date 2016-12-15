@@ -63,6 +63,7 @@ x3dom.registerNodeType(
 
             // Bindable stack to register node later on
             this._stack = null;
+            this._bindAnimation = true;
         
         },
         {

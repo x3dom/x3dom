@@ -58,7 +58,7 @@ x3dom.registerNodeType(
         {
             activate: function (prev) {
                 var viewarea = this._nameSpace.doc._viewarea;
-                if (prev) {
+                if (prev && this._bindAnimation) {
                     viewarea.animateTo(this, prev._autoGen ? null : prev);
                 }
                 viewarea._needNavigationMatrixUpdate = true;

@@ -747,7 +747,7 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
 
     if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
     {
-        this.orthoAnimateTo( dist, Math.abs(viewpoint._fieldOfView[0]) );
+        this.orthoAnimateTo( dist / 2.01, Math.abs(viewpoint._fieldOfView[0]) );
         this.animateTo( viewmat, viewpoint );
     }
     else
