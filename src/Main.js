@@ -9,92 +9,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-x3dom.detectActiveX = function() {
-    var isInstalled = false;  
-    
-    if (window.ActiveXObject)  {  
-        var control = null;  
-
-        try  {  
-            control = new ActiveXObject('AVALONATX.InstantPluginATXCtrl.1');  
-        } catch (e) {
-        }  
-        
-        if (control) {
-            isInstalled = true;  
-        }
-    }
-    
-    return isInstalled;
-};
-
-x3dom.rerouteSetAttribute = function(node, browser) {
-    // save old setAttribute method
-    node._setAttribute = node.setAttribute;
-    node.setAttribute = function(name, value) {
-        var id = node.getAttribute("_x3domNode");
-        var anode = browser.findNode(id);
-        
-        if (anode)
-            return anode.parseField(name, value);
-        else
-            return 0;
-    };
-
-    for(var i=0; i < node.childNodes.length; i++) {
-        var child = node.childNodes[i];
-        x3dom.rerouteSetAttribute(child, browser);
-    }
-};
-
-x3dom.insertActiveX = function(x3d) {
-    
-    if (typeof x3dom.atxCtrlCounter == 'undefined') {
-        x3dom.atxCtrlCounter = 0;
-    }
- 
-    var height = x3d.getAttribute("height");
-    var width  = x3d.getAttribute("width");
-
-    var parent = x3d.parentNode;
-    
-    var divelem = document.createElement("div");
-    divelem.setAttribute("id", "x3dplaceholder");
-
-    var inserted = parent.insertBefore(divelem, x3d);
-    
-    // hide x3d div
-    var hiddenx3d = document.createElement("div");
-    hiddenx3d.style.display = "none";
-    parent.appendChild(hiddenx3d);
-    parent.removeChild(x3d);
-    hiddenx3d.appendChild(x3d);
-     
-    var atx = document.createElement("object");
-    
-    var containerName = "Avalon" + x3dom.atxCtrlCounter;
-    x3dom.atxCtrlCounter++;
-    
-    atx.setAttribute("id", containerName);
-    atx.setAttribute("classid", "CLSID:F3254BA0-99FF-4D14-BD81-EDA9873A471E");
-    atx.setAttribute("width",   width   ? width     : "500");
-    atx.setAttribute("height",  height  ? height    : "500");
-    
-    inserted.appendChild(atx);
-    
-    var atxctrl = document.getElementById(containerName);
-    var browser = atxctrl.getBrowser();
-    var scene   = browser.importDocument(x3d);
-    browser.replaceWorld(scene);
-        
-    // add backtrack method to get browser from x3d node instead of the ctrl
-    x3d.getBrowser = function() {
-        return atxctrl.getBrowser();
-    };
-    
-    x3dom.rerouteSetAttribute(x3d, browser);
-};
-
 // holds the UserAgent feature
 x3dom.userAgentFeature = {
     supportsDOMAttrModified: false
@@ -187,7 +101,6 @@ x3dom.userAgentFeature = {
                 }
             }
         }
-        // }}}
 		
 		if (showLoggingConsole == true) {
 			x3dom.debug.activate(true);
@@ -201,13 +114,6 @@ x3dom.userAgentFeature = {
             return n;
         });
 
-        var w3sg = document.getElementsByTagName('webSG');	// THINKABOUTME: shall we still support exp. WebSG?!
-
-        for (i=0; i<w3sg.length; i++) {
-            w3sg[i].hasRuntime = false;
-            x3ds.push(w3sg[i]);
-        }
-
         if (x3dom.versionInfo !== undefined) {
             x3dom.debug.logInfo("X3DOM version " + x3dom.versionInfo.version + ", " +
                                 "Revison <a href='https://github.com/x3dom/x3dom/tree/"+ x3dom.versionInfo.revision +"'>"
@@ -215,8 +121,7 @@ x3dom.userAgentFeature = {
                                 "Date " + x3dom.versionInfo.date);
         }
         
-        x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + " X3D and " + 
-                            w3sg.length + " (experimental) WebSG nodes...");
+        x3dom.debug.logInfo("Found " + x3ds.length + " X3D and nodes...");
         
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
@@ -228,12 +133,6 @@ x3dom.userAgentFeature = {
         for (i=0; i < x3ds.length; i++)
         {
             x3d_element = x3ds[i];
-
-            // http://www.howtocreate.co.uk/wrongWithIE/?chapter=navigator.plugins
-            if (x3dom.detectActiveX()) {
-                x3dom.insertActiveX(x3d_element);
-                continue;
-            }
 
             x3dcanvas = new x3dom.X3DCanvas(x3d_element, x3dom.canvases.length);
 
@@ -328,61 +227,6 @@ x3dom.userAgentFeature = {
     x3dom.reload = function() {
         onload();
     };
-	
-    /* FIX PROBLEM IN CHROME - HACK - searching for better solution !!! */
-	if (navigator.userAgent.indexOf("Chrome") != -1) {
-		document.__getElementsByTagName = document.getElementsByTagName;
-		
-		document.getElementsByTagName = function(tag) {
-			var obj = [];
-			var elems = this.__getElementsByTagName("*");
-
-			if(tag =="*"){
-				obj = elems;
-			} else {
-				tag = tag.toUpperCase();
-				for (var i = 0; i < elems.length; i++) {
-					var tagName = elems[i].tagName.toUpperCase();		
-					if (tagName === tag) {
-						obj.push(elems[i]);
-					}
-				}
-			}
-			
-            return obj;
-        };
-
-		document.__getElementById = document.getElementById;
-        document.getElementById = function(id) {
-            var obj = this.__getElementById(id);
-            
-            if (!obj) {
-                var elems = this.__getElementsByTagName("*");
-                for (var i=0; i<elems.length && !obj; i++) {
-                    if (elems[i].getAttribute("id") === id) {
-                        obj = elems[i];
-                    }
-                }
-            }
-            return obj;
-        };
-		
-	} else { /* END OF HACK */
-        document.__getElementById = document.getElementById;
-        document.getElementById = function(id) {
-            var obj = this.__getElementById(id);
-            
-            if (!obj) {
-                var elems = this.getElementsByTagName("*");
-                for (var i=0; i<elems.length && !obj; i++) {
-                    if (elems[i].getAttribute("id") === id) {
-                        obj = elems[i];
-                    }
-                }
-            }
-            return obj;
-        };
-	}
     
     if (window.addEventListener)  {
         window.addEventListener('load', onload, false);
