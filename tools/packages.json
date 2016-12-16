@@ -7,6 +7,7 @@
                 {"path": "debug.js"},
                 {"path": "util/AdaptiveRenderControl.js"},
                 {"path": "util/DownloadManager.js"},
+                {"path": "util/RequestManager.js"},
                 {"path": "util/MultiMaterial.js"},
                 {"path": "util/Parts.js"},
                 {"path": "util/Properties.js"},

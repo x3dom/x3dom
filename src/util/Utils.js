@@ -214,7 +214,8 @@ x3dom.Utils.createCompressedTexture2D = function(gl, doc, src, bgnd, crossOrigin
   };
 
   doc.downloadCount++;
-  ddsXhr.send(null);
+  //ddsXhr.send(null);
+  x3dom.RequestManager.addRequest(ddsXhr);
 
   return texture;
 };
@@ -246,7 +247,8 @@ x3dom.Utils.tryCompressedTexture2D = function(texture, gl, doc, src, bgnd, cross
       cb(false);
   };
 
-  ddsXhr.send(null);
+  //ddsXhr.send(null);
+  x3dom.RequestManager.addRequest(ddsXhr);
 };
 
 

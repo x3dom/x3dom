@@ -94,7 +94,8 @@ x3dom.registerNodeType(
 
                 xhr.responseType = "arraybuffer";
 
-                xhr.send(null);
+                //xhr.send(null);
+                x3dom.RequestManager.addRequest(xhr);
 
                 xhr.onerror = function() {
                     x3dom.debug.logError("Unable to load SRC data from URL \"" + that._vf['url'][that._currentURLIdx] + "\"");

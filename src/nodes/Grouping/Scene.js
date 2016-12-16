@@ -103,7 +103,8 @@ x3dom.registerNodeType(
                 var xhr = new XMLHttpRequest();
 
                 xhr.open("GET", this._nameSpace.getURL(this._vf.shadowObjectIdMapping), true);
-                xhr.send();
+                //xhr.send();
+                x3dom.RequestManager.addRequest(xhr);
 
                 xhr.onload = function()
                 {
