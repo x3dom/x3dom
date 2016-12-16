@@ -633,7 +633,7 @@ x3dom.registerNodeType(
             {
                 if (fieldName != "coord" && fieldName != "normal" &&
                     fieldName != "texCoord" && fieldName != "color" &&
-                    fieldName != "coordIndex")
+                    fieldName != "coordIndex" && !fieldName.startsWith("attrib_"))
                 {
                     x3dom.debug.logWarning("IndexedFaceSet: fieldChanged for " +
                         fieldName + " not yet implemented!");
@@ -791,8 +791,21 @@ x3dom.registerNodeType(
                         hasColor = false;
                     }
                     this._mesh._numColComponents = numColComponents;
+                    if (fieldName.startsWith("attrib")) {
+                        var attrName = fieldName.slice(7);
+                        var attrNode = this._cf.attrib.nodes.find(
+                            function (a) {return a._vf.name == attrName;}
+                        );
+                        if (attrNode) {
+                            var attr_data = attrNode._vf.value;
+                            var attr_numComp = attrNode._vf.numComponents;
+                            var hasAttributes = this._mesh._dynamicFields[attrName] !== undefined;
+                            this._mesh._dynamicFields[attrName].numComponents = attr_numComp;
+                            this._mesh._dynamicFields[attrName].value = [];
+                        }
+                    }
 
-                    var i, j, t, cnt, faceCnt;
+                    var i, j, k, t, cnt, faceCnt;
                     var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                     if(this._vf.convex) {
@@ -865,8 +878,6 @@ x3dom.registerNodeType(
                                     else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
                                     else if (colPerVert) { c2 = p2; }
                                     else { c2 = faceCnt; }
-                                    t = 3;
-
                                     //this._mesh._indices[0].push(cnt++, cnt++, cnt++);
 
                                     this._mesh._positions[0].push(positions[p0].x);
@@ -932,10 +943,16 @@ x3dom.registerNodeType(
                                             this._mesh._texCoords[0].push(texCoords[t2].z);
                                         }
                                     }
-
-                                    //faceCnt++;
-                                    break;
-                                case 3:
+                                    if (hasAttributes) {
+                                        var pInd = [p0,p1,p2];
+                                        for (j=0;j<3;j++) {
+                                            for (k = 0; k < attr_numComp; k++){
+                                                this._mesh._dynamicFields[attrName].value.push(
+                                                    attr_data[attr_numComp*pInd[j]+k]
+                                                );
+                                            }
+                                        }
+                                    }
                                     p1 = p2;
                                     t1 = t2;
                                     if (normPerVert) {
@@ -943,99 +960,6 @@ x3dom.registerNodeType(
                                     }
                                     if (colPerVert) {
                                         c1 = c2;
-                                    }
-                                    p2 = +indexes[i];
-
-                                    if (hasNormalInd && normPerVert) {
-                                        n2 = +normalInd[i];
-                                    } else if (hasNormalInd && !normPerVert) {
-                                        /*n2 = +normalInd[faceCnt];*/
-                                    } else if (normPerVert) {
-                                        n2 = p2;
-                                    } else {
-                                        n2 = faceCnt;
-                                    }
-
-                                    if (hasTexCoordInd) {
-                                        t2 = +texCoordInd[i];
-                                    } else {
-                                        t2 = p2;
-                                    }
-
-                                    if (hasColorInd && colPerVert) {
-                                        c2 = +colorInd[i];
-                                    } else if (hasColorInd && !colPerVert) {
-                                        /*c2 = +colorInd[faceCnt];*/
-                                    } else if (colPerVert) {
-                                        c2 = p2;
-                                    } else {
-                                        c2 = faceCnt;
-                                    }
-
-                                    //this._mesh._indices[0].push(cnt++, cnt++, cnt++);
-
-                                    this._mesh._positions[0].push(positions[p0].x);
-                                    this._mesh._positions[0].push(positions[p0].y);
-                                    this._mesh._positions[0].push(positions[p0].z);
-                                    this._mesh._positions[0].push(positions[p1].x);
-                                    this._mesh._positions[0].push(positions[p1].y);
-                                    this._mesh._positions[0].push(positions[p1].z);
-                                    this._mesh._positions[0].push(positions[p2].x);
-                                    this._mesh._positions[0].push(positions[p2].y);
-                                    this._mesh._positions[0].push(positions[p2].z);
-
-                                    if (hasNormal) {
-                                        this._mesh._normals[0].push(normals[n0].x);
-                                        this._mesh._normals[0].push(normals[n0].y);
-                                        this._mesh._normals[0].push(normals[n0].z);
-                                        this._mesh._normals[0].push(normals[n1].x);
-                                        this._mesh._normals[0].push(normals[n1].y);
-                                        this._mesh._normals[0].push(normals[n1].z);
-                                        this._mesh._normals[0].push(normals[n2].x);
-                                        this._mesh._normals[0].push(normals[n2].y);
-                                        this._mesh._normals[0].push(normals[n2].z);
-                                    }
-                                    //else {
-                                    this._mesh._multiIndIndices.push(p0, p1, p2);
-                                    //}
-
-                                    if (hasColor) {
-                                        this._mesh._colors[0].push(colors[c0].r);
-                                        this._mesh._colors[0].push(colors[c0].g);
-                                        this._mesh._colors[0].push(colors[c0].b);
-                                        if (numColComponents === 4) {
-                                            this._mesh._colors[0].push(colors[c0].a);
-                                        }
-                                        this._mesh._colors[0].push(colors[c1].r);
-                                        this._mesh._colors[0].push(colors[c1].g);
-                                        this._mesh._colors[0].push(colors[c1].b);
-                                        if (numColComponents === 4) {
-                                            this._mesh._colors[0].push(colors[c1].a);
-                                        }
-                                        this._mesh._colors[0].push(colors[c2].r);
-                                        this._mesh._colors[0].push(colors[c2].g);
-                                        this._mesh._colors[0].push(colors[c2].b);
-                                        if (numColComponents === 4) {
-                                            this._mesh._colors[0].push(colors[c2].a);
-                                        }
-                                    }
-
-                                    if (hasTexCoord) {
-                                        this._mesh._texCoords[0].push(texCoords[t0].x);
-                                        this._mesh._texCoords[0].push(texCoords[t0].y);
-                                        if (numTexComponents === 3) {
-                                            this._mesh._texCoords[0].push(texCoords[t0].z);
-                                        }
-                                        this._mesh._texCoords[0].push(texCoords[t1].x);
-                                        this._mesh._texCoords[0].push(texCoords[t1].y);
-                                        if (numTexComponents === 3) {
-                                            this._mesh._texCoords[0].push(texCoords[t1].z);
-                                        }
-                                        this._mesh._texCoords[0].push(texCoords[t2].x);
-                                        this._mesh._texCoords[0].push(texCoords[t2].y);
-                                        if (numTexComponents === 3) {
-                                            this._mesh._texCoords[0].push(texCoords[t2].z);
-                                        }
                                     }
 
                                     //faceCnt++;
@@ -1147,6 +1071,7 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setGeoDirty();
+                        if (hasAttributes) node._dirty.specialAttribs = true;
                     });
                 }
                 else {

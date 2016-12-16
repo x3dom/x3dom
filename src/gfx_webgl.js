@@ -413,8 +413,30 @@ x3dom.gfx_webgl = (function () {
                                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(szArr), gl.STATIC_DRAW);
                             }
 
-                            shape._dirty.specialAttribs = false;
                         }
+                        // Special attribs is FloatVertexAttribute
+                        var AttribNodes = geoNode._mesh._dynamicFields;
+                        var attribNode, attribName;
+                        for (attribName in  AttribNodes) {
+                            attribNode = AttribNodes[attribName];
+                            if (attribNode !== undefined && attribNode.value.length) {
+                                // Remove old attribute buffer
+                                var attribs = new Float32Array(attribNode.value);
+                                var attribWebGLNode = shape._webgl.dynamicFields.find(
+                                    function(a){ return a.name == attribName;});
+                                if (!attribWebGLNode) continue;
+                                if (attribWebGLNode.buf.toString() == "[object WebGLBuffer]")
+                                    gl.deleteBuffer(attribWebGLNode.buf);
+                                gl.deleteBuffer(attribWebGLNode.buf);
+                                attribWebGLNode.buf = gl.createBuffer();
+
+                                gl.bindBuffer(gl.ARRAY_BUFFER, attribWebGLNode.buf);
+                                gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);
+
+                                attribs = null;
+                            }
+                        }
+                        shape._dirty.specialAttribs = false;
                         // Maybe other special attribs here, though e.g. AFAIK only BG (which not handled here) has ids.
                     }
                 }
@@ -2072,6 +2094,18 @@ x3dom.gfx_webgl = (function () {
         else {
             sp.bgPrecisionNorMax = 1;
         }
+
+        var n = s_geo._cf.customAttributes.nodes.length;
+        var node,j, uniform, name;
+        for (i=0; i<n ; i++){
+            node = s_geo._cf.customAttributes.nodes[i];
+            for (j=0; j < node._cf.uniforms.nodes.length; j++){
+                uniform = node._cf.uniforms.nodes[j];
+                name = uniform._vf.name;
+                sp[uniform._vf.name] = uniform._vf.value;
+            }
+        }
+
 
         if (s_gl.imageGeometry != 0) {
             sp.IG_bboxMin = s_geo.getMin().toGL();

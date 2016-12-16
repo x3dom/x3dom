@@ -114,6 +114,7 @@
                     {"file": "Color.js"},
                     {"file": "ColorRGBA.js"},
                     {"file": "ParticleSet.js"},
+                    {"file": "CustomAttributeNode.js"},
                     {"file": "ClipPlane.js"}
                 ]},
                 {"name": "Shape", "filePrefix": "nodes/Shape/", "files":[
@@ -231,6 +232,7 @@
                 ]},
                 {"name": "Shaders", "filePrefix": "nodes/Shaders/", "files":[
                     {"file": "Uniform.js"},
+                    {"file": "Varying.js"},
                     {"file": "SurfaceShaderTexture.js"},
                     {"file": "X3DShaderNode.js"},
                     {"file": "CommonSurfaceShader.js"},
