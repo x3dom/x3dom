@@ -2681,6 +2681,8 @@ x3dom.gfx_webgl = (function () {
                     gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
                 }
                 else {
+                    gl.enable( gl.POLYGON_OFFSET_FILL );
+                    gl.polygonOffset( 1.0, 1.0 )
                     gl.drawElements(s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
                 }
             }
