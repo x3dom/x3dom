@@ -57,9 +57,8 @@
 
         {"group": "GFX",
             "data": [
-		{"path": "SSAO.js", "type": "file"},
-                {"path": "gfx_webgl.js"},
-                {"path": "gfx_flash.js"}
+		        {"path": "SSAO.js", "type": "file"},
+                {"path": "gfx_webgl.js"}
             ]},
 
 

@@ -146,22 +146,15 @@ def build(mode='production'):
         except:
             print("  Error copying file to %s" % component)
     # done with components
-    
-    # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    dist_docs = os.path.join(DIST_ROOT, 'docs')
-    if not os.path.exists(dist_docs):
-        os.makedirs(dist_docs)
 
     print("\nCopying additional files")
     shutil.copy('README.md', DIST_ROOT)
     shutil.copy('LICENSE', DIST_ROOT)
-    shutil.copy('CHANGELOG', DIST_ROOT)
+    shutil.copy('RELEASENOTES.rst', DIST_ROOT)
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
     shutil.copy(LIB_ROOT + '/dash.all.js', DIST_ROOT)
     shutil.copy(LIB_ROOT + '/ammo.js', DIST_ROOT)
-    #shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
     # end other files
 
 def _build_examples():
