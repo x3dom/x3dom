@@ -1084,6 +1084,39 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
+        property.CUSTOM_ATTR = [];
+        for (var i = 0, n = geometry._cf.attrib.nodes.length; i < n ; i++) {
+            property.CUSTOM_ATTR.push({
+                "name": geometry._cf.attrib.nodes[i]._vf.name,
+                "numComponents":geometry._cf.attrib.nodes[i]._vf.numComponents});
+        }
+        property.CUSTOM_ATTRIBUTES = {
+            "vertexShaderPartInit":"",   "vertexShaderPartMain":"",
+            "fragmentShaderPartInit":"", "fragmentShaderPartMain":""
+        };
+        var j, uniform, varying;
+        for (i = 0, n = geometry._cf.customAttributes.nodes.length; i < n ; i++) {
+            var shaders = geometry._cf.customAttributes.nodes[i];
+            for (j = 0; j< shaders._cf.uniforms.nodes.length; j++){
+                uniform = shaders._cf.uniforms.nodes[j]._vf;
+                property.CUSTOM_ATTRIBUTES.vertexShaderPartInit +=
+                    "uniform "+uniform.type+" "+uniform.name+"; ";
+                property.CUSTOM_ATTRIBUTES.fragmentShaderPartInit +=
+                    "uniform "+uniform.type+" "+uniform.name+"; ";
+            }
+            for (j = 0; j< shaders._cf.varyings.nodes.length; j++){
+                varying = shaders._cf.varyings.nodes[j]._vf;
+                property.CUSTOM_ATTRIBUTES.vertexShaderPartInit +=
+                    "varying "+varying.type+" "+varying.name+"; ";
+                property.CUSTOM_ATTRIBUTES.fragmentShaderPartInit +=
+                    "varying "+varying.type+" "+varying.name+";";
+            }
+            property.CUSTOM_ATTRIBUTES.vertexShaderPartMain +=
+                shaders._vf.vertexShaderPartMain;
+            property.CUSTOM_ATTRIBUTES.fragmentShaderPartMain +=
+                shaders._vf.fragmentShaderPartMain;
+        }
+
         //console.log(property);
 	}
 

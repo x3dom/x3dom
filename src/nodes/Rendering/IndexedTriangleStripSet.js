@@ -12,7 +12,7 @@ x3dom.registerNodeType(
     "IndexedTriangleStripSet",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
-        
+
         /**
          * Constructor for IndexedTriangleStripSet
          * @constructs x3dom.nodeTypes.IndexedTriangleStripSet
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
 
             this._hasIndexOffset = false;
             this._indexOffset = null;
-        
+
         },
         {
             hasIndexOffset: function() {
@@ -329,7 +329,8 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 if (fieldName != "coord" && fieldName != "normal" &&
-                    fieldName != "texCoord" && fieldName != "color")
+                    fieldName != "texCoord" && fieldName != "color" &&
+                    !fieldName.startsWith("attrib"))
                 {
                     x3dom.debug.logWarning("IndexedTriangleStripSet: fieldChanged for " +
                         fieldName + " not yet implemented!");
@@ -760,6 +761,52 @@ x3dom.registerNodeType(
                             node._dirty.texcoords = true;
                         });
                     }
+                    if (fieldName.startsWith("attrib")) {
+                        var indexes = this._vf.index;
+                        var attrName = fieldName.slice(7);
+                        var attrNode = this._cf.attrib.nodes.find(
+                            function (a) {return a._vf.name == attrName;}
+                        );
+                        var attr_data= attrNode._vf.value;
+                        var attr_numComp= attrNode._vf.numComponents;
+                        var hasAttributes = this._mesh._dynamicFields[attrName];
+                        this._mesh._dynamicFields[attrName].numComponents = attr_numComp;
+
+                        var count = 0;
+                        var index = [0, 0, 0];
+                        this._mesh._dynamicFields[attrName].value = [];
+                        for (i=0; i < indexes.length; ++i)
+                        {
+                            switch (count) {
+                            case 0:
+                                index[0] = indexes[i]*attr_numComp;
+                                count++;
+                                break;
+                            case 1:
+                                index[1] = indexes[i]*attr_numComp;
+                                count++;
+                                break;
+                            case -1:
+                                count = 0;
+                                break;
+                            default:
+                                index[2] = indexes[i]*attr_numComp;
+                                for (var l=0; l< 3; l++)
+                                    for (var k=0; k< attr_numComp; k++) {
+                                        this._mesh._dynamicFields[attrName].value.push(
+                                            attr_data[index[l]+k]);
+                                    }
+                                if (count % 2 )
+                                    index[0]= index[1], index[1] = index[2];
+                                else index[0] = index[2];
+                                count = indexes[i+1] ==-1? -1: count+1;
+                                break;
+                            }
+                        }
+                        Array.forEach(this._parentNodes, function (node) {
+                            node._dirty.specialAttribs = true;
+                        });
+                    }
                 }
                 else
                 {
@@ -859,6 +906,22 @@ x3dom.registerNodeType(
 
                         Array.forEach(this._parentNodes, function (node) {
                             node._dirty.texcoords = true;
+                        });
+                    }
+                    else if (fieldName.startsWith("attrib"))
+                    {
+                        attrName = fieldName.slice(7);
+                        attrNode = this._cf.attrib.nodes.find(
+                            function (a) {return a._vf.name == attrName;}
+                        );
+                        attr_data= attrNode._vf.value;
+                        attr_numComp= attrNode._vf.numComponents;
+
+                        this._mesh._dynamicFields[attrName].numComponents = attr_numComp;
+                        this._mesh._dynamicFields[attrName].value= attr_data.toGL();
+
+                        Array.forEach(this._parentNodes, function (node) {
+                            node._dirty.specialAttribs = true;
                         });
                     }
                 }
