@@ -8,20 +8,67 @@
             <scene>
                 <Transform>
                     <NavigationInfo headlight="true"></NavigationInfo>
+
                     <SpotLight ambientIntensity='0' attenuation='1,0,0' beamWidth='1.5707963' color='1,1,1' cutOffAngle='1.5707963' direction='0,0,-1' global='true' intensity='1' location='2,2,2' on='true' radius='100' ></SpotLight>
+
                     <Viewpoint zNear="0.01" zFar="100"></Viewpoint>
 
-                    <Transform translation="0 0 -3">
-                        <Shape id="exgeom">
-                            <Appearance>
-                                <Material diffuseColor="0.4 0.1 0.1" ></Material>
-                            </Appearance>
-                            <ExternalGeometry solid="false" url="CesiumMilkTruck.glb" ></ExternalGeometry>
-                        </Shape>
-                    </Transform>
 
-                    <Transform>
-                        <ExternalShape id="exshape" url="CesiumMilkTruck.glb"></ExternalShape>
+                    <!-- EXTERNAL GEOMETRY (X3DOM MILKTRUCK) -->
+
+                	<Transform translation="0 0 -3">
+	 					<!-- Front Wheels -->
+	                    <Transform rotation="0 0 -0.0884856 0.996077" translation="1.43267 0.427722 -2.98023e-008">
+	                        <Shape>
+		                        <Appearance>
+		                        	<ImageTexture url="X3DOMMilkTruck.png"></ImageTexture>
+		                            <Material diffuseColor="0.4 0.1 0.1" ></Material>
+	                            </Appearance>
+		                        <ExternalGeometry id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh001"></ExternalGeometry>
+	                        </Shape>
+	                    </Transform>
+
+	                    <!-- Rear Wheels -->
+	                    <Transform rotation="0 0 -0.0884856 0.996077" translation="-1.35233 0.427722 -2.98023e-008">
+	                        <Shape>
+		                        <Appearance>
+		                        	<ImageTexture url="X3DOMMilkTruck.png"></ImageTexture>
+		                            <Material diffuseColor="0.4 0.1 0.1" ></Material>
+	                            </Appearance>
+		                        <ExternalGeometry id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh001"></ExternalGeometry>
+	                        </Shape>
+	                    </Transform>
+
+	                    <!-- Truck Body -->
+	                    <Transform>
+	                    	<Shape>	                    	
+		                        <Appearance>
+		                        	<ImageTexture url="X3DOMMilkTruck.png"></ImageTexture>
+		                            <Material diffuseColor="0.4 0.1 0.1" ></Material>
+	                            </Appearance>
+		                        <ExternalGeometry id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh002"></ExternalGeometry>
+	                        </Shape>
+	                    </Transform>
+					</Transform>
+
+
+					<!-- EXTERNAL SHAPE (CESIUM MILKTRUCK) -->
+
+					<Transform translation="0 0 3">
+						<!-- Front Wheels -->
+	                    <Transform rotation="0 0 -0.0884856 0.996077" translation="1.43267 0.427722 -2.98023e-008">
+	                        <ExternalShape id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh001"></ExternalShape>
+	                    </Transform>
+
+	                    <!-- Rear Wheels -->
+	                    <Transform rotation="0 0 -0.0884856 0.996077" translation="-1.35233 0.427722 -2.98023e-008">
+	                        <ExternalShape id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh001"></ExternalShape>
+	                    </Transform>
+
+	                    <!-- Truck Body -->
+	                    <Transform>
+	                        <ExternalShape id="exshape" url="CesiumMilkTruck.glb#Geometry-mesh002"></ExternalShape>
+	                    </Transform>
                     </Transform>
 
                 </Transform>                
