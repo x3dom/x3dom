@@ -3,6 +3,19 @@
 Release notes
 =============
 
+Version 1.7.2
+-------------
+
+* Secure X3DOM delivery over HTTPS.
+* New RequestManager for all X3DOM related downloads.
+* Stop Flash support and remove the Flash-backend.
+* Added basic glTF Binary (GLB) support to the ExternalShape-Node.
+* General Navigation and Turntable improvements.
+* Exposed canvas event handlers.
+* Added compatibility with python 3 and 2 for manage.py.
+* New GeoLOD-Node.
+* and many small other fixes and enhancements.
+
 Version 1.7.1
 -------------
 
