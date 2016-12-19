@@ -203,8 +203,10 @@ x3dom.releaseFieldRef = function(fieldName)
 };
 
 
-x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
+x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
     var n = null;
+
+    parent = parent || null;
 
     if (x3dom.isX3DElement(domNode)) {
 
@@ -369,7 +371,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 // call children
                 var that = this;
                 Array.forEach ( domNode.childNodes, function (childDomNode) {
-                    var c = that.setupTree(childDomNode);
+                    var c = that.setupTree(childDomNode, n);
                     if (c) {
                         n.addChild(c, childDomNode.getAttribute("containerField"));
                     }
@@ -380,10 +382,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             }
         }
     }
-    else if (domNode.localName) {
-        // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
-        n = null;
+    else if (domNode.localName)
+    {
+        if ( parent && domNode.localName.toLowerCase() == "x3dommetagroup" )
+        {
+            Array.forEach ( domNode.childNodes, function (childDomNode) {
+                var c = this.setupTree(childDomNode, parent);
+                if (c) {
+                    parent.addChild(c, childDomNode.getAttribute("containerField"));
+                }
+            }.bind(this) );
+        }
+        else
+        {
+            // be nice to users who use nodes not (yet) known to the system
+            x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+            n = null;
+        }
     }
 
     return n;
