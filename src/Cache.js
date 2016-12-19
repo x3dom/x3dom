@@ -167,16 +167,19 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
     if (this.shaders[shaderID] === undefined)
     {
         var program = null;
-
+        
         if (pickMode !== undefined && pickMode !== null) {
             program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
         }
         else if (shadows !== undefined && shadows !== null) {
             program = new x3dom.shader.DynamicShadowShader(gl, properties);
         }
-        else if (properties.CSHADER != -1) {
+        else if (properties.CSHADER != -1)
             program = new x3dom.shader.ComposedShader(gl, shape);
-        }
+        else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
+            program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
+        else if(properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0)
+            return {"shaderID": shaderID};
         else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
                         new x3dom.shader.DynamicMobileShader(gl, properties) :

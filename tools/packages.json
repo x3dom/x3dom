@@ -21,6 +21,8 @@
                 {"path": "util/DrawableCollection.js"},
 				{"path": "util/Moveable.js"},
 				{"path": "util/Zlib.js"},
+                {"path": "util/glTF/glTFLoader.js"},
+                {"path": "util/glTF/glTFContainer.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -51,6 +53,7 @@
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
+                {"path": "shader/ShaderKHRMaterialCommons.js"},
 		{"path": "shader/ShaderSSAO.js", "type": "file"},
 		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
@@ -128,7 +131,8 @@
                     {"file": "Material.js"},
                     {"file": "TwoSidedMaterial.js"},
                     {"file": "X3DShapeNode.js"},
-                    {"file": "Shape.js"}
+                    {"file": "Shape.js"},
+                    {"file": "ExternalShape.js"}
                 ]},
                 {"name": "Lighting", "filePrefix": "nodes/Lighting/", "files":[
                     {"file": "X3DLightNode.js"},

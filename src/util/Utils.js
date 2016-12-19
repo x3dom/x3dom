@@ -1084,10 +1084,12 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
+        property.KHR_MATERIAL_COMMONS = 0;
         //console.log(property);
 	}
 
 	property.toIdentifier = function() {
+        delete this.id;
 		var id = "";
 		for(var p in this) {
 			if(this[p] != this.toIdentifier && this[p] != this.toString) {
