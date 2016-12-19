@@ -342,8 +342,6 @@ x3dom.glTF.glTFLoader.prototype.readHeader = function(response)
 
     header.bodyOffset = header.sceneLength + 20;
 
-    console.log(header);
-
     return header;
 };
 
@@ -352,8 +350,6 @@ x3dom.glTF.glTFLoader.prototype.readScene = function(response,header)
     var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
 
     var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
-
-    console.log(json);
 
     return json;
 };
