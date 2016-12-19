@@ -45,7 +45,7 @@ x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, mesh
     {
         for(var key in this.scene.meshes){
             if(this.scene.meshes.hasOwnProperty(key)
-                && this.scene.meshes[key].name==meshName)
+                && key == meshName)
             {
                 mesh = this.scene.meshes[key];
                 break;
