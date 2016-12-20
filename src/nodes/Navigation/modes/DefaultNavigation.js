@@ -690,7 +690,7 @@ x3dom.DefaultNavigation.prototype.onTouchStart = function(view, evt, touches)
     
 };
 
-x3dom.DefaultNavigation.prototype.onTouchDrag = function(view,evt, touches, translation, rotation)
+x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, translation, rotation)
 {
     if (view._currentInputType == x3dom.InputTypes.NAVIGATION)
     {
@@ -705,6 +705,14 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view,evt, touches, tran
                 distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 
                 translation = translation.multiply(distance);
+
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - translation.z );
+
+                    translation.z = 0;
+                }
+                
                 view._movement = view._movement.add(translation);
 
                 view._transMat = viewpoint.getViewMatrix().inverse().
