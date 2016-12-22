@@ -171,7 +171,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 }
             }
 
-            //do not remove node from namespace if it was only "USE"d	
+            //do not remove node from namespace if it was only "USE"d
             if (nameSpace && !(domNode.getAttribute('use') || domNode.getAttribute('USE')))
             {
                 nameSpace.removeNode(node._DEF);
@@ -180,6 +180,17 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
             delete domNode._x3domNode;
         }
+    }
+
+    function getParentNode(domNode) {
+        var parentNode = domNode.parentNode;
+
+        // move dom up if parent is metagroup
+        if ( parentNode.localName.toLowerCase() == "x3dommetagroup" ) {
+            parentNode = getParentNode(parentNode);
+        }
+
+        return parentNode;
     }
 
     // Test capturing DOM mutation events on the X3D subscene
@@ -196,14 +207,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 doc.needRender = true;
             }
         },
-        
+
         onNodeRemoved: function(e) {
             var domNode = e.target;
             if (!domNode)
                 return;
 
-            if ('_x3domNode' in domNode.parentNode && '_x3domNode' in domNode) {
-                var parent = domNode.parentNode._x3domNode;
+            var parentNode = getParentNode(domNode);
+
+            if ('_x3domNode' in parentNode && '_x3domNode' in domNode) {
+                var parent = parentNode._x3domNode;
                 var child = domNode._x3domNode;
 
                 if (parent && child) {
@@ -255,11 +268,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 }
             }
         },
-        
+
         onNodeInserted: function(e) {
             var child = e.target;
-            var parentNode = child.parentNode;
-            
+            var parentNode = getParentNode(child);
+
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in parentNode) {
 				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
@@ -268,7 +281,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 				}
 				else {
 					var parent = parentNode._x3domNode;
-					
+
 					if (parent && parent._nameSpace && (child instanceof Element)) {
 
                         if (x3dom.caps.DOMNodeInsertedEvent_perSubtree)
@@ -314,7 +327,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
     // create and add the NodeNameSpace
     var nameSpace = new x3dom.NodeNameSpace("scene", doc);
-    
+
     var scene = nameSpace.setupTree(sceneElem);
 
     // link scene
@@ -362,7 +375,7 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
     if (!ctx || !this._viewarea) {
         return;
     }
-	
+
     ctx.pickValue(this._viewarea, x, y, 1);
 };
 
@@ -370,7 +383,7 @@ x3dom.X3DDocument.prototype.onPickRect = function (ctx, x1, y1, x2, y2) {
     if (!ctx || !this._viewarea) {
         return [];
     }
-	
+
     return ctx.pickRect(this._viewarea, x1, y1, x2, y2);
 };
 
@@ -662,15 +675,15 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             (function() {
                 var viewpoint = that._viewarea._scene.getViewpoint();
                 var mat_view = that._viewarea.getViewMatrix().inverse();
-    			
+
     			var rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
     			rotation.setValue(mat_view);
     			var rot = rotation.toAxisAngle();
     			var translation = mat_view.e3();
-    			
+
     			x3dom.debug.logInfo('\n&lt;Viewpoint position="' + translation.x.toFixed(5) + ' '
     			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
-    								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' ' 
+    								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' '
     								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '" \n\t' +
                                     'zNear="' + viewpoint.getNear().toFixed(5) + '" ' +
     								'zFar="' + viewpoint.getFar().toFixed(5) + '" ' +
