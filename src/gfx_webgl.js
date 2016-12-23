@@ -2475,7 +2475,8 @@ x3dom.gfx_webgl = (function () {
             isParticleSet = true;
         }
 
-        if (s_gl.externalGeometry != 0) {
+        if (s_gl.externalGeometry != 0)
+        {
             q_n = shape.meshes.length;
         }
         else
@@ -2486,7 +2487,9 @@ x3dom.gfx_webgl = (function () {
         for (var q = 0; q < q_n; q++) {
             var q6 = 6 * q;
 
-            if (s_gl.externalGeometry != 0) {
+            // rendering from src/glb data
+            if (s_gl.externalGeometry != 0)
+            {
                 var mesh = shape.meshes[q];
                 var exGeomShaderProgram = sp;
 
@@ -2515,8 +2518,10 @@ x3dom.gfx_webgl = (function () {
                     continue;
 
             indicesReady = false;
-            if(s_gl.externalGeometry == 0){
 
+            // rendering from other source
+            if (s_gl.externalGeometry == 0)
+            {
                 if (!(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q])))
                     continue;
 
