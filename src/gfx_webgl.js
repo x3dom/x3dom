@@ -2502,10 +2502,7 @@ x3dom.gfx_webgl = (function () {
                         mesh.material.setShader(gl,this.cache, shape, shape.getShaderProperties(viewarea));
 
                     mesh.material.bind(gl, sp, this.cache, shape.getShaderProperties(viewarea));
-                }else{
-                    exGeomShaderProgram.bind();
                 }
-
 
                 mesh.bindVertexAttribPointer(gl, exGeomShaderProgram);
                 var renderMode = viewarea.getRenderMode();
