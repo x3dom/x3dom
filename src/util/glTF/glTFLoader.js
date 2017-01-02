@@ -61,6 +61,7 @@ x3dom.glTF.glTFLoader.prototype.reset = function(shape, gl)
     this._mesh._numFaces = 0;
 
     shape._webgl.externalGeometry = -1;
+    shape._webgl.externalGeometryGLB = -1;
 
     if(this.loaded.bufferViews==null)
         this.loaded.bufferViews = this.loadBufferViews(shape, gl);
@@ -291,6 +292,8 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
     var bufferViews = this.scene.bufferViews;
     for(var bufferId in bufferViews)
     {
+        shape._webgl.externalGeometryGLB = 1;
+
         if(!bufferViews.hasOwnProperty(bufferId)) continue;
 
         var bufferView = bufferViews[bufferId];

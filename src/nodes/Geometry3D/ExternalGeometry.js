@@ -74,6 +74,8 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                shape._webgl.externalGeometryGLB = 0;
+
                 var currentURL = shape._nameSpace.getURL(this._vf['url'][this._currentURLIdx]);
 
                 // check if this is a legacy SRC container,
@@ -523,25 +525,25 @@ var ExternalGeometrySRC =
                     case "normal":
                         x3domTypeID      = "normal";
                         x3domShortTypeID = "Norm";
-                        idx = renderMesh.buffers[NORMAL_BUFFER_IDX + bufferOffset];
+                        idx = NORMAL_BUFFER_IDX + bufferOffset;
                         break;
 
                     case "texcoord":
                         x3domTypeID      = "texCoord";
                         x3domShortTypeID = "Tex";
-                        idx = renderMesh.buffers[TEXCOORD_BUFFER_IDX + bufferOffset];
+                        idx = TEXCOORD_BUFFER_IDX + bufferOffset;
                         break;
 
                     case "color":
                         x3domTypeID      = "color";
                         x3domShortTypeID = "Col";
-                        idx = renderMesh.buffers[COLOR_BUFFER_IDX + bufferOffset];
+                        idx = COLOR_BUFFER_IDX + bufferOffset;
                         break;
 
                     case "id":
                         x3domTypeID      = "id";
                         x3domShortTypeID = "Id";
-                        idx = renderMesh.buffers[ID_BUFFER_IDX + bufferOffset];
+                        idx = ID_BUFFER_IDX + bufferOffset;
                         shape._cf.geometry.node._vf.idsPerVertex = true;
                         break;
                 }

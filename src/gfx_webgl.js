@@ -2502,7 +2502,10 @@ x3dom.gfx_webgl = (function () {
                         mesh.material.setShader(gl,this.cache, shape, shape.getShaderProperties(viewarea));
 
                     mesh.material.bind(gl, sp, this.cache, shape.getShaderProperties(viewarea));
+                }else{
+                    exGeomShaderProgram.bind();
                 }
+
 
                 mesh.bindVertexAttribPointer(gl, exGeomShaderProgram);
                 var renderMode = viewarea.getRenderMode();
@@ -2513,15 +2516,11 @@ x3dom.gfx_webgl = (function () {
 
                 mesh.render(gl, polyMode);
             }
-            else
-                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
-                    continue;
+            else if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
+                continue;
+            else{
+                indicesReady = false;
 
-            indicesReady = false;
-
-            // rendering from other source
-            if (s_gl.externalGeometry == 0)
-            {
                 if (!(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q])))
                     continue;
 
