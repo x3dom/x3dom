@@ -74,8 +74,6 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                shape._webgl.externalGeometryGLB = 0;
-
                 var currentURL = shape._nameSpace.getURL(this._vf['url'][this._currentURLIdx]);
 
                 // check if this is a legacy SRC container,
