@@ -241,7 +241,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
                 if (indexed == false)
                 {
                     mesh.drawCount = accessor["count"];
-                    this._mesh._numFaces += indicesAccessor["count"] / 3;
+                    this._mesh._numFaces += accessor["count"] / 3;
                 }
                 this._mesh.numCoords += accessor["count"];
                 break;
@@ -299,8 +299,7 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
         if(bufferView.target == null && bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
             continue;
 
-        if(bufferView.target == gl.ELEMENT_ARRAY_BUFFER)
-            shape._webgl.externalGeometry = 1;
+        shape._webgl.externalGeometry = 1;
 
         var data = new Uint8Array(this.body.buffer,
             this.header.bodyOffset + bufferView["byteOffset"],
@@ -350,6 +349,8 @@ x3dom.glTF.glTFLoader.prototype.readScene = function(response,header)
     var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
 
     var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
+
+    console.log(json);
 
     return json;
 };
@@ -431,55 +432,57 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
 
 x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 {
-    if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
-    {
-        materialNode = materialNode.extensions.KHR_materials_common;
+    if(materialNode){
+        if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
+        {
+            materialNode = materialNode.extensions.KHR_materials_common;
 
-        var material = new x3dom.glTF.glTFKHRMaterialCommons();
+            var material = new x3dom.glTF.glTFKHRMaterialCommons();
 
-        material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
-        material.doubleSided = materialNode.doubleSided;
+            material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
+            material.doubleSided = materialNode.doubleSided;
 
-        for(var key in materialNode.values)
-            if(materialNode.values.hasOwnProperty(key))
-            {
-                var value = materialNode.values[key];
-                if(typeof value === 'string')
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
                 {
-                    var textureNode = this.scene.textures[value];
-                    material[key+"Tex"] = this.loadTexture(gl, textureNode);
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        var textureNode = this.scene.textures[value];
+                        material[key+"Tex"] = this.loadTexture(gl, textureNode);
+                    }
+                    else
+                    {
+                        material[key] = value;
+                    }
                 }
-                else
+
+            return material;
+        }else
+        {
+            var technique = this.scene.techniques[materialNode.technique];
+            var program = this.loadShaderProgram(gl, technique.program);
+
+            var material = new x3dom.glTF.glTFMaterial(technique);
+            material.program = program;
+
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
                 {
-                    material[key] = value;
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        var textureNode = this.scene.textures[value];
+                        material.textures[key] = this.loadTexture(gl, textureNode);
+                    }
+                    else
+                    {
+                        material.values[key] = value;
+                    }
                 }
-            }
 
-        return material;
-    }else
-    {
-        var technique = this.scene.techniques[materialNode.technique];
-        var program = this.loadShaderProgram(gl, technique.program);
-
-        var material = new x3dom.glTF.glTFMaterial(technique);
-        material.program = program;
-
-        for(var key in materialNode.values)
-            if(materialNode.values.hasOwnProperty(key))
-            {
-                var value = materialNode.values[key];
-                if(typeof value === 'string')
-                {
-                    var textureNode = this.scene.textures[value];
-                    material.textures[key] = this.loadTexture(gl, textureNode);
-                }
-                else
-                {
-                    material.values[key] = value;
-                }
-            }
-
-        return material;
+            return material;
+        }
     }
 
     return new x3dom.glTF.glTFKHRMaterialCommons();
