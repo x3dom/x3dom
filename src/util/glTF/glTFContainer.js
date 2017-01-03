@@ -98,7 +98,7 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
     if(this.material != null && !this.material.created())
         return;
 
-    if(polyMode == null)
+    if(polyMode == null || polyMode > this.primitiveType)
         polyMode = this.primitiveType;
 
     if(this.buffers[glTF_BUFFER_IDX.INDEX])
@@ -190,7 +190,7 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
 
     this.doubleSided = false;
 
-    this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.BLINN;
+    this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.CONSTANT;
 
     this.attributeMapping = {};
     this.attributeMapping[glTF_BUFFER_IDX.POSITION] = "position";
