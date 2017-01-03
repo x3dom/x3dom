@@ -2513,15 +2513,11 @@ x3dom.gfx_webgl = (function () {
 
                 mesh.render(gl, polyMode);
             }
-            else
-                if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
-                    continue;
+            else if ( !(sp.position !== undefined && s_gl.buffers[q6 + 1] && s_gl.indexes[q]) )
+                continue;
+            else{
+                indicesReady = false;
 
-            indicesReady = false;
-
-            // rendering from other source
-            if (s_gl.externalGeometry == 0)
-            {
                 if (!(sp.position !== undefined && s_gl.buffers[q6 + 1] && (s_gl.indexes[q])))
                     continue;
 
