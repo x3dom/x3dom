@@ -350,8 +350,6 @@ x3dom.glTF.glTFLoader.prototype.readScene = function(response,header)
 
     var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
 
-    console.log(json);
-
     return json;
 };
 
