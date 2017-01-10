@@ -295,25 +295,25 @@ x3dom.glTF.glTFMaterial = function(technique)
                 switch(parameter.semantic)
                 {
                     case "MODELVIEW":
-                        this.semanticMapping["modelViewMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewMatrix";
                         break;
                     case "MODELVIEWINVERSETRANSPOSE":
-                        this.semanticMapping["modelViewInverseTransposeMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewInverseTransposeMatrix";
                         break;
                     case "PROJECTION":
-                        this.semanticMapping["projectionMatrix"] = key;
+                        this.semanticMapping[key] = "projectionMatrix";
                         break;
                     case "MODEL":
-                        this.semanticMapping["modelMatrix"] = key;
+                        this.semanticMapping[key] = "modelMatrix";
                         break;
                     case "MODELVIEWPROJECTION":
-                        this.semanticMapping["modelViewProjectionMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewProjectionMatrix";
                         break;
                     case "VIEW":
-                        this.semanticMapping["viewMatrix"] = key;
+                        this.semanticMapping[key] = "viewMatrix";
                         break;
                     case "MODELVIEWINVERSE":
-                        this.semanticMapping["modelViewInverseMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewInverseMatrix";
                         break;
                     default:
                         break;
@@ -383,34 +383,44 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
     {
         this.program.bind();
 
-        if(this.semanticMapping["modelViewMatrix"] != null)
-            this.program[this.semanticMapping["modelViewMatrix"]] = shaderParameter.modelViewMatrix;
+        for(var key in this.semanticMapping){
+            if(!this.semanticMapping.hasOwnProperty(key))continue;
 
-        if(this.semanticMapping["viewMatrix"] != null)
-            this.program[this.semanticMapping["viewMatrix"]] = shaderParameter.viewMatrix;
+            var mapping = this.semanticMapping[key];
 
-        if(this.semanticMapping["modelViewInverseTransposeMatrix"] != null) {
-            var mat = shaderParameter.normalMatrix;
+            switch(mapping){
+                case "modelViewMatrix":
+                    this.program[key] = shaderParameter.modelViewMatrix;
+                    break;
+                case "viewMatrix":
+                    this.program[key] = shaderParameter.viewMatrix;
+                    break;
+                case "modelViewInverseTransposeMatrix":
+                    var mat = shaderParameter.normalMatrix;
 
-            var model_view_inv_gl =
-                [mat[0], mat[1], mat[2],
-                mat[4],mat[5],mat[6],
-                mat[8],mat[9],mat[10]];
+                    var model_view_inv_gl =
+                        [mat[0], mat[1], mat[2],
+                            mat[4],mat[5],mat[6],
+                            mat[8],mat[9],mat[10]];
 
-            this.program[this.semanticMapping["modelViewInverseTransposeMatrix"]] = model_view_inv_gl;
+                    this.program[key] = model_view_inv_gl;
+                    break;
+                case "modelViewInverseMatrix":
+                    this.program[key] = shaderParameter.modelViewMatrixInverse;
+                    break;
+                case "modelViewProjectionMatrix":
+                    this.program[key] = shaderParameter.modelViewProjectionMatrix;
+                    break;
+                case "modelMatrix":
+                    this.program[key] = shaderParameter.model;
+                    break;
+                case "projectionMatrix":
+                    this.program[key] = shaderParameter.projectionMatrix;
+                    break;
+                default:
+                    break;
+            }
         }
-
-        if(this.semanticMapping["modelViewInverseMatrix"] != null)
-            this.program[this.semanticMapping["modelViewInverseMatrix"]] = shaderParameter.modelViewMatrixInverse;
-
-        if(this.semanticMapping["modelViewProjectionMatrix"] != null)
-            this.program[this.semanticMapping["modelViewProjectionMatrix"]] = shaderParameter.modelViewProjectionMatrix;
-
-        if(this.semanticMapping["modelMatrix"] != null)
-            this.program[this.semanticMapping["modelMatrix"]] = shaderParameter.model;
-
-        if(this.semanticMapping["projectionMatrix"] != null)
-            this.program[this.semanticMapping["projectionMatrix"]] = shaderParameter.projectionMatrix;
     }
 
 };

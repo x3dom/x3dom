@@ -466,6 +466,15 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
             var material = new x3dom.glTF.glTFMaterial(technique);
             material.program = program;
 
+            for(var key in technique.parameters) {
+                if (!technique.parameters.hasOwnProperty(key)) continue;
+
+                var parameter = technique.parameters[key];
+                if(parameter.value != null){
+                    material.values[key] = parameter.value;
+                }
+            }
+
             for(var key in materialNode.values)
                 if(materialNode.values.hasOwnProperty(key))
                 {
