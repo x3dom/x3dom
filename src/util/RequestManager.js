@@ -152,7 +152,8 @@ x3dom.RequestManager.abortAllRequests = function()
         this.activeRequests[ i ].abort();
     }
 
-    this.requests = this.activeRequests = [];
+    this.requests = [];
+    this.activeRequests = [];
 };
 
 /**
