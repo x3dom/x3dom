@@ -364,13 +364,16 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
     this.updateTransforms(shaderParameter);
 
+    var texUnit = 0;
+
     for(var key in this.technique.uniforms)
         if(this.technique.uniforms.hasOwnProperty(key))
         {
             var uniformName = this.technique.uniforms[key];
             if(this.textures[uniformName] != null){
                 var texture = this.textures[uniformName];
-                texture.bind(gl, 0, this.program.program, key);
+                texture.bind(gl, texUnit, this.program.program, key);
+                texUnit++;
             }
             else if(this.values[uniformName] != null)
                 this.program[key] = this.values[uniformName];
