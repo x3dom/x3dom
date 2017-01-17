@@ -105,6 +105,7 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
         gl.drawElements(polyMode, this.drawCount, this.buffers[glTF_BUFFER_IDX.INDEX].type, this.buffers[glTF_BUFFER_IDX.INDEX].offset);
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
+
 };
 
 x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
@@ -160,10 +161,11 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
 x3dom.glTF.glTFTexture.prototype.bind = function(gl, textureUnit, shaderProgram, uniformName)
 {
+    gl.activeTexture(gl.TEXTURE0+textureUnit);
+
     if(!this.created)
         this.create(gl);
 
-    gl.activeTexture(gl.TEXTURE0+textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
     gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), textureUnit);
 };
