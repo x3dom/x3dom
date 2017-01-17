@@ -258,14 +258,15 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             
             if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
                 that.lastMousePos = pos;
-                if (evt.shiftKey) { this.mouse_button = 1; }
-                if (evt.ctrlKey)  { this.mouse_button = 4; }
-                if (evt.altKey)   { this.mouse_button = 2; }
-
+                
                 this.mouse_drag_x = pos.x;
                 this.mouse_drag_y = pos.y;
 
                 if (this.mouse_dragging) {
+                    
+                    if (evt.shiftKey) { this.mouse_button = 1; }
+                    if (evt.ctrlKey)  { this.mouse_button = 4; }
+                    if (evt.altKey)   { this.mouse_button = 2; }
                     
                     if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
                          this.mouse_button == 2 && !this.parent.disableRightDrag ||
