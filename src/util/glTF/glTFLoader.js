@@ -373,6 +373,7 @@ x3dom.glTF.glTFLoader.prototype.getNumComponentsForType = function(type)
     }
 };
 
+
 x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
 {
     if(this.loaded.images == null)
@@ -394,6 +395,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         var blobUrl = window.URL.createObjectURL(blob);
 
         var image = new Image();
+
         image.src = blobUrl;
 
         this.loaded.images[imageNodeName] = image;

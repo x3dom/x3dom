@@ -106,6 +106,8 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
 
+    console.log("render");
+
 };
 
 x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
@@ -128,6 +130,31 @@ x3dom.glTF.glTFTexture.prototype.isPowerOfTwo = function(x)
     return powerOfTwo;
 };
 
+x3dom.glTF.glTFTexture.prototype.needsPowerOfTwo = function(gl)
+{
+    var resize = true;
+    resize &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    resize &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+    resize &= (this.sampler.wrapS == gl.CLAMP_TO_EDGE);
+    resize &= (this.sampler.wrapT == gl.CLAMP_TO_EDGE);
+
+    return !resize;
+};
+
+x3dom.glTF.glTFTexture.prototype.needsMipMaps = function(gl)
+{
+    var need = true;
+    need &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    need &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+
+    return !need;
+};
+
+x3dom.glTF.glTFTexture.prototype.nextPowerOfTwo = function(n)
+{
+    return Math.pow(2, Math.ceil(Math.log(n)/Math.log(2)));
+};
+
 x3dom.glTF.glTFTexture.prototype.create = function(gl)
 {
     if(this.image.complete == false)
@@ -135,26 +162,54 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
     this.glTexture = gl.createTexture();
 
+    var imgSrc = this.image;
+
+    if(this.needsPowerOfTwo(gl)){
+        var width = this.image.width;
+        var height = this.image.height;
+
+        var aspect = width / height;
+
+        var width2 = this.nextPowerOfTwo(width);
+        var height2 = this.nextPowerOfTwo(height);
+
+        console.log(width2);
+        console.log(height2);
+
+        var aspect2 = width2 / height2;
+
+        if(aspect - aspect2 > 0.01){
+            console.warn("Image "+this.image.src+" needs to be resized to power of two, but has unsupported aspect ratio and may be distorted!");
+        }
+
+        var oc = document.createElement('canvas'),
+            octx = oc.getContext('2d');
+
+        oc.width = width2;
+        oc.height = height2;
+        octx.drawImage(this.image, 0, 0, oc.width, oc.height);
+
+        imgSrc = oc;
+
+    }
+
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, this.image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, imgSrc);
 
-    if(this.sampler.magFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
 
-    if(this.sampler.minFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
 
-    //if(!this.isPowerOfTwo(this.image.width)||!this.isPowerOfTwo(this.image.height)){
-        // gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // Prevents s-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        // Prevents t-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.sampler.wrapS);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.sampler.wrapT);
+
     //}
 
-    //gl.generateMipmap(gl.TEXTURE_2D);
+    if(this.needsMipMaps(gl))
+        gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
+
+    console.log("created");
 
     this.created = true;
 };
