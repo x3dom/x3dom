@@ -106,8 +106,6 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
 
-    console.log("render");
-
 };
 
 x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
@@ -190,7 +188,6 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
         octx.drawImage(this.image, 0, 0, oc.width, oc.height);
 
         imgSrc = oc;
-
     }
 
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
