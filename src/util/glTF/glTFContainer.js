@@ -171,9 +171,6 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
         var width2 = this.nextPowerOfTwo(width);
         var height2 = this.nextPowerOfTwo(height);
 
-        console.log(width2);
-        console.log(height2);
-
         var aspect2 = width2 / height2;
 
         if(aspect - aspect2 > 0.01){
@@ -205,8 +202,6 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
     if(this.needsMipMaps(gl))
         gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
-
-    console.log("created");
 
     this.created = true;
 };
