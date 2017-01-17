@@ -64,6 +64,11 @@ x3dom.RequestManager.requestHeaders = [];
  */
 x3dom.RequestManager.withCredentials = false;
 
+
+x3dom.RequestManager.onSendRequest = function( counters ) {}; 
+x3dom.RequestManager.onAbortAllRequests = function( counters ) {}; 
+
+
 /**
  *
  * @param header
@@ -79,7 +84,9 @@ x3dom.RequestManager.addRequestHeader = function( header, value )
  * @private
  */
 x3dom.RequestManager._sendRequest = function()
-{
+{       
+    this.onSendRequest( this._getCounters() );
+
     //Check if we have reached the maximum parallel request limit
     if ( this.activeRequests.length > this.maxParallelRequests )
     {
@@ -100,6 +107,19 @@ x3dom.RequestManager._sendRequest = function()
         //Trigger next request sending
         this._sendRequest();
     }
+};
+
+/**
+ *
+ */
+x3dom.RequestManager._getCounters = function () 
+{
+    return {
+        loaded: this.loadedRequests,
+        active: this.activeRequests.length,
+        failed: this.failedRequests,
+        total: this.totalRequests,
+    };
 };
 
 /**
@@ -154,7 +174,9 @@ x3dom.RequestManager.abortAllRequests = function()
 
     this.requests = [];
     this.activeRequests = [];
-};
+
+    this.onAbortAllRequests( this._getCounters() );
+}
 
 /**
  *
