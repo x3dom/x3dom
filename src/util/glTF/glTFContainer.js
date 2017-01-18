@@ -105,6 +105,7 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
         gl.drawElements(polyMode, this.drawCount, this.buffers[glTF_BUFFER_IDX.INDEX].type, this.buffers[glTF_BUFFER_IDX.INDEX].offset);
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
+
 };
 
 x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
@@ -121,10 +122,24 @@ x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, t
     this.create(gl);
 };
 
-x3dom.glTF.glTFTexture.prototype.isPowerOfTwo = function(x)
+x3dom.glTF.glTFTexture.prototype.needsPowerOfTwo = function(gl)
 {
-    var powerOfTwo = !(x == 0) && !(x & (x - 1));
-    return powerOfTwo;
+    var resize = true;
+    resize &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    resize &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+    resize &= (this.sampler.wrapS == gl.CLAMP_TO_EDGE);
+    resize &= (this.sampler.wrapT == gl.CLAMP_TO_EDGE);
+
+    return !resize;
+};
+
+x3dom.glTF.glTFTexture.prototype.needsMipMaps = function(gl)
+{
+    var need = true;
+    need &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    need &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+
+    return !need;
 };
 
 x3dom.glTF.glTFTexture.prototype.create = function(gl)
@@ -134,25 +149,37 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
     this.glTexture = gl.createTexture();
 
+    var imgSrc = this.image;
+
+    if(this.needsPowerOfTwo(gl)){
+        var width = this.image.width;
+        var height = this.image.height;
+
+        var aspect = width / height;
+
+        imgSrc = x3dom.Utils.scaleImage(this.image);
+
+        var aspect2 = imgSrc.width / imgSrc.height;
+
+        if(Math.abs(aspect - aspect2) > 0.01){
+            console.warn("Image "+this.image.src+" was resized to power of two, but has unsupported aspect ratio and may be distorted!");
+        }
+    }
+
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, this.image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, imgSrc);
 
-    if(this.sampler.magFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
 
-    if(this.sampler.minFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
 
-    //if(!this.isPowerOfTwo(this.image.width)||!this.isPowerOfTwo(this.image.height)){
-        // gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // Prevents s-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        // Prevents t-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.sampler.wrapS);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.sampler.wrapT);
+
     //}
 
-    //gl.generateMipmap(gl.TEXTURE_2D);
+    if(this.needsMipMaps(gl))
+        gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     this.created = true;
@@ -160,10 +187,11 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
 x3dom.glTF.glTFTexture.prototype.bind = function(gl, textureUnit, shaderProgram, uniformName)
 {
+    gl.activeTexture(gl.TEXTURE0+textureUnit);
+
     if(!this.created)
         this.create(gl);
 
-    gl.activeTexture(gl.TEXTURE0+textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
     gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), textureUnit);
 };
@@ -364,13 +392,16 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
     this.updateTransforms(shaderParameter);
 
+    var texUnit = 0;
+
     for(var key in this.technique.uniforms)
         if(this.technique.uniforms.hasOwnProperty(key))
         {
             var uniformName = this.technique.uniforms[key];
             if(this.textures[uniformName] != null){
                 var texture = this.textures[uniformName];
-                texture.bind(gl, 0, this.program.program, key);
+                texture.bind(gl, texUnit, this.program.program, key);
+                texUnit++;
             }
             else if(this.values[uniformName] != null)
                 this.program[key] = this.values[uniformName];
