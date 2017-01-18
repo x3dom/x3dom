@@ -122,12 +122,6 @@ x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, t
     this.create(gl);
 };
 
-x3dom.glTF.glTFTexture.prototype.isPowerOfTwo = function(x)
-{
-    var powerOfTwo = !(x == 0) && !(x & (x - 1));
-    return powerOfTwo;
-};
-
 x3dom.glTF.glTFTexture.prototype.needsPowerOfTwo = function(gl)
 {
     var resize = true;
@@ -148,11 +142,6 @@ x3dom.glTF.glTFTexture.prototype.needsMipMaps = function(gl)
     return !need;
 };
 
-x3dom.glTF.glTFTexture.prototype.nextPowerOfTwo = function(n)
-{
-    return Math.pow(2, Math.ceil(Math.log(n)/Math.log(2)));
-};
-
 x3dom.glTF.glTFTexture.prototype.create = function(gl)
 {
     if(this.image.complete == false)
@@ -168,23 +157,13 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
         var aspect = width / height;
 
-        var width2 = this.nextPowerOfTwo(width);
-        var height2 = this.nextPowerOfTwo(height);
+        imgSrc = x3dom.Utils.scaleImage(this.image);
 
-        var aspect2 = width2 / height2;
+        var aspect2 = imgSrc.width / imgSrc.height;
 
-        if(aspect - aspect2 > 0.01){
-            console.warn("Image "+this.image.src+" needs to be resized to power of two, but has unsupported aspect ratio and may be distorted!");
+        if(Math.abs(aspect - aspect2) > 0.01){
+            console.warn("Image "+this.image.src+" was resized to power of two, but has unsupported aspect ratio and may be distorted!");
         }
-
-        var oc = document.createElement('canvas'),
-            octx = oc.getContext('2d');
-
-        oc.width = width2;
-        oc.height = height2;
-        octx.drawImage(this.image, 0, 0, oc.width, oc.height);
-
-        imgSrc = oc;
     }
 
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
