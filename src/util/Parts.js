@@ -1079,6 +1079,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
 
         if (ids.length && ids.length > 1) //Multi select
         {
+            var hasChanged = false;
+
             //Get original pixels
             var dtPixels = parts.colorMap.getPixels();
             var eaPixels = parts.emissiveMap.getPixels();
@@ -1095,6 +1097,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
 
                 if( !this.multiPart._materials[partID]._highlighted )
                 {
+                    hasChanged = true;
+
                     this.multiPart._materials[partID]._highlighted = true;
 
                     dtPixels[pixelIDFront] = dtColor;
@@ -1107,9 +1111,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 }
             }
 
-            this.colorMap.setPixels(dtPixels, false);
-            this.emissiveMap.setPixels(eaPixels, false);
-            this.specularMap.setPixels(ssPixels, true);
+            if( hasChanged ) {
+                this.colorMap.setPixels(dtPixels, false);
+                this.emissiveMap.setPixels(eaPixels, false);
+                this.specularMap.setPixels(ssPixels, true);
+            }
         }
         else
         {
@@ -1150,6 +1156,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
 
         if (ids.length && ids.length > 1) //Multi select
         {
+            var hasChanged = false;
+
             //Get original pixels
             var dtPixels = parts.colorMap.getPixels();
             var eaPixels = parts.emissiveMap.getPixels();
@@ -1164,6 +1172,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
 
                 if( material._highlighted )
                 {
+                    hasChanged = true;
+
                     material._highlighted = false;
 
                     dtPixels[pixelIDFront] = new x3dom.fields.SFColorRGBA(material._diffuseColor.r, material._diffuseColor.g,
@@ -1182,9 +1192,13 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 }
             }
 
-            this.colorMap.setPixels(dtPixels, false);
-            this.emissiveMap.setPixels(eaPixels, false);
-            this.specularMap.setPixels(ssPixels, true);
+            if( hasChanged )
+            {
+                this.colorMap.setPixels(dtPixels, false);
+                this.emissiveMap.setPixels(eaPixels, false);
+                this.specularMap.setPixels(ssPixels, true);
+            }
+
         }
         else
         {
@@ -1419,13 +1433,15 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                         this.multiPart._inlineNamespace.defMap[usage[j]]._vf.render = false;
                     }
                 }
-            }
 
-            parts.visibilityMap.setPixel(x, y, pixel);
-            this.multiPart.invalidateVolume();
+                parts.visibilityMap.setPixel(x, y, pixel);
+                this.multiPart.invalidateVolume();
+            }
         }
         else
         {
+            var hasChange = false;
+
             var pixels = parts.visibilityMap.getPixels();
 
             for (i = 0; i < parts.ids.length; i++) {
@@ -1434,6 +1450,8 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
 
                 if (pixels[parts.ids[i]].r != visibilityAsInt) {
                     pixels[parts.ids[i]].r = visibilityAsInt;
+
+                    hasChange = true;
 
                     this.multiPart._partVisibility[parts.ids[i]] = visibility;
 
@@ -1458,8 +1476,11 @@ x3dom.Parts = function(multiPart, ids, colorMap, emissiveMap, specularMap, visib
                 }
             }
 
-            parts.visibilityMap.setPixels(pixels);
-            this.multiPart.invalidateVolume();
+            if(hasChange)
+            {
+                parts.visibilityMap.setPixels(pixels);
+                this.multiPart.invalidateVolume();
+            }
         }
     };
 
