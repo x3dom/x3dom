@@ -373,6 +373,7 @@ x3dom.glTF.glTFLoader.prototype.getNumComponentsForType = function(type)
     }
 };
 
+
 x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
 {
     if(this.loaded.images == null)
@@ -394,6 +395,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         var blobUrl = window.URL.createObjectURL(blob);
 
         var image = new Image();
+
         image.src = blobUrl;
 
         this.loaded.images[imageNodeName] = image;
@@ -404,8 +406,16 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
     return null;
 };
 
-x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
+x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNodeName)
 {
+    if(this.loaded.textures == null)
+        this.loaded.textures = {};
+
+    if(this.loaded.textures[textureNodeName]!=null)
+        return this.loaded.textures[textureNodeName];
+
+    var textureNode = this.scene.textures[textureNodeName];
+
     var format = textureNode.format;
     var internalFormat = textureNode.internalFormat;
     var sampler = {};
@@ -424,6 +434,8 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
     var type = textureNode.type;
 
     var glTFTexture = new x3dom.glTF.glTFTexture(gl, format, internalFormat, sampler, target, type, image);
+
+    this.loaded.textures[textureNodeName] = glTFTexture;
 
     return glTFTexture;
 };
@@ -446,8 +458,7 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
                     var value = materialNode.values[key];
                     if(typeof value === 'string')
                     {
-                        var textureNode = this.scene.textures[value];
-                        material[key+"Tex"] = this.loadTexture(gl, textureNode);
+                        material[key+"Tex"] = this.loadTexture(gl, value);
                     }
                     else
                     {
@@ -479,8 +490,7 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
                     var value = materialNode.values[key];
                     if(typeof value === 'string')
                     {
-                        var textureNode = this.scene.textures[value];
-                        material.textures[key] = this.loadTexture(gl, textureNode);
+                        material.textures[key] = this.loadTexture(gl, value);
                     }
                     else
                     {
