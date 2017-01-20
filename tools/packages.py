@@ -1,6 +1,8 @@
 
 def prefix_path(lst, path):
-    return [path + '/' + entry for entry in lst]
+    return [path + '/' + x for entry in lst for y in entry if type(y) == list for x in y]
+    #return [path + '/' + entry for entry in lst]
+
 
 
 def getPathTuples(data):
@@ -48,12 +50,16 @@ COMPONENTS = getPathTuples(json_object['grouplist'][3]['data'])
 
 EXTENSIONS = getPathTuples(json_object['grouplist'][4]['data'])
 
-COMPRESSED_EXT_LIBS = getPathTuples(json_object['grouplist'][5]['data'])
+PHYSIC_EXTENSIONS = getPathTuples(json_object['grouplist'][5]['data'])
+
+COMPRESSED_EXT_LIBS = getPathTuples(json_object['grouplist'][6]['data'])
 
 
 #Combine categories to create profiles
 
 CORE_PROFILE = BASICS + SHADER + GFX + COMPONENTS
 MORE_PROFILE = EXTENSIONS
+PHYS_PROFILE = EXTENSIONS + PHYSIC_EXTENSIONS
 
 FULL_PROFILE = CORE_PROFILE + MORE_PROFILE
+FULL_PHYS_PROFILE = CORE_PROFILE + PHYS_PROFILE

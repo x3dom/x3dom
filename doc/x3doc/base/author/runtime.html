@@ -90,6 +90,7 @@
                     <li><a href="#processIndicator">&#10152; processIndicator</a></li>
                     <li><a href="#backendName">&#10152; backendName</a></li>
                     <li><a href="#properties">&#10152; properties</a></li>
+                    <li><a href="#getPixelScale">&#10152; getPixelScale</a></li>
                 </ul>
             </div>
 
@@ -856,7 +857,7 @@
                 <h4 class="name method-container-header">
                 showAll
                         <span class="signature">
-                        ()
+                        (axis)
                         </span>
                     <a name="showAll" class="upwardsLink" href="#">&#10548;</a>
                 </h4>
@@ -864,6 +865,24 @@
                 <dd>
                     <div class="description">
                         Zooms so that all objects are visible.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>axis</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the axis as string, one of: posX, negX, posY, negY, posZ, negZ
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </dd>
             </dl>
@@ -1524,6 +1543,31 @@
                     <br>
                     <h5>Returns:</h5>
                     <div class="param-desc">Properties object</div>
+                </dd>
+            </dl>
+            
+            <!--- get Pixel Scale --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                getPixelScale
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 SF3Vec3f
+                        </span>
+                    <a name="getPixelScale" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the virtual scale of one pixel for the current orthographic viewpoint.
+                        The returned vector contains scale values for the x and y direction. The z value is always null.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">x3dom.fields.SFVec3f or null if non orthographic view</div>
                 </dd>
             </dl>
 

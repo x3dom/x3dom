@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 from __future__ import with_statement
 # -------------------------------------------------------------------
 # NOTE:
@@ -68,9 +69,9 @@ from __future__ import with_statement
 try:
     import argparse
 except:
-    print "\nYou need to install argparse. Please run the following command:"
-    print "on your command line and try again:\n"
-    print "    easy_install argparse\n"
+    print("\nYou need to install argparse. Please run the following command:")
+    print("on your command line and try again:\n")
+    print("    easy_install argparse\n")
     exit()
 
 import os
@@ -80,7 +81,7 @@ from contextlib import closing
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
-from tools.packages import FULL_PROFILE, CORE_PROFILE, EXTENSIONS, COMPRESSED_EXT_LIBS, prefix_path
+from tools.packages import FULL_PHYS_PROFILE, FULL_PROFILE, CORE_PROFILE, EXTENSIONS, COMPRESSED_EXT_LIBS, prefix_path
 
 
 PROJECT_ROOT = os.path.dirname(__file__)
@@ -102,15 +103,20 @@ def build(mode='production'):
     
     # building compressed files
     packer.build(CORE_PROFILE, "dist/x3dom.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
-    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)    
+    packer.build(FULL_PROFILE, "dist/x3dom-full.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT)
+    packer.build(FULL_PHYS_PROFILE, "dist/x3dom-full-physics.js", "jsmin", include_version=True, src_prefix_path=SRC_ROOT) 	
     # add compressed external libraries to full release
-    packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full.js", ["../dist/x3dom-full.js"])], "dist/x3dom-full.js", 'none', src_prefix_path=SRC_ROOT)
+    packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full-physics.js", ["../dist/x3dom-full-physics.js"])], "dist/x3dom-full-physics.js", 'none', src_prefix_path=SRC_ROOT)
     
         
     if not mode == 'no-debug':
         # building plain files (debug)
+        packer.build(FULL_PHYS_PROFILE, "dist/x3dom-full-physics.debug.js", 'none', src_prefix_path=SRC_ROOT)
         packer.build(FULL_PROFILE, "dist/x3dom-full.debug.js", 'none', src_prefix_path=SRC_ROOT)
         packer.build(CORE_PROFILE, "dist/x3dom.debug.js", 'none', src_prefix_path=SRC_ROOT)
+        # add compressed external libraries to full release
+        packer.build(COMPRESSED_EXT_LIBS + [("x3dom-full-physics.debug.js", ["../dist/x3dom-full-physics.debug.js"])], "dist/x3dom-full-physics.debug.js", 'none', src_prefix_path=SRC_ROOT)
+    
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     print("\nBundling extensions...")
@@ -138,24 +144,17 @@ def build(mode='production'):
             """
 #            shutil.copy(src, nodes_dest)
         except:
-            print "  Error copying file to %s" % component
+            print("  Error copying file to %s" % component)
     # done with components
-    
-    # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    dist_docs = os.path.join(DIST_ROOT, 'docs')
-    if not os.path.exists(dist_docs):
-        os.makedirs(dist_docs)
 
     print("\nCopying additional files")
     shutil.copy('README.md', DIST_ROOT)
     shutil.copy('LICENSE', DIST_ROOT)
-    shutil.copy('CHANGELOG', DIST_ROOT)
+    shutil.copy('RELEASENOTES.rst', DIST_ROOT)
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
-    shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
     shutil.copy(LIB_ROOT + '/dash.all.js', DIST_ROOT)
     shutil.copy(LIB_ROOT + '/ammo.js', DIST_ROOT)
-    #shutil.copy(SRC_ROOT + '/x3domBulletPhysics.js', DIST_ROOT)
     # end other files
 
 def _build_examples():
@@ -172,8 +171,12 @@ def release(version='snapshot'):
     _zipdir(DIST_ROOT, 'dist/x3dom-%s.zip' % version)
 
 def runserver():
-    import SimpleHTTPServer
-    import SocketServer
+    try:
+        import http.server as SimpleHTTPServer
+        import socketserver as SocketServer
+    except ImportError:
+        import SimpleHTTPServer
+        import SocketServer
 
     print("Starting development server...")
     print("Open your browser and visit http://localhost:8080/")

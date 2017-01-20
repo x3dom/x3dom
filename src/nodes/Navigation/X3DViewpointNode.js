@@ -58,7 +58,7 @@ x3dom.registerNodeType(
         {
             activate: function (prev) {
                 var viewarea = this._nameSpace.doc._viewarea;
-                if (prev) {
+                if (prev && this._bindAnimation) {
                     viewarea.animateTo(this, prev._autoGen ? null : prev);
                 }
                 viewarea._needNavigationMatrixUpdate = true;
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
              */
             setViewAbsolute: function(newView)
             {
-                this._viewMatrix = newView
+                this._viewMatrix = newView;
             },
 
             setProjectionMatrix: function(matrix)
@@ -133,6 +133,10 @@ x3dom.registerNodeType(
 
             getProjectionMatrix: function(aspect) {
                 return null;
+            },
+
+            setZoom: function( value ) {
+                
             }
         }
     )

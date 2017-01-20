@@ -7,11 +7,13 @@
                 {"path": "debug.js"},
                 {"path": "util/AdaptiveRenderControl.js"},
                 {"path": "util/DownloadManager.js"},
+                {"path": "util/RequestManager.js"},
                 {"path": "util/MultiMaterial.js"},
                 {"path": "util/Parts.js"},
                 {"path": "util/Properties.js"},
                 {"path": "util/DoublyLinkedList.js"},
                 {"path": "util/EarClipping.js"},
+                {"path": "util/FieldInterpolator.js"},
                 {"path": "util/Utils.js"},
                 {"path": "util/States.js"},
                 {"path": "util/StateManager.js"},
@@ -19,6 +21,8 @@
                 {"path": "util/DrawableCollection.js"},
 				{"path": "util/Moveable.js"},
 				{"path": "util/Zlib.js"},
+                {"path": "util/glTF/glTFLoader.js"},
+                {"path": "util/glTF/glTFContainer.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -49,15 +53,15 @@
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
+                {"path": "shader/ShaderKHRMaterialCommons.js"},
 		{"path": "shader/ShaderSSAO.js", "type": "file"},
 		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
 
         {"group": "GFX",
             "data": [
-		{"path": "SSAO.js", "type": "file"},
-                {"path": "gfx_webgl.js"},
-                {"path": "gfx_flash.js"}
+		        {"path": "SSAO.js", "type": "file"},
+                {"path": "gfx_webgl.js"}
             ]},
 
 
@@ -127,7 +131,8 @@
                     {"file": "Material.js"},
                     {"file": "TwoSidedMaterial.js"},
                     {"file": "X3DShapeNode.js"},
-                    {"file": "Shape.js"}
+                    {"file": "Shape.js"},
+                    {"file": "ExternalShape.js"}
                 ]},
                 {"name": "Lighting", "filePrefix": "nodes/Lighting/", "files":[
                     {"file": "X3DLightNode.js"},
@@ -190,7 +195,9 @@
                     {"file": "Collision.js"},
                     {"file": "X3DLODNode.js"},
                     {"file": "LOD.js"},
-                    {"file": "DynamicLOD.js"}
+                    {"file": "DynamicLOD.js"},
+                    {"file": "modes/DefaultNavigation.js"},
+                    {"file": "modes/TurntableNavigation.js"}
                 ]},
                 {"name": "Text", "filePrefix": "nodes/Text/", "files":[
                     {"file": "X3DFontStyleNode.js"},
@@ -350,7 +357,11 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
-                ]},
+                ]}              
+            ]
+		},
+		{"group": "PHYSIC_EXTENSIONS",
+            "data": [
                 {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
                     {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
@@ -366,13 +377,15 @@
                     {"file": "UniversalJoint.js"},
                     {"file": "SingleAxisHingeJoint.js"},
                     {"file": "DoubleAxisHingeJoint.js"}
-                ]}                
-            ]},
-            {"group": "COMPRESSED_EXT_LIBS",
+                ]}
+			]
+		},
+        {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
                     {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
                         {"file": "ammo.js"}
                     ]}
-            ]}
+            ]
+		}
     ]
 }

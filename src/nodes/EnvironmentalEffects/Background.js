@@ -93,6 +93,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFString(ctx, 'topUrl', []);
+			
+			/**
+             *
+             * @var {x3dom.fields.MFString} scaling
+             * @memberof x3dom.nodeTypes.Background
+             * @initvalue []
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'scaling', false);
         
         },
         {

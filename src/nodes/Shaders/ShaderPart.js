@@ -78,7 +78,8 @@ x3dom.registerNodeType(
                         xhr.onerror = function() {
                             x3dom.debug.logError("Could not load file '" + that._vf.url[0] + "'.");
                         };
-                        xhr.send(null);
+                        //xhr.send(null);
+                        x3dom.RequestManager.addRequest( xhr );
                     }
                     else
                     {

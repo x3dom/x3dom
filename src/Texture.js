@@ -125,6 +125,8 @@ x3dom.Texture.prototype.update = function()
 	{
 		this.updateTexture();
 	}
+
+    this.node.validateGLObject();
 };
 
 x3dom.Texture.prototype.setPixel = function(x, y, pixel, update)
@@ -289,19 +291,12 @@ x3dom.Texture.prototype.updateTexture = function()
         this.texture.height = tex._vf.image.height;
         this.texture.ready = true;
 
-		var pixelArr = tex._vf.image.array;//.toGL();
+		var pixelArr = tex._vf.image.array;
 		var pixelArrfont_size = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
 
-        if (pixelArr.length < pixelArrfont_size)
-        {
-            pixelArr = tex._vf.image.toGL();
+		var pixels = new Uint8Array(pixelArrfont_size);
 
-            while (pixelArr.length < pixelArrfont_size) {
-                pixelArr.push(0);
-            }
-        }
-
-		var pixels = new Uint8Array(pixelArr);
+        pixels.set(pixelArr);
 
 		gl.bindTexture(this.type, this.texture);
 		gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);

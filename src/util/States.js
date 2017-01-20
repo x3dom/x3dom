@@ -37,10 +37,14 @@ x3dom.States = function (x3dElem) {
     this.infoList = document.createElement('ul');
     this.infoList.className = 'x3dom-states-list';
 
+    this.requestList = document.createElement('ul');
+    this.requestList.className = 'x3dom-states-list';
+
     //this.viewer.appendChild(title);
     this.viewer.appendChild(this.renderMode);
     this.viewer.appendChild(this.measureList);
     this.viewer.appendChild(this.infoList);
+    this.viewer.appendChild(this.requestList);
 
     /**
      * Disable the context menu
@@ -65,6 +69,27 @@ x3dom.States = function (x3dElem) {
     this.toFixed = function (value) {
         var fixed = (value < 1) ? 2 : (value < 10) ? 2 : 2;
         return value.toFixed(fixed);
+    };
+
+    /**
+     *
+     */
+    this.addItem = function ( list, key, value ) {
+        var item = document.createElement('li');
+        item.className = 'x3dom-states-item';
+
+        var keyDiv = document.createElement('div');
+        keyDiv.className = 'x3dom-states-item-title';
+        keyDiv.appendChild(document.createTextNode(key));
+
+        var valueDiv = document.createElement('div');
+        valueDiv.className = 'x3dom-states-item-value';
+        valueDiv.appendChild(document.createTextNode(value));
+
+        item.appendChild(keyDiv);
+        item.appendChild(valueDiv);
+
+        list.appendChild(item);
     };
 
     /**
@@ -94,45 +119,33 @@ x3dom.States = function (x3dElem) {
         this.measureList.innerHTML = "";
 
         //Create list items
-        for (var m in measurements) {
-            infoItem = document.createElement('li');
-            infoItem.className = 'x3dom-states-item';
-
-            infoTitle = document.createElement('div');
-            infoTitle.className = 'x3dom-states-item-title';
-            infoTitle.appendChild(document.createTextNode(m));
-
-            infoValue = document.createElement('div');
-            infoValue.className = 'x3dom-states-item-value';
-            infoValue.appendChild(document.createTextNode(this.toFixed(measurements[m])));
-
-            infoItem.appendChild(infoTitle);
-            infoItem.appendChild(infoValue);
-
-            this.measureList.appendChild(infoItem);
+        for (var m in measurements)
+        {
+			if( measurements.hasOwnProperty( m ) )
+			{
+			    this.addItem(this.measureList, m, this.toFixed(measurements[m]) );
+			}
         }
 
         //Clear info list
         this.infoList.innerHTML = "";
 
         //Create list items
-        for (var i in infos) {
-            var infoItem = document.createElement('li');
-            infoItem.className = 'x3dom-states-item';
-
-            var infoTitle = document.createElement('div');
-            infoTitle.className = 'x3dom-states-item-title';
-            infoTitle.appendChild(document.createTextNode(i));
-
-            var infoValue = document.createElement('div');
-            infoValue.className = 'x3dom-states-item-value';
-            infoValue.appendChild(document.createTextNode(this.thousandSeperator(infos[i])));
-
-            infoItem.appendChild(infoTitle);
-            infoItem.appendChild(infoValue);
-
-            this.infoList.appendChild(infoItem);
+        for (var i in infos)
+        {
+			if( infos.hasOwnProperty( i ) )
+			{
+                this.addItem(this.infoList, i, this.thousandSeperator(infos[i]) );
+			}
         }
+
+        //Clear request list
+        this.requestList.innerHTML = "";
+
+        this.addItem(this.requestList, "#ACTIVE", x3dom.RequestManager.activeRequests.length );
+        this.addItem(this.requestList, "#TOTAL",  x3dom.RequestManager.totalRequests  );
+        this.addItem(this.requestList, "#LOADED", x3dom.RequestManager.loadedRequests );
+        this.addItem(this.requestList, "#FAILED", x3dom.RequestManager.failedRequests );
     };
 
     this.updateMethodID = window.setInterval(function () {

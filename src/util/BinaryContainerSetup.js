@@ -348,12 +348,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp0.send(null);
+        //xmlhttp0.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp0 );
 
         xmlhttp0.onload = function()
         {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp0.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR1/ index load failed with status: " + xmlhttp0.status );
                 return;
             }
@@ -406,10 +409,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             indexArray = null;
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 
@@ -429,12 +432,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp.send(null);
+        //xmlhttp.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp );
 
         xmlhttp.onload = function()
         {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR1/ interleaved array load failed with status: " + xmlhttp.status );
                 return;
             }
@@ -520,10 +526,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             attributes = null;  // delete data block in CPU memory
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 
@@ -544,12 +550,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp1.send(null);
+        //xmlhttp1.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp1 );
 
         xmlhttp1.onload = function()
         {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp1.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR1/ coord load failed with status: " + xmlhttp1.status );
                 return;
             }
@@ -617,10 +626,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             vertices = null;
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 
@@ -640,12 +649,15 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp2.send(null);
+        //xmlhttp2.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp2 );
 
         xmlhttp2.onload = function()
         {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp2.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR2/ normal load failed with status: " + xmlhttp2.status );
                 return;
             }
@@ -676,10 +688,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             normals = null;
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 
@@ -699,15 +711,18 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp3.send(null);
+        //xmlhttp3.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp3 );
 
         xmlhttp3.onload = function()
         {
             var i, j;
             var tmp;
 
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp3.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR3/ texcoord load failed with status: " + xmlhttp3.status );
                 return;
             }
@@ -764,10 +779,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             texCoords = null;
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 
@@ -785,16 +800,18 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
         shape._nameSpace.doc.downloadCount += 1;
 
-        xmlhttp4.send(null);
+        //xmlhttp4.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp4 );
 
         xmlhttp4.onload = function()
         {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
             if (xmlhttp4.status != 200) {
-                shape._nameSpace.doc.downloadCount -= 1;
                 x3dom.debug.logError( "XHR4/ color load failed with status: " + xmlhttp4.status );
                 return;
             }
-
 
             if (!shape._webgl)
                 return;
@@ -822,10 +839,10 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             colors = null;
 
-            shape._nameSpace.doc.downloadCount -= 1;
-            shape._webgl.internalDownloadCount -= 1;
             if (shape._webgl.internalDownloadCount == 0)
+            {
                 shape._nameSpace.doc.needRender = true;
+            }
 
             that.checkError(gl);
 

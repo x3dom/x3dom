@@ -1717,7 +1717,8 @@ function QuadtreeNodeBin(ctx, bvhRefiner, level, columnNr, rowNr, resizeFac)
     xhr.open("GET", file, false);
     // Try to load the binary geometry files
     try {
-        xhr.send();
+        //xhr.send();
+        x3dom.RequestManager.addRequest(xhr);
 
         var xmlDoc = xhr.responseXML;
         if (xmlDoc !== null) {
@@ -2003,7 +2004,8 @@ function BVHNode(ctx, bvhRefiner, level, path, imgNumber, count)
     xhr.open("GET", file, false);
     // Try to load the binary geometry files
     try {
-        xhr.send();
+        //xhr.send();
+        x3dom.RequestManager.addRequest(xhr);
 
         var xmlDoc = xhr.responseXML;
         if (xmlDoc !== null) {

@@ -139,6 +139,36 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
+
+            /**
+             * Sets the eye to screen distance in m for stereo rendering.
+             * @var {x3dom.fields.SFFloat} eyeToScreenDistance
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 0.041
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'eyeToScreenDistance', 0.041);
+
+            /**
+             * Sets the vertical screen size in m for stereo rendering.
+             * @var {x3dom.fields.SFFloat} vScreenSize
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 0.07074
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'vScreenSize', 0.07074);
+
+            /**
+             * Sets the lens Position on Screen.
+             * @var {x3dom.fields.SFVec3f} lensCenter
+             * @memberof x3dom.nodeTypes.RenderedTexture
+             * @initvalue 0.05329
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFVec3f(ctx, 'lensCenter', 0.15197, 0, 0);
             
             /** 
              * Determines if textures shall be treated as depth map.
@@ -161,15 +191,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'oculusRiftVersion', 1);
 
-            this.hScreenSize = (this._vf.oculusRiftVersion == 1) ? 0.14976 : 0.12576;
-            this.vScreenSize = (this._vf.oculusRiftVersion == 1) ? 0.09356 : 0.07074;
-            this.vScreenCenter = this.vScreenSize / 2;
-            this.eyeToScreenDistance = 0.041;
-            this.lensSeparationDistance = 0.0635;
-            this.distortionK = [1.0, 0.22, 0.24, 0.0];
-            //hRes, vRes = 1280 x 800  // DK2:  1920 x 1080
-            //this.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
-            this.lensCenter = 0.151976495726;   // TODO: DK2 ?
 
             x3dom.debug.assert(this._vf.dimensions.length >= 3,
                 "RenderedTexture.dimensions requires at least 3 entries.");
@@ -282,7 +303,7 @@ x3dom.registerNodeType(
                 if (view === null || view === vbP) {
                     ret_mat = x3dom.fields.SFMatrix4f.copy(doc._viewarea.getProjectionMatrix());
                     if (stereo) {
-                        f = 2 * Math.atan(this.vScreenSize / (2 * this.eyeToScreenDistance));
+                        f = 2 * Math.atan(this._vf.vScreenSize / (2 * this._vf.eyeToScreenDistance));
                         f = 1 / Math.tan(f / 2);
                     }
                     else {
@@ -296,14 +317,14 @@ x3dom.registerNodeType(
                 }
 
                 if (stereo) {
-                    var hp = this.lensCenter;
+                    var lensCenter = this._vf.lensCenter.copy();
                     if (stereoMode == "RIGHT_EYE") {
-                        hp = -hp;
+                        lensCenter.x = -lensCenter.x;
                     }
                     var modifier = new x3dom.fields.SFMatrix4f(
-                        1, 0, 0, hp,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
+                        1, 0, 0, lensCenter.x,
+                        0, 1, 0, lensCenter.y,
+                        0, 0, 1, lensCenter.z,
                         0, 0, 0, 1
                     );
                     ret_mat = modifier.mult(ret_mat);

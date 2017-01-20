@@ -622,10 +622,11 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
  *
  * Parameter:
  *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ *     updateCenterOfRotation - sets the center of rotation to the center of the scene volume
  *
  */
-x3dom.Runtime.prototype.showAll = function(axis) {
-    this.canvas.doc._viewarea.showAll(axis);
+x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
+    this.canvas.doc._viewarea.showAll(axis, updateCenterOfRotation);
 };
 
 /**
@@ -635,8 +636,9 @@ x3dom.Runtime.prototype.showAll = function(axis) {
  *
  * Parameter:
  *     obj  - the scene-graph element on which to focus
+ *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
  */
-x3dom.Runtime.prototype.showObject = function(obj)
+x3dom.Runtime.prototype.showObject = function(obj, axis)
 {
     if (obj && obj._x3domNode)
     {
@@ -657,7 +659,18 @@ x3dom.Runtime.prototype.showObject = function(obj)
         var focalLen = (viewarea._width < viewarea._height) ?
                         viewarea._width : viewarea._height;
 
-        var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
+        var n0;    // facingDir
+
+        switch( axis )
+        {
+            case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0); break;
+            case "negX": n0 = new x3dom.fields.SFVec3f(-1,  0,  0); break;
+            case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0); break;
+            case "negY": n0 = new x3dom.fields.SFVec3f( 1, -1,  0); break;
+            case "posZ": n0 = new x3dom.fields.SFVec3f( 0,  0,  1); break;
+            case "negZ": n0 = new x3dom.fields.SFVec3f( 0,  0, -1); break;
+        }
+
         var viewpoint = this.canvas.doc._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView() / 2.0;
         var ta = Math.tan(fov);
@@ -1116,6 +1129,20 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
 };
 
 /**
+ * APIFunction: zoom
+ *
+ *	Modifies the zoom of current viewpoint with the specified zoom value.
+ *
+ * Parameters:
+ *		zoomAmount - The zoom amount
+ *
+ */
+x3dom.Runtime.prototype.zoom = function(zoomAmount) {
+    this.canvas.doc._viewarea.zoom( zoomAmount );
+    this.canvas.doc.needRender = true;
+};
+
+/**
  * APIFunction: statistics
  *
  * Get or set statistics info. If parameter is omitted, this method
@@ -1219,4 +1246,81 @@ x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
     }
     
     return inherits;
+};
+
+/**
+ * APIMethod getPixelScale
+ *
+ * Returns the virtual scale of one pixel for the current orthographic viewpoint.
+ * The returned vector contains scale values for the x and y direction. The z value is always null.
+ *
+ * Parameters:
+ *
+ *  Returns:
+ *    x3dom.fields.SFVec3f or null if non orthographic view
+ */
+x3dom.Runtime.prototype.getPixelScale = function(){
+    var vp = this.viewpoint();
+    if(!x3dom.isa(vp, x3dom.nodeTypes.OrthoViewpoint)){
+        x3dom.debug.logError("getPixelScale is only implemented for orthographic Viewpoints");
+        return null;
+    }
+
+    var zoomLevel = vp.getZoom();
+    
+    var left   = zoomLevel[0];
+    var bottom = zoomLevel[1];
+    var right  = zoomLevel[2];
+    var top    = zoomLevel[3];
+
+    var x = right - left;
+    var y = top - bottom;
+
+    var pixelScaleX = x / this.getWidth();
+    var pixelScaleY = y / this.getHeight();
+
+    return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
+};
+
+x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
+{
+    var dist;
+    var factor = 2.2;
+    var runtime = document.getElementById("x3d").runtime;
+    var navInfo = runtime.canvas.doc._scene.getNavigationInfo();
+    var speed = navInfo._vf.transitionTime;
+    var persp = document.getElementById(perspViewID)._x3domNode;
+    var ortho = document.getElementById(orthoViewID)._x3domNode;
+
+    navInfo._vf.transitionTime = 0;
+
+    ortho._bindAnimation = false;
+    persp._bindAnimation = false;
+
+    if (persp._vf.isActive) {
+        ortho._viewMatrix = persp._viewMatrix;
+
+        document.getElementById(orthoViewID).setAttribute("set_bind", "true");
+
+        dist = persp._viewMatrix.e3().length() / factor;
+
+        ortho.setZoom(dist);
+    }
+    else if (ortho._vf.isActive) {
+        persp._viewMatrix = ortho._viewMatrix;
+
+        document.getElementById(perspViewID).setAttribute("set_bind", "true");
+
+        dist = ortho._fieldOfView[2] * factor;
+        var translation = ortho._viewMatrix.e3().normalize().multiply(dist);
+
+        persp._viewMatrix.setTranslate(translation);
+    }
+
+    navInfo._vf.transitionTime = speed;
+
+    ortho._bindAnimation = true;
+    persp._bindAnimation = true;
+
+    return (persp._vf.isActive) ? 0 : 1;
 };

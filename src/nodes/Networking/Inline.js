@@ -312,7 +312,8 @@ x3dom.registerNodeType(
                     this._nameSpace.doc.downloadCount += 1;
 
                     try {
-                        xhr.send(null);
+                        //xhr.send(null);
+                        x3dom.RequestManager.addRequest(xhr);
                     }
                     catch(ex) {
                         this.fireEvents("error");

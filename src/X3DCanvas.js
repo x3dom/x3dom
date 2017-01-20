@@ -26,12 +26,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this._canvasIdx = canvasIdx;
 
     /**
-     * Flag if flash is ready - needed for WebKit Browser
-     * @member {Boolean} isFlashReady
-     */
-    this.isFlashReady = false;
-
-    /**
      * The X3D Element
      * @member {X3DElement} x3dElem
      */
@@ -48,7 +42,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.lastTimeFPSWasTaken = 0;
     this.framesSinceLastTime = 0;
 
+    this._totalTime = 0;
+    this._elapsedTime = 0;
+
     this.doc = null;
+
+    this.devicePixelRatio = window.devicePixelRatio || 1;
 
     this.lastMousePos = { x: 0, y: 0 };
     //try to determine behavior of certain DOMNodeInsertedEvent:
@@ -65,8 +64,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         this.__setAttribute(attrName, newVal);
 
         // scale resolution so device pixel are used rather then css pixels
-        if(window.devicePixelRatio)
-            newVal = parseInt(newVal) * window.devicePixelRatio;
+        newVal = parseInt(newVal) * that.devicePixelRatio;
 
         switch(attrName) {
 
@@ -95,71 +93,55 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     x3dom.caps.MOBILE = (navigator.appVersion.indexOf("Mobile") > -1);
 
     this.backend = this.x3dElem.getAttribute('backend');
-    if (this.backend)
-        this.backend = this.backend.toLowerCase();
-    else
-        this.backend = 'none';
-
-    if (this.backend == 'flash') {
-        this.backend = 'flash';
-        this.canvas = this._createFlashObject(x3dElem);
-        if (this.canvas != null) {
-            this.canvas.parent = this;
-            this.gl = this._initFlashContext(this.canvas, this.flash_renderType);
-        } else {
-            this._createInitFailedDiv(x3dElem);
-            return;
-        }
-    } else {
-        this.canvas = this._createHTMLCanvas(x3dElem);
-        this.canvas.parent = this;
-        this.gl = this._initContext( this.canvas,
-            (this.backend.search("desktop") >= 0),
-            (this.backend.search("mobile") >= 0),
-            (this.backend.search("flashie") >= 0),
-            (this.backend.search("webgl2") >= 0));
-        this.backend = 'webgl';
-        if (this.gl == null)
-        {
-            x3dom.debug.logInfo("Fallback to Flash Renderer");
-            this.backend = 'flash';
-            this.canvas = this._createFlashObject(x3dElem);
-            if (this.canvas != null) {
-                this.canvas.parent = this;
-                this.gl = this._initFlashContext(this.canvas, this.flash_renderType);
-            } else {
-                this._createInitFailedDiv(x3dElem);
-                return;
-            }
-        }
-    }
+	
+    this.backend = ( this.backend ) ? this.backend.toLowerCase() : 'none';
+        
+	this.canvas = this._createHTMLCanvas( x3dElem );
+	
+	this.canvas.parent = this;
+	
+	this.gl = this._initContext( this.canvas, (this.backend.search("desktop") >= 0),
+											  (this.backend.search("mobile") >= 0),
+											  (this.backend.search("flashie") >= 0),
+											  (this.backend.search("webgl2") >= 0));
+	this.backend = 'webgl';
+	
+	if (this.gl == null)
+	{
+		this.hasRuntime = false;
+		this._createInitFailedDiv(x3dElem);
+		return;
+	}
 
     x3dom.caps.BACKEND = this.backend;
 
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
 
-    if (runtimeEnabled !== null) {
+    if (runtimeEnabled !== null)
+	{
         this.hasRuntime = (runtimeEnabled.toLowerCase() == "true");
-    } else {
+    }
+	else
+	{
         this.hasRuntime = x3dElem.hasRuntime;
     }
 
-    if (this.gl === null) {
-        this.hasRuntime = false;
-    }
+	/**
+	 * STATS VIEWER STUFF
+	 * TODO MOVE IT TO MAIN.JS
+	 */
+    this.showStat = x3dElem.getAttribute("showStat");
+    this.stateViewer = new x3dom.States(x3dElem);
+	
+	if (this.showStat !== null && this.showStat == "true")
+	{
+		this.stateViewer.display(true);
+	}
 
-    //States only needed for the webgl backend. flash has his own.
-    if (this.backend != "flash") {
-        this.showStat = x3dElem.getAttribute("showStat");
+    this.x3dElem.appendChild(this.stateViewer.viewer);
 
-        this.stateViewer = new x3dom.States(x3dElem);
-        if (this.showStat !== null && this.showStat == "true") {
-            this.stateViewer.display(true);
-        }
-
-        this.x3dElem.appendChild(this.stateViewer.viewer);
-    }
-
+	
+	
     // progress bar
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this._createProgressDiv();
@@ -168,8 +150,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     // touch visualization
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
-    this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
-    //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
+    this.showTouchpoints = this.showTouchpoints ? this.showTouchpoints : false;
 
     // disable touch events
     this.disableTouch = x3dElem.getAttribute("disableTouch");
@@ -187,8 +168,180 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	this.disableMiddleDrag = x3dElem.getAttribute("disableMiddleDrag");
 	this.disableMiddleDrag = this.disableMiddleDrag ? (this.disableMiddleDrag.toLowerCase() == "true") : false;
 
+    this.bindEventListeners();
+};
 
-    if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
+
+x3dom.X3DCanvas.prototype.bindEventListeners = function() {
+    var that = this;
+
+    this.onMouseDown = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+            this.classList.add('x3dom-canvas-mousedown');
+
+            switch(evt.button) {
+                case 0:  this.mouse_button = 1; break;  //left
+                case 1:  this.mouse_button = 4; break;  //middle
+                case 2:  this.mouse_button = 2; break;  //right
+                default: this.mouse_button = 0; break;
+            }
+
+            if (evt.shiftKey) { this.mouse_button = 1; }
+            if (evt.ctrlKey)  { this.mouse_button = 4; }
+            if (evt.altKey)   { this.mouse_button = 2; }
+
+            var pos = this.parent.mousePosition(evt);
+            this.mouse_drag_x = pos.x;
+            this.mouse_drag_y = pos.y;
+
+            this.mouse_dragging = true;
+
+            this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseUp = function (evt) {
+        if(!this.isMulti) {
+            var prev_mouse_button = this.mouse_button;
+            this.classList.remove('x3dom-canvas-mousedown');
+
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+
+            this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button, prev_mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseOver = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+
+            this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseAlt = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+            this.mouse_dragging = false;
+            this.classList.remove('x3dom-canvas-mousedown');
+
+            this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onDoubleClick = function (evt) {
+        if(!this.isMulti) {
+            this.mouse_button = 0;
+
+            var pos = this.parent.mousePosition(evt);
+            this.mouse_drag_x = pos.x;
+            this.mouse_drag_y = pos.y;
+
+            this.mouse_dragging = false;
+
+            this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
+            this.parent.doc.needRender = true;
+        }
+    }
+
+    this.onMouseMove = function (evt) {
+        if(!this.isMulti) {
+
+            var pos = this.parent.mousePosition(evt);
+            
+            if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
+                that.lastMousePos = pos;
+                
+                this.mouse_drag_x = pos.x;
+                this.mouse_drag_y = pos.y;
+
+                if (this.mouse_dragging) {
+                    
+                    if (evt.shiftKey) { this.mouse_button = 1; }
+                    if (evt.ctrlKey)  { this.mouse_button = 4; }
+                    if (evt.altKey)   { this.mouse_button = 2; }
+                    
+                    if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
+                         this.mouse_button == 2 && !this.parent.disableRightDrag ||
+                         this.mouse_button == 4 && !this.parent.disableMiddleDrag ) 
+                    {
+                        this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                    }
+                }
+                else {
+                    this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+                }
+
+                this.parent.doc.needRender = true;
+
+                // deliberately different for performance reasons
+                evt.preventDefault();
+                evt.stopPropagation();
+            }
+        }
+    }
+
+    this.onDOMMouseScroll = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+
+            var originalY = this.parent.mousePosition(evt).y;
+
+            this.mouse_drag_y += 2 * evt.detail;
+
+            this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
+            this.parent.doc.needRender = true;
+
+            evt.preventDefault();
+            evt.stopPropagation();
+        }
+    }
+
+    this.onKeyPress = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyPress(evt.charCode);
+        }
+        this.parent.doc.needRender = true;
+    }
+
+    this.onMouseWheel = function (evt) {
+        if(!this.isMulti) {
+            this.focus();
+
+            var originalY = this.parent.mousePosition(evt).y;
+
+            this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+
+            this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
+            this.parent.doc.needRender = true;
+
+            evt.preventDefault();
+            evt.stopPropagation();
+        }
+    }
+
+    this.onKeyUp = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyUp(evt.keyCode);
+        }
+        this.parent.doc.needRender = true;
+    }
+
+    this.onKeyDown = function (evt) {
+        if (!this.parent.disableKeys) {
+            this.parent.doc.onKeyDown(evt.keyCode);
+        }
+        this.parent.doc.needRender = true;
+    }
+
+    if (this.canvas !== null && this.gl !== null && this.hasRuntime) {
         // event handler for mouse interaction
         this.canvas.mouse_dragging = false;
         this.canvas.mouse_button = 0;
@@ -216,173 +369,30 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
 
         // Mouse Events
-        this.canvas.addEventListener('mousedown', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-                this.classList.add('x3dom-canvas-mousedown');
+        this.canvas.addEventListener('mousedown', this.onMouseDown , false);
 
-                switch(evt.button) {
-                    case 0:  this.mouse_button = 1; break;  //left
-                    case 1:  this.mouse_button = 4; break;  //middle
-                    case 2:  this.mouse_button = 2; break;  //right
-                    default: this.mouse_button = 0; break;
-                }
+        this.canvas.addEventListener('mouseup', this.onMouseUp, false);
 
-                if (evt.shiftKey) { this.mouse_button = 1; }
-                if (evt.ctrlKey)  { this.mouse_button = 4; }
-                if (evt.altKey)   { this.mouse_button = 2; }
+        this.canvas.addEventListener('mouseover', this.onMouseOver, false);
 
-                var pos = this.parent.mousePosition(evt);
-                this.mouse_drag_x = pos.x;
-                this.mouse_drag_y = pos.y;
+        this.canvas.addEventListener('mouseout', this.onMouseOut, false);
 
-                this.mouse_dragging = true;
+        this.canvas.addEventListener('dblclick', this.onDoubleClick, false);
 
-                this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
+        this.canvas.addEventListener('mousemove', this.onMouseMove, false);
 
-        this.canvas.addEventListener('mouseup', function (evt) {
-            if(!this.isMulti) {
-                var prev_mouse_button = this.mouse_button;
-                this.classList.remove('x3dom-canvas-mousedown');
+        this.canvas.addEventListener('DOMMouseScroll', this.onDOMMouseScroll, false);
 
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-
-                this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button, prev_mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mouseover', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-
-                this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mouseout', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-                this.mouse_dragging = false;
-                this.classList.remove('x3dom-canvas-mousedown');
-
-                this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('dblclick', function (evt) {
-            if(!this.isMulti) {
-                this.mouse_button = 0;
-
-                var pos = this.parent.mousePosition(evt);
-                this.mouse_drag_x = pos.x;
-                this.mouse_drag_y = pos.y;
-
-                this.mouse_dragging = false;
-
-                this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
-                this.parent.doc.needRender = true;
-            }
-        }, false);
-
-        this.canvas.addEventListener('mousemove', function (evt) {
-            if(!this.isMulti) {
-
-                var pos = this.parent.mousePosition(evt);
-                
-                if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
-                    that.lastMousePos = pos;
-                    if (evt.shiftKey) { this.mouse_button = 1; }
-                    if (evt.ctrlKey)  { this.mouse_button = 4; }
-                    if (evt.altKey)   { this.mouse_button = 2; }
-
-                    this.mouse_drag_x = pos.x;
-                    this.mouse_drag_y = pos.y;
-
-                    if (this.mouse_dragging) {
-						
-						if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
-							 this.mouse_button == 2 && !this.parent.disableRightDrag ||
-							 this.mouse_button == 4 && !this.parent.disableMiddleDrag ) 
-						{
-							this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-						}
-                    }
-                    else {
-                        this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-                    }
-
-                    this.parent.doc.needRender = true;
-
-                    // deliberately different for performance reasons
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                }
-            }
-        }, false);
-
-        this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-
-                var originalY = this.parent.mousePosition(evt).y;
-
-                this.mouse_drag_y += 2 * evt.detail;
-
-                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
-                this.parent.doc.needRender = true;
-
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        }, false);
-
-        this.canvas.addEventListener('mousewheel', function (evt) {
-            if(!this.isMulti) {
-                this.focus();
-
-                var originalY = this.parent.mousePosition(evt).y;
-
-                this.mouse_drag_y -= 0.1 * evt.wheelDelta;
-
-                this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
-                this.parent.doc.needRender = true;
-
-                evt.preventDefault();
-                evt.stopPropagation();
-            }
-        }, false);
+        this.canvas.addEventListener('mousewheel', this.onMouseWheel, false);
 
 
         // Key Events
-        this.canvas.addEventListener('keypress', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyPress(evt.charCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keypress', this.onKeyPress, true);
 
         // in webkit special keys are only handled on key-up
-        this.canvas.addEventListener('keyup', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyUp(evt.keyCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keyup', this.onKeyUp, true);
 
-        this.canvas.addEventListener('keydown', function (evt) {
-            if (!this.parent.disableKeys) {
-                this.parent.doc.onKeyDown(evt.keyCode);
-            }
-            this.parent.doc.needRender = true;
-        }, true);
+        this.canvas.addEventListener('keydown', this.onKeyDown, true);
 
 
         // Multitouch Events
@@ -466,15 +476,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             }
         };
 
-        // Mozilla Touches (seems obsolete now...)
-        var mozilla_ids = [];
-
-        var mozilla_touches =
-        {
-            touches : [],
-            preventDefault : function() {}
-        };
-
         // === Touch Start ===
         var touchStartHandler = function(evt, doc)
         {
@@ -549,24 +550,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             }
 
             doc.needRender = true;
-        };
 
-        var touchStartHandlerMoz = function(evt)
-        {
-            this.isMulti = true;
-            evt.preventDefault();
-
-            var new_id = true;
-            for(var i=0; i<mozilla_ids.length; ++i)
-                if(mozilla_ids[i] == evt.streamId)
-                    new_id = false;
-
-            if(new_id == true) {
-                evt.identifier = evt.streamId;
-                mozilla_ids.push(evt.streamId);
-                mozilla_touches.touches.push(evt);
-            }
-            touchStartHandler(mozilla_touches, this.parent.doc);
         };
 
         // === Touch Move ===
@@ -606,7 +590,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
                     rotMatrix = mx.mult(my);
 
-                    doc.onMoveView(that.gl, null, rotMatrix);
+                    doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
                 }
                 // two fingers: scale, translation, rotation around view (z) axis
                 else if(evt.touches.length >= 2) {
@@ -633,7 +617,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                     touches.lastMiddle = middle;
                     touches.lastSquareDistance = squareDistance;
 
-                    doc.onMoveView(that.gl, deltaMove, rotMatrix);
+                    doc.onMoveView(that.gl, evt, touches, deltaMove, rotMatrix);
                 }
             }
             else if (evt.touches.length) {
@@ -658,17 +642,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             }
 
             doc.needRender = true;
-        };
-
-        var touchMoveHandlerMoz = function(evt)
-        {
-            evt.preventDefault();
-
-            for(var i=0; i<mozilla_ids.length; ++i)
-                if(mozilla_ids[i] == evt.streamId)
-                    mozilla_touches.touches[i] = evt;
-
-            touchMoveHandler(mozilla_touches, this.parent.doc);
         };
 
         // === Touch end ===
@@ -747,40 +720,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
             doc.needRender = true;
         };
 
-        var touchEndHandlerMoz = function(evt)
-        {
-            this.isMulti = false;
-            evt.preventDefault();
-
-            var remove_index = -1;
-            for(var i=0; i<mozilla_ids.length; ++i)
-                if(mozilla_ids[i] == evt.streamId)
-                    remove_index = i;
-
-            if(remove_index != -1)
-            {
-                mozilla_ids.splice(remove_index, 1);
-                mozilla_touches.touches.splice(remove_index, 1);
-            }
-
-            touchEndHandler(mozilla_touches, this.parent.doc);
-        };
-
         if (!this.disableTouch)
         {
-            // mozilla touch events (TODO: seem to be obsolete now, completely remove all code if no one complains!)
-            // However, touch in general seems to be broken if this flag is not set: dom.w3c_touch_events.enabled;10
-            //this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
-            //this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
-            //this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
-
             // w3c / apple touch events (in Chrome via chrome://flags)
             this.canvas.addEventListener('touchstart',    touchStartHandler, true);
             this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-};
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -793,7 +742,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
  * @param {Boolean} forceFlashForIE - force flash backend for internet explorer
  * @param {Boolean} tryWebGL2 - try to retrieve a WebGL2 context
  */
-x3dom.X3DCanvas.prototype._initContext = function(canvas, forbidMobileShaders, forceMobileShaders, forceFlashForIE, tryWebGL2)
+x3dom.X3DCanvas.prototype._initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2)
 {
     x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
     var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, this.x3dElem);
@@ -808,32 +757,12 @@ x3dom.X3DCanvas.prototype._initContext = function(canvas, forbidMobileShaders, f
     {
         var webglVersion = parseFloat(x3dom.caps.VERSION.match(/\d+\.\d+/)[0]);
         if (webglVersion < 1.0) {
-            console.log(forceFlashForIE);
-            if (forceFlashForIE) {
-                x3dom.debug.logError("No valid 3D context found...");
-                this.x3dElem.removeChild(canvas);
-                return null;
-            } else {
-                x3dom.debug.logError("WebGL version " + x3dom.caps.VERSION +
-                    " lacks important WebGL/GLSL features needed for shadows, special vertex attribute types, etc.!");
-            }
+			x3dom.debug.logError("WebGL version " + x3dom.caps.VERSION +
+				" lacks important WebGL/GLSL features needed for shadows, special vertex attribute types, etc.!");
         }
     }
 
     return gl;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**
- * Creates the WebGL context and returns it
- * @returns {WebGLContext} gl
- * @param {HTMLCanvas} canvas - the HTMLCanvas
- * @param {Object} renderType - the renderType for the Flash backend
- */
-x3dom.X3DCanvas.prototype._initFlashContext = function(canvas, renderType) {
-    x3dom.debug.logInfo("Initializing X3DObject for [" + canvas.id + "]");
-    return x3dom.gfx_flash(canvas, renderType);
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -849,56 +778,6 @@ x3dom.X3DCanvas.prototype.appendParam = function(node, name, value) {
     param.setAttribute('name', name);
     param.setAttribute('value', value);
     node.appendChild( param );
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**
- * Tests if a file exists
- * @returns {Boolean}
- * @param {String} url - the url to be tested
- */
-x3dom.X3DCanvas.prototype._fileExists = function(url) {
-    var xhr = new XMLHttpRequest();
-    try {
-        xhr.open("HEAD", url, false);
-        xhr.send(null);
-        return (xhr.status != 404);
-    } catch(e) { return true; }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**
- * Detects if flash is available
- * @returns {Boolean}
- * @param {String} required - required version
- * @param {String} max - maximal compatible version
- */
-x3dom.X3DCanvas.prototype._detectFlash = function(required, max)
-{
-    var required_version = required;
-    var max_version = max;
-    var available_version = 0;
-
-    /* this section is for NS, Mozilla, Firefox and similar Browsers */
-    if(typeof(navigator.plugins["Shockwave Flash"]) == "object")
-    {
-        var description = navigator.plugins["Shockwave Flash"].description;
-        available_version = description.substr(16, (description.indexOf(".", 16) - 16));
-    }
-    else if(typeof(ActiveXObject) == "function") {
-        for(var i = 10; i < (max_version + 1); i ++) {
-            try {
-                if(typeof(new ActiveXObject("ShockwaveFlash.ShockwaveFlash." + i)) == "object") {
-                    available_version = i+1;
-                }
-            }
-            catch(error){}
-        }
-    }
-
-    return [available_version, required_version];
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -949,130 +828,6 @@ x3dom.X3DCanvas.prototype._createInitFailedDiv = function(x3dElem) {
 //----------------------------------------------------------------------------------------------------------------------
 
 /**
- * Creates the flash object used as render target
- * @returns {Object} - the flash object
- * @param {HTMLNode} x3dElem - the X3D root node
- */
-x3dom.X3DCanvas.prototype._createFlashObject = function (x3dElem) {
-
-    var result = this._detectFlash(11, 11);
-
-    if (!result[0] || result[0] < result[1]) {
-        return null;
-    } else {
-
-        x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
-
-        //Get X3D-Element ID
-        var id = this.x3dElem.getAttribute("id");
-        if (id !== null) {
-            id = "x3dom-" + id + "-object";
-        } else {
-            var index = new Date().getTime();
-            id = "x3dom-" + index + "-object";
-        }
-
-        //Get SWFPath
-        var swf_path = this.x3dElem.getAttribute("swfpath");
-        if (swf_path === null) {
-            swf_path = "x3dom.swf";
-        }
-
-        if (!this._fileExists(swf_path)) {
-            var version;
-
-            //No version info or a dev string?
-            if (x3dom.versionInfo === undefined || x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
-            {
-                version = "dev";
-            }
-            //Stable version?
-            else
-            {
-                version = x3dom.versionInfo.version;
-
-                //If version ends with ".0" (modification number), remove this part from path to download folder
-                var modification = version.substr(version.length-1);
-                if(modification == 0) {
-                    version = version.substr(0, 3);
-                }
-            }
-
-            swf_path = "http://www.x3dom.org/download/" + version + "/x3dom.swf";
-
-            x3dom.debug.logWarning("Can't find local x3dom.swf (" + version + "). X3DOM now using the online version from x3dom.org." +
-                "The online version needs a <a href='http://examples.x3dom.org/crossdomain.xml'>crossdomain.xml</a> " +
-                "file in the root directory of your domain to access textures");
-        }
-
-        //Get width from x3d-Element or set default
-        var width = this.x3dElem.getAttribute("width");
-        var idx = -1;
-        if (width == null) {
-            width = 550;
-        } else {
-            idx = width.indexOf("px");
-            if (idx != -1) {
-                width = width.substr(0, idx);
-            }
-        }
-        //Get height from x3d-Element or set default
-        var height = this.x3dElem.getAttribute("height");
-        if (height == null) {
-            height = 400;
-        } else {
-            idx = height.indexOf("px");
-            if (idx != -1) {
-                height = height.substr(0, idx);
-            }
-        }
-
-        //Get flash render type
-        var renderType = this.x3dElem.getAttribute("flashrenderer");
-        if (renderType == null) {
-            this.flash_renderType = "forward";
-        } else {
-            this.flash_renderType = "deferred";
-        }
-
-        var obj = document.createElement('object');
-        obj.setAttribute('width', '100%');
-        obj.setAttribute('height', '100%');
-        obj.setAttribute('id', id);
-
-        //Check for xhtml
-        if (!document.doctype || document.doctype && document.doctype.publicId && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
-            x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
-            obj.setAttribute('style', 'width:' + width + 'px; height:' + height + 'px;');
-        } else {
-            if (x3dElem.getAttribute('style') == null) {
-                x3dElem.setAttribute('style', 'width:' + width + 'px; height:' + height + 'px;');
-            }
-        }
-
-        this.appendParam(obj, 'menu', 'false');
-        this.appendParam(obj, 'quality', 'high');
-        this.appendParam(obj, 'wmode', 'direct');
-        this.appendParam(obj, 'allowScriptAccess', 'always');
-        this.appendParam(obj, 'flashvars', 'canvasIdx=' + this._canvasIdx + '&renderType=' + this.flash_renderType);
-        this.appendParam(obj, 'movie', swf_path);
-
-        if (navigator.appName == "Microsoft Internet Explorer") {
-            x3dElem.appendChild(obj);
-            obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
-        } else {
-            obj.setAttribute('type', 'application/x-shockwave-flash');
-            obj.setAttribute('data', swf_path);
-            x3dElem.appendChild(obj);
-        }
-
-        return obj;
-    }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/**
  * Creates the HTML canvas used as render target
  * @returns {HTMLCanvas} - the created canvas
  * @param {HTMLNode} x3dElem - the X3D root node
@@ -1109,11 +864,6 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
         "ontouchcancel",
         "ontouchleave",
         "ontouchenter",
-
-        // mozilla touch
-        //"onMozTouchDown",
-        //"onMozTouchMove",
-        //"onMozTouchUp",
 
         // drag and drop, requires 'draggable' source property set true (usually of an img)
         "ondragstart",
@@ -1295,42 +1045,27 @@ x3dom.X3DCanvas.prototype._createProgressDiv = function() {
 /** Helper that converts a point from node coordinates to page coordinates
  FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
  */
-x3dom.X3DCanvas.prototype.mousePosition = function(evt)
+x3dom.X3DCanvas.prototype.mousePosition = function( evt )
 {
-    var x = 0, y = 0;
+    var rect = evt.target.getBoundingClientRect();
 
-    if ( "getBoundingClientRect" in document.documentElement ) {
-        var elem = evt.target.offsetParent;    // should be x3dElem
-        var box = elem.getBoundingClientRect();
+    var offsetX = Math.round( evt.clientX - rect.left ) * this.devicePixelRatio;
+    var offsetY = Math.round( evt.clientY - rect.top  ) * this.devicePixelRatio;
 
-        var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-        var scrollTop  = window.pageYOffset || document.documentElement.scrollTop;
-
-        var compStyle = document.defaultView.getComputedStyle(elem, null);
-
-        var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
-        var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
-
-        var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
-        var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
-
-        x = Math.round(evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrollLeft));
-        y = Math.round(evt.pageY - (box.top + paddingTop + borderTopWidth + scrollTop));
-    }
-    else {
-        x3dom.debug.logError('NO getBoundingClientRect');
-    }
-
-    return new x3dom.fields.SFVec2f(x, y);
+    return new x3dom.fields.SFVec2f( offsetX, offsetY );
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Is called in the main loop after every frame
  */
-x3dom.X3DCanvas.prototype.tick = function()
+x3dom.X3DCanvas.prototype.tick = function(timestamp)
 {
     var that = this;
+
+    this._elapsedTime = (this._totalTime) ? timestamp - this._totalTime : 0;
+
+    this._totalTime = timestamp;
 
     var runtime = this.x3dElem.runtime;
     var d = new Date().getTime();
@@ -1361,26 +1096,19 @@ x3dom.X3DCanvas.prototype.tick = function()
             runtime.isReady = true;
         }
 
-        runtime.enterFrame();
+        runtime.enterFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
 
-        if (this.backend == 'flash') {
-            if (this.isFlashReady) {
-                this.canvas.setFPS({fps: fps});
+		// picking might require another pass
+		this.doc.needRender = false;
+		this.doc.render(this.gl);
 
-                this.doc.needRender = false;
-                this.doc.render(this.gl);
-            }
-        }
-        else {
-            // picking might require another pass
-            this.doc.needRender = false;
-            this.doc.render(this.gl);
+		if (!this.doc._scene._vf.doPickPass)
+		{
+			runtime.removeMeasurement('PICKING');
+		}
+                
 
-            if (!this.doc._scene._vf.doPickPass)
-                runtime.removeMeasurement('PICKING');
-        }
-
-        runtime.exitFrame();
+        runtime.exitFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
     }
 
     if (this.progressDiv) {
@@ -1439,10 +1167,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
         if (x3dCanvas.hasRuntime) {
 
 			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
-			(function mainloop(){
+			(function mainloop(timestamp){
                 if (x3dCanvas.doc && x3dCanvas.x3dElem.runtime) {
                     x3dCanvas._watchForResize();
-                    x3dCanvas.tick();
+                    x3dCanvas.tick(timestamp);
                     window.requestAnimFrame(mainloop, x3dCanvas);
                 }
 		    })();
