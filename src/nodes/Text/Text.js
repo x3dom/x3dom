@@ -98,6 +98,15 @@ x3dom.registerNodeType(
                         node.setAllDirty();
                     });
                 }
+            },
+            
+            validateGLObject: function ()
+            {
+                Array.forEach(this._parentNodes, function (node) {
+                    node._dirty.texture = false;
+                });
+
+                this._nameSpace.doc.needRender = true;
             }
         }
     ) // defineClass

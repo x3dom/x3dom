@@ -174,6 +174,9 @@ x3dom.RequestManager.abortAllRequests = function()
 
     this.requests = [];
     this.activeRequests = [];
+    this.failedRequests = 0;
+    this.loadedRequests = 0;
+    this.totalRequests = 0;
 
     this.onAbortAllRequests( this._getCounters() );
 }

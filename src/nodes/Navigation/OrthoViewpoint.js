@@ -188,8 +188,8 @@ x3dom.registerNodeType(
                     var dia = max.subtract(min);					
 					var tanfov2 = Math.tan(fov / 2.0);
 					
-					var dist1 = (dia.y / 2.0) / tanfov2 + dia.z;
-					var dist2 = (dia.x / 2.0) / tanfov2 + dia.z;
+					var dist1 = ( (dia.y / 2.0) / tanfov2 + dia.z ) + this._fieldOfView[2];
+					var dist2 = ( (dia.x / 2.0) / tanfov2 + dia.z ) + this._fieldOfView[2];
 					
 					znear = 0.00001;
 					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
