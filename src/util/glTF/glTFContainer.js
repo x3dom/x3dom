@@ -410,7 +410,13 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
 x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 {
-    if(this.program != null)
+    function glMultMatrix4 (gl, m) {
+        var glM = new x3dom.fields.SFMatrix4f();
+        glM.setFromArray(gl);
+        return glM.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+    }
+    
+    if(this.program !== null)
     {
         this.program.bind();
 
@@ -421,13 +427,15 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 
             switch(mapping){
                 case "modelViewMatrix":
-                    this.program[key] = shaderParameter.modelViewMatrix;
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewMatrix, this.worldTransform);
                     break;
                 case "viewMatrix":
                     this.program[key] = shaderParameter.viewMatrix;
                     break;
                 case "modelViewInverseTransposeMatrix":
                     var mat = shaderParameter.normalMatrix;
+                    //not sure how to factor in worldTransform
+                    //modelViewMatrix * worldTransform . inverse . transpose . toGL ?
 
                     var model_view_inv_gl =
                         [mat[0], mat[1], mat[2],
@@ -437,13 +445,14 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
                     this.program[key] = model_view_inv_gl;
                     break;
                 case "modelViewInverseMatrix":
+                    // not sure; perhaps work with worldTransform.inverse; or reconstruct
                     this.program[key] = shaderParameter.modelViewMatrixInverse;
                     break;
                 case "modelViewProjectionMatrix":
-                    this.program[key] = shaderParameter.modelViewProjectionMatrix;
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewProjectionMatrix, this.worldTransform);
                     break;
                 case "modelMatrix":
-                    this.program[key] = shaderParameter.model;
+                    this.program[key] = glMultMatrix4(shaderParameter.model, this.worldTransform);
                     break;
                 case "projectionMatrix":
                     this.program[key] = shaderParameter.projectionMatrix;
@@ -453,5 +462,4 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
             }
         }
     }
-
 };
