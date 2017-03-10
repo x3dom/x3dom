@@ -410,10 +410,11 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
 x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 {
+    var matrix4f = new x3dom.fields.SFMatrix4f();
+    
     function glMultMatrix4 (gl, m) {
-        var glM = new x3dom.fields.SFMatrix4f();
-        glM.setFromArray(gl);
-        return glM.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+        matrix4f.setFromArray(gl);
+        return matrix4f.mult(m).toGL(); //optimize by multiplying gl matrixes directly
     }
     
     if(this.program !== null)
@@ -445,7 +446,7 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
                             mat[4],mat[5],mat[6],
                             mat[8],mat[9],mat[10]];
 
-                    this.program[key] = model_view_inv_gl; //really 3x3?
+                    this.program[key] = model_view_inv_gl;
                     break;
                 case "modelViewInverseMatrix":
                     // work with worldTransform.inverse
