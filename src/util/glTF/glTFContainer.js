@@ -410,7 +410,13 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
 x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 {
-    if(this.program != null)
+    function glMultMatrix4 (gl, m) {
+        var glM = new x3dom.fields.SFMatrix4f();
+        glM.setFromArray(gl);
+        return glM.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+    }
+    
+    if(this.program !== null)
     {
         this.program.bind();
 
@@ -421,29 +427,38 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 
             switch(mapping){
                 case "modelViewMatrix":
-                    this.program[key] = shaderParameter.modelViewMatrix;
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewMatrix, this.worldTransform);
                     break;
                 case "viewMatrix":
                     this.program[key] = shaderParameter.viewMatrix;
                     break;
                 case "modelViewInverseTransposeMatrix":
-                    var mat = shaderParameter.normalMatrix;
+                    //var mat = shaderParameter.normalMatrix;
+                    //do modelviewinverse
+                    var worldInverse = this.worldTransform.inverse();
+                    matrix4f.setFromArray(shaderParameter.modelViewMatrixInverse);
+                    //mult in, transpose and to GL
+                    var mat = worldInverse.mult(matrix4f).transpose().toGL();
 
                     var model_view_inv_gl =
                         [mat[0], mat[1], mat[2],
                             mat[4],mat[5],mat[6],
                             mat[8],mat[9],mat[10]];
 
-                    this.program[key] = model_view_inv_gl;
+                    this.program[key] = model_view_inv_gl; //really 3x3?
                     break;
                 case "modelViewInverseMatrix":
-                    this.program[key] = shaderParameter.modelViewMatrixInverse;
+                    // work with worldTransform.inverse
+                    // (VM x W)-1 = W-1 x VM-1
+                    var worldInverse = this.worldTransform.inverse();
+                    matrix4f.setFromArray(shaderParameter.modelViewMatrixInverse);
+                    this.program[key] = worldInverse.mult(matrix4f);
                     break;
                 case "modelViewProjectionMatrix":
-                    this.program[key] = shaderParameter.modelViewProjectionMatrix;
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewProjectionMatrix, this.worldTransform);
                     break;
                 case "modelMatrix":
-                    this.program[key] = shaderParameter.model;
+                    this.program[key] = glMultMatrix4(shaderParameter.model, this.worldTransform);
                     break;
                 case "projectionMatrix":
                     this.program[key] = shaderParameter.projectionMatrix;
@@ -453,5 +468,4 @@ x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
             }
         }
     }
-
 };
