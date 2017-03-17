@@ -166,7 +166,7 @@ x3dom.registerNodeType(
             
             // save centerOfRotation field for reset
             this._geoCenterOfRotation = this._vf.centerOfRotation ;
-
+            this._viewMatrix = x3dom.fields.SFMatrix4f.identity(); // needs to be initialized for Inline
         },
         {
             // redefine activate function to save initial speed
