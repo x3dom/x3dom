@@ -160,6 +160,7 @@ x3dom.registerNodeType(
             },
 
             setZoom: function( value ) {
+
                 this._fieldOfView[0] = -value;
                 this._fieldOfView[1] = -value;
                 this._fieldOfView[2] =  value;
@@ -181,6 +182,8 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
+                    this._viewMatrix._23 = 0;
+
                     var scene = this._nameSpace.doc._viewarea._scene;
                     var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
                     var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
@@ -190,9 +193,10 @@ x3dom.registerNodeType(
 					
 					var dist1 = ( (dia.y / 2.0) / tanfov2 + dia.z ) + this._fieldOfView[2];
 					var dist2 = ( (dia.x / 2.0) / tanfov2 + dia.z ) + this._fieldOfView[2];
-					
-					znear = 0.00001;
+
 					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
+
+                    znear = -zfar;
                 }
 				
                 if (this._projMatrix == null || this._lastAspect != aspect ||
