@@ -3232,10 +3232,12 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * Render ColorBuffer-Pass for picking sub window
      *****************************************************************************/
-    Context.prototype.pickRect = function (viewarea, x1, y1, x2, y2)
+    Context.prototype.pickRect = function (viewarea, x1, y1, x2, y2, fromMultipartAPI)
     {
         var gl = this.ctx3d;
         var scene = viewarea ? viewarea._scene : null;
+        
+        fromMultipartAPI = (fromMultipartAPI != undefined) ? fromMultipartAPI : false;
 
         // method requires that scene has already been rendered at least once
         if (!gl || !scene || !scene._webgl || !scene.drawableCollection)
@@ -3289,6 +3291,8 @@ x3dom.gfx_webgl = (function () {
         // for deriving shadow ids together with shape ids
         var baseID = x3dom.nodeTypes.Shape.objectID + 2;
 
+        var partIDs = [];
+        
         for (index = 0; index < pickedObjects.length; index++) {
             objId = pickedObjects[index];
 
@@ -3298,7 +3302,7 @@ x3dom.gfx_webgl = (function () {
 
                 //Check if there are MultiParts
                 if (scene._multiPartMap) {
-                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID;
+                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID
 
                     //Find related MultiPart
                     for (mp = 0; mp < scene._multiPartMap.multiParts.length; mp++) {
@@ -3308,6 +3312,9 @@ x3dom.gfx_webgl = (function () {
                         specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
                         visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
                         if (objId >= multiPart._minId && objId <= multiPart._maxId) {
+                            
+                            partIDs.push(objId);
+                            
                             partID = multiPart._idMap.mapping[objId - multiPart._minId].name;
                             hitObject = new x3dom.Parts(multiPart, [objId], colorMap, emissiveMap, specularMap, visibilityMap);
 
@@ -3327,6 +3334,11 @@ x3dom.gfx_webgl = (function () {
                 if (hitObject)
                     pickedNodes.push(hitObject);
             }
+        }
+        
+        if( fromMultipartAPI && partIDs.length )
+        {
+            pickedNodes = new x3dom.Parts(multiPart, partIDs, colorMap, emissiveMap, specularMap, visibilityMap);
         }
 
         return pickedNodes;
