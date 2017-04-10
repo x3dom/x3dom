@@ -178,6 +178,8 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
             program = new x3dom.shader.ComposedShader(gl, shape);
         else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
             program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
+        else if(properties.PBR_MATERIAL != null && properties.PBR_MATERIAL != 0)
+            program = new x3dom.shader.PBRMaterialShader(gl, properties);
         else if(properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0)
             return {"shaderID": shaderID};
         else {

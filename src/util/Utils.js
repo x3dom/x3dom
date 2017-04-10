@@ -1036,6 +1036,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
         property.VERTEXID         = ((property.BINARYGEOMETRY || property.EXTERNALGEOMETRY) && geometry._vf.idsPerVertex) ? 1 : 0;
         property.IS_PARTICLE      = (x3dom.isa(geometry, x3dom.nodeTypes.ParticleSet)) ? 1 : 0;
+        property.TANGENTDATA      = (geometry._mesh._tangents[0].length > 0 && geometry._mesh._binormals[0].length > 0) ? 1 : 0;
 
 
         property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.TwoSidedMaterial)) ? 1 : 0;
@@ -1085,6 +1086,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
+        property.PBR_MATERIAL = 0;
         //console.log(property);
 	}
 
@@ -1247,6 +1249,52 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 
 	return shader;
 };
+
+/**
+ * Converts a UTF-8 Uint8Array to a string
+ * @param {String} uri_string
+ * @returns {boolean}
+ */
+x3dom.Utils.ArrayToStr = function( array, offset, length )
+{
+    offset = ( offset != undefined ) ? offset : 0;
+    length = ( length != undefined ) ? length : array.length;
+    
+    var out, i, len, c;
+    var char2, char3;
+
+    out = "";
+    len = length;
+    i = offset;
+    
+    while( i < len )
+    {
+        c = array[i++];
+        
+        switch(c >> 4)
+        { 
+          case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+            // 0xxxxxxx
+            out += String.fromCharCode(c);
+            break;
+          case 12: case 13:
+            // 110x xxxx   10xx xxxx
+            char2 = array[i++];
+            out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+            break;
+          case 14:
+            // 1110 xxxx  10xx xxxx  10xx xxxx
+            char2 = array[i++];
+            char3 = array[i++];
+            out += String.fromCharCode(((c & 0x0F) << 12) |
+                           ((char2 & 0x3F) << 6) |
+                           ((char3 & 0x3F) << 0));
+            break;
+        }
+    }
+
+    return out;
+}
 
 
 /**

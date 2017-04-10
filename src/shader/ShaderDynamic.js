@@ -140,16 +140,19 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "uniform mat4 texTrafoMatrix;\n";
 		}
 
-		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT" && !x3dom.caps.STD_DERIVATIVES) {
+		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT") {
 
-            x3dom.debug.logWarning("Your System doesn't support the 'OES_STANDARD_DERIVATIVES' Extension. " +
-                                   "You must set tangents and binormals manually via the FloatVertexAttribute-Node " +
-                                   "to use normal maps");
+			if(!properties.TANGENTDATA && !x3dom.caps.STD_DERIVATIVES)
+			{
+                x3dom.debug.logWarning("Your System doesn't support the 'OES_STANDARD_DERIVATIVES' Extension. " +
+                    "You must set tangents and binormals manually via the FloatVertexAttribute-Node " +
+                    "to use normal maps");
+            }
 
-			shader += "attribute vec3 tangent;\n";
-			shader += "attribute vec3 binormal;\n";
-			shader += "varying vec3 fragTangent;\n";
-			shader += "varying vec3 fragBinormal;\n";
+            shader += "attribute vec3 tangent;\n";
+            shader += "attribute vec3 binormal;\n";
+            shader += "varying vec3 fragTangent;\n";
+            shader += "varying vec3 fragBinormal;\n";
 		}
 
 		if(properties.CUBEMAP) {
@@ -420,9 +423,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			// LOD LUT HACK ###
 		}
 
-		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT" && !x3dom.caps.STD_DERIVATIVES) {
-			shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
-			shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
+		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT") {
+		    if(properties.TANGENTDATA)
+            {
+                shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
+                shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
+            }
 		}
 	}
 	
@@ -447,7 +453,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     {
         shader += "vertPosition += normalize(vertNormal) * texture2D(diffuseDisplacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).a * displacementFactor;\n";
     }
-  
+
     //Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
 
@@ -573,7 +579,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         }
         if(properties.NORMALMAP){
             shader += "uniform sampler2D normalMap;\n";
-
+            shader += "uniform float3 normalBias;\n";
 			if(properties.NORMALSPACE == "TANGENT") {
 
 				if (x3dom.caps.STD_DERIVATIVES) {
@@ -710,8 +716,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 				shader += "vec3 n = normal;\n";
 
-				if (x3dom.caps.STD_DERIVATIVES) {
+				if (!properties.TANGENTDATA && x3dom.caps.STD_DERIVATIVES) {
 					shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
+
+                    shader += "normal.x *= normalBias.x;\n";
+                    shader += "normal.y *= normalBias.y;\n";
+                    shader += "normal.y *= normalBias.z;\n";
 				} else {
 					shader += "vec3 t = normalize( fragTangent );\n";
 					shader += "vec3 b = normalize( fragBinormal );\n";
@@ -721,8 +731,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 					shader += "normal = 2.0 * normal - 1.0;\n";
 					shader += "normal = normalize( normal * tangentToWorld );\n";
 
-					shader += "normal.y = -normal.y;\n";
-					shader += "normal.x = -normal.x;\n";
+                    // shader += "normal.x = -normal.x;\n";
+					// shader += "normal.y = -normal.y;\n";
+
+                    shader += "normal.x *= normalBias.x;\n";
+                    shader += "normal.y *= normalBias.y;\n";
+                    shader += "normal.y *= normalBias.z;\n";
+
 				}
 
 			} else if(properties.NORMALSPACE == "OBJECT") {

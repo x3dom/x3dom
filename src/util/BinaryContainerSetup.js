@@ -852,7 +852,130 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._webgl.buffers[4] = colorBuffer;
         };
     }
-    // TODO: tangent AND binormal
+
+    // tangents
+    if (!binGeo._hasStrideOffset && binGeo._vf.tangent.length > 0)
+    {
+        var xmlhttp5 = new XMLHttpRequest();
+        xmlhttp5.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
+        xmlhttp5.responseType = "arraybuffer";
+
+        shape._nameSpace.doc.downloadCount += 1;
+
+        //xmlhttp2.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp5 );
+
+        xmlhttp5.onload = function()
+        {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
+            if (xmlhttp5.status != 200) {
+                x3dom.debug.logError( "XHR2/ normal load failed with status: " + xmlhttp5.status );
+                return;
+            }
+
+            if (!shape._webgl)
+                return;
+
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp5.response) : xmlhttp5.response;
+
+            var attribTypeStr = binGeo._vf.tangentType;
+            shape._webgl.tangentType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+
+            var tangents = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+
+            if (createTriangleSoup) {
+                shape._webgl.makeSeparateTris.pushBuffer("tangent", tangents);
+                return;
+            }
+
+            var tangentBuffer = gl.createBuffer();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, tangentBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, tangents, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // Test reading Data
+            //x3dom.debug.logWarning("arraybuffer[0].nx="+normals[0]);
+
+            tangents = null;
+
+            if (shape._webgl.internalDownloadCount == 0)
+            {
+                shape._nameSpace.doc.needRender = true;
+            }
+
+            that.checkError(gl);
+
+            var t11 = new Date().getTime() - t00;
+            x3dom.debug.logInfo("XHR5/ normal load time: " + t11 + " ms");
+
+            shape._webgl.buffers[6] = tangentBuffer;
+        };
+    }
+
+    // bitangents
+    if (!binGeo._hasStrideOffset && binGeo._vf.binormal.length > 0)
+    {
+        var xmlhttp6 = new XMLHttpRequest();
+        xmlhttp6.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
+        xmlhttp6.responseType = "arraybuffer";
+
+        shape._nameSpace.doc.downloadCount += 1;
+
+        //xmlhttp2.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp6 );
+
+        xmlhttp6.onload = function()
+        {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
+            if (xmlhttp6.status != 200) {
+                x3dom.debug.logError( "XHR6/ normal load failed with status: " + xmlhttp6.status );
+                return;
+            }
+
+            if (!shape._webgl)
+                return;
+
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp6.response) : xmlhttp6.response;
+
+            var attribTypeStr = binGeo._vf.binormalType;
+            shape._webgl.binormalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+
+            var binormals = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+
+            if (createTriangleSoup) {
+                shape._webgl.makeSeparateTris.pushBuffer("binormal", binormals);
+                return;
+            }
+
+            var binormalBuffer = gl.createBuffer();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, binormalBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, binormals, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // Test reading Data
+            //x3dom.debug.logWarning("arraybuffer[0].nx="+normals[0]);
+
+            binormals = null;
+
+            if (shape._webgl.internalDownloadCount == 0)
+            {
+                shape._nameSpace.doc.needRender = true;
+            }
+
+            that.checkError(gl);
+
+            var t11 = new Date().getTime() - t00;
+            x3dom.debug.logInfo("XHR6/ normal load time: " + t11 + " ms");
+
+            shape._webgl.buffers[7] = binormalBuffer;
+        };
+    }
 };
 
 /** setup/download pop geometry */

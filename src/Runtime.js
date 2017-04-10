@@ -1311,8 +1311,9 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
 
         document.getElementById(perspViewID).setAttribute("set_bind", "true");
 
-        dist = ortho._fieldOfView[2] * factor;
-        var translation = ortho._viewMatrix.e3().normalize().multiply(dist);
+        dist = ortho._fieldOfView[2] * -factor;
+
+        var translation = ortho._viewMatrix.e2().normalize().multiply(dist);
 
         persp._viewMatrix.setTranslate(translation);
     }

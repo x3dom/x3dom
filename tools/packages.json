@@ -54,8 +54,9 @@
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
                 {"path": "shader/ShaderKHRMaterialCommons.js"},
-		{"path": "shader/ShaderSSAO.js", "type": "file"},
-		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
+                {"path": "shader/ShaderPBRMaterial.js"},
+                {"path": "shader/ShaderSSAO.js", "type": "file"},
+                {"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
 
         {"group": "GFX",

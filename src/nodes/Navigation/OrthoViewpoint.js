@@ -182,7 +182,7 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    this._viewMatrix._23 = 0;
+                    this._viewMatrix._23 = 1e-80;
 
                     var scene = this._nameSpace.doc._viewarea._scene;
                     var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
@@ -196,14 +196,14 @@ x3dom.registerNodeType(
 
 					zfar = (dist1 > dist2) ? dist1 * 4 : dist2 * 4;
 
-                    znear = -zfar;
+                    znear = -zfar / 2.0;
                 }
 				
                 if (this._projMatrix == null || this._lastAspect != aspect ||
 				    this._zNear != znear || this._zFar != zfar)
                 {
                     var near = this._zNear = znear;
-					var far  = this._zFar = zfar; 
+					var far  = this._zFar = zfar;
 
                     var left   = this._fieldOfView[0];
                     var bottom = this._fieldOfView[1];

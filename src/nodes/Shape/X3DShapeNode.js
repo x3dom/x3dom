@@ -79,6 +79,8 @@ x3dom.registerNodeType(
                 normals: true,
                 texcoords: true,
                 colors: true,
+                tangents: true,
+                binormals : true,
                 specialAttribs: true,   // e.g., particleSize, IDs,...
                 indexes: true,
                 texture: true,
@@ -94,6 +96,8 @@ x3dom.registerNodeType(
             this._texCoordStrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
             this._idStrideOffset = [0, 0];
+            this._tangentStrideOffset = [0, 0];
+            this._binormalStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
         },
@@ -215,6 +219,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
                 this._dirty.colors = false;
+                this._dirty.tangents = false;
+                this._dirty.binormals = false;
                 this._dirty.specialAttribs = false;
                 // indices/topology
                 this._dirty.indexes = false;
@@ -230,6 +236,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
                 this._dirty.colors = false;
+                this._dirty.tangents = false;
+                this._dirty.binormals = false;
                 this._dirty.specialAttribs = false;
                 this._dirty.indexes = false;
             },
@@ -240,6 +248,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.tangents = true;
+                this._dirty.binormals = true;
                 this._dirty.specialAttribs = true;
                 // indices/topology
                 this._dirty.indexes = true;
@@ -265,6 +275,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.tangents = true;
+                this._dirty.binormals = true;
                 this._dirty.specialAttribs = true;
                 this._dirty.indexes = true;
                 // finally invalidate volume
