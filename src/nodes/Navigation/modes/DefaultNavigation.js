@@ -35,7 +35,7 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
     {
         viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
     }
-    else
+    //else
     {
         if ( navi._vf.typeParams.length >= 6 ) {
 
@@ -655,7 +655,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
         {
             viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
         }
-        else
+        //else
         {
             if ( navi._vf.typeParams.length >= 6 ) {
 

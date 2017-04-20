@@ -732,6 +732,126 @@ x3dom.registerNodeType(
                     }
                 }
             },
+            
+            /**
+             *
+             *
+             * @param left border position in screen pixel
+             * @param right border position in screen pixel
+             * @param bottom border position in screen pixel
+             * @param top border position in screen pixel
+             * @returns selected Parts
+             */
+            getPartsByRect_Pixel : function (left, right, bottom, top)
+            {
+                var canvas = this._nameSpace.doc._x3dElem.runtime.canvas;
+                var ctx = canvas.gl;
+                var viewarea = canvas.doc._viewarea;
+                
+                if (!ctx || !viewarea) {
+                    return [];
+                }
+
+                return ctx.pickRect(viewarea, left, top, right, bottom, true);
+            },
+            
+            /**
+             *
+             *
+             * @param left border position in screen pixel
+             * @param right border position in screen pixel
+             * @param bottom border position in screen pixel
+             * @param top border position in screen pixel
+             * @param mode specifies the intersection mode 0 intersects 1 fully inside
+             * @returns selected Parts
+             */
+            getPartsByRect_Volume : function (left, right, bottom, top, mode)
+            {
+                mode = (mode != undefined) ? mode : 0;
+                
+                var viewarea = this._nameSpace.doc._viewarea;
+                var viewpoint = viewarea._scene.getViewpoint();
+
+                var origViewMatrix    = viewarea.getViewMatrix();
+                var origProjMatrix    = viewarea.getProjectionMatrix();
+
+                var upDir   = new x3dom.fields.SFVec3f(origViewMatrix._01, origViewMatrix._11, origViewMatrix._21);
+                var viewDir = new x3dom.fields.SFVec3f(origViewMatrix._02, origViewMatrix._12, origViewMatrix._22);
+                var pos = new x3dom.fields.SFVec3f(origViewMatrix._03, origViewMatrix._13, origViewMatrix._23);
+
+                var normalizedLeft   = (left   - viewarea._width  / 2) / (viewarea._width  / 2);
+                var normalizedRight  = (right  - viewarea._width  / 2) / (viewarea._width  / 2);
+                var normalizedTop    = (top    - viewarea._height / 2) / (viewarea._height / 2);
+                var normalizedBottom = (bottom - viewarea._height / 2) / (viewarea._height / 2);
+
+                /*
+                    For any given distance Z from the camera,
+                    the shortest distance D from the center point of a plane
+                    perpendicular to the viewing vector at Z to one of its borders
+                    above or below the center (really, the intersection of the plane and frustum)
+                    is D = tan(FOV / 2) * Z . Add and subtract D from the center point's Y component
+                    to get the maximum and minimum Y extents.
+                */
+
+                var zNear = viewpoint._zNear;
+                var zFar = viewpoint._zFar;
+                var aspect = viewpoint._lastAspect;
+                var fov = viewpoint.getFieldOfView();
+                var factorH = Math.tan(fov/2) * zNear;
+                var factorW = Math.tan(fov/2)* aspect * zNear;
+
+                var projMatrix, viewMatrix, factor;
+
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    aspect = (right - left) / (bottom - top);
+                    factor = Math.max(normalizedLeft, normalizedRight, normalizedTop, normalizedBottom) * viewpoint._fieldOfView[2];
+                    viewMatrix = origViewMatrix;
+                    projMatrix = x3dom.fields.SFMatrix4f.ortho(-factor, factor, -factor, factor, zNear, zFar, aspect );
+                }
+                else
+                {
+                    left = normalizedLeft * factorW;
+                    right = normalizedRight * factorW;
+                    bottom = normalizedBottom * factorH;
+                    top = normalizedTop * factorH;
+
+                    projMatrix = x3dom.fields.SFMatrix4f.perspectiveFrustum( left, right, bottom, top, zNear, zFar);
+                    viewMatrix = x3dom.fields.SFMatrix4f.lookAt(pos,  pos.subtract(viewDir.multiply(5.0)), upDir);
+                }
+
+                var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
+
+                var selection = [];
+                var volumes = this._partVolume;
+                for(id in volumes){
+                    if(!volumes.hasOwnProperty(id))
+                        continue;
+
+                    var intersect = frustum.intersect(volumes[id], 0);
+                    if(mode == 0 && intersect > 0)
+                    {
+                        selection.push(+id);
+                    }
+                    else if(mode == 1 && intersect == 63)
+                    {
+                        selection.push(+id);
+                    }
+                        
+                }
+
+                var colorMap = this._inlineNamespace.defMap["MultiMaterial_ColorMap"];
+                var emissiveMap = this._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
+                var specularMap = this._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
+                var visibilityMap = this._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
+
+                if ( selection.length == 0) {
+                    return null;
+                } else {
+                    return new x3dom.Parts(this, selection, colorMap, emissiveMap, specularMap, visibilityMap);
+                }
+
+            },
 
             appendAPI: function ()
             {
@@ -808,76 +928,23 @@ x3dom.registerNodeType(
                  * @param top border position in screen pixel
                  * @returns selected Parts
                  */
-                this._xmlNode.getPartsByRect = function (left, right, bottom, top)
+                this._xmlNode.getPartsByRect = function (left, right, bottom, top, technique, mode)
                 {
-                    var viewarea = multiPart._nameSpace.doc._viewarea;
-                    var viewpoint = viewarea._scene.getViewpoint();
-
-                    var origViewMatrix    = viewarea.getViewMatrix();
-                    var origProjMatrix    = viewarea.getProjectionMatrix();
-
-                    var upDir   = new x3dom.fields.SFVec3f(origViewMatrix._01, origViewMatrix._11, origViewMatrix._21);
-                    var viewDir = new x3dom.fields.SFVec3f(origViewMatrix._02, origViewMatrix._12, origViewMatrix._22);
-                    var pos = new x3dom.fields.SFVec3f(origViewMatrix._03, origViewMatrix._13, origViewMatrix._23);
-
-                    var normalizedLeft   = (left   - viewarea._width  / 2) / (viewarea._width  / 2);
-                    var normalizedRight  = (right  - viewarea._width  / 2) / (viewarea._width  / 2);
-                    var normalizedTop    = (top    - viewarea._height / 2) / (viewarea._height / 2);
-                    var normalizedBottom = (bottom - viewarea._height / 2) / (viewarea._height / 2);
-
-                    /*
-                        For any given distance Z from the camera,
-                        the shortest distance D from the center point of a plane
-                        perpendicular to the viewing vector at Z to one of its borders
-                        above or below the center (really, the intersection of the plane and frustum)
-                        is D = tan(FOV / 2) * Z . Add and subtract D from the center point's Y component
-                        to get the maximum and minimum Y extents.
-                    */
-
-                    var fov = viewpoint._vf.fieldOfView;
-                    var factorH = Math.tan(fov/2) * viewpoint._zNear;
-                    var factorW = Math.tan(fov/2)* viewpoint._lastAspect * viewpoint._zNear;
-
-                    var projMatrix = x3dom.fields.SFMatrix4f.perspectiveFrustum(
-                        normalizedLeft * factorW,
-                        normalizedRight * factorW,
-                        normalizedBottom * factorH,
-                        normalizedTop * factorH,
-                        viewpoint.getNear(),
-                        viewpoint.getFar());
-
-                    var viewMatrix = x3dom.fields.SFMatrix4f.lookAt(pos,
-                        pos.subtract(viewDir.multiply(5.0)),
-                        upDir);
-
-                    var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
-                    //viewpoint._projMatrix = projMatrix;
-
-                    //return null;
-
-                    var selection = [];
-                    var volumes = this._x3domNode._partVolume;
-                    for(id in volumes){
-                        if(!volumes.hasOwnProperty(id))
-                            continue;
-
-                        var intersect = frustum.intersect(volumes[id], 0);
-                        if(intersect > 0)
-                            selection.push(id);
+                    var parts;
+                    technique = (technique != undefined) ? technique : "volume";
+                    mode = (mode != undefined) ? mode : 0;
+                    
+                    if ( technique == "volume" )
+                    {
+                        parts = multiPart.getPartsByRect_Volume(left, right, bottom, top, mode);
                     }
-
-                    var colorMap = multiPart._inlineNamespace.defMap["MultiMaterial_ColorMap"];
-                    var emissiveMap = multiPart._inlineNamespace.defMap["MultiMaterial_EmissiveMap"];
-                    var specularMap = multiPart._inlineNamespace.defMap["MultiMaterial_SpecularMap"];
-                    var visibilityMap = multiPart._inlineNamespace.defMap["MultiMaterial_VisibilityMap"];
-
-                    if ( selection.length == 0) {
-                        return null;
-                    } else {
-                        return new x3dom.Parts(multiPart, selection, colorMap, emissiveMap, specularMap, visibilityMap);
+                    else if ( technique == "pixel" )
+                    {
+                        parts = multiPart.getPartsByRect_Pixel(left, right, bottom, top);
                     }
-
-                };
+                    
+                    return parts;
+                }
             },
 
             loadInline: function ()
