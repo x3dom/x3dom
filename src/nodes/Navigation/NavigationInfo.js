@@ -146,7 +146,8 @@ x3dom.registerNodeType(
             
             this._typeMapping = {
               "default":x3dom.DefaultNavigation,
-              "turntable":x3dom.TurntableNavigation  
+              "turntable":x3dom.TurntableNavigation,
+              "walk":x3dom.WalkNavigation
             };
             
             this._heliUpdated = false;
@@ -163,6 +164,10 @@ x3dom.registerNodeType(
                 else if (fieldName == "type") {
                     this.setType(this.getType());
                 }
+                //AP: needs to be preserved from X3DBindableNode
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
+                }
             },
 
             setType: function(type, viewarea) {
@@ -176,7 +181,7 @@ x3dom.registerNodeType(
                         this._impl = new this._typeMapping[navType](this);                    
                     
                     switch (navType) {
-                        case 'game':
+                        case 'game': //perhaps needed for 'walk' as well ?
                             if (viewarea)
                                 viewarea.initMouseState();
                             else
