@@ -197,7 +197,8 @@
                     {"file": "LOD.js"},
                     {"file": "DynamicLOD.js"},
                     {"file": "modes/DefaultNavigation.js"},
-                    {"file": "modes/TurntableNavigation.js"}
+                    {"file": "modes/TurntableNavigation.js"},
+			        {"file": "modes/WalkNavigation.js"}
                 ]},
                 {"name": "Text", "filePrefix": "nodes/Text/", "files":[
                     {"file": "X3DFontStyleNode.js"},
