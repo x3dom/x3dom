@@ -468,6 +468,9 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
             // finally attach to ground when walking
             if (navType === "walk")
             {
+                // Set the up-vector to Y during walk
+                up.x = 0.0; up.y = 1.0; up.z = 0.0;
+
                 tmpAt = view._from.addScaled(up, -1.0);
                 tmpUp = sv.cross(up.negate()).normalize();  // lv
 
@@ -480,9 +483,11 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
                 if (view._pickingInfo.pickObj)
                 {
                     dist = view._pickingInfo.pickPos.subtract(view._from).length();
+                    dist = (avatarHeight - dist) / navi._vf.walkDamping;
 
-                    view._at = view._at.add(up.multiply(avatarHeight - dist));
-                    view._from = view._from.add(up.multiply(avatarHeight - dist));
+                    view._at = view._at.add(up.multiply(dist));
+                    view._from = view._from.add(up.multiply(dist));
+
                 }
             }
             view._pickingInfo.pickObj = null;
