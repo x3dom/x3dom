@@ -608,6 +608,16 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
     var dx = x - view._lastX;
     var dy = y - view._lastY;
+	
+	
+    view._dx = dx;
+    view._dy = dy;
+
+    view._lastX = x;
+    view._lastY = y;
+    
+    if (navType !== "examine") { return; } // reinstate 1.7.1 behaviour
+	
     var d, vec, cor, mat = null;
     var alpha, beta;
 
@@ -676,13 +686,6 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     }
 
     view._isMoving = true;
-    
-    
-    view._dx = dx;
-    view._dy = dy;
-
-    view._lastX = x;
-    view._lastY = y;
 };
 
 x3dom.DefaultNavigation.prototype.onTouchStart = function(view, evt, touches)
