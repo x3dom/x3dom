@@ -1659,6 +1659,9 @@ x3dom.gfx_webgl = (function () {
             if (!sp) {   // error
                 return;
             }
+            
+            //Save current shader
+            s_gl.shader = sp;
 
             //Bind shader
             this.stateManager.useProgram(sp);
