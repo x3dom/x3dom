@@ -59,6 +59,7 @@ x3dom.Texture = function (gl, doc, cache, node) {
     this.genMipMaps = false;
     this.texture = null;
     this.ready = false;
+    this.anisotropicDegree = 1.0;
 
     this.dashtexture = false;
 
@@ -186,6 +187,8 @@ x3dom.Texture.prototype.updateTexture = function()
 
 		this.minFilter = x3dom.Utils.minFilterDic(gl, texProp._vf.minificationFilter);
 		this.magFilter = x3dom.Utils.magFilterDic(gl, texProp._vf.magnificationFilter);
+        
+        this.anisotropicDegree = Math.min(Math.max(texProp._vf.anisotropicDegree, 1.0), x3dom.caps.MAX_ANISOTROPY);
 
 		if (texProp._vf.generateMipMaps === true) {
 			this.genMipMaps = true;

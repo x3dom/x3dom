@@ -88,6 +88,17 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
 
             /**
+             * Factor for damping the walk animation
+             * Interchange profile hint: this field may be ignored.
+             * @var {x3dom.fields.SFFloat} walkDamping
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 2.0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'walkDamping', 2.0);
+
+            /**
              * Geometry beyond the visibilityLimit may not be rendered (far culling plane of the view frustrum).
              * visibilityLimit=0.0 indicates an infinite visibility limit.
              * Hint: keep visibilityLimit greater than zero.

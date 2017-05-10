@@ -35,7 +35,7 @@ x3dom.WalkNavigation.prototype.onDrag = function(view, x, y, buttonState)
     var dx = x - view._lastX;
     var dy = y - view._lastY;
     
-    view._isMoving = true;
+    //view._isMoving = true; // only for turntable,examine?
 
     view._dx = dx;
     view._dy = dy;
