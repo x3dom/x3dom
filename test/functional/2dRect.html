@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HTML Template</title>
+        <script type="text/javascript" src="../x3dom_include.js"></script>
+        <style>
+            html, body, X3D { width: 100%; height: 100%; margin: 0; padding: 0; background: #666; overflow: hidden;}  
+            #box {width:20px; height: 20px; position:absolute; top:0; left: 0; border: 1px solid red; z-index: 500; pointer-events: none;}
+        </style>
+        <script>
+            function init()
+            {
+                console.log("initialize");
+                updateRect();
+            }
+			
+            function sync(event)
+            {
+                updateRect();
+            }
+            
+            function updateRect()
+            {
+                var rect = document.getElementsByTagName("x3d")[0].runtime.getSceneBRect();
+                var box = document.getElementById("box");
+                box.style.left = rect.x + "px";
+                box.style.top = rect.y + "px";
+                box.style.width = rect.width + "px";
+                box.style.height = rect.height + "px";
+            }
+        </script>
+    </head>
+    <body onload="init()">
+        <div id="box" style="width:20px; height: 20px; position:absolute; top:0; left: 0; border: 1px solid red; z-index: 500;"></div> 
+        <X3D>
+          <Scene>
+            <viewpoint onviewpointChanged="sync(event);"></viewpoint>
+            <Transform>
+                <shape>
+                    <appearance>
+                       <material ambientintensity="0.024" diffusecolor="0.0 0.8 1" emissivecolor="0,0,0" shininess="0.12" specularcolor="0.94 0.72 0"></material>
+                    </appearance>
+                    <box></box>
+                </shape>
+            </Transform>
+            <Transform translation="2 1 0">
+                <shape>
+                    <appearance>
+                       <material ambientintensity="0.024" diffusecolor="0.6 0.2 1" emissivecolor="0,0,0" shininess="0.12" specularcolor="0.94 0.72 0"></material>
+                    </appearance>
+                    <box></box>
+                </shape>
+            </Transform>
+          </Scene>
+        </X3D>
+    </body>
+</html>
