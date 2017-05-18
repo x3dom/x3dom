@@ -440,8 +440,6 @@ x3dom.Runtime.prototype.getSceneBRect = function() {
         height: max.y - min.y
     };
 
-    console.log(rect);
-
     return rect;
 };
 
@@ -1303,6 +1301,16 @@ x3dom.Runtime.prototype.getPixelScale = function(){
     var pixelScaleY = y / this.getHeight();
 
     return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
+};
+
+x3dom.Runtime.prototype.onAnimationStarted = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
+};
+
+x3dom.Runtime.prototype.onAnimationFinished = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
 };
 
 x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )

@@ -1078,6 +1078,18 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
     this.doc.advanceTime(d / 1000.0);
     var animD = new Date().getTime() - d;
 
+    if ( this.doc.hasAnimationStateChanged() )
+    {
+        if (this.doc.isAnimating())
+        {
+            runtime.onAnimationStarted();
+        }
+        else
+        {
+            runtime.onAnimationFinished();
+        }
+    }
+
     if (this.doc.needRender) {
         // calc average frames per second
         if (diff >= 1000) {

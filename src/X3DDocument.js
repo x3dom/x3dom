@@ -708,3 +708,19 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
     }
     ctx.shutdown(this._viewarea);
 };
+
+x3dom.X3DDocument.prototype.hasAnimationStateChanged = function () {
+    if (!this._viewarea) {
+        return false;
+    }
+
+    return this._viewarea.hasAnimationStateChanged();
+};
+
+x3dom.X3DDocument.prototype.isAnimating = function () {
+    if (!this._viewarea) {
+        return false;
+    }
+
+    return this._viewarea.isAnimating();
+};
