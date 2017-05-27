@@ -151,6 +151,7 @@ x3dom.Viewarea = function (document, scene) {
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
 	this._interpolator = new x3dom.FieldInterpolator();
+    this._animationStateChanged = false;
 
     this.arc = null;
 };
@@ -183,10 +184,20 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 	}
 
     var needNavAnim = this.navigateTo(timeStamp);
+
     var lastIsAnimating = this._isAnimating;
 
     this._lastTS = timeStamp;
     this._isAnimating = (this._mixer.isMixing || this._interpolator.isInterpolating || needNavAnim);
+
+    if ( this._isAnimating != lastIsAnimating )
+    {
+        this._animationStateChanged = true;
+    }
+    else
+    {
+        this._animationStateChanged = false;
+    }
 
     if (this.arc != null )
     {
@@ -212,6 +223,15 @@ x3dom.Viewarea.prototype.isMoving = function()
 x3dom.Viewarea.prototype.isAnimating = function()
 {
     return this._isAnimating;
+};
+
+/**
+ * Returns if the animation state has changed since the last update
+ * @return {Boolean} animation state of view area
+ */
+x3dom.Viewarea.prototype.hasAnimationStateChanged = function()
+{
+    return this._animationStateChanged;
 };
 
 /**
