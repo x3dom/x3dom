@@ -33,7 +33,9 @@
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
                 {"path": "fields.js"},		
-                {"path": "Docs.js"}
+                {"path": "Docs.js"},
+                {"path": "JSONParser.js"},
+                {"path": "PrototypeExpander.js"}
             ]},
 
         {"group": "SHADER",
@@ -243,6 +245,9 @@
                     {"file": "ShaderPart.js"},
                     {"file": "X3DVertexAttributeNode.js"},
                     {"file": "FloatVertexAttribute.js"}
+                ]},
+                {"name": "Scripting", "filePrefix": "nodes/Scripting/", "files":[
+                    {"file": "Script.js"}
                 ]},
                 {"name": "Geometry3D", "filePrefix": "nodes/Geometry3D/", "files":[
                     {"file": "X3DSpatialGeometryNode.js"},
