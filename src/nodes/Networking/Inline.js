@@ -224,8 +224,9 @@ x3dom.registerNodeType(
 			    try {
 				    var json = JSON.parse(xhr.response);
 				    console.log("post parse", json);
-				    // json = x3dom.protoExpander.prototypeExpander(json);
-				    // console.log("post expander", json);
+			
+				    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
+				    console.log("return from expander", json);
 				    var parser = new x3dom.JSONParser();
 				    xml = parser.parseJavaScript(json);
 				    console.log("post parser", xml);

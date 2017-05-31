@@ -506,7 +506,7 @@ x3dom.PROTOS.prototype = {
 		var newobject = [];
 		var offset = 0;
 		for (var p in object) {
-			var possibleArray = flattener(object[p], newobject, object.length);
+			var possibleArray = this.flattener(object[p], newobject, object.length);
 			if (Array.isArray(possibleArray)) {
 				for (var q in possibleArray) {
 					newobject[parseInt(p)+offset+parseInt(q)] = possibleArray[q];
@@ -522,10 +522,10 @@ x3dom.PROTOS.prototype = {
 	flattenerObject : function(object, parentArray, arrayLen) {
 		var newobject = {};
 		for (var p in object) {
-			var possibleArray = flattener(object[p], parentArray, arrayLen);
+			var possibleArray = this.flattener(object[p], parentArray, arrayLen);
 			if (Array.isArray(possibleArray)) {
 				if (this.SFNodes[p]) {
-					// SFNodes should only have one child
+					// this.SFNodes should only have one child
 					newobject[p] = possibleArray[0];
 					// handle extra nodes brought in from proto
 					if (possibleArray.length > 1) {
@@ -548,7 +548,7 @@ x3dom.PROTOS.prototype = {
 					newobject[p] = possibleArray;
 				}
 			} else {
-				if (SFNodes[p]) {
+				if (this.SFNodes[p]) {
 					if (typeof possibleArray === 'object' && possibleArray["#comment"]) {
 						if (newobject["-children"]) {
 							newobject[p] = {};
@@ -571,9 +571,9 @@ x3dom.PROTOS.prototype = {
 	flattener : function(object, parentArray, arrayLen) {
 		if (typeof object === "object") {
 			if (Array.isArray(object)) {
-				var newobject = flattenerArray(object, parentArray);
+				var newobject = this.flattenerArray(object, parentArray);
 			} else {
-				var newobject = flattenerObject(object, parentArray, arrayLen);
+				var newobject = this.flattenerObject(object, parentArray, arrayLen);
 			}
 			return newobject;
 		} else {
@@ -582,10 +582,13 @@ x3dom.PROTOS.prototype = {
 	},
 
 	prototypeExpander: function (file, object) {
+		console.log("Pre proto expander", object);
 		object = this.realPrototypeExpander(file, object, false);
+		console.log("Post proto expander", object);
 		this.zapIs(object);
-		// console.error("SCRIPTS", JSON.stringify(this.scriptField));
-		// console.error("PROTOS", JSON.stringify(this.protoField, null, 2));
+		console.log("Post zap", object);
+		object = this.flattener(object);
+		console.log("Post flattener", object);
 		return object;
 	},
 
@@ -864,6 +867,7 @@ x3dom.PROTOS.prototype = {
 				try {
 					json = JSON.parse(data);
 					console.error("parsed JSON from " + filename);
+					protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 				} catch (e) {
 					console.error("Failed to parse JSON from " + filename);
 					if (filename.endsWith(".x3d") && (typeof runAndSend === "function")) {
