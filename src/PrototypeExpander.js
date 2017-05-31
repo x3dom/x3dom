@@ -48,7 +48,6 @@ x3dom.PROTOS = function() {
 		"-transferFunction" : 1,
 		"-viewport" : 1
 	};
-
 }
 
 x3dom.PROTOS.prototype = {
@@ -502,6 +501,7 @@ x3dom.PROTOS.prototype = {
 		return object;
 	},
 
+
 	flattenerArray : function(object, parentArray) {
 		var newobject = [];
 		var offset = 0;
@@ -519,7 +519,7 @@ x3dom.PROTOS.prototype = {
 		return newobject;
 	},
 
-	flattenerObject :  function(object, parentArray, arrayLen) {
+	flattenerObject : function(object, parentArray, arrayLen) {
 		var newobject = {};
 		for (var p in object) {
 			var possibleArray = flattener(object[p], parentArray, arrayLen);
@@ -568,7 +568,7 @@ x3dom.PROTOS.prototype = {
 		return newobject;
 	},
 
-	flattener: function(object, parentArray, arrayLen) {
+	flattener : function(object, parentArray, arrayLen) {
 		if (typeof object === "object") {
 			if (Array.isArray(object)) {
 				var newobject = flattenerArray(object, parentArray);
@@ -584,7 +584,6 @@ x3dom.PROTOS.prototype = {
 	prototypeExpander: function (file, object) {
 		object = this.realPrototypeExpander(file, object, false);
 		this.zapIs(object);
-		object = this.flattener(object);
 		// console.error("SCRIPTS", JSON.stringify(this.scriptField));
 		// console.error("PROTOS", JSON.stringify(this.protoField, null, 2));
 		return object;
@@ -602,7 +601,8 @@ x3dom.PROTOS.prototype = {
 		// console.error("DEF is", newobject[p]["@DEF"]);
 		this.setScriptFields(newobject[p]["field"], newobject[p]["@DEF"]);
 		var url = newobject[p]["@url"];
-		this.loadURLs(file, url, this.readCode, null, p, newobject);
+		console.error("Not loading Script--missing loadURLs", file, url);
+		// this.loadURLs(file, url, this.readCode, null, p, newobject);
 	},
 
 	handleProtoDeclare: function (file, object, p) {
@@ -854,9 +854,9 @@ x3dom.PROTOS.prototype = {
 	},
 
 
-	loadedProto: function (data, protoname, obj, filename, objret) {
+	loadedProto: function (data, protoname, obj, filename, protoexp, objret) {
 		if (typeof data !== 'undefined') {
-			// console.error("searching for", name, "in", data.toString());
+			console.error("searching for", protoname);
 			try {
 				// can only search for one Proto at a time
 				this.founddef = null;
@@ -866,10 +866,34 @@ x3dom.PROTOS.prototype = {
 					console.error("parsed JSON from " + filename);
 				} catch (e) {
 					console.error("Failed to parse JSON from " + filename);
+					if (filename.endsWith(".x3d") && (typeof runAndSend === "function")) {
+						console.error("calling run and send");
+						console.error("loadedProto converting " + filename);
+						var protoexp = this;
+						runAndSend(['---silent', filename], function(json) {
+							console.error("got", json, "from run and send, searching for", protoname);
+							protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
+						});
+						console.error("async skip of run and send " + filename);
+					} else {
+						console.error("calling converter on server");
+						try {
+							var str = serializeDOM(undefined, data.firstElementChild, true);
+							$.post("/convert", str, function(json) {
+								console.error("JSON converted on server is", json);
+								protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
+							}, "json")
+						} catch (e) {
+							alert(e);
+							console.error("Server convert failed", e);
+						}
+					}
 				}
 			} catch (e) {
 				console.error("Failed to parse JSON in ", filename, e);
 			}
+		} else {
+			console.error("data is undefined for file", filename);
 		}
 	},
 
@@ -877,29 +901,37 @@ x3dom.PROTOS.prototype = {
 		var name = obj["@name"];
 		var nameIndex = u.indexOf("#");
 		var protoname = name;
+		console.error("doLoad External Prototype", u);
 		if (nameIndex >= 0) {
 			protoname = u.substring(nameIndex + 1);
 		}
 
-		protoexp.loadedProto(data, protoname, obj, u, function (nuobject) {
-			done(p, nuobject);
-		});
+		console.error("protoname is", protoname, protoexp);
+		try {
+			protoexp.loadedProto(data, protoname, obj, u, protoexp, function (nuobject) {
+				console.error("Done searching, found", nuobject);
+				done(p, nuobject);
+			});
+		} catch (e) {
+			console.error("Error searching for proto", e);
+		}
 	},
 
 	load : function (p, file, object, done) {
 		var obj = object[p];
 		var url = obj["@url"];
 		// this is a single task
-		console.error("NOT loading External Prototype", file, url);
+		console.error("Not loading External Prototype--missing loadURLs", file, url);
 		// this.loadURLs(file, url, this.doLoad, this, done, p, obj);
 	},
 
 	expand : function (file, object, done) {
 		for (var p in object) {
 			if (p === 'ExternProtoDeclare') {
+				console.error("Found External Prototype reference", file, object);
 				this.load(p, file, object, done);
 			} else {
-				// this is a single tas:
+				// this is a single task:
 				done(p, this.externalPrototypeExpander(file, object[p]));
 			}
 		}
@@ -916,8 +948,9 @@ x3dom.PROTOS.prototype = {
 			// Wait for expectedreturn tasks to finish
 			var expectedreturn = Object.keys(object).length;
 			this.expand(file, object, function (p, newobj) {
-				// console.error("Replacing", p);
 				if (p === "ExternProtoDeclare") {
+					console.error("Putting in", newobj);
+					console.error("OLD ", object);
 					newobject = newobj;
 					console.error("EPD", newobject);
 				} else {
@@ -925,7 +958,7 @@ x3dom.PROTOS.prototype = {
 				}
 			});
 			while (expectedreturn > Object.keys(newobject).length + 1); {  // when they are equal, we exit
-				// console.error(expectedreturn, '=', Object.keys(newobject).length);
+				console.error(expectedreturn, '=', Object.keys(newobject).length);
 				setTimeout(function () { }, 50);
 			}
 			// console.error("Exited loop");

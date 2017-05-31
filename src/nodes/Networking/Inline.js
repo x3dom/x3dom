@@ -220,10 +220,18 @@ x3dom.registerNodeType(
                     var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
 		    if (isJSON) {
-			    var json = JSON.parse(xhr.response);
-			    json = x3dom.protoExpander.prototypeExpander(json);
-			    var parser = new x3dom.JSONParser();
-			    xml = parser.parseJavaScript(json);
+			    console.log(xhr);
+			    try {
+				    var json = JSON.parse(xhr.response);
+				    console.log("post parse", json);
+				    // json = x3dom.protoExpander.prototypeExpander(json);
+				    // console.log("post expander", json);
+				    var parser = new x3dom.JSONParser();
+				    xml = parser.parseJavaScript(json);
+				    console.log("post parser", xml);
+			    } catch (e) {
+				    console.error(e);
+			    }
 		    } else {
 			    if (navigator.appName != "Microsoft Internet Explorer")
 				xml = xhr.responseXML;

@@ -14,7 +14,7 @@ x3dom.JSONParser.prototype.constructor = x3dom.JSONParser;
 x3dom.JSONParser.prototype.parseJavaScript = function(jsobj) {
 		var child = this.CreateElement('X3D');
 		this.ConvertToX3DOM(jsobj, "", child);
-		// call the DOM parser
+		console.log(jsobj, child);
 		return child;
 	};
 
