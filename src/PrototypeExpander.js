@@ -89,6 +89,11 @@ x3dom.PROTOS.prototype = {
 			scope = this.privatescope.join("_");
 		}
 		// console.error("GET", [def], scope);
+		// TODO VERIFY IF THIS IS RIGHT
+		var decl = scope.lastIndexOf("DECL");
+		if (decl > 0) {
+			scope = scope.substring(decl);
+		}
 		return scope;
 	},
 
@@ -125,7 +130,6 @@ x3dom.PROTOS.prototype = {
 			if (Array.isArray(value) && fieldname_field_scope[1]["@type"] === "SFNode" && objectfield !== '-children') {
 				// and some SF fields are arrays, so we have to explicitly test for SFNode
 				// can't shove an array into an SFNode, so take the first element, per Roy Walmsley
-				console.error("SFNode is array, reducing", value);
 				value = value[0];
 				// console.error("SFNode array[0]=", value);
 			}
@@ -327,23 +331,27 @@ x3dom.PROTOS.prototype = {
 		this.zap(field, object);
 	},
 
-	extractConnectedDef: function (scope, node) {
+	extractConnectedDef: function (scope, field) {
 		var defobj;
-		for (var sf in this.scriptField[this.getField(scope, node)]) {
-			var obj = this.scriptField[this.getField(scope, node)][sf];
-			if (typeof obj !== 'undefined') {
-				if (typeof obj[3] !== 'undefined') {
-					defobj = [this.getField(scope, obj[3]), obj[0]["@name"]];
-					// console.error("def5 is", defobj);
+		for (var sf in this.scriptField[this.getField(scope, field)]) {
+			// just grab first one, the others may be bad
+			if (typeof defobj === 'undefined') {
+				var obj = this.scriptField[this.getField(scope, field)][sf];
+				if (typeof obj !== 'undefined') {
+					if (typeof obj[3] !== 'undefined') {
+						var f = this.getField(scope, obj[3]);
+						if (f.indexOf("DECL", 1) == -1) {
+							defobj = [f,  obj[0]["@name"]];
+						}
+					}
 				}
 			}
 		}
 		if (typeof defobj === 'undefined') {
-			for (var pf in this.protoField[this.getField(scope, node)]) {
-				var obj2 = this.protoField[this.getField(scope, node)][pf];
+			for (var pf in this.protoField[this.getField(scope, field)]) {
+				var obj2 = this.protoField[this.getField(scope, field)][pf];
 				if (typeof obj2 !== 'undefined') {
 					defobj = [obj2[3], obj2[1]];
-					// console.error("def2 is", defobj);
 				}
 			}
 		}
@@ -351,14 +359,12 @@ x3dom.PROTOS.prototype = {
 			for (var pf2 in this.protoField[this.getField(scope, "__DEF_FIELD__")]) {
 				var obj3 = this.protoField[this.getField(scope, "__DEF_FIELD__")][pf2];
 				if (typeof obj3 !== 'undefined') {
-					defobj = [obj3[3], node];
-					// console.error("def3 is", defobj);
+					defobj = [obj3[3], field];
 				}
 			}
 		}
 		if (typeof defobj === 'undefined') {
-			defobj = [scope, node];
-			// console.error("def4 is", defobj);
+			defobj = [scope, field];
 		}
 		return defobj;
 	},
@@ -582,13 +588,19 @@ x3dom.PROTOS.prototype = {
 	},
 
 	prototypeExpander: function (file, object) {
-		console.log("Pre proto expander", object);
+		this.protos = {};
+		this.names = {};
+		this.protoField = {};
+		this.scriptField = {};
+		this.interfaceField = {};
+		this.envField = {};
+		this.scopecount = 0;
+		this.privatescope = [];
+		this.defs = {};
+		this.founddef = null;
 		object = this.realPrototypeExpander(file, object, false);
-		console.log("Post proto expander", object);
 		this.zapIs(object);
-		console.log("Post zap", object);
 		object = this.flattener(object);
-		console.log("Post flattener", object);
 		return object;
 	},
 
@@ -601,7 +613,6 @@ x3dom.PROTOS.prototype = {
 
 	handleScript: function (file, object, p, newobject) {
 		newobject[p] = this.realPrototypeExpander(file, object[p], true);
-		// console.error("DEF is", newobject[p]["@DEF"]);
 		this.setScriptFields(newobject[p]["field"], newobject[p]["@DEF"]);
 		var url = newobject[p]["@url"];
 		console.error("Not loading Script--missing loadURLs", file, url);
@@ -644,100 +655,114 @@ x3dom.PROTOS.prototype = {
 
 	handleProtoInstance: function (file, object, p) {
 		var name = object[p]["@name"];
-		this.pushScope("DECL" + name);
 		var def = object[p]["@DEF"];
 		var use = object[p]["@USE"];
 		this.names[def] = name;
 		if (typeof name === 'undefined' && typeof use !== 'undefined') {
 			name = this.names[use];
 		}
+		this.pushScope("DECL" + name);
+
 		var instance = {};
-		if (typeof def === 'undefined') {
+		if (typeof def === 'undefined' && typeof use === 'undefined') {
 			def = "INSTANCE";
 		}
-		if (this.getDef(def)) {
+		if (this.getDef(def) && typeof use === 'undefined') {
 			this.scopecount += 1000;
-			def += this.scopecount;
+			def += "" + this.scopecount;
 		} else {
 			// first appearance of def is left alone
 		}
-		var newdef = this.saveDef(def);
-		this.pushScope(def);
+		if (typeof def !== 'undefined') {
+			var newdef = this.saveDef(def);
+			this.pushScope(def);
+		}
+		var bodydef;
 		if (typeof this.protos[name] === 'undefined' || typeof this.protos[name]['ProtoBody'] === 'undefined') {
 			console.error("ProtoBody undefined for", name);
 		} else {
 			// console.error("Copying ProtoBody", name);
-			var obj = this.protos[name]['ProtoBody']['-children'];
-			// var bodydef = this.protos[name]['ProtoBody']["@DEF"];
-			instance = JSON.parse(JSON.stringify(obj));
-		}
-
-		// instance is an array
-		while (Array.isArray(instance) && Object.keys(instance).length === 1) {
-			instance = instance[0];
-		}
-
-		var firstobj = instance;
-		while (Array.isArray(firstobj)) {
-			// we only the DEF of the first node 
-			firstobj = firstobj[0];
-		}
-		if (!Array.isArray(firstobj)) {
-			if (typeof use !== 'undefined') {
-				for (var q in firstobj) {
-					if (q === "Group" || q == "Transform") {
-						if (typeof firstobj[q] === 'object' && !Array.isArray(firstobj[q])) {
-							firstobj[q]["@USE"] = this.getScope(use);  // there will be at least DEF with this USE
-						} else {
-							console.error("USE is Failed");
+			var children = this.protos[name]['ProtoBody']['-children'];
+			for (var child in children) {
+				var ch = children[child];
+				for (var objkey in ch) {
+					if (typeof bodydef === 'undefined') {
+						bodydef = ch[objkey]["@DEF"];
+						if (typeof use !== 'undefined') {
+							var iuse = this.saveDef(use);
+							this.pushScope(use);
 						}
 					}
 				}
 			}
-
+			instance = JSON.parse(JSON.stringify(children));
 		}
-		/*
-		if (typeof bodydef !== 'undefined') {
-			this.saveDef(bodydef);
-			this.pushScope(bodydef);
-		}
-		*/
-		var newobject = this.realPrototypeExpander(file, instance, false);
 
-		var fieldValue = object[p]["fieldValue"];
-		for (var field in fieldValue) {
-			var fv = fieldValue[field];
-			var protoField = fv["@name"];
-			var fieldOrNode = "@value";
-			var value = fv[fieldOrNode];
-			for (var nv in fv) {
-				if (nv === '@name') {
-					continue;
-				}
-				fieldOrNode = nv;
-				value = fv[fieldOrNode];
-				this.pushScope("FIELD" + protoField);
-				value = this.realPrototypeExpander(file, value, false);
-				this.popScope();
-				this.getInterface(protoField);
-				this.setObjectValues(this.getScope(),
-					protoField,
-					fieldOrNode,
-					value);
+		// instance is an array.  Get the first object, no matter how
+		// deep it is.
+		// TODO comments
+
+		var firstobj = instance;
+
+		while (Array.isArray(firstobj)) {
+			if (firstobj[0] === null || typeof firstobj[0] === 'undefined') {
+				break;
 			}
-			// this.clearScope(fieldname, newobject);
+			firstobj = firstobj[0];
 		}
 
-		/*
-		if (typeof bodydef !== 'undefined') {
+
+		if (typeof use !== 'undefined' && typeof firstobj === 'object') {
+			if (typeof bodydef !== 'undefined') {
+				var bdef = this.saveDef(bodydef);
+				this.pushScope(bodydef);
+			}
+			var newobject = {
+				"Group": {  // replace ProtoInstance with Group
+					"@USE" : this.getScope()
+				}
+			};
+			if (typeof bodydef !== 'undefined') {
+				this.popScope();
+			}
+
+		} else {
+			var newobject = this.realPrototypeExpander(file, instance, false);
+
+			var fieldValue = object[p]["fieldValue"];
+			for (var field in fieldValue) {
+				var fv = fieldValue[field];
+				var protoField = fv["@name"];
+				var fieldOrNode = "@value";
+				var value = fv[fieldOrNode];
+				for (var nv in fv) {
+					if (nv === '@name') {
+						continue;
+					}
+					fieldOrNode = nv;
+					value = fv[fieldOrNode];
+					this.pushScope("FIELD" + protoField);
+					value = this.realPrototypeExpander(file, value, false);
+					this.popScope();
+					this.getInterface(protoField);
+					this.setObjectValues(this.getScope(),
+						protoField,
+						fieldOrNode,
+						value);
+				}
+				// this.clearScope(fieldname, newobject);
+			}
+		}
+
+		if (typeof use !== 'undefined') {
 			this.popScope();
 		}
-		*/
-		this.popScope();
+		if (typeof def !== 'undefined') {
+			this.popScope();
+		}
 		this.popScope();
 		return newobject;
 	},
-
 	realPrototypeExpander: function (file, object, inScript) {
 		if (typeof object === "object") {
 			var newobject = null;
@@ -814,14 +839,11 @@ x3dom.PROTOS.prototype = {
 		if (typeof object === "object") {
 			for (p in object) {
 				if (p === 'ProtoDeclare') {
-					console.error("looked at", object[p]["@name"], "for", name);
 					if (object[p]["@name"] === name) {
-						console.error("Found equal names");
 						found = object;
 					}
 					// find the first one if none match
 					if (typeof found === 'undefined' && this.founddef === null) {
-						console.error("First default found");
 						this.founddef = object;
 					}
 				}
@@ -838,7 +860,6 @@ x3dom.PROTOS.prototype = {
 
 
 	searchAndReplaceProto: function (filename, json, protoname, founddef, obj, objret) {
-		console.error("finished converting", filename);
 		var newobj = this.searchForProtoDeclare(json, protoname);
 		if (typeof newobj === 'undefined') {
 			newobj = founddef;
@@ -859,37 +880,27 @@ x3dom.PROTOS.prototype = {
 
 	loadedProto: function (data, protoname, obj, filename, protoexp, objret) {
 		if (typeof data !== 'undefined') {
-			console.error("searching for", protoname);
 			try {
 				// can only search for one Proto at a time
 				this.founddef = null;
 				var json = {};
 				try {
 					json = JSON.parse(data);
-					console.error("parsed JSON from " + filename);
 					protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 				} catch (e) {
 					console.error("Failed to parse JSON from " + filename);
 					if (filename.endsWith(".x3d") && (typeof runAndSend === "function")) {
-						console.error("calling run and send");
-						console.error("loadedProto converting " + filename);
-						var protoexp = this;
 						runAndSend(['---silent', filename], function(json) {
-							console.error("got", json, "from run and send, searching for", protoname);
 							protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 						});
-						console.error("async skip of run and send " + filename);
 					} else {
-						console.error("calling converter on server");
 						try {
 							var str = serializeDOM(undefined, data.firstElementChild, true);
 							$.post("/convert", str, function(json) {
-								console.error("JSON converted on server is", json);
 								protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 							}, "json")
 						} catch (e) {
 							alert(e);
-							console.error("Server convert failed", e);
 						}
 					}
 				}
@@ -905,15 +916,12 @@ x3dom.PROTOS.prototype = {
 		var name = obj["@name"];
 		var nameIndex = u.indexOf("#");
 		var protoname = name;
-		console.error("doLoad External Prototype", u);
 		if (nameIndex >= 0) {
 			protoname = u.substring(nameIndex + 1);
 		}
 
-		console.error("protoname is", protoname, protoexp);
 		try {
 			protoexp.loadedProto(data, protoname, obj, u, protoexp, function (nuobject) {
-				console.error("Done searching, found", nuobject);
 				done(p, nuobject);
 			});
 		} catch (e) {
@@ -932,7 +940,6 @@ x3dom.PROTOS.prototype = {
 	expand : function (file, object, done) {
 		for (var p in object) {
 			if (p === 'ExternProtoDeclare') {
-				console.error("Found External Prototype reference", file, object);
 				this.load(p, file, object, done);
 			} else {
 				// this is a single task:
@@ -953,16 +960,12 @@ x3dom.PROTOS.prototype = {
 			var expectedreturn = Object.keys(object).length;
 			this.expand(file, object, function (p, newobj) {
 				if (p === "ExternProtoDeclare") {
-					console.error("Putting in", newobj);
-					console.error("OLD ", object);
 					newobject = newobj;
-					console.error("EPD", newobject);
 				} else {
 					newobject[p] = newobj;
 				}
 			});
 			while (expectedreturn > Object.keys(newobject).length + 1); {  // when they are equal, we exit
-				console.error(expectedreturn, '=', Object.keys(newobject).length);
 				setTimeout(function () { }, 50);
 			}
 			// console.error("Exited loop");
