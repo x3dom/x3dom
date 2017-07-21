@@ -374,13 +374,16 @@ x3dom.Runtime.prototype.mousePosition = function(event) {
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
+
+    var DPR = window.devicePixelRatio || 1;
+
     var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
     
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
     var pos = mat.multFullMatrixPnt(pnt);
     
-    var w = this.canvas.doc._viewarea._width;
-    var h = this.canvas.doc._viewarea._height;
+    var w = this.canvas.doc._viewarea._width / DPR;
+    var h = this.canvas.doc._viewarea._height / DPR;
     
     var x = Math.round((pos.x + 1) * (w - 1) / 2);
     var y = Math.round((h - 1) * (1 - pos.y) / 2);

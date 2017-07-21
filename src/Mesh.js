@@ -409,8 +409,7 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
         for (var k=0, l=0, m=this._positions[0].length; k<m; k+=3)
         {
             this._texCoords[0][l++] = (this._positions[0][k+S] - sMin) / sDenom;
-            this._texCoords[0][l++] = (this._positions[0][k+T] - tMin) / tDenom;
+            this._texCoords[0][l++] = (this._positions[0][k+T] - tMin) / sDenom;
         }
     }
 };
-
