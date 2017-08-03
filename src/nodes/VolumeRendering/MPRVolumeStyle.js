@@ -179,15 +179,19 @@ x3dom.registerNodeType(
                 "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
                 "  vec3 pos = d*dir+pos.rgb;\n"+
                 "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
-                "    vec3 intesity = cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb;\n";
+                "    vec4 intesity = cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY);\n";
                 if (this._cf.transferFunction.node){
                     shader += "    if (forceOpaque){\n"+
                     "      color = vec4(texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgb, 1.0);\n"+
                     "    }else{\n"+
                     "      color = texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgba;\n"+
-                    "    }";
+                    "    }\n";
                 }else{
-                    shader += "    color = vec4(intesity,1.0);\n";
+                    shader += "    if (forceOpaque){\n"+
+                    "      color = vec4(intesity.rgb,1.0);\n"+
+                    "    }else{\n"+
+                    "      color = intesity;\n"+
+                    "    }\n";
                 }
                 shader += "  }\n"+
                 "  gl_FragColor = color;\n"+
