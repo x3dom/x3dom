@@ -183,7 +183,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "color.rgb = (_emission.rgb + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor.rgb);\n";
         }
 
-        shader += "gl_FragColor = vec4(color.rgb, 1.0-transparency);\n"+
+        shader += "gl_FragColor = vec4(color.rgb, transparency);\n"+
     "}";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
