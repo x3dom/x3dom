@@ -156,6 +156,10 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "    eye = -v_eye.xyz;\n";
             shader += "}\n";
 
+            //divide glTF shininess by 128 since it is provided premultiplied
+            shader += "float _shininess = shininess * 0.0078125;\n";
+            //glTF normals do no need to be unit vectors
+            shader += "vec3 _normal = normalize(v_normal);\n";
             shader += "vec3 ads;\n";
 
             for(var l=0; l<properties.LIGHTS; l++) {
