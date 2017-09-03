@@ -101,8 +101,11 @@ x3dom.registerNodeType(
             {
                 if(fieldName === "set_fraction")
                 {
-                    this._keyIndex = this.findInterval(this._vf.set_fraction);
-                    this.postMessage('value_changed', this._vf.keyValue[this._keyIndex]);
+                    var keyIndex = this.findInterval(this._vf.set_fraction);
+                    if (keyIndex !== this._keyIndex) { // only generate event when necessary
+                      this._keyIndex = keyIndex;
+                      this.postMessage('value_changed', this._vf.keyValue[keyIndex]);
+                    }
                     return;
                 }
                 if(fieldName === "next" && this._vf.next)
