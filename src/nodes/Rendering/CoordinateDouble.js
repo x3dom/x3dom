@@ -22,10 +22,10 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DCoordinateNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Coordinate builds geometry using a set of double precision 3D coordinates.
-         * Coordinate is used by IndexedFaceSet, IndexedLineSet, LineSet and PointSet.
+         * X3DCoordinateNode is used by IndexedFaceSet, IndexedLineSet, LineSet and PointSet.
          */
         function (ctx) {
-            x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
+            x3dom.nodeTypes.CoordinateDouble.superClass.call(this, ctx);
 
             /**
              * Contains the 3D coordinates
