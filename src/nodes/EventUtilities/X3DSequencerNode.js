@@ -25,12 +25,33 @@ x3dom.registerNodeType(
          */
         function (ctx) {
             x3dom.nodeTypes.X3DSequencerNode.superClass.call(this, ctx);
-
+        
+            /**
+             * If the next inputOnly field receives an SFBool event with value TRUE, it triggers the next output value in keyValue array by issuing a value_changed event with that value.
+             * After reaching the boundary of keyValue array, next goes to the initial element after last.
+             * @var {x3dom.fields.SFBool} next
+             * @memberof x3dom.nodeTypes.X3DSequencerNode
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'next', false);
+        
+            /**
+             * If the previous inputOnly field receives an SFBool event with value TRUE, it triggers the previous output value in keyValue array by issuing a value_changed event with that value.
+             * After reaching the boundary of keyValue array previous goes to the last element after the first.
+             * @var {x3dom.fields.SFBool} previous
+             * @memberof x3dom.nodeTypes.X3DSequencerNode
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'previous', false);
 
             /**
              * The key field contains the list of key times, the keyValue field contains values for the target field, one complete set of values for each key.
-             * Interpolator nodes containing no keys in the key field shall not produce any events.
-             * However, an input event that replaces an empty key field with one that contains keys will cause the interpolator node to produce events the next time that a set_fraction event is received.
+             * Sequencer nodes containing no keys in the key field shall not produce any events.
+             * However, an input event that replaces an empty key field with one that contains keys will cause the sequencer node to produce events the next time that a set_fraction event is received.
              * @var {x3dom.fields.MFFloat} key
              * @memberof x3dom.nodeTypes.X3DSequencerNode
              * @initvalue []
@@ -40,7 +61,7 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'key', []);
 
             /**
-             * The set_fraction inputOnly field receives an SFFloat event and causes the interpolator node function to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
+             * The set_fraction inputOnly field receives an SFFloat event and causes the sequencer node function to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
              * @var {x3dom.fields.SFFloat} set_fraction
              * @memberof x3dom.nodeTypes.X3DSequencerNode
              * @initvalue 0
