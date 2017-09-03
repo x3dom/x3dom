@@ -25,7 +25,7 @@ x3dom.registerNodeType(
          */
          
         function (ctx) {
-            x3dom.nodeTypes.IntegerSequencer.superClass.call(this, ctx);
+            x3dom.nodeTypes.BooleanSequencer.superClass.call(this, ctx);
             
             /**
              * Defines the set of Booleans, that are used for sequencing.
