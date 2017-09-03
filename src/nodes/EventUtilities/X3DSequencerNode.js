@@ -97,7 +97,7 @@ x3dom.registerNodeType(
                     //return this._vf.keyValue[0];
                 }
 
-                else if (time >= this._vf.key[keyLength) {
+                else if (time >= this._vf.key[keyLength]) {
                     return keyLength;
                     //return this._vf.keyValue[keyLength];
                 }
