@@ -70,21 +70,70 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'set_fraction', 0);
         
+            this._keyIndex = 0;
+        
         },
         {
-            linearInterp: function (time, interp) {
-                if (time <= this._vf.key[0])
-                    return this._vf.keyValue[0];
+//             linearInterp: function (time, interp) {
+//                 if (time <= this._vf.key[0])
+//                     return this._vf.keyValue[0];
 
-                else if (time >= this._vf.key[this._vf.key.length-1])
-                    return this._vf.keyValue[this._vf.key.length-1];
+//                 else if (time >= this._vf.key[this._vf.key.length-1])
+//                     return this._vf.keyValue[this._vf.key.length-1];
 
-                for (var i = 0; i < this._vf.key.length-1; ++i) {
-                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
-                        return interp( this._vf.keyValue[i], this._vf.keyValue[i+1],
-                                (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+//                 for (var i = 0; i < this._vf.key.length-1; ++i) {
+//                     if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
+//                         return interp( this._vf.keyValue[i], this._vf.keyValue[i+1],
+//                                 (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+//                 }
+//                 return this._vf.keyValue[0];
+//             },
+        
+            findInterval: function (time) {
+                var keyLength = this._vf.key.length-1;
+                
+                if (time <= this._vf.key[0]) {
+                    return 0;
+                    //return this._vf.keyValue[0];
                 }
-                return this._vf.keyValue[0];
+
+                else if (time >= this._vf.key[keyLength) {
+                    return keyLength;
+                    //return this._vf.keyValue[keyLength];
+                }
+
+                for (var i = 0; i < keyLength; ++i) {
+                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
+                        return i+1;
+                        //return this._vf.keyValue[i+1],
+                }
+                return 0;
+                //return this._vf.keyValue[0];
+            },        
+
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    this._keyIndex = this.findInterval(this._vf.set_fraction);//linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        //return (1.0-t)*a + t*b;
+                    //});
+
+                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    return;
+                }
+                if(fieldName === "next" && this._vf.next)
+                {
+                    this._keyIndex = (this._keyIndex + 1)%(this._vf.key.length);
+                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    return;
+                }
+                if(fieldName === "previous" && this._vf.previous)
+                {
+                    this._keyIndex = (this._keyIndex - 1 + this._vf.key.length)%(this._vf.key.length);
+                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    return;
+                }
             }
         }
     )
