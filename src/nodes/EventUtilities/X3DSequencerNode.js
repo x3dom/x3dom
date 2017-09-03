@@ -119,19 +119,19 @@ x3dom.registerNodeType(
                         //return (1.0-t)*a + t*b;
                     //});
 
-                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    this.postMessage('value_changed', this._vf.keyValue[this._keyIndex]);
                     return;
                 }
                 if(fieldName === "next" && this._vf.next)
                 {
                     this._keyIndex = (this._keyIndex + 1)%(this._vf.key.length);
-                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    this.postMessage('value_changed', this._vf.keyValue[this._keyIndex]);
                     return;
                 }
                 if(fieldName === "previous" && this._vf.previous)
                 {
                     this._keyIndex = (this._keyIndex - 1 + this._vf.key.length)%(this._vf.key.length);
-                    this.postMessage('value_changed', this._vf.keyValue(this._keyIndex));
+                    this.postMessage('value_changed', this._vf.keyValue[this._keyIndex]);
                     return;
                 }
             }
