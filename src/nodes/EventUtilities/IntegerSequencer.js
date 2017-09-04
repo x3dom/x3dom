@@ -7,7 +7,7 @@
  * Dual licensed under the MIT and GPL
  */
 
-// ### X3DSequencerNode ###
+// ### IntegerSequencer ###
 x3dom.registerNodeType(
     "IntegerSequencer",
     "EventUtilities",
