@@ -7,7 +7,7 @@
  * Dual licensed under the MIT and GPL
  */
 
-// ### X3DSequencerNode ###
+// ### BooleanSequencer ###
 x3dom.registerNodeType(
     "BooleanSequencer",
     "EventUtilities",
