@@ -79,7 +79,7 @@ x3dom.registerNodeType(
                         this.postMessage('inputTrue', true);
                         return;
                     }
-                    this._vf.inputFalse = false; // according to tooltips but cobweb uses true
+                    this._vf.inputFalse = false; // confirmed with other browsers
                     this.postMessage('inputFalse', false);
                     return;
                 }
