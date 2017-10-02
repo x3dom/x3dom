@@ -77,7 +77,7 @@ x3dom.registerNodeType(
             findInterval: function (time) {
                 var keyLength = this._vf.key.length-1;
                 
-                if (time <= this._vf.key[0]) {
+                if (time < this._vf.key[0]) {
                     return 0;
                     //return this._vf.keyValue[0];
                 }
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
                 }
 
                 for (var i = 0; i < keyLength; ++i) {
-                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
+                    if ((this._vf.key[i] <= time) && (time < this._vf.key[i+1])) {
                         return i+1;
                         //return this._vf.keyValue[i+1],
                     }
