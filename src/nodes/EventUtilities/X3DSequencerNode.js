@@ -70,7 +70,7 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'set_fraction', 0);
         
-            this._keyIndex = 0;
+            this._keyIndex = -1;
         
         },
         {
@@ -79,22 +79,18 @@ x3dom.registerNodeType(
                 
                 if (time < this._vf.key[0]) {
                     return 0;
-                    //return this._vf.keyValue[0];
                 }
 
                 else if (time >= this._vf.key[keyLength]) {
                     return keyLength;
-                    //return this._vf.keyValue[keyLength];
                 }
 
                 for (var i = 0; i < keyLength; ++i) {
                     if ((this._vf.key[i] <= time) && (time < this._vf.key[i+1])) {
-                        return i+1;
-                        //return this._vf.keyValue[i+1],
+                        return i;
                     }
                 }
-                return 0;
-                //return this._vf.keyValue[0];
+                return 0; // should never happen
             },        
 
             fieldChanged: function(fieldName)
