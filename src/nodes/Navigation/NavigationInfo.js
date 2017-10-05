@@ -40,6 +40,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
 
             /**
+             * Enable/disable natural mousewheel scrolling.
+             * @var {x3dom.fields.SFBool} naturalScroll
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'naturalScroll', false);
+
+            /**
              * defines the navigation type
              * @var {x3dom.fields.MFString} type
              * @range {"ANY","WALK","EXAMINE","FLY","LOOKAT","NONE","EXPLORE",...}
