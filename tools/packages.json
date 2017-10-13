@@ -277,6 +277,17 @@
                     {"file": "PlaneSensor.js"},
                     {"file": "SphereSensor.js"},
                     {"file": "CylinderSensor.js"}
+                ]},
+                {"name": "EventUtilities", "filePrefix": "nodes/EventUtilities/", "files":[
+                    {"file": "X3DSequencerNode.js"},
+                    {"file": "X3DTriggerNode.js"},
+                    {"file": "BooleanFilter.js"},
+                    {"file": "BooleanSequencer.js"},
+                    {"file": "BooleanToggle.js"},
+                    {"file": "BooleanTrigger.js"},
+                    {"file": "IntegerSequencer.js"},
+                    {"file": "IntegerTrigger.js"},
+                    {"file": "TimeTrigger.js"}
                 ]}
             ]},
 
