@@ -43,7 +43,7 @@
                 {"path": "shader/ShaderDynamic.js"},
                 {"path": "shader/ShaderDynamicMobile.js"},
 		        {"path": "shader/ShaderDynamicPicking.js"},
-				{"path": "shader/ShaderDynamicShadow.js"},
+                {"path": "shader/ShaderDynamicShadow.js"},
                 {"path": "shader/ShaderComposed.js"},
                 {"path": "shader/ShaderNormal.js"},
                 {"path": "shader/ShaderFrontgroundTexture.js"},
