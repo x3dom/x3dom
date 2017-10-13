@@ -54,8 +54,8 @@
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
                 {"path": "shader/ShaderKHRMaterialCommons.js"},
-		{"path": "shader/ShaderSSAO.js", "type": "file"},
-		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
+                {"path": "shader/ShaderSSAO.js", "type": "file"},
+                {"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
 
         {"group": "GFX",
@@ -63,7 +63,6 @@
 		        {"path": "SSAO.js", "type": "file"},
                 {"path": "gfx_webgl.js"}
             ]},
-
 
         {"group": "COMPONENTS",
             "data": [
@@ -372,6 +371,7 @@
                 ]}              
             ]
 		},
+        
 		{"group": "PHYSIC_EXTENSIONS",
             "data": [
                 {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
@@ -392,6 +392,7 @@
                 ]}
 			]
 		},
+        
         {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
                     {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
