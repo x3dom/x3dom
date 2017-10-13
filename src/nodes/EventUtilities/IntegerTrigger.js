@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "IntegerTrigger",
     "EventUtilities",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DTriggerNode,
         
         /**
          * Constructor for IntegerTrigger
