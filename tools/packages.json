@@ -19,8 +19,8 @@
                 {"path": "util/StateManager.js"},
                 {"path": "util/BinaryContainerSetup.js"},
                 {"path": "util/DrawableCollection.js"},
-				{"path": "util/Moveable.js"},
-				{"path": "util/Zlib.js"},
+                {"path": "util/Moveable.js"},
+                {"path": "util/Zlib.js"},
                 {"path": "util/glTF/glTFLoader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
                 {"path": "X3DCanvas.js"},
@@ -42,8 +42,8 @@
                 {"path": "shader/ShaderParts.js"},
                 {"path": "shader/ShaderDynamic.js"},
                 {"path": "shader/ShaderDynamicMobile.js"},
-		        {"path": "shader/ShaderDynamicPicking.js"},
-				{"path": "shader/ShaderDynamicShadow.js"},
+                {"path": "shader/ShaderDynamicPicking.js"},
+                {"path": "shader/ShaderDynamicShadow.js"},
                 {"path": "shader/ShaderComposed.js"},
                 {"path": "shader/ShaderNormal.js"},
                 {"path": "shader/ShaderFrontgroundTexture.js"},
@@ -54,8 +54,8 @@
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
                 {"path": "shader/ShaderKHRMaterialCommons.js"},
-		{"path": "shader/ShaderSSAO.js", "type": "file"},
-		{"path": "shader/ShaderSSAOBlur.js", "type": "file"}
+                {"path": "shader/ShaderSSAO.js", "type": "file"},
+                {"path": "shader/ShaderSSAOBlur.js", "type": "file"}
             ]},
 
         {"group": "GFX",
@@ -63,7 +63,6 @@
 		        {"path": "SSAO.js", "type": "file"},
                 {"path": "gfx_webgl.js"}
             ]},
-
 
         {"group": "COMPONENTS",
             "data": [
@@ -277,6 +276,17 @@
                     {"file": "PlaneSensor.js"},
                     {"file": "SphereSensor.js"},
                     {"file": "CylinderSensor.js"}
+                ]},
+                {"name": "EventUtilities", "filePrefix": "nodes/EventUtilities/", "files":[
+                    {"file": "X3DSequencerNode.js"},
+                    {"file": "X3DTriggerNode.js"},
+                    {"file": "BooleanFilter.js"},
+                    {"file": "BooleanSequencer.js"},
+                    {"file": "BooleanToggle.js"},
+                    {"file": "BooleanTrigger.js"},
+                    {"file": "IntegerSequencer.js"},
+                    {"file": "IntegerTrigger.js"},
+                    {"file": "TimeTrigger.js"}
                 ]}
             ]},
 
@@ -361,6 +371,7 @@
                 ]}              
             ]
 		},
+        
 		{"group": "PHYSIC_EXTENSIONS",
             "data": [
                 {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
@@ -381,6 +392,7 @@
                 ]}
 			]
 		},
+        
         {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
                     {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
