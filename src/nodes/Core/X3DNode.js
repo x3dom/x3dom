@@ -417,7 +417,7 @@ x3dom.registerNodeType(
                         pos = toField.indexOf(post);
                         if (pos > 0) {
                             fieldName = toField.substr(0, toField.length - post.length);
-                            if (toNode._vf[fieldName]!== undefined) {
+                            if (toNode._vf[fieldName] !== undefined) {
                                 toField = fieldName;
                             }
                         }
