@@ -273,14 +273,13 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
 {
     this.program.bind();
 
-
     // set all used Shader Parameter
     for(var key in shaderProgram){
         if(!shaderProgram.hasOwnProperty(key))
             continue;
 
         if(this.program.hasOwnProperty(key))
-            this.program[key] = shaderProgram[key];
+            this.program[key] = this.updateTransforms(key, shaderProgram[key]);
     }
 
     if(this.diffuseTex != null)
@@ -304,6 +303,54 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
     this.program.lightVector = this.lightVector;
 
     this.program.technique = this.technique;
+};
+
+x3dom.glTF.glTFKHRMaterialCommons.prototype.updateTransforms = function(uniform, value)
+{
+    var matrix4f = new x3dom.fields.SFMatrix4f();
+    
+    function glMultMatrix4 (gl, m) {
+        matrix4f.setFromArray(gl);
+        return matrix4f.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+    };
+    
+    switch(uniform){
+        case "modelViewInverseTransposeMatrix":
+            //do modelviewinverse
+            var worldInverse = this.worldTransform.inverse();
+            matrix4f.setFromArray(value);
+            //mult in, transpose and to GL
+            var mat = worldInverse.mult(matrix4f).transpose().toGL();
+            var model_view_inv_gl = [
+                mat[0], mat[1], mat[2],
+                mat[4],mat[5],mat[6],
+                mat[8],mat[9],mat[10]];
+            return model_view_inv_gl;
+            break;
+        case "modelViewInverseMatrix":
+            // work with worldTransform.inverse
+            // (VM x W)-1 = W-1 x VM-1
+            var worldInverse = this.worldTransform.inverse();
+            matrix4f.setFromArray(value);
+            return worldInverse.mult(matrix4f);
+            break;
+        case "modelViewMatrix":
+        case "modelViewProjectionMatrix":
+        case "modelMatrix":
+        case "model":
+            return glMultMatrix4(value, this.worldTransform);
+            break;
+        case "viewMatrix":
+        case "projectionMatrix":
+            return value;
+            break;
+        default:
+            return value;
+            break;
+    }
+    
+	console.warn("switch default not encountered ?");
+	return value;
 };
 
 x3dom.glTF.glTFMaterial = function(technique)
