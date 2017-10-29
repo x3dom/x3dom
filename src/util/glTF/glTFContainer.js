@@ -321,10 +321,10 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.updateTransforms = function(uniform,
             matrix4f.setFromArray(value);
             //mult in, transpose and to GL
             var mat = worldInverse.mult(matrix4f).transpose().toGL();
-            var model_view_inv_gl =
-                [mat[0], mat[1], mat[2],
-                    mat[4],mat[5],mat[6],
-                    mat[8],mat[9],mat[10]];
+            var model_view_inv_gl = [
+                mat[0], mat[1], mat[2],
+                mat[4],mat[5],mat[6],
+                mat[8],mat[9],mat[10]];
             return model_view_inv_gl;
             break;
         case "modelViewInverseMatrix":
