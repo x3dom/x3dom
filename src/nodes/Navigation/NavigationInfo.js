@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFBool} naturalScroll
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue false
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFBool(ctx, 'naturalScroll', false);
