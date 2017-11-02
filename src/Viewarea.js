@@ -980,6 +980,9 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 {
     this._needNavigationMatrixUpdate = true;
 
+    // simulate move first, in case mouse not moved after last click
+    this.prepareEvents(x, y, 0, "onmouseover");
+    // touchsensor isActive is invoked now since in affectedPointingSensorList
     this.prepareEvents(x, y, buttonState, "onmousedown");
     this._pickingInfo.lastClickObj = this._pickingInfo.pickObj;
     this._pickingInfo.firstObj = this._pickingInfo.pickObj;
