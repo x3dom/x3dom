@@ -62,6 +62,7 @@ x3dom.Texture = function (gl, doc, cache, node) {
     this.anisotropicDegree = 1.0;
 
     this.dashtexture = false;
+    this.lastUrlUsedForTextureCreation = null;
 
     var tex = this.node;
     var suffix = "mpd";
@@ -128,6 +129,35 @@ x3dom.Texture.prototype.update = function()
 	}
 
     this.node.validateGLObject();
+};
+
+/**
+ * Invoke gl.deleteTexture on the texture handle, thus freeing up some video memory.
+ * @pre This instance has been properly set up before and contains a handle to a valid OpenGL texture.
+ * @pre The texture was created by using a URL. In other words, this.lastUrlUsedForTextureCreation is defined.
+ * @post This instance is no longer valid, and should be either updated or deleted.
+ */
+x3dom.Texture.prototype.cleanGLObjects = function()
+{
+  if ( x3dom.isa( this.node, x3dom.nodeTypes.ImageTexture ) ) {
+      var textureUrl = this.lastUrlUsedForTextureCreation;
+      if( textureUrl === null ) {
+          x3dom.debug.logError( 'cleanGLObjects cannot delete texture by url since lastUrlUsedForTextureCreation is null' );
+      } else {
+          var textureHandle = this.cache.getTexture2DByUrl( textureUrl );
+          if( textureHandle === undefined || textureHandle !== this.texture ) { 
+              // TODO: Implement cleanup logic for the case where this.cache is 
+              // not holding the texture handle.
+              x3dom.debug.logError( 'cleanGLObjects not defined for case where this.cache does not contain this.texture' );
+          } else {
+              this.cache.deleteTexture2DByUrl( this.gl, textureUrl );
+              this.texture = undefined; // Make debugging easier.
+          }        
+      }
+  } else {
+      // TODO: Implement for other node types, like MovieTexture and so on.
+      x3dom.debug.logError( 'cleanGLObjects not defined for this kind of texture node!' );
+  }
 };
 
 x3dom.Texture.prototype.setPixel = function(x, y, pixel, update)
@@ -393,14 +423,27 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
 	{
-		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false,
+		this.lastUrlUsedForTextureCreation = tex.getTexUrl();
+		this.texture = this.cache.getTextureCube( gl, doc, this.lastUrlUsedForTextureCreation, false,
 		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
 	else
 	{
-		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
+		this.lastUrlUsedForTextureCreation = this.getUrlForBasicTexture();
+		this.texture = this.cache.getTexture2D( gl, doc, this.lastUrlUsedForTextureCreation,
 		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
 	}
+};
+
+/**
+ * Returns the URL of the relevant texture, assuming the relevant node is not an
+ * X3DEnvironmentTextureMode or some other node which defines a special way of generating
+ * the texture's URL.
+ * @pre this.node is the sort for which basic URL-generation method is appropriate.
+ */
+x3dom.Texture.prototype.getUrlForBasicTexture = function() 
+{
+  return this.node._nameSpace.getURL( this.node._vf.url[0] );
 };
 
 x3dom.Texture.prototype.updateText = function()

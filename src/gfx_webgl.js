@@ -194,23 +194,39 @@ x3dom.gfx_webgl = (function () {
         return null;
     }
 
-
     /*****************************************************************************
      * Setup GL objects for given shape
      *****************************************************************************/
     Context.prototype.setupShape = function (gl, drawable, viewarea) {
         var q = 0, q6;
-        var textures, t;
+        var textureNodes, t;
         var vertices, positionBuffer;
         var texCoordBuffer, normalBuffer, colorBuffer;
         var indicesBuffer, indexArray;
 
         var shape = drawable.shape;
         var geoNode = shape._cf.geometry.node;
-
+                        
         if (shape._webgl !== undefined) {
             var needFullReInit = false;
 
+            // Make a copy of shape._webgl.texture, which is essentially the collection of 
+            // texture wrappers that this shape is in charge of. By making a copy, we can detect
+            // which textures have gone out of use, at which point we can delete them if we chose.
+            var oldTextureWrappers = [];
+            Array.forEach( shape._webgl.texture, function( oldTextureWrapper ) {
+                // Make a deep (enough) copy to support comparisons with true Texture instances
+                // and the deletion of an OpenGL texture, if necessary (the latter is 
+                // why there is a copy of cache and gl in here).
+                var copyOfOldTextureWrapper = {};
+                copyOfOldTextureWrapper.node = oldTextureWrapper.node;
+                copyOfOldTextureWrapper.texture = oldTextureWrapper.texture;
+                copyOfOldTextureWrapper.lastUrlUsedForTextureCreation = oldTextureWrapper.lastUrlUsedForTextureCreation;
+                copyOfOldTextureWrapper.cache = oldTextureWrapper.cache;
+                copyOfOldTextureWrapper.gl = oldTextureWrapper.gl;
+                oldTextureWrappers.push( copyOfOldTextureWrapper );
+            });
+            
             // TODO; do same for texcoords etc.!
             if (shape._dirty.colors === true &&
                 shape._webgl.shader.color === undefined && geoNode._mesh._colors[0].length) {
@@ -223,48 +239,47 @@ x3dom.gfx_webgl = (function () {
             if (needFullReInit && shape._cleanupGLObjects) {
                 shape._cleanupGLObjects(true, false);
             }
-
-            //Check for dirty Textures
+                        
+            // Check for dirty Textures (Have DOM elements been modified?)
             if (shape._dirty.texture === true) {
-                //Check for Texture add or remove
-                if (shape._webgl.texture.length != shape.getTextures().length) {
-                    //Delete old Textures
-                    for (t = 0; t < shape._webgl.texture.length; ++t) {
+              
+                // ImageTexture nodes, MovieTexture nodes, etc.
+                textureNodes = shape.getTextures();
+              
+                // Check if Textures have been added or removed via adding/removing nodes.
+                if (shape._webgl.texture.length != textureNodes.length) {
+                    // Delete old Textures (the wrappers, not the actual OpenGL texture objects).
+                    for (t = 0; t < shape._webgl.texture.length; ++t) {                        
                         shape._webgl.texture.pop();
                     }
 
-                    //Generate new Textures
-                    textures = shape.getTextures();
-
-                    for (t = 0; t < textures.length; ++t) {
-                        shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]));
+                    // Create new Texture wrappers.
+                    for (t = 0; t < textureNodes.length; ++t) {
+                        shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textureNodes[t]));
                     }
 
-                    //Set dirty shader
                     shape._dirty.shader = true;
 
-                    //Set dirty texture Coordinates
+                    // Set dirty texture Coordinates
                     if (shape._webgl.shader.texcoord === undefined)
                         shape._dirty.texcoords = true;
                 }
                 else {
-                    //If someone remove and append at the same time, texture count don't change
-                    //and we have to check if all nodes the same as before
-                    textures = shape.getTextures();
-
-                    for (t = 0; t < textures.length; ++t) {
-                        if (textures[t] === shape._webgl.texture[t].node) {
-                            //only update the texture
+                    // If client code performed an equal number of removes and appends, the texture count doesn't change
+                    // and we have to check if all nodes the same as before
+                    for (t = 0; t < textureNodes.length; ++t) {
+                        if (textureNodes[t] === shape._webgl.texture[t].node) {
+                            // Only update the texture
                             shape._webgl.texture[t].update();
                         }
                         else {
-                            //Set texture to null for recreation
+                            // Set texture to null for recreation
                             shape._webgl.texture[t].texture = null;
 
-                            //Set new node
-                            shape._webgl.texture[t].node = textures[t];
+                            // Set new node
+                            shape._webgl.texture[t].node = textureNodes[t];
 
-                            //Update new node
+                            // Update new node
                             shape._webgl.texture[t].update();
                         }
                     }
@@ -449,7 +464,32 @@ x3dom.gfx_webgl = (function () {
                 geoNode.unsetGeoDirty();
                 shape.unsetGeoDirty();
             }
-
+                
+            // Check whether there are any now-unused texture wrappers whose textures can now by cleaned up by 
+            // the GL context.     
+            Array.forEach( oldTextureWrappers, function( oldTextureWrapper ) {
+                            
+                // Check whether oldTextureWrapper is not a member of the updated
+                // texture wrappers (out of the updated texture wrappers, there is not 
+                // a wrapper that wraps the same texture).
+                var textureNoLongerUsed = true;
+                Array.forEach( shape._webgl.texture, function( newTextureWrapper ) {
+                    if( newTextureWrapper.texture === oldTextureWrapper.texture ) {
+                        textureNoLongerUsed = false;
+                    }
+                });
+                
+                if( textureNoLongerUsed && oldTextureWrapper.node.cleanGLObjectsUponModifyOrDelete() ) {
+                    // invoke gl.deleteTexture - would say 
+                    // 'oldTextureWrapper.cleanGLObjects()' except
+                    // that oldTextureWrapper is not a true instance of Texture,
+                    // just a copy of some of the fields from a Texture instance.
+                    x3dom.Texture.prototype.cleanGLObjects.call( oldTextureWrapper );
+                }
+              
+            });
+            oldTextureWrappers = [];
+            
             if (!needFullReInit) {
                 // we're done
                 return;
@@ -473,11 +513,11 @@ x3dom.gfx_webgl = (function () {
             }
             return;
         }
-
+        
         // we're on init, thus reset all dirty flags
         shape.unsetDirty();
 
-        // dynamically attach clean-up method for GL objects
+        // Dynamically attach clean-up method for GL objects
         if (!shape._cleanupGLObjects)
         {
             shape._cleanupGLObjects = function (force, delGL)
@@ -485,6 +525,15 @@ x3dom.gfx_webgl = (function () {
                 // FIXME; what if complete tree is removed? Then _parentNodes.length may be greater 0.
                 if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
                 {
+                    // Invoke gl.deleteTexture on those textures that are not supposed to hang around
+                    // in memory when they go out of use. 
+                    Array.forEach( shape._webgl.texture, function( textureWrapper ) {
+                        if( textureWrapper.node.cleanGLObjectsUponModifyOrDelete() ) {
+                            // Here we are assuming that the Shape is going out of existence.
+                            textureWrapper.cleanGLObjects();
+                        }
+                    });                  
+                  
                     var sp = this._webgl.shader;
 
                     for (var q = 0; q < this._webgl.positions.length; q++) {
@@ -555,12 +604,12 @@ x3dom.gfx_webgl = (function () {
             externalGeometry: 0 // 0 : no EG,  1 : indexed EG, -1 : non-indexed EG
         };
 
-        //Set Textures		
-        textures = shape.getTextures();
-        for (t = 0; t < textures.length; ++t) {
-            shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]));
+        // Update texture wrappers
+        textureNodes = shape.getTextures();
+        for (t = 0; t < textureNodes.length; ++t) {
+            shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textureNodes[t]));
         }
-
+        
         //Set Shader
         //shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
         //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
