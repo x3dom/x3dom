@@ -71,6 +71,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'set_fraction', 0);
         
             this._keyIndex = -1;
+            this._key_changed = false;
+            this._keyValue_changed = false;
         
         },
         {
@@ -118,11 +120,21 @@ x3dom.registerNodeType(
                 }
                 if(fieldName === "key")
                 {
+                    if (this._key_changed) { // avoid loop this way since no timestamping
+                        this._key_changed = false;
+                        return
+                    }
+                    this._key_changed = true;
                     this.postMessage('key', this._vf.key);
                     return;
                 }
                 if(fieldName === "keyValue")
                 {
+                    if (this._keyValue_changed) { // avoid loop this way since no timestamping
+                        this._keyValue_changed = false;
+                        return
+                    }
+                    this._keyValue_changed = true;
                     this.postMessage('keyValue', this._vf.keyValue);
                     return;
                 }
