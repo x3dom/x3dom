@@ -36,7 +36,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateVertexShader = function(
                 "{"+
                 "    vec4 pos = modelViewProjectionMatrix * vec4(position, 1.0);"+
                 "    v_eye = (modelViewMatrix * vec4(position, 1.0)).xyz;"+
-                "    v_normal = (normalMatrix * vec4(normal,1.0)).xyz;"+
+                "    v_normal = normalize((normalMatrix * vec4(normal,1.0)).xyz);"+
                 "    v_texcoord = texcoord;"+
                 "    gl_Position = pos;"+
                 "}";
@@ -104,7 +104,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
     "void main(void)\n"+
     "{\n"+
         "vec4 I = -vec4(normalize(v_eye),1.0);\n"+
-        "vec4 N = vec4(normalize(v_normal),1.0);\n"+
+        "vec4 N = vec4(v_normal,1.0);\n"+
         "vec4 al = ambientLight;\n"+
         "vec4 L = normalize(lightVector-vec4(v_eye,1.0));\n";
 
@@ -156,6 +156,8 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "    eye = -v_eye.xyz;\n";
             shader += "}\n";
 
+            //divide glTF shininess by 128 since it is provided premultiplied
+            shader += "float _shininess = shininess * 0.0078125;\n";
             shader += "vec3 ads;\n";
 
             for(var l=0; l<properties.LIGHTS; l++) {
@@ -170,7 +172,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
                     "light"+l+"_AmbientIntensity, " +
                     "light"+l+"_BeamWidth, " +
                     "light"+l+"_CutOffAngle, " +
-                    "v_normal, eye, shininess, ambientIntensity);\n";
+                    "v_normal, eye, _shininess, ambientIntensity);\n";
                 shader += "ambient  += " + lightCol + " * ads.r;\n" +
                     "diffuse  += " + lightCol + " * ads.g;\n" +
                     "specular += " + lightCol + " * ads.b;\n";
@@ -183,7 +185,7 @@ x3dom.shader.KHRMaterialCommonsShader.prototype.generateFragmentShader = functio
             shader += "color.rgb = (_emission.rgb + max(ambient + diffuse, 0.0) * color.rgb + specular*_specularColor.rgb);\n";
         }
 
-        shader += "gl_FragColor = vec4(color.rgb, 1.0-transparency);\n"+
+        shader += "gl_FragColor = vec4(color.rgb, transparency);\n"+
     "}";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);

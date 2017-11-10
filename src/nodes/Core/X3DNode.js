@@ -315,14 +315,14 @@ x3dom.registerNodeType(
                     pos = fromField.indexOf(pre);
                     if (pos === 0) {
                         fieldName = fromField.substr(pre.length, fromField.length - 1);
-                        if (this._vf[fieldName]) {
+                        if (this._vf[fieldName] !== undefined) {
                             fromField = fieldName;
                         }
                     } else {
                         pos = fromField.indexOf(post);
                         if (pos > 0) {
                             fieldName = fromField.substr(0, fromField.length - post.length);
-                            if (this._vf[fieldName]) {
+                            if (this._vf[fieldName] !== undefined) {
                                 fromField = fieldName;
                             }
                         }
@@ -334,7 +334,7 @@ x3dom.registerNodeType(
                     pos = toField.indexOf(pre);
                     if (pos === 0) {
                         fieldName = toField.substr(pre.length, toField.length - 1);
-                        if (toNode._vf[fieldName]) {
+                        if (toNode._vf[fieldName] !== undefined) {
                             toField = fieldName;
                         }
                     }
@@ -342,7 +342,7 @@ x3dom.registerNodeType(
                         pos = toField.indexOf(post);
                         if (pos > 0) {
                             fieldName = toField.substr(0, toField.length - post.length);
-                            if (toNode._vf[fieldName]) {
+                            if (toNode._vf[fieldName] !== undefined) {
                                 toField = fieldName;
                             }
                         }
@@ -390,14 +390,14 @@ x3dom.registerNodeType(
                     pos = fromField.indexOf(pre);
                     if (pos === 0) {
                         fieldName = fromField.substr(pre.length, fromField.length - 1);
-                        if (this._vf[fieldName]) {
+                        if (this._vf[fieldName] !== undefined) {
                             fromField = fieldName;
                         }
                     } else {
                         pos = fromField.indexOf(post);
                         if (pos > 0) {
                             fieldName = fromField.substr(0, fromField.length - post.length);
-                            if (this._vf[fieldName]) {
+                            if (this._vf[fieldName] !== undefined) {
                                 fromField = fieldName;
                             }
                         }
@@ -409,7 +409,7 @@ x3dom.registerNodeType(
                     pos = toField.indexOf(pre);
                     if (pos === 0) {
                         fieldName = toField.substr(pre.length, toField.length - 1);
-                        if (toNode._vf[fieldName]) {
+                        if (toNode._vf[fieldName] !== undefined) {
                             toField = fieldName;
                         }
                     }
@@ -417,7 +417,7 @@ x3dom.registerNodeType(
                         pos = toField.indexOf(post);
                         if (pos > 0) {
                             fieldName = toField.substr(0, toField.length - post.length);
-                            if (toNode._vf[fieldName]) {
+                            if (toNode._vf[fieldName] !== undefined) {
                                 toField = fieldName;
                             }
                         }

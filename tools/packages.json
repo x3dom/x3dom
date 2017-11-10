@@ -111,6 +111,7 @@
                     {"file": "X3DGeometricPropertyNode.js"},
                     {"file": "X3DCoordinateNode.js"},
                     {"file": "Coordinate.js"},
+                    {"file": "CoordinateDouble.js"},
                     {"file": "Normal.js"},
                     {"file": "X3DColorNode.js"},
                     {"file": "Color.js"},
