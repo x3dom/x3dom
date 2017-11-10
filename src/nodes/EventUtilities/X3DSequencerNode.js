@@ -116,6 +116,16 @@ x3dom.registerNodeType(
                     this.postMessage('value_changed', this._vf.keyValue[this._keyIndex]);
                     return;
                 }
+                if(fieldName === "key")
+                {
+                    this.postMessage('key', this._vf.key);
+                    return;
+                }
+                if(fieldName === "keyValue")
+                {
+                    this.postMessage('keyValue', this._vf.keyValue);
+                    return;
+                }
             }
         }
     )
