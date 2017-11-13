@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'naturalScroll', false);
+            this.addField_SFBool(ctx, 'reverseScroll', false);
 
             /**
              * defines the navigation type
