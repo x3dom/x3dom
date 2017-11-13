@@ -40,6 +40,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
 
             /**
+             * Enable/disable reversed mousewheel scrolling to zoom.
+             * @var {x3dom.fields.SFBool} reverseScroll
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'reverseScroll', false);
+
+            /**
              * defines the navigation type
              * @var {x3dom.fields.MFString} type
              * @range {"ANY","WALK","EXAMINE","FLY","LOOKAT","NONE","EXPLORE",...}

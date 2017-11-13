@@ -293,8 +293,12 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.focus();
 
             var originalY = this.parent.mousePosition(evt).y;
-
-            this.mouse_drag_y += 2 * evt.detail;
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
+                this.mouse_drag_y -= 2 * evt.detail;
+            }
+            else{
+                this.mouse_drag_y += 2 * evt.detail;
+            }
 
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
@@ -316,8 +320,13 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.focus();
 
             var originalY = this.parent.mousePosition(evt).y;
-
-            this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+            
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
+                this.mouse_drag_y += 0.1 * evt.wheelDelta;
+            }
+            else{
+                this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+            }
 
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
