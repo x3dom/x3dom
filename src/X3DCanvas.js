@@ -293,7 +293,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.focus();
 
             var originalY = this.parent.mousePosition(evt).y;
-            if(this.parent.doc._scene.getNavigationInfo()._vf.naturalScroll == true){
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
                 this.mouse_drag_y -= 2 * evt.detail;
             }
             else{
@@ -321,7 +321,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
 
             var originalY = this.parent.mousePosition(evt).y;
             
-            if(this.parent.doc._scene.getNavigationInfo()._vf.naturalScroll == true){
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
                 this.mouse_drag_y += 0.1 * evt.wheelDelta;
             }
             else{
