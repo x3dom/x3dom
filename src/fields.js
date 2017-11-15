@@ -1781,7 +1781,7 @@ x3dom.fields.Quaternion.prototype.multiply = function (that) {
 
 x3dom.fields.Quaternion.parseAxisAngle = function (str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
-    if (m === null) return x3dom.fields.Quaternion();
+    if (m === null) return new x3dom.fields.Quaternion();
     return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
 };
 
