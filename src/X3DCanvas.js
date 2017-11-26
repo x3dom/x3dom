@@ -306,6 +306,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
 
     this.onKeyPress = function (evt) {
         if (!this.parent.disableKeys) {
+            evt.preventDefault();
             this.parent.doc.onKeyPress(evt.charCode);
         }
         this.parent.doc.needRender = true;
