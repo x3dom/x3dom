@@ -33,15 +33,15 @@ x3dom.glTF.glTFLoader.prototype.getScene = function(shape,shaderProgram, gl, sce
     this.updateScene(shape, shaderProgram, gl, scene);
 };
 
-x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, meshName)
+x3dom.glTF.glTFLoader.prototype.getMesh = function(shape, shaderProgram, gl, meshName)
 {
     this.reset(shape,gl);
 
     var mesh;
-    if(meshName == null)
+    if (meshName == null)
     {
         mesh = Object.keys(this.scene.meshes)[0];
-    }else
+    } else
     {
         for(var key in this.scene.meshes){
             if(this.scene.meshes.hasOwnProperty(key)
@@ -52,7 +52,7 @@ x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, mesh
             }
         }
     }
-    this.updateMesh(shape, shaderProgram, gl, mesh);
+    this.updateMesh(shape, shaderProgram, gl, mesh, new x3dom.fields.SFMatrix4f());
 };
 
 x3dom.glTF.glTFLoader.prototype.reset = function(shape, gl)
