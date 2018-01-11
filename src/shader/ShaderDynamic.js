@@ -549,12 +549,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if((properties.TEXTURED || properties.DIFFUSEMAP)) {
 			shader += "uniform sampler2D diffuseMap;\n";
 		}
-		if(properties.CUBEMAP) {
-			shader += "uniform samplerCube environmentMap;\n";
-			shader += "varying vec3 fragViewDir;\n";
-            shader += "uniform float environmentFactor;\n";
-
-		}
+        if(properties.CUBEMAP) {
+            shader += "uniform samplerCube environmentMap;\n";
+            shader += "varying vec3 fragViewDir;\n";
+            if(properties.CSSHADER) {
+                shader += "uniform float environmentFactor;\n";
+            }
+        }
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
 		}
@@ -831,7 +832,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 					shader += "color.rgb *= texColor.rgb;\n";
 				}
 				if(properties.CUBEMAP) {
-					shader += "color.rgb *= mix(vec3(1.0,1.0,1.0), envColor.rgb, environmentFactor);\n";
+					if(properties.CSSHADER) {
+						shader += "color.rgb *= mix(vec3(1.0,1.0,1.0), envColor.rgb, environmentFactor);\n";
+					}else{
+						shader += "color.rgb *= envColor.rgb;\n";
+					}
 				}
 			}else{
 				shader += "color.rgb = (_emissiveColor + max(ambient + diffuse, 0.0) * texColor.rgb + specular*_specularColor);\n";
