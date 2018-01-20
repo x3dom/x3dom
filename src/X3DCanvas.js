@@ -101,9 +101,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	this.canvas.parent = this;
 	
 	this.gl = this._initContext( this.canvas, (this.backend.search("desktop") >= 0),
-											  (this.backend.search("mobile") >= 0),
-											  (this.backend.search("flashie") >= 0),
-											  (this.backend.search("webgl2") >= 0));
+		(this.backend.search("mobile") >= 0),
+		(this.backend.search("webgl2") >= 0));
 	this.backend = 'webgl';
 	
 	if (this.gl == null)
