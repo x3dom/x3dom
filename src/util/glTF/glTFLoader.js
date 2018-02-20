@@ -416,7 +416,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         return this.loaded.images[imageNodeName];
 
     var imageNode = this.scene.images[imageNodeName];
-    if(imageNode.extensions!=null && imageNode.extensions.KHR_binary_glTF != null)
+    if (imageNode.extensions != null && imageNode.extensions.KHR_binary_glTF != null)
     {
         var ext = imageNode.extensions.KHR_binary_glTF;
         var bufferView = this.scene.bufferViews[ext.bufferView];
@@ -430,6 +430,17 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         var image = new Image();
 
         image.src = blobUrl;
+
+        this.loaded.images[imageNodeName] = image;
+
+        return image;
+    }
+    //untested
+    if (imageNode.uri != null)
+    {
+        var image = new Image();
+
+        image.src = imageNode.uri;
 
         this.loaded.images[imageNodeName] = image;
 
@@ -589,9 +600,31 @@ x3dom.glTF.glTFLoader.prototype.loadShaderProgram = function(gl, shaderProgramNa
 
 x3dom.glTF.glTFLoader.prototype._loadShaderSource = function(shaderNode)
 {
-    var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
+    if(shaderNode.extensions != null && shaderNode.extensions.KHR_binary_glTF != null)
+    {
+        var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
 
-    var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
-    var src = new TextDecoder("ascii").decode(shaderBytes);
-    return src;
+        var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
+        var src = new TextDecoder("ascii").decode(shaderBytes);
+        return src;
+    }
+    else
+    {
+        var dataURL = /^data\:([^]*?)(?:;([^]*?))?(;base64)?,([^]*)$/;
+        var result = dataURL .exec (shaderNode.uri);
+        if (result)
+        {
+            //var mimeType = result [1];
+            var data = result [4];
+
+            if (result [2] === "base64")
+                data = atob (data);
+            else
+                data = unescape (data);
+
+            console.log(data);
+            return data;
+        }
+        x3dom.debug.logError('no shader found');
+    }
 };
