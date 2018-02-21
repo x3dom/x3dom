@@ -2983,7 +2983,7 @@ x3dom.gfx_webgl = (function () {
 
                 line = viewarea.calcViewRay(x, y, cctowc);
 
-                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+                pickPos = from.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
                 dist = (pixelData[index    ] / 255.0) * denom +
@@ -2991,7 +2991,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
-                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = from.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
@@ -3000,7 +3000,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
-                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = from.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
 
                 pickNorm = right.cross(up).normalize();
@@ -3013,14 +3013,14 @@ x3dom.gfx_webgl = (function () {
 
                 line = viewarea.calcViewRay(x, y, cctowc);
 
-                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+                pickPos = from.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
                 dist = pixelData[index] / 255.0;
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
-                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = from.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
@@ -3028,7 +3028,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
-                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = from.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
 
                 pickNorm = right.cross(up).normalize();
