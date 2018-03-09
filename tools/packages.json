@@ -20,9 +20,11 @@
                 {"path": "util/BinaryContainerSetup.js"},
                 {"path": "util/DrawableCollection.js"},
 				{"path": "util/Moveable.js"},
-				{"path": "util/Zlib.js"},
+                {"path": "util/Zlib.js"},
+                {"path": "util/Promise.js"},
                 {"path": "util/glTF/glTFLoader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
+                {"path": "util/glTF/glTF2.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -258,7 +260,10 @@
                     {"file": "PopGeometryLevel.js"},
                     {"file": "PopGeometry.js"},
                     {"file": "ImageGeometry.js"},
-                    {"file": "IndexedFaceSet.js"}
+                    {"file": "IndexedFaceSet.js"},
+                    {"file": "BufferGeometry.js"},
+                    {"file": "BufferGeometryViews.js"},
+                    {"file": "BufferGeometryAccessor.js"}
                 ]},
                 {"name": "Texturing3D", "filePrefix": "nodes/Texturing3D/", "files":[
                     {"file": "X3DTexture3DNode.js"},

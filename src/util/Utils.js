@@ -1028,6 +1028,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.SOLID            = (shape.isSolid()) ? 1 : 0;
         property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
         property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
+        property.BUFFERGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.BufferGeometry)) ? 1 : 0;
         property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
         property.BINARYGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BinaryGeometry))  ? 1 : 0;
 		property.EXTERNALGEOMETRY = (x3dom.isa(geometry, x3dom.nodeTypes.ExternalGeometry))  ? 1 : 0;
@@ -1077,16 +1078,19 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      geometry._cf.texCoord.node._vf.mode &&
                                      geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0;
         property.VERTEXCOLOR      = (geometry._mesh._colors[0].length > 0 ||
-                                     (property.IMAGEGEOMETRY && geometry.getColorTexture()) ||
+                                     (property.IMAGEGEOMETRY  && geometry.getColorTexture()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
+                                     (property.BUFFERGEOMETRY && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.CLIPPLANES       = shape._clipPlanes.length;
 		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
+        property.FLIPTEXCOORD     = geometry._vf.flipTexCoord;
 
         property.KHR_MATERIAL_COMMONS = 0;
         property.PBR_MATERIAL = 0;
+        
         //console.log(property);
 	}
 

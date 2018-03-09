@@ -1239,3 +1239,198 @@ x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, curr
 
     this.checkError(gl);
 };
+
+x3dom.BinaryContainerLoader.bufferGeoCache = {};
+
+/** setup/download buffer geometry */
+x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, currContext)
+{
+    var URL;
+    var bufferGeo = shape._cf.geometry.node;
+
+    // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
+    shape._webgl.bufferGeometry = (bufferGeo._indexed) ? 1 : -1;
+
+    var initAccessors = function()
+    {
+        var accessors = bufferGeo._cf.accessors.nodes;
+
+        for(var i = 0; i < accessors.length; i++)
+        {
+            var accessor = accessors[i];
+
+            var byteOffset = accessor._vf.byteOffset;
+            var byteStride = accessor._vf.byteStride;
+            var bufferType = accessor._vf.bufferType;
+            var components = accessor._vf.components;
+            var componentType = accessor._vf.componentType;
+            var view = accessor._vf.view;
+
+            switch(bufferType)
+            {
+                case "INDEX":
+                    shape._webgl.indexType = componentType;
+                    shape._indexOffset = byteOffset;
+                    break;
+                case "POSITION":
+                    shape._coordStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.coordType = componentType;
+                    bufferGeo._mesh._numPosComponents = components;
+                    break;
+                case "NORMAL":
+                    shape._normalStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.normalType = componentType;
+                    bufferGeo._mesh._numNormComponents = components;
+                    break;
+                case "TEXCOORD":
+                    shape._texCoordStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.texCoordType = componentType;
+                    bufferGeo._mesh._numTexComponents = components;
+                    break;
+                case "COLOR":
+                    shape._colorStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.colorType = componentType;
+                    bufferGeo._mesh._numColComponents = components;
+                    break;
+                case "TANGENT":
+                    shape._tangentStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.tangentType = componentType;
+                    bufferGeo._mesh._numTangentComponents = components;
+                    break;
+                case "BITANGENT":
+                    shape._binormalStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.binormalType = componentType;
+                    bufferGeo._mesh._numBinormalComponents = components;
+                    break;
+            }
+
+            var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
+
+            shape._webgl.buffers[bufferIdx] = x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[view];
+        }
+    }
+
+    var getBufferData = function(buffer, accessor)
+    {
+        var byteOffset = accessor._vf.byteOffset;
+        var byteLength = accessor._vf.byteLength;
+        var componentType = accessor._vf.componentType;
+
+        switch(componentType)
+        {
+            case 5120: return new Int8Array(buffer, byteOffset, byteLength);
+            case 5121: return new Uint8Array(buffer, byteOffset, byteLength);
+            case 5122: return new Int16Array(buffer, byteOffset, byteLength);
+            case 5123: return new Uint16Array(buffer, byteOffset, byteLength);
+            case 5125: return new Uint32Array(buffer, byteOffset, byteLength);
+            case 5126: return new Float32Array(buffer, byteOffset, byteLength);
+        }
+    }
+
+    var initBuffers = function(arraybuffer)
+    {
+        var accessors = bufferGeo._cf.accessors.nodes;
+
+        for(var i = 0; i < accessors.length; i++)
+        {
+            var accessor = accessors[i];
+
+            var buffer = gl.createBuffer();
+
+            gl.bindBuffer(accessor._vf.target, buffer);
+            gl.bufferData(accessor._vf.target, getBufferData(arraybuffer, accessor), gl.STATIC_DRAW);
+            gl.bindBuffer(accessor._vf.target, null);
+
+            var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
+
+            shape._webgl.buffers[bufferIdx] = buffer;
+        }
+    };
+
+    var initBufferViews = function(arraybuffer)
+    {
+        var views = bufferGeo._cf.views.nodes;
+        var buffers = [];
+
+        for(var i = 0; i < views.length; i++)
+        {
+            var view = views[i];
+
+            var byteOffset = view._vf.byteOffset;
+            var byteLength = view._vf.byteLength;
+
+            var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
+
+            var buffer = gl.createBuffer();
+
+            gl.bindBuffer(view._vf.target, buffer);
+            gl.bufferData(view._vf.target, bufferData, gl.STATIC_DRAW);
+            gl.bindBuffer(view._vf.target, null);
+
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers.push(buffer);
+        }
+    };
+
+    if(bufferGeo._vf.buffer != "")
+    {
+        URL = shape._nameSpace.getURL(bufferGeo._vf.buffer);
+
+        if(x3dom.BinaryContainerLoader.bufferGeoCache[URL] != undefined)
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+
+                initAccessors();
+                //initBuffers(arraybuffer);
+
+            });
+        }
+        else
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {
+                buffers: [],
+                promise : new Promise(function(resolve, reject) {
+
+                    var xhr = new XMLHttpRequest();
+        
+                    xhr.open("GET", URL);
+            
+                    xhr.responseType = "arraybuffer";
+            
+                    xhr.onload = function(e)
+                    {
+                        if(xhr.status != 200)
+                        {
+                            shape._nameSpace.doc.downloadCount -= 1;
+                            reject();
+                            return;
+                        }
+            
+                        initBufferViews(xhr.response);
+
+                        initAccessors();
+
+                        //initBuffers(xhr.response);
+
+                        resolve();
+                    
+                        shape._nameSpace.doc.downloadCount -= 1;
+            
+                        shape._nameSpace.doc.needRender = true;
+                    }
+            
+                    xhr.onerror = function(e)
+                    {
+                        shape._nameSpace.doc.downloadCount -= 1;
+                        reject();
+                    }
+            
+                    x3dom.RequestManager.addRequest( xhr );
+            
+                    shape._nameSpace.doc.downloadCount += 1; 
+
+                })
+            }    
+             
+        }      
+    }
+};

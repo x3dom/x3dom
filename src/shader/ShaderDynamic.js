@@ -414,7 +414,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		} else if(properties.TEXTRAFO) {
 			shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
 		} else {
-			shader += " fragTexcoord = vertTexCoord;\n";
+
+			if(properties.FLIPTEXCOORD)
+			{
+				shader += " fragTexcoord = vec2(vertTexCoord.x, 1.0 - vertTexCoord.y);\n";
+			}
+			else
+			{
+				shader += " fragTexcoord = vertTexCoord;\n";
+			}	
 			
 			// LOD LUT HACK ###
 			if (properties.POPGEOMETRY && x3dom.debug.usePrecisionLevelAsTexCoord === true)
@@ -833,7 +841,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                 if (properties.PIXELTEX) {
                     shader += "vec2 texCoord = fragTexcoord;\n";
                 } else {
-                    shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+                    shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0 - fragTexcoord.y);\n";
                 }
 				shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
 				shader += "color.a *= texColor.a;\n";

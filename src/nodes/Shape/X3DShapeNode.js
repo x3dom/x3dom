@@ -91,6 +91,7 @@ x3dom.registerNodeType(
             };
 
             // FIXME; move somewhere else and allow generic values!!!
+            this._indexOffset =0;
             this._coordStrideOffset = [0, 0];
             this._normalStrideOffset = [0, 0];
             this._texCoordStrideOffset = [0, 0];
