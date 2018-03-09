@@ -75,7 +75,9 @@ x3dom.gfx_webgl = (function () {
 
         for (var i = 0; i < validContextNames.length; i++) {
             try {
-				
+                
+                x3dom.caps.RENDERMODE = "HARDWARE";
+
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
 
                 //If context creation fails, retry the creation with failIfMajorPerformanceCaveat = false
@@ -83,6 +85,7 @@ x3dom.gfx_webgl = (function () {
                     x3dom.caps.RENDERMODE = "SOFTWARE";
                     ctxAttribs.failIfMajorPerformanceCaveat = false;
                     ctx = canvas.getContext(validContextNames[i], ctxAttribs);
+                    ctxAttribs.failIfMajorPerformanceCaveat = true;
                 }
 
                 if (ctx) {

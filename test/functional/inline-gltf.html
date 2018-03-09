@@ -1,0 +1,88 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>X3DOM example</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; font-family: Arial, 'sans serif';}
+        .x3dom-canvas {  cursor: default; }
+        body { background: darkslategrey; }
+        x3d { width: calc(100% - 400px); height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        .sidebar {display: flex; flex-direction: column;width: 400px; height: 100%; background: darkgrey; }
+        .sidebar-entry {display: flex; flex-direction: row; width: 100%; height: 48px; justify-content: flex-start; align-items: center; font-weight: bold; color: white; cursor: pointer}
+        .sidebar-entry:hover { background: lightblue; }
+        .main { display: flex; flex-direction: row; }
+    </style>
+
+    <script>
+        
+        var runtime;
+
+        function onDownloadsFinished()
+        {
+            runtime.showAll("posZ", true);
+        };
+    
+        function onload()
+        {
+            x3d = document.getElementById("x3d");           
+            x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
+            
+            runtime = x3d.runtime;
+        };
+
+        function load(file, type)
+        {
+            var suffix = (type == "Binary") ? ".glb" : ".gltf"; 
+
+            type = (type != undefined) ? "-" + type : "";
+            
+            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+
+            url = repo + file + "/glTF" + type + "/" + file + suffix;
+            document.getElementById("inline").setAttribute("url", url);
+
+            runtime.showAll("posZ", true);
+        }
+    
+    </script>
+</head>
+
+     
+<body onload="onload();">
+
+    <section class="main">
+
+        <section class="sidebar">
+
+            <div class="sidebar-entry" onclick="load('TriangleWithoutIndices')">Triangle Without Indices</div>
+            <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
+            <div class="sidebar-entry" onclick="load('Box')">Box</div>
+            <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Binary')">Box Textured (binary)</div>
+            <div class="sidebar-entry" onclick="load('BoxInterleaved')">Box Interleaved</div>
+            <div class="sidebar-entry" onclick="load('BoxTexturedNonPowerOfTwo')">Box Textured NPOT</div>
+            <div class="sidebar-entry" onclick="load('Duck')">Duck</div>
+            <div class="sidebar-entry" onclick="load('2CylinderEngine')">2 Cylinder Engine</div>
+            <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
+            <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
+            <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
+            <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+
+        </section>
+
+        <X3D id="x3d" >
+            <Scene>
+                <Transform>
+                    <!-- <Inline url="2CylinderEngine.gltf"></Inline> -->
+                    <Inline id="inline" url=""></Inline>
+                </Transform>
+            </Scene>
+        </X3D>
+
+    </section>
+</body>
+</html>

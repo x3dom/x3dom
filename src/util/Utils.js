@@ -1259,7 +1259,7 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
  * @param {String} uri_string
  * @returns {boolean}
  */
-x3dom.Utils.ArrayToStr = function( array, offset, length )
+x3dom.Utils.arrayBufferToJSON = function( array, offset, length )
 {
     offset = ( offset != undefined ) ? offset : 0;
     length = ( length != undefined ) ? length : array.length;
@@ -1297,7 +1297,21 @@ x3dom.Utils.ArrayToStr = function( array, offset, length )
         }
     }
 
-    return out;
+    return JSON.parse(out);
+}
+
+x3dom.Utils.arrayBufferToDataURL = function( buffer, mimetype )
+{
+    var binary = '';
+
+    var bytes = new Uint8Array( buffer );
+
+    for (var i = 0; i < bytes.byteLength; i++)
+    {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+
+    return "data:" + mimetype + ";base64," + window.btoa( binary );
 }
 
 

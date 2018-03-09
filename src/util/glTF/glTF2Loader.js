@@ -6,21 +6,16 @@
 x3dom.glTF2Loader = function(nameSpace)
 {
     this._nameSpace = nameSpace;
+    this._binaryData = null;
 }
-
-/**
- * Callback function which is called after the parsing is finished
- * @param {X3DScene} result
- */
-x3dom.glTF2Loader.prototype.onload = function( result ){};
 
 /**
  * Starts the loading/parsing of the glTF-Object
  * @param {Object} gltf 
  */
-x3dom.glTF2Loader.prototype.load = function(gltf)
+x3dom.glTF2Loader.prototype.load = function(input, binary)
 {
-    this._gltf = gltf;
+    this._gltf = this._getGLTF(input, binary);
 
     //generate X3D scene
     var x3dScene = this._generateX3DScene();
@@ -40,9 +35,9 @@ x3dom.glTF2Loader.prototype.load = function(gltf)
 
     console.log(x3dScene);
 
-    this.onload(x3dScene);
+    console.log(this._gltf);
 
-    console.log(gltf);
+    return x3dScene;
 }
 
 /**
@@ -264,11 +259,6 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(image)
     if(image.uri != undefined)
     {
         texture.setAttribute("url", image.uri);
-        
-    }
-    else if(image.bufferView != undefined)
-    {
-        //TODO 
     }
 
     return texture;
@@ -460,6 +450,73 @@ x3dom.glTF2Loader.prototype._primitiveType = function(mode)
         case 4: return "TRIANGLES";
         case 5: return "TRIANGLE_STRIP";
         case 6: return "TRIANGLE_FAN";
+    }
+};
+
+/**
+ */
+x3dom.glTF2Loader.prototype._getGLTF = function(input, binary)
+{
+    if(!binary)
+    {
+        return JSON.parse(input);
+    }
+
+    var byteOffset = 0;
+
+    var header = new Uint32Array(input, byteOffset, 3);
+
+    if (header[0] == 1179937895 || header[1] == 2)
+    {
+        byteOffset += 12;
+
+        var jsonHeader = new Uint32Array(input, byteOffset, 2);
+
+        if (jsonHeader[1] == 1313821514)
+        {
+            byteOffset += 8;
+
+            var jsonData = new Uint8Array(input, byteOffset, jsonHeader[0]);
+
+            byteOffset += jsonHeader[0];
+
+            var binaryHeader = new Uint32Array(input, byteOffset, 2);
+
+            if (binaryHeader[1] == 5130562)
+            {
+                byteOffset += 8;
+
+                var binaryData = new Uint8Array(input, byteOffset, binaryHeader[0]);
+
+                var gltf = x3dom.Utils.arrayBufferToJSON(jsonData);
+
+                gltf.buffers[0].uri = x3dom.Utils.arrayBufferToDataURL(binaryData, "application/octet-stream");
+
+                this._convertBinaryImages(gltf, input, byteOffset);
+
+                return gltf;
+            }
+        }
+    }  
+};
+
+x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOffset)
+{
+    if(gltf.images != undefined)
+    {
+        for(var i = 0; i < gltf.images.length; i++)
+        {
+            var image = gltf.images[i];
+
+            if( image.bufferView )
+            {
+                var bufferView = gltf.bufferViews[image.bufferView];
+
+                var imageData = new Uint8Array(buffer, byteOffset + bufferView.byteOffset, bufferView.byteLength);
+
+                image.uri = x3dom.Utils.arrayBufferToDataURL(imageData, image.mimeType);
+            }
+        }
     }
 };
 

@@ -1246,6 +1246,7 @@ x3dom.BinaryContainerLoader.bufferGeoCache = {};
 x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, currContext)
 {
     var URL;
+    var isDataURL = false;
     var bufferGeo = shape._cf.geometry.node;
 
     // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
@@ -1310,43 +1311,6 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         }
     }
 
-    var getBufferData = function(buffer, accessor)
-    {
-        var byteOffset = accessor._vf.byteOffset;
-        var byteLength = accessor._vf.byteLength;
-        var componentType = accessor._vf.componentType;
-
-        switch(componentType)
-        {
-            case 5120: return new Int8Array(buffer, byteOffset, byteLength);
-            case 5121: return new Uint8Array(buffer, byteOffset, byteLength);
-            case 5122: return new Int16Array(buffer, byteOffset, byteLength);
-            case 5123: return new Uint16Array(buffer, byteOffset, byteLength);
-            case 5125: return new Uint32Array(buffer, byteOffset, byteLength);
-            case 5126: return new Float32Array(buffer, byteOffset, byteLength);
-        }
-    }
-
-    var initBuffers = function(arraybuffer)
-    {
-        var accessors = bufferGeo._cf.accessors.nodes;
-
-        for(var i = 0; i < accessors.length; i++)
-        {
-            var accessor = accessors[i];
-
-            var buffer = gl.createBuffer();
-
-            gl.bindBuffer(accessor._vf.target, buffer);
-            gl.bufferData(accessor._vf.target, getBufferData(arraybuffer, accessor), gl.STATIC_DRAW);
-            gl.bindBuffer(accessor._vf.target, null);
-
-            var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
-
-            shape._webgl.buffers[bufferIdx] = buffer;
-        }
-    };
-
     var initBufferViews = function(arraybuffer)
     {
         var views = bufferGeo._cf.views.nodes;
@@ -1380,18 +1344,39 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
 
                 initAccessors();
-                //initBuffers(arraybuffer);
 
             });
         }
         else
         {
-            x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {
-                buffers: [],
-                promise : new Promise(function(resolve, reject) {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {};
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers = [];
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) {
 
+                if ( URL.indexOf("data:") != -1 )
+                {
+                    var data = URL.split(",")[1];
+
+                    var binaryString =  window.atob(data);
+
+                    var byteLength = binaryString.length;
+                    var bytes = new Uint8Array( byteLength );
+
+                    for (var i = 0; i < byteLength; i++)
+                    {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+
+                    initBufferViews(bytes.buffer);
+
+                    initAccessors();
+
+                    resolve();
+                }
+                else
+                {
                     var xhr = new XMLHttpRequest();
-        
+    
                     xhr.open("GET", URL);
             
                     xhr.responseType = "arraybuffer";
@@ -1409,8 +1394,6 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
 
                         initAccessors();
 
-                        //initBuffers(xhr.response);
-
                         resolve();
                     
                         shape._nameSpace.doc.downloadCount -= 1;
@@ -1427,9 +1410,8 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
                     x3dom.RequestManager.addRequest( xhr );
             
                     shape._nameSpace.doc.downloadCount += 1; 
-
-                })
-            }    
+                }
+            })    
              
         }      
     }
