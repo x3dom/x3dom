@@ -374,13 +374,16 @@ x3dom.Runtime.prototype.mousePosition = function(event) {
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
+
+    var DPR = window.devicePixelRatio || 1;
+
     var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
     
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
     var pos = mat.multFullMatrixPnt(pnt);
     
-    var w = this.canvas.doc._viewarea._width;
-    var h = this.canvas.doc._viewarea._height;
+    var w = this.canvas.doc._viewarea._width / DPR;
+    var h = this.canvas.doc._viewarea._height / DPR;
     
     var x = Math.round((pos.x + 1) * (w - 1) / 2);
     var y = Math.round((h - 1) * (1 - pos.y) / 2);
@@ -389,37 +392,58 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
 };
 
 /**
+ * Function: getBBoxPoints
+ *
+ * Returns the eight point of the scene bounding box
+ */
+x3dom.Runtime.prototype.getBBoxPoints = function() {
+    var scene = this.canvas.doc._scene;
+    scene.updateVolume();
+
+    return [
+        {x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMin.z},
+        {x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMin.z},
+        {x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMin.z},
+        {x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMin.z},
+        {x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMax.z},
+        {x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMax.z},
+        {x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMax.z},
+        {x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMax.z},
+    ];
+
+};
+
+
+    /**
  * Function: calcPagePos
  *
- * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] 
- * for a given point [wx, wy, wz] in world coordinates.
+ * Returns the 2d rect of the scene volume
  */
-x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
-    var elem = this.canvas.canvas.offsetParent;
+x3dom.Runtime.prototype.getSceneBRect = function() {
+    var min = { x: Number.MAX_VALUE, y: Number.MAX_VALUE };
+    var max = { x: Number.MIN_VALUE, y: Number.MIN_VALUE };
 
-    if (!elem) {
-        x3dom.debug.logError("Can't calc page pos without offsetParent.");
-        return [0, 0];
+    var points = this.getBBoxPoints();
+
+    for ( var i = 0; i < points.length; i++ )
+    {
+        var pos2D = this.calcCanvasPos(points[i].x, points[i].y, points[i].z);
+
+        min.x = ( pos2D[0] <  min.x ) ? pos2D[0] : min.x;
+        min.y = ( pos2D[1] <  min.y ) ? pos2D[1] : min.y;
+
+        max.x = ( pos2D[0] >  max.x ) ? pos2D[0] : max.x;
+        max.y = ( pos2D[1] >  max.y ) ? pos2D[1] : max.y;
     }
-    
-	var canvasPos = elem.getBoundingClientRect();
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
-	
-	var scrollLeft = window.pageXOffset || document.body.scrollLeft;
-	var scrollTop = window.pageYOffset || document.body.scrollTop;
 
-    var compStyle = document.defaultView.getComputedStyle(elem, null);
-	
-	var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
-	var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
-		
-	var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
-	var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
-		
-	var x = canvasPos.left + paddingLeft + borderLeftWidth + scrollLeft + mousePos[0];
-    var y = canvasPos.top + paddingTop + borderTopWidth + scrollTop + mousePos[1];
-    
-    return [x, y];
+    var rect = {
+        x: min.x,
+        y: min.y,
+        width: max.x - min.x,
+        height: max.y - min.y
+    };
+
+    return rect;
 };
 
 /**
@@ -1280,6 +1304,16 @@ x3dom.Runtime.prototype.getPixelScale = function(){
     var pixelScaleY = y / this.getHeight();
 
     return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
+};
+
+x3dom.Runtime.prototype.onAnimationStarted = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
+};
+
+x3dom.Runtime.prototype.onAnimationFinished = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
 };
 
 x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )

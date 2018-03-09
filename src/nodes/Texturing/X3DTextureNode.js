@@ -181,8 +181,8 @@ x3dom.registerNodeType(
             parentRemoved: function(parent)
             {
                 Array.forEach(parent._parentNodes, function (shape) {
-                    // THINKABOUTME: this is a bit ugly, cleanup more generically
-                    if (x3dom.isa(shape, x3dom.nodeTypes.Shape)) {
+                    // THINKABOUTME: cleanup more generically, X3DShapeNode allows VolumeData
+                    if (x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
                         shape._dirty.texture = true;
                     }
                     else {

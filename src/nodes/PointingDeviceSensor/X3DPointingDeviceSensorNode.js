@@ -42,6 +42,7 @@ x3dom.registerNodeType(
             //---------------------------------------
             // PROPERTIES
             //---------------------------------------
+            this._isOver = false; // track for touchTime 
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -59,6 +60,7 @@ x3dom.registerNodeType(
                 {
                     this._vf.isActive = true;
                     this.postMessage('isActive', true);
+                    this._isOver = true;
                 }
             },
 
@@ -100,6 +102,7 @@ x3dom.registerNodeType(
                 if (this._vf.enabled)
                 {
                     this.postMessage('isOver', false);
+                    this._isOver = false;
                 }
             },
 
@@ -116,6 +119,8 @@ x3dom.registerNodeType(
                 {
                     this._vf.isActive = false;
                     this.postMessage('isActive', false);
+                    if (this._isOver) // button released and still over
+                      this.postMessage('touchTime', Date.now()/1000);
                 }
             }
 

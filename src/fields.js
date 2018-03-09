@@ -1454,6 +1454,7 @@ x3dom.fields.SFVec2f.copy = function(v) {
 
 x3dom.fields.SFVec2f.parse = function (str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    if (m === null) return new x3dom.fields.SFVec2f();
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
 };
 
@@ -1537,6 +1538,7 @@ x3dom.fields.SFVec2f.prototype.toString = function () {
 
 x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    m = m || [0, 0, 0];
     this.x = +m[1];
     this.y = +m[2];
     return this;
@@ -1722,11 +1724,13 @@ x3dom.fields.SFVec4f.prototype.copy = function() {
 
 x3dom.fields.SFVec4f.parse = function (str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    if (m === null) return new x3dom.fields.SFVec4f();
     return new x3dom.fields.SFVec4f(+m[1], +m[2], +m[3], +m[4]);
 };
 
 x3dom.fields.SFVec4f.prototype.setValueByStr = function(str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    m = m || [0, 0, 0, 0, 0];
     this.x = +m[1];
     this.y = +m[2];
     this.z = +m[3];
@@ -1777,6 +1781,7 @@ x3dom.fields.Quaternion.prototype.multiply = function (that) {
 
 x3dom.fields.Quaternion.parseAxisAngle = function (str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    if (m === null) return new x3dom.fields.Quaternion();
     return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
 };
 
@@ -2082,6 +2087,7 @@ x3dom.fields.Quaternion.prototype.toString = function () {
 
 x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    m = m || [0, 1, 0, 0, 0];
     var quat = x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
     this.x = quat.x;
     this.y = quat.y;

@@ -5,70 +5,18 @@
 if(x3dom.glTF == null)
     x3dom.glTF = {};
 
-x3dom.glTF.ParameterType = {
-    SAMPLER_2D : 35678,
-    SAMPLER_CUBE: 35680
-}
-
-x3dom.glTF.glTFLoader = function(meshOnly, encoding, baseURL)
+x3dom.glTF.glTFLoader = function(response, meshOnly)
 {
-    this.encoding = encoding || "binary";
-    
     this.meshOnly = meshOnly;
-    
-    this.header = null; 
-    
-    this.buffers = [];
-    
-    this._mesh = {};
-    
-    this.state = 0;
-    
-    this.baseURL = baseURL || "";
-    
-    this.loaded = { images: {}, meshes : {}, bufferViews: null, shaders: {}, meshCount: 0};
-    
-    this.readyCallback = null;
-};
 
-x3dom.glTF.glTFLoader.prototype.getURL = function(url)
-{
-    if ( url.indexOf("http://") == -1 )
-    {
-        url = this.baseURL + url;
-    }
-    
-    return url;
-};
-
-
-x3dom.glTF.glTFLoader.prototype.load = function(response, callback)
-{
     this.header = this.readHeader(response);
 
-    if ( this.encoding == "binary" && this.header.sceneLength > 0 )
-    {
+    if (this.header.sceneLength > 0) {
         this.scene = this.readScene(response, this.header);
         this.body = this.readBody(response, this.header);
-        callback();
     }
-    else
-    {
-        this.readyCallback = callback;
-        this.scene = this.readScene(response, this.header);
-        this.loadExternalStuff();
-    }
-};
 
-x3dom.glTF.glTFLoader.prototype.loadExternalStuff = function(callback)
-{
-    switch( this.state )
-    {
-        case 0: this.state++; this.loadBuffers(); break;
-        case 1: this.state++; this.loadImages(); break;
-        case 2: this.state++; this.loadShaders(); break;
-        default: this.readyCallback();
-    }
+    this._mesh = {};
 };
 
 x3dom.glTF.glTFLoader.prototype.getScene = function(shape,shaderProgram, gl, sceneName)
@@ -78,27 +26,22 @@ x3dom.glTF.glTFLoader.prototype.getScene = function(shape,shaderProgram, gl, sce
     if(sceneName == null)
     {
         sceneName = this.scene["scene"];
+
     }
-    
-    if(sceneName == null)
-    {
-        sceneName = Object.keys(this.scene.scenes)[0];
-    }
-    
     var scene = this.scene.scenes[sceneName];
 
     this.updateScene(shape, shaderProgram, gl, scene);
 };
 
-x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, meshName)
+x3dom.glTF.glTFLoader.prototype.getMesh = function(shape, shaderProgram, gl, meshName)
 {
     this.reset(shape,gl);
 
     var mesh;
-    if(meshName == null)
+    if (meshName == null)
     {
         mesh = Object.keys(this.scene.meshes)[0];
-    }else
+    } else
     {
         for(var key in this.scene.meshes){
             if(this.scene.meshes.hasOwnProperty(key)
@@ -147,19 +90,8 @@ x3dom.glTF.glTFLoader.prototype.traverseNode = function(shape, shaderProgram, gl
             this.traverseNode(shape, shaderProgram, gl, this.scene.nodes[childID], worldTransform);
         }
 
-    var meshes = null;
-    
-    if ( node["meshes"] && node["meshes"].length > 0)
-    {
-        meshes = node["meshes"]
-    }
-    else if ( node["mesh"] != undefined )
-    {
-        meshes = [ node["mesh"] ];
-    }
-        
-    if( meshes != null )
-    {
+    var meshes = node["meshes"];
+    if(meshes != null && meshes.length > 0)
         for (var i = 0; i < meshes.length; ++i) {
             var meshID = meshes[i];
             //if (this.loaded.meshes[meshID] == null)
@@ -168,7 +100,6 @@ x3dom.glTF.glTFLoader.prototype.traverseNode = function(shape, shaderProgram, gl
                 this.loaded.meshes[meshID] = 1;
             }
         }
-    }
 };
 
 
@@ -213,8 +144,6 @@ x3dom.glTF.glTFLoader.prototype.loadPrimitive =  function(shape, shaderProgram, 
     var NORMAL_BUFFER_IDX   = 2;
     var TEXCOORD_BUFFER_IDX = 3;
     var COLOR_BUFFER_IDX    = 4;
-    var TANGENT_BUFFER_IDX  = 6;
-    var BITANGENT_BUFFER_IDX  = 7;
 
     var x3domTypeID, x3domShortTypeID;
 
@@ -244,30 +173,14 @@ x3dom.glTF.glTFLoader.prototype.loadPrimitive =  function(shape, shaderProgram, 
         var accessorName = attributes[attributeID];
         var accessor = this.scene.accessors[accessorName];
 
-        var bufferView = this.scene.bufferViews[ accessor.bufferView ];
-
-        var byteOffset = accessor.byteOffset + bufferView.byteOffset;
-        var byteLength = accessor.count * LUX.Utils.componentsOf(accessor.type.toLowerCase());
-
-        console.log(accessor.type);
-
-        var data = new Uint8Array(this.buffers[bufferView.buffer], byteOffset, byteLength);
-
-        var newBuffer = gl.createBuffer();
-        gl.bindBuffer(bufferView["target"], newBuffer);
-
-        //upload all chunk data to GPU
-        gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
-
-        gl.bindBuffer(bufferView["target"], null);
-
         //the current renderer does not support generic vertex attributes, so simply look for useable cases
         switch (attributeID)
         {
             case "POSITION":
                 x3domTypeID      = "coord";
                 x3domShortTypeID = "Pos";
-                shape._webgl.buffers[POSITION_BUFFER_IDX + bufferOffset] = newBuffer;
+                shape._webgl.buffers[POSITION_BUFFER_IDX + bufferOffset] =
+                    this.loaded.bufferViews[accessor["bufferView"]];
                 //for non-indexed rendering, we assume that all attributes have the same count
                 if (indexed == false)
                 {
@@ -281,31 +194,22 @@ x3dom.glTF.glTFLoader.prototype.loadPrimitive =  function(shape, shaderProgram, 
             case "NORMAL":
                 x3domTypeID      = "normal";
                 x3domShortTypeID = "Norm";
-                shape._webgl.buffers[NORMAL_BUFFER_IDX + bufferOffset] = newBuffer;
+                shape._webgl.buffers[NORMAL_BUFFER_IDX + bufferOffset] =
+                    this.loaded.bufferViews[accessor["bufferView"]];
                 break;
 
             case "TEXCOORD_0":
                 x3domTypeID      = "texCoord";
                 x3domShortTypeID = "Tex";
-                shape._webgl.buffers[TEXCOORD_BUFFER_IDX + bufferOffset] = newBuffer;
+                shape._webgl.buffers[TEXCOORD_BUFFER_IDX + bufferOffset] =
+                    this.loaded.bufferViews[accessor["bufferView"]];
                 break;
 
             case "COLOR":
                 x3domTypeID      = "color";
                 x3domShortTypeID = "Col";
-                shape._webgl.buffers[COLOR_BUFFER_IDX + bufferOffset] = newBuffer;
-                break;
-
-            case "TANGENT":
-                x3domTypeID      = "tangent";
-                x3domShortTypeID = "Tangent";
-                shape._webgl.buffers[TANGENT_BUFFER_IDX + bufferOffset] = newBuffer;
-                break;
-
-            case "BITANGENT":
-                x3domTypeID      = "binormal";
-                x3domShortTypeID = "Binormal";
-                shape._webgl.buffers[BITANGENT_BUFFER_IDX + bufferOffset] = newBuffer;
+                shape._webgl.buffers[COLOR_BUFFER_IDX + bufferOffset] =
+                    this.loaded.bufferViews[accessor["bufferView"]];
                 break;
         }
 
@@ -333,9 +237,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
 
     var mesh = new x3dom.glTF.glTFMesh();
 
-    mesh.primitiveType = primitive["mode"] || gl.TRIANGLES;
-    
-    mesh.transform = worldTransform;
+    mesh.primitiveType = primitive["mode"];
 
     var indexed = (primitive.indices != null && primitive.indices != "");
 
@@ -372,14 +274,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
                     mesh.drawCount = accessor["count"];
                     this._mesh._numFaces += accessor["count"] / 3;
                 }
-                this._mesh._numCoords += accessor["count"];
-                                
-                var min = new x3dom.fields.SFVec3f(accessor["min"][0],accessor["min"][1],accessor["min"][2]);
-                var max = new x3dom.fields.SFVec3f(accessor["max"][0],accessor["max"][1],accessor["max"][2]);
-                
-                this._mesh._vol = new x3dom.fields.BoxVolume();
-                
-                this._mesh._vol.setBounds(min, max);
+                this._mesh.numCoords += accessor["count"];
                 break;
 
             case "NORMAL":
@@ -392,14 +287,6 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
 
             case "COLOR":
                 idx = glTF_BUFFER_IDX.COLOR;
-                break;
-
-            case "TANGENT":
-                idx = glTF_BUFFER_IDX.TANGENT;
-                break;
-
-            case "BITANGENT":
-                idx = glTF_BUFFER_IDX.BITANGENT;
                 break;
         }
 
@@ -435,11 +322,11 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
     var buffers = {};
 
     var bufferViews = this.scene.bufferViews;
-    for(var bufferViewId in bufferViews)
+    for(var bufferId in bufferViews)
     {
-        if(!bufferViews.hasOwnProperty(bufferViewId)) continue;
+        if(!bufferViews.hasOwnProperty(bufferId)) continue;
 
-        var bufferView = bufferViews[bufferViewId];
+        var bufferView = bufferViews[bufferId];
 
         // do not use Buffer for Skin or animation data
         if(bufferView.target == null && bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
@@ -447,114 +334,56 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
 
         shape._webgl.externalGeometry = 1;
 
-        if ( this.encoding == "binary" )
-        {
-            var data = new Uint8Array(this.body.buffer,
+        var data = new Uint8Array(this.body.buffer,
             this.header.bodyOffset + bufferView["byteOffset"],
             bufferView["byteLength"]);
 
-            var newBuffer = gl.createBuffer();
-            gl.bindBuffer(bufferView["target"], newBuffer);
+        var newBuffer = gl.createBuffer();
+        gl.bindBuffer(bufferView["target"], newBuffer);
 
-            //upload all chunk data to GPU
-            gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
+        //upload all chunk data to GPU
+        gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
 
-            buffers[bufferViewId] = newBuffer;
-        }
-        else
-        {
-            var data = new Uint8Array(this.buffers[bufferView.buffer], bufferView["byteOffset"], bufferView["byteLength"]);
-            
-            var newBuffer = gl.createBuffer();
-            gl.bindBuffer(bufferView["target"], newBuffer);
-
-            //upload all chunk data to GPU
-            gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
-
-            buffers[bufferViewId] = newBuffer;
-        }
+        buffers[bufferId] = newBuffer;
     }
 
+
+
     return buffers;
-};
-
-x3dom.glTF.glTFLoader.prototype.loadBufferView = function(primitive, attribute, gl)
-{
-    var accessor = this.scene.accessors[ attribute ];
-    var bufferView = this.scene.bufferViews[ accessor.bufferView ];
-
-    var byteOffset = accessor.byteOffset + bufferView.byteOffset;
-    var byteLength = accessor.count * LUX.Utils.componentsOf(accessor.type.toLowerCase());
-
-    var data = new Uint8Array(this.buffers[bufferView.buffer], bufferView["byteOffset"], bufferView["byteLength"]);
-
-    var newBuffer = gl.createBuffer();
-    gl.bindBuffer(bufferView["target"], newBuffer);
-
-    //upload all chunk data to GPU
-    gl.bufferData(bufferView["target"], data, gl.STATIC_DRAW);
-
-    buffers[bufferViewId] = newBuffer;
 };
 
 x3dom.glTF.glTFLoader.prototype.readHeader = function(response)
 {
     var header = {};
-    
-    if ( this.encoding == "binary" )
-    {
-        var magicBytes = new Uint8Array(response, 0, 4);
-        var versionBytes = new Uint32Array(response, 4, 1);
-        var lengthBytes = new Uint32Array(response, 8, 1);
-        var sceneLengthBytes = new Uint32Array(response, 12, 1);
-        var sceneFormatBytes = new Uint32Array(response, 16, 1);
+    var magicBytes = new Uint8Array(response, 0, 4);
+    var versionBytes = new Uint32Array(response, 4, 1);
+    var lengthBytes = new Uint32Array(response, 8, 1);
+    var sceneLengthBytes = new Uint32Array(response, 12, 1);
+    var sceneFormatBytes = new Uint32Array(response, 16, 1);
 
-        header.magic = x3dom.Utils.ArrayToStr(magicBytes);
-        
-        if(versionBytes[0] == 1)
-        {
-            header.version = "Version 1";
-        }
-        
-        header.length = lengthBytes[0];
-        header.sceneLength = sceneLengthBytes[0];
+    header.magic = new TextDecoder("ascii").decode(magicBytes);
+    if(versionBytes[0] == 1)
+        header.version = "Version 1";
 
-        if(sceneFormatBytes[0] == 0)
-        {
-            header.sceneFormat = "JSON";
-        }
+    header.length = lengthBytes[0];
+    header.sceneLength = sceneLengthBytes[0];
 
-        header.bodyOffset = header.sceneLength + 20;
-    }
-    else if ( this.encoding == "ascii" )
-    {
-        header.version = response.asset.version;
-        header.length = 0;
-        header.sceneLength = 1;
-        header.bodyOffset = 0;
+    if(sceneFormatBytes[0] == 0)
         header.sceneFormat = "JSON";
-    }
-    
+
+
+    header.bodyOffset = header.sceneLength + 20;
 
     return header;
 };
 
 x3dom.glTF.glTFLoader.prototype.readScene = function(response,header)
 {
-    var scene = null;
-    
-    if ( this.encoding == "binary" )
-    {
-        var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
+    var sceneBytes = new Uint8Array(response, 20, header.sceneLength);
 
-        scene = JSON.parse(x3dom.Utils.ArrayToStr(sceneBytes));
-    }
-    else if ( this.encoding == "ascii" )
-    {
-        scene = response;
-    }
+    var json = JSON.parse(new TextDecoder("utf-8").decode(sceneBytes));
 
-    return scene;
+    return json;
 };
 
 x3dom.glTF.glTFLoader.prototype.readBody = function(response, header)
@@ -563,103 +392,6 @@ x3dom.glTF.glTFLoader.prototype.readBody = function(response, header)
     var body = new Uint8Array(response, offset, header.length-offset);
 
     return body;
-};
-
-x3dom.glTF.glTFLoader.prototype.loadBuffers = function()
-{
-    var buffers = this.scene.buffers;
-    
-    if ( buffers )
-    {    
-        var numBuffers = Object.keys(buffers).length;
-        
-        var numLoadedBuffers = 0;
-        
-        for ( var bufferID in buffers )
-        {
-            var buffer = buffers[ bufferID ];
-            
-            var xhr = new XMLHttpRequest();
-            
-            xhr.responseType = "arraybuffer";
-            
-            xhr.bufferID = bufferID;
-            
-            xhr.open( "GET", this.getURL( buffer.uri ) );
-            
-            xhr.addEventListener( "load", function ( e )
-            {
-                numLoadedBuffers++;
-                
-                this.buffers[ e.target.bufferID ] = e.target.response;
-                
-                if ( numLoadedBuffers == numBuffers )
-                {
-                    this.loadExternalStuff();
-                }
-            }.bind(this) );
-            
-            xhr.addEventListener( "error", function ()
-            {
-                this.loadExternalStuff();
-            }.bind(this) );
-            
-            x3dom.RequestManager.addRequest(xhr);
-        }
-    }
-    else
-    {
-        this.loadExternalStuff();
-    }
-};
-
-x3dom.glTF.glTFLoader.prototype.loadShaders = function()
-{
-    var shaders = this.scene.shaders;
-    
-    if ( shaders )
-    {
-        var numShaders = Object.keys(shaders).length;
-        
-        var numLoadedShaders = 0;
-        
-        for ( var shaderID in shaders )
-        {
-            var shader = shaders[ shaderID ];
-            
-            var xhr = new XMLHttpRequest();
-            
-            xhr.responseType = "text";
-            
-            xhr.shaderID = shaderID;
-            
-            xhr.open( "GET", this.getURL( shader.uri ) );
-            
-            xhr.addEventListener( "load", function ( e )
-            {
-                numLoadedShaders++;
-                
-                this.loaded.shaders[ e.target.shaderID ] = e.target.response;
-                
-                if ( numLoadedShaders == numShaders )
-                {
-                    this.loadExternalStuff();
-                }
-            }.bind(this) );
-            
-            xhr.addEventListener( "error", function ()
-            {
-                this.loadExternalStuff();
-            }.bind(this) );
-            
-            x3dom.RequestManager.addRequest(xhr);
-        }
-    
-    }
-    else
-    {
-        this.loadExternalStuff();
-    }
 };
 
 x3dom.glTF.glTFLoader.prototype.getNumComponentsForType = function(type)
@@ -684,8 +416,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         return this.loaded.images[imageNodeName];
 
     var imageNode = this.scene.images[imageNodeName];
-    
-    if(imageNode.extensions!=null && imageNode.extensions.KHR_binary_glTF != null)
+    if (imageNode.extensions != null && imageNode.extensions.KHR_binary_glTF != null)
     {
         var ext = imageNode.extensions.KHR_binary_glTF;
         var bufferView = this.scene.bufferViews[ext.bufferView];
@@ -704,50 +435,20 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
 
         return image;
     }
+    //untested
+    if (imageNode.uri != null)
+    {
+        var image = new Image();
+
+        image.src = imageNode.uri;
+
+        this.loaded.images[imageNodeName] = image;
+
+        return image;
+    }
 
     return null;
 };
-
-x3dom.glTF.glTFLoader.prototype.loadImages = function( callback )
-{
-    var images = this.scene.images;
-        
-    if( images )
-    {
-        var numImages = Object.keys(images).length;
-        var numLoadedImages = 0;
-        
-        for (var imageID in images )
-        {           
-            var image = images[ imageID ];
-            
-            if ( image.uri )
-            {
-                var img = new Image();
-                
-                img.src = this.getURL( image.uri );
-                
-                img.imageID = imageID;
-                
-                img.addEventListener( "load", function( e )
-                {
-                    numLoadedImages++;
-                    
-                    this.loaded.images[e.target.imageID] = e.target;
-                    
-                    if(numLoadedImages == numImages)
-                    {
-                        this.loadExternalStuff();
-                    }
-                }.bind(this));
-            }
-        }
-    }
-    else
-    {
-        this.loadExternalStuff();
-    }
-}
 
 x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNodeName)
 {
@@ -759,21 +460,9 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNodeName)
 
     var textureNode = this.scene.textures[textureNodeName];
 
-    //Defaults
-    textureNode["target"] = textureNode["target"] || 3553;
-    textureNode["internalFormat"] = textureNode["internalFormat"] || 6408;
-    textureNode["format"] = textureNode["format"] || 6408;
-    textureNode["type"] = textureNode["type"] || 5121;
-
     var format = textureNode.format;
     var internalFormat = textureNode.internalFormat;
-
-    var sampler = {
-        "magFilter": 9729,
-        "minFilter": 9987,
-        "wrapS": 33648,
-        "wrapT": 33648
-    };
+    var sampler = {};
 
     var samplerNode = this.scene.samplers[textureNode.sampler];
     if(samplerNode!=null)
@@ -787,10 +476,8 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNodeName)
     var image = this.loadImage(textureNode.source);
     var target = textureNode.target;
     var type = textureNode.type;
-    
-    var flipY = (this.header.version != "1.0")
-    
-    var glTFTexture = new x3dom.glTF.glTFTexture(gl, format, internalFormat, sampler, target, type, image, flipY);
+
+    var glTFTexture = new x3dom.glTF.glTFTexture(gl, format, internalFormat, sampler, target, type, image);
 
     this.loaded.textures[textureNodeName] = glTFTexture;
 
@@ -824,8 +511,7 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
                 }
 
             return material;
-        }
-        else if(materialNode.technique)
+        }else
         {
             var technique = this.scene.techniques[materialNode.technique];
             var program = this.loadShaderProgram(gl, technique.program);
@@ -838,15 +524,7 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 
                 var parameter = technique.parameters[key];
                 if(parameter.value != null){
-                    
-                    switch(parameter.type)
-                    {
-                        case gl.SAMPLER_2D:
-                            material.textures[key] = this.loadTexture(gl, parameter.value[0]);
-                            break;
-                        default:
-                            material.values[key] = parameter.value;
-                    } 
+                    material.values[key] = parameter.value;
                 }
             }
 
@@ -866,22 +544,6 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 
             return material;
         }
-        else if(materialNode.pbrMetallicRoughness)
-        {
-            var material = new x3dom.glTF.PBRMaterial();
-
-            if(materialNode.normalTexture)
-            {
-                material.normalTex = this.loadTexture(gl, materialNode.normalTexture.index);
-            }
-
-            if(materialNode.pbrMetallicRoughness.baseColorTexture)
-            {
-                material.baseColorTex = this.loadTexture(gl, materialNode.pbrMetallicRoughness.baseColorTexture.index);
-            }
-
-            return material;
-        }
     }
 
     return new x3dom.glTF.glTFKHRMaterialCommons();
@@ -897,11 +559,11 @@ x3dom.glTF.glTFLoader.prototype.loadShaderProgram = function(gl, shaderProgramNa
 
     var shaderProgramNode = this.scene.programs[shaderProgramName];
 
-    var vertexShaderNode = this.scene.shaders[shaderProgramNode.vertexShader];    
-    var vertexShaderSrc = this.loaded.shaders[shaderProgramNode.vertexShader] || this._loadShaderSource(vertexShaderNode);
+    var vertexShaderNode = this.scene.shaders[shaderProgramNode.vertexShader];
+    var vertexShaderSrc = this._loadShaderSource(vertexShaderNode);
 
     var fragmentShaderNode = this.scene.shaders[shaderProgramNode.fragmentShader];
-    var fragmentShaderSrc = this.loaded.shaders[shaderProgramNode.fragmentShader] || this._loadShaderSource(fragmentShaderNode);
+    var fragmentShaderSrc = this._loadShaderSource(fragmentShaderNode);
 
     var program = gl.createProgram();
 
@@ -938,9 +600,31 @@ x3dom.glTF.glTFLoader.prototype.loadShaderProgram = function(gl, shaderProgramNa
 
 x3dom.glTF.glTFLoader.prototype._loadShaderSource = function(shaderNode)
 {
-    var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
+    if(shaderNode.extensions != null && shaderNode.extensions.KHR_binary_glTF != null)
+    {
+        var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
 
-    var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
-    var src = x3dom.Utils.ArrayToStr(shaderBytes);
-    return src;
+        var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
+        var src = new TextDecoder("ascii").decode(shaderBytes);
+        return src;
+    }
+    else
+    {
+        var dataURL = /^data\:([^]*?)(?:;([^]*?))?(;base64)?,([^]*)$/;
+        var result = dataURL .exec (shaderNode.uri);
+        if (result)
+        {
+            //var mimeType = result [1];
+            var data = result [4];
+
+            if (result [2] === "base64")
+                data = atob (data);
+            else
+                data = unescape (data);
+
+            console.log(data);
+            return data;
+        }
+        x3dom.debug.logError('no shader found');
+    }
 };

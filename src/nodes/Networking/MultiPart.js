@@ -793,26 +793,34 @@ x3dom.registerNodeType(
                     to get the maximum and minimum Y extents.
                 */
 
-                var fov = viewpoint._vf.fieldOfView;
-                var factorH = Math.tan(fov/2) * viewpoint._zNear;
-                var factorW = Math.tan(fov/2)* viewpoint._lastAspect * viewpoint._zNear;
+                var zNear = viewpoint._zNear;
+                var zFar = viewpoint._zFar;
+                var aspect = viewpoint._lastAspect;
+                var fov = viewpoint.getFieldOfView();
+                var factorH = Math.tan(fov/2) * zNear;
+                var factorW = Math.tan(fov/2)* aspect * zNear;
 
-                var projMatrix = x3dom.fields.SFMatrix4f.perspectiveFrustum(
-                    normalizedLeft * factorW,
-                    normalizedRight * factorW,
-                    normalizedBottom * factorH,
-                    normalizedTop * factorH,
-                    viewpoint.getNear(),
-                    viewpoint.getFar());
+                var projMatrix, viewMatrix, factor;
 
-                var viewMatrix = x3dom.fields.SFMatrix4f.lookAt(pos,
-                    pos.subtract(viewDir.multiply(5.0)),
-                    upDir);
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    aspect = (right - left) / (bottom - top);
+                    factor = Math.max(normalizedLeft, normalizedRight, normalizedTop, normalizedBottom) * viewpoint._fieldOfView[2];
+                    viewMatrix = origViewMatrix;
+                    projMatrix = x3dom.fields.SFMatrix4f.ortho(-factor, factor, -factor, factor, zNear, zFar, aspect );
+                }
+                else
+                {
+                    left = normalizedLeft * factorW;
+                    right = normalizedRight * factorW;
+                    bottom = normalizedBottom * factorH;
+                    top = normalizedTop * factorH;
+
+                    projMatrix = x3dom.fields.SFMatrix4f.perspectiveFrustum( left, right, bottom, top, zNear, zFar);
+                    viewMatrix = x3dom.fields.SFMatrix4f.lookAt(pos,  pos.subtract(viewDir.multiply(5.0)), upDir);
+                }
 
                 var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
-                //viewpoint._projMatrix = projMatrix;
-
-                //return null;
 
                 var selection = [];
                 var volumes = this._partVolume;

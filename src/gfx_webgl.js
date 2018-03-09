@@ -51,7 +51,7 @@ x3dom.gfx_webgl = (function () {
         var validContextNames = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
         if (tryWebGL2) {
-            validContextNames = ['experimental-webgl2'].concat(validContextNames);
+            validContextNames = ['webgl2','experimental-webgl2'].concat(validContextNames);
         }
 
         var ctx = null;
@@ -120,6 +120,14 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.DRAW_BUFFERS = ctx.getExtension("WEBGL_draw_buffers");
 						x3dom.caps.DEPTH_TEXTURE = ctx.getExtension("WEBGL_depth_texture");
                         x3dom.caps.DEBUGRENDERINFO = ctx.getExtension("WEBGL_debug_renderer_info");
+                        x3dom.caps.ANISOTROPIC = ctx.getExtension("EXT_texture_filter_anisotropic");
+                        
+                        if ( x3dom.caps.ANISOTROPIC )
+                        {
+                            x3dom.caps.MAX_ANISOTROPY = ctx.getParameter( x3dom.caps.ANISOTROPIC.MAX_TEXTURE_MAX_ANISOTROPY_EXT );
+                        }
+                        
+                        
 						x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 						
 						//Enabled WebGL2 breaks picking if we use the depth_texture extension for the picking fbo
@@ -1720,6 +1728,9 @@ x3dom.gfx_webgl = (function () {
             if (!sp) {   // error
                 return;
             }
+            
+            //Save current shader
+            s_gl.shader = sp;
 
             //Bind shader
             this.stateManager.useProgram(sp);
@@ -2519,7 +2530,12 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(tex.type, gl.TEXTURE_WRAP_T, tex.wrapT);
             gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
             gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
-
+            
+            if ( x3dom.caps.ANISOTROPIC )
+            {
+                gl.texParameterf(tex.type, x3dom.caps.ANISOTROPIC.TEXTURE_MAX_ANISOTROPY_EXT, tex.anisotropicDegree);
+            }
+            
             if (!shader || !isUserDefinedShader) {
                 if (!sp[tex.samplerName])
                     sp[tex.samplerName] = cnt;
@@ -3087,7 +3103,7 @@ x3dom.gfx_webgl = (function () {
 
                 line = viewarea.calcViewRay(x, y, cctowc);
 
-                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+                pickPos = from.add(line.dir.multiply(dist * sceneSize));
 
 
                 index = 4;      // get right pixel
@@ -3096,7 +3112,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
-                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = from.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
@@ -3105,7 +3121,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
-                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = from.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
 
                 pickNorm = right.cross(up).normalize();
@@ -3118,14 +3134,14 @@ x3dom.gfx_webgl = (function () {
 
                 line = viewarea.calcViewRay(x, y, cctowc);
 
-                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+                pickPos = from.add(line.dir.multiply(dist * sceneSize));
 
                 index = 4;      // get right pixel
                 dist = pixelData[index] / 255.0;
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y, cctowc);
 
-                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = from.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
 
                 index = 8;      // get top pixel
@@ -3133,7 +3149,7 @@ x3dom.gfx_webgl = (function () {
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset, cctowc);
 
-                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = from.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
 
                 pickNorm = right.cross(up).normalize();

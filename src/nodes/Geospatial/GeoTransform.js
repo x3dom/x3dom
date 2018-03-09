@@ -131,7 +131,7 @@ x3dom.registerNodeType(
                 // C: geoCenter Translation
                 // regular Transform P' = T * C * R * SR * S * -SR * -C * P
                 
-                var geoCenterRotMat, geoCenter, scaleOrientMat, geoTransform, coords, geoCenterGC, geoSystem, geoOrigin;
+                var geoCenterRotMat, geoCenter, skipGO, scaleOrientMat, geoTransform, coords, geoCenterGC, geoSystem, geoOrigin;
                 geoSystem = this._vf.geoSystem;
                 geoOrigin = this._cf.geoOrigin;
                 geoCenter = this._vf.geoCenter;
