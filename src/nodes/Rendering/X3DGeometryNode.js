@@ -67,8 +67,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFBool(ctx, 'lit', true);
 
-            this.addField_SFBool(ctx, 'flipTexCoord', false);
-
             // mesh object also holds volume (_vol)
             this._mesh = new x3dom.Mesh(this);
         

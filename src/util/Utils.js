@@ -67,8 +67,10 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 *
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps, flipY)
 {
+    flipY = flipY || false;
+
 	var texture = gl.createTexture();
 
     //Create a black 4 pixel texture to prevent 'texture not complete' warning
@@ -116,7 +118,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
         if (scale)
 		    image = x3dom.Utils.scaleImage( image );
 
-		if(bgnd == true) {
+		if(bgnd == true || flipY == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		}
 		gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -126,7 +128,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
             gl.generateMipmap(gl.TEXTURE_2D);
         }
 		gl.bindTexture(gl.TEXTURE_2D, null);
-		if(bgnd == true) {
+		if(bgnd == true || flipY == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 		}
 
@@ -1086,7 +1088,6 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
-        property.FLIPTEXCOORD     = geometry._vf.flipTexCoord;
 
         property.KHR_MATERIAL_COMMONS = 0;
         property.PBR_MATERIAL = 0;

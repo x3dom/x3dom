@@ -255,6 +255,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(image)
 {
     var texture = document.createElement("imagetexture");
     texture.setAttribute("origChannelCount", "2");
+    texture.setAttribute("flipY", "true");
 
     if(image.uri != undefined)
     {
@@ -274,8 +275,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
-
-    bufferGeometry.setAttribute("fliptexCoord", "true"); 
+ 
     bufferGeometry.setAttribute("buffer", this._bufferURI(primitive));
     bufferGeometry.setAttribute("position", centerAndSize.center.join( " " ));
     bufferGeometry.setAttribute("size", centerAndSize.size.join( " " ));

@@ -415,14 +415,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
 		} else {
 
-			if(properties.FLIPTEXCOORD)
-			{
-				shader += " fragTexcoord = vec2(vertTexCoord.x, 1.0 - vertTexCoord.y);\n";
-			}
-			else
-			{
-				shader += " fragTexcoord = vertTexCoord;\n";
-			}	
+			shader += " fragTexcoord = vertTexCoord;\n";	
 			
 			// LOD LUT HACK ###
 			if (properties.POPGEOMETRY && x3dom.debug.usePrecisionLevelAsTexCoord === true)
