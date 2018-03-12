@@ -43,7 +43,7 @@
             
             var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
 
-            url = repo + file + "/glTF" + type + "/" + file + suffix;
+            var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             document.getElementById("inline").setAttribute("url", url);
 
             g_runtime.showAll("posZ", true);
@@ -58,6 +58,11 @@
     <section class="main">
 
         <section class="sidebar">
+            <div class="sidebar-entry" onclick="load(this.children[0].value,'direct')">
+                url:
+                <input type='url' size='150'
+                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'/>
+            </div>
 
             <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
