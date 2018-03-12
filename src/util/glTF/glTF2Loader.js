@@ -250,7 +250,7 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
 
     if(image.uri != undefined)
     {
-        imagetexture.setAttribute("url", image.uri);
+        imagetexture.setAttribute("url", x3dom.Utils.dataURIToObjectURL(image.uri));
     }
 
     if(texture.sampler != undefined)
@@ -473,7 +473,7 @@ x3dom.glTF2Loader.prototype._bufferURI = function(primitive)
         var bufferView = this._gltf.bufferViews[accessor.bufferView];
         var buffer = this._gltf.buffers[bufferView.buffer];
 
-        uri = buffer.uri;
+        uri = x3dom.Utils.dataURIToObjectURL(buffer.uri);
     }
 
     return uri;
@@ -520,7 +520,7 @@ x3dom.glTF2Loader.prototype._getGLTF = function(input, binary)
 {
     if(!binary)
     {
-        return JSON.parse(input);
+        return (typeof input == "string") ? JSON.parse(input) : input;
     }
 
     var byteOffset = 0;
@@ -551,7 +551,7 @@ x3dom.glTF2Loader.prototype._getGLTF = function(input, binary)
 
                 var gltf = x3dom.Utils.arrayBufferToJSON(jsonData);
 
-                gltf.buffers[0].uri = x3dom.Utils.arrayBufferToDataURL(binaryData, "application/octet-stream");
+                gltf.buffers[0].uri = x3dom.Utils.arrayBufferToObjectURL(binaryData, "application/octet-stream");
 
                 this._convertBinaryImages(gltf, input, byteOffset);
 
@@ -575,7 +575,7 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
 
                 var imageData = new Uint8Array(buffer, byteOffset + bufferView.byteOffset, bufferView.byteLength);
 
-                image.uri = x3dom.Utils.arrayBufferToDataURL(imageData, image.mimeType);
+                image.uri = x3dom.Utils.arrayBufferToObjectURL(imageData, image.mimeType);
             }
         }
     }

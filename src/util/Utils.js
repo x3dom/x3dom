@@ -1346,6 +1346,33 @@ x3dom.Utils.arrayBufferToJSON = function( array, offset, length )
     return JSON.parse(out);
 }
 
+x3dom.Utils.arrayBufferToObjectURL = function( buffer, mimetype )
+{
+    return URL.createObjectURL(new Blob([new Uint8Array(buffer)], {type: mimetype}));
+}
+
+x3dom.Utils.dataURIToObjectURL = function( dataURI )
+{
+    if ( dataURI.indexOf("data:") == -1 )
+    {
+        return dataURI;
+    }
+
+    var parts        = dataURI.split(",");
+    var mimetype     = parts[0].split(':')[1].split(';')[0];
+    var data         = parts[1];
+    var binaryString = window.atob(data);
+    var byteLength   = binaryString.length;
+    var bytes        = new Uint8Array( byteLength );
+
+    for (var i = 0; i < byteLength; i++)
+    {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return URL.createObjectURL(new Blob([bytes], {type: mimetype}));
+}
+
 x3dom.Utils.arrayBufferToDataURL = function( buffer, mimetype )
 {
     var binary = '';
