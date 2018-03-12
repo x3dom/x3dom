@@ -67,8 +67,10 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 *
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps, flipY)
 {
+    flipY = flipY || false;
+
 	var texture = gl.createTexture();
 
     //Create a black 4 pixel texture to prevent 'texture not complete' warning
@@ -116,7 +118,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
         if (scale)
 		    image = x3dom.Utils.scaleImage( image );
 
-		if(bgnd == true) {
+		if(bgnd == true || flipY == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 		}
 		gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -126,7 +128,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
             gl.generateMipmap(gl.TEXTURE_2D);
         }
 		gl.bindTexture(gl.TEXTURE_2D, null);
-		if(bgnd == true) {
+		if(bgnd == true || flipY == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 		}
 
@@ -874,6 +876,23 @@ x3dom.Utils.minFilterDic = function(gl, minFilter)
 };
 
 /*****************************************************************************
+* Get GL min filter
+*****************************************************************************/
+x3dom.Utils.minFilterDicX3D = function(minFilter)
+{
+	switch(minFilter)
+	{
+		case 9728: return "NEAREST";
+		case 9729: return "LINEAR";
+        case 9984: return "NEAREST_MIPMAP_NEAREST";
+        case 9985: return "LINEAR_MIPMAP_NEAREST";
+		case 9986: return "NEAREST_MIPMAP_LINEAR";
+        case 9987: return "LINEAR_MIPMAP_LINEAR";
+        default:   return "LINEAR_MIPMAP_LINEAR";
+	}
+};
+
+/*****************************************************************************
 * Get GL mag filter
 *****************************************************************************/
 x3dom.Utils.magFilterDic = function(gl, magFilter)
@@ -888,6 +907,34 @@ x3dom.Utils.magFilterDic = function(gl, magFilter)
 		case "NEAREST_PIXEL":	return gl.NEAREST;
 		case "NICEST":			return gl.LINEAR;
 		default:				return gl.LINEAR;
+	}
+};
+
+/*****************************************************************************
+* Get X3D mag filter
+*****************************************************************************/
+x3dom.Utils.magFilterDicX3D = function(magFilter)
+{
+	switch(magFilter)
+	{
+		case 9728: return "NEAREST";
+		case 9729: return "LINEAR";
+		default:   return "LINEAR";
+	}
+};
+
+/*****************************************************************************
+* Get GL boundary mode
+*****************************************************************************/
+x3dom.Utils.boundaryModesDicX3D = function(mode)
+{
+	switch(mode)
+	{
+
+        case 10497: return "REPEAT";
+		case 33071: return "CLAMP_TO_EDGE";
+		case 33648: return "MIRRORED_REPEAT";
+		default:    return "REPEAT";
 	}
 };
 
@@ -1028,6 +1075,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.SOLID            = (shape.isSolid()) ? 1 : 0;
         property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
         property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
+        property.BUFFERGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.BufferGeometry)) ? 1 : 0;
         property.IMAGEGEOMETRY    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
         property.BINARYGEOMETRY   = (x3dom.isa(geometry, x3dom.nodeTypes.BinaryGeometry))  ? 1 : 0;
 		property.EXTERNALGEOMETRY = (x3dom.isa(geometry, x3dom.nodeTypes.ExternalGeometry))  ? 1 : 0;
@@ -1036,6 +1084,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
         property.VERTEXID         = ((property.BINARYGEOMETRY || property.EXTERNALGEOMETRY) && geometry._vf.idsPerVertex) ? 1 : 0;
         property.IS_PARTICLE      = (x3dom.isa(geometry, x3dom.nodeTypes.ParticleSet)) ? 1 : 0;
+        property.TANGENTDATA      = (geometry._mesh._tangents[0].length > 0 && geometry._mesh._binormals[0].length > 0) ? 1 : 0;
 
 
         property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.TwoSidedMaterial)) ? 1 : 0;
@@ -1076,8 +1125,9 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      geometry._cf.texCoord.node._vf.mode &&
                                      geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0;
         property.VERTEXCOLOR      = (geometry._mesh._colors[0].length > 0 ||
-                                     (property.IMAGEGEOMETRY && geometry.getColorTexture()) ||
+                                     (property.IMAGEGEOMETRY  && geometry.getColorTexture()) ||
                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
+                                     (property.BUFFERGEOMETRY && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.CLIPPLANES       = shape._clipPlanes.length;
 		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
@@ -1085,6 +1135,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
+        property.PBR_MATERIAL = 0;
+        
         //console.log(property);
 	}
 
@@ -1247,6 +1299,66 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 
 	return shader;
 };
+
+/**
+ * Converts a UTF-8 Uint8Array to a string
+ * @param {String} uri_string
+ * @returns {boolean}
+ */
+x3dom.Utils.arrayBufferToJSON = function( array, offset, length )
+{
+    offset = ( offset != undefined ) ? offset : 0;
+    length = ( length != undefined ) ? length : array.length;
+    
+    var out, i, len, c;
+    var char2, char3;
+
+    out = "";
+    len = length;
+    i = offset;
+    
+    while( i < len )
+    {
+        c = array[i++];
+        
+        switch(c >> 4)
+        { 
+          case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+            // 0xxxxxxx
+            out += String.fromCharCode(c);
+            break;
+          case 12: case 13:
+            // 110x xxxx   10xx xxxx
+            char2 = array[i++];
+            out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+            break;
+          case 14:
+            // 1110 xxxx  10xx xxxx  10xx xxxx
+            char2 = array[i++];
+            char3 = array[i++];
+            out += String.fromCharCode(((c & 0x0F) << 12) |
+                           ((char2 & 0x3F) << 6) |
+                           ((char3 & 0x3F) << 0));
+            break;
+        }
+    }
+
+    return JSON.parse(out);
+}
+
+x3dom.Utils.arrayBufferToDataURL = function( buffer, mimetype )
+{
+    var binary = '';
+
+    var bytes = new Uint8Array( buffer );
+
+    for (var i = 0; i < bytes.byteLength; i++)
+    {
+        binary += String.fromCharCode( bytes[ i ] );
+    }
+
+    return "data:" + mimetype + ";base64," + window.btoa( binary );
+}
 
 
 /**

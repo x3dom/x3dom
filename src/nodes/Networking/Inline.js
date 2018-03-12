@@ -150,157 +150,202 @@ x3dom.registerNodeType(
                 }
             },
 
-            loadInline: function ()
+            getSuffix: function()
+            {
+                if (this._vf.url.length && this._vf.url[0].length)
+                {
+                    return this._vf.url[0].substr( this._vf.url[0].lastIndexOf(".") ).toLowerCase();
+                }
+                else
+                {
+                    return ".x3d";
+                }
+            },
+
+            loadX3D: function(inlScene, nameSpace)
             {
                 var that = this;
 
+                var newScene = null;
+
+                if (inlScene)
+                {
+                    newScene = nameSpace.setupTree(inlScene);
+
+                    if(that._vf.nameSpaceName.length != 0)
+                    {
+                        Array.forEach ( inlScene.childNodes, function (childDomNode)
+                        {
+                            if(childDomNode instanceof Element)
+                            {
+                                setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
+                                that._xmlNode.appendChild(childDomNode);
+                            }
+                        } );
+                    }
+                }
+                else {
+                    if (xml && xml.localName)
+                        x3dom.debug.logError('No Scene in ' + xml.localName);
+                    else
+                        x3dom.debug.logError('No Scene in resource');
+                }
+
+                // trick to free memory, assigning a property to global object, then deleting it
+                var global = x3dom.getGlobal();
+
+                if (that._childNodes.length > 0 && that._childNodes[0] && that._childNodes[0]._nameSpace)
+                    that._nameSpace.removeSpace(that._childNodes[0]._nameSpace);
+
+                while (that._childNodes.length !== 0)
+                    global['_remover'] = that.removeChild(that._childNodes[0]);
+
+                delete global['_remover'];
+
+                if (newScene)
+                {
+                    that.addChild(newScene);
+
+                    that.invalidateVolume();
+                    //that.invalidateCache();
+
+                    that._nameSpace.doc.downloadCount -= 1;
+                    that._nameSpace.doc.needRender = true;
+                    x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
+
+                    // recalc changed scene bounding box twice
+                    var theScene = that._nameSpace.doc._scene;
+
+                    if (theScene) {
+                        theScene.invalidateVolume();
+                        //theScene.invalidateCache();
+
+                        window.setTimeout( function() {
+                            that.invalidateVolume();
+                            //that.invalidateCache();
+
+                            theScene.updateVolume();
+                            that._nameSpace.doc.needRender = true;
+                        }, 1000 );
+                    }
+
+                    that.fireEvents("load");
+                }
+
+                newScene = null;
+                nameSpace = null;
+                inlScene = null;
+                xml = null;
+            },
+
+            loadInline: function ()
+            {
+                var that = this; 
+
+                var suffix = this.getSuffix();
+
+                var isBinary = false;
+
                 var xhr = new window.XMLHttpRequest();
+
                 if (xhr.overrideMimeType)
-                    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+                {
+                    if( suffix == ".x3d" )
+                    {
+                        xhr.overrideMimeType('text/xml');
+                    }
+                    else if( suffix == ".glb" )
+                    {
+                        isBinary = true;
+                        xhr.responseType = "arraybuffer";
+                    }
+                }
 
                 xhr.onreadystatechange = function ()
                 {
-                    if (xhr.readyState != 4) {
-                        // still loading
-                        //x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-                        return xhr;
-                    }
-
-                    if (xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding) {
-                        if (that.count < that.numRetries)
+                    if ( xhr.readyState == 4 )
+                    {
+                        //202 Still Transcoding
+                        if(xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding)
                         {
-                            that.count++;
-                            var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
-                            x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
-                                                'Next request in ' + refreshTime + ' seconds');
-                      
-                            window.setTimeout(function() {
+                            if ( that.count < that.numRetries )
+                            {
+                                that.count++;
+
+                                var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+
+                                x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                    'Next request in ' + refreshTime + ' seconds');
+                          
+                                window.setTimeout(function() {
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.loadInline();
+                                }, refreshTime * 1000);
+                            }
+                            else
+                            {
+                                x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                                     'No Retries left');
+
                                 that._nameSpace.doc.downloadCount -= 1;
-                                that.loadInline();
-                            }, refreshTime * 1000);
-                            return xhr;
+
+                                that.count = 0;
+                            }
+                        }
+                        else if( xhr.status == 200 || xhr.status == 0 )
+                        {
+                            x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
+
+                            that.count = 0;
+
+                            var inlineScene;
+
+                            var namespace = that.addNameSpace();
+
+                            if (suffix == ".gltf" || suffix == ".glb")
+                            {
+                                var loader = new x3dom.glTF2Loader(namespace);
+ 
+                                inlineScene = loader.load(xhr.response, isBinary);
+                                
+                                that.loadX3D( inlineScene, namespace );
+                            }
+                            else
+                            {
+                                var xml;
+
+                                if (navigator.appName == "Microsoft Internet Explorer")
+                                {
+                                    xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+                                }
+                                else
+                                {
+                                    xml = xhr.responseXML;
+                                }
+
+                                if (xml !== undefined && xml !== null)
+                                {
+                                    inlScene = xml.getElementsByTagName('Scene')[0] ||
+                                               xml.getElementsByTagName('scene')[0];
+
+                                    that.loadX3D( inlineScene, namespace );
+                                }
+                                else
+                                {
+                                    that.fireEvents("error");
+                                }
+                            }
                         }
                         else
                         {
-                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
-                                                 'No Retries left');
+                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires web server running!');
+
+                            that.fireEvents("error");
+
                             that._nameSpace.doc.downloadCount -= 1;
                             that.count = 0;
-                            return xhr;
                         }
                     }
-                    else if ((xhr.status !== 200) && (xhr.status !== 0)) {
-                        that.fireEvents("error");
-                        x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires web server running!');
-
-                        that._nameSpace.doc.downloadCount -= 1;
-                        that.count = 0;
-                        return xhr;
-                    }
-                    else if ((xhr.status == 200) || (xhr.status == 0)) {
-                        that.count = 0;
-                    }
-
-                    x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
-
-                    var inlScene = null, newScene = null, nameSpace = null, xml = null;
-
-                    if (navigator.appName != "Microsoft Internet Explorer")
-                        xml = xhr.responseXML;
-                    else
-                        xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
-
-                    //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-                    if (xml !== undefined && xml !== null)
-                    {
-                        inlScene = xml.getElementsByTagName('Scene')[0] ||
-                            xml.getElementsByTagName('scene')[0];
-                    }
-                    else {
-                        that.fireEvents("error");
-                    }
-
-                    if (inlScene)
-                    {
-                        var nsName = (that._vf.nameSpaceName.length != 0) ?
-                            that._vf.nameSpaceName.toString().replace(' ','') : "";
-                        nameSpace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
-
-                        var url = that._vf.url.length ? that._vf.url[0] : "";
-                        if ((url[0] === '/') || (url.indexOf(":") >= 0))
-                            nameSpace.setBaseURL(url);
-                        else
-                            nameSpace.setBaseURL(that._nameSpace.baseURL + url);
-
-                        newScene = nameSpace.setupTree(inlScene);
-                        that._nameSpace.addSpace(nameSpace);
-
-                        if(that._vf.nameSpaceName.length != 0)
-                        {
-                            Array.forEach ( inlScene.childNodes, function (childDomNode)
-                            {
-                                if(childDomNode instanceof Element)
-                                {
-                                    setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
-                                    that._xmlNode.appendChild(childDomNode);
-                                }
-                            } );
-                        }
-                    }
-                    else {
-                        if (xml && xml.localName)
-                            x3dom.debug.logError('No Scene in ' + xml.localName);
-                        else
-                            x3dom.debug.logError('No Scene in resource');
-                    }
-
-                    // trick to free memory, assigning a property to global object, then deleting it
-                    var global = x3dom.getGlobal();
-
-                    if (that._childNodes.length > 0 && that._childNodes[0] && that._childNodes[0]._nameSpace)
-                        that._nameSpace.removeSpace(that._childNodes[0]._nameSpace);
-
-                    while (that._childNodes.length !== 0)
-                        global['_remover'] = that.removeChild(that._childNodes[0]);
-
-                    delete global['_remover'];
-
-                    if (newScene)
-                    {
-                        that.addChild(newScene);
-
-                        that.invalidateVolume();
-                        //that.invalidateCache();
-
-                        that._nameSpace.doc.downloadCount -= 1;
-                        that._nameSpace.doc.needRender = true;
-                        x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
-
-                        // recalc changed scene bounding box twice
-                        var theScene = that._nameSpace.doc._scene;
-
-                        if (theScene) {
-                            theScene.invalidateVolume();
-                            //theScene.invalidateCache();
-
-                            window.setTimeout( function() {
-                                that.invalidateVolume();
-                                //that.invalidateCache();
-
-                                theScene.updateVolume();
-                                that._nameSpace.doc.needRender = true;
-                            }, 1000 );
-                        }
-
-                        that.fireEvents("load");
-                    }
-
-                    newScene = null;
-                    nameSpace = null;
-                    inlScene = null;
-                    xml = null;
-
-                    return xhr;
                 };
 
                 if (this._vf.url.length && this._vf.url[0].length)
@@ -312,7 +357,6 @@ x3dom.registerNodeType(
                     this._nameSpace.doc.downloadCount += 1;
 
                     try {
-                        //xhr.send(null);
                         x3dom.RequestManager.addRequest(xhr);
                     }
                     catch(ex) {
@@ -320,6 +364,29 @@ x3dom.registerNodeType(
                         x3dom.debug.logError(this._vf.url[0] + ": " + ex);
                     }
                 }
+            },
+
+            addNameSpace: function()
+            {
+                var nsName = (this._vf.nameSpaceName.length != 0) ?
+                this._vf.nameSpaceName.toString().replace(' ','') : "";
+
+                var nameSpace = new x3dom.NodeNameSpace(nsName, this._nameSpace.doc);
+
+                var url = this._vf.url.length ? this._vf.url[0] : "";
+
+                if ((url[0] === '/') || (url.indexOf(":") >= 0))
+                {
+                    nameSpace.setBaseURL(url);
+                }
+                else
+                {
+                    nameSpace.setBaseURL(this._nameSpace.baseURL + url);
+                }
+
+                this._nameSpace.addSpace(nameSpace);
+
+                return nameSpace;
             }
         }
     )

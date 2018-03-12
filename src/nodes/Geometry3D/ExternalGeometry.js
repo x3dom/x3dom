@@ -104,10 +104,14 @@ x3dom.registerNodeType(
 
                 //post request
                 xhr = new XMLHttpRequest();
+                
+                var encoding = ( currentURL.indexOf(".glb") != -1 ) ? "binary" : "ascii";
 
-                xhr.open("GET", currentURL, true);
+                var xhr = new XMLHttpRequest();
 
-                xhr.responseType = "arraybuffer";
+                xhr.open("GET", this._nameSpace.getURL(this._vf['url'][this._currentURLIdx]), true);
+
+                xhr.responseType = ( encoding == "binary" ) ? "arraybuffer" : "json";
 
                 //xhr.send(null);
                 x3dom.RequestManager.addRequest(xhr);
@@ -125,50 +129,68 @@ x3dom.registerNodeType(
                     shape._webgl.drawCount   = [];
 
                     if ((xhr.status == 200 || xhr.status == 0)) {
-                        var glTF = new x3dom.glTF.glTFLoader(xhr.response, true);
+                        var glTF = new x3dom.glTF.glTFLoader(true);
 
-                        if (glTF.header.sceneLength > 0)
+                        glTF.load(xhr.response, function()
                         {
-                            glTF.loaded = {};
-                            glTF.loaded.meshes = {};
-                            glTF.loaded.meshCount = 0;
-
-                            if(currentURL.includes('#'))
+                            if (glTF.header.sceneLength > 0)
                             {
-                                var split = currentURL.split('#');
-                                var meshName = split[split.length-1];
-                                glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                glTF.loaded = {};
+                                glTF.loaded.meshes = {};
+                                glTF.loaded.meshCount = 0;
+
+                                if(currentURL.includes('#'))
+                                {
+                                    var split = currentURL.split('#');
+                                    var meshName = split[split.length-1];
+                                    glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                }
+                                else
+                                {
+                                    glTF.getScene(shape, shaderProgram, gl);
+                                }
+
+                                for(var key in glTF._mesh){
+                                    if(!glTF._mesh.hasOwnProperty(key))continue;
+                                    that._mesh[key] = glTF._mesh[key];
+                                }
+
                             }
                             else
                             {
-                                glTF.getScene(shape, shaderProgram, gl);
-                            }
+                                if ((that._currentURLIdx + 1) < that._vf['url'].length)
+                                {
+                                    x3dom.debug.logWarning("Invalid GLB data, loaded from URL \"" +
+                                                           currentURL +
+                                                           "\", trying next specified URL");
 
-                            for(var key in glTF._mesh){
-                                if(!glTF._mesh.hasOwnProperty(key))continue;
-                                that._mesh[key] = glTF._mesh[key];
+                                    //try next URL
+                                    ++that._currentURLIdx;
+                                    that.update(shape, shaderProgram, gl, viewarea, context);
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError("Invalid GLB data, loaded from URL \"" +
+                                                         currentURL + "\"," +
+                                                         " no other URLs left to try.");
+                                }
                             }
+                            
+                            var theScene = that._nameSpace.doc._scene;
 
-                        }
-                        else
-                        {
-                            if ((that._currentURLIdx + 1) < that._vf['url'].length)
-                            {
-                                x3dom.debug.logWarning("Invalid GLB data, loaded from URL \"" +
-                                                       currentURL +
-                                                       "\", trying next specified URL");
+                            if (theScene) {
+                                theScene.invalidateVolume();
+                                //theScene.invalidateCache();
 
-                                //try next URL
-                                ++that._currentURLIdx;
-                                that.update(shape, shaderProgram, gl, viewarea, context);
+                                window.setTimeout( function() {
+                                    that.invalidateVolume();
+                                    //that.invalidateCache();
+
+                                    theScene.updateVolume();
+                                    that._nameSpace.doc.needRender = true;
+                                }, 1000 );
                             }
-                            else
-                            {
-                                x3dom.debug.logError("Invalid GLB data, loaded from URL \"" +
-                                                     currentURL + "\"," +
-                                                     " no other URLs left to try.");
-                            }
-                        }
+                        });
                     }
                     else
                     {

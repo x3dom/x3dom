@@ -852,7 +852,130 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             shape._webgl.buffers[4] = colorBuffer;
         };
     }
-    // TODO: tangent AND binormal
+
+    // tangents
+    if (!binGeo._hasStrideOffset && binGeo._vf.tangent.length > 0)
+    {
+        var xmlhttp5 = new XMLHttpRequest();
+        xmlhttp5.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
+        xmlhttp5.responseType = "arraybuffer";
+
+        shape._nameSpace.doc.downloadCount += 1;
+
+        //xmlhttp2.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp5 );
+
+        xmlhttp5.onload = function()
+        {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
+            if (xmlhttp5.status != 200) {
+                x3dom.debug.logError( "XHR2/ normal load failed with status: " + xmlhttp5.status );
+                return;
+            }
+
+            if (!shape._webgl)
+                return;
+
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp5.response) : xmlhttp5.response;
+
+            var attribTypeStr = binGeo._vf.tangentType;
+            shape._webgl.tangentType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+
+            var tangents = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+
+            if (createTriangleSoup) {
+                shape._webgl.makeSeparateTris.pushBuffer("tangent", tangents);
+                return;
+            }
+
+            var tangentBuffer = gl.createBuffer();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, tangentBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, tangents, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // Test reading Data
+            //x3dom.debug.logWarning("arraybuffer[0].nx="+normals[0]);
+
+            tangents = null;
+
+            if (shape._webgl.internalDownloadCount == 0)
+            {
+                shape._nameSpace.doc.needRender = true;
+            }
+
+            that.checkError(gl);
+
+            var t11 = new Date().getTime() - t00;
+            x3dom.debug.logInfo("XHR5/ normal load time: " + t11 + " ms");
+
+            shape._webgl.buffers[6] = tangentBuffer;
+        };
+    }
+
+    // bitangents
+    if (!binGeo._hasStrideOffset && binGeo._vf.binormal.length > 0)
+    {
+        var xmlhttp6 = new XMLHttpRequest();
+        xmlhttp6.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
+        xmlhttp6.responseType = "arraybuffer";
+
+        shape._nameSpace.doc.downloadCount += 1;
+
+        //xmlhttp2.send(null);
+        x3dom.RequestManager.addRequest( xmlhttp6 );
+
+        xmlhttp6.onload = function()
+        {
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._webgl.internalDownloadCount -= 1;
+
+            if (xmlhttp6.status != 200) {
+                x3dom.debug.logError( "XHR6/ normal load failed with status: " + xmlhttp6.status );
+                return;
+            }
+
+            if (!shape._webgl)
+                return;
+
+            var XHR_buffer = binGeo._vf.compressed == true ? x3dom.Utils.gunzip(xmlhttp6.response) : xmlhttp6.response;
+
+            var attribTypeStr = binGeo._vf.binormalType;
+            shape._webgl.binormalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+
+            var binormals = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+
+            if (createTriangleSoup) {
+                shape._webgl.makeSeparateTris.pushBuffer("binormal", binormals);
+                return;
+            }
+
+            var binormalBuffer = gl.createBuffer();
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, binormalBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, binormals, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+
+            // Test reading Data
+            //x3dom.debug.logWarning("arraybuffer[0].nx="+normals[0]);
+
+            binormals = null;
+
+            if (shape._webgl.internalDownloadCount == 0)
+            {
+                shape._nameSpace.doc.needRender = true;
+            }
+
+            that.checkError(gl);
+
+            var t11 = new Date().getTime() - t00;
+            x3dom.debug.logInfo("XHR6/ normal load time: " + t11 + " ms");
+
+            shape._webgl.buffers[7] = binormalBuffer;
+        };
+    }
 };
 
 /** setup/download pop geometry */
@@ -1115,4 +1238,188 @@ x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, curr
     vertices = null;
 
     this.checkError(gl);
+};
+
+x3dom.BinaryContainerLoader.bufferGeoCache = {};
+
+/** setup/download buffer geometry */
+x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, currContext)
+{
+    var URL;
+    var isDataURL = false;
+    var bufferGeo = shape._cf.geometry.node;
+
+    // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
+    shape._webgl.bufferGeometry = (bufferGeo._indexed) ? 1 : -1;
+
+    var initAccessors = function()
+    {
+        var accessors = bufferGeo._cf.accessors.nodes;
+
+        for(var i = 0; i < accessors.length; i++)
+        {
+            var accessor = accessors[i];
+
+            var byteOffset = accessor._vf.byteOffset;
+            var byteStride = accessor._vf.byteStride;
+            var bufferType = accessor._vf.bufferType;
+            var components = accessor._vf.components;
+            var componentType = accessor._vf.componentType;
+            var view = accessor._vf.view;
+
+            switch(bufferType)
+            {
+                case "INDEX":
+                    shape._webgl.indexType = componentType;
+                    shape._indexOffset = byteOffset;
+                    break;
+                case "POSITION":
+                    shape._coordStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.coordType = componentType;
+                    bufferGeo._mesh._numPosComponents = components;
+                    break;
+                case "NORMAL":
+                    shape._normalStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.normalType = componentType;
+                    bufferGeo._mesh._numNormComponents = components;
+                    break;
+                case "TEXCOORD":
+                    shape._texCoordStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.texCoordType = componentType;
+                    bufferGeo._mesh._numTexComponents = components;
+                    break;
+                case "COLOR":
+                    shape._colorStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.colorType = componentType;
+                    bufferGeo._mesh._numColComponents = components;
+                    break;
+                case "TANGENT":
+                    shape._tangentStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.tangentType = componentType;
+                    bufferGeo._mesh._numTangentComponents = components;
+                    break;
+                case "BITANGENT":
+                    shape._binormalStrideOffset = [byteStride, byteOffset];
+                    shape._webgl.binormalType = componentType;
+                    bufferGeo._mesh._numBinormalComponents = components;
+                    break;
+            }
+
+            var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
+
+            var bufferViewID = bufferGeo._cf.views.nodes[view]._vf.id;
+
+            shape._webgl.buffers[bufferIdx] = x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferViewID];
+        }
+    }
+
+    var initBufferViews = function(arraybuffer)
+    {
+        var views = bufferGeo._cf.views.nodes;
+        var buffers = [];
+
+        for(var i = 0; i < views.length; i++)
+        {
+            var view = views[i];
+
+            var bufferID   = view._vf.id;
+            var byteOffset = view._vf.byteOffset;
+            var byteLength = view._vf.byteLength;
+
+            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined)
+            {
+                var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
+
+                var buffer = gl.createBuffer();
+    
+                gl.bindBuffer(view._vf.target, buffer);
+                gl.bufferData(view._vf.target, bufferData, gl.STATIC_DRAW);
+                gl.bindBuffer(view._vf.target, null);
+    
+                x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] = buffer;
+            }
+        }
+    };
+
+    if(bufferGeo._vf.buffer != "")
+    {
+        URL = shape._nameSpace.getURL(bufferGeo._vf.buffer);
+
+        if(x3dom.BinaryContainerLoader.bufferGeoCache[URL] != undefined)
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+
+                initBufferViews(arraybuffer);
+                initAccessors();
+
+            });
+        }
+        else
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {};
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers = [];
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) {
+
+                if ( URL.indexOf("data:") != -1 )
+                {
+                    var data = URL.split(",")[1];
+
+                    var binaryString =  window.atob(data);
+
+                    var byteLength = binaryString.length;
+                    var bytes = new Uint8Array( byteLength );
+
+                    for (var i = 0; i < byteLength; i++)
+                    {
+                        bytes[i] = binaryString.charCodeAt(i);
+                    }
+
+                    initBufferViews(bytes.buffer);
+
+                    initAccessors();
+
+                    resolve(bytes.buffer);
+                }
+                else
+                {
+                    var xhr = new XMLHttpRequest();
+    
+                    xhr.open("GET", URL);
+            
+                    xhr.responseType = "arraybuffer";
+            
+                    xhr.onload = function(e)
+                    {
+                        if(xhr.status != 200)
+                        {
+                            shape._nameSpace.doc.downloadCount -= 1;
+                            reject();
+                            return;
+                        }
+            
+                        initBufferViews(xhr.response);
+
+                        initAccessors();
+
+                        resolve(xhr.response);
+                    
+                        shape._nameSpace.doc.downloadCount -= 1;
+            
+                        shape._nameSpace.doc.needRender = true;
+                    }
+            
+                    xhr.onerror = function(e)
+                    {
+                        shape._nameSpace.doc.downloadCount -= 1;
+                        reject();
+                    }
+            
+                    x3dom.RequestManager.addRequest( xhr );
+            
+                    shape._nameSpace.doc.downloadCount += 1; 
+                }
+            })    
+             
+        }      
+    }
 };

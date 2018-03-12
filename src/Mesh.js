@@ -30,12 +30,16 @@ x3dom.Mesh = function(parent)
     this._texCoords = [];
     this._colors    = [];
     this._indices   = [];
+    this._tangents  = [];
+    this._binormals = [];
     
     this._positions[0] = [];
     this._normals[0]   = [];
     this._texCoords[0] = [];
     this._colors[0]    = [];
     this._indices[0]   = [];
+    this._tangents[0]  = [];
+    this._binormals[0] = [];
 };
 
 x3dom.Mesh.prototype._dynamicFields = {};   // can hold X3DVertexAttributeNodes
@@ -49,6 +53,8 @@ x3dom.Mesh.prototype._numPosComponents = 3;
 x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
 x3dom.Mesh.prototype._numNormComponents = 3;
+x3dom.Mesh.prototype._numTangentComponents = 3;
+x3dom.Mesh.prototype._numBinormalComponents = 3;
 x3dom.Mesh.prototype._lit = true;
 
 x3dom.Mesh.prototype._vol = null;
@@ -56,13 +62,15 @@ x3dom.Mesh.prototype._invalidate = true;
 x3dom.Mesh.prototype._numFaces = 0;
 x3dom.Mesh.prototype._numCoords = 0;
 
-x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, colors, indices)
+x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, colors, indices, tangents, binormals)
 {
     this._positions[0] = positions;
     this._normals[0]   = normals;
     this._texCoords[0] = texCoords;
     this._colors[0]    = colors;
     this._indices[0]   = indices;
+    this._tangents[0]   = tangents;
+    this._binormals[0]   = binormals;
     
     this._invalidate = true;
     this._numFaces = this._indices[0].length / 3;
@@ -274,6 +282,8 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
     var texCoords = this._texCoords[0];
     var colors = this._colors[0];
     var indices = isMultiInd ? this._multiIndIndices : this._indices[0];
+    var tangents = this._tangents[0];
+    var binormals = this._binormals[0];
 
     var i = 0;
     
@@ -284,6 +294,8 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
         this._texCoords[i] = [];
         this._colors[i]    = [];
         this._indices[i]   = [];
+        this._tangents[i]   = [];
+        this._binormals[i]   = [];
         
         var k = (indices.length - ((i + 1) * MAX) >= 0);
         
@@ -333,6 +345,20 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
                                                   this._numColComponents * (i + 1) * MAX);
             } else { 
                 this._colors[i] = colors.slice(i * MAX * this._numColComponents);
+            }
+        }
+        if (tangents.length) {
+            if (k) {
+                this._tangents[i] = tangents.slice(i * MAX * 3, 3 * (i + 1) * MAX);
+            } else {
+                this._tangents[i] = tangents.slice(i * MAX * 3);
+            }
+        }
+        if (binormals.length) {
+            if (k) {
+                this._binormals[i] = binormals.slice(i * MAX * 3, 3 * (i + 1) * MAX);
+            } else {
+                this._binormals[i] = binormals.slice(i * MAX * 3);
             }
         }
     }

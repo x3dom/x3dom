@@ -1,0 +1,95 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+	<title>X3DOM example</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; font-family: Arial, 'sans serif';}
+        .x3dom-canvas {  cursor: default; }
+        body { background: darkslategrey; }
+        x3d { width: calc(100% - 400px); height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        .sidebar {display: flex; flex-direction: column;width: 400px; height: 100%; background: darkgrey; overflow-y: scroll;}
+        .sidebar-entry {display: flex; flex-direction: row; width: 100%; justify-content: flex-start; align-items: center; font-weight: bold; color: white; cursor: pointer; padding: 10px; box-sizing: border-box;}
+        .sidebar-entry:hover { background: lightblue; }
+        .main { display: flex; flex-direction: row; }
+    </style>
+
+    <script>
+        
+        var g_runtime;
+        var g_direction = "posZ";
+
+        function onDownloadsFinished()
+        {
+            g_runtime.showAll(g_direction, true);
+        };
+    
+        function onload()
+        {
+            x3d = document.getElementById("x3d");           
+            x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
+            
+            g_runtime = x3d.runtime;
+        };
+
+        function load(file, type, direction)
+        {
+            var suffix = (type == "Binary") ? ".glb" : ".gltf"; 
+
+            type = (type != undefined) ? "-" + type : "";
+
+            g_direction = direction || "posZ";
+            
+            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+
+            url = repo + file + "/glTF" + type + "/" + file + suffix;
+            document.getElementById("inline").setAttribute("url", url);
+
+            g_runtime.showAll("posZ", true);
+        }
+    
+    </script>
+</head>
+
+     
+<body onload="onload();">
+
+    <section class="main">
+
+        <section class="sidebar">
+
+            <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
+            <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
+            <div class="sidebar-entry" onclick="load('Box')">Box</div>
+            <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Binary')">Box Textured (binary)</div>
+            <div class="sidebar-entry" onclick="load('BoxInterleaved')">Box Interleaved</div>
+            <div class="sidebar-entry" onclick="load('BoxTexturedNonPowerOfTwo')">Box Textured NPOT</div>
+            <div class="sidebar-entry" onclick="load('Duck')">Duck</div>
+            <div class="sidebar-entry" onclick="load('2CylinderEngine')">2 Cylinder Engine</div>
+            <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
+            <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
+            <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
+            <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+            <div class="sidebar-entry" onclick="load('Avocado')">Avocado</div>
+            <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
+            <div class="sidebar-entry" onclick="load('TextureCoordinateTest',undefined,'negZ')">Texture Coordinate Test</div>
+            <div class="sidebar-entry" onclick="load('TextureSettingsTest',undefined,'negZ')">Texture Settings Test</div>
+
+        </section>
+
+        <X3D id="x3d" >
+            <Scene>
+                <Transform>
+                    <!-- <Inline url="2CylinderEngine.gltf"></Inline> -->
+                    <Inline id="inline" url=""></Inline>
+                </Transform>
+            </Scene>
+        </X3D>
+
+    </section>
+</body>
+</html>

@@ -98,6 +98,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
 
+            this.addField_SFBool(ctx, 'flipY', false);
+
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
             this._type = "diffuseMap";

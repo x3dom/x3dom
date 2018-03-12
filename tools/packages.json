@@ -21,7 +21,9 @@
                 {"path": "util/DrawableCollection.js"},
                 {"path": "util/Moveable.js"},
                 {"path": "util/Zlib.js"},
+                {"path": "util/Promise.js"},
                 {"path": "util/glTF/glTFLoader.js"},
+                {"path": "util/glTF/glTF2Loader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
@@ -258,7 +260,10 @@
                     {"file": "PopGeometryLevel.js"},
                     {"file": "PopGeometry.js"},
                     {"file": "ImageGeometry.js"},
-                    {"file": "IndexedFaceSet.js"}
+                    {"file": "IndexedFaceSet.js"},
+                    {"file": "BufferGeometry.js"},
+                    {"file": "BufferGeometryViews.js"},
+                    {"file": "BufferGeometryAccessor.js"}
                 ]},
                 {"name": "Texturing3D", "filePrefix": "nodes/Texturing3D/", "files":[
                     {"file": "X3DTexture3DNode.js"},
@@ -372,7 +377,7 @@
                 ]}              
             ]
 		},
-        
+
 		{"group": "PHYSIC_EXTENSIONS",
             "data": [
                 {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
@@ -393,7 +398,7 @@
                 ]}
 			]
 		},
-        
+
         {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
                     {"name": "Ammo", "filePrefix": "../lib/", "files":[                    

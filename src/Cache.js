@@ -17,12 +17,12 @@ x3dom.Cache = function () {
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps) {
+x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY) {
     var textureIdentifier = url;
 
     if (this.textures[textureIdentifier] === undefined) {
         this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(
-                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps);
+                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY);
     }
 
     return this.textures[textureIdentifier];
@@ -44,7 +44,7 @@ x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
 /**
  * Returns a Cube Texture
  */
-x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps) {
+x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY) {
     var textureIdentifier = "";
 
     for (var i = 0; i < url.length; ++i) {
@@ -53,7 +53,7 @@ x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, crossOrigin
 
     if (this.textures[textureIdentifier] === undefined) {
         this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(
-                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps);
+                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY);
     }
 
     return this.textures[textureIdentifier];
@@ -178,6 +178,8 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
             program = new x3dom.shader.ComposedShader(gl, shape);
         else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
             program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
+        else if(properties.PBR_MATERIAL != null && properties.PBR_MATERIAL != 0)
+            program = new x3dom.shader.PBRMaterialShader(gl, properties);
         else if(properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0)
             return {"shaderID": shaderID};
         else {

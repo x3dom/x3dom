@@ -638,6 +638,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
         var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 
         var center = viewpoint.getCenterOfRotation();
+
         mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
 
         view._rotMat = view._rotMat.
@@ -773,6 +774,8 @@ x3dom.DefaultNavigation.prototype.onDoubleClick = function (view, x, y)
 
     viewpoint.setCenterOfRotation(view._pick);
     x3dom.debug.logInfo("New center of Rotation:  " + view._pick);
+
+    console.log(view._pick);
 
     var mat = view.getViewMatrix().inverse();
 
