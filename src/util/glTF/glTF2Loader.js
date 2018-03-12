@@ -98,6 +98,12 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
         
     }
 
+    if ( node.name != undefined )
+    {
+        x3dNode.setAttribute( "id", node.name );
+        x3dNode.setAttribute( "DEF", node.name );
+    }
+
     return x3dNode;
 };
 
@@ -117,11 +123,6 @@ x3dom.glTF2Loader.prototype._generateX3DTransform = function(node)
 {
     var transform = document.createElement("transform");
 
-    if ( node.name != undefined )
-    {
-        transform.setAttribute( "id", node.name );
-    }
-
     if( node.translation != undefined )
     {
         transform.setAttribute("translation", node.translation.join(" "));
@@ -129,7 +130,7 @@ x3dom.glTF2Loader.prototype._generateX3DTransform = function(node)
 
     if( node.rotation != undefined )
     {
-        transform.setAttribute("rotation", node.rotation.join(" "));
+        transform.setAttribute("rotation", this._toAxisAngle(node.rotation).join(" "));
     }
 
     if( node.scale != undefined )
@@ -148,11 +149,6 @@ x3dom.glTF2Loader.prototype._generateX3DTransform = function(node)
 x3dom.glTF2Loader.prototype._generateX3DMatrixTransform = function(node)
 {
     var matrixTransform = document.createElement("matrixtransform");
-    
-    if ( node.name != undefined )
-    {
-        matrixTransform.setAttribute( "id", node.name );
-    }
 
     if( node.matrix != undefined )
     {
@@ -169,14 +165,7 @@ x3dom.glTF2Loader.prototype._generateX3DMatrixTransform = function(node)
  */
 x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 {
-    var group = document.createElement("group");
-    
-    if ( node.name != undefined )
-    {
-        group.setAttribute( "id", node.name );
-    }
-
-    return group;
+    return document.createElement("group");
 };
 
 /**
@@ -216,9 +205,8 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
     if(material.pbrMetallicRoughness.baseColorTexture != undefined)
     {
         var texture = this._gltf.textures[material.pbrMetallicRoughness.baseColorTexture.index];
-        var image   = this._gltf.images[texture.source];
 
-        appearance.appendChild(this._generateX3DImageTexture(image));
+        appearance.appendChild(this._generateX3DImageTexture(texture));
     }
 
     return appearance;
@@ -251,28 +239,63 @@ x3dom.glTF2Loader.prototype._generateX3DMaterial = function(material)
  * @param {Object} image - A glTF image node
  * @return {Imagetexture}
  */
-x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(image)
+x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
 {
-    var texture = document.createElement("imagetexture");
-    texture.setAttribute("origChannelCount", "2");
-    texture.setAttribute("flipY", "true");
+    var image   = this._gltf.images[texture.source]; 
+
+    var imagetexture = document.createElement("imagetexture");
+    
+    imagetexture.setAttribute("origChannelCount", "2");
+    imagetexture.setAttribute("flipY", "true");
 
     if(image.uri != undefined)
     {
-        texture.setAttribute("url", image.uri);
+        imagetexture.setAttribute("url", image.uri);
     }
 
-    return texture;
+    if(texture.sampler != undefined)
+    {
+        var sampler = this._gltf.samplers[texture.sampler];
+        imagetexture.appendChild(this._createX3DTextureProperties(sampler));
+    }
+    
+
+    return imagetexture;
 };
 
 /**
- * Generates a X3D shape node
+ * Generates a X3D TextureProperties node
+ * @private
+ * @param {Object} primitive - A glTF sampler node
+ * @return {TextureProperties}
+ */
+x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
+{
+    var textureproperties = document.createElement("textureproperties");
+
+    textureproperties.setAttribute("boundaryModeS", x3dom.Utils.boundaryModesDicX3D(sampler.wrapS));
+    textureproperties.setAttribute("boundaryModeT", x3dom.Utils.boundaryModesDicX3D(sampler.wrapT));
+
+    textureproperties.setAttribute("magnificationFilter", x3dom.Utils.magFilterDicX3D(sampler.magFilter));
+    textureproperties.setAttribute("minificationFilter",  x3dom.Utils.minFilterDicX3D(sampler.minFilter));
+
+    if(sampler.minFilter == undefined || (sampler.minFilter >= 9984 && sampler.minFilter <= 9987) )
+    {
+        textureproperties.setAttribute("generateMipMaps", "true");
+    }
+    
+    return textureproperties;
+};
+
+/**
+ * Generates a X3D BufferGeometry node
  * @private
  * @param {Object} primitive - A glTF primitive node
- * @return {IndexedFaceSet}
+ * @return {BufferGeometry}
  */
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
+    var views = [];
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -293,30 +316,46 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
         }
     }
 
-    for(var i = 0; i < this._gltf.bufferViews.length; i++)
-    {
-        var view = this._gltf.bufferViews[i];
-
-        //Only generate view for vertex & index buffers
-        if(view.target != undefined)
-        {
-            bufferGeometry.appendChild(this._generateX3DBufferView(view));
-        } 
-    }
-
     //Check for indices
     if(primitive.indices != undefined)
     {
-        accessor = this._gltf.accessors[primitive.indices]
+        var accessor = this._gltf.accessors[primitive.indices];
 
-        bufferGeometry.appendChild( this._generateX3DBufferAccessor("INDEX", accessor) );
+        var view = this._gltf.bufferViews[accessor.bufferView];
+        view.id = accessor.bufferView;
+        view.target = 34963;
+
+        var viewID = views.indexOf(view)
+
+        if(view.target != undefined && viewID == -1)
+        {
+            viewID = views.push(view) - 1;
+        }
+
+        bufferGeometry.appendChild( this._generateX3DBufferAccessor("INDEX", accessor, viewID) );
     }
 
     for(var attribute in primitive.attributes)
     {
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
-        bufferGeometry.appendChild( this._generateX3DBufferAccessor(attribute, accessor) );
+        var view = this._gltf.bufferViews[accessor.bufferView];
+        view.target = 34962;
+        view.id = accessor.bufferView;
+
+        var viewID = views.indexOf(view)
+
+        if(view.target != undefined && viewID == -1)
+        {
+            viewID = views.push(view) - 1;
+        }
+
+        bufferGeometry.appendChild( this._generateX3DBufferAccessor(attribute, accessor, viewID) );
+    }
+
+    for(var i = 0; i < views.length; i++)
+    {
+        bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
 
     return bufferGeometry;
@@ -327,14 +366,14 @@ x3dom.glTF2Loader.prototype._generateX3DBufferView = function(view)
     var bufferView = document.createElement( "buffergeometryview" );
 
     bufferView.setAttribute("target",     view.target);
-    bufferView.setAttribute("byteOffset", view.byteOffset);
-    bufferView.setAttribute("byteStride", view.byteStride || 0);
+    bufferView.setAttribute("byteOffset", view.byteOffset || 0);
     bufferView.setAttribute("byteLength", view.byteLength);
+    bufferView.setAttribute("id", view.id);
 
     return bufferView;
 };
 
-x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, accessor)
+x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, accessor, viewID)
 {
     var components = this._componentsOf(accessor.type);
 
@@ -345,9 +384,10 @@ x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, access
     var bufferAccessor = document.createElement( "buffergeometryaccessor" );
 
     bufferAccessor.setAttribute("bufferType", buffer.replace("_0", ""));
-    bufferAccessor.setAttribute("view", accessor.bufferView);
-    bufferAccessor.setAttribute("byteOffset", byteOffset);
-    bufferAccessor.setAttribute("byteStride", bufferView.byteStride);
+    bufferAccessor.setAttribute("view", viewID);
+    bufferAccessor.setAttribute("byteOffset", byteOffset || 0);
+    bufferAccessor.setAttribute("byteStride", bufferView.byteStride || 0);
+
     bufferAccessor.setAttribute("components", components);
     bufferAccessor.setAttribute("componentType", accessor.componentType);
 
@@ -450,7 +490,28 @@ x3dom.glTF2Loader.prototype._primitiveType = function(mode)
         case 4: return "TRIANGLES";
         case 5: return "TRIANGLE_STRIP";
         case 6: return "TRIANGLE_FAN";
+        default: return "TRIANGLES";
     }
+};
+
+x3dom.glTF2Loader.prototype._isDefaultSampler = function(sampler)
+{
+    return ( sampler.wrapS     == 10497 && sampler.wrapS     == 10497 && 
+             sampler.magFilter == 9729  && sampler.minFilter == 9729 );
+};
+
+x3dom.glTF2Loader.prototype._toAxisAngle = function(quat)
+{
+    var result = [];
+    var quat = new x3dom.fields.Quaternion(quat[0], quat[1], quat[2], quat[3]);
+    var axisAngle = quat.toAxisAngle();
+
+    result[0] = axisAngle[0].x;
+    result[1] = axisAngle[0].y;
+    result[2] = axisAngle[0].z;
+    result[3] = axisAngle[1];
+
+    return result;
 };
 
 /**

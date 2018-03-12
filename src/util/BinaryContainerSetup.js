@@ -1307,7 +1307,9 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
 
             var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
 
-            shape._webgl.buffers[bufferIdx] = x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[view];
+            var bufferViewID = bufferGeo._cf.views.nodes[view]._vf.id;
+
+            shape._webgl.buffers[bufferIdx] = x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferViewID];
         }
     }
 
@@ -1320,18 +1322,22 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         {
             var view = views[i];
 
+            var bufferID   = view._vf.id;
             var byteOffset = view._vf.byteOffset;
             var byteLength = view._vf.byteLength;
 
-            var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
+            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined)
+            {
+                var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
 
-            var buffer = gl.createBuffer();
-
-            gl.bindBuffer(view._vf.target, buffer);
-            gl.bufferData(view._vf.target, bufferData, gl.STATIC_DRAW);
-            gl.bindBuffer(view._vf.target, null);
-
-            x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers.push(buffer);
+                var buffer = gl.createBuffer();
+    
+                gl.bindBuffer(view._vf.target, buffer);
+                gl.bufferData(view._vf.target, bufferData, gl.STATIC_DRAW);
+                gl.bindBuffer(view._vf.target, null);
+    
+                x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] = buffer;
+            }
         }
     };
 
@@ -1343,6 +1349,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         {
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
 
+                initBufferViews(arraybuffer);
                 initAccessors();
 
             });
@@ -1371,7 +1378,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
 
                     initAccessors();
 
-                    resolve();
+                    resolve(bytes.buffer);
                 }
                 else
                 {
@@ -1394,7 +1401,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
 
                         initAccessors();
 
-                        resolve();
+                        resolve(xhr.response);
                     
                         shape._nameSpace.doc.downloadCount -= 1;
             

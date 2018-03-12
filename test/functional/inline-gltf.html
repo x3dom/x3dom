@@ -9,19 +9,20 @@
         .x3dom-canvas {  cursor: default; }
         body { background: darkslategrey; }
         x3d { width: calc(100% - 400px); height: 100%; margin: 0; padding: 0; overflow: hidden; }
-        .sidebar {display: flex; flex-direction: column;width: 400px; height: 100%; background: darkgrey; }
-        .sidebar-entry {display: flex; flex-direction: row; width: 100%; height: 48px; justify-content: flex-start; align-items: center; font-weight: bold; color: white; cursor: pointer}
+        .sidebar {display: flex; flex-direction: column;width: 400px; height: 100%; background: darkgrey; overflow-y: scroll;}
+        .sidebar-entry {display: flex; flex-direction: row; width: 100%; justify-content: flex-start; align-items: center; font-weight: bold; color: white; cursor: pointer; padding: 10px; box-sizing: border-box;}
         .sidebar-entry:hover { background: lightblue; }
         .main { display: flex; flex-direction: row; }
     </style>
 
     <script>
         
-        var runtime;
+        var g_runtime;
+        var g_direction = "posZ";
 
         function onDownloadsFinished()
         {
-            runtime.showAll("posZ", true);
+            g_runtime.showAll(g_direction, true);
         };
     
         function onload()
@@ -29,21 +30,23 @@
             x3d = document.getElementById("x3d");           
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
             
-            runtime = x3d.runtime;
+            g_runtime = x3d.runtime;
         };
 
-        function load(file, type)
+        function load(file, type, direction)
         {
             var suffix = (type == "Binary") ? ".glb" : ".gltf"; 
 
             type = (type != undefined) ? "-" + type : "";
+
+            g_direction = direction || "posZ";
             
             var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
 
             url = repo + file + "/glTF" + type + "/" + file + suffix;
             document.getElementById("inline").setAttribute("url", url);
 
-            runtime.showAll("posZ", true);
+            g_runtime.showAll("posZ", true);
         }
     
     </script>
@@ -56,7 +59,7 @@
 
         <section class="sidebar">
 
-            <div class="sidebar-entry" onclick="load('TriangleWithoutIndices')">Triangle Without Indices</div>
+            <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
             <div class="sidebar-entry" onclick="load('Box')">Box</div>
             <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
@@ -71,6 +74,10 @@
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+            <div class="sidebar-entry" onclick="load('Avocado')">Avocado</div>
+            <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
+            <div class="sidebar-entry" onclick="load('TextureCoordinateTest',undefined,'negZ')">Texture Coordinate Test</div>
+            <div class="sidebar-entry" onclick="load('TextureSettingsTest',undefined,'negZ')">Texture Settings Test</div>
 
         </section>
 

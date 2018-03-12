@@ -4790,7 +4790,7 @@ x3dom.gfx_webgl = (function () {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 2]);
             gl.vertexAttribPointer(sp.normal,
-                s_geo._mesh._numNormComponents, shape._webgl.normalType, false,
+                s_geo._mesh._numNormComponents, shape._webgl.normalType, true,
                 shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
             gl.enableVertexAttribArray(sp.normal);
 

@@ -64,6 +64,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'byteLength', 0);
+
+            /**
+             * The buffer id
+             * @var {x3dom.fields.SFInt32} id
+             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'id', 0);
         },
         {
             parentAdded: function(parent)

@@ -876,6 +876,23 @@ x3dom.Utils.minFilterDic = function(gl, minFilter)
 };
 
 /*****************************************************************************
+* Get GL min filter
+*****************************************************************************/
+x3dom.Utils.minFilterDicX3D = function(minFilter)
+{
+	switch(minFilter)
+	{
+		case 9728: return "NEAREST";
+		case 9729: return "LINEAR";
+        case 9984: return "NEAREST_MIPMAP_NEAREST";
+        case 9985: return "LINEAR_MIPMAP_NEAREST";
+		case 9986: return "NEAREST_MIPMAP_LINEAR";
+        case 9987: return "LINEAR_MIPMAP_LINEAR";
+        default:   return "LINEAR_MIPMAP_LINEAR";
+	}
+};
+
+/*****************************************************************************
 * Get GL mag filter
 *****************************************************************************/
 x3dom.Utils.magFilterDic = function(gl, magFilter)
@@ -890,6 +907,34 @@ x3dom.Utils.magFilterDic = function(gl, magFilter)
 		case "NEAREST_PIXEL":	return gl.NEAREST;
 		case "NICEST":			return gl.LINEAR;
 		default:				return gl.LINEAR;
+	}
+};
+
+/*****************************************************************************
+* Get X3D mag filter
+*****************************************************************************/
+x3dom.Utils.magFilterDicX3D = function(magFilter)
+{
+	switch(magFilter)
+	{
+		case 9728: return "NEAREST";
+		case 9729: return "LINEAR";
+		default:   return "LINEAR";
+	}
+};
+
+/*****************************************************************************
+* Get GL boundary mode
+*****************************************************************************/
+x3dom.Utils.boundaryModesDicX3D = function(mode)
+{
+	switch(mode)
+	{
+
+        case 10497: return "REPEAT";
+		case 33071: return "CLAMP_TO_EDGE";
+		case 33648: return "MIRRORED_REPEAT";
+		default:    return "REPEAT";
 	}
 };
 
