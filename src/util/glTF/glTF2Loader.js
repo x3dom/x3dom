@@ -200,14 +200,16 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
 
-    appearance.appendChild(this._generateX3DMaterial(material));
+    //appearance.appendChild(this._generateX3DMaterial(material));
 
-    if(material.pbrMetallicRoughness.baseColorTexture != undefined)
-    {
-        var texture = this._gltf.textures[material.pbrMetallicRoughness.baseColorTexture.index];
+    appearance.appendChild(this._generateX3DPhysicalMaterial(material));
 
-        appearance.appendChild(this._generateX3DImageTexture(texture));
-    }
+    // if(material.pbrMetallicRoughness.baseColorTexture != undefined)
+    // {
+    //     var texture = this._gltf.textures[material.pbrMetallicRoughness.baseColorTexture.index];
+
+    //     appearance.appendChild(this._generateX3DImageTexture(texture));
+    // }
 
     return appearance;
 };
@@ -233,13 +235,72 @@ x3dom.glTF2Loader.prototype._generateX3DMaterial = function(material)
     return mat;
 };
 
+x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
+{
+    var mat = document.createElement("physicalmaterial");
+
+    var texture;
+    var baseColorFactor = [1,1,1,1];
+    var emissiveFactor  = material.emissiveFactor || [0,0,0];
+    var metallicFactor  = 0;
+    var roughnessFactor = 0.5;
+
+    var pbr = material.pbrMetallicRoughness;
+
+    if(pbr)
+    {
+        baseColorFactor = pbr.baseColorFactor || baseColorFactor;
+        metallicFactor  = pbr.metallicFactor  || metallicFactor;
+        roughnessFactor = pbr.roughnessFactor || roughnessFactor;
+    }
+
+    if(pbr && pbr.baseColorTexture)
+    {
+        texture = this._gltf.textures[pbr.baseColorTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+    }
+
+    if(pbr && pbr.metallicRoughnessTexture)
+    {
+        metallicFactor = 1;
+        roughnessFactor = 1;
+        texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "metallicRoughnessTexture"));
+    }
+
+    if(material.normalTexture)
+    {
+        texture = this._gltf.textures[material.normalTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "normalTexture"));
+    }
+
+    if(material.emissiveTexture)
+    {
+        texture = this._gltf.textures[material.emissiveTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture"));
+    }
+
+    if(material.occlusionTexture)
+    {
+        texture = this._gltf.textures[material.occlusionTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));
+    }
+
+    mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+    mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
+    mat.setAttribute("metallicFactor",  metallicFactor);
+    mat.setAttribute("roughnessFactor", roughnessFactor);
+    
+    return mat;
+};
+
 /**
  * Generates a X3D image texture node
  * @private
  * @param {Object} image - A glTF image node
  * @return {Imagetexture}
  */
-x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
+x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, containerField)
 {
     var image   = this._gltf.images[texture.source]; 
 
@@ -247,6 +308,11 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
     
     imagetexture.setAttribute("origChannelCount", "2");
     imagetexture.setAttribute("flipY", "true");
+
+    if(containerField)
+    {
+        imagetexture.setAttribute("containerField", containerField);
+    }
 
     if(image.uri != undefined)
     {

@@ -325,6 +325,13 @@ x3dom.registerNodeType(
                             textures = textures.concat(shader.getTextures());
                         }
                     }
+
+                    var material = appearance._cf.material.node;
+                    if(material) {
+                        if(x3dom.isa(material, x3dom.nodeTypes.PhysicalMaterial)) {
+                            textures = textures.concat(material.getTextures());
+                        }
+                    }
                 }
 
                 var geometry = this._cf.geometry.node;

@@ -1072,6 +1072,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
     else if (geometry) {
 
         property.CSHADER          = -1;
+        property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
         property.SOLID            = (shape.isSolid()) ? 1 : 0;
         property.TEXT             = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
         property.POPGEOMETRY      = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
@@ -1086,26 +1087,31 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.IS_PARTICLE      = (x3dom.isa(geometry, x3dom.nodeTypes.ParticleSet)) ? 1 : 0;
         property.TANGENTDATA      = (geometry._mesh._tangents[0].length > 0 && geometry._mesh._binormals[0].length > 0) ? 1 : 0;
 
-
+        property.PBR_MATERIAL     = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.PhysicalMaterial)) ? 1 : 0;
         property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa(material, x3dom.nodeTypes.TwoSidedMaterial)) ? 1 : 0;
         property.SEPARATEBACKMAT  = ( property.TWOSIDEDMAT && material._vf.separateBackColor) ? 1 : 0;
         property.SHADOW           = (viewarea.getLightsShadow()) ? 1 : 0;
         property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
         property.CSSHADER         = (appearance && appearance._shader &&
                                      x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
-        property.APPMAT           = (appearance && (material || property.CSSHADER) ) ? 1 : 0;
+        
         property.LIGHTS           = (!property.POINTLINE2D && appearance && shape.isLit() && (material || property.CSSHADER)) ?
                                      viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
-        property.TEXTURED         = (texture || property.TEXT || ( property.CSSHADER && appearance._shader.needTexcoords() ) ) ? 1 : 0;
+        property.TEXTURED         = (texture || property.TEXT || ( property.CSSHADER && appearance._shader.needTexcoords() ) || 
+                                    (property.PBR_MATERIAL && material.hasTextures())) ? 1 : 0;
         property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ||
                                     (property.CSSHADER && appearance._shader.getEnvironmentMap()) ? 1 : 0;
         property.PIXELTEX         = (texture && x3dom.isa(texture, x3dom.nodeTypes.PixelTexture)) ? 1 : 0;
         property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
-        property.DIFFUSEMAP       = (texture && !x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode) ) || (property.CSSHADER && appearance._shader.getDiffuseMap()) ? 1 : 0;
-        property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ? 1 : 0;
-		property.NORMALSPACE      = (property.NORMALMAP) ? appearance._shader._vf.normalSpace.toUpperCase() : "";
+        property.DIFFUSEMAP       = (texture && !x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode) ) || 
+                                    (property.CSSHADER && appearance._shader.getDiffuseMap()) ||
+                                    (property.PBR_MATERIAL && material._cf.baseColorTexture.node) ? 1 : 0;
+        property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) || 
+                                    (property.PBR_MATERIAL && material._cf.normalTexture.node) ? 1 : 0;
         property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
         property.SHINMAP          = (property.CSSHADER && appearance._shader.getShininessMap()) ? 1 : 0;
+        property.EMISSIVEMAP      = (property.PBR_MATERIAL && material._cf.emissiveTexture.node) ? 1 : 0;
+        property.OCCLUSIONMAP     = (property.PBR_MATERIAL && material._cf.occlusionTexture.node) ? 1 : 0;
         property.DISPLACEMENTMAP  = (property.CSSHADER && appearance._shader.getDisplacementMap()) ? 1 : 0;
         property.DIFFPLACEMENTMAP = (property.CSSHADER && appearance._shader.getDiffuseDisplacementMap()) ? 1 : 0;
         property.MULTIDIFFALPMAP  = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiDiffuseAlphaMap()) ? 1 : 0;
@@ -1113,7 +1119,12 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.MULTISPECSHINMAP = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiSpecularShininessMap()) ? 1 : 0;
         property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
 
-        property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || (texture && texture._blending)) ? 1 : 0;
+        property.METALLICROUGHNESSMAP = (property.PBR_MATERIAL && material._cf.metallicRoughnessTexture.node) ? 1 : 0;
+
+        property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() : 
+                                    (property.NORMALMAP && property.PBR_MATERIAL) ? material._vf.normalSpace.toUpperCase() : "TANGENT";
+
+        property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || property.PBR_MATERIAL || (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
         property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
         property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;
@@ -1135,7 +1146,6 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
-        property.PBR_MATERIAL = 0;
         
         //console.log(property);
 	}

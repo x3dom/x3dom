@@ -68,6 +68,10 @@
             <div class="sidebar-entry" onclick="load('BoxTextured', 'Binary')">Box Textured (binary)</div>
             <div class="sidebar-entry" onclick="load('BoxInterleaved')">Box Interleaved</div>
             <div class="sidebar-entry" onclick="load('BoxTexturedNonPowerOfTwo')">Box Textured NPOT</div>
+            <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
+            <div class="sidebar-entry" onclick="load('TextureCoordinateTest',undefined,'negZ')">Texture Coordinate Test</div>
+            <div class="sidebar-entry" onclick="load('TextureSettingsTest',undefined,'negZ')">Texture Settings Test</div>
+            <div class="sidebar-entry" onclick="load('NormalTangentTest',undefined,'negZ')">Normal Tangent Test</div>
             <div class="sidebar-entry" onclick="load('Duck')">Duck</div>
             <div class="sidebar-entry" onclick="load('2CylinderEngine')">2 Cylinder Engine</div>
             <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
@@ -75,14 +79,18 @@
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
             <div class="sidebar-entry" onclick="load('Avocado')">Avocado</div>
-            <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
-            <div class="sidebar-entry" onclick="load('TextureCoordinateTest',undefined,'negZ')">Texture Coordinate Test</div>
-            <div class="sidebar-entry" onclick="load('TextureSettingsTest',undefined,'negZ')">Texture Settings Test</div>
-
+            <div class="sidebar-entry" onclick="load('BarramundiFish')">BarramundiFish</div>
+            <div class="sidebar-entry" onclick="load('Lantern')">Lantern</div>
+            <div class="sidebar-entry" onclick="load('BoomBox')">Boom Box</div>
+            <div class="sidebar-entry" onclick="load('Corset')">Corset</div>
+            <div class="sidebar-entry" onclick="load('WaterBottle')">WaterBottle</div>
+            
+            
         </section>
 
         <X3D id="x3d" >
             <Scene>
+                <NavigationInfo></NavigationInfo>
                 <Transform>
                     <!-- <Inline url="2CylinderEngine.gltf"></Inline> -->
                     <Inline id="inline" url=""></Inline>
