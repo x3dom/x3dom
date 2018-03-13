@@ -171,6 +171,8 @@ x3dom.gfx_webgl = (function () {
                             x3dom.caps.MOBILE = true;
                         }
 
+                        x3dom.caps.MOBILE = false;
+
                         if (x3dom.caps.MOBILE) {
                             if (forbidMobileShaders) {
                                 x3dom.caps.MOBILE = false;
