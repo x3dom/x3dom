@@ -733,7 +733,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "    eye = vec3(0.0, 0.0, 1.0);\n";
         shader += "} else {\n";
         shader += "    eye = -fragPosition.xyz;\n";
-        shader += "}\n";
+		shader += "}\n";
+		
+		if(properties.NORMALMAP){
+			shader += "vec3 _normalBias = normalBias;\n";
+		}
 
 		if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
 			shader += "vec3 normal = vec3(0.0, 0.0, 0.0);\n";
@@ -755,8 +759,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		{
 			//Normalmap
 			if(properties.NORMALMAP){
-
-				shader += "vec3 _normalBias = normalBias;\n";
 
 				if(properties.NORMALSPACE == "TANGENT") {
 
