@@ -178,12 +178,9 @@ x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 {
     var shape = document.createElement("shape");
 
-    if(primitive.material != undefined)
-    {
-        var appearance = this._generateX3DAppearance( this._gltf.materials[ primitive.material ] );
+    var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : {};
 
-        shape.appendChild(appearance);
-    }
+    shape.appendChild(this._generateX3DAppearance( material ));
 
     shape.appendChild(this._generateX3DBufferGeometry(primitive));
 
@@ -200,39 +197,9 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
 
-    //appearance.appendChild(this._generateX3DMaterial(material));
-
     appearance.appendChild(this._generateX3DPhysicalMaterial(material));
 
-    // if(material.pbrMetallicRoughness.baseColorTexture != undefined)
-    // {
-    //     var texture = this._gltf.textures[material.pbrMetallicRoughness.baseColorTexture.index];
-
-    //     appearance.appendChild(this._generateX3DImageTexture(texture));
-    // }
-
     return appearance;
-};
-
-x3dom.glTF2Loader.prototype._generateX3DMaterial = function(material)
-{
-    var mat = document.createElement("material");
-
-    var diffuseColor = [1, 1, 1];
-    var transparency = 0;
-
-    if(material.pbrMetallicRoughness.baseColorFactor)
-    {
-        diffuseColor[0] = material.pbrMetallicRoughness.baseColorFactor[0];
-        diffuseColor[1] = material.pbrMetallicRoughness.baseColorFactor[1];
-        diffuseColor[2] = material.pbrMetallicRoughness.baseColorFactor[2];
-        transparency    = 1.0 - material.pbrMetallicRoughness.baseColorFactor[3];
-    }
-
-    mat.setAttribute("diffuseColor", diffuseColor.join(" "));
-    mat.setAttribute("transparency", transparency);
-    
-    return mat;
 };
 
 x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
@@ -243,7 +210,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var baseColorFactor = [1,1,1,1];
     var emissiveFactor  = material.emissiveFactor || [0,0,0];
     var metallicFactor  = 0;
-    var roughnessFactor = 0.5;
+    var roughnessFactor = 0.6;
 
     var pbr = material.pbrMetallicRoughness;
 
@@ -362,6 +329,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var views = [];
+    var isLit = false;
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -403,6 +371,11 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 
     for(var attribute in primitive.attributes)
     {
+        if(attribute == "NORMAL")
+        {
+            isLit = true;
+        }
+
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
         var view = this._gltf.bufferViews[accessor.bufferView];
@@ -423,6 +396,8 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
     {
         bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
+
+    bufferGeometry.setAttribute("lit", isLit);
 
     return bufferGeometry;
 }

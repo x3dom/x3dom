@@ -291,11 +291,23 @@ x3dom.registerNodeType(
 
                             if (suffix == ".gltf" || suffix == ".glb")
                             {
-                                var loader = new x3dom.glTF2Loader(namespace);
+                                if(xhr.response)
+                                {
+                                    var loader = new x3dom.glTF2Loader(namespace);
  
-                                inlineScene = loader.load(xhr.response, isBinary);
-                                
-                                that.loadX3D( inlineScene, namespace );
+                                    inlineScene = loader.load(xhr.response, isBinary);
+                                    
+                                    that.loadX3D( inlineScene, namespace );
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError('Invalide XHR Response');
+
+                                    that.fireEvents("error");
+
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.count = 0;
+                                }
                             }
                             else
                             {
@@ -320,6 +332,8 @@ x3dom.registerNodeType(
                                 else
                                 {
                                     that.fireEvents("error");
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.count = 0;
                                 }
                             }
                         }

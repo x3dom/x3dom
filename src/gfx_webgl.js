@@ -2247,16 +2247,15 @@ x3dom.gfx_webgl = (function () {
             sp.diffuseColor     = [mat._vf.baseColorFactor.r, 
                                    mat._vf.baseColorFactor.g,
                                    mat._vf.baseColorFactor.b];
-            sp.specularColor    = (sp.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r, 
-                                                                                 mat._vf.baseColorFactor.g,
-                                                                                 mat._vf.baseColorFactor.b];              
+            sp.specularColor    = (mat._vf.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r, 
+                                                                                   mat._vf.baseColorFactor.g,
+                                                                                   mat._vf.baseColorFactor.b];              
             sp.emissiveColor    = mat._vf.emissiveFactor.toGL();
             sp.shininess        = 1.0 - mat._vf.roughnessFactor;
             sp.metallicFactor   = mat._vf.metallicFactor;
             sp.normalBias       = mat._vf.normalBias.toGL();
             sp.ambientIntensity = 1.0;
-            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;
-            
+            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;            
         }
         else if (mat) 
         {

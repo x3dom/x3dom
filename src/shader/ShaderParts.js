@@ -414,7 +414,7 @@ x3dom.shader.lightPBR = function(numLights) {
 	
 	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+					"in float lCutOffAngle, in vec3 positionVS,in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
 				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
 					"{\n" +
 					// Calculate some Dot-Products		
@@ -453,7 +453,7 @@ x3dom.shader.lightPBR = function(numLights) {
 					"   float diffuseFactor  = lIntensity * NoL;\n" +
 					"   float spec  = lIntensity * NoL;\n" +
 					"   float roughness = 1.0 - shin;\n" +
-					"   float a = roughness * roughness;\n" +
+					"   float a = max( roughness * roughness, 5e-4 );\n" +
 			
 					// Distribution Function"
 					"   float a2 = a * a;\n" +

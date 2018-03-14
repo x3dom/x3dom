@@ -510,6 +510,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += x3dom.shader.twoSidedMaterial();
 	}
 
+	if(properties.PBR_MATERIAL)
+	{
+		shader += "uniform float metallicFactor;\n";
+	}
+
 	//Colors
 	if(properties.VERTEXCOLOR){
 		if(properties.COLCOMPONENTS == 3){
@@ -728,7 +733,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
-        shader += "vec3 eye;\n";
+		shader += "vec3 eye;\n";
+		shader += "vec3 positionVS = fragPosition.rgb;\n";
         shader += "if ( isOrthoView > 0.0 ) {\n";
         shader += "    eye = vec3(0.0, 0.0, 1.0);\n";
         shader += "} else {\n";
@@ -837,12 +843,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec4 metallicRoughness = texture2D(metallicRoughnessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
 
 				shader += "_shininess = 1.0 - metallicRoughness.g;\n";
-				shader += "_specularColor = texture2D(diffuseMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
-				shader += "if(metallicRoughness.b == 0.0){\n";
-				shader += "_specularColor = vec3(0.04, 0.04, 0.04);\n";
-				shader += "}else{\n";
-				shader += "_specularColor = texColor.rgb;\n";
-				shader += "}\n";
+				shader += "_specularColor = mix(vec3(0.04, 0.04, 0.04), color.rgb, metallicRoughness.b);\n";
+				shader += "color.rgb *= (1.0 - metallicRoughness.b);\n";		
 			}
 
 			if (properties.MULTISPECSHINMAP) {
@@ -856,8 +858,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 		//Calculate lights
         if (properties.LIGHTS) {
-            shader += "vec3 ads;\n";
-
             for(var l=0; l<properties.LIGHTS; l++) {
                 var lightCol = "light"+l+"_Color";
                 shader += " lighting(light"+l+"_Type, " +
@@ -870,18 +870,23 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
                                     "light"+l+"_AmbientIntensity, " +
                                     "light"+l+"_BeamWidth, " +
                                     "light"+l+"_CutOffAngle, " +
-                                    "normal, eye, _shininess, _ambientIntensity, _specularColor, ambient, diffuse, specular);\n";
+                                    "positionVS, normal, eye, _shininess, _ambientIntensity, _specularColor, ambient, diffuse, specular);\n";
             }
 
             shader += "ambient = max(ambient, 0.0);\n";
             shader += "diffuse = max(diffuse, 0.0);\n";
             shader += "specular = max(specular, 0.0);\n";
 		}
+
+		if(properties.PBR_MATERIAL && !properties.METALLICROUGHNESSMAP)
+		{
+			shader += "color.rgb *= (1.0 - metallicFactor);\n";
+		}
 		
 		shader += "color.rgb = (_emissiveColor + (ambient + diffuse) * color.rgb + specular);\n";
 		
 	} else {
-		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED) {
+		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {
 			shader += "color = vec4(0.0, 0.0, 0.0, 1.0 - _transparency);\n";
 		}
 		
@@ -904,9 +909,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			} else {
 				shader += "color = texColor;\n";
 			}
-		} else if(!properties.VERTEXCOLOR && !properties.POINTLINE2D){
+		} else if(!properties.VERTEXCOLOR && !properties.PBR_MATERIAL && !properties.POINTLINE2D){
 			shader += "color.rgb += _emissiveColor;\n";
-		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D){
+		} else if(!properties.VERTEXCOLOR && !properties.PBR_MATERIAL && properties.POINTLINE2D){
 			shader += "color.rgb = _emissiveColor;\n";
             if (properties.IS_PARTICLE) {
                 shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
@@ -948,7 +953,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 	shader += "gl_FragColor = color;\n";
 
-	// shader += "gl_FragColor = vec4(_specularColor,1.0);\n";
+	//shader += "gl_FragColor = vec4(specular ,1.0);\n";
 	
 	//End Of Shader
 	shader += "}\n";

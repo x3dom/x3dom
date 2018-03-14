@@ -698,6 +698,8 @@ x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation)
         viewpoint.setCenterOfRotation(center);
     }
 
+    var aspect =  Math.min(this._width/this._height, 1);
+
     var diaz2 = dia[z] / 2.0, tanfov2 = Math.tan(fov / 2.0);
 
     var dist1 = (dia[y] / 2.0) / tanfov2 + diaz2;
@@ -714,6 +716,7 @@ x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation)
         dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.01;
     }
 
+    dia[z] /= aspect;
 
     var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
 
@@ -752,8 +755,10 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
     var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
     var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
 
+    var aspect =  Math.min(this._width/this._height, 1);
+
     var tanfov2 = Math.tan(fov / 2.0);
-    var dist = bsr / tanfov2;
+    var dist = bsr / tanfov2 / aspect;
 
     var eyePos = center.add(viewDir.multiply(dist));
 
