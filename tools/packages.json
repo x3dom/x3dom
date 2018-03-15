@@ -132,6 +132,7 @@
                     {"file": "X3DMaterialNode.js"},
                     {"file": "Material.js"},
                     {"file": "TwoSidedMaterial.js"},
+                    {"file": "PhysicalMaterial.js"},
                     {"file": "X3DShapeNode.js"},
                     {"file": "Shape.js"},
                     {"file": "ExternalShape.js"}

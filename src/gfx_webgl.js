@@ -171,6 +171,8 @@ x3dom.gfx_webgl = (function () {
                             x3dom.caps.MOBILE = true;
                         }
 
+                        x3dom.caps.MOBILE = false;
+
                         if (x3dom.caps.MOBILE) {
                             if (forbidMobileShaders) {
                                 x3dom.caps.MOBILE = false;
@@ -2240,7 +2242,23 @@ x3dom.gfx_webgl = (function () {
                 sp.multiVisibilityHeight = tex.texture.height;
             }
         }
-        else if (mat) {
+        else if (mat && x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial)) 
+        {
+            sp.diffuseColor     = [mat._vf.baseColorFactor.r, 
+                                   mat._vf.baseColorFactor.g,
+                                   mat._vf.baseColorFactor.b];
+            sp.specularColor    = (mat._vf.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r, 
+                                                                                   mat._vf.baseColorFactor.g,
+                                                                                   mat._vf.baseColorFactor.b];              
+            sp.emissiveColor    = mat._vf.emissiveFactor.toGL();
+            sp.shininess        = 1.0 - mat._vf.roughnessFactor;
+            sp.metallicFactor   = mat._vf.metallicFactor;
+            sp.normalBias       = mat._vf.normalBias.toGL();
+            sp.ambientIntensity = 1.0;
+            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;            
+        }
+        else if (mat) 
+        {
             sp.diffuseColor = mat._vf.diffuseColor.toGL();
             sp.specularColor = mat._vf.specularColor.toGL();
             sp.emissiveColor = mat._vf.emissiveColor.toGL();
@@ -2259,12 +2277,12 @@ x3dom.gfx_webgl = (function () {
             }
         }
         else {
-            sp.diffuseColor = [1.0, 1.0, 1.0];
-            sp.specularColor = [0.0, 0.0, 0.0];
-            sp.emissiveColor = [0.0, 0.0, 0.0];
-            sp.shininess = 0.0;
+            sp.diffuseColor     = [1.0, 1.0, 1.0];
+            sp.specularColor    = [0.0, 0.0, 0.0];
+            sp.emissiveColor    = [0.0, 0.0, 0.0];
+            sp.shininess        = 0.0;
             sp.ambientIntensity = 1.0;
-            sp.transparency = 0.0;
+            sp.transparency     = 0.0;
         }
 
         //Look for user-defined shaders

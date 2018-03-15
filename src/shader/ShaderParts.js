@@ -25,6 +25,18 @@
 };
 
 /*******************************************************************************
+* Material
+********************************************************************************/
+x3dom.shader.physicalMaterial = function() {
+	var shaderPart = "uniform vec3  baseColorFacor;\n" +
+					 "uniform vec3  emissiveFactor;\n" +
+					 "uniform float metallicFactor;\n" +
+					 "uniform float roughnessFactor;\n";
+					 
+	return shaderPart;
+};
+
+/*******************************************************************************
  * TwoSidedMaterial
  ********************************************************************************/
 x3dom.shader.twoSidedMaterial = function() {
@@ -338,7 +350,8 @@ x3dom.shader.light = function(numLights) {
 	
 	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity)\n" +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -369,10 +382,98 @@ x3dom.shader.light = function(numLights) {
 					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
 					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
-                    "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +
-					//"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
-					//"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
-					//"   specular += lColor * specularFactor * attentuation * spot;\n" +
+					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+					"   specular += lColor * specularFactor * attentuation * spot;\n" +
+                    "}\n";
+						
+	return shaderPart;
+};
+
+/*******************************************************************************
+* Light
+********************************************************************************/
+x3dom.shader.lightPBR = function(numLights) {
+
+	var shaderPart = "";
+
+	for(var l=0; l<numLights; l++) {
+		shaderPart += 	"uniform float light"+l+"_On;\n" +
+						"uniform float light"+l+"_Type;\n" +
+						"uniform vec3  light"+l+"_Location;\n" +
+						"uniform vec3  light"+l+"_Direction;\n" +
+						"uniform vec3  light"+l+"_Color;\n" +
+						"uniform vec3  light"+l+"_Attenuation;\n" +
+						"uniform float light"+l+"_Radius;\n" +
+						"uniform float light"+l+"_Intensity;\n" +
+						"uniform float light"+l+"_AmbientIntensity;\n" +
+						"uniform float light"+l+"_BeamWidth;\n" +
+						"uniform float light"+l+"_CutOffAngle;\n" +
+						"uniform float light"+l+"_ShadowIntensity;\n";
+	}
+	
+	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
+					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+					"in float lCutOffAngle, in vec3 positionVS,in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
+					"{\n" +
+					// Calculate some Dot-Products		
+					
+
+					"   vec3 L;\n" +
+					"   float spot = 1.0, attentuation = 0.0;\n" +
+					"   if(lType == 0.0) {\n" +
+					"       L = -normalize(lDirection);\n" +
+					"		V = normalize(V);\n" +
+					"		attentuation = 1.0;\n" +
+					"   } else{\n" +
+					"       L = (lLocation - (-V));\n" +
+					"       float d = length(L);\n" +
+					"		L = normalize(L);\n" +
+					"		V = normalize(V);\n" +
+					"       if(lRadius == 0.0 || d <= lRadius) {\n" +
+					"       	attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+					"		}\n" +
+					"       if(lType == 2.0) {\n" +
+					"           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+					"           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
+					"           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+					"           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+					"       }\n" +
+					"   }\n" +
+					
+					"   vec3  fresnel = vec3(1.0, 1.0, 1.0);\n" +
+					"   vec3  H = normalize( L + V );\n" +
+					"   float NoL = clamp( dot( N, L ), 0.0, 1.0 );\n" +
+					"   float NoH = clamp( dot( N, H ), 0.0, 1.0 );\n" +
+					"   float NoV = clamp( dot( N, V ), 0.0, 1.0 );\n" +
+					"   float VoH = clamp( dot( V, H ), 0.0, 1.0 );\n" +
+					
+					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
+					"   float diffuseFactor  = lIntensity * NoL;\n" +
+					"   float spec  = lIntensity * NoL;\n" +
+					"   float roughness = 1.0 - shin;\n" +
+					"   float a = max( roughness * roughness, 5e-4 );\n" +
+			
+					// Distribution Function"
+					"   float a2 = a * a;\n" +
+					"   float denom = NoH * NoH * ( a2 - 1.0 ) + 1.0;\n" +
+					"   float D = a2 / ( denom * denom );\n" +
+			
+					// Geometric Shadowing Term
+					"   float k = a / 2.0;\n" +
+					"   float G_V = ( NoV * ( 1.0 - k ) + k );\n" +
+					"   float G_L = ( NoL * ( 1.0 - k ) + k );\n" +
+					"   float G = 0.25 / ( G_V * G_L );\n" +
+
+					// Fresnel
+					"   vec3 F = reflectivity + (fresnel - fresnel*reflectivity) * exp2( (-5.55473 * VoH - 6.98316) * VoH );\n" +
+					
+					"   vec3 specularFactor = (D * G) * (F * spec);\n" +
+
+					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+					"   specular += lColor * specularFactor * attentuation * spot;\n" +
                     "}\n";
 						
 	return shaderPart;
@@ -403,12 +504,13 @@ x3dom.shader.TBNCalculation = function() {
         "    return mat3( T * invmax, B * invmax, N );\n" +
         "}\n\n";
 
-    shaderPart += "vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )\n" +
+    shaderPart += "vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord, vec3 bias )\n" +
         "{\n" +
         "    // assume N, the interpolated vertex normal and\n" +
         "    // V, the view vector (vertex to eye)\n" +
         "    vec3 map = texture2D(normalMap, texcoord ).xyz;\n" +
 		"    map = 2.0 * map - 1.0;\n" +
+		"    map = map * bias;\n" +
         "    mat3 TBN = cotangent_frame(N, -V, texcoord);\n" +
         "    return normalize(TBN * map);\n" +
         "}\n\n";

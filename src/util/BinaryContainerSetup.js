@@ -1360,65 +1360,42 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers = [];
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) {
 
-                if ( URL.indexOf("data:") != -1 )
+                var xhr = new XMLHttpRequest();
+
+                xhr.open("GET", URL);
+        
+                xhr.responseType = "arraybuffer";
+        
+                xhr.onload = function(e)
                 {
-                    var data = URL.split(",")[1];
-
-                    var binaryString =  window.atob(data);
-
-                    var byteLength = binaryString.length;
-                    var bytes = new Uint8Array( byteLength );
-
-                    for (var i = 0; i < byteLength; i++)
-                    {
-                        bytes[i] = binaryString.charCodeAt(i);
-                    }
-
-                    initBufferViews(bytes.buffer);
-
-                    initAccessors();
-
-                    resolve(bytes.buffer);
-                }
-                else
-                {
-                    var xhr = new XMLHttpRequest();
-    
-                    xhr.open("GET", URL);
-            
-                    xhr.responseType = "arraybuffer";
-            
-                    xhr.onload = function(e)
-                    {
-                        if(xhr.status != 200)
-                        {
-                            shape._nameSpace.doc.downloadCount -= 1;
-                            reject();
-                            return;
-                        }
-            
-                        initBufferViews(xhr.response);
-
-                        initAccessors();
-
-                        resolve(xhr.response);
-                    
-                        shape._nameSpace.doc.downloadCount -= 1;
-            
-                        shape._nameSpace.doc.needRender = true;
-                    }
-            
-                    xhr.onerror = function(e)
+                    if(xhr.status != 200)
                     {
                         shape._nameSpace.doc.downloadCount -= 1;
                         reject();
+                        return;
                     }
-            
-                    x3dom.RequestManager.addRequest( xhr );
-            
-                    shape._nameSpace.doc.downloadCount += 1; 
+        
+                    initBufferViews(xhr.response);
+
+                    initAccessors();
+
+                    resolve(xhr.response);
+                
+                    shape._nameSpace.doc.downloadCount -= 1;
+        
+                    shape._nameSpace.doc.needRender = true;
                 }
-            })    
+        
+                xhr.onerror = function(e)
+                {
+                    shape._nameSpace.doc.downloadCount -= 1;
+                    reject();
+                }
+        
+                x3dom.RequestManager.addRequest( xhr );
+        
+                shape._nameSpace.doc.downloadCount += 1;
+            });    
              
         }      
     }
