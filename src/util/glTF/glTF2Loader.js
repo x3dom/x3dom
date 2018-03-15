@@ -178,12 +178,9 @@ x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 {
     var shape = document.createElement("shape");
 
-    if(primitive.material != undefined)
-    {
-        var appearance = this._generateX3DAppearance( this._gltf.materials[ primitive.material ] );
+    var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : {};
 
-        shape.appendChild(appearance);
-    }
+    shape.appendChild(this._generateX3DAppearance( material ));
 
     shape.appendChild(this._generateX3DBufferGeometry(primitive));
 
@@ -200,35 +197,66 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
 
-    appearance.appendChild(this._generateX3DMaterial(material));
-
-    if(material.pbrMetallicRoughness.baseColorTexture != undefined)
-    {
-        var texture = this._gltf.textures[material.pbrMetallicRoughness.baseColorTexture.index];
-
-        appearance.appendChild(this._generateX3DImageTexture(texture));
-    }
+    appearance.appendChild(this._generateX3DPhysicalMaterial(material));
 
     return appearance;
 };
 
-x3dom.glTF2Loader.prototype._generateX3DMaterial = function(material)
+x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 {
-    var mat = document.createElement("material");
+    var mat = document.createElement("physicalmaterial");
 
-    var diffuseColor = [1, 1, 1];
-    var transparency = 0;
+    var texture;
+    var baseColorFactor = [1,1,1,1];
+    var emissiveFactor  = material.emissiveFactor || [0,0,0];
+    var metallicFactor  = 0;
+    var roughnessFactor = 0.6;
 
-    if(material.pbrMetallicRoughness.baseColorFactor)
+    var pbr = material.pbrMetallicRoughness;
+
+    if(pbr)
     {
-        diffuseColor[0] = material.pbrMetallicRoughness.baseColorFactor[0];
-        diffuseColor[1] = material.pbrMetallicRoughness.baseColorFactor[1];
-        diffuseColor[2] = material.pbrMetallicRoughness.baseColorFactor[2];
-        transparency    = 1.0 - material.pbrMetallicRoughness.baseColorFactor[3];
+        baseColorFactor = pbr.baseColorFactor || baseColorFactor;
+        metallicFactor  = pbr.metallicFactor  || metallicFactor;
+        roughnessFactor = pbr.roughnessFactor || roughnessFactor;
     }
 
-    mat.setAttribute("diffuseColor", diffuseColor.join(" "));
-    mat.setAttribute("transparency", transparency);
+    if(pbr && pbr.baseColorTexture)
+    {
+        texture = this._gltf.textures[pbr.baseColorTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+    }
+
+    if(pbr && pbr.metallicRoughnessTexture)
+    {
+        metallicFactor = 1;
+        roughnessFactor = 1;
+        texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "metallicRoughnessTexture"));
+    }
+
+    if(material.normalTexture)
+    {
+        texture = this._gltf.textures[material.normalTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "normalTexture"));
+    }
+
+    if(material.emissiveTexture)
+    {
+        texture = this._gltf.textures[material.emissiveTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture"));
+    }
+
+    if(material.occlusionTexture)
+    {
+        texture = this._gltf.textures[material.occlusionTexture.index];
+        mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));
+    }
+
+    mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+    mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
+    mat.setAttribute("metallicFactor",  metallicFactor);
+    mat.setAttribute("roughnessFactor", roughnessFactor);
     
     return mat;
 };
@@ -239,7 +267,7 @@ x3dom.glTF2Loader.prototype._generateX3DMaterial = function(material)
  * @param {Object} image - A glTF image node
  * @return {Imagetexture}
  */
-x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
+x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, containerField)
 {
     var image   = this._gltf.images[texture.source]; 
 
@@ -248,9 +276,14 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture)
     imagetexture.setAttribute("origChannelCount", "2");
     imagetexture.setAttribute("flipY", "true");
 
+    if(containerField)
+    {
+        imagetexture.setAttribute("containerField", containerField);
+    }
+
     if(image.uri != undefined)
     {
-        imagetexture.setAttribute("url", image.uri);
+        imagetexture.setAttribute("url", x3dom.Utils.dataURIToObjectURL(image.uri));
     }
 
     if(texture.sampler != undefined)
@@ -296,6 +329,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var views = [];
+    var isLit = false;
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -337,6 +371,11 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 
     for(var attribute in primitive.attributes)
     {
+        if(attribute == "NORMAL")
+        {
+            isLit = true;
+        }
+
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
         var view = this._gltf.bufferViews[accessor.bufferView];
@@ -357,6 +396,8 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
     {
         bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
+
+    bufferGeometry.setAttribute("lit", isLit);
 
     return bufferGeometry;
 }
@@ -473,7 +514,7 @@ x3dom.glTF2Loader.prototype._bufferURI = function(primitive)
         var bufferView = this._gltf.bufferViews[accessor.bufferView];
         var buffer = this._gltf.buffers[bufferView.buffer];
 
-        uri = buffer.uri;
+        uri = x3dom.Utils.dataURIToObjectURL(buffer.uri);
     }
 
     return uri;
@@ -520,7 +561,7 @@ x3dom.glTF2Loader.prototype._getGLTF = function(input, binary)
 {
     if(!binary)
     {
-        return JSON.parse(input);
+        return (typeof input == "string") ? JSON.parse(input) : input;
     }
 
     var byteOffset = 0;
@@ -551,7 +592,7 @@ x3dom.glTF2Loader.prototype._getGLTF = function(input, binary)
 
                 var gltf = x3dom.Utils.arrayBufferToJSON(jsonData);
 
-                gltf.buffers[0].uri = x3dom.Utils.arrayBufferToDataURL(binaryData, "application/octet-stream");
+                gltf.buffers[0].uri = x3dom.Utils.arrayBufferToObjectURL(binaryData, "application/octet-stream");
 
                 this._convertBinaryImages(gltf, input, byteOffset);
 
@@ -575,7 +616,7 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
 
                 var imageData = new Uint8Array(buffer, byteOffset + bufferView.byteOffset, bufferView.byteLength);
 
-                image.uri = x3dom.Utils.arrayBufferToDataURL(imageData, image.mimeType);
+                image.uri = x3dom.Utils.arrayBufferToObjectURL(imageData, image.mimeType);
             }
         }
     }

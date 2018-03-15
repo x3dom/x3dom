@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'target', "");
+            this.addField_SFInt32(ctx, 'target', 34962);
 
             /**
              * The buffer byteOffset

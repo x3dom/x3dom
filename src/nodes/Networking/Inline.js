@@ -248,19 +248,6 @@ x3dom.registerNodeType(
 
                 var xhr = new window.XMLHttpRequest();
 
-                if (xhr.overrideMimeType)
-                {
-                    if( suffix == ".x3d" )
-                    {
-                        xhr.overrideMimeType('text/xml');
-                    }
-                    else if( suffix == ".glb" )
-                    {
-                        isBinary = true;
-                        xhr.responseType = "arraybuffer";
-                    }
-                }
-
                 xhr.onreadystatechange = function ()
                 {
                     if ( xhr.readyState == 4 )
@@ -304,11 +291,23 @@ x3dom.registerNodeType(
 
                             if (suffix == ".gltf" || suffix == ".glb")
                             {
-                                var loader = new x3dom.glTF2Loader(namespace);
+                                if(xhr.response)
+                                {
+                                    var loader = new x3dom.glTF2Loader(namespace);
  
-                                inlineScene = loader.load(xhr.response, isBinary);
-                                
-                                that.loadX3D( inlineScene, namespace );
+                                    inlineScene = loader.load(xhr.response, isBinary);
+                                    
+                                    that.loadX3D( inlineScene, namespace );
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError('Invalide XHR Response');
+
+                                    that.fireEvents("error");
+
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.count = 0;
+                                }
                             }
                             else
                             {
@@ -333,6 +332,8 @@ x3dom.registerNodeType(
                                 else
                                 {
                                     that.fireEvents("error");
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.count = 0;
                                 }
                             }
                         }
@@ -353,6 +354,24 @@ x3dom.registerNodeType(
                     var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
 
                     xhr.open('GET', xhrURI, true);
+
+                    if (xhr.overrideMimeType)
+                    {
+                        if( suffix == ".x3d" )
+                        {
+                            xhr.overrideMimeType('text/xml');
+                        }
+                        else if( suffix == ".gltf" )
+                        {
+                            isBinary = false;
+                            xhr.responseType = "json";
+                        }
+                        else if( suffix == ".glb" )
+                        {
+                            isBinary = true;
+                            xhr.responseType = "arraybuffer";
+                        }
+                    }
 
                     this._nameSpace.doc.downloadCount += 1;
 
