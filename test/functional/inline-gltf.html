@@ -122,7 +122,7 @@
             
             var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
 
-            url = repo + file + "/glTF" + type + "/" + file + suffix;
+            var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             
             updateInline(url);
         }
@@ -158,6 +158,11 @@
     <section class="main-wrapper">
 
         <section class="sidebar">
+            <div class="sidebar-entry" onclick="load(this.children[0].value,'direct')">
+                url:
+                <input type='url' size='150'
+                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'/>
+            </div>
 
             <div class="sidebar-header">Basic Tests</div>
     
