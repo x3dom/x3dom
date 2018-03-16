@@ -152,18 +152,19 @@
     <section class="topbar">
         <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
         <span class="topbar-label">X3DOM // GLTF 2.0</span>
+        <div class="topbar-label" onclick="load(this.children[0].value,'direct')">
+            url:
+            <input type='url' size='150'
+            placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'
+            value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'       />
+        </div>
     </section>
   
 
     <section class="main-wrapper">
 
         <section class="sidebar">
-            <div class="sidebar-entry" onclick="load(this.children[0].value,'direct')">
-                url:
-                <input type='url' size='150'
-                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'/>
-            </div>
-
+            
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
