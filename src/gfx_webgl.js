@@ -24,6 +24,8 @@ x3dom.gfx_webgl = (function () {
         this.IG_PositionBuffer = null;
         this.cache = new x3dom.Cache();
         this.stateManager = new x3dom.StateManager(ctx3d);
+        this.VRMode = 1;
+        this.vrFrameData = null;
 
         this.BUFFER_IDX  =
         {
@@ -124,6 +126,8 @@ x3dom.gfx_webgl = (function () {
 						x3dom.caps.DEPTH_TEXTURE = ctx.getExtension("WEBGL_depth_texture");
                         x3dom.caps.DEBUGRENDERINFO = ctx.getExtension("WEBGL_debug_renderer_info");
                         x3dom.caps.ANISOTROPIC = ctx.getExtension("EXT_texture_filter_anisotropic");
+                        x3dom.caps.TEXTURE_LOD = ctx.getExtension("EXT_shader_texture_lod");
+                        x3dom.caps.INSTANCED_ARRAYS = ctx.getExtension("ANGLE_instanced_arrays");
                         
                         if ( x3dom.caps.ANISOTROPIC )
                         {
@@ -1115,7 +1119,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
 
-                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                this.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1223,7 +1227,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.position);
 
-                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                this.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.disableVertexAttribArray(sp.position);
 
@@ -1317,7 +1321,7 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
 
-            gl.drawElements(scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+            this.drawElements(gl, scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0, 1);
 
             gl.disableVertexAttribArray(sp.position);
 
@@ -1597,29 +1601,29 @@ x3dom.gfx_webgl = (function () {
                     // render mesh
                     if (indicesReady && (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0)) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                 x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                            this.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (s_geo.hasIndexOffset()) {
                         var indOff = shape.tessellationProperties();
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v].count, s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType, indOff[v].count, s_gl.indexType,
                                 indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
                         }
                     }
                     else if (s_gl.indexes[q].length == 0) {
-                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
+                        this.drawArrays(gl, s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
+                        this.drawElements(gl, s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
                     }
                 }
 
@@ -1977,35 +1981,35 @@ x3dom.gfx_webgl = (function () {
                     // render mesh
                     if (indicesReady && (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0)) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                 x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                            gl.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (indicesReady && (s_gl.bufferGeometry > 0)) {
-                        gl.drawElements(s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
+                        this.drawElements(gl, s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
                     }
                     else if (s_gl.bufferGeometry < 0) {
-                        gl.drawArrays(s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
+                        this.drawArrays(gl, s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
                     }
                     else if (s_geo.hasIndexOffset()) {
                         var indOff = shape.tessellationProperties();
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v].count, s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType, indOff[v].count, s_gl.indexType,
                                 indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
                         }
                     }
                     else if (s_gl.indexes[q].length == 0) {
-                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
+                        this.drawArrays(gl, s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
+                        this.drawElements(gl, s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
                     }
 
                 }
@@ -2511,6 +2515,8 @@ x3dom.gfx_webgl = (function () {
         var model_view = mat_view.mult(transform);
         var model_view_inv = model_view.inverse();
 
+
+
         sp.isOrthoView = ( mat_proj._33 == 1 ) ? 1.0 : 0.0;
 
         sp.modelViewMatrix = model_view.toGL();
@@ -2534,7 +2540,29 @@ x3dom.gfx_webgl = (function () {
 
             sp.worldMatrix = transform.toGL();
             sp.worldInverseTranspose = transform.inverse().transpose().toGL();
+        }
 
+        if(this.VRMode == 2)
+        {           
+            var mat_view_R = viewarea.getViewMatrices()[1];
+            var mat_proj_R = viewarea.getProjectionMatrices()[1];
+            var mat_scene_R = mat_proj_R.mult(mat_view_R);
+            var model_view_R = mat_view_R.mult(transform);
+            var model_view_R_inv = model_view_R.inverse();
+
+            sp.viewMatrix2      = mat_view_R.toGL();
+            sp.modelViewMatrix2 = model_view_R.toGL();
+            
+            sp.normalMatrix2 = model_view_R_inv.transpose().toGL();
+            sp.modelViewMatrixInverse2 = model_view_R_inv.toGL();
+
+            sp.modelViewProjectionMatrix2 = mat_scene_R.mult(transform).toGL();
+
+            sp.isVR = 1.0
+        }
+        else
+        {
+            sp.isVR = 0.0
         }
 
         //PopGeometry: adapt LOD and set shader variables
@@ -2562,6 +2590,23 @@ x3dom.gfx_webgl = (function () {
                     sp[tex.samplerName] = cnt;
             }
         }
+
+        if(x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial))
+        {
+            //Get BRDF LUT Texture
+            var brdf_lut = this.cache.getTexture2D(gl, shape._nameSpace.doc, x3dom.BRDF_LUT, false, 'anonymous', false, false, true);
+
+            gl.activeTexture(gl.TEXTURE0 + cnt_n);
+
+            gl.bindTexture(gl.TEXTURE_2D, brdf_lut);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            
+            sp.brdfMap = cnt_n;
+        }
+        
 
         if (s_app && s_app._cf.textureTransform.node) {
             var texTrafo = s_app.texTransformMatrix();
@@ -2611,25 +2656,23 @@ x3dom.gfx_webgl = (function () {
                 var exGeomShaderProgram = sp;
 
                 var model = transform.mult(mesh.transform);
+                sp.model = sp.worldMatrix = model.toGL();
                 
+                sp.viewMatrix      = mat_view.toGL();
+                    
                 model_view = mat_view.mult(model);
                 model_view_inv = model_view.inverse();
 
                 sp.modelViewMatrix = model_view.toGL();
-                sp.viewMatrix = mat_view.toGL();
-
+                    
                 sp.normalMatrix = model_view_inv.transpose().toGL();
                 sp.modelViewMatrixInverse = model_view_inv.toGL();
-
+    
                 sp.modelViewProjectionMatrix = mat_scene.mult(model).toGL();
-
-                sp.model = model.toGL();
-
-                sp.worldMatrix = model.toGL();
+    
                 sp.worldInverseTranspose = model.inverse().transpose().toGL();
-                
+   
                 if(mesh.material!=null){
-
 
                     if(mesh.material.setShader != null)
                         mesh.material.setShader(gl, this.cache, shape, shape.getShaderProperties(viewarea));
@@ -2701,6 +2744,7 @@ x3dom.gfx_webgl = (function () {
                     indicesReady = true;
                 }
 
+                this.setVertexAttribEyeIdx(gl, sp);
                 this.setVertexAttribPointerPosition(gl, shape, q6, q);
                 this.setVertexAttribPointerNormal(gl, shape, q6, q);
                 this.setVertexAttribPointerTexCoord(gl, shape, q6, q);
@@ -2738,73 +2782,73 @@ x3dom.gfx_webgl = (function () {
 
                     if (indicesReady && (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0)) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawElements(polyMode, s_geo._vf.vertexCount[v], s_gl.indexType,
+                            this.drawElements(gl, polyMode, s_geo._vf.vertexCount[v], s_gl.indexType,
                                 x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(polyMode, offset, s_geo._vf.vertexCount[v]);
+                            this.drawArrays(gl, polyMode, offset, s_geo._vf.vertexCount[v]);
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (indicesReady && (s_gl.bufferGeometry > 0)) {
-                        gl.drawElements(s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
+                        this.drawElements(gl, s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
                     }
                     else if (s_gl.bufferGeometry < 0) {
-                        gl.drawArrays(s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
+                        this.drawArrays(gl, s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
                     }
                     else if (s_geo.hasIndexOffset()) {
                         // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
                         // and Patch geometry from external BVHRefiner component
                         indOff = shape.tessellationProperties();
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(polyMode, indOff[v].count, s_gl.indexType,
+                            this.drawElements(gl, polyMode, indOff[v].count, s_gl.indexType,
                                 indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
                         }
                     }
                     else if (s_gl.indexes[q].length == 0) {
-                        gl.drawArrays(polyMode, 0, s_gl.positions[q].length / 3);
+                        this.drawArrays(gl, polyMode, 0, s_gl.positions[q].length / 3);
                     }
                     else {
-                        gl.drawElements(polyMode, s_gl.indexes[q].length, s_gl.indexType, 0);
+                        this.drawElements(gl, polyMode, s_gl.indexes[q].length, s_gl.indexType, 0);
                     }
                 }
                 else {
                     if (indicesReady && (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0)) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                 x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                         for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                            gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                            this.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                             offset += s_geo._vf.vertexCount[v];
                         }
                     }
                     else if (indicesReady && (s_gl.bufferGeometry > 0)) {
-                            gl.drawElements(s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
+                        this.drawElements(gl, s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
                     }
                     else if (s_gl.bufferGeometry < 0) {
-                        gl.drawArrays(s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
+                        this.drawArrays(gl, s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
                     }
                     else if (s_geo.hasIndexOffset()) {
                         // IndexedTriangleStripSet with primType TRIANGLE_STRIP,
                         // and Patch geometry from external BVHRefiner component
                         indOff = shape.tessellationProperties();
                         for (v = 0, v_n = indOff.length; v < v_n; v++) {
-                            gl.drawElements(s_gl.primType, indOff[v].count, s_gl.indexType,
+                            this.drawElements(gl, s_gl.primType, indOff[v].count, s_gl.indexType,
                                 indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
                         }
                     }
                     else if (s_gl.indexes[q].length == 0) {
-                        gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
+                        this.drawArrays(gl, s_gl.primType, 0, s_gl.positions[q].length / 3);
                     }
                     else {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
+                        this.drawElements(gl, s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
                     }
                 }
             }
@@ -3507,8 +3551,10 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * Render Scene (Main-Pass)
      *****************************************************************************/
-    Context.prototype.renderScene = function (viewarea)
+    Context.prototype.renderScene = function (viewarea, vrFrameData)
     {
+        viewarea.vrFrameData = vrFrameData;
+
         var gl = this.ctx3d;
         var scene = viewarea._scene;
 
@@ -4436,35 +4482,35 @@ x3dom.gfx_webgl = (function () {
                 // draw mesh
                 if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
+                        this.drawElements(gl, s_gl.primType[v], s_geo._vf.vertexCount[v], s_gl.indexType,
                                         x3dom.Utils.getByteAwareOffset(offset, s_gl.indexType, gl));
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        this.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
                     }
                 }
                 else if (indicesReady && (s_gl.bufferGeometry > 0)) {
-                    gl.drawElements(s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
+                    this.drawElements(gl, s_gl.primType[0], s_geo._vf.vertexCount[0], s_gl.indexType, shape._indexOffset);
                 }
                 else if (s_gl.bufferGeometry < 0) {
-                    gl.drawArrays(s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
+                    this.drawArrays(gl, s_gl.primType[0], 0, s_geo._vf.vertexCount[0]);
                 }
                 else if (s_geo.hasIndexOffset()) {
                     var indOff = shape.tessellationProperties();
                     for (v = 0, v_n = indOff.length; v < v_n; v++) {
-                        gl.drawElements(s_gl.primType, indOff[v].count, s_gl.indexType,
+                        this.drawElements(gl, s_gl.primType, indOff[v].count, s_gl.indexType,
                             indOff[v].offset * x3dom.Utils.getOffsetMultiplier(s_gl.indexType, gl));
                     }
                 }
                 else if (s_gl.indexes[q].length == 0) {
-                    gl.drawArrays(s_gl.primType, 0, s_gl.positions[q].length / 3);
+                    this.drawArrays(gl, s_gl.primType, 0, s_gl.positions[q].length / 3);
                 }
                 else {
-                    gl.drawElements(s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
+                    this.drawElements(gl, s_gl.primType, s_gl.indexes[q].length, s_gl.indexType, 0);
                 }
 
                 gl.disableVertexAttribArray(sp.position);
@@ -4783,6 +4829,32 @@ x3dom.gfx_webgl = (function () {
 		this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 	};
 
+    Context.prototype.setVertexAttribEyeIdx = function(gl, sp)
+    {
+        if(x3dom.caps.INSTANCED_ARRAYS)
+        {
+            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+
+            if(!this.eyeIdxBuffer)
+            {
+                this.eyeIdxBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.eyeIdxBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1.0, 1.0]), gl.STATIC_DRAW);
+
+                gl.vertexAttribPointer(sp.eyeIdx, 1, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.eyeIdx);
+                instancedArrays.vertexAttribDivisorANGLE(sp.eyeIdx, 1);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.eyeIdxBuffer);
+                gl.vertexAttribPointer(sp.eyeIdx, 1, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.eyeIdx);
+                instancedArrays.vertexAttribDivisorANGLE(sp.eyeIdx, 1);
+            }
+        }
+    };
+
     Context.prototype.setVertexAttribPointerPosition = function(gl, shape, q6, q)
     {
         var sp = shape._webgl.shader;
@@ -4796,6 +4868,40 @@ x3dom.gfx_webgl = (function () {
                 shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.position);
 
+        }
+    };
+
+    Context.prototype.drawElements = function(gl, mode, count, type, offset, instanceCount)
+    {
+        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
+
+        instanceCount *= this.VRMode;
+
+        if(x3dom.caps.INSTANCED_ARRAYS)
+        {
+            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+            instancedArrays.drawElementsInstancedANGLE(mode, count, type, offset, instanceCount);
+        }
+        else
+        {
+            gl.drawElements(mode, count, type, offset);
+        }
+    };
+
+    Context.prototype.drawArrays = function(gl, mode, first, count, instanceCount)
+    {
+        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
+
+        instanceCount *= this.VRMode;
+
+        if(x3dom.caps.INSTANCED_ARRAYS)
+        {
+            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+            instancedArrays.drawArraysInstancedANGLE(mode, first, count, instanceCount);
+        }
+        else
+        {
+            gl.drawArrays(mode, first, count);
         }
     };
 

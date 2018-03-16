@@ -157,11 +157,11 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
         shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0);\n";
 
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
-                      "    return pow(color, gammaEncode4Vector);\n" +
+                      "    return pow(abs(color), gammaEncode4Vector);\n" +
                       "}\n";
 
         shaderPart += "vec4 gammaDecode(vec4 color){\n" +
-                      "    return pow(color, gammaDecode4Vector);\n" +
+                      "    return pow(abs(color), gammaDecode4Vector);\n" +
                       "}\n";
 
         // RGB; minor opt: 1.0 / 2.2 = 0.4545454545454545
@@ -169,11 +169,11 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
         shaderPart += "const vec3 gammaDecode3Vector = vec3(2.2, 2.2, 2.2);\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
-                      "    return pow(color, gammaEncode3Vector);\n" +
+                      "    return pow(abs(color), gammaEncode3Vector);\n" +
                       "}\n";
 
         shaderPart += "vec3 gammaDecode(vec3 color){\n" +
-                      "    return pow(color, gammaDecode3Vector);\n" +
+                      "    return pow(abs(color), gammaDecode3Vector);\n" +
                       "}\n";
     }
 	return shaderPart;

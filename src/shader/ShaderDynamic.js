@@ -43,8 +43,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	
 	//Default Matrices
 	shader += "uniform mat4 modelViewMatrix;\n";
-    shader += "uniform mat4 modelViewProjectionMatrix;\n";
+	shader += "uniform mat4 modelViewProjectionMatrix;\n";
+			
+	shader += "uniform mat4 modelViewMatrix2;\n";
+	shader += "uniform mat4 modelViewProjectionMatrix2;\n";
 	
+	shader += "uniform float isVR;\n";
+	shader += "attribute float eyeIdx;\n";
+	shader += "varying float vrOffset;\n";
+	shader += "varying float fragEyeIdx;\n";
+
 	//Positions
 	if(properties.POSCOMPONENTS == 3) {
 		shader += "attribute vec3 position;\n";
@@ -90,6 +98,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		} else {
 			shader += "varying vec3 fragNormal;\n";
 			shader += "uniform mat4 normalMatrix;\n";
+			shader += "uniform mat4 normalMatrix2;\n";
 
             if(properties.IMAGEGEOMETRY) {
                 shader += "uniform sampler2D IG_normals;\n";
@@ -158,6 +167,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(properties.CUBEMAP) {
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "uniform mat4 viewMatrix;\n";
+			shader += "uniform mat4 viewMatrix2;\n";
 		}
         if (properties.DISPLACEMENTMAP) {
             shader += "uniform sampler2D displacementMap;\n";
@@ -214,7 +224,35 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
-  
+
+	//Positions
+	shader += "mat4 mat_mvp = modelViewProjectionMatrix;\n"
+	shader += "mat4 mat_mv  = modelViewMatrix;\n"
+	shader += "fragEyeIdx = eyeIdx;\n";
+
+
+	if(properties.CUBEMAP) {
+		shader += "mat4 mat_v   = viewMatrix;\n"
+	}
+
+	if(properties.LIGHTS || properties.PBR_MATERIAL)
+	{
+		shader += "mat4 mat_n   = normalMatrix;\n"
+	}
+
+	shader += "if(eyeIdx == 1.0){\n"
+	shader += "    mat_mvp = modelViewProjectionMatrix2;\n";
+
+	if(properties.CUBEMAP) {
+		shader += "    mat_v   = viewMatrix2;\n";
+	}
+	if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT")
+	{
+		shader += "    mat_n   = normalMatrix2;\n";
+	}
+
+	shader += "}\n";
+
 	/*******************************************************************************
 	* Start of special Geometry switch
 	********************************************************************************/
@@ -393,21 +431,21 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 
           //normalized Normal
           shader += "calcNormal = normalize(calcNormal);\n";
-          shader += "fragNormal = (normalMatrix * vec4(calcNormal, 0.0)).xyz;\n";
+          shader += "fragNormal = (mat_n * vec4(calcNormal, 0.0)).xyz;\n";
         }
 		else if (properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
 			//Nothing to do
 		}
         else
         {
-            shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
+            shader += "fragNormal = (mat_n * vec4(vertNormal, 0.0)).xyz;\n";
         }
 	}
     
 	//Textures
 	if(properties.TEXTURED){
 		if(properties.CUBEMAP) {
-			shader += "fragViewDir = (viewMatrix[3].xyz);\n";
+			shader += "fragViewDir = (mat_v[3].xyz);\n";
 		}
 		if (properties.SPHEREMAPPING) {
 			shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;\n";
@@ -427,15 +465,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT") {
 		    if(properties.TANGENTDATA)
             {
-                shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
-                shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
+                shader += "fragTangent  = (mat_n * vec4(tangent, 0.0)).xyz;\n";
+                shader += "fragBinormal = (mat_n * vec4(binormal, 0.0)).xyz;\n";
             }
 		}
 	}
 	
 	//Lights & Fog
 	if(properties.LIGHTS || properties.FOG || properties.CLIPPLANES){
-		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0));\n";
+		shader += "fragPosition = (mat_mv * vec4(vertPosition, 1.0));\n";
 		if (properties.FOG) {
 			shader += "fragEyePosition = eyePosition - fragPosition.xyz;\n";
 		}
@@ -453,10 +491,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     else if (properties.DIFFPLACEMENTMAP)
     {
         shader += "vertPosition += normalize(vertNormal) * texture2D(diffuseDisplacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).a * displacementFactor;\n";
-    }
+	}
 
-    //Positions
-	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
+	//Positions
+	shader += "gl_Position = mat_mvp * vec4(vertPosition, 1.0);\n";
+
+	shader += "if(isVR == 1.0){\n";
+	shader += "    vrOffset = eyeIdx * 0.5;\n";
+	shader += "    gl_Position.x *= 0.5;\n";
+	shader += "    gl_Position.x += vrOffset * gl_Position.w;\n";
+	shader += "}\n";
 
     //Set point size
     if (properties.IS_PARTICLE) {
@@ -488,21 +532,31 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
  */
 x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties)
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += " precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
-	
+	var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+	shader += " precision highp float;\n";
+	shader += "#else\n";
+	shader += " precision mediump float;\n";
+	shader += "#endif\n\n";
+
+	if(properties.PBR_MATERIAL && x3dom.caps.TEXTURE_LOD)
+	{
+		shader += "#extension GL_EXT_shader_texture_lod : enable\n";
+	}
+
+	if (properties.NORMALMAP && x3dom.caps.STD_DERIVATIVES)
+	{
+		shader += "#extension GL_OES_standard_derivatives:enable\n";
+	}
+
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings
 	********************************************************************************/
 	
 	//Default Matrices
-	shader += "uniform mat4 modelMatrix;\n";
-    shader += "uniform mat4 modelViewMatrix;\n";
-    shader += "uniform mat4 viewMatrixInverse;\n";
-	
+	shader += "uniform float isVR;\n";
+	shader += "varying float vrOffset;\n";
+	shader += "varying float fragEyeIdx;\n";
+
 	//Material
 	shader += x3dom.shader.material();
 
@@ -513,6 +567,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	if(properties.PBR_MATERIAL)
 	{
 		shader += "uniform float metallicFactor;\n";
+		shader += "uniform sampler2D brdfMap;\n";
 	}
 
 	//Colors
@@ -526,7 +581,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     if(properties.CUBEMAP || properties.CLIPPLANES)
     {
-        shader += "uniform mat4 modelViewMatrixInverse;\n";
+		shader += "uniform mat4 modelViewMatrixInverse;\n";
+		shader += "uniform mat4 modelViewMatrixInverse2;\n";
     }
 
 	//VertexID
@@ -599,7 +655,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			if(properties.NORMALSPACE == "TANGENT") {
 
 				if (x3dom.caps.STD_DERIVATIVES) {
-					shader += "#extension GL_OES_standard_derivatives:enable\n";
 					shader += x3dom.shader.TBNCalculation();
 				} else {
 					shader += "varying vec3 fragTangent;\n";
@@ -608,6 +663,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			} else if(properties.NORMALSPACE == "OBJECT") {
 
 				shader += "uniform mat4 normalMatrix;\n";
+				shader += "uniform mat4 normalMatrix2;\n";
 			}
         }
 	}
@@ -655,6 +711,31 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	********************************************************************************/
 	shader += "void main(void) {\n";
 
+	if(properties.CUBEMAP || properties.CLIPPLANES)
+    {
+		shader += "mat4 mat_mvi = modelViewMatrixInverse;\n";
+	}
+	
+	if(properties.NORMALSPACE == "OBJECT")
+	{
+		shader += "mat4 mat_n = normalMatrix;\n"
+	}
+
+	shader += "if(fragEyeIdx == 1.0){\n"
+
+	if(properties.CUBEMAP || properties.CLIPPLANES) {
+		shader += "    mat_mvi   = modelViewMatrixInverse2;\n";
+	}
+	if(properties.NORMALSPACE == "OBJECT")
+	{
+		shader += "    mat_n   = normalMatrix2;\n";
+	}
+
+	shader += "}\n";
+
+	shader += "if ( isVR == 1.0) {\n";
+	shader += "    if ( ( step( 0.5, gl_FragCoord.x / 1670.0 ) - 0.5 ) * vrOffset < 0.0 ) discard;\n";
+	shader += "}\n";
 
     if(properties.CLIPPLANES)
     {
@@ -763,6 +844,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 		if(properties.TEXTURED)
 		{
+			shader += "vec4 blub = texture2D( brdfMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
+
 			//Normalmap
 			if(properties.NORMALMAP){
 
@@ -785,7 +868,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				} else if(properties.NORMALSPACE == "OBJECT") {
 					shader += "normal = texture2D( normalMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
 					shader += "normal = 2.0 * normal - 1.0;\n";
-					shader += "normal = (normalMatrix * vec4(normal, 0.0)).xyz;\n";
+					shader += "normal = (mat_n * vec4(normal, 0.0)).xyz;\n";
 					shader += "normal = normalize(normal);\n";
 				}
 			}
@@ -793,7 +876,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			if(properties.CUBEMAP) {
 				shader += "vec3 viewDir = normalize(fragViewDir);\n";
 				shader += "vec3 reflected = reflect(-eye, normal);\n";
-				shader += "reflected = (modelViewMatrixInverse * vec4(reflected, 0.0)).xyz;\n";
+				shader += "reflected = (mat_mvi * vec4(reflected, 0.0)).xyz;\n";
 				shader += "texColor = " + x3dom.shader.decodeGamma(properties, "textureCube(environmentMap, reflected)") + ";\n";
 			}
 			else if (properties.DIFFPLACEMENTMAP)
@@ -878,6 +961,19 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "specular = max(specular, 0.0);\n";
 		}
 
+		if(true)
+		{
+			//shader += "float lod = roughness * mipCount;\n";
+			shader += "vec3 R    = -normalize( reflect ( eye, normal ) );\n";
+			shader += "float NoV = dot( normal, eye );\n";
+
+			//Calculate specular lighting from precomputed maps
+			shader += "vec3 brdf = texture2D( brdfMap, vec2( NoV, _shininess ) ).rgb;\n";
+			// "vec3 specularLight = vec3(0.0);\n" +
+			//"vec3 specularLight = textureCubeLodEXT( environmentTexture, R, lod ).rgb;\n" +
+			//"vec3 specularColor = specularLight * ( _specularColor * brdf.x + brdf.y );\n" +
+		}
+
 		if(properties.PBR_MATERIAL && !properties.METALLICROUGHNESSMAP)
 		{
 			shader += "color.rgb *= (1.0 - metallicFactor);\n";
@@ -952,8 +1048,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	}
 
 	shader += "gl_FragColor = color;\n";
-
-	//shader += "gl_FragColor = vec4(specular ,1.0);\n";
 	
 	//End Of Shader
 	shader += "}\n";

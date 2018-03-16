@@ -165,7 +165,10 @@
             <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
             <div class="sidebar-entry" onclick="load('SimpleMeshes',undefined,'negZ')">Simple Meshes</div>
             <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/cx20/gltf-test/master/tutorialModels/SimpleMaterial/glTF/SimpleMaterial.gltf')">Simple Material</div>
-    
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/cx20/gltf-test/master/tutorialModels/Cameras/glTF/Cameras.gltf')">SimpleCameras</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/FlightHelmet/glTF/FlightHelmet.gltf')">Flight Helmet</div>
+
+
             <div class="sidebar-header">Feature Tests</div>
     
             <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
@@ -206,10 +209,9 @@
             <div class="sidebar-entry" onclick="load('Cube')">Cube</div>
             <div class="sidebar-entry" onclick="load('SciFiHelmet')">SciFiHelmet</div>
             
-            
-            
-            
         </section>
+
+        <section style="z-index: 5; width:100px; height: 50px; position: absolute; bottom: 15px; right: 15px; background: red" onclick="g_runtime.toggleVR();"></section>
 
         <X3D id="x3d" >
             <Scene>

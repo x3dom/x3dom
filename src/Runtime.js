@@ -38,6 +38,8 @@ x3dom.Runtime = function(doc, canvas) {
     this.isReady = false;
     
     this.fps = 0;
+
+    this.VRMode = false;
       
     this.states = { measurements: [], infos: [] };
 };
@@ -1314,6 +1316,34 @@ x3dom.Runtime.prototype.onAnimationStarted = function() {
 x3dom.Runtime.prototype.onAnimationFinished = function() {
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
+};
+
+x3dom.Runtime.prototype.enterVR = function() {
+
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.requestPresent([{ source: this.canvas.canvas }]).then(function() {        
+            this.canvas.doc.needRender = true;
+        }.bind(this));
+    }
+};
+
+x3dom.Runtime.prototype.exitVR = function() {
+    if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.exitPresent();
+    }
+};
+
+x3dom.Runtime.prototype.toggleVR = function() {
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.enterVR();
+    }
+    else if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.exitVR();
+    }
 };
 
 x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )

@@ -363,12 +363,12 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx) {
+x3dom.X3DDocument.prototype.render = function (ctx, vrFrameData) {
     if (!ctx || !this._viewarea) {
         return;
     }
 
-    ctx.renderScene(this._viewarea);
+    ctx.renderScene(this._viewarea, vrFrameData);
 };
 
 x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
