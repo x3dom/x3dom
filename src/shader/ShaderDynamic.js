@@ -900,7 +900,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             if (properties.IS_PARTICLE) {
                 shader += "texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
             }
-            shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
+            shader += "texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
             shader += "color.a = texColor.a;\n";
 
 			if(properties.BLENDING || properties.IS_PARTICLE){
