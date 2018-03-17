@@ -85,6 +85,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'componentType', 5126);
+
+            /**
+             * The buffer element count
+             * @var {x3dom.fields.SFInt32} count
+             * @memberof x3dom.nodeTypes.BufferGeometryAccessor
+             * @initvalue 0
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFInt32(ctx, 'count', 0);
         },
         {
             parentAdded: function(parent)

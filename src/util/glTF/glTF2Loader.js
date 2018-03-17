@@ -94,8 +94,7 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
             var shape = this._generateX3DShape(mesh.primitives[i]);
 
             x3dNode.appendChild(shape);
-        }
-        
+        } 
     }
 
     if ( node.name != undefined )
@@ -169,6 +168,52 @@ x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 };
 
 /**
+ * Generates a X3D viewpoint node
+ * @private
+ * @param {Object} camera - A glTF camera node
+ * @return {Viewpoint}
+ */
+x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
+{
+    var viewpoint = document.createElement("viewpoint");
+
+    var fov   = camera.yfov  || 0.785398;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
+
+    viewpoint.setAttribute("fieldOfView", fov);
+    viewpoint.setAttribute("zNear", znear);
+    viewpoint.setAttribute("zFar", zfar);
+    viewpoint.setAttribute("position", "0 0 0");
+
+    return viewpoint;
+};
+
+/**
+ * Generates a X3D orthoviewpoint node
+ * @private
+ * @param {Object} camera - A glTF camera node
+ * @return {OrthoViewpoint}
+ */
+x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(camera)
+{
+    var viewpoint = document.createElement("orthoviewpoint");
+
+    var xmag  = camera.xmag  ||  1;
+    var ymag  = camera.ymag  ||  1;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
+    var fov   = [-xmag, -ymag, xmag, ymag];
+
+    viewpoint.setAttribute("fieldOfView", fov);
+    viewpoint.setAttribute("zNear", znear);
+    viewpoint.setAttribute("zFar", zfar);
+    viewpoint.setAttribute("position", "0 0 0");
+
+    return viewpoint;
+};
+
+/**
  * Generates a X3D shape node
  * @private
  * @param {Object} primitive - A glTF primitive node
@@ -211,6 +256,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var emissiveFactor  = material.emissiveFactor || [0,0,0];
     var metallicFactor  = 0;
     var roughnessFactor = 0.6;
+    var alphaMode       = material.alphaMode || "OPAQUE";
+    var alphaCutoff     = material.alphaCutoff || 0.5
 
     var pbr = material.pbrMetallicRoughness;
 
@@ -257,6 +304,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
     mat.setAttribute("metallicFactor",  metallicFactor);
     mat.setAttribute("roughnessFactor", roughnessFactor);
+    mat.setAttribute("alphaMode",  alphaMode);
+    mat.setAttribute("alphaCutoff", alphaCutoff);
     
     return mat;
 };
@@ -329,7 +378,6 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var views = [];
-    var isLit = false;
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -371,11 +419,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 
     for(var attribute in primitive.attributes)
     {
-        if(attribute == "NORMAL")
-        {
-            isLit = true;
-        }
-
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
         var view = this._gltf.bufferViews[accessor.bufferView];
@@ -396,8 +439,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
     {
         bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
-
-    bufferGeometry.setAttribute("lit", isLit);
 
     return bufferGeometry;
 }
@@ -431,6 +472,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, access
 
     bufferAccessor.setAttribute("components", components);
     bufferAccessor.setAttribute("componentType", accessor.componentType);
+    bufferAccessor.setAttribute("count", accessor.count);
 
     return bufferAccessor;
 };

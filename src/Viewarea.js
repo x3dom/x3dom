@@ -153,6 +153,13 @@ x3dom.Viewarea = function (document, scene) {
 	this._interpolator = new x3dom.FieldInterpolator();
     this._animationStateChanged = false;
 
+    this.vrFrameData = null;
+    this.vrLeftViewMatrix = new x3dom.fields.SFMatrix4f();
+    this.vrRightViewMatrix = new x3dom.fields.SFMatrix4f();
+
+    this.vrLeftProjMatrix = new x3dom.fields.SFMatrix4f();
+    this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
+
     this.arc = null;
 };
 
@@ -377,7 +384,29 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function ()
  */
 x3dom.Viewarea.prototype.getViewMatrix = function ()
 {
-    return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+    if(this.vrFrameData)
+    {
+        return this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix);
+    }
+    else
+    {
+        return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+    }
+};
+
+x3dom.Viewarea.prototype.getViewMatrices = function()
+{
+    if(this.vrFrameData)
+    {
+        return [this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
+                this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)];
+    }
+    else
+    {
+        var viewMatrix = this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+
+        return [viewMatrix, viewMatrix]
+    }
 };
 
 x3dom.Viewarea.prototype.getLightMatrix = function ()
@@ -577,9 +606,32 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 
 x3dom.Viewarea.prototype.getProjectionMatrix = function()
 {
-    var viewpoint = this._scene.getViewpoint();
+    if(this.vrFrameData)
+    {
+        return this.vrLeftProjMatrix.setFromArray(this.vrFrameData.leftProjectionMatrix);
+    }
+    else
+    {
+        var viewpoint = this._scene.getViewpoint();
 
-    return viewpoint.getProjectionMatrix(this._width/this._height);
+        return viewpoint.getProjectionMatrix(this._width/this._height);
+    }
+};
+
+x3dom.Viewarea.prototype.getProjectionMatrices = function()
+{
+    if(this.vrFrameData)
+    {
+        return [this.vrLeftProjMatrix.setFromArray(this.vrFrameData.leftProjectionMatrix),
+                this.vrRightProjMatrix.setFromArray(this.vrFrameData.rightProjectionMatrix)];
+    }
+    else
+    {
+        var viewpoint = this._scene.getViewpoint();
+        var projectionMatrix = viewpoint.getProjectionMatrix(this._width/this._height);
+
+        return [projectionMatrix, projectionMatrix]
+    }
 };
 
 /**
