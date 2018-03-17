@@ -2259,25 +2259,27 @@ x3dom.gfx_webgl = (function () {
             sp.metallicFactor   = mat._vf.metallicFactor;
             sp.normalBias       = mat._vf.normalBias.toGL();
             sp.ambientIntensity = 1.0;
-            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;            
+            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;
+            sp.alphaCutoff      = mat._vf.alphaCutoff;    
         }
         else if (mat) 
         {
-            sp.diffuseColor = mat._vf.diffuseColor.toGL();
-            sp.specularColor = mat._vf.specularColor.toGL();
-            sp.emissiveColor = mat._vf.emissiveColor.toGL();
-            sp.shininess = mat._vf.shininess;
-            sp.ambientIntensity = mat._vf.ambientIntensity;
-            sp.transparency = mat._vf.transparency;
+            sp.diffuseColor      = mat._vf.diffuseColor.toGL();
+            sp.specularColor     = mat._vf.specularColor.toGL();
+            sp.emissiveColor     = mat._vf.emissiveColor.toGL();
+            sp.shininess         = mat._vf.shininess;
+            sp.ambientIntensity  = mat._vf.ambientIntensity;
+            sp.transparency      = mat._vf.transparency;
             sp.environmentFactor = 0.0;
+            sp.alphaCutoff       = s_app._vf.alphaClipThreshold.toFixed(2);     
             if (x3dom.isa(mat, x3dom.nodeTypes.TwoSidedMaterial)) {
-                twoSidedMat = true;
-                sp.backDiffuseColor = mat._vf.backDiffuseColor.toGL();
-                sp.backSpecularColor = mat._vf.backSpecularColor.toGL();
-                sp.backEmissiveColor = mat._vf.backEmissiveColor.toGL();
-                sp.backShininess = mat._vf.backShininess;
+                twoSidedMat             = true;
+                sp.backDiffuseColor     = mat._vf.backDiffuseColor.toGL();
+                sp.backSpecularColor    = mat._vf.backSpecularColor.toGL();
+                sp.backEmissiveColor    = mat._vf.backEmissiveColor.toGL();
+                sp.backShininess        = mat._vf.backShininess;
                 sp.backAmbientIntensity = mat._vf.backAmbientIntensity;
-                sp.backTransparency = mat._vf.backTransparency;
+                sp.backTransparency     = mat._vf.backTransparency;
             }
         }
         else {
@@ -2287,6 +2289,7 @@ x3dom.gfx_webgl = (function () {
             sp.shininess        = 0.0;
             sp.ambientIntensity = 1.0;
             sp.transparency     = 0.0;
+            sp.alphaCutoff      = 0.1
         }
 
         //Look for user-defined shaders
@@ -2515,7 +2518,7 @@ x3dom.gfx_webgl = (function () {
         var model_view = mat_view.mult(transform);
         var model_view_inv = model_view.inverse();
 
-
+        sp.screenWidth = this.canvas.width;
 
         sp.isOrthoView = ( mat_proj._33 == 1 ) ? 1.0 : 0.0;
 

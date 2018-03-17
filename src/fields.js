@@ -1614,6 +1614,12 @@ x3dom.fields.SFVec3f.prototype.setValues = function (that) {
     this.z = that.z;   
 };
 
+x3dom.fields.SFVec3f.prototype.set = function (x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;   
+};
+
 x3dom.fields.SFVec3f.prototype.at = function (i) {
 	switch(i) {
 	    case 0:  return this.x;
@@ -1633,6 +1639,10 @@ x3dom.fields.SFVec3f.prototype.addScaled = function (that, s) {
 
 x3dom.fields.SFVec3f.prototype.subtract = function (that) {
     return new x3dom.fields.SFVec3f(this.x - that.x, this.y - that.y, this.z - that.z);
+};
+
+x3dom.fields.SFVec3f.prototype.subtractVectors = function (a, b) {
+    return new x3dom.fields.SFVec3f(a.x - b.x, a.y - b.y, a.z - b.z);
 };
 
 x3dom.fields.SFVec3f.prototype.negate = function () {

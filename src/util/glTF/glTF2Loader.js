@@ -256,6 +256,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var emissiveFactor  = material.emissiveFactor || [0,0,0];
     var metallicFactor  = 0;
     var roughnessFactor = 0.6;
+    var alphaMode       = material.alphaMode || "OPAQUE";
+    var alphaCutoff     = material.alphaCutoff || 0.5
 
     var pbr = material.pbrMetallicRoughness;
 
@@ -302,6 +304,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
     mat.setAttribute("metallicFactor",  metallicFactor);
     mat.setAttribute("roughnessFactor", roughnessFactor);
+    mat.setAttribute("alphaMode",  alphaMode);
+    mat.setAttribute("alphaCutoff", alphaCutoff);
     
     return mat;
 };
@@ -374,7 +378,6 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var views = [];
-    var isLit = false;
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -416,11 +419,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 
     for(var attribute in primitive.attributes)
     {
-        if(attribute == "NORMAL")
-        {
-            isLit = true;
-        }
-
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
         var view = this._gltf.bufferViews[accessor.bufferView];
@@ -441,8 +439,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
     {
         bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
-
-    bufferGeometry.setAttribute("lit", isLit);
 
     return bufferGeometry;
 }
@@ -476,6 +472,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, access
 
     bufferAccessor.setAttribute("components", components);
     bufferAccessor.setAttribute("componentType", accessor.componentType);
+    bufferAccessor.setAttribute("count", accessor.count);
 
     return bufferAccessor;
 };

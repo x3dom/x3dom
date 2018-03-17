@@ -150,6 +150,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
     this.x3dElem.appendChild(this.progressDiv);
 
+    // vr button
+    this.vrDiv = this._createVRDiv();
+    this.x3dElem.appendChild(this.vrDiv);
+
     // touch visualization
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? this.showTouchpoints : false;
@@ -362,9 +366,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this._oldCanvasWidth  = this.canvas.width;
             this._oldCanvasHeight = this.canvas.height;
 
-            //TODO check why rendering is broken after setting the correct dimensions
-            // this.canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
-            // this.canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+            this.canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+            this.canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
 
             this.gl.VRMode = 2;
             this.doc.needRender = true;
@@ -1082,6 +1085,27 @@ x3dom.X3DCanvas.prototype._createProgressDiv = function() {
     return progressDiv;
 };
 
+/**
+ * Creates the div for progression visualization
+ */
+x3dom.X3DCanvas.prototype._createVRDiv = function() {
+    var vrDiv = document.createElement('div');
+    vrDiv.setAttribute("class", "x3dom-vr");
+
+    vrDiv.onclick = function()
+    {
+        this.x3dElem.runtime.toggleVR();
+    }.bind(this);
+
+    vrDiv.oncontextmenu = function(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        return false;
+    };
+
+    return vrDiv;
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /** Helper that converts a point from node coordinates to page coordinates
@@ -1260,12 +1284,13 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                                 if(x3dCanvas.vrDisplay)
                                 {
                                     x3dCanvas.vrDisplay.requestAnimationFrame(mainloop, x3dCanvas);
+
+                                    x3dCanvas.vrDiv.style.display = "block";
                                 }
                                 else
                                 {
                                     window.requestAnimFrame(mainloop, x3dCanvas);
                                 }
-    
                             });
                         }
                     }

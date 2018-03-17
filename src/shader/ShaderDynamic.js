@@ -556,6 +556,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "uniform float isVR;\n";
 	shader += "varying float vrOffset;\n";
 	shader += "varying float fragEyeIdx;\n";
+	shader += "uniform float screenWidth;\n";
+
+	shader += "uniform float alphaCutoff;\n";
 
 	//Material
 	shader += x3dom.shader.material();
@@ -734,7 +737,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "}\n";
 
 	shader += "if ( isVR == 1.0) {\n";
-	shader += "    if ( ( step( 0.5, gl_FragCoord.x / 1670.0 ) - 0.5 ) * vrOffset < 0.0 ) discard;\n";
+	shader += "    if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n";
 	shader += "}\n";
 
     if(properties.CLIPPLANES)
@@ -996,7 +999,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             if (properties.IS_PARTICLE) {
                 shader += "texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
             }
-            shader += "vec4 texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
+            shader += "texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, texCoord)") + ";\n";
             shader += "color.a = texColor.a;\n";
 
 			if(properties.BLENDING || properties.IS_PARTICLE){
@@ -1032,7 +1035,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	if(properties.TEXT) {
 		shader += "if (color.a <= 0.5) discard;\n";
 	} else {
-		shader += "if (color.a <= " + properties.ALPHATHRESHOLD + ") discard;\n";
+		shader += "if (color.a <= alphaCutoff) discard;\n";
 	}
 
 

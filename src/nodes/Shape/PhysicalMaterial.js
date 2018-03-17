@@ -91,6 +91,33 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalSpace', 'TANGENT');
 
             /**
+             * The material's alpha rendering mode enumeration specifying the interpretation 
+             * of the alpha value of the main factor and texture.
+             * @var {x3dom.fields.SFString} alphaMode
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 'OPAQUE'
+             * @range [OPAQUE, BLEND, MASK]
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'alphaMode', 'OPAQUE');
+
+            /**
+             * Specifies the cutoff threshold when in `MASK` mode. 
+             * If the alpha value is greater than or equal to this value then 
+             * it is rendered as fully opaque, otherwise, it is rendered as fully transparent. 
+             * A value greater than 1.0 will render the entire material as fully transparent. 
+             * This value is ignored for other modes."
+             * @var {x3dom.fields.SFFloat} alphaCutoff
+             * @range [0, 1]
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 0.5
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'alphaCutoff', 0.5);
+
+            /**
              * Bias to apply to normal sampled from normalTexture
              * @var {x3dom.fields.SFVec3f} normalBias
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
