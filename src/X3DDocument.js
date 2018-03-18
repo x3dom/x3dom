@@ -368,7 +368,10 @@ x3dom.X3DDocument.prototype.render = function (ctx, vrFrameData) {
         return;
     }
 
-    ctx.renderScene(this._viewarea, vrFrameData);
+    this._viewarea.setVRFrameData(vrFrameData);
+    this._viewarea.updateGamepads();
+
+    ctx.renderScene(this._viewarea);
 };
 
 x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {

@@ -154,6 +154,7 @@ x3dom.Viewarea = function (document, scene) {
     this._animationStateChanged = false;
 
     this.vrFrameData = null;
+    this.gamepads = null;
     this.vrLeftViewMatrix = new x3dom.fields.SFMatrix4f();
     this.vrRightViewMatrix = new x3dom.fields.SFMatrix4f();
 
@@ -161,6 +162,42 @@ x3dom.Viewarea = function (document, scene) {
     this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
 
     this.arc = null;
+};
+
+x3dom.Viewarea.prototype.setVRFrameData = function(vrFrameData)
+{
+    this.vrFrameData = vrFrameData;
+
+    if(this.vrFrameData)
+    {
+        this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
+        this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)
+    }
+};
+
+x3dom.Viewarea.prototype.updateGamepads = function()
+{
+    this.gamepads = navigator.getGamepads();
+
+    if(this.gamepads[0])
+    {
+        var axes = this.gamepads[0].axes;
+
+        var dx = axes[0];
+        var dy = axes[1];
+
+        var d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+        d = ((d < x3dom.fields.Eps) ? 1 : d) * 5;
+
+        var viewDir = this.vrLeftViewMatrix.e2();
+        var rightDir = this.vrLeftViewMatrix.e0();
+
+        viewDir = new x3dom.fields.SFVec3f(-viewDir.x, -viewDir.y, viewDir.z).multiply(d*(dy)/this._height);
+        rightDir = new x3dom.fields.SFVec3f(-rightDir.x, -rightDir.y, rightDir.z).multiply((d*dx/this._width));
+
+        this._movement = this._movement.add(rightDir).add(viewDir);
+        this._transMat = x3dom.fields.SFMatrix4f.translation(this._movement);
+    }
 };
 
 /**
@@ -386,7 +423,7 @@ x3dom.Viewarea.prototype.getViewMatrix = function ()
 {
     if(this.vrFrameData)
     {
-        return this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix);
+        return this.vrLeftViewMatrix.mult(this._transMat).mult(this._rotMat);
     }
     else
     {
@@ -398,8 +435,8 @@ x3dom.Viewarea.prototype.getViewMatrices = function()
 {
     if(this.vrFrameData)
     {
-        return [this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
-                this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)];
+        return [this.vrLeftViewMatrix.mult(this._transMat).mult(this._rotMat),
+                this.vrRightViewMatrix.mult(this._transMat).mult(this._rotMat)];
     }
     else
     {

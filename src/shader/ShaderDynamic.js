@@ -847,8 +847,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 		if(properties.TEXTURED)
 		{
-			shader += "vec4 blub = texture2D( brdfMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) );\n";
-
 			//Normalmap
 			if(properties.NORMALMAP){
 
@@ -895,7 +893,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				}
 			}
 
-			if(properties.BLENDING)
+			if(properties.ALPHAMODE == "OPAQUE")
+			{
+				shader += "texColor.a = 1.0;\n";
+			}
+
+			if(properties.BLENDING && (properties.DIFFUSEMAP || properties.TEXT || properties.DIFFPLACEMENTMAP || properties.CUBEMAP))
 			{
 				if(properties.CUBEMAP && properties.CSSHADER) {
 					shader += "color.rgb *= mix(vec3(1.0,1.0,1.0), texColor.rgb, environmentFactor);\n";
@@ -905,7 +908,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 					shader += "color *= texColor;\n";
 				}
 			}
-			else
+			else if(!properties.BLENDING && (properties.DIFFUSEMAP || properties.TEXT || properties.DIFFPLACEMENTMAP || properties.CUBEMAP))
 			{
 				shader += "color = texColor;\n";
 			}

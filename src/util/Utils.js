@@ -1119,6 +1119,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.MULTISPECSHINMAP = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiSpecularShininessMap()) ? 1 : 0;
         property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
 
+        property.ALPHAMODE            = (property.PBR_MATERIAL) ? material._vf.alphaMode : "BLEND";
         property.METALLICROUGHNESSMAP = (property.PBR_MATERIAL && material._cf.metallicRoughnessTexture.node) ? 1 : 0;
 
         property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() : 

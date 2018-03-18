@@ -1321,7 +1321,7 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
 
-            this.drawElements(gl, scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0, 1);
+            that.drawElements(gl, scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0, 1);
 
             gl.disableVertexAttribArray(sp.position);
 
@@ -3556,8 +3556,6 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.renderScene = function (viewarea, vrFrameData)
     {
-        viewarea.vrFrameData = vrFrameData;
-
         var gl = this.ctx3d;
         var scene = viewarea._scene;
 

@@ -254,8 +254,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var texture;
     var baseColorFactor = [1,1,1,1];
     var emissiveFactor  = material.emissiveFactor || [0,0,0];
-    var metallicFactor  = 0;
-    var roughnessFactor = 0.6;
+    var metallicFactor  = 1;
+    var roughnessFactor = 1;
     var alphaMode       = material.alphaMode || "OPAQUE";
     var alphaCutoff     = material.alphaCutoff || 0.5
 
@@ -264,8 +264,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     if(pbr)
     {
         baseColorFactor = pbr.baseColorFactor || baseColorFactor;
-        metallicFactor  = pbr.metallicFactor  || metallicFactor;
-        roughnessFactor = pbr.roughnessFactor || roughnessFactor;
+        metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor : metallicFactor;
+        roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.metallicFactor : roughnessFactor;
     }
 
     if(pbr && pbr.baseColorTexture)
@@ -276,8 +276,6 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 
     if(pbr && pbr.metallicRoughnessTexture)
     {
-        metallicFactor = 1;
-        roughnessFactor = 1;
         texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
         mat.appendChild(this._generateX3DImageTexture(texture, "metallicRoughnessTexture"));
     }
