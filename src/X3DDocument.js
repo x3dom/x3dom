@@ -507,7 +507,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
             stack = this._scene.getViewpoint()._stack;
 
             if (stack) {
-                stack.switchTo('next');
+                stack.switchTo('prev');
             }
             else {
                 x3dom.debug.logError ('No valid ViewBindable stack.');
@@ -517,7 +517,27 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
             stack = this._scene.getViewpoint()._stack;
 
             if (stack) {
-                stack.switchTo('prev');
+                stack.switchTo('next');
+            }
+            else {
+                x3dom.debug.logError ('No valid ViewBindable stack.');
+            }
+            break;
+        case 35: /* end */
+            stack = this._scene.getViewpoint()._stack;
+
+            if (stack) {
+                stack.switchTo('last');
+            }
+            else {
+                x3dom.debug.logError ('No valid ViewBindable stack.');
+            }
+            break;
+        case 36: /* home */
+            stack = this._scene.getViewpoint()._stack;
+
+            if (stack) {
+                stack.switchTo('first');
             }
             else {
                 x3dom.debug.logError ('No valid ViewBindable stack.');
