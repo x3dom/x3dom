@@ -293,6 +293,9 @@ x3dom.registerNodeType(
                                 case "string":
                                     this._vf[field] = msg;
                                     break;
+				default:
+                                    this._vf[field] = msg;
+                                    break;
                             }
                         }
                         catch (exc2) {
