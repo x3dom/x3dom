@@ -175,13 +175,27 @@ x3dom.Viewarea.prototype.setVRFrameData = function(vrFrameData)
     }
 };
 
-x3dom.Viewarea.prototype.updateGamepads = function()
+x3dom.Viewarea.prototype.updateGamepads = function(vrDisplay)
 {
-    this.gamepads = navigator.getGamepads();
-
-    if(this.gamepads[0] && this.vrFrameData)
+    if(!this.vrFrameData || !vrDisplay)
     {
-        var axes = this.gamepads[0].axes;
+        return;
+    }    
+
+    var allGamepads = navigator.getGamepads();
+    var gamepads = [];
+
+    for(var i = 0; i < this.gamepads.length; i++ )
+    {
+        if(this.gamepads[i].displayId && this.gamepads[i].displayId == vrDisplay.displayId)
+        {
+            gamepads.push(this.gamepads[i]);
+        }
+    }
+
+    if(gamepads.length)
+    {
+        var axes = gamepads[0].axes;
 
         var dx = axes[0];
         var dy = axes[1];

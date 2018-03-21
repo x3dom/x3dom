@@ -1192,7 +1192,7 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
 
 		// picking might require another pass
 		
-		this.doc.render(this.gl, this.vrFrameData);
+		this.doc.render(this.gl, this.vrFrameData, this.vrDisplay);
 
 		if (!this.doc._scene._vf.doPickPass)
 		{

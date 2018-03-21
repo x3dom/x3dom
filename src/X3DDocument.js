@@ -363,13 +363,13 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx, vrFrameData) {
+x3dom.X3DDocument.prototype.render = function (ctx, vrFrameData, vrDisplay) {
     if (!ctx || !this._viewarea) {
         return;
     }
 
     this._viewarea.setVRFrameData(vrFrameData);
-    this._viewarea.updateGamepads();
+    this._viewarea.updateGamepads(vrDisplay);
 
     ctx.renderScene(this._viewarea);
 };
