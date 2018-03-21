@@ -179,7 +179,7 @@ x3dom.Viewarea.prototype.updateGamepads = function()
 {
     this.gamepads = navigator.getGamepads();
 
-    if(this.gamepads[0])
+    if(this.gamepads[0] && this.vrFrameData)
     {
         var axes = this.gamepads[0].axes;
 
