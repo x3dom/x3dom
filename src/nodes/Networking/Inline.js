@@ -158,11 +158,11 @@ x3dom.registerNodeType(
 
                 var xhr = new window.XMLHttpRequest();
                 if (this._vf.url.length && this._vf.url[0].length) {
-			if (this._vf.url[0].endsWith(".x3d")) {
+			if (this._vf.url[0].toLowerCase().endsWith(".x3d")) {
 				isJSON = false;
 				if (xhr.overrideMimeType)
 				    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-			} else if (this._vf.url[0].endsWith(".json")) {
+			} else if (this._vf.url[0].toLowerCase().endsWith(".json")) {
 				if (xhr.overrideMimeType)
 				    xhr.overrideMimeType('text/json');
 			}
