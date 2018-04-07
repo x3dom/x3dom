@@ -107,6 +107,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'range', 10);
+        
+            /**
+             * outputOnly field which is emitted when the level changes to another range. Event with value 0 or 1, where 0 indicates the rootNode field and 1 indicates the nodes specified by the child1Url, child2Url, child3Url, and child4Url fields.
+             * @var {x3dom.fields.SFInt32} level_changed
+             * @range [0, 1]
+             * @memberof x3dom.nodeTypes.GeoLOD
+             * @initvalue 0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFInt32(ctx, "level_changed", 0);
 
             /**
              *
@@ -161,7 +172,8 @@ x3dom.registerNodeType(
             this._child4added = false;
             this._rootNodeLoaded = true;
             this._childUrlNodes = new x3dom.fields.MFNode(x3dom.nodeTypes.X3DChildNode);
-              
+        
+            this._lastRangePos = -1;
         },
         {
             collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
@@ -197,6 +209,7 @@ x3dom.registerNodeType(
                 
                 if (len > this._vf.range) {
                     
+                    i = 0;
                     if(!this._rootNodeLoaded) {
                         this._rootNodeLoaded = true;
                     }
@@ -206,6 +219,7 @@ x3dom.registerNodeType(
                 
                 else {
                     
+                    i = 1;
                     if (!this._child1added) {
                         this._child1added = true;
                         this.addInlineChild(this._vf.child1Url);
@@ -231,7 +245,14 @@ x3dom.registerNodeType(
                     cnodes = this._childUrlNodes.nodes;
                     
                 }
-                
+                    
+                if (i !== this._lastRangePos) {
+                    //x3dom.debug.logInfo('Changed from '+this._lastRangePos+' th range to '+i+' th.');
+                    this.postMessage('level_changed', i);
+                }
+                    
+                this._lastRangePos = i;
+                    
                 n = cnodes.length;
                                 
                 //probably not necessary to check if there are any child nodes
