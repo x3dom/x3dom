@@ -1,4 +1,15 @@
-﻿"use strict";
+﻿/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2018 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * John Carlson https://coderextreme.net/X3DJSONLD
+ */
+
+"use strict";
 
 x3dom.JSONParser = function(scene)
 {
@@ -14,7 +25,7 @@ x3dom.JSONParser.prototype.constructor = x3dom.JSONParser;
 x3dom.JSONParser.prototype.parseJavaScript = function(jsobj) {
 		var child = this.CreateElement('X3D');
 		this.ConvertToX3DOM(jsobj, "", child);
-		console.log(jsobj, child);
+		// console.log(jsobj, child);
 		return child;
 	};
 
@@ -88,7 +99,7 @@ x3dom.JSONParser.prototype.CDATACreateFunction = function(document, element, str
 			str = y;
 			y = str.replace(/'([^'\r\n]*)\n([^']*)'/g, "'$1\\n$2'");
 			if (str !== y) {
-				console.log("CDATA Replacing",str,"with",y);
+				// console.log("CDATA Replacing",str,"with",y);
 			}
 		} while (y != str);
 		var domParser = new DOMParser();
@@ -104,9 +115,9 @@ x3dom.JSONParser.prototype.CDATACreateFunction = function(document, element, str
 x3dom.JSONParser.prototype.ConvertObject = function(key, object, element, containerField) {
 		var child;
 		if (object !== null && typeof object[key] === 'object') {
-			if (key.substr(0,1) === '@') {
+			if (key.startsWith('@')) {
 				this.ConvertToX3DOM(object[key], key, element);
-			} else if (key.substr(0,1) === '-') {
+			} else if (key.startsWith('-')) {
 				this.ConvertChildren(key, object[key], element);
 			} else if (key === '#comment') {
 				for (var c in object[key]) {
@@ -142,7 +153,7 @@ x3dom.JSONParser.prototype.CommentStringToXML = function(str) {
 		var y = str;
 		str = str.replace(/\\\\/g, '\\');
 		if (y !== str) {
-			console.log("X3DJSONLD <!-> replacing", y, "with", str);
+			// console.log("X3DJSONLD <!-> replacing", y, "with", str);
 		}
 		return str;
 	};
@@ -160,7 +171,7 @@ x3dom.JSONParser.prototype.SFStringToXML = function(str) {
 		str = str.replace(/\\/g, '\\\\');
 		str = str.replace(/"/g, '\\\"');
 		if (y !== str) {
-			console.log("X3DJSONLD [] replacing", y, "with", str);
+			// console.log("X3DJSONLD [] replacing", y, "with", str);
 		}
 		return str;
 	};
@@ -173,7 +184,7 @@ x3dom.JSONParser.prototype.JSONStringToXML = function(str) {
 		str = str.replace(/\\/g, '\\\\');
 		str = str.replace(/\n/g, '\\n');
 		if (y !== str) {
-			console.log("X3DJSONLD replacing", y, "with", str);
+			// console.log("X3DJSONLD replacing", y, "with", str);
 		}
 		return str;
 	};
@@ -241,7 +252,7 @@ x3dom.JSONParser.prototype.ConvertToX3DOM = function(object, parentkey, element,
 			}
 		}
 		if (isArray) {
-			if (parentkey.substr(0,1) === '@') {
+			if (parentkey.startsWith('@')) {
 				if (arrayOfStrings) {
 					arrayOfStrings = false;
 					for (var str in localArray) {

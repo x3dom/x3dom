@@ -34,8 +34,8 @@
                 {"path": "Mesh.js"},
                 {"path": "fields.js"},		
                 {"path": "Docs.js"},
-                {"path": "JSONParser.js"},
-                {"path": "PrototypeExpander.js"}
+                {"path": "util/json/JSONParser.js"},
+                {"path": "util/json/PrototypeExpander.js"}
             ]},
 
         {"group": "SHADER",

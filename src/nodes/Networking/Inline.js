@@ -164,7 +164,7 @@ x3dom.registerNodeType(
 				    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
 			} else if (this._vf.url[0].toLowerCase().endsWith(".json")) {
 				if (xhr.overrideMimeType)
-				    xhr.overrideMimeType('text/json');
+				    xhr.overrideMimeType('application/json');
 			}
 		} else {
 			isJSON = false;
@@ -220,16 +220,16 @@ x3dom.registerNodeType(
                     var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
 		    if (isJSON) {
-			    console.log(xhr);
+			    // console.log(xhr);
 			    try {
 				    var json = JSON.parse(xhr.response);
-				    console.log("post parse", json);
+				    // console.log("post parse", json);
 			
 				    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
-				    console.log("return from expander", json);
+				    // console.log("return from expander", json);
 				    var parser = new x3dom.JSONParser();
 				    xml = parser.parseJavaScript(json);
-				    console.log("post parser", xml);
+				    // console.log("post parser", xml);
 			    } catch (e) {
 				    console.error(e);
 			    }

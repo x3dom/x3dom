@@ -1,3 +1,14 @@
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2018 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * John Carlson https://coderextreme.net/X3DJSONLD
+ */
+
 x3dom.PROTOS = function() {
 	this.protos = {};
 	this.names = {};
