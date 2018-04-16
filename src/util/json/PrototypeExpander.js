@@ -62,6 +62,83 @@ x3dom.PROTOS = function() {
 }
 
 x3dom.PROTOS.prototype = {
+	flattenerArray : function(object, parentArray) {
+		var newobject = [];
+		var offset = 0;
+		for (var p in object) {
+			var possibleArray = this.flattener(object[p], newobject, object.length);
+			if (Array.isArray(possibleArray)) {
+				for (var q in possibleArray) {
+					newobject[parseInt(p)+offset+parseInt(q)] = possibleArray[q];
+				}
+				offset += possibleArray.length-1;
+			} else {
+				newobject[parseInt(p)+offset] = possibleArray;
+			}
+		}
+		return newobject;
+	},
+	flattenerObject : function(object, parentArray, arrayLen) {
+		var newobject = {};
+		for (var p in object) {
+			var possibleArray = this.flattener(object[p], parentArray, arrayLen);
+			if (Array.isArray(possibleArray)) {
+				if (this.SFNodes[p]) {
+					// this.SFNodes should only have one child
+					newobject[p] = possibleArray[0];
+					// handle extra nodes brought in from proto
+					if (possibleArray.length > 1) {
+						parentArray[arrayLen] = { "Switch" : {
+									"@whichChoice": -1,
+									"-children" : [
+										{"Group" : {
+										"-children" : [
+										]
+										}
+										}
+									]
+									}
+									};
+						for (var i = 1; i < possibleArray.length; i++) {
+							parentArray[arrayLen]["Switch"]["-children"][0]["Group"]["-children"][i-1] = possibleArray[i];
+						}
+					}
+				} else {
+					newobject[p] = possibleArray;
+				}
+			} else {
+				if (this.SFNodes[p]) {
+					if (typeof possibleArray === 'object' && possibleArray["#comment"]) {
+						if (newobject["-children"]) {
+							newobject[p] = {};
+							newobject["-children"].push(possibleArray);
+						} else {
+							newobject[p] = {};
+							newobject["-children"] = [ possibleArray ];
+						}
+					} else {
+						newobject[p] = possibleArray;
+					}
+				} else {
+					newobject[p] = possibleArray;
+				}
+			}
+		}
+		return newobject;
+	},
+	flattener : function(object, parentArray, arrayLen) {
+		if (typeof object === "object") {
+			if (Array.isArray(object)) {
+				var newobject = this.flattenerArray(object, parentArray);
+			} else {
+				var newobject = this.flattenerObject(object, parentArray, arrayLen);
+			}
+			return newobject;
+		} else {
+			return object;
+		}
+	},
+
 	pushScope: function (s) {
 		// console.error("PUSH", s);
 		this.privatescope.push(s);
@@ -100,7 +177,6 @@ x3dom.PROTOS.prototype = {
 			scope = this.privatescope.join("_");
 		}
 		// console.error("GET", [def], scope);
-		// TODO VERIFY IF THIS IS RIGHT
 		var decl = scope.lastIndexOf("DECL");
 		if (decl > 0) {
 			scope = scope.substring(decl);
@@ -115,11 +191,6 @@ x3dom.PROTOS.prototype = {
 	upScope: function (i) {
 		return this.privatescope.slice(0, this.privatescope.length - i).join("_");
 	},
-
-	setLoadURLs: function (func) {
-		this.loadURLs = func;
-	},
-
 	setValueFromInterface: function (field, object, objectfield) {
 		// copy the default interface value;
 		var fieldname_field_scope = this.getInterface(field);
@@ -141,6 +212,7 @@ x3dom.PROTOS.prototype = {
 			if (Array.isArray(value) && fieldname_field_scope[1]["@type"] === "SFNode" && objectfield !== '-children') {
 				// and some SF fields are arrays, so we have to explicitly test for SFNode
 				// can't shove an array into an SFNode, so take the first element, per Roy Walmsley
+				console.error("SFNode is array, reducing", value);
 				value = value[0];
 				// console.error("SFNode array[0]=", value);
 			}
@@ -344,6 +416,7 @@ x3dom.PROTOS.prototype = {
 
 	extractConnectedDef: function (scope, field) {
 		var defobj;
+		// console.error("extracting def from script, proto, or otherwise:", scope, field, this.getField(scope, field), this.getField(scope, "__DEF_FIELD__"), this.scriptField[this.getField(scope, field)], this.protoField[this.getField(scope, field)], this.protoField[this.getField(scope, "__DEF_FIELD__")]);
 		for (var sf in this.scriptField[this.getField(scope, field)]) {
 			// just grab first one, the others may be bad
 			if (typeof defobj === 'undefined') {
@@ -353,6 +426,7 @@ x3dom.PROTOS.prototype = {
 						var f = this.getField(scope, obj[3]);
 						if (f.indexOf("DECL", 1) == -1) {
 							defobj = [f,  obj[0]["@name"]];
+							// console.error("def5 is", defobj);
 						}
 					}
 				}
@@ -363,6 +437,7 @@ x3dom.PROTOS.prototype = {
 				var obj2 = this.protoField[this.getField(scope, field)][pf];
 				if (typeof obj2 !== 'undefined') {
 					defobj = [obj2[3], obj2[1]];
+					// console.error("def2 is", defobj);
 				}
 			}
 		}
@@ -371,11 +446,13 @@ x3dom.PROTOS.prototype = {
 				var obj3 = this.protoField[this.getField(scope, "__DEF_FIELD__")][pf2];
 				if (typeof obj3 !== 'undefined') {
 					defobj = [obj3[3], field];
+					// console.error("def3 is", defobj);
 				}
 			}
 		}
 		if (typeof defobj === 'undefined') {
 			defobj = [scope, field];
+			// console.error("def4 is", defobj);
 		}
 		return defobj;
 	},
@@ -518,86 +595,6 @@ x3dom.PROTOS.prototype = {
 		return object;
 	},
 
-
-	flattenerArray : function(object, parentArray) {
-		var newobject = [];
-		var offset = 0;
-		for (var p in object) {
-			var possibleArray = this.flattener(object[p], newobject, object.length);
-			if (Array.isArray(possibleArray)) {
-				for (var q in possibleArray) {
-					newobject[parseInt(p)+offset+parseInt(q)] = possibleArray[q];
-				}
-				offset += possibleArray.length-1;
-			} else {
-				newobject[parseInt(p)+offset] = possibleArray;
-			}
-		}
-		return newobject;
-	},
-
-	flattenerObject : function(object, parentArray, arrayLen) {
-		var newobject = {};
-		for (var p in object) {
-			var possibleArray = this.flattener(object[p], parentArray, arrayLen);
-			if (Array.isArray(possibleArray)) {
-				if (this.SFNodes[p]) {
-					// this.SFNodes should only have one child
-					newobject[p] = possibleArray[0];
-					// handle extra nodes brought in from proto
-					if (possibleArray.length > 1) {
-						parentArray[arrayLen] = { "Switch" : {
-									"@whichChoice": -1,
-									"-children" : [
-										{"Group" : {
-										"-children" : [
-										]
-										}
-										}
-									]
-									}
-									};
-						for (var i = 1; i < possibleArray.length; i++) {
-							parentArray[arrayLen]["Switch"]["-children"][0]["Group"]["-children"][i-1] = possibleArray[i];
-						}
-					}
-				} else {
-					newobject[p] = possibleArray;
-				}
-			} else {
-				if (this.SFNodes[p]) {
-					if (typeof possibleArray === 'object' && possibleArray["#comment"]) {
-						if (newobject["-children"]) {
-							newobject[p] = {};
-							newobject["-children"].push(possibleArray);
-						} else {
-							newobject[p] = {};
-							newobject["-children"] = [ possibleArray ];
-						}
-					} else {
-						newobject[p] = possibleArray;
-					}
-				} else {
-					newobject[p] = possibleArray;
-				}
-			}
-		}
-		return newobject;
-	},
-
-	flattener : function(object, parentArray, arrayLen) {
-		if (typeof object === "object") {
-			if (Array.isArray(object)) {
-				var newobject = this.flattenerArray(object, parentArray);
-			} else {
-				var newobject = this.flattenerObject(object, parentArray, arrayLen);
-			}
-			return newobject;
-		} else {
-			return object;
-		}
-	},
-
 	prototypeExpander: function (file, object) {
 		this.protos = {};
 		this.names = {};
@@ -609,13 +606,16 @@ x3dom.PROTOS.prototype = {
 		this.privatescope = [];
 		this.defs = {};
 		this.founddef = null;
+		object = this.externalPrototypeExpander(file, object);
 		object = this.realPrototypeExpander(file, object, false);
 		this.zapIs(object);
 		object = this.flattener(object);
+		// console.error("SCRIPTS", JSON.stringify(this.scriptField));
+		// console.error("PROTOS", JSON.stringify(this.protoField, null, 2));
 		return object;
 	},
 
-	readCode : function (data, fileExt) {
+	readCode : function (data, fileExt, protoexp, done, p, newobject) {
 		if (typeof data !== 'undefined') {
 			newobject[p]["#sourceText"] = data.split(/\r?\n/);
 			delete newobject[p]["@url"];
@@ -624,10 +624,10 @@ x3dom.PROTOS.prototype = {
 
 	handleScript: function (file, object, p, newobject) {
 		newobject[p] = this.realPrototypeExpander(file, object[p], true);
+		// console.error("DEF is", newobject[p]["@DEF"]);
 		this.setScriptFields(newobject[p]["field"], newobject[p]["@DEF"]);
 		var url = newobject[p]["@url"];
-		console.error("Not loading Script--missing loadURLs", file, url);
-		// this.loadURLs(file, url, this.readCode, null, p, newobject);
+		this.loadURLs(file, url, this.readCode, null, function(){}, p, newobject);
 	},
 
 	handleProtoDeclare: function (file, object, p) {
@@ -694,6 +694,7 @@ x3dom.PROTOS.prototype = {
 		} else {
 			// console.error("Copying ProtoBody", name);
 			var children = this.protos[name]['ProtoBody']['-children'];
+			//  bodydef = this.protos[name]['ProtoBody']["@DEF"];
 			for (var child in children) {
 				var ch = children[child];
 				for (var objkey in ch) {
@@ -721,18 +722,17 @@ x3dom.PROTOS.prototype = {
 			}
 			firstobj = firstobj[0];
 		}
-
-
 		if (typeof use !== 'undefined' && typeof firstobj === 'object') {
+			/*
 			if (typeof bodydef !== 'undefined') {
 				var bdef = this.saveDef(bodydef);
 				this.pushScope(bodydef);
 			}
-			var newobject = {
-				"Group": {  // replace ProtoInstance with Group
-					"@USE" : this.getScope()
-				}
-			};
+			*/
+			var newobject = {}
+			newobject[objkey] = {};
+			// replace ProtoInstance with the first item from the ProtoBody
+			newobject[objkey]["@USE"] = this.getScope();
 			if (typeof bodydef !== 'undefined') {
 				this.popScope();
 			}
@@ -753,6 +753,9 @@ x3dom.PROTOS.prototype = {
 					fieldOrNode = nv;
 					value = fv[fieldOrNode];
 					this.pushScope("FIELD" + protoField);
+		if (typeof firstobj === 'object' && typeof firstobj[objkey] !== 'undefined') {
+			firstobj[objkey]["@DEF"] = this.getScope();
+		}
 					value = this.realPrototypeExpander(file, value, false);
 					this.popScope();
 					this.getInterface(protoField);
@@ -774,6 +777,7 @@ x3dom.PROTOS.prototype = {
 		this.popScope();
 		return newobject;
 	},
+
 	realPrototypeExpander: function (file, object, inScript) {
 		if (typeof object === "object") {
 			var newobject = null;
@@ -847,14 +851,23 @@ x3dom.PROTOS.prototype = {
 	searchForProtoDeclare: function (object, name) {
 		var p;
 		var found;
+		if (typeof alert === 'function') {
+			// alert("searching for "+ name+" in "+JSON.stringify(object));
+		}
 		if (typeof object === "object") {
 			for (p in object) {
 				if (p === 'ProtoDeclare') {
+					// console.error("looked at", object[p]["@name"], "for", name);
 					if (object[p]["@name"] === name) {
+						// console.error("Found equal names");
 						found = object;
 					}
 					// find the first one if none match
 					if (typeof found === 'undefined' && this.founddef === null) {
+						if (typeof alert === 'function') {
+							// alert("First default found");
+						}
+						// console.error("First default found");
 						this.founddef = object;
 					}
 				}
@@ -871,12 +884,19 @@ x3dom.PROTOS.prototype = {
 
 
 	searchAndReplaceProto: function (filename, json, protoname, founddef, obj, objret) {
+		if (typeof alert === 'function') {
+			// alert("finished converting"+ filename);
+		}
+		// console.error("finished converting"+ filename);
 		var newobj = this.searchForProtoDeclare(json, protoname);
 		if (typeof newobj === 'undefined') {
 			newobj = founddef;
 		}
 		if (newobj === null || typeof newobj.ProtoDeclare === 'undefined') {
-			console.error("ProtoDeclare is still null or undefined in ", JSON.stringify(json));
+			if (typeof alert === 'function') {
+				// alert("ProtoDeclare is still null or undefined ",filename + " " + protoname + " " + JSON.stringify(json));
+			}
+			console.error("ProtoDeclare is still null or undefined",filename, protoname, JSON.stringify(json));
 		} else {
 			var name = obj["@name"];
 			var appinfo = obj["@appinfo"];
@@ -885,34 +905,65 @@ x3dom.PROTOS.prototype = {
 			newobj["ProtoDeclare"]["@appinfo"] = appinfo;
 			newobj["ProtoDeclare"]["@description"] = description;
 		}
+		if (typeof alert === 'function') {
+			// alert("returning "+ JSON.stringify(newobj));
+			// console.log("returning ", JSON.stringify(newobj));
+		}
 		objret(newobj);
 	},
 
 
 	loadedProto: function (data, protoname, obj, filename, protoexp, objret) {
 		if (typeof data !== 'undefined') {
+			// console.error("searching for", protoname);
 			try {
 				// can only search for one Proto at a time
 				this.founddef = null;
 				var json = {};
 				try {
-					json = JSON.parse(data);
+					// console.error("parsing ", data);
+					// alert("parsed JSON from " + filename);
+					// alert("data is " + JSON.stringify(data));
+					// console.error("parsed JSON from " + filename);
+					if (filename.indexOf(".json") > 0) {
+						json = data;
+					} else {
+						json = JSON.parse(data);
+					}
 					protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 				} catch (e) {
+					/*
 					console.error("Failed to parse JSON from " + filename);
 					if (filename.endsWith(".x3d") && (typeof runAndSend === "function")) {
+						console.error("calling run and send");
+						console.error("loadedProto converting " + filename);
 						runAndSend(['---silent', filename], function(json) {
+							console.error("got", json, "from run and send, searching for", protoname);
 							protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
 						});
-					} else {
-						try {
-							var str = serializeDOM(undefined, data.firstElementChild, true);
-							$.post("/convert", str, function(json) {
-								protoexp.searchAndReplaceProto(filename, json, protoname, protoexp.founddef, obj, objret);
-							}, "json")
-						} catch (e) {
-							alert(e);
+						console.error("async skip of run and send " + filename);
+					} else
+					*/
+					if (typeof DOM2JSONSerializer === 'function') {
+						if (typeof alert === 'function') {
+							// alert("calling local converter");
 						}
+						// console.error("calling local converter");
+						try {
+							var serializer = new DOM2JSONSerializer();
+							var str = serializer.serializeToString(null, data.firstElementChild, filename, mapToMethod, fieldTypes);
+							protoexp.searchAndReplaceProto(filename, JSON.parse(str), protoname, protoexp.founddef, obj, objret);
+						} catch (e) {
+							if (typeof alert === 'function') {
+								alert(e);
+							}
+							console.error("Convert failed", e);
+						}
+					} else {
+						if (typeof alert === 'function') {
+							// alert("Did not convert XML to JSON.  Oops!");
+						}
+						console.error("Did not convert XML to JSON.  Oops!")
 					}
 				}
 			} catch (e) {
@@ -927,38 +978,212 @@ x3dom.PROTOS.prototype = {
 		var name = obj["@name"];
 		var nameIndex = u.indexOf("#");
 		var protoname = name;
+		// console.error("doLoad External Prototype", u);
 		if (nameIndex >= 0) {
 			protoname = u.substring(nameIndex + 1);
 		}
 
+		// console.error("protoname is", protoname, protoexp);
 		try {
 			protoexp.loadedProto(data, protoname, obj, u, protoexp, function (nuobject) {
-				done(p, nuobject);
+				if (typeof alert === 'function') {
+					// alert("Done searching, found "+JSON.stringify(nuobject));
+				}
+				// console.error("Done searching, found", nuobject);
+				done(p, nuobject, protoexp);
 			});
 		} catch (e) {
 			console.error("Error searching for proto", e);
 		}
 	},
 
-	load : function (p, file, object, done) {
-		var obj = object[p];
-		var url = obj["@url"];
-		// this is a single task
-		console.error("Not loading External Prototype--missing loadURLs", file, url);
-		// this.loadURLs(file, url, this.doLoad, this, done, p, obj);
+	/**
+	 * processURLs and make them more kosher for the X3DJSONLD user inteferface to
+	 * deal with.  Pass an array of URLs and a path for the main JSON file you are
+	 * loading.
+	 */
+	processURLs: function(localArray, path) {
+		// console.error("Process URLs", path, localArray);
+		var url;
+		// No longer need to split
+		for (url in localArray) {
+			if (localArray[url].indexOf("http://") === 0
+			 || localArray[url].indexOf("https://") === 0) {
+			} else if (localArray[url].indexOf("urn:web3d:media:textures/panoramas/") === 0) {
+				var ls = localArray[url].lastIndexOf("/");
+				if (ls > 0) {
+					localArray[url] = 'examples/Basic/UniversalMediaPanoramas/'+localArray[url].substring(ls+1);
+				}
+
+			} else {
+				/*
+				var s = localArray[url].indexOf('/');
+				*/
+				var p = localArray[url].indexOf('#');
+				var pe = path.lastIndexOf('/');
+				var pc = path;
+				if (pe >= 0) {
+					pc = path.substring(0, pe);
+				}
+				/*
+				if (s != 0 && p != 0) {
+					if (localArray[url].indexOf(pc) != 0) {
+						 localArray[url] = pc+'/'+localArray[url];
+					}
+					if (localArray[url].indexOf('/') === 0) {
+						// no webroot absolute paths.  No /'s for X_ITE shaders
+						localArray[url] = localArray[url].substring(1);
+					}
+				}
+				*/
+				while (localArray[url].startsWith("../")) {
+					localArray[url] = localArray[url].substr(3);
+					var pe = pc.lastIndexOf('/');
+					if (pe >= 0) {
+						pc = pc.substring(0, pe);
+					} else {
+						pc = "";
+					}
+				}
+				if (p == 0) {
+					localArray[url] = path+localArray[url];
+				} else {
+					localArray[url] = pc+"/"+localArray[url];
+				}
+			}
+			// for server side
+			var h = localArray[url].lastIndexOf("#") ;
+			var hash = "";
+			if (h >= 0) {
+				hash = localArray[url].substring(h);
+				localArray[url] = localArray[url].substring(0, h);
+			}
+			/*
+			var x3d = localArray[url].lastIndexOf(".x3d") ;
+			if (x3d === localArray[url].length - 4) {
+				localArray[url] = localArray[url].substring(0, x3d)+".json" + hash;
+			}
+			*/
+			var wrl = localArray[url].lastIndexOf(".wrl") ;
+			if (wrl === localArray[url].length - 4) {
+				localArray[url] = localArray[url].substring(0, wrl)+".json" + hash;
+			}
+			var wrz = localArray[url].lastIndexOf(".wrz") ;
+			if (wrz === localArray[url].length - 4) {
+				localArray[url] = localArray[url].substring(0, wrz)+".json" + hash;
+			}
+				
+		}
+		// console.error("Processed URLs", localArray.join(" "));
+		return localArray;
 	},
 
-	expand : function (file, object, done) {
-		for (var p in object) {
-			if (p === 'ExternProtoDeclare') {
-				this.load(p, file, object, done);
-			} else {
-				// this is a single task:
-				done(p, this.externalPrototypeExpander(file, object[p]));
+	/**
+	 * Use almost any method possible to load a set of URLs.  The loadpath is the
+	 * original URL the main JSON got laoded from, Urls is the se of urls, and
+	 * the loadedCallback returns the data and the URL it was loaded from.
+	 */
+	loadURLs : function(loadpath, urls, loadedCallback, protoexp, done, externProtoDeclare, obj) {
+		if (typeof urls !== 'undefined') {
+			// console.error("Preprocessed", urls)
+			urls = this.processURLs(urls, loadpath);
+			// console.error("Postprocessed", urls)
+			for (var u in urls) {
+				try {
+					var url = urls[u];
+					(function(url) {
+						var p = url.indexOf("://");
+						var protocol = "file";
+						var host = "localhost";
+						var path = "/"+loadpath;
+						if (p > 0) {
+							protocol = url.substring(0, p);
+							var pa = url.indexOf("/", p+3);
+							host = url.substring(p+3, pa);
+							path = url.substring(pa);
+						}
+
+						if (protocol === "http") {
+							// console.error("Loading HTTP URL", url);
+							if (typeof $ !== 'undefined' && typeof $.get === 'function') {
+								$.get(url, function(data) {
+									loadedCallback(data, url, protoexp, done, externProtoDeclare, obj);
+								});
+							} else if (typeof http !== 'undefined') {
+								http.get({ host: host, path: path}, function(res) {
+									var data = '';
+									res.on('data', function (d) {
+										data += d;
+									});
+									res.on('end', function() {
+										loadedCallback(data, url, protoexp, done, externProtoDeclare, obj);
+									});
+								});
+						
+							}
+						} else if (protocol === "https") {
+							// console.error("Loading HTTPS URL", url);
+							if (typeof $ !== 'undefined' && typeof $.get === 'function') {
+								$.get(url, function(data) {
+									loadedCallback(data, url, protoexp, done, externProtoDeclare, obj);
+								});
+							} else if (typeof https !== 'undefined') {
+								https.get({ host: host, path: path}, function(res) {
+									var data = '';
+									res.on('data', function (d) {
+										data += d;
+									});
+									res.on('end', function() {
+										loadedCallback(data, url, protoexp, done, externProtoDeclare, obj);
+									});
+								});
+						
+							}
+						} else if (typeof fs !== 'undefined' && protocol.indexOf("http") !== 0) {
+							// should be async, but out of memory
+							// console.error("Loading FILE URL", url);
+							var hash = url.indexOf("#");
+							if (hash > 0) {
+								url = url.substring(0, hash);
+							}
+							try {
+								var data = fs.readFileSync(url);
+								loadedCallback(data.toString(), url, protoexp, done, externProtoDeclare, obj);
+							} catch (e) {
+								var filename = url;
+								if (filename.endsWith(".json")) {
+									filename = filename.substring(0, filename.lastIndexOf("."))+".x3d";
+									// console.error("converting possible X3D to JSON", filename);
+									if (typeof runAndSend === 'function') {
+										runAndSend(['---silent', filename], function(jsobj) {
+											data = JSON.stringify(jsobj);
+											loadedCallback(data, filename, protoexp, done, externProtoDeclare, obj);
+										});
+									}
+								}
+							}
+						} else if (typeof $ !== 'undefined' && typeof $.get === 'function') {
+							// console.error("Loading Relative URL", url);
+							$.get(url, function(data) {
+								loadedCallback(data, url, protoexp, done, externProtoDeclare, obj);
+							});
+						} else {
+							console.error("Didn't load", url, ".  No JQuery $.get() or file system");
+						}
+					})(url);
+				} catch (e) {
+					console.error(e);
+				}
 			}
 		}
 	},
-
+	load : function (p, file, object, protoexp, done) {
+		var obj = object[p];
+		var url = obj["@url"];
+		// this is a single task
+		// console.error("loading External Prototype", file, url);
+		this.loadURLs(file, url, protoexp.doLoad, protoexp, done, p, obj);
+	},
 	externalPrototypeExpander: function (file, object) {
 		if (typeof object === "object") {
 			var newobject = null;
@@ -967,20 +1192,26 @@ x3dom.PROTOS.prototype = {
 			} else {
 				newobject = {};
 			}
-			// Wait for expectedreturn tasks to finish
-			var expectedreturn = Object.keys(object).length;
-			this.expand(file, object, function (p, newobj) {
+			for (var p in object) {
 				if (p === "ExternProtoDeclare") {
-					newobject = newobj;
+					this.load(p, file, object, this, function(p, newobj, protoexp) {
+						if (newobj != null && typeof newobj != 'undefined') {
+							// process new proto declare for additional extern proto declares
+							// console.log("*******", typeof protoexp);
+							newobject["ProtoDeclare"] = protoexp.externalPrototypeExpander(file, newobj)["ProtoDeclare"];
+						}
+					});
 				} else {
-					newobject[p] = newobj;
+					// console.log("*******", typeof this);
+					newobject[p] = this.externalPrototypeExpander(file, object[p]);
 				}
-			});
-			while (expectedreturn > Object.keys(newobject).length + 1); {  // when they are equal, we exit
-				setTimeout(function () { }, 50);
 			}
-			// console.error("Exited loop");
-
+			var expectedreturn = Object.keys(object).length;
+			// Wait for expectedreturn tasks to finish
+			while (expectedreturn > Object.keys(newobject).length + 1); {  // when they are equal, we exit
+			       // console.error(expectedreturn, '=', Object.keys(newobject).length);
+			       setTimeout(function () { }, 50);
+			}
 			return newobject;
 		} else {
 			return object;
