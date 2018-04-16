@@ -75,7 +75,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName)
             {
-                if (fieldName == "url") {
+                if (fieldName == "url" || fieldName == "load") {
 
                     //Remove the childs of the x3domNode
                     for (var i=0; i<this._childNodes.length; i++)
@@ -152,19 +152,24 @@ x3dom.registerNodeType(
 
             loadInline: function ()
             {
+                if (!this._vf.load) {
+                    x3dom.debug.logInfo('Inline: load field prevented loading of ' + this._vf.url[0]);
+                    return;
+                }
+              
                 var that = this;
 
 		var isJSON = true;
 
                 var xhr = new window.XMLHttpRequest();
                 if (this._vf.url.length && this._vf.url[0].length) {
-			if (this._vf.url[0].endsWith(".x3d")) {
+			if (this._vf.url[0].toLowerCase().endsWith(".x3d")) {
 				isJSON = false;
 				if (xhr.overrideMimeType)
 				    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-			} else if (this._vf.url[0].endsWith(".json")) {
+			} else if (this._vf.url[0].toLowerCase().endsWith(".json")) {
 				if (xhr.overrideMimeType)
-				    xhr.overrideMimeType('text/json');
+				    xhr.overrideMimeType('application/json');
 			}
 		} else {
 			isJSON = false;
@@ -220,16 +225,16 @@ x3dom.registerNodeType(
                     var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
 		    if (isJSON) {
-			    console.log(xhr);
+			    // console.log(xhr);
 			    try {
 				    var json = JSON.parse(xhr.response);
-				    console.log("post parse", json);
+				    // console.log("post parse", json);
 			
 				    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
-				    console.log("return from expander", json);
+				    // console.log("return from expander", json);
 				    var parser = new x3dom.JSONParser();
 				    xml = parser.parseJavaScript(json);
-				    console.log("post parser", xml);
+				    // console.log("post parser", xml);
 			    } catch (e) {
 				    console.error(e);
 			    }
