@@ -246,9 +246,6 @@
                     {"file": "X3DVertexAttributeNode.js"},
                     {"file": "FloatVertexAttribute.js"}
                 ]},
-                {"name": "Scripting", "filePrefix": "nodes/Scripting/", "files":[
-                    {"file": "Script.js"}
-                ]},
                 {"name": "Geometry3D", "filePrefix": "nodes/Geometry3D/", "files":[
                     {"file": "X3DSpatialGeometryNode.js"},
                     {"file": "Plane.js"},
