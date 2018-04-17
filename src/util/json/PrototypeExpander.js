@@ -1078,6 +1078,9 @@ x3dom.PROTOS.prototype = {
 	 * Use almost any method possible to load a set of URLs.  The loadpath is the
 	 * original URL the main JSON got laoded from, Urls is the se of urls, and
 	 * the loadedCallback returns the data and the URL it was loaded from.
+	 *
+	 * The fs, http and https objects are used by server side, and not used
+	 * on the client side unless defined.
 	 */
 	loadURLs : function(loadpath, urls, loadedCallback, protoexp, done, externProtoDeclare, obj) {
 		if (typeof urls !== 'undefined') {
