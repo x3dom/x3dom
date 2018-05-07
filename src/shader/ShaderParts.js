@@ -348,9 +348,9 @@ x3dom.shader.light = function(numLights) {
 						"uniform float light"+l+"_ShadowIntensity;\n";
 	}
 	
-	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
+	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+					"in float lCutOffAngle, in vec3 positionVS, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
 				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
@@ -414,7 +414,7 @@ x3dom.shader.lightPBR = function(numLights) {
 	
 	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 positionVS,in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+					"in float lCutOffAngle, in vec3 positionVS, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
 				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
 					"{\n" +
 					// Calculate some Dot-Products		
@@ -510,7 +510,7 @@ x3dom.shader.TBNCalculation = function() {
         "    // V, the view vector (vertex to eye)\n" +
         "    vec3 map = texture2D(normalMap, texcoord ).xyz;\n" +
 		"    map = 2.0 * map - 1.0;\n" +
-		"    map = map * bias;\n" +
+	    "    map = map * bias;\n" +
         "    mat3 TBN = cotangent_frame(N, -V, texcoord);\n" +
         "    return normalize(TBN * map);\n" +
         "}\n\n";

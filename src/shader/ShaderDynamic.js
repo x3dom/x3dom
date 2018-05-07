@@ -584,6 +584,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     if(properties.CUBEMAP || properties.CLIPPLANES)
     {
+		shader += "uniform mat4 viewMatrixInverse;\n";
+		shader += "uniform mat4 viewMatrixInverse2;\n";
 		shader += "uniform mat4 modelViewMatrixInverse;\n";
 		shader += "uniform mat4 modelViewMatrixInverse2;\n";
     }
@@ -967,25 +969,30 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "specular = max(specular, 0.0);\n";
 		}
 
-		if(true)
-		{
-			//shader += "float lod = roughness * mipCount;\n";
-			shader += "vec3 R    = -normalize( reflect ( eye, normal ) );\n";
-			shader += "float NoV = dot( normal, eye );\n";
+		// if(true)
+		// {
+		// 	//shader += "float lod = roughness * mipCount;\n";
+		// 	shader += "vec3 R    = -normalize( reflect ( eye, normal ) );\n";
+		// 	shader += "float NoV = dot( normal, eye );\n";
 
-			//Calculate specular lighting from precomputed maps
-			shader += "vec3 brdf = texture2D( brdfMap, vec2( NoV, _shininess ) ).rgb;\n";
-			// "vec3 specularLight = vec3(0.0);\n" +
-			//"vec3 specularLight = textureCubeLodEXT( environmentTexture, R, lod ).rgb;\n" +
-			//"vec3 specularColor = specularLight * ( _specularColor * brdf.x + brdf.y );\n" +
+		// 	//Calculate specular lighting from precomputed maps
+		// 	shader += "vec3 brdf = texture2D( brdfMap, vec2( NoV, _shininess ) ).rgb;\n";
+		// 	// "vec3 specularLight = vec3(0.0);\n" +
+		// 	//"vec3 specularLight = textureCubeLodEXT( environmentTexture, R, lod ).rgb;\n" +
+		// 	//"vec3 specularColor = specularLight * ( _specularColor * brdf.x + brdf.y );\n" +
+		// }
+
+		if(properties.PBR_MATERIAL)
+		{
+			shader += "_specularColor = vec3(1.0);\n";
+
+			if(!properties.METALLICROUGHNESSMAP)
+			{
+				shader += "color.rgb *= (1.0 - metallicFactor);\n";
+			}
 		}
 
-		if(properties.PBR_MATERIAL && !properties.METALLICROUGHNESSMAP)
-		{
-			shader += "color.rgb *= (1.0 - metallicFactor);\n";
-		}
-		
-		shader += "color.rgb = (_emissiveColor + (ambient + diffuse) * color.rgb + specular);\n";
+		shader += "color.rgb = (_emissiveColor + (ambient + diffuse) * color.rgb + specular * _specularColor);\n";	
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {

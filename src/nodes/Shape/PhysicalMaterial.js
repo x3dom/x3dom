@@ -128,6 +128,16 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, 1);
 
             /**
+             * Scale to apply to normal sampled from normalTexture
+             * @var {x3dom.fields.SFVec3f} normalBias
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'normalScale', 1);
+
+            /**
              * The base color texture. This texture contains RGB(A) components in sRGB color space. 
              * The first three components (RGB) specify the base color of the material. 
              * If the fourth component (A) is present, it represents the alpha coverage of the material. 

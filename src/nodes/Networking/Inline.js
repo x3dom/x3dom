@@ -185,10 +185,7 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
-                    if (xml && xml.localName)
-                        x3dom.debug.logError('No Scene in ' + xml.localName);
-                    else
-                        x3dom.debug.logError('No Scene in resource');
+                    x3dom.debug.logError('No Scene in resource');
                 }
 
                 // trick to free memory, assigning a property to global object, then deleting it
@@ -324,8 +321,8 @@ x3dom.registerNodeType(
 
                                 if (xml !== undefined && xml !== null)
                                 {
-                                    inlScene = xml.getElementsByTagName('Scene')[0] ||
-                                               xml.getElementsByTagName('scene')[0];
+                                    inlineScene = xml.getElementsByTagName('Scene')[0] ||
+                                                  xml.getElementsByTagName('scene')[0];
 
                                     that.loadX3D( inlineScene, namespace );
                                 }

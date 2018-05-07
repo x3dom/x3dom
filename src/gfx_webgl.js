@@ -880,7 +880,7 @@ x3dom.gfx_webgl = (function () {
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 
-                bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_TEXTURE);
+                bgnd._webgl.shader = that.cache.getShader(gl, x3dom.shader.BACKGROUND_TEXTURE);
             }
         }
         else {
@@ -993,7 +993,7 @@ x3dom.gfx_webgl = (function () {
                 gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
                 gl.bindTexture(gl.TEXTURE_2D, null);
 
-                bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
+                bgnd._webgl.shader = that.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
             }
             else {
                 // Impl. gradient bg etc., e.g. via canvas 2d? But can be done via CSS anyway...
@@ -1119,7 +1119,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
 
-                this.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                that.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1227,7 +1227,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.position);
 
-                this.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                that.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.disableVertexAttribArray(sp.position);
 
@@ -4089,9 +4089,9 @@ x3dom.gfx_webgl = (function () {
         // load stamp textures
         if (rt._currLoadLevel == 0 && (!scene._webgl.refinement.stamps[0] || !scene._webgl.refinement.stamps[1])) {
             scene._webgl.refinement.stamps[0] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-                                    rt._nameSpace.getURL(rt._vf.stamp0), false, false, false, false);
+                                    rt._nameSpace.getURL(rt._vf.stamp0), false, 'anonymous', false, false);
             scene._webgl.refinement.stamps[1] = this.cache.getTexture2D(gl, rt._nameSpace.doc,
-                                    rt._nameSpace.getURL(rt._vf.stamp1), false, false, false, false);
+                                    rt._nameSpace.getURL(rt._vf.stamp1), false, 'anonymous', false, false);
         }
 
         // load next level of image
@@ -4104,7 +4104,7 @@ x3dom.gfx_webgl = (function () {
             var filename = rt._vf.url[0] + "/" + rt._currLoadLevel + "." + rt._vf.format;
 
             rt._webgl.texture = x3dom.Utils.createTexture2D(gl, rt._nameSpace.doc,
-                                rt._nameSpace.getURL(filename), false, false, false, false);
+                                rt._nameSpace.getURL(filename), false, 'anonymous', false, false);
 
             if (rt._vf.iterations % 2 === 0)
                 (rt._currLoadLevel % 2 !== 0) ? rt._repeat.x *= 2.0 : rt._repeat.y *= 2.0;
