@@ -75,7 +75,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName)
             {
-                if (fieldName == "url") {
+                if (fieldName == "url" || fieldName == "load") {
 
                     //Remove the childs of the x3domNode
                     for (var i=0; i<this._childNodes.length; i++)
@@ -164,6 +164,11 @@ x3dom.registerNodeType(
 
             loadX3D: function(inlScene, nameSpace)
             {
+                if (!this._vf.load) {
+                    x3dom.debug.logInfo('Inline: load field prevented loading of ' + this._vf.url[0]);
+                    return;
+                }
+              
                 var that = this;
 
                 var newScene = null;
