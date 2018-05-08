@@ -33,10 +33,6 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         this._traverseNodes(node, x3dScene);
     }
 
-    console.log(x3dScene);
-
-    console.log(this._gltf);
-
     return x3dScene;
 }
 

@@ -552,7 +552,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	* Generate dynamic uniforms & varyings
 	********************************************************************************/
 	
-	//Default Matrices
 	shader += "uniform float isVR;\n";
 	shader += "varying float vrOffset;\n";
 	shader += "varying float fragEyeIdx;\n";

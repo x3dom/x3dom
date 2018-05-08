@@ -1744,8 +1744,19 @@ x3dom.gfx_webgl = (function () {
             //Bind shader
             this.stateManager.useProgram(sp);
 
+            sp.screenWidth = this.canvas.width * scene._webgl.pickScale
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
+
+            if(this.VRMode == 2)
+            {           
+                var mat_view_R = viewarea.getViewMatrices()[1];
+                var mat_proj_R = viewarea.getProjectionMatrices()[1];              
+                var mat_scene_R = mat_proj_R.mult(mat_view_R);
+                sp.modelViewProjectionMatrix2 = mat_scene_R.mult(trafo).toGL();
+    
+                sp.isVR = 1.0;
+            }
 
             sp.lowBit  = (shape._objectID & 255) / 255.0;
             sp.highBit = (shape._objectID >>> 8) / 255.0;
@@ -1784,6 +1795,10 @@ x3dom.gfx_webgl = (function () {
             if (shape._clipPlanes) {
                 sp.modelViewMatrix = mat_view.mult(trafo).toGL();
                 sp.viewMatrixInverse = mat_view.inverse().toGL();
+
+                sp.modelViewMatrix2 = mat_view_R.mult(trafo).toGL();
+                sp.viewMatrixInverse2 = mat_view_R.inverse().toGL();
+
                 for (var cp = 0; cp < shape._clipPlanes.length; cp++) {
                     var clip_plane = shape._clipPlanes[cp].plane;
                     var clip_trafo = shape._clipPlanes[cp].trafo;
@@ -1948,6 +1963,7 @@ x3dom.gfx_webgl = (function () {
                         indicesReady = true;
                     }
 
+                    this.setVertexAttribEyeIdx(gl, sp);
                     this.setVertexAttribPointerPosition(gl, shape, q6, q);
 
                     if (pickMode == 1) {
@@ -2561,7 +2577,7 @@ x3dom.gfx_webgl = (function () {
 
             sp.modelViewProjectionMatrix2 = mat_scene_R.mult(transform).toGL();
 
-            sp.isVR = 1.0
+            sp.isVR = 1.0;
         }
         else
         {
