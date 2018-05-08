@@ -33,6 +33,8 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         this._traverseNodes(node, x3dScene);
     }
 
+    console.log(x3dScene);
+
     return x3dScene;
 }
 
@@ -260,8 +262,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     if(pbr)
     {
         baseColorFactor = pbr.baseColorFactor || baseColorFactor;
-        metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor : metallicFactor;
-        roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.metallicFactor : roughnessFactor;
+        metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor  : metallicFactor;
+        roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.roughnessFactor : roughnessFactor;
     }
 
     if(pbr && pbr.baseColorTexture)
@@ -646,7 +648,7 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
         {
             var image = gltf.images[i];
 
-            if( image.bufferView )
+            if( image.bufferView != undefined )
             {
                 var bufferView = gltf.bufferViews[image.bufferView];
 
