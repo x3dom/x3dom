@@ -141,242 +141,95 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 		doc.needRender = true;
 	};
 
-	image.onerror = function(error) {
-    // Try loading the image as a compressed texture, if the extension is provided
-    // by the platform.
-    // Copyrigth (C) 2014 TOSHIBA
-    // Dual licensed under the MIT and GPL licenses.
-    // Based on code originally provided by　http://www.x3dom.org
-
-   if(x3dom.caps.EXTENSIONS.indexOf('WEBGL_compressed_texture_s3tc') !== -1){
-  		x3dom.Utils.tryCompressedTexture2D(texture, gl, doc, src, bgnd,
-  		    crossOrigin, genMipMaps, function(success){
-  		  if(success){
-	      }else{
-          x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
-		    }
-        doc.downloadCount--;
-		  });
-	  }else{
-      x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
-	    doc.downloadCount--;
-    }
+    image.onerror = function(error)
+    {
+        x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY).then( function() {
+            doc.downloadCount--;
+            doc.needRender = true;
+        }, function() {
+            x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
+            doc.downloadCount--;
+        });
 	};
 
 	return texture;
 };
 
-/*****************************************************************************
-*  Creating textures from S3TC compressed files.
-*  Copyrigth (C) 2014 TOSHIBA
-*  Dual licensed under the MIT and GPL licenses.
-*  Based on code originally provided by
-*  http://www.x3dom.org
-*
-*  S3TC file reading code originaly provided by Brandon Jones
-*  (http://media.tojicode.com/)
-*****************************************************************************/
-
-x3dom.Utils.createCompressedTexture2D = function(gl, doc, src, bgnd, crossOrigin, genMipMaps)
+x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 {
-  var texture = gl.createTexture();
+    return x3dom.DDSLoader.load(src).then( function( dds ) {
 
-    //Create a black 4 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    if (genMipMaps) {
-        gl.generateMipmap(gl.TEXTURE_2D);
-    }
-    gl.bindTexture(gl.TEXTURE_2D, null);
+        if (!dds || (dds.isCompressed && !x3dom.caps.COMPRESSED_TEXTURE) )
+        {
+            return;
+        }
 
-    texture.ready = false;
+        gl.bindTexture(dds.type, texture);
+		
+		if ( flipY ) 
+		{
+			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );						
+		}
+		
+		if ( !x3dom.Utils.isPowerOfTwo( dds.width ) && !x3dom.Utils.isPowerOfTwo( dds.height ) )
+		{
+			gl.texParameteri( dds.type, gl.TEXTURE_MAG_FILTER, gl.LINEAR 	        );
+			gl.texParameteri( dds.type, gl.TEXTURE_MIN_FILTER, gl.LINEAR 	        );
+			gl.texParameteri( dds.type, gl.TEXTURE_WRAP_S, 	gl.CLAMP_TO_EDGE 	);
+			gl.texParameteri( dds.type, gl.TEXTURE_WRAP_T, 	gl.CLAMP_TO_EDGE 	);
+			
+			dds.generateMipmaps = false;		
+		} 
+		else if (dds.generateMipmaps )
+		{
+			gl.texParameteri( dds.type, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
+		}
 
-  if (src == null || src == '')
-      return texture;
+        for ( var target in dds.data )
+        {
+			var width  = dds.width;
+			var height = dds.height;
+			
+			var levels = dds.data[ target ];
+			
+			for ( var l = 0; l < levels.length; l++ )
+			{	
+				if ( l != 0 )
+				{
+					width  = Math.max( width  * 0.5, 1 );
+					height = Math.max( height * 0.5, 1 );
+				}
+				
+				if ( dds.format.internal < 33776 || dds.format.internal > 33776 )
+				{		
+					gl.texImage2D( target, l, dds.format.internal, width, height, 0, dds.format.format, dds.format.type, levels[ l ] );
+				}
+				else
+				{
+					gl.compressedTexImage2D( target, l, dds.format.internal, width, height, 0, levels[ l ] );
+					dds.generateMipmaps = false;
+				}
+		
+			}
+		}
+		
+		if ( dds.generateMipmaps )
+		{
+			gl.generateMipmap( dds.type );
+		}
+			
+		if ( flipY )
+		{
+			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );			
+		}
 
-  //start loading
+        gl.bindTexture(dds.type, null);
 
-  ddsXhr = new XMLHttpRequest();
-
-  var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
-
-  ddsXhr.open('GET', src, true);
-  ddsXhr.responseType = "arraybuffer";
-  ddsXhr.onload = function() {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      var mipmaps = uploadDDSLevels(gl, ext, this.response);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-
-      texture.ready = true;
-
-      doc.downloadCount--;
-      doc.needRender = true;
-  };
-
-  doc.downloadCount++;
-  //ddsXhr.send(null);
-  x3dom.RequestManager.addRequest(ddsXhr);
-
-  return texture;
+		texture.width  = dds.width;
+		texture.height = dds.height;
+		texture.ready = true;
+    });
 };
-
-x3dom.Utils.tryCompressedTexture2D = function(texture, gl, doc, src, bgnd, crossOrigin, genMipMaps, cb)
-{
-  //start loading
-
-  ddsXhr = new XMLHttpRequest();
-
-  var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
-
-  ddsXhr.open('GET', src, true);
-  ddsXhr.responseType = "arraybuffer";
-  ddsXhr.onload = function() {
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-      var mipmaps = uploadDDSLevels(gl, ext, this.response);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps > 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
-
-      texture.ready = true;
-
-      doc.needRender = true;
-
-      cb(true);
-  };
-
-  ddsXhr.onerror = function() {
-      cb(false);
-  };
-
-  //ddsXhr.send(null);
-  x3dom.RequestManager.addRequest(ddsXhr);
-};
-
-
-/*****************************************************************************
-*  Original code by  Brandon Jones
-* http://media.tojicode.com/
-*****************************************************************************/
-function uploadDDSLevels(gl, ext, arrayBuffer, loadMipmaps) {
-    var DDS_MAGIC = 0x20534444;
-
-    var DDSD_CAPS = 0x1,
-        DDSD_HEIGHT = 0x2,
-        DDSD_WIDTH = 0x4,
-        DDSD_PITCH = 0x8,
-        DDSD_PIXELFORMAT = 0x1000,
-        DDSD_MIPMAPCOUNT = 0x20000,
-        DDSD_LINEARSIZE = 0x80000,
-        DDSD_DEPTH = 0x800000;
-
-    var DDSCAPS_COMPLEX = 0x8,
-        DDSCAPS_MIPMAP = 0x400000,
-        DDSCAPS_TEXTURE = 0x1000;
-
-    var DDSCAPS2_CUBEMAP = 0x200,
-        DDSCAPS2_CUBEMAP_POSITIVEX = 0x400,
-        DDSCAPS2_CUBEMAP_NEGATIVEX = 0x800,
-        DDSCAPS2_CUBEMAP_POSITIVEY = 0x1000,
-        DDSCAPS2_CUBEMAP_NEGATIVEY = 0x2000,
-        DDSCAPS2_CUBEMAP_POSITIVEZ = 0x4000,
-        DDSCAPS2_CUBEMAP_NEGATIVEZ = 0x8000,
-        DDSCAPS2_VOLUME = 0x200000;
-
-    var DDPF_ALPHAPIXELS = 0x1,
-        DDPF_ALPHA = 0x2,
-        DDPF_FOURCC = 0x4,
-        DDPF_RGB = 0x40,
-        DDPF_YUV = 0x200,
-        DDPF_LUMINANCE = 0x20000;
-
-    function FourCCToInt32(value) {
-        return value.charCodeAt(0) +
-            (value.charCodeAt(1) << 8) +
-            (value.charCodeAt(2) << 16) +
-            (value.charCodeAt(3) << 24);
-    }
-
-    function Int32ToFourCC(value) {
-        return String.fromCharCode(
-            value & 0xff,
-            (value >> 8) & 0xff,
-            (value >> 16) & 0xff,
-            (value >> 24) & 0xff
-        );
-    }
-
-    var FOURCC_DXT1 = FourCCToInt32("DXT1");
-    var FOURCC_DXT5 = FourCCToInt32("DXT5");
-
-    var headerLengthInt = 31; // The header length in 32 bit ints
-
-    // Offsets into the header array
-    var off_magic = 0;
-
-    var off_size = 1;
-    var off_flags = 2;
-    var off_height = 3;
-    var off_width = 4;
-
-    var off_mipmapCount = 7;
-
-    var off_pfFlags = 20;
-    var off_pfFourCC = 21;
-
-    var header = new Int32Array(arrayBuffer, 0, headerLengthInt),
-        fourCC, blockBytes, internalFormat,
-        width, height, dataLength, dataOffset,
-        byteArray, mipmapCount, i;
-
-    if(header[off_magic] != DDS_MAGIC) {
-        console.error("Invalid magic number in DDS header");
-        return 0;
-    }
-
-    if(!header[off_pfFlags] & DDPF_FOURCC) {
-        console.error("Unsupported format, must contain a FourCC code");
-        return 0;
-    }
-
-    fourCC = header[off_pfFourCC];
-    switch(fourCC) {
-        case FOURCC_DXT1:
-            blockBytes = 8;
-            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            break;
-
-        case FOURCC_DXT5:
-            blockBytes = 16;
-            internalFormat = ext.COMPRESSED_RGBA_S3TC_DXT5_EXT;
-            break;
-
-        default:
-            console.error("Unsupported FourCC code:", Int32ToFourCC(fourCC));
-            return null;
-    }
-
-    mipmapCount = 1;
-    if(header[off_flags] & DDSD_MIPMAPCOUNT && loadMipmaps !== false) {
-        mipmapCount = Math.max(1, header[off_mipmapCount]);
-    }
-
-    width = header[off_width];
-    height = header[off_height];
-    dataOffset = header[off_size] + 4;
-
-    for(i = 0; i < mipmapCount; ++i) {
-        dataLength = Math.max( 4, width )/4 * Math.max( 4, height )/4 * blockBytes;
-        byteArray = new Uint8Array(arrayBuffer, dataOffset, dataLength);
-        gl.compressedTexImage2D(gl.TEXTURE_2D, i, internalFormat, width, height, 0, byteArray);
-        dataOffset += dataLength;
-        width *= 0.5;
-        height *= 0.5;
-    }
-
-    return mipmapCount;
-};
-
 
 /*****************************************************************************
 *

@@ -118,6 +118,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.ALIASED_LINE_WIDTH_RANGE = ctx.getParameter(ctx.ALIASED_LINE_WIDTH_RANGE);
                         x3dom.caps.ALIASED_POINT_SIZE_RANGE = ctx.getParameter(ctx.ALIASED_POINT_SIZE_RANGE);
                         x3dom.caps.SAMPLES = ctx.getParameter(ctx.SAMPLES);
+                        x3dom.caps.COMPRESSED_TEXTURE = ctx.getExtension('WEBGL_compressed_texture_s3tc');
                         x3dom.caps.INDEX_UINT = ctx.getExtension("OES_element_index_uint");
                         x3dom.caps.FP_TEXTURES = ctx.getExtension("OES_texture_float");
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");

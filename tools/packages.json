@@ -25,6 +25,7 @@
                 {"path": "util/glTF/glTFLoader.js"},
                 {"path": "util/glTF/glTF2Loader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
+                {"path": "util/DDSLoader.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
