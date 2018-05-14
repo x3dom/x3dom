@@ -2383,6 +2383,9 @@ x3dom.gfx_webgl = (function () {
                 sp['light' + p + '_CutOffAngle'] = slights[p]._vf.cutOffAngle;
                 sp['light' + p + '_ShadowIntensity'] = slights[p]._vf.shadowIntensity;
             }
+            else if (x3dom.isa(slights[p], x3dom.nodeTypes.PhysicalEnvironmentLight)) {
+
+            }
         }
 
         //===========================================================================
@@ -2614,10 +2617,18 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        if(x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial))
+        /*if(x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial) && 
+           physicalEnvironmentLight != undefined && 
+           physicalEnvironmentLight._cf.diffuse.node &&
+           physicalEnvironmentLight._cf.specular.node)
         {
+            var diffuseURL  = physicalEnvironmentLight._nameSpace.getURL(physicalEnvironmentLight._cf.diffuse.node._vf.url);
+            var specularURL = physicalEnvironmentLight._nameSpace.getURL(physicalEnvironmentLight._cf.diffuse.node._vf.url);
+
             //Get BRDF LUT Texture
             var brdf_lut = this.cache.getTexture2D(gl, shape._nameSpace.doc, x3dom.BRDF_LUT, false, 'anonymous', false, false, true);
+            var diffuse  = this.cache.getTexture2D(gl, shape._nameSpace.doc, diffuseURL, false, 'anonymous', false, false, true);
+            var specular = this.cache.getTexture2D(gl, shape._nameSpace.doc, specularURL, false, 'anonymous', false, false, true);
 
             gl.activeTexture(gl.TEXTURE0 + cnt_n);
 
@@ -2627,8 +2638,28 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             
-            sp.brdfMap = cnt_n;
-        }
+            sp.brdfMap = cnt_n++;
+ 
+            gl.activeTexture(gl.TEXTURE0 + cnt_n);
+
+            gl.bindTexture(gl.TEXTURE_CUBE, diffuse);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+            sp.diffuseLightMap = cnt_n++;
+
+            gl.activeTexture(gl.TEXTURE0 + cnt_n);
+
+            gl.bindTexture(gl.TEXTURE_CUBE, diffuse);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_CUBE, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+            sp.specularLightMap = cnt_n++;
+        }*/
         
 
         if (s_app && s_app._cf.textureTransform.node) {
