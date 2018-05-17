@@ -159,12 +159,10 @@ x3dom.registerNodeType(
               
                 var that = this;
 
-		var isJSON = true;
 
                 var xhr = new window.XMLHttpRequest();
                 if (this._vf.url.length && this._vf.url[0].length) {
 			if (this._vf.url[0].toLowerCase().endsWith(".x3d")) {
-				isJSON = false;
 				if (xhr.overrideMimeType)
 				    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
 			} else if (this._vf.url[0].toLowerCase().endsWith(".json")) {
@@ -172,7 +170,6 @@ x3dom.registerNodeType(
 				    xhr.overrideMimeType('application/json');
 			}
 		} else {
-			isJSON = false;
 			if (xhr.overrideMimeType)
 			    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
 		}
@@ -224,26 +221,21 @@ x3dom.registerNodeType(
 
                     var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
-		    if (isJSON) {
-			    // console.log(xhr);
-			    try {
-				    var json = JSON.parse(xhr.response);
-				    // console.log("post parse", json);
-			
-				    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
-				    // console.log("return from expander", json);
-				    var parser = new x3dom.JSONParser();
-				    xml = parser.parseJavaScript(json);
-				    // console.log("post parser", xml);
-			    } catch (e) {
-				    console.error(e);
-			    }
-		    } else {
+		    try {
+			    var json = JSON.parse(xhr.response);
+			    // console.log("post parse", json);
+		
+			    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
+			    // console.log("return from expander", json);
+			    var parser = new x3dom.JSONParser();
+			    xml = parser.parseJavaScript(json);
+			    // console.log("post parser", xml);
+		    } catch (e) {
 			    if (navigator.appName != "Microsoft Internet Explorer")
 				xml = xhr.responseXML;
 			    else
 				xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
-	            }
+		    }
 
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                     if (xml !== undefined && xml !== null)
