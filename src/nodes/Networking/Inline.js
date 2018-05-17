@@ -232,10 +232,10 @@ x3dom.registerNodeType(
                         xml = parser.parseJavaScript(json);
                         // console.log("post parser", xml);
                     } catch (e) {
-                      if (navigator.appName != "Microsoft Internet Explorer")
-                        xml = xhr.responseXML;
-                      else
-                        xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+                        if (navigator.appName != "Microsoft Internet Explorer")
+                            xml = xhr.responseXML;
+                        else
+                            xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
                     }
                     
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
