@@ -2914,7 +2914,7 @@ x3dom.fields.MFVec3f.parse = function(str) {
 
 x3dom.fields.MFVec3f.prototype.copy = function()
 {
-    return x3dom.fields.MFVec3f.copy(this);
+    x3dom.fields.MFVec3f.copy(this);
 };
 
 x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
@@ -2937,14 +2937,6 @@ x3dom.fields.MFVec3f.prototype.toGL = function() {
     return a;
 };
 
-x3dom.fields.MFVec3f.prototype.toString = function () {
-   var str = "";
-
-   this.forEach(function (sf) {
-   	str = str + sf.toString() + " ";
-   });
-   return str.trim();
-};
 
 ///////////////////////////////////////////////////////////////////////////////
 /** MFVec2f constructor.
