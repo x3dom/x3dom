@@ -73,14 +73,14 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 
 	var texture = gl.createTexture();
 
-    //Create a black 4 pixel texture to prevent 'texture not complete' warning
-    var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    if (genMipMaps) {
-        gl.generateMipmap(gl.TEXTURE_2D);
-    }
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    // //Create a black 4 pixel texture to prevent 'texture not complete' warning
+    // var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
+    // gl.bindTexture(gl.TEXTURE_2D, texture);
+    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    // if (genMipMaps) {
+    //     gl.generateMipmap(gl.TEXTURE_2D);
+    // }
+    // gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture.ready = false;
 
@@ -164,7 +164,13 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
             return;
         }
 
+        // //gl.deleteTexture(texture);
+
+        // texture = gl.createTexture();
+
         gl.bindTexture(dds.type, texture);
+
+        flipY = false;
 		
 		if ( flipY ) 
 		{
@@ -200,13 +206,13 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 					height = Math.max( height * 0.5, 1 );
 				}
 				
-				if ( dds.format.internal < 33776 || dds.format.internal > 33776 )
+				if ( dds.format.internal < 33776 || dds.format.internal > 33779 )
 				{		
-					gl.texImage2D( target, l, dds.format.internal, width, height, 0, dds.format.format, dds.format.type, levels[ l ] );
+					gl.texImage2D( +target, l, dds.format.internal, width, height, 0, dds.format.format, dds.format.type, levels[ l ] );
 				}
 				else
 				{
-					gl.compressedTexImage2D( target, l, dds.format.internal, width, height, 0, levels[ l ] );
+					gl.compressedTexImage2D( +target, l, dds.format.internal, width, height, 0, levels[ l ] );
 					dds.generateMipmaps = false;
 				}
 		

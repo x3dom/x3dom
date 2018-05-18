@@ -150,7 +150,7 @@ x3dom.DDSLoader._readType = function( dds )
     }
     else if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP )
     {
-        dds.type = LUX.TextureType.TEXTURE_CUBE;
+        dds.type = 34067;
         
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_POSITIVEX )
         { 
@@ -357,47 +357,49 @@ x3dom.DDSLoader._readCompressedData = function( buffer, width, height, offset, b
 
 x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset, format, type )
 {
-    if ( format.internal == LUX.TextureFormat.ALPHA.internal )
+    if ( format.internal == 6406 )
     {
         return new Uint8Array( buffer.slice( offset, offset + width * height ) );
     }
-    else if ( format.internal == LUX.TextureFormat.LUMINANCE.internal )
+    else if ( format.internal == 6409 )
     {
         return new Uint8Array( buffer.slice( offset, offset + width * height ) );
     }
-    else if ( format.internal == LUX.TextureFormat.LUMINANCE_ALPHA.internal )
+    else if ( format.internal == 6410 )
     {
         return new Uint8Array( buffer.slice( offset, offset + width * height * 2 ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGB.internal )
+    else if ( format.internal == 6407 )
     {
         return x3dom.DDSLoader.R8G8B8_To_B8G8R8( new Uint8Array( buffer.slice( offset, offset + width * height * 3 ) ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGB565.internal )
+    else if ( format.internal == 36194 )
     {
         return new Uint16Array( buffer.slice( offset, offset + width * height * 2 ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGBA.internal )
+    else if ( format.internal == 6408 && format.type != 36193 )
     {
         return x3dom.DDSLoader.A8R8G8B8_To_A8B8G8R8( new Uint8Array( buffer.slice( offset, offset + width * height * 4 ) ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGBA4.internal )
+    else if ( format.internal == 32854)
     {
         return x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4( new Uint16Array( buffer.slice( offset, offset + width * height * 2 ) ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGB5_A1.internal )
+    else if ( format.internal == 32855 )
     {
         return x3dom.DDSLoader.A1R5G5B5_To_A1B5G5R5( new Uint16Array( buffer.slice( offset, offset + width * height * 2 ) ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGBA16F.internal )
+    else if ( format.internal == 34842 || format.type == 36193 )
     {
+        // format.type = 5121;
+        // return x3dom.DDSLoader.F16_To_UB8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
         return new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) );
     }
-    else if ( format.internal == LUX.TextureFormat.RGBA32F.internal )
+    else if ( format.internal == 34836 )
     {
         return new Float32Array( buffer.slice( offset, offset + width * height * 4 * 4 ) );
     }
-    else if ( format.internal == LUX.TextureFormat.R11F_G11F_B10F.internal )
+    else if ( format.internal == 35898 )
     {
         return new Uint8Array( buffer.slice( offset, offset + width * height * 3 ) );
     }
@@ -433,7 +435,9 @@ x3dom.DDSLoader._readFormat = function( dds )
         }
         else if ( pixelFormat.dwFourCC == "q"  || pixelFormat.dwFourCC == "$" )
         {
-            dds.format = { internal: 34842, format: 6408, type: 5131 };
+            // dds.format = { internal: 34842, format: 6408, type: 5131 };
+            //WEBGL 1.0
+            dds.format = { internal: 6408, format: 6408, type: 36193 };
         }
         else if ( pixelFormat.dwFourCC == "DX10")
         {
@@ -574,6 +578,23 @@ x3dom.DDSLoader.A8R8G8B8_To_A8B8G8R8 = function ( src )
     return dst;
 };
 
+x3dom.DDSLoader.F16_To_UB8 = function ( src )
+{
+    var dst = new Uint8Array( src.length );
+
+    for ( var i = 0; i < src.length; i += 4 )
+    {
+        dst[ i     ] = Math.round(src[ i     ] / 16384 * 255);
+        dst[ i + 1 ] = Math.round(src[ i + 1 ] / 16384 * 255);
+        dst[ i + 2 ] = Math.round(src[ i + 2 ] / 16384 * 255);
+        dst[ i + 3 ] = Math.round(src[ i + 3 ] / 16384 * 255);
+    }
+
+    console.log(src, dst);
+
+    return dst;
+};
+
 x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
 
     var a, r, g, b;
@@ -586,6 +607,8 @@ x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
         r = ( src[ i ] >> 8  ) & 0xf;
         g = ( src[ i ] >> 4  ) & 0xf;
         b = ( src[ i ]       ) & 0xf;
+
+        var test = ( r << 12 ) & ( g << 8 ) & ( b << 4 ) & ( a );
 
         dst[ i ] = ( r << 12 ) & ( g << 8 ) & ( b << 4 ) & ( a );
     }

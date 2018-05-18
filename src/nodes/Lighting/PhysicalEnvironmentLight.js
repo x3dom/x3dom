@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode(ctx, 'diffuse', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFString(ctx, 'diffuse', "");
 
             /**
              *
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode(ctx, 'specular', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFString(ctx, 'specular', "");
 
             /**
              *

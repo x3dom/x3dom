@@ -109,7 +109,15 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
  */
 x3dom.glTF2Loader.prototype._generateX3DScene = function()
 {
-    return document.createElement("scene");
+    var scene = document.createElement( "scene" );
+    var pel   = document.createElement( "physicalenvironmentlight" );
+
+    pel.setAttribute( "diffuse",  "http://localhost/x3dom/test/functional/Pisa_Courtyard_Diffuse.dds"  );
+    pel.setAttribute( "specular", "http://localhost/x3dom/test/functional/Pisa_Courtyard_Specular.dds" );
+
+    scene.appendChild( pel );
+
+    return scene;
 };
 
 /**
