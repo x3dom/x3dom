@@ -142,7 +142,8 @@
                     {"file": "X3DLightNode.js"},
                     {"file": "DirectionalLight.js"},
                     {"file": "PointLight.js"},
-                    {"file": "SpotLight.js"}
+                    {"file": "SpotLight.js"},
+                    {"file": "PhysicalEnvironmentLight.js"}
                 ]},
                 {"name": "Followers", "filePrefix": "nodes/Followers/", "files":[
                     {"file": "X3DFollowerNode.js"},
