@@ -1,7 +1,7 @@
 Welcome to X3DOM 
 ================
 X3DOM is a framework for integrating and manipulating (X)3D scenes as HTML5
-DOM elements, which are rendered via an X3D plugin, Flash/Stage3D or WebGL.
+DOM elements, which are rendered via WebGL without additional plugins.
 The open-source system allows defining 3D scene description and runtime
 behavior declaratively, without any low-level JavaScript or GLSL coding.
 
@@ -15,7 +15,7 @@ http://doc.x3dom.org
 
 Need help?
 ----------
-If you want to use X3DOM and seek help and exchange of knowledge, please use
+If you want to use X3DOM and seek help or sharing of knowledge, please use
 the x3dom-users mailing list or the forums. Beginner questions usually have
 been asked already and in many cases the mailinglist or forum archives provide
 quick answers to many questions.
