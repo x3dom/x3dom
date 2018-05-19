@@ -30,11 +30,12 @@ addons:
   apt:
     packages:
     - tree
-    - python-sphinx
+    #- python-sphinx
 script:
   - python manage.py --build > build.log
-  - python manage.py --docs >> build.log
+  - ./doc/jsdoc-releases-3.1/jsdoc -c doc/jsdoc.conf
   - mkdir -p deploy/latest
+  - mv out deploy/latest/doc
 after_success:
   - ( wget -e robots=off -r -nH -np -l 1 -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN; exit 0 )
   - # go into build dirs and get marks
@@ -67,7 +68,7 @@ after_success:
   - tree -I index.html -h -C -h -H '.' -T "title" ./latest > ./latest/index.html
   - "# link title to PR and commit on github"
   - sed -i "s-<h1>.*</h1>-<h1><a href=\"${PR_URL}/${TRAVIS_PULL_REQUEST}\">PR ${TRAVIS_PULL_REQUEST}</a> <a href=\"${COMMIT_URL}/${TRAVIS_COMMIT}\">commit ${TRAVIS_COMMIT}</a></h1>-" ./latest/index.html
-  - surge --project ./ --domain $SURGE_DOMAIN
+  #- surge --project ./ --domain $SURGE_DOMAIN
   - "# just for logging purposes"
   - du -ah ./
   - env
