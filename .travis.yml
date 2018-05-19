@@ -33,10 +33,12 @@ addons:
     - tree
     #- python-sphinx
 script:
-  - chmod a+x ./doc/jsdoc-releases-3.1/jsdoc
-  - ./doc/jsdoc-releases-3.1/jsdoc -c doc/jsdoc.conf
+  - cd doc
+  - chmod a+x ./jsdoc-releases-3.1/jsdoc
+  - ./jsdoc-releases-3.1/jsdoc -c jsdoc.conf
+  - cd ../
   - mkdir -p deploy/latest
-  - mv out deploy/latest/doc
+  - mv doc/out deploy/latest/doc
   - python manage.py --build > build.log
 after_success:
   - ( wget -e robots=off -r -nH -np -l 1 -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN; exit 0 )
