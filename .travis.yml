@@ -30,8 +30,10 @@ addons:
   apt:
     packages:
     - tree
+    - python-sphinx
 script:
   - python manage.py --build > build.log
+  - python manage.py --docs >> build.log
   - mkdir -p deploy/latest
 after_success:
   - ( wget -e robots=off -r -nH -np -l 1 -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN; exit 0 )
