@@ -1,4 +1,5 @@
-if: type IN (push)
+# for testing
+#if: type IN (push)
 branches:
   only:
   - master
