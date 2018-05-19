@@ -16,7 +16,7 @@ http://doc.x3dom.org
 Need help?
 ----------
 If you want to use X3DOM and seek help or sharing of knowledge, please use
-the x3dom-users mailing list or the forums. Beginner questions usually have
+the [x3dom-users][] mailing list or the forums. Beginner questions usually have
 been asked already and in many cases the mailinglist or forum archives provide
 quick answers to many questions.
 
