@@ -10,8 +10,11 @@ Getting started
 ---------------
 Please have a look at the official documentation in order to get started:
 
-http://doc.x3dom.org
+https://doc.x3dom.org (or https://x3dom-dev.surge.sh/latest/doc for doc. development)
 
+https://doc.x3dom.org/tutorials/basics/hello/index.html (https://x3dom-dev.surge.sh/latest/doc/tutorials/basics/hello/index.html) describes a minimal starter scene.
+
+https://www.x3dom.org/download (or https://x3dom-dev.surge.sh/latest/ for latest development) serves various versions of the x3dom framework. 
 
 Need help?
 ----------
