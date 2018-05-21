@@ -40,10 +40,10 @@ script:
   - mv doc/out deploy/latest/doc
   - python manage.py --build > build.log
 after_success:
-  - ( wget -e robots=off -r -nH -np -l 1 -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN; exit 0 )
+  - ( wget -e robots=off -r -nH -np -l 1 -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN >> build.log; exit 0 )
   - # go into build dirs and get marks
-  - ( wget -e robots=off -r -nH -np -R js,css -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN; exit 0 )
-  - ( wget -e robots=off -r -nH -np --accept-regex='build_.+' -S ${SURGE_DOMAIN}/latest/index.html; exit 0 )  
+  - ( wget -e robots=off -r -nH -np -R js,css -X /latest,/build_?? -S -P deploy $SURGE_DOMAIN >> build.log; exit 0 )
+  - ( wget -e robots=off -r -nH -np --accept-regex='build_.+' -S ${SURGE_DOMAIN}/latest/index.html >> build.log; exit 0 )  
   - cp dist/x3dom.* dist/x3dom-full.* deploy/latest
   - >
     lastbuild=$(ls latest/build_?); lastbuild=${lastbuild: -1}
@@ -61,7 +61,7 @@ after_success:
   - touch latest/$PR_MARK
   - rm -rf $BUILD
   - cp -r latest $BUILD
-  - tree -r -I index.html -h -C -h -H '.' -T "x3dom PR ${TRAVIS_PULL_REQUEST} commit ${TRAVIS_COMMIT} build:" ./ > index.html
+  - tree -L 2 -r -I index.html -h -C -h -H '.' -T "x3dom PR ${TRAVIS_PULL_REQUEST} commit ${TRAVIS_COMMIT} build:" ./ > index.html
   - "# link to commit and PR on github"
   - sed -i "s=./.*commit_\(.*commit\)=${COMMIT_URL}/\1=" index.html
   - sed -i "s=./.*PR_NUMBER_\(.*PR\)=${PR_URL}/\1=" index.html
