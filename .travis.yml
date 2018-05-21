@@ -41,11 +41,11 @@ script:
   - python manage.py --build > build.log
 after_success:
   - # only get build dirs, do not descend into doc
-  - ( wget -nv -e robots=off -r -nH -np -l 2 -I /build_? -S -P deploy $SURGE_DOMAIN; exit 0 )
+  - ( wget -nv -e robots=off -r -nH -np -l 2 -I /build_? -P deploy $SURGE_DOMAIN; exit 0 )
   - # go into build dirs and get marks
   - # ( wget -nv -e robots=off -r -nH -np -l 2 -R js,css -I /build_? -S -P deploy $SURGE_DOMAIN; exit 0 )
   - # get build no for latest
-  - ( wget -nv -e robots=off -r -nH -np --accept-regex='build_.+' -S ${SURGE_DOMAIN}/latest/index.html; exit 0 )  
+  - ( wget -nv -e robots=off -r -nH -np --accept-regex='build_.+' ${SURGE_DOMAIN}/latest/index.html; exit 0 )  
   - cp dist/x3dom.* dist/x3dom-full.* deploy/latest
   - >
     lastbuild=$(ls latest/build_?); lastbuild=${lastbuild: -1}
@@ -77,4 +77,4 @@ after_success:
   - "# just for logging purposes"
   - du -ah ./
   - env
-  - cat ../build.log ../wget*log
+  - cat ../build.log
