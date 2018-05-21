@@ -1,4 +1,4 @@
-#if: type IN (push)
+if: type IN (push)
 branches:
   only:
   - master
