@@ -254,7 +254,6 @@ x3dom.JSONParser.prototype.ConvertToX3DOM = function(object, parentkey, element,
 		if (isArray) {
 			if (parentkey.startsWith('@')) {
 				if (arrayOfStrings) {
-					arrayOfStrings = false;
 					for (var str in localArray) {
 						localArray[str] = this.SFStringToXML(localArray[str]);
 					}
@@ -264,7 +263,6 @@ x3dom.JSONParser.prototype.ConvertToX3DOM = function(object, parentkey, element,
 					this.elementSetAttribute(element, parentkey.substr(1),localArray.join(" "));
 				}
 			}
-			isArray = false;
 		}
 		return element;
 	};
