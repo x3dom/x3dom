@@ -244,13 +244,13 @@ x3dom.Mesh.prototype.splitMesh = function(primStride, checkMultiIndIndices)
     var pStride;
     var isMultiInd;
 
-    if (typeof primStride === undefined) {
+    if (primStride === undefined) {
         pStride = 3;
     } else {
         pStride = primStride;
     }
 
-    if (typeof checkMultiIndIndices === undefined) {
+    if (checkMultiIndIndices === undefined) {
         checkMultiIndIndices = false;
     }
 
