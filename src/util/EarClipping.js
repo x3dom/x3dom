@@ -15,7 +15,7 @@ x3dom.EarClipping = {
 		
 		var node = linklist.first.next;
 		var plane = this.identifyPlane(node.prev.point, node.point, node.next.point);
-		var i, points, x, y;
+		var i, points, point_indexes, x, y;
 		points = [];
 		point_indexes = [];
 		
@@ -51,8 +51,8 @@ x3dom.EarClipping = {
 		mapped.colors = [];
 		mapped.texCoords = [];
 		
-		points = [];
-		
+		var points = [];
+		var i, x, y;
 		for (i = 0; i < linklist.length; i++) {
 			node = linklist.getNode(i);
 			switch (plane) {
@@ -165,6 +165,7 @@ function earcut(data, holeIndices, dim) {
 // AP: separated to get original winding order
 function windingOrder(data, start, end, dim) {
 	var sum = 0;
+	var i, j;
     for (i = start, j = end - dim; i < end; i += dim) {
         sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
         j = i;

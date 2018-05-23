@@ -33,7 +33,9 @@
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
                 {"path": "fields.js"},		
-                {"path": "Docs.js"}
+                {"path": "Docs.js"},
+                {"path": "util/json/JSONParser.js"},
+                {"path": "util/json/PrototypeExpander.js"}
             ]},
 
         {"group": "SHADER",
@@ -111,6 +113,7 @@
                     {"file": "X3DGeometricPropertyNode.js"},
                     {"file": "X3DCoordinateNode.js"},
                     {"file": "Coordinate.js"},
+                    {"file": "CoordinateDouble.js"},
                     {"file": "Normal.js"},
                     {"file": "X3DColorNode.js"},
                     {"file": "Color.js"},

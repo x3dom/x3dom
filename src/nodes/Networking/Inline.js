@@ -75,7 +75,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName)
             {
-                if (fieldName == "url") {
+                if (fieldName == "url" || fieldName == "load") {
 
                     //Remove the childs of the x3domNode
                     for (var i=0; i<this._childNodes.length; i++)
@@ -152,11 +152,26 @@ x3dom.registerNodeType(
 
             loadInline: function ()
             {
+                if (!this._vf.load) {
+                    x3dom.debug.logInfo('Inline: load field prevented loading of ' + this._vf.url[0]);
+                    return;
+                }
+              
                 var that = this;
 
                 var xhr = new window.XMLHttpRequest();
-                if (xhr.overrideMimeType)
-                    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+                if (this._vf.url.length && this._vf.url[0].length) {
+			if (this._vf.url[0].toLowerCase().endsWith(".json")) {
+				if (xhr.overrideMimeType)
+				    xhr.overrideMimeType('application/json');
+			} else {
+				if (xhr.overrideMimeType)
+				    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+			}
+		} else {
+			if (xhr.overrideMimeType)
+			    xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+		}
 
                 xhr.onreadystatechange = function ()
                 {
@@ -205,10 +220,21 @@ x3dom.registerNodeType(
 
                     var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
-                    if (navigator.appName != "Microsoft Internet Explorer")
-                        xml = xhr.responseXML;
-                    else
-                        xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+		    try {
+			    var json = JSON.parse(xhr.response);
+			    // console.log("post parse", json);
+		
+			    json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, json);
+			    // console.log("return from expander", json);
+			    var parser = new x3dom.JSONParser();
+			    xml = parser.parseJavaScript(json);
+			    // console.log("post parser", xml);
+		    } catch (e) {
+			    if (navigator.appName != "Microsoft Internet Explorer")
+				xml = xhr.responseXML;
+			    else
+				xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+		    }
 
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                     if (xml !== undefined && xml !== null)
