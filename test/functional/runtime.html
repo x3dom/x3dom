@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
     <title>Runtime object example</title>
     <script type="text/javascript" src="../x3dom_include.js"></script>
+    <script type="text/javascript" src="https://rawgit.com/coderextreme/x3dom/2c0db248ee57f0a7702c4203b5c780de74a43127/src/Runtime.js"></script>
 	<style>
 		ul.plain { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
 		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap}
@@ -44,7 +45,14 @@
     </x3d>
 
     	<ul class="plain">
-		    <li><em>Active bindable</em></span>
+            <li><em>Scene access</em></span>
+                <ul>
+                    <li><span id="scene_info"></span></li>
+                    <li><a href="#" onClick="$element.runtime.replaceWorld(world2);updateAbInfo('world 2');return false;">replace world</a></li>
+                    <li><a href="#" onClick="$element.runtime.replaceWorld(savedWorld);updateAbInfo('restored world');return false;">restore world</a></li>
+                </ul>
+            </li>
+            <li><em>Active bindable</em></span>
 	           	<ul>
 		    		<li><span id="ab_info"></span></li>
                     <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0</a></li>
@@ -122,6 +130,10 @@
 	var ab_info;
 
     x3dom.runtime.ready = function() {
+        savedWorld = document.querySelector('Scene');
+        var container = document.createElement('container');
+        container.innerHTML = '<Scene><Shape><Appearance></Appearance><Sphere></Sphere></Shape></Scene>';
+        world2 = container.querySelector('Scene');
         alert('Hello I am the result of a custom runtime ready function.');
     };
 
