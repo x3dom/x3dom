@@ -195,7 +195,7 @@ x3dom.Utils.createCompressedTexture2D = function(gl, doc, src, bgnd, crossOrigin
 
   //start loading
 
-  ddsXhr = new XMLHttpRequest();
+  var ddsXhr = new XMLHttpRequest();
 
   var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
 
@@ -224,7 +224,7 @@ x3dom.Utils.tryCompressedTexture2D = function(texture, gl, doc, src, bgnd, cross
 {
   //start loading
 
-  ddsXhr = new XMLHttpRequest();
+  var ddsXhr = new XMLHttpRequest();
 
   var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
 

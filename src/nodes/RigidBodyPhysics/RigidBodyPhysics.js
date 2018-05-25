@@ -866,7 +866,7 @@ function X3DJoint(){
                         rbInfo = new Ammo.btRigidBodyConstructionInfo( mass, motionState, compoundShape, localInertia );
                         rbInfo.m_friction = CollidableShapes[cs].CollisionCollection._x3domNode._vf.frictionCoefficients.x;
                         rbInfo.m_rollingFriction = CollidableShapes[cs].CollisionCollection._x3domNode._vf.frictionCoefficients.y;
-                        trianglesetAmmo = new Ammo.btRigidBody( rbInfo );
+                        var trianglesetAmmo = new Ammo.btRigidBody( rbInfo );
                         if(CollidableShapes[cs].RigidBody._vf.autoDamp){
                             trianglesetAmmo.setDamping(CollidableShapes[cs].RigidBody._vf.linearDampingFactor, CollidableShapes[cs].RigidBody._vf.angularDampingFactor);
                         }
@@ -931,7 +931,7 @@ function X3DJoint(){
 
     CreateJoints = function(){
         if(UpdateRigidbody != null){
-            var constraintNum = bulletWorld.getNumConstraints();
+            var cn, constraintNum = bulletWorld.getNumConstraints();
             for(cn = constraintNum; cn >= 0; cn--){
                 var constr = bulletWorld.getConstraint(cn);
                 bulletWorld.removeConstraint(constr);
