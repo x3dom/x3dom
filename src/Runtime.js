@@ -1358,3 +1358,92 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
 
     return (persp._vf.isActive) ? 0 : 1;
 };
+
+/**
+ * APIFunction: replaceWorld
+ *
+ * Replaces the current scene element
+ *
+ * For example:
+ *
+ *   > var element, x3d, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *
+ * Parameters:
+ * 		scene - scene element to substitute
+ */
+x3dom.Runtime.prototype.replaceWorld = function(scene) {
+    var current = this.doc.querySelector('Scene');
+    this.doc.replaceChild(scene, current);
+    //also replace header node
+    this.canvas.doc.load(this.doc, 0);
+    this.canvas.doc.needRender = true;
+};
+
+/**
+ * APIFunction: createX3dFromJS
+ *
+ * Creates a x3d element from a JSON JavaScript X3D object
+ *
+ * For example:
+ *
+ *   > var element, x3d, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *
+ * Parameters:
+ * 		jsobject -- JavaScript JSON object of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on jsobject.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		The x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
+	if (optionalURL) {
+		jsobject = x3dom.protoExpander.prototypeExpander(optionalURL, jsobject);
+	}
+	var jsonParser = new x3dom.JSONParser();
+	return jsonParser.parseJavaScript(jsobject);
+};
+
+/**
+ * APIFunction: createX3dFromString
+ *
+ * Creates a x3d element from a JSON String
+ *
+ * For example:
+ *
+ *   > var element, x3d, json, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *
+ * Parameters:
+ * 		json -- JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		The x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
+    try {
+	    var jsobject = JSON.parse(jsonOrXML);
+	    return this.createX3DFromJS(jsonOrXML, optionalURL);
+    } catch {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(jsonOrXML, 'application/xml');
+        var scene = doc.querySelector('X3D');
+        if (scene == null) {
+            doc = parser.parseFromString(jsonOrXML, 'text/html');
+            scene = doc.querySelector('X3D');
+        }
+        return scene;
+    }
+};

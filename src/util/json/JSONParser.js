@@ -91,7 +91,7 @@ x3dom.JSONParser.prototype.CreateElement = function(key, containerField) {
 	 * a way to create a CDATA function or script in HTML, by using a DOM parser.
 	 */
 x3dom.JSONParser.prototype.CDATACreateFunction = function(document, element, str) {
-		var y = str.replace(/\\"/g, "\\\"")
+		var y = str.trim().replace(/\\"/g, "\\\"")
 			.replace(/&lt;/g, "<")
 			.replace(/&gt;/g, ">")
 			.replace(/&amp;/g, "&");
