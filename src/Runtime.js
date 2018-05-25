@@ -1358,3 +1358,74 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
 
     return (persp._vf.isActive) ? 0 : 1;
 };
+
+/**
+ * APIFunction: replaceWorld
+ *
+ * Replaces the current scene element
+ *
+ * For example:
+ *
+ *   > var element, scene, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > scene = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(scene);
+ *
+ * Parameters:
+ * 		scene - scene element to substitute
+ */
+x3dom.Runtime.prototype.replaceWorld = function(scene) {
+    this.canvas.doc._scene = scene;
+    x3dom.reload();
+};
+
+/**
+ * APIFunction: createX3dFromJS
+ *
+ * Creates a scene from a JSON JavaScript X3D object
+ *
+ * For example:
+ *
+ *   > var element, scene, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > scene = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(scene);
+ *
+ * Parameters:
+ * 		jsobject -- JavaScript JSON object of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on jsobject.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		The scene element
+ */
+x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
+	return x3dom.JSONParser.parseJavaScript(jsobject, optionalURL).querySelector('Scene');
+};
+
+/**
+ * APIFunction: createX3dFromString
+ *
+ * Creates a scene from a JSON String
+ *
+ * For example:
+ *
+ *   > var element, scene, json, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > scene = element.runtime.createX3dFromString(json, optionalUrl);
+ *   > element.runtime.replaceWorld(scene);
+ *
+ * Parameters:
+ * 		json -- JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		The scene element
+ */
+x3dom.Runtime.prototype.createX3DFromString = function(json, optionalURL) {
+	var jsobject = JSON.parse(json);
+	return x3dom.Runtime.prototype.createX3DFromJS(json, optionalURL);
+};
