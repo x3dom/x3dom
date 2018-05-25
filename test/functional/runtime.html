@@ -130,10 +130,12 @@
 	var ab_info;
 
     x3dom.runtime.ready = function() {
-        savedWorld = document.querySelector('Scene');
         var container = document.createElement('container');
         container.innerHTML = '<Scene><Shape><Appearance></Appearance><Sphere></Sphere></Shape></Scene>';
         world2 = container.querySelector('Scene');
+	    var savedWorldHTML = document.querySelector('Scene').outerHTML;
+        container.innerHTML = savedWorldHTML;
+        savedWorld = container.querySelector('Scene');
         alert('Hello I am the result of a custom runtime ready function.');
     };
 
