@@ -146,13 +146,6 @@
 	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
         //container.innerHTML = savedWorldHTML;
         savedWorld = document.querySelector('Scene');
-		
-        function replaceScene(scene) {
-            //strip scene of custom properties
-            var container = document.createElement('container');
-            container.innerHTML = scene.outerHTML;
-            $element.runtime.replaceWorld(container.firstChild());
-        }
             
         $element.runtime.ready = function() {
             alert('Per element custom .runtime.ready() function.');
@@ -166,6 +159,13 @@
 		updatePickInfo();
 		updateNavInfo();
 	}
+        
+    function replaceScene(scene) {
+        //strip scene of custom properties
+        var container = document.createElement('container');
+        container.innerHTML = scene.outerHTML;
+        $element.runtime.replaceWorld(container.firstChild());
+    }
 
 	function updatePickInfo() {
 		pick_mode_info = document.getElementById('pick_mode_info');
