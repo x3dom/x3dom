@@ -1440,10 +1440,10 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     catch {
         var parser = new DOMParser();
         var doc = parser.parseFromString(jsonOrXML, 'application/xml');
-        var scene = doc.querySelector('Scene');
+        var scene = doc.querySelector('X3D');
         if (scene == null) {
             doc = parser.parseFromString(jsonOrXML, 'text/html');
-            scene = doc.querySelector('Scene');
+            scene = doc.querySelector('X3D');
         }
         return scene;
 };
