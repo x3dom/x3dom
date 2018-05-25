@@ -1366,30 +1366,31 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  *
  * For example:
  *
- *   > var element, scene, jsobject, optionalUrl;
+ *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > scene = element.runtime.createX3dFromJS(jsobject, optionalUrl);
- *   > element.runtime.replaceWorld(scene);
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
  *
  * Parameters:
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(scene) {
-    this.canvas.doc._scene = scene;
+    var oldScene = this.doc.querySelector("Scene");
+    this.doc.replaceChild(scene, oldScene);
     x3dom.reload();
 };
 
 /**
  * APIFunction: createX3dFromJS
  *
- * Creates a scene from a JSON JavaScript X3D object
+ * Creates a x3d element from a JSON JavaScript X3D object
  *
  * For example:
  *
- *   > var element, scene, jsobject, optionalUrl;
+ *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > scene = element.runtime.createX3dFromJS(jsobject, optionalUrl);
- *   > element.runtime.replaceWorld(scene);
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
  *
  * Parameters:
  * 		jsobject -- JavaScript JSON object of X3D object
@@ -1398,23 +1399,27 @@ x3dom.Runtime.prototype.replaceWorld = function(scene) {
  * 			URL.
  *
  * Returns:
- * 		The scene element
+ * 		The x3d element
  */
 x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
-	return x3dom.JSONParser.parseJavaScript(jsobject, optionalURL).querySelector('Scene');
+	if (optionalURL) {
+		jsobject = x3dom.protoExpander.prototypeExpander(optionalURL, jsobject);
+	}
+	var jsonParser = new x3dom.JSONParser();
+	return jsonParser.parseJavaScript(jsobject);
 };
 
 /**
  * APIFunction: createX3dFromString
  *
- * Creates a scene from a JSON String
+ * Creates a x3d element from a JSON String
  *
  * For example:
  *
- *   > var element, scene, json, optionalUrl;
+ *   > var element, x3d, json, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > scene = element.runtime.createX3dFromString(json, optionalUrl);
- *   > element.runtime.replaceWorld(scene);
+ *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
  *
  * Parameters:
  * 		json -- JSON of X3D object
@@ -1423,7 +1428,7 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
  * 			URL.
  *
  * Returns:
- * 		The scene element
+ * 		The x3d element
  */
 x3dom.Runtime.prototype.createX3DFromString = function(json, optionalURL) {
 	var jsobject = JSON.parse(json);
