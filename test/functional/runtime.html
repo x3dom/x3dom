@@ -141,7 +141,15 @@
 //		$element = document.getElementById('the_element');
 
 		var container = document.createElement('container');
-        container.innerHTML = '<Scene><Shape><Appearance></Appearance><Sphere></Sphere></Shape></Scene>';
+        container.innerHTML =
+`<Scene>
+  <Shape>
+    <Appearance>
+      <Material></Material>
+    </Appearance>
+    <Sphere></Sphere>
+  </Shape>
+</Scene>`;
         world2 = container.querySelector('Scene');
 	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
         //container.innerHTML = savedWorldHTML;
