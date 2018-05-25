@@ -202,8 +202,10 @@ x3dom.gfx_webgl = (function () {
         var q = 0, q6;
         var textures, t;
         var vertices, positionBuffer;
-        var texCoordBuffer, normalBuffer, colorBuffer;
+        var texCoords, texCoordBuffer;
         var indicesBuffer, indexArray;
+        var normals, normalBuffer ;
+        var colors, colorBuffer;
 
         var shape = drawable.shape;
         var geoNode = shape._cf.geometry.node;
@@ -3739,7 +3741,7 @@ x3dom.gfx_webgl = (function () {
             if (slights[p]._vf.shadowIntensity > 0.0) {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
-                shadowMaps = scene._webgl.fboShadow[shadowCount];
+                var shadowMaps = scene._webgl.fboShadow[shadowCount];
                 var offset = Math.max(0.0, Math.min(1.0, slights[p]._vf.shadowOffset));
 
                 if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)) {
