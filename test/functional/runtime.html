@@ -164,7 +164,7 @@
         //strip scene of custom properties
         var container = document.createElement('container');
         container.innerHTML = scene.outerHTML;
-        $element.runtime.replaceWorld(container.firstChild());
+        $element.runtime.replaceWorld(container.firstElementChild);
     }
 
 	function updatePickInfo() {
