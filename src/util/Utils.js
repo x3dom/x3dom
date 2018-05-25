@@ -73,14 +73,14 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 
 	var texture = gl.createTexture();
 
-    // //Create a black 4 pixel texture to prevent 'texture not complete' warning
-    // var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
-    // gl.bindTexture(gl.TEXTURE_2D, texture);
-    // gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-    // if (genMipMaps) {
-    //     gl.generateMipmap(gl.TEXTURE_2D);
-    // }
-    // gl.bindTexture(gl.TEXTURE_2D, null);
+    //Create a black 4 pixel texture to prevent 'texture not complete' warning
+    var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+    if (genMipMaps) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+    }
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
     texture.ready = false;
 
@@ -164,10 +164,6 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
             return;
         }
 
-        // //gl.deleteTexture(texture);
-
-        // texture = gl.createTexture();
-
         gl.bindTexture(dds.type, texture);
 
         flipY = false;
@@ -240,9 +236,12 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 /*****************************************************************************
 *
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps)
+x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps, flipY)
 {
-	var texture = gl.createTexture();
+    //Create a black 4 pixel texture to prevent 'texture not complete' warning
+    var data = new Uint8Array([0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
+
+    var texture = gl.createTexture();
 
 	var faces;
 	if (bgnd) {
@@ -256,7 +255,9 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 		faces = [gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
 				 gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
 				 gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
-	}
+    }
+
+
 
     texture.ready = false;
     texture.pendingTextureLoads = -1;
@@ -264,80 +265,103 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 
     var width = 0, height = 0;
 
-	for (var i=0; i<faces.length; i++) {
-		var face = faces[i];
+    for (var i=0; i<faces.length; i++)
+    {
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texImage2D(faces[i], 0, gl.RGBA, 2, 2, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    }
 
-		var image = new Image();
-
-        switch(crossOrigin.toLowerCase()) {
-            case 'anonymous': {
-                image.crossOrigin = 'anonymous';
-            } break;
-            case 'use-credentials': {
-                image.crossOrigin = 'use-credentials'
-            } break;
-            case 'none': {
-                //this is needed to omit the default case, if default is none, erase this and the default case
-            } break;
-            default: {
-                if(x3dom.Utils.forbiddenBySOP(src[i])) {
+    if ( src.length == 1 )
+    {
+        x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY).then( function() {
+            doc.downloadCount--;
+            doc.needRender = true;
+        }, function() {
+            x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
+            doc.downloadCount--;
+        });
+    }
+    else if ( src.length == 6 )
+    {
+        for (var i=0; i<faces.length; i++)
+        {
+            var face = faces[i];
+    
+            var image = new Image();
+    
+            switch(crossOrigin.toLowerCase()) {
+                case 'anonymous': {
                     image.crossOrigin = 'anonymous';
+                } break;
+                case 'use-credentials': {
+                    image.crossOrigin = 'use-credentials'
+                } break;
+                case 'none': {
+                    //this is needed to omit the default case, if default is none, erase this and the default case
+                } break;
+                default: {
+                    if(x3dom.Utils.forbiddenBySOP(src[i])) {
+                        image.crossOrigin = 'anonymous';
+                    }
                 }
             }
-        }
-
-		texture.pendingTextureLoads++;
-		doc.downloadCount++;
-
-		image.onload = (function(texture, face, image, swap) {
-			return function() {
-				if (width == 0 && height == 0) {
-					width = image.width;
-					height = image.height;
-				}
-				else if (scale && (width != image.width || height != image.height)) {
-					x3dom.debug.logWarning("[Utils|createTextureCube] Rescaling CubeMap images, which are of different size!");
-					image = x3dom.Utils.rescaleImage(image, width, height);
-				}
-
-				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
-
-				gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-				gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-				gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-				gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-
-				texture.pendingTextureLoads--;
-				doc.downloadCount--;
-
-				if (texture.pendingTextureLoads < 0) {
-                    //Save image size also for cube tex
-                    texture.width  = width;
-                    texture.height = height;
-					texture.textureCubeReady = true;
-
-                    if (genMipMaps) {
-                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-                        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+    
+            texture.pendingTextureLoads++;
+            doc.downloadCount++;
+    
+            image.onload = (function(texture, face, image, swap) {
+                return function() {
+                    if (width == 0 && height == 0) {
+                        width = image.width;
+                        height = image.height;
                     }
+                    else if (scale && (width != image.width || height != image.height)) {
+                        x3dom.debug.logWarning("[Utils|createTextureCube] Rescaling CubeMap images, which are of different size!");
+                        image = x3dom.Utils.rescaleImage(image, width, height);
+                    }
+    
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
+    
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                    gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    
+                    texture.pendingTextureLoads--;
+                    doc.downloadCount--;
+    
+                    if (texture.pendingTextureLoads < 0) {
+                        //Save image size also for cube tex
+                        texture.width  = width;
+                        texture.height = height;
+                        texture.textureCubeReady = true;
+    
+                        if (genMipMaps) {
+                            gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                            gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                            gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                        }
+    
+                        x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
+                        doc.needRender = true;
+                    }
+                };
+            })( texture, face, image, bgnd );
+    
+            image.onerror = function()
+            {
+                doc.downloadCount--;
+    
+                x3dom.debug.logError("[Utils|createTextureCube] Can't load CubeMap!");
+            };
+    
+            // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
+            image.src = src[i];
+        }
+    }
 
-					x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
-					doc.needRender = true;
-				}
-			};
-		})( texture, face, image, bgnd );
-
-		image.onerror = function()
-		{
-			doc.downloadCount--;
-
-			x3dom.debug.logError("[Utils|createTextureCube] Can't load CubeMap!");
-		};
-
-		// backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
-		image.src = src[i];
-	}
+    
 
 	return texture;
 };

@@ -2632,8 +2632,8 @@ x3dom.gfx_webgl = (function () {
 
             //Get BRDF LUT Texture
             var brdf_lut = this.cache.getTexture2D(gl, shape._nameSpace.doc, x3dom.BRDF_LUT, false, 'anonymous', false, false, true);
-            var diffuse  = this.cache.getTexture2D(gl, shape._nameSpace.doc, diffuseURL, false, 'anonymous', false, false, true);
-            var specular = this.cache.getTexture2D(gl, shape._nameSpace.doc, specularURL, false, 'anonymous', false, false, true);
+            var diffuse  = this.cache.getTextureCube(gl, shape._nameSpace.doc, [diffuseURL], false, 'anonymous', false, false, true);
+            var specular = this.cache.getTextureCube(gl, shape._nameSpace.doc, [specularURL], false, 'anonymous', false, false, true);
 
             gl.activeTexture(gl.TEXTURE0 + cnt_n);
 
