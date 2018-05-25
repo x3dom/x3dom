@@ -227,7 +227,8 @@ x3dom.registerNodeType(
                             n1 = p1;
                             n2 = p2;
                             n3 = p3;
-                        } else //if (!normPerVert) {
+                        } else //if (!normPerVert)
+                        {
                             n1 = n2 = n3 = faceCnt;
                         }
 
@@ -239,7 +240,8 @@ x3dom.registerNodeType(
                             c1 = p1;
                             c2 = p2;
                             c3 = p3;
-                        } else //if (!colPerVert) {
+                        } else //if (!colPerVert)
+                        {
                             c1 = c2 = c3 = faceCnt;
                         }
 
@@ -442,7 +444,8 @@ x3dom.registerNodeType(
                                     n1 = p1;
                                     n2 = p2;
                                     n3 = p3;
-                                } else //if (!normPerVert) {
+                                } else //if (!normPerVert)
+                                {
                                     n1 = n2 = n3 = faceCnt;
                                 }
 
@@ -454,7 +457,8 @@ x3dom.registerNodeType(
                                     c1 = p1;
                                     c2 = p2;
                                     c3 = p3;
-                                } else //if (!colPerVert) {
+                                } else //if (!colPerVert)
+                                {
                                     c1 = c2 = c3 = faceCnt;
                                 }
 
