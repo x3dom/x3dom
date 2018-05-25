@@ -48,8 +48,8 @@
             <li><em>Scene access</em></span>
                 <ul>
                     <li><span id="scene_info"></span></li>
-                    <li><a href="#" onClick="$element.runtime.replaceWorld(world2);return false;">replace world</a></li>
-                    <li><a href="#" onClick="$element.runtime.replaceWorld(savedWorld);return false;">restore world</a></li>
+                    <li><a href="#" onClick="replaceScene(world2);return false;">replace world</a></li>
+                    <li><a href="#" onClick="replaceScene(savedWorld);return false;">restore world</a></li>
                 </ul>
             </li>
             <li><em>Active bindable</em></span>
@@ -130,12 +130,6 @@
 	var ab_info;
 
     x3dom.runtime.ready = function() {
-        var container = document.createElement('container');
-        container.innerHTML = '<Scene><Shape><Appearance></Appearance><Sphere></Sphere></Shape></Scene>';
-        world2 = container.querySelector('Scene');
-	    var savedWorldHTML = document.querySelector('Scene').outerHTML;
-        container.innerHTML = savedWorldHTML;
-        savedWorld = container.querySelector('Scene');
         alert('Hello I am the result of a custom runtime ready function.');
     };
 
@@ -146,6 +140,20 @@
 	function init(event) {
 //		$element = document.getElementById('the_element');
 
+		var container = document.createElement('container');
+        container.innerHTML = '<Scene><Shape><Appearance></Appearance><Sphere></Sphere></Shape></Scene>';
+        world2 = container.querySelector('Scene');
+	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
+        //container.innerHTML = savedWorldHTML;
+        savedWorld = document.querySelector('Scene');
+		
+        function replaceWorld(scene) {
+            //strip scene of custom properties
+            var container = document.createElement('container');
+            container.innerHTML = scene.outerHTML;
+            $element.runtime.replaceWorld(container.firstChild());
+        }
+            
         $element.runtime.ready = function() {
             alert('Per element custom .runtime.ready() function.');
         };
