@@ -1375,9 +1375,11 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(scene) {
-    var oldScene = this.doc.querySelector("Scene");
-    this.doc.replaceChild(scene, oldScene);
-    x3dom.reload();
+    var current = this.doc.querySelector('Scene');
+    this.doc.replaceChild(scene, current);
+    //also replace header node
+    this.canvas.doc.load(this.doc, 0);
+    this.canvas.doc.needRender = true;
 };
 
 /**
@@ -1430,7 +1432,18 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
  * Returns:
  * 		The x3d element
  */
-x3dom.Runtime.prototype.createX3DFromString = function(json, optionalURL) {
-	var jsobject = JSON.parse(json);
-	return x3dom.Runtime.prototype.createX3DFromJS(json, optionalURL);
+x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
+    try {
+	    var jsobject = JSON.parse(jsonOrXML);
+	    return this.createX3DFromJS(jsonOrXML, optionalURL);
+    }
+    catch {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(jsonOrXML, 'application/xml');
+        var scene = doc.querySelector('Scene');
+        if (scene == null) {
+            doc = parser.parseFromString(jsonOrXML, 'text/html');
+            scene = doc.querySelector('Scene');
+        }
+        return scene;
 };
