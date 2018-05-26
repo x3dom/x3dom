@@ -50,6 +50,7 @@
                     <li><span id="scene_info"></span></li>
                     <li><a href="#" onClick="replaceScene(world2);return false;">replace world</a></li>
                     <li><a href="#" onClick="replaceScene(savedWorld);return false;">restore world</a></li>
+                    <li><a href="#" onClick="fetchScene(DeerUrl);return false;">fetch world</a></li>
                 </ul>
             </li>
             <li><em>Active bindable</em></span>
@@ -138,9 +139,9 @@
     };
 
 	function init(event) {
-//		$element = document.getElementById('the_element');
+        //$element = document.getElementById('the_element');
 
-		var container = document.createElement('container');
+        var container = document.createElement('container');
         container.innerHTML =
 `<Scene>
   <Shape>
@@ -150,10 +151,12 @@
     <Sphere></Sphere>
   </Shape>
 </Scene>`;
+        
         world2 = container.querySelector('Scene');
 	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
         //container.innerHTML = savedWorldHTML;
         savedWorld = document.querySelector('Scene');
+        DeerUrl = '../../doc/x3doc/base/tutorials/models/inline/Deer.x3d';
             
         $element.runtime.ready = function() {
             alert('Per element custom .runtime.ready() function.');
@@ -173,6 +176,11 @@
         var container = document.createElement('container');
         container.innerHTML = scene.outerHTML;
         $element.runtime.replaceWorld(container.firstElementChild);
+    }
+       
+    function fetchScene(url) {
+        var x3d = $element.runtime.createX3DFromURL(url);
+        $element.runtime.replaceWorld(x3d);
     }
 
 	function updatePickInfo() {
