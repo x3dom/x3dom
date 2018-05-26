@@ -1477,7 +1477,7 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     fetch(url)
     .then(function(r) { return r.text(); })
     .then(function(text) {
-        that.createX3DFromString(text, optionalURL);
+        return that.createX3DFromString(text, optionalURL);
         //return text;
     })
     .catch(function(r) { console.log ('fetch failed: ', r); });
