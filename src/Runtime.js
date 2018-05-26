@@ -1375,9 +1375,9 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
-    var currentHead = this.doc.querySelector('Scene');
+    var currentHead = this.doc.querySelector('head');
     if (currentHead != null) currentHead.remove();
-    var head = x3d.querySelector("Head");
+    var head = x3d.querySelector("head");
     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
     var current = this.doc.querySelector('Scene');
     this.doc.replaceChild(x3d.querySelector("Scene"), current);
