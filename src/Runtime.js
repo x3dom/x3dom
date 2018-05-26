@@ -1369,15 +1369,18 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
  *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
- *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
  * 		scene - scene element to substitute
  */
-x3dom.Runtime.prototype.replaceWorld = function(scene) {
+x3dom.Runtime.prototype.replaceWorld = function(x3d) {
+    var currentHead = this.doc.querySelector('Scene');
+    if (currentHead != null) currentHead.remove();
+    var head = x3d.querySelector("Head");
+    if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
     var current = this.doc.querySelector('Scene');
-    this.doc.replaceChild(scene, current);
-    //also replace header node
+    this.doc.replaceChild(x3d.querySelector("Scene"), current);
     this.canvas.doc.load(this.doc, 0);
     this.canvas.doc.needRender = true;
 };
