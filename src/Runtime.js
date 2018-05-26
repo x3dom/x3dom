@@ -1395,7 +1395,7 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
  *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
  *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
- *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
  * 		jsobject -- JavaScript JSON object of X3D object
@@ -1417,14 +1417,14 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
 /**
  * APIFunction: createX3dFromString
  *
- * Creates a x3d element from a JSON String
+ * Creates a x3d element from a JSON or XML String
  *
  * For example:
  *
  *   > var element, x3d, json, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
  *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
- *   > element.runtime.replaceWorld(x3d.querySelector("Scene"));
+ *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
  * 		json -- JSON of X3D object
@@ -1449,4 +1449,36 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
         }
         return scene;
     }
+};
+/**
+ * APIFunction: createX3dFromURL
+ *
+ * Creates a x3d element from a Url
+ *
+ * For example:
+ *
+ *   > var element, x3d, json, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromURK(Url, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * Parameters:
+ * 		url -- url of XML or JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json, only.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		The x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
+    that = this;
+    //tentative, untested
+    fetch(url)
+    .then(function(r) { return r.text(); })
+    .then(function(text) {
+        that.createX3DFromString(text, optionalURL);
+        //return text;
+    })
+    .catch(function(r) { console.log ('fetch failed: ', r); });
 };
