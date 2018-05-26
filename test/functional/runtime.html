@@ -178,8 +178,10 @@
     }
        
     function fetchScene(url) {
-        var x3d = $element.runtime.createX3DFromURL(url);
-        $element.runtime.replaceWorld(x3d);
+        $element.runtime.createX3DFromURL(url)
+        .then(function(x3d){
+            $element.runtime.replaceWorld(x3d)
+        });
     }
 
 	function updatePickInfo() {
