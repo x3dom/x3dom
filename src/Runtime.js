@@ -1382,7 +1382,10 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
     //Scene
     var current = this.doc.querySelector('Scene');
-    this.doc.replaceChild(x3d.querySelector("Scene"), current);
+    //explicitly remove scene to trigger event
+    current.remove();
+    //this.doc.replaceChild(x3d.querySelector("Scene"), current);
+    this.doc.appendChild(x3d.querySelector("Scene"));
     this.canvas.doc.load(this.doc, 0);
     this.canvas.doc.needRender = true;
 };
