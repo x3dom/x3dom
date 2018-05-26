@@ -48,9 +48,9 @@
             <li><em>Scene access</em></span>
                 <ul>
                     <li><span id="scene_info"></span></li>
-                    <li><a href="#" onClick="$element.runtime.replaceWorld(savedSphere);return false;">replace with red sphere</a></li>
-                    <li><a href="#" onClick="$element.runtime.replaceWorld(world2);return false;">replace world</a></li>
-                    <li><a href="#" onClick="$element.runtime.replaceWorld(savedWorld);return false;">restore world</a></li>
+                    <li><a href="#" onClick="replaceScene(savedSphere);return false;">replace with red sphere</a></li>
+                    <li><a href="#" onClick="replaceScene(world2);return false;">replace world</a></li>
+                    <li><a href="#" onClick="replaceScene(savedWorld);return false;">restore world</a></li>
                 </ul>
             </li>
             <li><em>Active bindable</em></span>
@@ -151,6 +151,21 @@
 	function init(event) {
 	// $element = document.getElementById('the_element');
 
+		var container = document.createElement('container');
+        container.innerHTML =
+`<Scene>
+  <Shape>
+    <Appearance>
+      <Material></Material>
+    </Appearance>
+    <Sphere></Sphere>
+  </Shape>
+</Scene>`;
+        world2 = container.querySelector('Scene');
+	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
+        //container.innerHTML = savedWorldHTML;
+        savedWorld = document.querySelector('Scene');
+            
         $element.runtime.ready = function() {
             alert('Per element custom .runtime.ready() function.');
         };
@@ -163,6 +178,13 @@
 		updatePickInfo();
 		updateNavInfo();
 	}
+        
+    function replaceScene(scene) {
+        //strip scene of custom properties
+        var container = document.createElement('container');
+        container.innerHTML = scene.outerHTML;
+        $element.runtime.replaceWorld(container.firstElementChild);
+    }
 
 	function updatePickInfo() {
 		pick_mode_info = document.getElementById('pick_mode_info');
