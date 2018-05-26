@@ -1474,7 +1474,7 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
 x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     that = this;
     //tentative, untested
-    fetch(url)
+    return fetch(url)
     .then(function(r) { return r.text(); })
     .then(function(text) {
         return that.createX3DFromString(text, optionalURL);
