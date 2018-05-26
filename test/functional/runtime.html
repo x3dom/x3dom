@@ -142,19 +142,19 @@
 
         var container = document.createElement('container');
         container.innerHTML =
-`<Scene>
+`<X3D><Scene>
   <Shape>
     <Appearance>
       <Material></Material>
     </Appearance>
     <Sphere></Sphere>
   </Shape>
-</Scene>`;
+</Scene></X3D>`;
         
-        world2 = container.querySelector('Scene');
+        world2 = container.querySelector('X3D');
 	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
         //container.innerHTML = savedWorldHTML;
-        savedWorld = document.querySelector('Scene');
+        savedWorld = document.querySelector('X3D');
         DeerUrl = '../../doc/x3doc/base/tutorials/models/inline/Deer.x3d';
             
         $element.runtime.ready = function() {
