@@ -1375,10 +1375,12 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
+    //Head if there
     var currentHead = this.doc.querySelector('Head');
     if (currentHead != null) currentHead.remove();
     var head = x3d.querySelector("head");
     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
+    //Scene
     var current = this.doc.querySelector('Scene');
     this.doc.replaceChild(x3d.querySelector("Scene"), current);
     this.canvas.doc.load(this.doc, 0);
@@ -1453,7 +1455,7 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
 /**
  * APIFunction: createX3dFromURL
  *
- * Creates a x3d element from a Url
+ * Creates a promise resolved to the x3d element from a Url
  *
  * For example:
  *
@@ -1475,10 +1477,12 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     that = this;
     //tentative, untested
     return fetch(url)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-        return that.createX3DFromString(text, optionalURL);
-        //return text;
-    })
-    .catch(function(r) { console.log ('fetch failed: ', r); });
+        .then(function(r) { return r.text(); })
+        .then(function(text) {
+            return that.createX3DFromString(text, optionalURL);
+        })
+        .catch(function(r) { 
+            x3dom.debug.logError ('fetch failed: '+ r); 
+            return r;
+        });
 };
