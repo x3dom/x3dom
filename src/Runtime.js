@@ -1538,9 +1538,8 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     var intervalID = window.setInterval(function(){
         x3dom.debug.logInfo("waiting for fetch ...");
     }, timeout * 1000/20);
-            
-    while (wait) {
-        //wait, block
+    
+    while (function(){return wait;}) {
     };
     
     window.clearInterval(intervalID);
