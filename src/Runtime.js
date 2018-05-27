@@ -1522,7 +1522,7 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
 x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     var x3dresolved = null;
     var wait = true;
-    var timeout = 60;
+    var timeout = 30;
     this.createX3DFromURLPromise(url, optionalURL)
     .then(function(x3d) {
         wait = false;
@@ -1537,7 +1537,7 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     
     var intervalID = window.setInterval(function(){
         x3dom.debug.logInfo("waiting for fetch ...");
-    }, timout * 1000/20);
+    }, timeout * 1000/20);
             
     while (wait) {
         //wait, block
