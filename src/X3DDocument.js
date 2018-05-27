@@ -240,8 +240,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
                 }
             }
-            else if (domNode.localName && domNode.localName.toUpperCase() == "SCENE") {
-                removeX3DOMBackendGraph(domNode);
+//             else if (domNode.localName && domNode.localName.toUpperCase() == "SCENE") {
+//                 removeX3DOMBackendGraph(domNode);
             }
             else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
                 var runtime = domNode.runtime;
@@ -316,12 +316,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     };
 
     //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);
-    sceneDoc.removeEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
-    sceneDoc.removeEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
     sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
     sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
     if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
-        sceneDoc.removeEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
         sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
     }
 
