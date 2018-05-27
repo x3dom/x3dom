@@ -1535,11 +1535,15 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
         x3dom.debug.logError("fetch timed out");
     }, timeout * 1000);
     
+    var intervalID = window.setInterval(function(){
+        x3dom.debug.logInfo("waiting for fetch ...");
+    }, timout * 1000/20);
+            
     while (wait) {
-        window.setTimeout(function(){
-            x3dom.debug.logInfo("waiting for fetch ..");
-        }, timeout * 1000/20);
+        //wait, block
     };
     
+    window.clearInterval(intervalID);
+ 
     return x3dresolved;
 };
