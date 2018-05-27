@@ -1376,16 +1376,16 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
     //Head if there
-    var currentHead = this.doc.querySelector('Head');
+    var currentHead = this.doc.querySelector('Head') || this.doc.querySelector('head');
     if (currentHead != null) currentHead.remove();
     var head = x3d.querySelector("head");
     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
     //Scene
-    var current = this.doc.querySelector('Scene');
+    var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
     //explicitly remove scene to trigger event
     current.remove();
     //this.doc.replaceChild(x3d.querySelector("Scene"), current);
-    this.doc.appendChild(x3d.querySelector("Scene"));
+    this.doc.appendChild(x3d.querySelector("Scene") || x3d.querySelector("scene"));
     this.canvas.doc.load(this.doc, 0);
     this.canvas.doc.needRender = true;
 };
