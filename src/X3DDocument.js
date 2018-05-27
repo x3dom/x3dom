@@ -240,6 +240,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
                 }
             }
+            else if (domNode.localName && domNode.localName.toUpperCase() == "SCENE") {
+                removeX3DOMBackendGraph(domNode._xmlNode);
+            }
             else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
                 var runtime = domNode.runtime;
 
