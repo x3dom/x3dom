@@ -242,7 +242,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
 //             else if (domNode.localName && domNode.localName.toUpperCase() == "SCENE") {
 //                 removeX3DOMBackendGraph(domNode);
-            }
+//            }
             else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
                 var runtime = domNode.runtime;
 
