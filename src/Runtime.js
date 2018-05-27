@@ -1383,9 +1383,21 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
     //Scene
     var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
     //explicitly remove scene to trigger event
-    current.remove();
-    //this.doc.replaceChild(x3d.querySelector("Scene"), current);
-    this.doc.appendChild(x3d.querySelector("Scene") || x3d.querySelector("scene"));
+    //current.remove();
+    this.doc.replaceChild(x3d.querySelector("Scene"), current);
+    //this.doc.appendChild(x3d.querySelector("Scene") || x3d.querySelector("scene"));
+	this.canvas.doc._scene._webgl = null;
+	this.canvas.doc._nodeBag = {
+        timer: [],                // TimeSensor (tick)
+        lights: [],               // Light
+        clipPlanes: [],           // ClipPlane
+        followers: [],            // X3DFollowerNode
+        trans: [],                // X3DTransformNode (for listening to CSS changes)
+        renderTextures: [],       // RenderedTexture
+        viewarea: [],             // Viewport (for updating camera navigation)
+        affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
+                                    // this list is maintained for efficient update / deactivation
+    };
     this.canvas.doc.load(this.doc, 0);
     this.canvas.doc.needRender = true;
 };
