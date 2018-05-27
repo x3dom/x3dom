@@ -1521,17 +1521,17 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
  */
 x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     var x3dresolved = null;
-    var wait = true;
-    var timeout = 30;
+    var waiting = true;
+    var timeout = 10;
     this.createX3DFromURLPromise(url, optionalURL)
     .then(function(x3d) {
-        wait = false;
+        waiting = false;
         x3dresolved = x3d;
         return x3d;
     });
           
     window.setTimeout(function(){
-        wait = false;
+        waiting = false;
         x3dom.debug.logError("fetch timed out");
     }, timeout * 1000);
     
@@ -1539,7 +1539,10 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
         x3dom.debug.logInfo("waiting for fetch ...");
     }, timeout * 1000/20);
     
-    while (function(){return wait;}) {
+    var blocking = waiting;
+    
+    while (blocking) {
+        blocking = waiting;
     };
     
     window.clearInterval(intervalID);
