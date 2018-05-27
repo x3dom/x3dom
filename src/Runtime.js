@@ -1382,12 +1382,9 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
     //Scene
     var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
-    //explicitly remove scene to trigger event
-    //current.remove();
     this.doc.replaceChild(x3d.querySelector("Scene"), current);
-    //this.doc.appendChild(x3d.querySelector("Scene") || x3d.querySelector("scene"));
-	this.canvas.doc._scene._webgl = null;
-	this.canvas.doc._nodeBag = {
+    this.canvas.doc._scene._webgl = null;
+    this.canvas.doc._nodeBag = {
         timer: [],                // TimeSensor (tick)
         lights: [],               // Light
         clipPlanes: [],           // ClipPlane
@@ -1468,6 +1465,40 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     }
 };
 /**
+ * APIFunction: createX3dFromURLPromise
+ *
+ * Creates a promise resolved to the x3d element from a Url
+ *
+ * For example:
+ *
+ *   > var element, x3d, json, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromURK(Url, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * Parameters:
+ * 		url -- url of XML or JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json, only.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		A Promise resolved to the x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
+    that = this;
+    //tentative, untested
+    return fetch(url)
+        .then(function(r) { return r.text(); })
+        .then(function(text) {
+            return that.createX3DFromString(text, optionalURL);
+        })
+        .catch(function(r) { 
+            x3dom.debug.logError ('fetch failed: '+ r); 
+            return r;
+        });
+};
+/**
  * APIFunction: createX3dFromURL
  *
  * Creates a promise resolved to the x3d element from a Url
@@ -1486,18 +1517,22 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  * 			URL.
  *
  * Returns:
- * 		The x3d element
+ * 		the x3d element
  */
 x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
-    that = this;
-    //tentative, untested
-    return fetch(url)
-        .then(function(r) { return r.text(); })
-        .then(function(text) {
-            return that.createX3DFromString(text, optionalURL);
-        })
-        .catch(function(r) { 
-            x3dom.debug.logError ('fetch failed: '+ r); 
-            return r;
-        });
+    var x3dresolved = null;
+    var timedout = false;
+    var timeout = 60;
+    this.createX3DFromURLPromise(url, optionalURL)
+    .then(function(x3d) {
+        x3dresolved = x3d;
+        return x3d;
+    }
+    window.setTimeout(function(){
+        timedout = true;
+    }, timeout = timeout * 1000;);
+    while (!timedout) {
+        if (x3dresolved != null) return x3dresolved;
+    }
+    return null;
 };
