@@ -1528,7 +1528,7 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
         wait = false;
         x3dresolved = x3d;
         return x3d;
-    )};
+    });
           
     window.setTimeout(function(){
         wait = false;
