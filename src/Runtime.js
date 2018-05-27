@@ -1542,7 +1542,7 @@ x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
     var blocking = waiting;
     
     while (blocking) {
-        blocking = waiting;
+        if (!waiting) break;
     };
     
     window.clearInterval(intervalID);
