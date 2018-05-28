@@ -1537,5 +1537,5 @@ x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
     .then(function(x3d){
         if (x3d != null) that.replaceWorld(x3d);
         else {x3dom.debug.logError("loadURL: could not fetch or parse " + url);
-    };
+    });
 };
