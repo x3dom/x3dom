@@ -1376,8 +1376,11 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
     var x3dele = this.doc.cloneNode(false);
-    while (x3d.firstChild) {
-        x3dele.appendChild(x3d.firstChild);   
+    var child, name;
+    while (child = x3d.firstChild) {
+        name = child.localName.toUpperCase();
+        if (name == 'HEAD' || name == 'SCENE') x3dele.appendChild(child);
+        else {child.remove()}
     }
     this.doc.parentNode.replaceChild(x3dele, this.doc);
     this.doc = x3dele;
