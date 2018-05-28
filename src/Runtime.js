@@ -1464,7 +1464,7 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
 x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     try {
 	    var jsobject = JSON.parse(jsonOrXML);
-	    return this.createX3DFromJS(jsonOrXML, optionalURL);
+	    return this.createX3DFromJS(jsobject, optionalURL);
     } catch {
         var parser = new DOMParser();
         var doc = parser.parseFromString(jsonOrXML, 'application/xml');
@@ -1509,6 +1509,36 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
         .catch( function (r) {
             that.canvas.doc.downloadCount--;
             x3dom.debug.logError('fetch failed: '+ r); 
-            return r;
+            return null;
         });
+};
+/**
+ * APIFunction: loadURL
+ *
+ * loads asynchronuously a scene from a URL with json or xml content.
+ * The function returns before the world is loaded. Use events or .ready
+ * to determine when the scene is available.
+ * For more control use .createX3DFromURLPromise(url, optionalURL).
+ *
+ * Example:
+ *
+ *   > var element, url , optionalUrl;
+ *   > element.runtime.loadURL(url, optionalUrl);
+ *
+ * Parameters:
+ * 		url -- url of XML or JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json, only.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		undefined
+ */
+x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
+    that = this;
+    this.createX3DFromURLPromise(url, optionalURL)
+    .then(function(x3d){
+        if (x3d != null) that.replaceWorld(x3d);
+        else x3dom.debug.logError("loadURL: could not fetch or parse " + url);
+    });
 };
