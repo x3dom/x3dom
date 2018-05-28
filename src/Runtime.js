@@ -1467,7 +1467,7 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
 /**
  * APIFunction: createX3dFromURLPromise
  *
- * Creates a promise resolved to the x3d element from a Url
+ * Creates a Promise resolved to the x3d element from a Url
  *
  * For example:
  *
@@ -1487,63 +1487,13 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  */
 x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
     that = this;
-    //tentative, untested
     return fetch(url)
-        .then(function(r) { return r.text(); })
-        .then(function(text) {
+        .then( function (r) { return r.text(); })
+        .then( function (text) {
             return that.createX3DFromString(text, optionalURL);
         })
-        .catch(function(r) { 
+        .catch( function (r) { 
             x3dom.debug.logError ('fetch failed: '+ r); 
             return r;
         });
-};
-/**
- * APIFunction: createX3dFromURL
- *
- * Creates a promise resolved to the x3d element from a Url
- *
- * For example:
- *
- *   > var element, x3d, json, optionalUrl;
- *   > element = document.getElementById('the_x3delement');
- *   > x3d = element.runtime.createX3DFromURK(Url, optionalUrl);
- *   > element.runtime.replaceWorld(x3d);
- *
- * Parameters:
- * 		url -- url of XML or JSON of X3D object
- * 		optionalURL -- if specified, does a PROTO expansion on json, only.
- * 			JSON ExternProtoDeclare's are loaded relative to this
- * 			URL.
- *
- * Returns:
- * 		the x3d element
- */
-x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
-    var x3dresolved = null;
-    var waiting = true;
-    var timeout = 10;
-    this.createX3DFromURLPromise(url, optionalURL)
-    .then(function(x3d) {
-        waiting = false;
-        x3dresolved = x3d;
-        return x3d;
-    });
-          
-    window.setTimeout(function(){
-        waiting = false;
-        x3dom.debug.logError("fetch timed out");
-    }, timeout * 1000);
-    
-    var intervalID = window.setInterval(function(){
-        x3dom.debug.logInfo("waiting for fetch ...");
-    }, timeout * 1000/20);
-    
-//     while (blocking) {
-//         if (!waiting) break;
-//     };
-    
-    window.clearInterval(intervalID);
- 
-    return x3dresolved;
 };
