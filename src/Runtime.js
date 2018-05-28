@@ -1509,6 +1509,33 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
         .catch( function (r) {
             that.canvas.doc.downloadCount--;
             x3dom.debug.logError('fetch failed: '+ r); 
-            return r;
+            return null;
         });
+};
+/**
+ * APIFunction: loadURL
+ *
+ * loads a scene from a URL with json or xml content
+ *
+ * For example:
+ *
+ *   > var element, x3d, json, optionalUrl;
+ *   > element.runtime.loadURL(url, optionalUrl);
+ *
+ * Parameters:
+ * 		url -- url of XML or JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json, only.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		A Promise resolved to the x3d element
+ */
+x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
+    that = this;
+    this.createX3DFromURLPromise(url, optionalURL)
+    .then(function(x3d){
+        if (x3d != null) that.replaceWorld(x3d);
+        else {x3dom.debug.logError("loadURL: could not fetch or parse " + url);
+    };
 };
