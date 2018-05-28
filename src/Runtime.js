@@ -1375,14 +1375,40 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
-    var currentHead = this.doc.querySelector('Head');
-    if (currentHead != null) currentHead.remove();
-    var head = x3d.querySelector("head");
-    if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
-    var current = this.doc.querySelector('Scene');
-    this.doc.replaceChild(x3d.querySelector("Scene"), current);
-    this.canvas.doc.load(this.doc, 0);
-    this.canvas.doc.needRender = true;
+    var x3dElement = this.doc.cloneNode(false);
+    var child, name;
+    while (child = x3d.firstChild) {
+        name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
+        if (name == 'HEAD' || name == 'SCENE') x3dElement.appendChild(child);
+        else {child.remove();}
+    }
+    this.doc.parentNode.replaceChild(x3dElement, this.doc);
+    this.doc = x3dElement;
+    x3dom.reload();
+    return;
+    //alternative to only replace scene element
+//     //Head if there
+//     var currentHead = this.doc.querySelector('Head') || this.doc.querySelector('head');
+//     if (currentHead != null) currentHead.remove();
+//     var head = x3d.querySelector("head");
+//     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
+//     //Scene
+//     var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
+//     this.doc.replaceChild(x3d.querySelector("Scene"), current);
+//     this.canvas.doc._scene._webgl = null;
+//     this.canvas.doc._nodeBag = {
+//         timer: [],                // TimeSensor (tick)
+//         lights: [],               // Light
+//         clipPlanes: [],           // ClipPlane
+//         followers: [],            // X3DFollowerNode
+//         trans: [],                // X3DTransformNode (for listening to CSS changes)
+//         renderTextures: [],       // RenderedTexture
+//         viewarea: [],             // Viewport (for updating camera navigation)
+//         affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
+//                                     // this list is maintained for efficient update / deactivation
+//     };
+//     this.canvas.doc.load(this.doc, 0);
+//     this.canvas.doc.needRender = true;
 };
 
 /**
@@ -1438,7 +1464,7 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
 x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     try {
 	    var jsobject = JSON.parse(jsonOrXML);
-	    return this.createX3DFromJS(jsonOrXML, optionalURL);
+	    return this.createX3DFromJS(jsobject, optionalURL);
     } catch {
         var parser = new DOMParser();
         var doc = parser.parseFromString(jsonOrXML, 'application/xml');
@@ -1451,9 +1477,9 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     }
 };
 /**
- * APIFunction: createX3dFromURL
+ * APIFunction: createX3dFromURLPromise
  *
- * Creates a x3d element from a Url
+ * Creates a Promise resolved to the x3d element from a Url
  *
  * For example:
  *
@@ -1469,16 +1495,50 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  * 			URL.
  *
  * Returns:
- * 		The x3d element
+ * 		A Promise resolved to the x3d element
  */
-x3dom.Runtime.prototype.createX3DFromURL = function(url, optionalURL) {
+x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
+    this.canvas.doc.downloadCount++;
     that = this;
-    //tentative, untested
     return fetch(url)
-    .then(function(r) { return r.text(); })
-    .then(function(text) {
-        return that.createX3DFromString(text, optionalURL);
-        //return text;
-    })
-    .catch(function(r) { console.log ('fetch failed: ', r); });
+        .then( function (r) { return r.text(); })
+        .then( function (text) {
+            that.canvas.doc.downloadCount--;
+            return that.createX3DFromString(text, optionalURL);
+        })
+        .catch( function (r) {
+            that.canvas.doc.downloadCount--;
+            x3dom.debug.logError('fetch failed: '+ r); 
+            return null;
+        });
+};
+/**
+ * APIFunction: loadURL
+ *
+ * loads asynchronuously a scene from a URL with json or xml content.
+ * The function returns before the world is loaded. Use events or .ready
+ * to determine when the scene is available.
+ * For more control use .createX3DFromURLPromise(url, optionalURL).
+ *
+ * Example:
+ *
+ *   > var element, url , optionalUrl;
+ *   > element.runtime.loadURL(url, optionalUrl);
+ *
+ * Parameters:
+ * 		url -- url of XML or JSON of X3D object
+ * 		optionalURL -- if specified, does a PROTO expansion on json, only.
+ * 			JSON ExternProtoDeclare's are loaded relative to this
+ * 			URL.
+ *
+ * Returns:
+ * 		undefined
+ */
+x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
+    that = this;
+    this.createX3DFromURLPromise(url, optionalURL)
+    .then(function(x3d){
+        if (x3d != null) that.replaceWorld(x3d);
+        else x3dom.debug.logError("loadURL: could not fetch or parse " + url);
+    });
 };
