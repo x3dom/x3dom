@@ -147,6 +147,9 @@
         var container = document.createElement('container');
         container.innerHTML =
 `<X3D><Scene>
+  <Transform>
+  <DirectionalLight></DirectionalLight>
+  </Transform>
   <Shape>
     <Appearance>
       <Material></Material>
@@ -182,9 +185,9 @@
     }
        
     function fetchScene(url) {
-        $element.runtime.createX3DFromURL(url)
-        .then(function(x3d){
-            $element.runtime.replaceWorld(x3d)
+        $element.runtime.createX3DFromURLPromise(url)
+        .then( function (x3d) {
+            $element.runtime.replaceWorld(x3d);
         });
     }
 
