@@ -1486,14 +1486,17 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  * 		A Promise resolved to the x3d element
  */
 x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
+    this.canvas.doc.downloadCount++;
     that = this;
     return fetch(url)
         .then( function (r) { return r.text(); })
         .then( function (text) {
+            that.canvas.doc.downloadCount--;
             return that.createX3DFromString(text, optionalURL);
         })
-        .catch( function (r) { 
-            x3dom.debug.logError ('fetch failed: '+ r); 
+        .catch( function (r) {
+            that.canvas.doc.downloadCount--;
+            x3dom.debug.logError('fetch failed: '+ r); 
             return r;
         });
 };
