@@ -1380,6 +1380,7 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
         x3dele.appendChild(x3d.firstChild);   
     }
     this.doc.parentNode.replaceChild(x3dele, this.doc);
+    this.doc = x3dele;
     x3dom.reload();
     return;
     //Head if there
