@@ -1515,11 +1515,14 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
 /**
  * APIFunction: loadURL
  *
- * loads a scene from a URL with json or xml content
+ * loads asynchronuously a scene from a URL with json or xml content.
+ * The function returns before the world is loaded. Use events or .ready
+ * to determine when the scene is available.
+ * For more control use .createX3DFromURLPromise(url, optionalURL).
  *
- * For example:
+ * Example:
  *
- *   > var element, x3d, json, optionalUrl;
+ *   > var element, url , optionalUrl;
  *   > element.runtime.loadURL(url, optionalUrl);
  *
  * Parameters:
@@ -1529,7 +1532,7 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
  * 			URL.
  *
  * Returns:
- * 		A Promise resolved to the x3d element
+ * 		undefined
  */
 x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
     that = this;
