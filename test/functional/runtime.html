@@ -47,10 +47,11 @@
             <li><em>Scene access</em></span>
                 <ul>
                     <li><span id="scene_info"></span></li>
-                    <li><a href="#" onClick="replaceScene(savedSphere);return false;">replace with red sphere</a></li>
+                    <li><a href="#" onClick="replaceScene(savedSphere);return false;">replace with json sphere</a></li>
                     <li><a href="#" onClick="replaceScene(world2);return false;">replace world</a></li>
                     <li><a href="#" onClick="replaceScene(savedWorld);return false;">restore world</a></li>
-                    <li><a href="#" onClick="fetchScene(DeerUrl);return false;">fetch world</a></li>
+                    <li><a href="#" onClick="fetchScene(DeerUrl);return false;">fetch and replace world</a></li>
+                    <li><a href="#" onClick="$element.runtime.loadURL(DeerUrl);return false;">load world</a></li>
                 </ul>
             </li>
             <li><em>Active bindable</em></span>
