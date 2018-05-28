@@ -1375,15 +1375,15 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  * 		scene - scene element to substitute
  */
 x3dom.Runtime.prototype.replaceWorld = function(x3d) {
-    var x3dele = this.doc.cloneNode(false);
+    var x3dElement = this.doc.cloneNode(false);
     var child, name;
     while (child = x3d.firstChild) {
         name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
-        if (name == 'HEAD' || name == 'SCENE') x3dele.appendChild(child);
+        if (name == 'HEAD' || name == 'SCENE') x3dElement.appendChild(child);
         else {child.remove();}
     }
-    this.doc.parentNode.replaceChild(x3dele, this.doc);
-    //this.doc = x3dele;
+    this.doc.parentNode.replaceChild(x3dElement, this.doc);
+    this.doc = x3dElement;
     x3dom.reload();
     return;
     //alternative to only replace scene element
