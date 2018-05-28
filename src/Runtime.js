@@ -1383,31 +1383,32 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
         else {child.remove();}
     }
     this.doc.parentNode.replaceChild(x3dele, this.doc);
-    this.doc = x3dele;
+    //this.doc = x3dele;
     x3dom.reload();
     return;
-    //Head if there
-    var currentHead = this.doc.querySelector('Head') || this.doc.querySelector('head');
-    if (currentHead != null) currentHead.remove();
-    var head = x3d.querySelector("head");
-    if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
-    //Scene
-    var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
-    this.doc.replaceChild(x3d.querySelector("Scene"), current);
-    this.canvas.doc._scene._webgl = null;
-    this.canvas.doc._nodeBag = {
-        timer: [],                // TimeSensor (tick)
-        lights: [],               // Light
-        clipPlanes: [],           // ClipPlane
-        followers: [],            // X3DFollowerNode
-        trans: [],                // X3DTransformNode (for listening to CSS changes)
-        renderTextures: [],       // RenderedTexture
-        viewarea: [],             // Viewport (for updating camera navigation)
-        affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
-                                    // this list is maintained for efficient update / deactivation
-    };
-    this.canvas.doc.load(this.doc, 0);
-    this.canvas.doc.needRender = true;
+    //alternative to only replace scene element
+//     //Head if there
+//     var currentHead = this.doc.querySelector('Head') || this.doc.querySelector('head');
+//     if (currentHead != null) currentHead.remove();
+//     var head = x3d.querySelector("head");
+//     if (head != null) this.doc.insertAdjacentElement('afterBegin', head);
+//     //Scene
+//     var current = this.doc.querySelector('Scene') || this.doc.querySelector('scene');
+//     this.doc.replaceChild(x3d.querySelector("Scene"), current);
+//     this.canvas.doc._scene._webgl = null;
+//     this.canvas.doc._nodeBag = {
+//         timer: [],                // TimeSensor (tick)
+//         lights: [],               // Light
+//         clipPlanes: [],           // ClipPlane
+//         followers: [],            // X3DFollowerNode
+//         trans: [],                // X3DTransformNode (for listening to CSS changes)
+//         renderTextures: [],       // RenderedTexture
+//         viewarea: [],             // Viewport (for updating camera navigation)
+//         affectedPointingSensors: [] // all X3DPointingDeviceSensor currently activated (i.e., used for interaction),
+//                                     // this list is maintained for efficient update / deactivation
+//     };
+//     this.canvas.doc.load(this.doc, 0);
+//     this.canvas.doc.needRender = true;
 };
 
 /**
