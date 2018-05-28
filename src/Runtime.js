@@ -1412,7 +1412,7 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
 };
 
 /**
- * APIFunction: createX3dFromJS
+ * APIFunction: createX3DFromJS
  *
  * Creates a x3d element from a JSON JavaScript X3D object
  *
