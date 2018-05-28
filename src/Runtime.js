@@ -1447,13 +1447,13 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
  *
  * For example:
  *
- *   > var element, x3d, json, optionalUrl;
+ *   > var element, x3d, jsonOrXML, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > x3d = element.runtime.createX3dFromString(jsonOrXML, optionalUrl);
  *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
- * 		json -- JSON of X3D object
+ * 		jsonOrXML -- JSON or XML of X3D object
  * 		optionalURL -- if specified, does a PROTO expansion on json.
  * 			JSON ExternProtoDeclare's are loaded relative to this
  * 			URL.
