@@ -1563,11 +1563,6 @@ x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
  * 		undefined
  */
 x3dom.Runtime.prototype.loadJS = function(jsobject, optionalURL) {
-    that = this;
     var x3d = this.createX3DFromJS(jsobject, optionalURL)
-    if (x3d != null) {
-	    that.replaceWorld(x3d);
-    } else {
-	    x3dom.debug.logError("loadJS: could not fetch or parse " + jsobject);
-    }
+    this.replaceWorld(x3d);
 };
