@@ -1368,7 +1368,7 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  *
  *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > x3d = element.runtime.createX3DFromJS(jsobject, optionalUrl);
  *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
@@ -1420,7 +1420,7 @@ x3dom.Runtime.prototype.replaceWorld = function(x3d) {
  *
  *   > var element, x3d, jsobject, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > x3d = element.runtime.createX3dFromJS(jsobject, optionalUrl);
+ *   > x3d = element.runtime.createX3DFromJS(jsobject, optionalUrl);
  *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
@@ -1441,7 +1441,7 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
 };
 
 /**
- * APIFunction: createX3dFromString
+ * APIFunction: createX3DFromString
  *
  * Creates a x3d element from a JSON or XML String
  *
@@ -1449,7 +1449,7 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
  *
  *   > var element, x3d, jsonOrXML, optionalUrl;
  *   > element = document.getElementById('the_x3delement');
- *   > x3d = element.runtime.createX3dFromString(jsonOrXML, optionalUrl);
+ *   > x3d = element.runtime.createX3DFromString(jsonOrXML, optionalUrl);
  *   > element.runtime.replaceWorld(x3d);
  *
  * Parameters:
@@ -1477,7 +1477,7 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
     }
 };
 /**
- * APIFunction: createX3dFromURLPromise
+ * APIFunction: createX3DFromURLPromise
  *
  * Creates a Promise resolved to the x3d element from a Url
  *
