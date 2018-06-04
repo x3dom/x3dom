@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
     <title>Runtime object example</title>
     <script type="text/javascript" src="../x3dom_include.js"></script>
-	<style>
+    	<style>
 		ul.plain { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
 		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap}
 	</style>
@@ -17,7 +17,7 @@
     <x3d id="the_element" showProgress="true" showStat="true" showLog="true" width="512px" height="512px">
     <!--<div id="spinner" class="loader">Loading...</div>-->
     <scene>
-           <Background backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"'></Background>
+           <background crossOrigin='anonymous' backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"'></background>
            <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
            <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
            <viewpoint position='2 0 15' description="Camera 0"></viewpoint>
@@ -44,7 +44,17 @@
     </x3d>
 
     	<ul class="plain">
-		    <li><em>Active bindable</em></span>
+            <li><em>Scene access</em></span>
+                <ul>
+                    <li><span id="scene_info"></span></li>
+                    <li><a href="#" onClick="replaceScene(savedSphere);return false;">replace with json sphere</a></li>
+                    <li><a href="#" onClick="replaceScene(world2);return false;">replace world</a></li>
+                    <li><a href="#" onClick="replaceScene(savedWorld);return false;">restore world</a></li>
+                    <li><a href="#" onClick="fetchScene(DeerUrl);return false;">fetch and replace world</a></li>
+                    <li><a href="#" onClick="$element.runtime.loadURL(VitaminUrl, VitaminUrl);return false;">load expanded world</a></li>
+                </ul>
+            </li>
+            <li><em>Active bindable</em></span>
 	           	<ul>
 		    		<li><span id="ab_info"></span></li>
                     <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0</a></li>
@@ -120,9 +130,13 @@
 	var pick_mode_info;
 	var nav_mode_info;
 	var ab_info;
+        var savedSphere;
 
-    x3dom.runtime.ready = function() {
+    x3dom.runtime.ready = function(el) {
         alert('Hello I am the result of a custom runtime ready function.');
+	    var sphere = { "X3D": { "encoding":"UTF-8", "@profile":"Interchange", "@version":"3.3", "@xsd:noNamespaceSchemaLocation":"http://www.web3d.org/specifications/x3d-3.3.xsd", "JSON schema":"http://www.web3d.org/specifications/x3d-3.3-JSONSchema.json", "head": { "meta": [ { "@name":"title", "@content":"sphere.x3d" }, { "@name":"creator", "@content":"John Carlson" }, { "@name":"generator", "@content":"manual" }, { "@name":"identifier", "@content":"https://coderextreme.net/X3DJSONLD/sphere.x3d" }, { "@name":"description", "@content":"a sphere" }, { "@name":"translated", "@content":"25 May 2018" }, { "@name":"generator", "@content":"X3dToJson.xslt, http://www.web3d.org/x3d/stylesheets/X3dToJson.html" }, { "@name":"reference", "@content":"X3D JSON encoding: http://www.web3d.org/wiki/index.php/X3D_JSON_Encoding" } ] }, "Scene": { "-children":[ { "Group": { "-children":[ { "Shape": { "-appearance": { "Appearance": { "-material": { "Material": { "@diffuseColor":[1,0,0] } } } }, "-geometry": { "Sphere": { } } } } ] } } ] } } };
+	    var spherex3d = $element.runtime.createX3DFromJS(sphere);
+	    savedSphere = spherex3d;//.querySelector("X3D");
     };
 
     x3dom.runtime.noBackendFound = function() {
@@ -130,8 +144,28 @@
     };
 
 	function init(event) {
-//		$element = document.getElementById('the_element');
-
+	// $element = document.getElementById('the_element');
+        var container = document.createElement('container');
+        container.innerHTML =
+`<X3D><Scene>
+  <Transform>
+  <DirectionalLight></DirectionalLight>
+  </Transform>
+  <Shape>
+    <Appearance>
+      <Material></Material>
+    </Appearance>
+    <Sphere></Sphere>
+  </Shape>
+</Scene></X3D>`;
+        
+        world2 = container.querySelector('X3D');
+	    //var savedWorldHTML = document.querySelector('Scene').outerHTML;
+        //container.innerHTML = savedWorldHTML;
+        savedWorld = document.querySelector('X3D').cloneNode(true);
+        DeerUrl = '../../doc/x3doc/base/tutorials/models/inline/Deer.x3d';
+        VitaminUrl = 'https://cors-anywhere.herokuapp.com/http://www.web3d.org/x3d/content/examples/Basic/ChemicalMarkupLanguage/_1_4_Dihydronaphthalene.json';
+            
         $element.runtime.ready = function() {
             alert('Per element custom .runtime.ready() function.');
         };
@@ -144,6 +178,20 @@
 		updatePickInfo();
 		updateNavInfo();
 	}
+        
+    function replaceScene(scene) {
+        //strip scene of custom properties
+        var container = document.createElement('container');
+        container.innerHTML = scene.outerHTML;
+        $element.runtime.replaceWorld(container.firstElementChild);
+    }
+       
+    function fetchScene(url) {
+        $element.runtime.createX3DFromURLPromise(url)
+        .then( function (x3d) {
+            $element.runtime.replaceWorld(x3d);
+        });
+    }
 
 	function updatePickInfo() {
 		pick_mode_info = document.getElementById('pick_mode_info');
