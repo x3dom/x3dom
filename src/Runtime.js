@@ -1373,11 +1373,15 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
  *
  * Parameters:
  * 		scene - scene element to substitute
+ *
+ * Note: replaceWorld replaces the current x3d element. It is
+ *       therefore necessary to get the replaced x3d element
+ *       each time to access the new runtime.
  */
-x3dom.Runtime.prototype.replaceWorld = function(x3d) {
+x3dom.Runtime.prototype.replaceWorld = function(scene) {
     var x3dElement = this.doc.cloneNode(false);
     var child, name;
-    while (child = x3d.firstChild) {
+    while (child = scene.firstChild) {
         name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
         if (name == 'HEAD' || name == 'SCENE') x3dElement.appendChild(child);
         else {child.remove();}
@@ -1533,6 +1537,10 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
  *
  * Returns:
  * 		undefined
+ *
+ * Note: replaceWorld replaces the current x3d element. It is
+ *       therefore necessary to get the replaced x3d element
+ *       each time to access the new runtime.
  */
 x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
     that = this;
