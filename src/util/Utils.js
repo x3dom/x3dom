@@ -167,21 +167,21 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
         gl.bindTexture(dds.type, texture);
 
         flipY = false;
-		
-		if ( flipY ) 
+
+		if ( flipY )
 		{
-			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );						
+			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, true );
 		}
-		
+
 		if ( !x3dom.Utils.isPowerOfTwo( dds.width ) && !x3dom.Utils.isPowerOfTwo( dds.height ) )
 		{
 			gl.texParameteri( dds.type, gl.TEXTURE_MAG_FILTER, gl.LINEAR 	        );
 			gl.texParameteri( dds.type, gl.TEXTURE_MIN_FILTER, gl.LINEAR 	        );
 			gl.texParameteri( dds.type, gl.TEXTURE_WRAP_S, 	gl.CLAMP_TO_EDGE 	);
 			gl.texParameteri( dds.type, gl.TEXTURE_WRAP_T, 	gl.CLAMP_TO_EDGE 	);
-			
-			dds.generateMipmaps = false;		
-		} 
+
+			dds.generateMipmaps = false;
+		}
 		else if (dds.generateMipmaps )
 		{
 			gl.texParameteri( dds.type, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
@@ -191,19 +191,19 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
         {
 			var width  = dds.width;
 			var height = dds.height;
-			
+
 			var levels = dds.data[ target ];
-			
+
 			for ( var l = 0; l < levels.length; l++ )
-			{	
+			{
 				if ( l != 0 )
 				{
 					width  = Math.max( width  * 0.5, 1 );
 					height = Math.max( height * 0.5, 1 );
 				}
-				
+
 				if ( dds.format.internal < 33776 || dds.format.internal > 33779 )
-				{		
+				{
 					gl.texImage2D( +target, l, dds.format.internal, width, height, 0, dds.format.format, dds.format.type, levels[ l ] );
 				}
 				else
@@ -211,18 +211,18 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 					gl.compressedTexImage2D( +target, l, dds.format.internal, width, height, 0, levels[ l ] );
 					dds.generateMipmaps = false;
 				}
-		
+
 			}
 		}
-		
+
 		if ( dds.generateMipmaps )
 		{
 			gl.generateMipmap( dds.type );
 		}
-			
+
 		if ( flipY )
 		{
-			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );			
+			gl.pixelStorei( gl.UNPACK_FLIP_Y_WEBGL, false );
 		}
 
         gl.bindTexture(dds.type, null);
@@ -287,9 +287,9 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
         for (var i=0; i<faces.length; i++)
         {
             var face = faces[i];
-    
+
             var image = new Image();
-    
+
             switch(crossOrigin.toLowerCase()) {
                 case 'anonymous': {
                     image.crossOrigin = 'anonymous';
@@ -306,10 +306,10 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                     }
                 }
             }
-    
+
             texture.pendingTextureLoads++;
             doc.downloadCount++;
-    
+
             image.onload = (function(texture, face, image, swap) {
                 return function() {
                     if (width == 0 && height == 0) {
@@ -320,48 +320,48 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                         x3dom.debug.logWarning("[Utils|createTextureCube] Rescaling CubeMap images, which are of different size!");
                         image = x3dom.Utils.rescaleImage(image, width, height);
                     }
-    
+
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
-    
+
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
                     gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-    
+
                     texture.pendingTextureLoads--;
                     doc.downloadCount--;
-    
+
                     if (texture.pendingTextureLoads < 0) {
                         //Save image size also for cube tex
                         texture.width  = width;
                         texture.height = height;
                         texture.textureCubeReady = true;
-    
+
                         if (genMipMaps) {
                             gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
                             gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
                             gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                         }
-    
+
                         x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
                         doc.needRender = true;
                     }
                 };
             })( texture, face, image, bgnd );
-    
+
             image.onerror = function()
             {
                 doc.downloadCount--;
-    
+
                 x3dom.debug.logError("[Utils|createTextureCube] Can't load CubeMap!");
             };
-    
+
             // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
             image.src = src[i];
         }
     }
 
-    
+
 
 	return texture;
 };
@@ -977,19 +977,19 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.FOG              = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
         property.CSSHADER         = (appearance && appearance._shader &&
                                      x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
-        
+
         property.LIGHTS           = (!property.POINTLINE2D && appearance && shape.isLit() && (material || property.CSSHADER)) ?
                                      viewarea.getLights().length + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
-        property.TEXTURED         = (texture || property.TEXT || ( property.CSSHADER && appearance._shader.needTexcoords() ) || 
+        property.TEXTURED         = (texture || property.TEXT || ( property.CSSHADER && appearance._shader.needTexcoords() ) ||
                                     (property.PBR_MATERIAL && material.hasTextures())) ? 1 : 0;
         property.CUBEMAP          = (texture && x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode)) ||
                                     (property.CSSHADER && appearance._shader.getEnvironmentMap()) ? 1 : 0;
         property.PIXELTEX         = (texture && x3dom.isa(texture, x3dom.nodeTypes.PixelTexture)) ? 1 : 0;
         property.TEXTRAFO         = (appearance && appearance._cf.textureTransform.node) ? 1 : 0;
-        property.DIFFUSEMAP       = (texture && !x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode) ) || 
+        property.DIFFUSEMAP       = (texture && !x3dom.isa(texture, x3dom.nodeTypes.X3DEnvironmentTextureNode) ) ||
                                     (property.CSSHADER && appearance._shader.getDiffuseMap()) ||
                                     (property.PBR_MATERIAL && material._cf.baseColorTexture.node) ? 1 : 0;
-        property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) || 
+        property.NORMALMAP        = (property.CSSHADER && appearance._shader.getNormalMap()) ||
                                     (property.PBR_MATERIAL && material._cf.normalTexture.node) ? 1 : 0;
         property.SPECMAP          = (property.CSSHADER && appearance._shader.getSpecularMap()) ? 1 : 0;
         property.SHINMAP          = (property.CSSHADER && appearance._shader.getShininessMap()) ? 1 : 0;
@@ -1007,7 +1007,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.OCCLUSIONROUGHNESSMETALLICMAP = (property.PBR_MATERIAL && material._cf.occlusionRoughnessMetallicTexture.node) ? 1 : 0;
         property.PHYSICALENVLIGHT = viewarea.hasPhysicalEnvironmentLight() ? 1 : 0;
 
-        property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() : 
+        property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() :
                                     (property.NORMALMAP && property.PBR_MATERIAL) ? material._vf.normalSpace.toUpperCase() : "TANGENT";
 
         property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || property.PBR_MATERIAL || (texture && texture._blending)) ? 1 : 0;
@@ -1032,7 +1032,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
-        
+
         //console.log(property);
 	}
 
@@ -1205,20 +1205,20 @@ x3dom.Utils.arrayBufferToJSON = function( array, offset, length )
 {
     offset = ( offset != undefined ) ? offset : 0;
     length = ( length != undefined ) ? length : array.length;
-    
+
     var out, i, len, c;
     var char2, char3;
 
     out = "";
     len = length;
     i = offset;
-    
+
     while( i < len )
     {
         c = array[i++];
-        
+
         switch(c >> 4)
-        { 
+        {
           case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
             // 0xxxxxxx
             out += String.fromCharCode(c);

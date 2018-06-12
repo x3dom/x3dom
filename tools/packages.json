@@ -37,7 +37,9 @@
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
                 {"path": "fields.js"},		
-                {"path": "Docs.js"}
+                {"path": "Docs.js"},
+                {"path": "util/json/JSONParser.js"},
+                {"path": "util/json/PrototypeExpander.js"}
             ]},
 
         {"group": "SHADER",

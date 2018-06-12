@@ -77,7 +77,7 @@ x3dom.gfx_webgl = (function () {
 
         for (var i = 0; i < validContextNames.length; i++) {
             try {
-                
+
                 x3dom.caps.RENDERMODE = "HARDWARE";
 
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
@@ -132,7 +132,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.ANISOTROPIC = ctx.getExtension("EXT_texture_filter_anisotropic");
                         x3dom.caps.TEXTURE_LOD = ctx.getExtension("EXT_shader_texture_lod");
                         x3dom.caps.INSTANCED_ARRAYS = ctx.getExtension("ANGLE_instanced_arrays");
-                        
+
                         if ( x3dom.caps.ANISOTROPIC )
                         {
                             x3dom.caps.MAX_ANISOTROPY = ctx.getParameter( x3dom.caps.ANISOTROPIC.MAX_TEXTURE_MAX_ANISOTROPY_EXT );
@@ -224,8 +224,12 @@ x3dom.gfx_webgl = (function () {
         var q = 0, q6;
         var textures, t;
         var vertices, positionBuffer;
-        var texCoordBuffer, normalBuffer, colorBuffer, tangentBuffer, binormalBuffer;
+        var texCoords, texCoordBuffer;
+        var tangents, tangentBuffer;
+        var binormals, binormalBuffer;
         var indicesBuffer, indexArray;
+        var normals, normalBuffer ;
+        var colors, colorBuffer;
 
         var shape = drawable.shape;
         var geoNode = shape._cf.geometry.node;
@@ -1753,12 +1757,12 @@ x3dom.gfx_webgl = (function () {
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
             if(this.VRMode == 2)
-            {           
+            {
                 var mat_view_R = viewarea.getViewMatrices()[1];
-                var mat_proj_R = viewarea.getProjectionMatrices()[1];              
+                var mat_proj_R = viewarea.getProjectionMatrices()[1];
                 var mat_scene_R = mat_proj_R.mult(mat_view_R);
                 sp.modelViewProjectionMatrix2 = mat_scene_R.mult(trafo).toGL();
-    
+
                 sp.isVR = 1.0;
             }
 
@@ -1801,7 +1805,7 @@ x3dom.gfx_webgl = (function () {
                 sp.viewMatrixInverse = mat_view.inverse().toGL();
 
                 if(this.VRMode == 2)
-                { 
+                {
                     sp.modelViewMatrix2 = mat_view_R.mult(trafo).toGL();
                     sp.viewMatrixInverse2 = mat_view_R.inverse().toGL();
                 }
@@ -2269,23 +2273,23 @@ x3dom.gfx_webgl = (function () {
                 sp.multiVisibilityHeight = tex.texture.height;
             }
         }
-        else if (mat && x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial)) 
+        else if (mat && x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial))
         {
-            sp.diffuseColor     = [mat._vf.baseColorFactor.r, 
+            sp.diffuseColor     = [mat._vf.baseColorFactor.r,
                                    mat._vf.baseColorFactor.g,
                                    mat._vf.baseColorFactor.b];
-            sp.specularColor    = (mat._vf.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r, 
+            sp.specularColor    = (mat._vf.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r,
                                                                                    mat._vf.baseColorFactor.g,
-                                                                                   mat._vf.baseColorFactor.b];              
+                                                                                   mat._vf.baseColorFactor.b];
             sp.emissiveColor    = mat._vf.emissiveFactor.toGL();
             sp.shininess        = 1.0 - mat._vf.roughnessFactor;
             sp.metallicFactor   = mat._vf.metallicFactor;
             sp.normalBias       = mat._vf.normalBias.toGL();
             sp.ambientIntensity = 1.0;
             sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;
-            sp.alphaCutoff      = mat._vf.alphaCutoff;    
+            sp.alphaCutoff      = mat._vf.alphaCutoff;
         }
-        else if (mat) 
+        else if (mat)
         {
             sp.diffuseColor      = mat._vf.diffuseColor.toGL();
             sp.specularColor     = mat._vf.specularColor.toGL();
@@ -2294,7 +2298,7 @@ x3dom.gfx_webgl = (function () {
             sp.ambientIntensity  = mat._vf.ambientIntensity;
             sp.transparency      = mat._vf.transparency;
             sp.environmentFactor = 0.0;
-            sp.alphaCutoff       = s_app._vf.alphaClipThreshold.toFixed(2);     
+            sp.alphaCutoff       = s_app._vf.alphaClipThreshold.toFixed(2);
             if (x3dom.isa(mat, x3dom.nodeTypes.TwoSidedMaterial)) {
                 twoSidedMat             = true;
                 sp.backDiffuseColor     = mat._vf.backDiffuseColor.toGL();
@@ -2575,7 +2579,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         if(this.VRMode == 2)
-        {           
+        {
             var mat_view_R = viewarea.getViewMatrices()[1];
             var mat_proj_R = viewarea.getProjectionMatrices()[1];
             var mat_scene_R = mat_proj_R.mult(mat_view_R);
@@ -2584,7 +2588,7 @@ x3dom.gfx_webgl = (function () {
 
             sp.viewMatrix2      = mat_view_R.toGL();
             sp.modelViewMatrix2 = model_view_R.toGL();
-            
+
             sp.normalMatrix2 = model_view_R_inv.transpose().toGL();
             sp.modelViewMatrixInverse2 = model_view_R_inv.toGL();
 
@@ -2623,8 +2627,8 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        if(x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial) && 
-           physicalEnvironmentLight != undefined && 
+        if(x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial) &&
+           physicalEnvironmentLight != undefined &&
            physicalEnvironmentLight._vf.diffuse != "" &&
            physicalEnvironmentLight._vf.specular != "")
         {
@@ -2643,9 +2647,9 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            
+
             sp.brdfMap = cnt_n++;
- 
+
             if(diffuse.ready)
             {
                 gl.activeTexture(gl.TEXTURE0 + cnt_n);
@@ -2655,10 +2659,10 @@ x3dom.gfx_webgl = (function () {
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    
+
                 sp.diffuseEnvironmentMap = cnt_n++;
             }
-            
+
             if(specular.ready)
             {
                 gl.activeTexture(gl.TEXTURE0 + cnt_n);
@@ -2668,12 +2672,12 @@ x3dom.gfx_webgl = (function () {
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    
+
                 sp.specularEnvironmentMap = cnt_n++;
             }
-            
+
         }
-        
+
 
         if (s_app && s_app._cf.textureTransform.node) {
             var texTrafo = s_app.texTransformMatrix();
@@ -2724,21 +2728,21 @@ x3dom.gfx_webgl = (function () {
 
                 var model = transform.mult(mesh.transform);
                 sp.model = sp.worldMatrix = model.toGL();
-                
+
                 sp.viewMatrix      = mat_view.toGL();
-                    
+
                 model_view = mat_view.mult(model);
                 model_view_inv = model_view.inverse();
 
                 sp.modelViewMatrix = model_view.toGL();
-                    
+
                 sp.normalMatrix = model_view_inv.transpose().toGL();
                 sp.modelViewMatrixInverse = model_view_inv.toGL();
-    
+
                 sp.modelViewProjectionMatrix = mat_scene.mult(model).toGL();
-    
+
                 sp.worldInverseTranspose = model.inverse().transpose().toGL();
-   
+
                 if(mesh.material!=null){
 
                     if(mesh.material.setShader != null)
@@ -3994,7 +3998,7 @@ x3dom.gfx_webgl = (function () {
             if (slights[p]._vf.shadowIntensity > 0.0) {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
-                shadowMaps = scene._webgl.fboShadow[shadowCount];
+                var shadowMaps = scene._webgl.fboShadow[shadowCount];
                 var offset = Math.max(0.0, Math.min(1.0, slights[p]._vf.shadowOffset));
 
                 if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)) {

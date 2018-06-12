@@ -1,5 +1,3 @@
-
-
 x3dom.DefaultNavigation = function(navigationNode)
 {
     this.navi = navigationNode;
@@ -29,7 +27,7 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
     var d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
     d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-    vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
+    var vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
 
     if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
     {
@@ -47,7 +45,7 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
         }
 
         view._movement = view._movement.add(vec);
-        mat = view.getViewpointMatrix().mult(view._transMat);
+        var mat = view.getViewpointMatrix().mult(view._transMat);
         //TODO; move real distance along viewing ray
         view._transMat = mat.inverse().
                             mult(x3dom.fields.SFMatrix4f.translation(view._movement)).
@@ -62,11 +60,11 @@ x3dom.DefaultNavigation.prototype.moveForward = function(view)
     if (navi.getType() === "game")
     {
         var avatarRadius = 0.25;
-        var avatarHeight = 1.6;
+        //var avatarHeight = 1.6; // not used
 
         if (navi._vf.avatarSize.length > 2) {
             avatarRadius = navi._vf.avatarSize[0];
-            avatarHeight = navi._vf.avatarSize[1];
+            //avatarHeight = navi._vf.avatarSize[1]; // not used
         }
 
         var speed = 5 * view._deltaT * navi._vf.speed;

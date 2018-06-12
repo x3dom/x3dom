@@ -255,15 +255,15 @@ x3dom.registerNodeType(
                     this.vrcSinglePassShaderVertex._vf.url[0] = this.vertexShaderText();
 
                     this.vrcSinglePassShaderFragment._vf.type = 'fragment';
-                    shaderText =
-                    this.fragmentPreamble+
-                    this.defaultUniformsShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText()+
-                    this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
+                    var shaderText =
+                        this.fragmentPreamble+
+                        this.defaultUniformsShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY)+
+                        this.styleUniformsShaderText()+
+                        this.styleShaderText()+
+                        this.texture3DFunctionShaderText+
+                        this.normalFunctionShaderText()+
+                        this.lightEquationShaderText()+
+                        this.defaultLoopFragmentShaderText(this.inlineStyleShaderText(), this.lightAssigment(), this.initializeValues());
                     this.vrcSinglePassShaderFragment._vf.url[0] = shaderText;
 
                     this.vrcSinglePassShader.addChild(this.vrcSinglePassShaderVertex, 'parts');
