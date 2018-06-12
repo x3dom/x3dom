@@ -1003,7 +1003,9 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
 
         property.ALPHAMODE            = (property.PBR_MATERIAL) ? material._vf.alphaMode : "BLEND";
-        property.METALLICROUGHNESSMAP = (property.PBR_MATERIAL && material._cf.metallicRoughnessTexture.node) ? 1 : 0;
+        property.ROUGHNESSMETALLICMAP = (property.PBR_MATERIAL && material._cf.roughnessMetallicTexture.node) ? 1 : 0;
+        property.OCCLUSIONROUGHNESSMETALLICMAP = (property.PBR_MATERIAL && material._cf.occlusionRoughnessMetallicTexture.node) ? 1 : 0;
+        property.PHYSICALENVLIGHT = viewarea.hasPhysicalEnvironmentLight() ? 1 : 0;
 
         property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() : 
                                     (property.NORMALMAP && property.PBR_MATERIAL) ? material._vf.normalSpace.toUpperCase() : "TANGENT";

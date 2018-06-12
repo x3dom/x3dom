@@ -29,7 +29,7 @@ x3dom.registerNodeType(
             /**
              * The direction field specifies the direction vector of the illumination emanating from the light source in the local coordinate system.
              * @var {x3dom.fields.SFVec3f} direction
-             * @memberof x3dom.nodeTypes.DirectionalLight
+             * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
              * @initvalue 0,0,-1
              * @field x3dom
              * @instance
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'diffuse', "");
+            this.addField_SFString(ctx, 'diffuse', "https://x3dom.org/download/assets/pbr/museumDiffuse.dds");
 
             /**
              *
@@ -54,12 +54,12 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'specular', "");
+            this.addField_SFString(ctx, 'specular', "https://x3dom.org/download/assets/pbr/museumSpecular.dds");
 
             /**
              *
              * @var {x3dom.fields.SFInt32} shadowCascades
-             * @memberof x3dom.nodeTypes.DirectionalLight
+             * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
              * @initvalue 1
              * @field x3dom
              * @instance
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             /**
              *
              * @var {x3dom.fields.SFFloat} shadowSplitFactor
-             * @memberof x3dom.nodeTypes.DirectionalLight
+             * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
              * @initvalue 1
              * @field x3dom
              * @instance
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
             /**
              *
              * @var {x3dom.fields.SFFloat} shadowSplitOffset
-             * @memberof x3dom.nodeTypes.DirectionalLight
+             * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
              * @initvalue 0.1
              * @field x3dom
              * @instance
@@ -88,6 +88,13 @@ x3dom.registerNodeType(
         
         },
         {
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "diffuse" || fieldName == "specular") {
+                    //this.invalidateGLObject();
+                }
+            },
+
             getViewMatrix: function(vec) {
                 var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(

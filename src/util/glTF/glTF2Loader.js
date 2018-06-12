@@ -112,11 +112,12 @@ x3dom.glTF2Loader.prototype._generateX3DScene = function()
     var scene = document.createElement( "scene" );
     var pel   = document.createElement( "physicalenvironmentlight" );
 
-    pel.setAttribute( "diffuse",  "http://localhost/x3dom/test/functional/Pisa_Courtyard_Diffuse.dds"  );
-    pel.setAttribute( "specular", "http://localhost/x3dom/test/functional/Pisa_Courtyard_Specular.dds" );
+    //Deactivate headlight
+    var navi = this._nameSpace.doc._scene.getNavigationInfo();
+    navi._vf.headlight = false;
 
     scene.appendChild( pel );
-
+    
     return scene;
 };
 
@@ -258,12 +259,13 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var mat = document.createElement("physicalmaterial");
 
     var texture;
-    var baseColorFactor = [1,1,1,1];
-    var emissiveFactor  = material.emissiveFactor || [0,0,0];
-    var metallicFactor  = 1;
-    var roughnessFactor = 1;
-    var alphaMode       = material.alphaMode || "OPAQUE";
-    var alphaCutoff     = material.alphaCutoff || 0.5
+    var baseColorFactor  = [1,1,1,1];
+    var emissiveFactor   = material.emissiveFactor || [0,0,0];
+    var metallicFactor   = 1;
+    var roughnessFactor  = 1;
+    var alphaMode        = material.alphaMode || "OPAQUE";
+    var alphaCutoff      = material.alphaCutoff || 0.5;
+    var seperateOcclusion = true
 
     var pbr = material.pbrMetallicRoughness;
 
@@ -283,7 +285,17 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     if(pbr && pbr.metallicRoughnessTexture)
     {
         texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "metallicRoughnessTexture"));
+
+        if( material.occlusionTexture && material.occlusionTexture.index == pbr.metallicRoughnessTexture.index)
+        {
+            seperateOcclusion = false;
+            mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture"));
+        }
+        else
+        {
+            mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture"));
+        }
+        
     }
 
     if(material.normalTexture)
@@ -298,7 +310,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
         mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture"));
     }
 
-    if(material.occlusionTexture)
+    if(material.occlusionTexture && seperateOcclusion)
     {
         texture = this._gltf.textures[material.occlusionTexture.index];
         mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));

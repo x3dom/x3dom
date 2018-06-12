@@ -2390,6 +2390,7 @@ x3dom.gfx_webgl = (function () {
             }
             else if (x3dom.isa(slights[p], x3dom.nodeTypes.PhysicalEnvironmentLight)) {
                 physicalEnvironmentLight = slights[p];
+                numLights--;
             }
         }
 

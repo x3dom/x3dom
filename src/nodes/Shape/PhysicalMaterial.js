@@ -43,7 +43,7 @@ x3dom.registerNodeType(
              * The metalness of the material. A value of 1.0 means the material is a metal.
              * A value of 0.0 means the material is a dielectric. Values in between are for blending
              * between metals and dielectrics such as dirty metallic surfaces. This value is linear.
-             * If a metallicRoughnessTexture is specified, this value is multiplied with
+             * If a roughnessMetallicTexture is specified, this value is multiplied with
              * the metallic texel values.
              * @var {x3dom.fields.SFFloat} metallicFactor
              * @range [0, 1]
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
             /**
              * The roughness of the material. A value of 1.0 means the material is completely rough. 
              * A value of 0.0 means the material is completely smooth. This value is linear. 
-             * If a metallicRoughnessTexture is specified, this value is multiplied with 
+             * If a roughnessMetallicTexture is specified, this value is multiplied with 
              * the roughness texel values.
              * @var {x3dom.fields.SFFloat} roughnessFactor
              * @range [0, 1]
@@ -167,13 +167,25 @@ x3dom.registerNodeType(
              * A set of parameter values that are used to define the
              * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
-             * @var {x3dom.nodeTypes.X3DTextureNode} metallicRoughnessTexture
+             * @var {x3dom.nodeTypes.X3DTextureNode} roughnessMetallicTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('metallicRoughnessTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('roughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             * A set of parameter values that are used to define the
+             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
+             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode('occlusionRoughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
              * A tangent space normal map. The texture contains RGB components in linear space. 
@@ -227,7 +239,7 @@ x3dom.registerNodeType(
                         this._cf.normalTexture.node    ||
                         this._cf.occlusionTexture.node ||
                         this._cf.emissiveTexture.node  ||
-                        this._cf.metallicRoughnessTexture.node);
+                        this._cf.roughnessMetallicTexture.node);
             },
 
             getTextures: function()
@@ -262,11 +274,18 @@ x3dom.registerNodeType(
                     textures.push(this._cf.emissiveTexture.node);
                 }
 
-                if(this._cf.metallicRoughnessTexture.node)
+                if(this._cf.roughnessMetallicTexture.node)
                 {
-                    this._cf.metallicRoughnessTexture.node._type = "metallicRoughnessMap";
+                    this._cf.roughnessMetallicTexture.node._type = "roughnessMetallicMap";
 
-                    textures.push(this._cf.metallicRoughnessTexture.node);
+                    textures.push(this._cf.roughnessMetallicTexture.node);
+                }
+
+                if(this._cf.occlusionRoughnessMetallicTexture.node)
+                {
+                    this._cf.occlusionRoughnessMetallicTexture.node._type = "occlusionRoughnessMetallicMap";
+
+                    textures.push(this._cf.occlusionRoughnessMetallicTexture.node);
                 }
 
                 return textures;

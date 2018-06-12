@@ -639,8 +639,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.OCCLUSIONMAP){
 			shader += "uniform sampler2D occlusionMap;\n";
 		}
-		if(properties.METALLICROUGHNESSMAP){
-			shader += "uniform sampler2D metallicRoughnessMap;\n";
+		if(properties.ROUGHNESSMETALLICMAP){
+			shader += "uniform sampler2D roughnessMetallicMap;\n";
+		}
+		if(properties.OCCLUSIONROUGHNESSMETALLICMAP){
+			shader += "uniform sampler2D occlusionRoughnessMetallicMap;\n";
 		}
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
@@ -766,6 +769,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
     shader += "vec3 _specularColor     = specularColor;\n";
     shader += "float _ambientIntensity = ambientIntensity;\n";
 	shader += "float _transparency     = transparency;\n";
+	shader += "float _occlusion        = 1.0;\n";
 
 	if(properties.SEPARATEBACKMAT)
 	{
@@ -936,12 +940,27 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			}
 			
 			//Specularmap
-			if(properties.METALLICROUGHNESSMAP) {
-				shader += "vec4 metallicRoughness = texture2D(metallicRoughnessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
+			if(properties.ROUGHNESSMETALLICMAP) {
+				shader += "vec4 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
 
-				shader += "_shininess = 1.0 - metallicRoughness.g;\n";
-				shader += "_specularColor = mix(vec3(0.04, 0.04, 0.04), color.rgb, metallicRoughness.b);\n";
-				shader += "color.rgb *= (1.0 - metallicRoughness.b);\n";		
+				shader += "_shininess = 1.0 - roughnessMetallic.g;\n";
+				shader += "_specularColor = mix(vec3(0.04, 0.04, 0.04), color.rgb, roughnessMetallic.b);\n";
+				shader += "color.rgb *= (1.0 - roughnessMetallic.b);\n";		
+			}
+
+			//Specularmap
+			if(properties.OCCLUSIONROUGHNESSMETALLICMAP) {
+				shader += "vec4 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
+
+				shader += "_occlusion = occlusionRoughnessMetallic.r;\n";
+				shader += "_shininess = 1.0 - occlusionRoughnessMetallic.g;\n";
+				shader += "_specularColor = mix(vec3(0.04, 0.04, 0.04), color.rgb, occlusionRoughnessMetallic.b);\n";
+				shader += "color.rgb *= (1.0 - occlusionRoughnessMetallic.b);\n";		
+			}
+
+			//Specularmap
+			if(properties.OCCLUSIONMAP) {
+				shader += "_occlusion = texture2D(occlusionMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r;\n";	
 			}
 
 			if (properties.MULTISPECSHINMAP) {
@@ -955,6 +974,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 		//Calculate lights
         if (properties.LIGHTS) {
+
+			var numLights = properties.LIGHTS;
+
+			if(properties.PHYSICALENVLIGHT)
+			{
+				numLights--;
+			}
+
             for(var l=0; l<properties.LIGHTS; l++) {
                 var lightCol = "light"+l+"_Color";
                 shader += " lighting(light"+l+"_Type, " +
@@ -974,46 +1001,36 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "diffuse = max(diffuse, 0.0);\n";
             shader += "specular = max(specular, 0.0);\n";
 		}
-
-
-		// shader += "vec3 viewDir = normalize(fragViewDir);\n";
-		// shader += "vec3 reflected = -reflect(eye, normal);\n";
-		// shader += "reflected = (mat_mvi * vec4(reflected, 0.0)).xyz;\n";
-
-		// shader += "vec3 normalWorld = (mat_vi * vec4(normal, 0.0)).rgb;\n";
-		// shader += "diffuse = textureCube( diffuseEnvironmentMap, reflected ).rgb;\n";
-
 		
-
 		if(properties.PBR_MATERIAL)
 		{
 			//shader += "_specularColor = vec3(1.0);\n";
 
-			if(!properties.METALLICROUGHNESSMAP)
+			if(!properties.ROUGHNESSMETALLICMAP && !properties.OCCLUSIONROUGHNESSMETALLICMAP)
 			{
 				shader += "color.rgb *= (1.0 - metallicFactor);\n";
 			}
+
+			if(properties.PHYSICALENVLIGHT)
+			{
+				shader += "vec3 N = (mat_vi * vec4(normal, 0.0)).rgb;\n";
+				shader += "vec3 V = (mat_vi * vec4(eye, 0.0)).rgb;\n";
+				shader += "vec3 R = -normalize( reflect ( V, N ) );\n";
+
+				shader += "float roughness  =  1.0 - _shininess;\n";
+				shader += "float NoV = dot( N, V );\n";
+				shader += "float lod = roughness * 6.0;"
+
+				shader += "diffuse += textureCube( diffuseEnvironmentMap, N ).rgb;\n";
+
+				//Calculate specular lighting from precomputed maps
+				shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, roughness ) ).rgb;\n";
+				shader += "specular       += textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
+				shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";
+			}
 		}
 
-		if(true)
-		{
-			shader += "vec3 normalWorld = (mat_vi * vec4(normal, 0.0)).rgb;\n";
-			shader += "diffuse = textureCube( diffuseEnvironmentMap, normalWorld ).rgb;\n";
-
-			//shader += "float lod = roughness * mipCount;\n";
-			shader += "vec3 R    = normalize( reflect ( -eye, normal ) );\n";
-			shader += "R         = (mat_mvi * vec4(R, 0.0)).xyz;\n";
-			shader += "float NoV = dot( normal, eye );\n";
-			shader += "float lod = (1.0 - _shininess) * 9.0;"
-
-			//Calculate specular lighting from precomputed maps
-			shader += "vec3 brdf = texture2D( brdfMap, vec2( NoV, 1.0 - _shininess ) ).rgb;\n";
-			shader += "vec3 specularLight = vec3(0.0);\n";
-			shader += "specularLight = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
-			shader += "specular = specularLight * ( _specularColor * brdf.x + brdf.y );\n";
-		}
-
-		shader += "color.rgb = (_emissiveColor + (diffuse) * color.rgb + specular);\n";	
+		shader += "color.rgb = (_emissiveColor + (ambient + diffuse) * color.rgb + (specular * _specularColor)) * _occlusion;\n";	
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {
