@@ -110,13 +110,6 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
 x3dom.glTF2Loader.prototype._generateX3DScene = function()
 {
     var scene = document.createElement( "scene" );
-    var pel   = document.createElement( "physicalenvironmentlight" );
-
-    //Deactivate headlight
-    var navi = this._nameSpace.doc._scene.getNavigationInfo();
-    navi._vf.headlight = false;
-
-    scene.appendChild( pel );
     
     return scene;
 };

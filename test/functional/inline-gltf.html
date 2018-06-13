@@ -20,7 +20,7 @@
             display: flex;
             width: 100%;
             height: 56px;
-            background: #86c540;
+            background: #000000;
             align-items: center;
             padding: 0 16px;
             box-sizing: border-box;
@@ -70,7 +70,7 @@
         }  
         .sidebar-entry {width: 100%; font-size: 14px; color: #888; cursor: pointer; padding: 8px 32px; box-sizing: border-box; font-weight: 500; white-space: nowrap;}
         .sidebar-entry:hover { background: #ddd; }
-        .sidebar-header {width: 100%; font-size: 14px; margin: 0 0 5px 0; font-weight: 500; color: #86c540; padding: 16px; box-sizing: border-box; white-space: nowrap;}
+        .sidebar-header {width: 100%; font-size: 14px; margin: 0 0 5px 0; font-weight: 500; color: #000000; padding: 16px; box-sizing: border-box; white-space: nowrap;}
         
         x3d
         { 
@@ -225,7 +225,10 @@
 
         <X3D id="x3d" >
             <Scene>
-                <Transform translation="0 0 -5">
+                <navigationinfo headlight="false"></navigationinfo>
+                <physicalenvironmentlight></physicalenvironmentlight>
+                <background backURL="https://x3dom.org/download/assets/pbr/museumDiffuse.dds"></background>
+                <Transform translation="0 0 0">
                     <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
                 </Transform>
             </Scene>

@@ -229,7 +229,8 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 
 		texture.width  = dds.width;
 		texture.height = dds.height;
-		texture.ready = true;
+        texture.ready = true;
+        texture.textureCubeReady = true;
     });
 };
 
@@ -1063,6 +1064,15 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	return property;
 };
 
+/*****************************************************************************
+* Returns the linear interpolations between two values
+*****************************************************************************/
+x3dom.Utils.lerp = function (value1, value2, amount)
+{
+    amount = amount < 0 ? 0 : amount;
+    amount = amount > 1 ? 1 : amount;
+    return value1 + (value2 - value1) * amount;
+}
 
 /*****************************************************************************
 * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the

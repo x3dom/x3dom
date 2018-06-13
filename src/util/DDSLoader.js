@@ -377,7 +377,7 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
     {
         return new Uint16Array( buffer.slice( offset, offset + width * height * 2 ) );
     }
-    else if ( format.internal == 6408 && format.type != 36193 )
+    else if ( format.internal == 6408 && format.type != 36193 && format.type != 5126 )
     {
         return x3dom.DDSLoader.A8R8G8B8_To_A8B8G8R8( new Uint8Array( buffer.slice( offset, offset + width * height * 4 ) ) );
     }
@@ -395,7 +395,7 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
         // return x3dom.DDSLoader.F16_To_UB8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
         return new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) );
     }
-    else if ( format.internal == 34836 )
+    else if ( format.internal == 34836 || format.type == 5126)
     {
         return new Float32Array( buffer.slice( offset, offset + width * height * 4 * 4 ) );
     }
@@ -431,7 +431,9 @@ x3dom.DDSLoader._readFormat = function( dds )
         }
         else if ( pixelFormat.dwFourCC == "t" )
         {
-            dds.format = { internal: 34836, format: 6408, type: 5126 };
+            //dds.format = { internal: 34836, format: 6408, type: 5126 };
+            //WEBGL 1.0
+            dds.format = { internal: 6408, format: 6408, type: 5126 };
         }
         else if ( pixelFormat.dwFourCC == "q"  || pixelFormat.dwFourCC == "$" )
         {

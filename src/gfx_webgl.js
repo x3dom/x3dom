@@ -853,8 +853,9 @@ x3dom.gfx_webgl = (function () {
         var w = 1, h = 1;
 
         if (url.length > 0 && url[0].length > 0) {
-            if (url.length >= 6 && url[1].length > 0 && url[2].length > 0 &&
-                url[3].length > 0 && url[4].length > 0 && url[5].length > 0) {
+            if ((url.length >= 6 && url[1].length > 0 && url[2].length > 0 &&
+                url[3].length > 0 && url[4].length > 0 && url[5].length > 0) ||
+                url[0].indexOf(".dds") != -1) {
                 sphere = new x3dom.nodeTypes.Sphere();
 
                 bgnd._webgl = {
@@ -867,10 +868,20 @@ x3dom.gfx_webgl = (function () {
 
                 bgnd._webgl.primType = gl.TRIANGLES;
 
-                bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
+                if(url[0].indexOf(".dds") != -1)
+                {
+                    bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE_DDS);
+                    bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, [url[0]],
+                        false, bgnd._vf.crossOrigin, true, false, false);
+                }
+                else
+                {
+                    bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
+                    bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
+                        true, bgnd._vf.crossOrigin, true, false);
+                }
 
-                bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
-                    true, bgnd._vf.crossOrigin, true, false);
+                
             }
             else {
                 bgnd._webgl = {
@@ -2278,9 +2289,11 @@ x3dom.gfx_webgl = (function () {
             sp.diffuseColor     = [mat._vf.baseColorFactor.r,
                                    mat._vf.baseColorFactor.g,
                                    mat._vf.baseColorFactor.b];
-            sp.specularColor    = (mat._vf.metallicFactor == 0) ? [0.04, 0.04, 0.04] : [mat._vf.baseColorFactor.r,
-                                                                                   mat._vf.baseColorFactor.g,
-                                                                                   mat._vf.baseColorFactor.b];
+
+            sp.specularColor    = [x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.r, mat._vf.metallicFactor),
+                                   x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.g, mat._vf.metallicFactor),
+                                   x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.b, mat._vf.metallicFactor)];
+
             sp.emissiveColor    = mat._vf.emissiveFactor.toGL();
             sp.shininess        = 1.0 - mat._vf.roughnessFactor;
             sp.metallicFactor   = mat._vf.metallicFactor;
@@ -2555,6 +2568,7 @@ x3dom.gfx_webgl = (function () {
 
         sp.isOrthoView = ( mat_proj._33 == 1 ) ? 1.0 : 0.0;
 
+        sp.modelMatrix = transform.toGL();
         sp.modelViewMatrix = model_view.toGL();
         sp.viewMatrix = mat_view.toGL();
 
@@ -2563,10 +2577,9 @@ x3dom.gfx_webgl = (function () {
 
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 
-        //if (isUserDefinedShader || shape._clipPlanes && shape._clipPlanes.length)
-        {
-            sp.viewMatrixInverse = mat_view.inverse().toGL();
-        }
+        sp.viewMatrixInverse = mat_view.inverse().toGL();
+
+        sp.cameraPosWS = mat_view.inverse().e3().toGL();
 
         // only calculate on "request" (maybe of interest for users)
         // may be used by external materials
@@ -2634,9 +2647,10 @@ x3dom.gfx_webgl = (function () {
         {
             var diffuseURL  = physicalEnvironmentLight._nameSpace.getURL(physicalEnvironmentLight._vf.diffuse);
             var specularURL = physicalEnvironmentLight._nameSpace.getURL(physicalEnvironmentLight._vf.specular);
+            var brdfURL     = x3dom.BRDF_LUT
 
             //Get BRDF LUT Texture
-            var brdf_lut = this.cache.getTexture2D(gl, shape._nameSpace.doc, x3dom.BRDF_LUT, false, 'anonymous', false, false, true);
+            var brdf_lut = this.cache.getTexture2D(gl, shape._nameSpace.doc, brdfURL, false, 'anonymous', false, false, true);
             var diffuse  = this.cache.getTextureCube(gl, shape._nameSpace.doc, [diffuseURL], false, 'anonymous', false, false, true);
             var specular = this.cache.getTextureCube(gl, shape._nameSpace.doc, [specularURL], false, 'anonymous', false, false, true);
 

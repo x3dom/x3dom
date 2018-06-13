@@ -12,7 +12,7 @@
 /**
  * Generate the final ShadowShader program
  */
-x3dom.shader.BackgroundCubeTextureShader = function(gl)
+x3dom.shader.BackgroundCubeTextureDDSShader = function(gl)
 {
 	this.program = gl.createProgram();
 	
@@ -33,7 +33,7 @@ x3dom.shader.BackgroundCubeTextureShader = function(gl)
 /**
  * Generate the vertex shader
  */
-x3dom.shader.BackgroundCubeTextureShader.prototype.generateVertexShader = function(gl)
+x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateVertexShader = function(gl)
 {
 	var shader = 	"attribute vec3 position;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
@@ -58,7 +58,7 @@ x3dom.shader.BackgroundCubeTextureShader.prototype.generateVertexShader = functi
 /**
  * Generate the fragment shader
  */
-x3dom.shader.BackgroundCubeTextureShader.prototype.generateFragmentShader = function(gl)
+x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = function(gl)
 {
   var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
   shader += "precision highp float;\n";
@@ -69,14 +69,7 @@ x3dom.shader.BackgroundCubeTextureShader.prototype.generateFragmentShader = func
 	shader +=	"uniform samplerCube tex;\n" +
 				"varying vec3 fragNormal;\n" +
 				"\n" +
-				"float magn(float val) {\n" +
-				"    return ((val >= 0.0) ? val : -1.0 * val);\n" +
-				"}" +
-				"\n" +
 				"void main(void) {\n" +
-				// "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));\n" +
-				// "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z))\n" +
-				// "        normal.xz = -normal.xz;\n" +
 				"    gl_FragColor = textureCube(tex, fragNormal);\n" +
 				"}\n";
 

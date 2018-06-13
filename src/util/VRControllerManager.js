@@ -14,6 +14,11 @@ x3dom.VRControllerManager = function()
             right : "https://x3dom.org/download/assets/vr/vive.glb",
             scaleFactor : 40
         },
+        "OpenVR Controller" : {
+            left  : "https://x3dom.org/download/assets/vr/vive.glb",
+            right : "https://x3dom.org/download/assets/vr/vive.glb",
+            scaleFactor : 40
+        },
         "Oculus Touch" : {
             left  : "https://x3dom.org/download/assets/vr/oculus-touch-left.glb",
             right : "https://x3dom.org/download/assets/vr/oculus-touch-right.glb",
