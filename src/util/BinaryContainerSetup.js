@@ -1332,7 +1332,8 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             var byteOffset = view._vf.byteOffset;
             var byteLength = view._vf.byteLength;
 
-            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined)
+            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined || 
+               !gl.isBuffer(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID]))
             {
                 var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
 

@@ -179,7 +179,7 @@ x3dom.Viewarea.prototype.setVRFrameData = function(vrFrameData)
 
 x3dom.Viewarea.prototype.updateGamepads = function(vrDisplay)
 {
-    this.vrControllerManager.update(vrDisplay);
+    this.vrControllerManager.update(this, vrDisplay);
 
     // var allGamepads = navigator.getGamepads();
     // var gamepads = [];

@@ -549,7 +549,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "#extension GL_EXT_shader_texture_lod : enable\n";
 	}
 
-	if (properties.NORMALMAP && x3dom.caps.STD_DERIVATIVES)
+	if ((properties.PBR_MATERIAL || properties.NORMALMAP) && x3dom.caps.STD_DERIVATIVES)
 	{
 		shader += "#extension GL_OES_standard_derivatives:enable\n";
 	}
@@ -568,6 +568,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 	//Material
 	shader += x3dom.shader.material();
+
+	if(properties.PBR_MATERIAL && !x3dom.caps.TEXTURE_LOD)
+	{
+		shader += x3dom.shader.calcMipLevel();
+	}
 
 	if (properties.TWOSIDEDMAT) {
 		shader += x3dom.shader.twoSidedMaterial();
@@ -771,11 +776,15 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
     shader += "vec3 _emissiveColor     = emissiveColor;\n";
 	shader += "float _shininess        = shininess;\n";
-	shader += "float _metallic         = metallicFactor;\n";
     shader += "vec3 _specularColor     = specularColor;\n";
     shader += "float _ambientIntensity = ambientIntensity;\n";
 	shader += "float _transparency     = transparency;\n";
 	shader += "float _occlusion        = 1.0;\n";
+
+	if(properties.PBR_MATERIAL)
+	{	
+		shader += "float _metallic         = metallicFactor;\n";
+	}
 
 	if(properties.SEPARATEBACKMAT)
 	{
@@ -1018,6 +1027,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 			if(properties.PHYSICALENVLIGHT)
 			{
+				shader += "float camDistance = length(cameraPosWS.xyz - fragPositionWS.xyz);"
 				shader += "vec3 N = (mat_vi * vec4(normal, 0.0)).rgb;\n";
 				shader += "vec3 V = normalize ( cameraPosWS.xyz - fragPositionWS.xyz );\n";
 				shader += "vec3 R = normalize( reflect ( -V, N ) );\n";
@@ -1028,14 +1038,25 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 				shader += "diffuse = textureCube( diffuseEnvironmentMap, N ).rgb / 3.14159;\n";
 
+				if(x3dom.caps.TEXTURE_LOD)
+				{
+					shader += "specular = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
+				}
+				else
+				{
+					shader += "float level = calcMipLevel(dirToCubeUV(R));\n";
+					shader += "float bias  = lod - level;\n";
+					shader += "specular    = textureCube( specularEnvironmentMap, R, bias ).rgb;\n";
+				}
+				
 				//Calculate specular lighting from precomputed maps
 				shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, 1.0 - roughness ) ).rgb;\n";
-				shader += "specular       = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
-				shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";
+				shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";		
 			}
 		}
 
 		shader += "color.rgb = (_emissiveColor + ((ambient + diffuse) * color.rgb) + specular * _specularColor) * _occlusion;\n";	
+		// shader += "color.rgb = vec3(dirToCubeUV(N), 0.0);\n";	
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {

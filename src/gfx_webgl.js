@@ -52,7 +52,8 @@ x3dom.gfx_webgl = (function () {
     function setupContext(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, x3dElem) {
         var validContextNames = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
-        if (tryWebGL2) {
+        if (tryWebGL2)
+        {
             validContextNames = ['webgl2','experimental-webgl2'].concat(validContextNames);
         }
 
@@ -1074,7 +1075,7 @@ x3dom.gfx_webgl = (function () {
             };
         }
 
-        bgnd._webgl.render = function (gl, mat_view, mat_proj)
+        bgnd._webgl.render = function (gl, mat_view, mat_proj, viewarea)
         {
             var sp = bgnd._webgl.shader;
             var alpha = 1.0 - bgnd.getTransparency();
@@ -1238,8 +1239,23 @@ x3dom.gfx_webgl = (function () {
 					}
 					
 					sp.scale = scale.toGL();
-					sp.translation = translation.toGL();
+                    sp.translation = translation.toGL();
                 }
+
+                sp.isVR = -1.0;
+                sp.screenWidth = that.canvas.width;
+
+                if(that.VRMode == 2)
+                {
+                    var mat_view_R = viewarea.getViewMatrices()[1];
+                    var mat_proj_R = viewarea.getProjectionMatrices()[1];
+                    var mat_scene_R = mat_proj_R.mult(mat_view_R);
+                    sp.modelViewProjectionMatrix2 = mat_scene_R.toGL();
+
+                    sp.isVR = 1.0;
+                }
+
+                that.setVertexAttribEyeIdx(gl, sp);
 
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);
                 gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[1]);
@@ -1763,9 +1779,11 @@ x3dom.gfx_webgl = (function () {
             //Bind shader
             this.stateManager.useProgram(sp);
 
-            sp.screenWidth = this.canvas.width * scene._webgl.pickScale
+            sp.screenWidth = this.canvas.width * scene._webgl.pickScale;
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
+
+            sp.isVR = -1.0;
 
             if(this.VRMode == 2)
             {
@@ -1776,6 +1794,7 @@ x3dom.gfx_webgl = (function () {
 
                 sp.isVR = 1.0;
             }
+
 
             sp.lowBit  = (shape._objectID & 255) / 255.0;
             sp.highBit = (shape._objectID >>> 8) / 255.0;
@@ -4064,7 +4083,7 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 
         // calls gl.clear etc. (bgnd stuff)
-        bgnd._webgl.render(gl, mat_view, mat_proj);
+        bgnd._webgl.render(gl, mat_view, mat_proj, viewarea);
 
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris = 0;

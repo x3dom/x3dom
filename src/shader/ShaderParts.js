@@ -234,6 +234,67 @@ x3dom.shader.rgbaPacking = function() {
 	return shaderPart;
 };
 
+x3dom.shader.calcMipLevel = function() {
+	var shaderPart = "";
+
+	shaderPart +=
+				"vec2 dirToCubeUV( vec3 dir ) {\n" +
+				"    vec2 uv = vec2(0.0);\n" +
+				"    vec3 absDir = abs(dir);\n" +
+				"    if( absDir.x >= absDir.y && absDir.x >= absDir.z) {\n" +
+				"    	if(dir.x < 0.0) {\n" +
+				"   		uv.x = 1.0 - (((dir.z/absDir.x) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.x) + 1.0) * 0.5);\n" +
+				"   	} else {\n" +
+				"   		uv.x = 1.0 - (((-dir.z/absDir.x) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.x) + 1.0) * 0.5);\n" +
+				"   	}\n" +
+				"   } else if( absDir.y >= absDir.x && absDir.y >= absDir.z) {\n" +
+				"   	if(dir.y < 0.0) {\n" +
+				"  			uv.x = ((dir.x/absDir.y) + 1.0) * 0.5;\n" +
+				"   		uv.y = ((-dir.z/absDir.y) + 1.0) * 0.5;\n" +
+				"   	} else {\n" +
+				"   		uv.x = ((dir.x/absDir.y) + 1.0) * 0.5;\n" +
+				"   		uv.y = ((dir.z/absDir.y) + 1.0) * 0.5;\n" +
+				"if(uv.y == 0.0) { uv.x = 1.0; uv.y = 0.0; }\n"+
+				"   	}\n" +
+				"   } else if( absDir.z >= absDir.x && absDir.z >= absDir.y) {\n" +
+				"   	if(dir.z < 0.0) {\n" +
+				"   		uv.x = (((-dir.x/absDir.z) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.z) + 1.0) * 0.5);\n" +
+				"   	} else {\n" +
+				"   		uv.x = ((dir.x/absDir.z) + 1.0) * 0.5;\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.z) + 1.0) * 0.5);\n" +
+				"   	}\n" +
+				"   }\n" +
+
+				"   float a = pow(64.0,2.0) / pow(64.0,3.0);\n" +
+				"	uv.x = a * pow(uv.x, 3.0) + uv.x;\n" +
+				"	uv.y = a * pow(uv.y, 3.0) + uv.y;\n" +
+				"   return uv;\n" +
+				"}\n";   
+
+	shaderPart +=
+				"float calcMipLevel( vec2 uv ) {\n" + 
+	            "	vec2  dx_vtc        = dFdx(uv) * 64.0;\n" + 
+				"	vec2  dy_vtc        = dFdy(uv) * 64.0;\n" + 
+				"	float delta_max_sqr = max(dot(dx_vtc, dx_vtc), dot(dy_vtc, dy_vtc));\n" + 
+				"	return 0.5 * log2(delta_max_sqr);\n" + 
+				"}\n";
+
+	shaderPart += 
+				"vec3 fixSeams(vec3 vec, float mipmapIndex) {\n" + 
+				"	float scale = 1.0 - exp2(mipmapIndex) / 64.0;\n" + 
+				"	float M = max(max(abs(vec.x), abs(vec.y)), abs(vec.z));\n" + 
+				"	if (abs(vec.x) != M) vec.x *= scale;\n" + 
+				"	if (abs(vec.y) != M) vec.y *= scale;\n" + 
+				"	if (abs(vec.z) != M) vec.z *= scale;\n" + 
+				"	return vec;\n" + 
+				"}"
+
+	return shaderPart;
+};
+
 x3dom.shader.shadowRendering = function(){
 	//determine if and how much a given position is influenced by given light
 	var shaderPart = "";

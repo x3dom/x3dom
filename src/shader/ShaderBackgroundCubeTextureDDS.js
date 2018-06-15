@@ -37,11 +37,27 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateVertexShader = fun
 {
 	var shader = 	"attribute vec3 position;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
+					"uniform mat4 modelViewProjectionMatrix2;\n" +
 					"varying vec3 fragNormal;\n" +
+					"uniform float isVR;\n" +
+					"attribute float eyeIdx;\n" +
+					"varying float vrOffset;\n" +
+					"varying float fragEyeIdx;\n" +
 					"\n" +
 					"void main(void) {\n" +
-					"    fragNormal = normalize(position);\n" +
-					"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+					"	fragEyeIdx = eyeIdx;\n" +
+					"   fragNormal = normalize(position);\n" +
+					"	if(eyeIdx == 1.0){\n" +
+					"   	gl_Position = modelViewProjectionMatrix2 * vec4(position, 1.0);\n" +
+					"	} else {\n" +
+					"   	gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+					"	}\n" +
+					"	if(isVR == 1.0){\n" +
+					"    	vrOffset = eyeIdx * 0.5;\n" +
+					"    	gl_Position.x *= 0.5;\n" +
+					"    	gl_Position.x += vrOffset * gl_Position.w;\n" +
+					"	}\n" +
+
 					"}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -66,11 +82,18 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
   shader += " precision mediump float;\n";
   shader += "#endif\n\n";
 
-	shader +=	"uniform samplerCube tex;\n" +
+	shader +=	"uniform float isVR;\n" +
+				"varying float vrOffset;\n" +
+				"varying float fragEyeIdx;\n" +
+				"uniform float screenWidth;\n" +
+				"uniform samplerCube tex;\n" +
 				"varying vec3 fragNormal;\n" +
 				"\n" +
 				"void main(void) {\n" +
-				"    gl_FragColor = textureCube(tex, fragNormal);\n" +
+				"	if ( isVR == 1.0) {\n" +
+				"   	if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
+				"	}\n"+
+				"   gl_FragColor = textureCube(tex, fragNormal);\n" +
 				"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
