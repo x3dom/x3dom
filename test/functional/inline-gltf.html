@@ -120,7 +120,8 @@
 
             g_direction = direction || "posZ";
             
-            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            var repo = "http://localhost/glTF-Sample-Models/2.0/";
 
             url = repo + file + "/glTF" + type + "/" + file + suffix;
             
@@ -205,8 +206,10 @@
             <div class="sidebar-entry" onclick="load('TwoSidedPlane')">TwoSidedPlane</div>
             <div class="sidebar-entry" onclick="load('Cube')">Cube</div>
             <div class="sidebar-entry" onclick="load('SciFiHelmet')">SciFiHelmet</div>  
-            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/FlightHelmet/glTF/FlightHelmet.gltf')">Flight Helmet</div>
-            <div class="sidebar-entry" onclick="updateInline('http://localhost/cerberus/glTF/cerberus.gltf')">Cerberus</div>
+            <div class="sidebar-entry" onclick="load('FlightHelmet')">Flight Helmet</div>
+            <div class="sidebar-entry" onclick="load('Cerberus')">Cerberus</div>
+            <div class="sidebar-entry" onclick="load('adamHead')">Adam Head</div>
+            <div class="sidebar-entry" onclick="load('microphone')">Microphone</div>
            
 
 			<div class="sidebar-header">VR Controller</div>
@@ -229,7 +232,7 @@
             <Scene>
                 <navigationinfo headlight="false"></navigationinfo>
                 <physicalenvironmentlight></physicalenvironmentlight>
-                <background backURL="https://x3dom.org/download/assets/pbr/museumDiffuse.dds"></background>
+                <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
                 <Transform translation="0 0 0">
                     <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
                 </Transform>

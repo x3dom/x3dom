@@ -26,6 +26,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
 
+            this.addField_SFString(ctx, 'model', "roughnessMetallic");
+
             /**
              * The RGBA components of the base color of the material. The fourth component (A) is the 
              * alpha coverage of the material. The `alphaMode` property specifies how alpha is interpreted. 
@@ -67,6 +69,37 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'roughnessFactor', 0.2);
+
+            /**
+             * Toto
+             * @var {x3dom.fields.SFColor} diffuseFactor
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1,1,1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFColorRGBA(ctx, 'diffuseFactor', 1, 1, 1, 1);
+
+            /**
+             * Todo
+             * @var {x3dom.fields.SFColor} specularFactor
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1,1,1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFColor(ctx, 'specularFactor', 1, 1, 1);
+
+            /**
+             * todo
+             * @var {x3dom.fields.SFFloat} glossinessFactor
+             * @range [0, 1]
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'glossinessFactor', 1);
 
             /**
              * The RGB components of the emissive color of the material. These values are linear.
@@ -179,6 +212,18 @@ x3dom.registerNodeType(
              * A set of parameter values that are used to define the
              * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * @var {x3dom.nodeTypes.X3DTextureNode} specularGlossinessTexture
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode('specularGlossinessTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             * A set of parameter values that are used to define the
+             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
+             * When not specified, all the default values of `pbrMetallicRoughness` apply.
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue
@@ -281,12 +326,20 @@ x3dom.registerNodeType(
                     textures.push(this._cf.roughnessMetallicTexture.node);
                 }
 
+                if(this._cf.specularGlossinessTexture.node)
+                {
+                    this._cf.specularGlossinessTexture.node._type = "specularGlossinessMap";
+
+                    textures.push(this._cf.specularGlossinessTexture.node);
+                }
+
                 if(this._cf.occlusionRoughnessMetallicTexture.node)
                 {
                     this._cf.occlusionRoughnessMetallicTexture.node._type = "occlusionRoughnessMetallicMap";
 
                     textures.push(this._cf.occlusionRoughnessMetallicTexture.node);
                 }
+
 
                 return textures;
             }

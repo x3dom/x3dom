@@ -1004,7 +1004,9 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.MULTIVISMAP      = (property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap()) ? 1 : 0;
 
         property.ALPHAMODE            = (property.PBR_MATERIAL) ? material._vf.alphaMode : "BLEND";
+        property.ISROUGHNESSMETALLIC  = (property.PBR_MATERIAL && material._vf.model == "roughnessMetallic") ? 1 : 0;
         property.ROUGHNESSMETALLICMAP = (property.PBR_MATERIAL && material._cf.roughnessMetallicTexture.node) ? 1 : 0;
+        property.SPECULARGLOSSINESSMAP = (property.PBR_MATERIAL && material._cf.specularGlossinessTexture.node) ? 1 : 0;
         property.OCCLUSIONROUGHNESSMETALLICMAP = (property.PBR_MATERIAL && material._cf.occlusionRoughnessMetallicTexture.node) ? 1 : 0;
         property.PHYSICALENVLIGHT = viewarea.hasPhysicalEnvironmentLight() ? 1 : 0;
 

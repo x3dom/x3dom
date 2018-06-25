@@ -1047,6 +1047,11 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
  */
 x3dom.X3DCanvas.prototype._watchForResize = function() {
 
+    if(this.vrDisplay && this.vrDisplay.isPresenting)
+    {
+        return;
+    }
+
     var new_dim = [
         parseInt(x3dom.getStyle(this.canvas, "width")),
         parseInt(x3dom.getStyle(this.canvas, "height"))

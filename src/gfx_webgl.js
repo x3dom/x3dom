@@ -2305,20 +2305,38 @@ x3dom.gfx_webgl = (function () {
         }
         else if (mat && x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial))
         {
-            sp.diffuseColor     = [mat._vf.baseColorFactor.r,
-                                   mat._vf.baseColorFactor.g,
-                                   mat._vf.baseColorFactor.b];
+            if (mat._vf.model == "roughnessMetallic")
+            {
+                sp.diffuseColor     = [mat._vf.baseColorFactor.r,
+                                       mat._vf.baseColorFactor.g,
+                                       mat._vf.baseColorFactor.b];
 
-            sp.specularColor    = [x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.r, mat._vf.metallicFactor),
-                                   x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.g, mat._vf.metallicFactor),
-                                   x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.b, mat._vf.metallicFactor)];
+                sp.specularColor    = [x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.r, mat._vf.metallicFactor),
+                                       x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.g, mat._vf.metallicFactor),
+                                       x3dom.Utils.lerp(0.04, mat._vf.baseColorFactor.b, mat._vf.metallicFactor)];
+
+                sp.shininess        = 1.0 - mat._vf.roughnessFactor;
+                sp.metallicFactor   = mat._vf.metallicFactor;       
+                sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;
+            }
+            else
+            {
+                sp.diffuseColor     = [mat._vf.diffuseFactor.r,
+                                       mat._vf.diffuseFactor.g,
+                                       mat._vf.diffusefactor.b];
+
+                sp.specularColor    = [mat._vf.specularfactor.r,
+                                       mat._vf.specularfactor.g,
+                                       mat._vf.specularfactor.b];
+
+
+                sp.shininess        = mat._vf.glossinessFactor;   
+                sp.transparency     = 1.0 - mat._vf.diffuseFactor.a;
+            }
 
             sp.emissiveColor    = mat._vf.emissiveFactor.toGL();
-            sp.shininess        = 1.0 - mat._vf.roughnessFactor;
-            sp.metallicFactor   = mat._vf.metallicFactor;
             sp.normalBias       = mat._vf.normalBias.toGL();
             sp.ambientIntensity = 1.0;
-            sp.transparency     = 1.0 - mat._vf.baseColorFactor.a;
             sp.alphaCutoff      = mat._vf.alphaCutoff;
         }
         else if (mat)

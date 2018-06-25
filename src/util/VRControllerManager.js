@@ -15,19 +15,29 @@ x3dom.VRControllerManager = function()
             left  : "https://x3dom.org/download/assets/vr/vive.glb",
             right : "https://x3dom.org/download/assets/vr/vive.glb",
             scaleFactor : new x3dom.fields.SFVec3f(40, 40, 40),
-            offset : new x3dom.fields.SFVec3f()
+            offset : new x3dom.fields.SFVec3f(),
+            axesScale : [1,1]
         },
         "Oculus Oculus Rift CV1" : {
             left  : "https://x3dom.org/download/assets/vr/oculus-touch-left.glb",
             right : "https://x3dom.org/download/assets/vr/oculus-touch-right.glb",
             scaleFactor : new x3dom.fields.SFVec3f(39.5, 39.5, 39.5),
-            offset : new x3dom.fields.SFVec3f()
+            offset : new x3dom.fields.SFVec3f(),
+            axesScale : [1,1]
         },
         "Oculus Go" : {
             left  : "https://x3dom.org/download/assets/vr/oculus-go.glb",
             right : "https://x3dom.org/download/assets/vr/oculus-go.glb",
             scaleFactor : new x3dom.fields.SFVec3f(1, 1, 1),
-            offset : new x3dom.fields.SFVec3f(0.2, -0.3, -0.3)
+            offset : new x3dom.fields.SFVec3f(0.2, -0.3, -0.3),
+            axesScale : [1,-1]
+        },
+        "Emulated HTC Vive DVT" : {
+            left  : "https://x3dom.org/download/assets/vr/vive.glb",
+            right : "https://x3dom.org/download/assets/vr/vive.glb",
+            scaleFactor : new x3dom.fields.SFVec3f(40, 40, 40),
+            offset : new x3dom.fields.SFVec3f(),
+            axesScale : [1,1]
         }
     }
 
@@ -120,6 +130,7 @@ x3dom.VRControllerManager.prototype.update = function( viewarea, vrDisplay )
         this.rightInline.setAttribute("render", "false");
 
         this.wasPresenting = false;
+        return;
     }
     else
     {
@@ -157,11 +168,12 @@ x3dom.VRControllerManager.prototype.onUpdate = function( viewarea, vrDisplay, co
     var transMat = new x3dom.fields.SFMatrix4f();
     var rotMat = new x3dom.fields.SFMatrix4f();
     var axes = [0, 0];
+    var axesScale = this.controllers[vrDisplay.displayName].axesScale;
 
     if(controllers.left)
     {   
-        axes[0] += controllers.left.axes[0];
-        axes[1] += controllers.left.axes[1];
+        axes[0] += controllers.left.axes[0] * axesScale[0];
+        axes[1] += controllers.left.axes[1] * axesScale[1];
 
         if(controllers.left.buttons[1].pressed)
         {
@@ -171,8 +183,8 @@ x3dom.VRControllerManager.prototype.onUpdate = function( viewarea, vrDisplay, co
     
     if(controllers.right)
     {
-        axes[0] += controllers.right.axes[0];
-        axes[1] += controllers.right.axes[1];
+        axes[0] += controllers.right.axes[0] * axesScale[0];
+        axes[1] += controllers.right.axes[1] * axesScale[1];
 
         if(controllers.right.buttons[1].pressed)
         {

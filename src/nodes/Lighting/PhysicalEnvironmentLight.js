@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'diffuse', "https://x3dom.org/download/assets/pbr/museumDiffuse.dds");
+            this.addField_SFString(ctx, 'diffuse', "https://x3dom.org/download/assets/pbr/papermillDiffuse.dds");
 
             /**
              *
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'specular', "https://x3dom.org/download/assets/pbr/museumSpecular.dds");
+            this.addField_SFString(ctx, 'specular', "https://x3dom.org/download/assets/pbr/papermillSpecular.dds");
 
             /**
              *

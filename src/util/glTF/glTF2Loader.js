@@ -252,43 +252,79 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var mat = document.createElement("physicalmaterial");
 
     var texture;
-    var baseColorFactor  = [1,1,1,1];
-    var emissiveFactor   = material.emissiveFactor || [0,0,0];
-    var metallicFactor   = 1;
-    var roughnessFactor  = 1;
-    var alphaMode        = material.alphaMode || "OPAQUE";
-    var alphaCutoff      = material.alphaCutoff || 0.5;
+    var baseColorFactor   = [1,1,1,1];
+    var emissiveFactor    = material.emissiveFactor || [0,0,0];
+    var metallicFactor    = 1;
+    var roughnessFactor   = 1;
+    var alphaMode         = material.alphaMode || "OPAQUE";
+    var alphaCutoff       = material.alphaCutoff || 0.5;
     var seperateOcclusion = true
+    var model             = undefined;
+    var pbr          = undefined;
 
-    var pbr = material.pbrMetallicRoughness;
-
-    if(pbr)
+    if( material.pbrMetallicRoughness )
     {
-        baseColorFactor = pbr.baseColorFactor || baseColorFactor;
-        metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor  : metallicFactor;
-        roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.roughnessFactor : roughnessFactor;
+        pbr = material.pbrMetallicRoughness;
+        model = "roughnessMetallic";
+    }
+    else if(material.extensions && material.extensions.KHR_materials_pbrSpecularGlossiness)
+    {
+        pbr = material.extensions.KHR_materials_pbrSpecularGlossiness;
+        model = "specularGlossiness";
     }
 
-    if(pbr && pbr.baseColorTexture)
+    if( model == "roughnessMetallic" )
     {
-        texture = this._gltf.textures[pbr.baseColorTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
-    }
+        var baseColorFactor = pbr.baseColorFactor || [1,1,1,1];
+        var metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor  : 1;
+        var roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.roughnessFactor : 1;
 
-    if(pbr && pbr.metallicRoughnessTexture)
-    {
-        texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
-
-        if( material.occlusionTexture && material.occlusionTexture.index == pbr.metallicRoughnessTexture.index)
+        if(pbr.baseColorTexture )
         {
-            seperateOcclusion = false;
-            mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture"));
+            texture = this._gltf.textures[pbr.baseColorTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
         }
-        else
+
+        if(pbr.metallicRoughnessTexture)
         {
-            mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture"));
+            texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
+
+            if( material.occlusionTexture && material.occlusionTexture.index == pbr.metallicRoughnessTexture.index)
+            {
+                seperateOcclusion = false;
+                mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture"));
+            }
+            else
+            {
+                mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture"));
+            }
+        }
+
+        mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+        mat.setAttribute("metallicFactor",  metallicFactor);
+        mat.setAttribute("roughnessFactor", roughnessFactor);
+    }
+    else if ( model == "specularGlossiness" )
+    {
+        var diffuseFactor    = pbr.diffuseFactor || [ 1, 1, 1, ];
+        var specularFactor   = pbr.specularFactor || [ 1, 1, 1 ];
+        var glossinessFactor = (pbr.glossinessFactor != undefined) ? pbr.glossinessFactor : 1;
+
+        if ( pbr.diffuseTexture )
+        {
+            texture = this._gltf.textures[pbr.diffuseTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
         }
         
+        if ( pbr.specularGlossinessTexture )
+        {
+            texture = this._gltf.textures[pbr.specularGlossinessTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "specularGlossinessTexture"));
+        }
+
+        mat.setAttribute("diffuseFactor", diffuseFactor.join(" "));
+        mat.setAttribute("specularFactor",  specularFactor.join(" "));
+        mat.setAttribute("glossinessFactor", glossinessFactor);
     }
 
     if(material.normalTexture)
@@ -308,11 +344,8 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
         texture = this._gltf.textures[material.occlusionTexture.index];
         mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));
     }
-
-    mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+    
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
-    mat.setAttribute("metallicFactor",  metallicFactor);
-    mat.setAttribute("roughnessFactor", roughnessFactor);
     mat.setAttribute("alphaMode",  alphaMode);
     mat.setAttribute("alphaCutoff", alphaCutoff);
     

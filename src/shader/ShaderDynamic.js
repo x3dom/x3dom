@@ -580,7 +580,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 	if(properties.PBR_MATERIAL)
 	{
-		shader += "uniform float metallicFactor;\n";
+		if(properties.ISROUGHNESSMETALLIC)
+		{
+			shader += "uniform float metallicFactor;\n";
+		}
+		
 		shader += "uniform sampler2D brdfMap;\n";
 		shader += "uniform samplerCube diffuseEnvironmentMap;\n";
 		shader += "uniform samplerCube specularEnvironmentMap;\n";
@@ -650,6 +654,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		if(properties.ROUGHNESSMETALLICMAP){
 			shader += "uniform sampler2D roughnessMetallicMap;\n";
+		}
+		if(properties.SPECULARGLOSSINESSMAP)
+		{
+			shader += "uniform sampler2D specularGlossinessMap;\n";
 		}
 		if(properties.OCCLUSIONROUGHNESSMETALLICMAP){
 			shader += "uniform sampler2D occlusionRoughnessMetallicMap;\n";
@@ -781,7 +789,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "float _transparency     = transparency;\n";
 	shader += "float _occlusion        = 1.0;\n";
 
-	if(properties.PBR_MATERIAL)
+	if(properties.PBR_MATERIAL && properties.ISROUGHNESSMETALLIC)
 	{	
 		shader += "float _metallic         = metallicFactor;\n";
 	}
@@ -962,6 +970,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "_metallic  = roughnessMetallic.b;\n";		
 			}
 
+			if(properties.SPECULARGLOSSINESSMAP)
+			{
+				shader += "vec4 specularGlossiness = texture2D(specularGlossinessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
+				shader += "_shininess = specularGlossiness.a;\n";
+			}
+
 			//Specularmap
 			if(properties.OCCLUSIONROUGHNESSMETALLICMAP) {
 				shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
@@ -985,10 +999,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			}
 		}
 
-		if(properties.PBR_MATERIAL)
+		if(properties.PBR_MATERIAL && properties.ISROUGHNESSMETALLIC)
 		{
 			shader += "_specularColor = mix(vec3(0.04, 0.04, 0.04), color.rgb, _metallic);\n";	
 			shader += "color.rgb *= (1.0 - _metallic);\n";
+		}
+		else if(properties.PBR_MATERIAL && properties.SPECULARGLOSSINESSMAP)
+		{
+			shader += "_specularColor = specularGlossiness.rgb;\n";
 		}
 
 		//Calculate lights
