@@ -251,7 +251,7 @@ x3dom.Texture.prototype.updateTexture = function()
 	if (tex._isCanvas && tex._canvas)
 	{
 		if (this.texture == null) {
-			this.texture = gl.createTexture()
+			this.texture = gl.createTexture();
 		}
         this.texture.width  = tex._canvas.width;
         this.texture.height = tex._canvas.height;
