@@ -14,7 +14,7 @@
 x3dom.JSONParser = function(scene)
 {
 	this.x3djsonNS = "http://www.web3d.org/specifications/x3d-namespace";
-}
+};
 
 x3dom.JSONParser.prototype.constructor = x3dom.JSONParser;
 

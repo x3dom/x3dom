@@ -729,7 +729,7 @@ x3dom.PROTOS.prototype = {
 				this.pushScope(bodydef);
 			}
 			*/
-			var newobject = {}
+			var newobject = {};
 			newobject[objkey] = {};
 			// replace ProtoInstance with the first item from the ProtoBody
 			newobject[objkey]["@USE"] = this.getScope();
@@ -959,7 +959,7 @@ x3dom.PROTOS.prototype = {
 						if (typeof alert === 'function') {
 							// alert("Did not convert XML to JSON.  Oops!");
 						}
-						console.error("Did not convert XML to JSON.  Oops!")
+						console.error("Did not convert XML to JSON.  Oops!");
 					}
 				}
 			} catch (e) {
