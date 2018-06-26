@@ -179,7 +179,7 @@ x3dom.RequestManager.abortAllRequests = function()
     this.totalRequests = 0;
 
     this.onAbortAllRequests( this._getCounters() );
-}
+};
 
 /**
  *
