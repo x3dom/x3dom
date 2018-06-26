@@ -265,7 +265,7 @@ x3dom.registerNodeType(
                 }
                 else if (locScene && locScene !== scene) {
                     // in case of completely local scene do not transform local viewpoint
-                    ret_mat = view.getViewMatrix()
+                    ret_mat = view.getViewMatrix();
                 }
                 else {
                     var mat_viewpoint = view.getCurrentTransform();
