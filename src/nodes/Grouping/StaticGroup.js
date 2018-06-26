@@ -187,7 +187,7 @@ x3dom.registerNodeType(
                     n = this.drawableCollection.length;
                     for (i = 0; i < n; i++)
                     {
-                        this.bvh.addDrawable(this.drawableCollection.get(i))
+                        this.bvh.addDrawable(this.drawableCollection.get(i));
                     }
 
                     //compile bvh
