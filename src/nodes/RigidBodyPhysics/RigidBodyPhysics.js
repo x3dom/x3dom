@@ -1312,7 +1312,7 @@ function X3DJoint(){
             CreateRigidbodies();
         }
         CreateInteractiveObjects();
-    }
+    };
 
 })();
 
