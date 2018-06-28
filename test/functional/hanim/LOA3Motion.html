@@ -1,0 +1,23 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Inline test</title>
+
+    <script type="text/javascript" src="../../x3dom-full_include.js"></script>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+        <Scene>
+            <Viewpoint centerOfRotation='0 0.9149 0.0016' description='Humanoid LOA 3 Front' position='0 0.4 4'></Viewpoint>
+            <DirectionalLight direction='-1 -1 -1' intensity='0.4'></DirectionalLight>
+            <DirectionalLight direction='1 -1 -1' intensity='0.4'></DirectionalLight>
+            <Viewpoint position='0 0 10'></Viewpoint>
+            <Background skyColor='0 0 0'></Background>
+            <Transform>
+                <Inline id="inline" nameSpaceName="hanim" mapDEFToID="true" url="HAnimSpecificationLOA3MotionNoHUD.x3d" ></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+</body>
+</html>
