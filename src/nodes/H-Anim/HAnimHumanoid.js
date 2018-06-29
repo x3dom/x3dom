@@ -183,6 +183,84 @@ x3dom.registerNodeType(
              */
             this.addField_MFNode('viewpoints', x3dom.nodeTypes.HAnimSite);
         
+            /**
+             * The skeletalConfiguration field identifies the skeletal configuration of this model. Any models that share the
+             * same skeletalConfiguration value can also share skeletal animation data. The only specific skeletal configuration
+             * defined in this International Standard is the "BASIC" skeletal configuration specified in 4.8.1 Overview. Since the
+             * default value of the skeletal configuration is "BASIC", a humanoid model that specifies a skeletalConfiguration value
+             * of "BASIC" shall conform to the restrictive skeletal model specified in 4.8.1 Overview. For any other value 
+             * the model shall also contain one or more of the five binding fields.
+             * @var {x3dom.fields.MFVec3f} skeletalConfiguration
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue 'BASIC'
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFString(ctx, 'skeletalConfiguration', 'BASIC');
+
+            /**
+             * The jointBindingPositions field specifies position values, respectively, associated with the array of Joint objects
+             * contained in the joints field. If only one value is provided (such as the default value) then it is applied to all
+             * listed Joint objects equivalently. Applying each set of these translation, rotation, and scale values, in order,
+             * to the corresponding Joint objects maps a skeleton to the binding pose.
+             * @var {x3dom.fields.MFVec3f} jointBindingPositions
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue [0 0 0]
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFVec3f(ctx, 'jointBindingPositions', [0, 0, 0]);
+        
+            /**
+             * The jointBindingRotations field specifies position values, respectively, associated with the array of Joint objects
+             * contained in the joints field. If only one value is provided (such as the default value) then it is applied to all
+             * listed Joint objects equivalently. Applying each set of these translation, rotation, and scale values, in order,
+             * to the corresponding Joint objects maps a skeleton to the binding pose.
+             * @var {x3dom.fields.MFVec3f} jointBindingRotations
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue  [0 0 1 0]
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFRotation(ctx, 'jointBindingRotations', [0, 0, 1, 0]);
+        
+            /**
+             * The jointBindingScales field specifies scale values, respectively, associated with the array of Joint objects
+             * contained in the joints field. If only one value is provided (such as the default value) then it is applied to all
+             * listed Joint objects equivalently. Applying each set of these translation, rotation, and scale values, in order,
+             * to the corresponding Joint objects maps a skeleton to the binding pose.
+             * @var {x3dom.fields.MFVec3f} jointBindingScales
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue [1 1 1]
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFVec3f(ctx, 'jointBindingScales', [1, 1, 1]);
+        
+            /**
+             * The skinBindingCoords field specifies an array of vertex locations that define the mesh in the binding pose.
+             * For each set of values corresponding to a given pose, the same vertex indexing system that is used for the skinCoord
+             * field also applies to this field.
+             * @var {x3dom.fields.MFVec3f} skinBindingCoords
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue []
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFVec3f(ctx, 'skinBindingCoords', []);
+ 
+            /**
+             * The skinBindingNormals field specifies an array of normal vectors that define the mesh normal vectors in the
+             * binding pose. For each set of values corresponding to a given pose, the same normal indexing system used for
+             * the skinNormal field also applies to this field.
+             * @var {x3dom.fields.MFVec3f} skinBindingNormals
+             * @memberof x3dom.nodeTypes.HAnimHumanoid
+             * @initvalue []
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFVec3f(ctx, 'skinBindingNormals', []);
+               
         },
         {
             // TODO skeleton   contains the HumanoidRoot Joint object functionality: map similar to children of Group
