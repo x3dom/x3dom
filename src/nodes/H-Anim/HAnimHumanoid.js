@@ -29,112 +29,156 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The name field, which shall be present, and which shall not have the empty string value, 
+             * stores the name of the humanoid defined by the Humanoid object.
              * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'name', "");
 
             /**
-             *
+             * The version field stores the version of this International Standard to which the Humanoid object conforms.
+             * The version value for International Standard V2.0  is "2.0".
              * @var {x3dom.fields.SFString} version
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'version', "");
 
             /**
-             *
+             * The info field consists of a sequence of strings, each of which is of the form term=value.
+             * The following terms are defined in this International Standard:
+             *   authorName
+             *   authorEmail
+             *   copyright
+             *   creationDate
+             *   usageRestrictions
+             *   humanoidVersion
+             *   age
+             *   gender
+             *   height
+             *   weight
+             * The gender term typically has a value of female, male or neuter. The humanoidVersion term refers to the version
+             * of the humanoid being used, in order to track revisions to the data. It is not the same as the version field of 
+             * the Humanoid object, which refers to the version of the H-Anim specification that was used when building the humanoid.
+             * Additional term=value pairs may be included as needed for specific applications.
              * @var {x3dom.fields.MFString} info
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFString(ctx, 'info', []);
 
-
             /**
-             *
+             * The joints field contains a list of references, one for each Joint object defined within the skeleton field hierarchy
+             * of the Humanoid object. The order in which the joints are listed is irrelevant since the names of the joints are
+             * stored in the Joint objects themselves. The references to contained Joint objects may be used to support inverse
+             * kinematics (IK) and other motion tools animating nodes found within the skeleton field.
              * @var {x3dom.fields.MFNode} joints
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.HAnimJoint
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('joints', x3dom.nodeTypes.HAnimJoint);
 
             /**
-             *
+             * The segments field contains a list of references, one for each Segment object defined within the skeleton
+             * field hierarchy of the Humanoid object. The order in which the segments are listed is irrelevant since
+             * the names of the segments are stored in the Segment objects themselves. The references to contained Segment
+             * objects may be used to support inverse kinematics (IK) and other motion tools animating nodes found within the skeleton field.
              * @var {x3dom.fields.MFNode} segments
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.HAnimSegment
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('segments', x3dom.nodeTypes.HAnimSegment);
 
             /**
-             *
+             * The sites field contains a list of references, one for each Site object defined within the skeleton
+             * field hierarchy of the Humanoid object. The order in which the sites are listed is irrelevant since
+             * the names of the sites are stored in the Site objects themselves. The references to contained Site objects
+             * may be used to support inverse kinematics (IK) and other motion tools animating nodes found within the skeleton field.
              * @var {x3dom.fields.MFNode} sites
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.HAnimSite
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('sites', x3dom.nodeTypes.HAnimSite);
 
             /**
-             *
+             * The skeleton field contains the humanoid_root Joint object. The Humanoid object is considered the parent object
+             * of the humanoid_root Joint object and defines a coordinate space for the humanoid_root Joint object. Thus,
+             * the Humanoid object's transformation affects the Joint object hierarchy in the skeleton field. A hierarchy of Joint
+             * objects is defined for each H-Anim humanoid figure within the skeleton field of the Humanoid object and a hierarchical
+             * definition of joints is present even when the geometry of the humanoid figure is not defined within the skeleton field.
+             * The skeleton field can also contain zero or more Site objects which allow landmarks to be established with respect to
+             * the overall humanoid figure, but which are not affected by the movement of any of the Joint objects.
              * @var {x3dom.fields.MFNode} skeleton
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.HAnimJoint
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('skeleton', x3dom.nodeTypes.HAnimJoint);
 
             /**
-             *
+             * The skin field contains one or more indexed mesh definitions. Those indexed mesh definitions utilize the point
+             * and normal data that is defined within the skinCoord and skinNormal fields, respectively, of the Humanoid object.
+             * This field is defined as an generic type for which the specific representation is defined by each binding
+             * to a presentation system.
              * @var {x3dom.fields.MFNode} skin
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.X3DChildNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('skin', x3dom.nodeTypes.X3DChildNode);
 
             /**
-             *
-             * @var {x3dom.fields.MFNode} skinCoord
+             * The skinCoord field contains a single sequence of points which are used by the internal mechanisms of the Humanoid
+             * object to create the appropriate surface deformations as well as by the indexed mesh definitions within the skin field
+             * which do the actual rendering of the surface geometry.
+             * @var {x3dom.fields.SFNode} skinCoord
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.X3DCoordinateNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
-            this.addField_MFNode('skinCoord', x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode('skinCoord', x3dom.nodeTypes.X3DCoordinateNode);
 
             /**
-             *
-             * @var {x3dom.fields.MFNode} skinNormal
+             * The skinNormal field contains the normal data definition which is used by the internal mechanisms of the Humanoid
+             * object to create the appropriate surface deformations as well as the indexed mesh definitions within the skin field
+             * which contains the actual surface geometry that is rendered.
+             * @var {x3dom.fields.SFNode} skinNormal
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.X3DNormalNode
-             * @field x3dom
+             * @field x3d
              * @instance
              */
-            this.addField_MFNode('skinNormal', x3dom.nodeTypes.X3DNormalNode);
+            this.addField_SFNode('skinNormal', x3dom.nodeTypes.X3DNormalNode);
 
             /**
-             *
+             * The viewpoints field has a different functionality and behaviour than the joints, segments and sites fields.
+             * The viewpoints field can contain zero or more Site object definitions. The Site objects defined within this field
+             * are affected by the transformations applied to the Humanoid object, but are not affected by any of the transformations
+             * performed on the skeletal hierarchy defined within the skeleton field. The purpose of these Site objects is to
+             * define locations for virtual cameras in the reference frame of the Humanoid object. Site objects that are defined
+             * in this manner are intended to be used as attachment points from which a certain viewing perspective can be seen
+             * (such as viewing the face or profile of the human figure).
              * @var {x3dom.fields.MFNode} viewpoints
              * @memberof x3dom.nodeTypes.HAnimHumanoid
              * @initvalue x3dom.nodeTypes.HAnimSite
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('viewpoints', x3dom.nodeTypes.HAnimSite);
