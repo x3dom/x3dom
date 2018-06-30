@@ -30,9 +30,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.HAnimJoint.superClass.call(this, ctx);
 
-
             /**
-             *
+             * Each Joint object shall have a name field, which shall not have the empty string value, that is used for identifying
+             * the object. Within the local scope of a Humanoid object, each Joint object can be referenced by its name alone
+             * (e.g., r_shoulder, l_hip, or skullbase). However, when referring to a Joint object within a larger or global scope,
+             * the name of the Humanoid object shall be added as a distinguishing prefix.
              * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue ""
@@ -42,7 +44,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'name', "");
 
             /**
-             *
+             * The displacers field contains a list of Displacer objects that are used to morph the deformable mesh using
+             * the morph targets defined in the Displacer objects. 
              * @var {x3dom.fields.MFNode} displacers
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue x3dom.nodeTypes.HAnimDisplacer
@@ -53,7 +56,9 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * The limitOrientation field gives the orientation of the coordinate frame in which the ulimit and llimit values
+             * are to be interpreted. It describes the orientation of ulimit and llimit fields in the local coordinate frame,
+             * relative to the Joint object centre position described by the center field.
              * @var {x3dom.fields.SFRotation} limitOrientation
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue 0 0 1 0
@@ -63,7 +68,10 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'limitOrientation', '0 0 1 0');
 
             /**
-             *
+             * The llimit field specifies lower joint rotation limits. Its components storee the lower (i.e., minimum) values
+             * for rotation around the X, Y and Z axes. A sequence containing zero elements indicates that the joint is unconstrained.
+             * A non-empty sequence can only consist of a single three-value element. If ulimit and llimit values are provided,
+             * both must be defined together. If llimit and ulimit are equal, no constraints are applied to Joint object rotations.
              * @var {x3dom.fields.MFFloat} llimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
@@ -73,7 +81,10 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'llimit', []);
 
             /**
-             *
+             * The ulimit field specifies the upper joint rotation limits. Its components store the upper (i.e. maximum) values for rotation
+             * around the X, Y and Z axes. A sequence containing zero elements indicates that the joint is unconstrained. A non-empty
+             * sequence can only consist of a single three-value element. If ulimit and llimit values are provided, both must be defined
+             * together. If llimit and ulimit are equal, no constraints are applied to Joint object rotations.
              * @var {x3dom.fields.MFFloat} ulimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
@@ -93,7 +104,10 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'skinCoordIndex', []);
 
             /**
-             *
+             * The skinCoordWeight field contains a list of floating point values between 0.0 and 1.0 that describe an amount
+             * of weighting that should be used to affect a particular vertex from the skinCoord field of the Humanoid object.
+             * Each item in this list has a corresponding index value in the skinCoordIndex field of the Joint object indicating
+             * exactly which coordinate is to be influenced.
              * @var {x3dom.fields.MFFloat} skinCoordWeight
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
@@ -103,7 +117,11 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'skinCoordWeight', []);
         
             /**
-             *
+             * The stiffness field, if present, contains values that specify to an inverse kinematics (IK) system how much each degree
+             * of freedom should scale the calculated joint rotation at each step of the IK solver. A scale factor of (1 - stiffness)
+             * is applied around the corresponding axis (X, Y, or Z for entries 0, 1 and 2 of the stiffness field). Thus a stiffness
+             * value of zero means that no rotation scaling occurs, while a stiffness value of one means that no rotation occurs
+             * regardless of any provided rotation.
              * @var {x3dom.fields.MFFloat} stiffness
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue 0 0 0
