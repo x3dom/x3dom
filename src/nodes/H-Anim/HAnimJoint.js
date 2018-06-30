@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue ""
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_SFString(ctx, 'name', "");
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.MFNode} displacers
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue x3dom.nodeTypes.HAnimDisplacer
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFNode('displacers', x3dom.nodeTypes.HAnimDisplacer);
@@ -56,18 +56,18 @@ x3dom.registerNodeType(
              *
              * @var {x3dom.fields.SFRotation} limitOrientation
              * @memberof x3dom.nodeTypes.HAnimJoint
-             * @initvalue 0,0,1,0
-             * @field x3dom
+             * @initvalue 0 0 1 0
+             * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'limitOrientation', 0, 0, 1, 0);
+            this.addField_SFRotation(ctx, 'limitOrientation', '0 0 1 0');
 
             /**
              *
              * @var {x3dom.fields.MFFloat} llimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'llimit', []);
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.MFFloat} ulimit
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'ulimit', []);
@@ -87,7 +87,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.MFInt32} skinCoordIndex
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFInt32(ctx, 'skinCoordIndex', []);
@@ -97,10 +97,20 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.MFFloat} skinCoordWeight
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue []
-             * @field x3dom
+             * @field x3d
              * @instance
              */
             this.addField_MFFloat(ctx, 'skinCoordWeight', []);
+        
+            /**
+             *
+             * @var {x3dom.fields.MFFloat} stiffness
+             * @memberof x3dom.nodeTypes.HAnimJoint
+             * @initvalue 0 0 0
+             * @field x3d
+             * @instance
+             */
+            this.addField_MFFloat(ctx, 'stiffness', [0, 0, 0]);
         
         }
     )
