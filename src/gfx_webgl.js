@@ -1218,13 +1218,13 @@ x3dom.gfx_webgl = (function () {
                                           
                         if ( viewport.x > viewport.y )
                         {
-                            ratio = viewport.x / texture.x
+                            ratio = viewport.x / texture.x;
                             texture.x = viewport.x;
                             texture.y = texture.y * ratio;
                         }
                         else
                         {
-                            ratio = viewport.y / texture.y
+                            ratio = viewport.y / texture.y;
                             texture.y = viewport.y;
                             texture.x = texture.x * ratio;
                         }
@@ -3628,7 +3628,7 @@ x3dom.gfx_webgl = (function () {
 
                 //Check if there are MultiParts
                 if (scene._multiPartMap) {
-                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID
+                    var mp, multiPart, colorMap, emissiveMap, specularMap, visibilityMap, partID;
 
                     //Find related MultiPart
                     for (mp = 0; mp < scene._multiPartMap.multiParts.length; mp++) {

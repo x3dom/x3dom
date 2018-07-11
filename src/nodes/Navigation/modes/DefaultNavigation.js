@@ -51,7 +51,7 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
                             mult(x3dom.fields.SFMatrix4f.translation(view._movement)).
                             mult(mat);
     }
-}
+};
 
 x3dom.DefaultNavigation.prototype.moveForward = function(view)
 {

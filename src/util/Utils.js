@@ -94,7 +94,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
             image.crossOrigin = 'anonymous';
         } break;
         case 'use-credentials': {
-            image.crossOrigin = 'use-credentials'
+            image.crossOrigin = 'use-credentials';
         } break;
         case 'none': {
             //this is needed to omit the default case, if default is none, erase this and the default case
@@ -296,7 +296,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                     image.crossOrigin = 'anonymous';
                 } break;
                 case 'use-credentials': {
-                    image.crossOrigin = 'use-credentials'
+                    image.crossOrigin = 'use-credentials';
                 } break;
                 case 'none': {
                     //this is needed to omit the default case, if default is none, erase this and the default case
