@@ -321,7 +321,7 @@
             0 0 0.5 0.5 0.5 0 0 0.5
             0 0 0.5 0.5 0.5 0 0 0.5
             0 0 0.5 0.5 0.5 0 0 0.5
-            0 0'/>
+            0 0 0.5 0.5'/>
           </IndexedFaceSet>
         </Shape>
         <Coordinate USE='Joe_SkinCoord' containerField='skinCoord'/>
