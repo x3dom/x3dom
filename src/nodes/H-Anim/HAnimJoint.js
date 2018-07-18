@@ -130,6 +130,138 @@ x3dom.registerNodeType(
              */
             this.addField_MFFloat(ctx, 'stiffness', [0, 0, 0]);
         
-        }
+        },
+        {
+            nodeChanged: function()
+            {
+                this._humanoid = _findRoot(this._xmlNode);
+                
+                function _findRoot(domNode) {
+                    var parent = domNode.parentNode._x3domNode; //_parentNodes not yet available
+                    if (x3dom.isa(parent, x3dom.nodeTypes.Scene)) return false
+                    if (x3dom.isa(parent, x3dom.nodeTypes.HAnimHumanoid)) return parent
+                    return _findRoot(parent._xmlNode);
+                }
+            },
+        
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            {
+                // check if multi parent sub-graph, don't cache in that case
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
+                // an invalid world matrix or volume needs to be invalidated down the hierarchy
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                // check if sub-graph can be culled away or render flag was set to false
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask < 0) {
+                    return;
+                }
+
+                var cnode, childTransform;
+
+                if (singlePath) {
+                    // rebuild cache on change and reuse world transform
+                    if (!this._graph.globalMatrix) {
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+                    }
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
+                }
+
+                var n = this._childNodes.length;
+
+                if (x3dom.nodeTypes.ClipPlane.count > 0) {
+                    var localClipectPlanes = [];
+
+                    for (var j = 0; j < n; j++) {
+                        if ( (cnode = this._childNodes[j]) ) {
+                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
+                                localClipPlanes.push({plane: cnode, trafo: childTransform});
+                            }
+                        }
+                    }
+
+                    clipPlanes = localClipPlanes.concat(clipPlanes);
+                }
+                
+                //skin
+                
+                var skinCoordIndex, skinCoordWeight, humanoid, trafo, displacers;
+                var skinCoord = this._humanoid._cf.skinCoord.node;
+                
+                if ( skinCoord ) {               
+                    humanoid = this._humanoid;
+                    trafo = humanoid.getCurrentTransform().inverse().mult(childTransform);//factor in root trafo
+                    
+                    // first add displacers
+                    displacers = this._cf.displacers.nodes;
+                    if ( displacers.length !== 0) {
+                        displacers.forEach( function(displacer) {
+                            var weight = displacer._vf.weight;
+                            var MFdisplacements = displacer._vf.displacements;
+                            var offsets = MFdisplacements.length;
+                            if (offsets !== 0) {
+                                displacer._vf.coordIndex.forEach( function(coordIndex, i) {
+                                    skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
+                                        .addScaled( trafo.multMatrixVec( MFdisplacements[i % offsets] ), weight );
+                                });
+                            }
+                        });
+                    }
+                    
+                    // then add weighted skinCoordIndex
+                    skinCoordIndex = this._vf.skinCoordIndex;
+                    if ( skinCoordIndex.length !== 0 ) {
+                        skinCoordWeight = this._vf.skinCoordWeight;
+                        //blend in contribution rel. to undeformed resting
+                        skinCoordIndex.forEach(function(coordIndex, i) {
+                            //update coord
+                            var restCoord = humanoid._restCoords[coordIndex];
+                            skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
+                                .add( trafo.multMatrixPnt( restCoord )
+                                    .subtract( restCoord )
+                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
+                                 ); //in case of not enough weights
+                        });
+                    }
+                }
+                
+                var skinNormal = this._humanoid._cf.skinNormal.node;
+                if (skinNormal) {
+                    skinCoordIndex = this._vf.skinCoordIndex;
+                    if (skinCoordIndex.length !== 0) {
+                        skinCoordWeight = this._vf.skinCoordWeight;
+                        humanoid = this._humanoid;
+                        trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();//factor in root trafo
+                        //blend in contribution rel. to undeformed resting
+                        skinCoordIndex.forEach(function(coordIndex, i) {
+                            //update coord
+                            var restNormal = humanoid._restNormals[coordIndex];
+                            skinNormal._vf.vector[coordIndex] = skinNormal._vf.vector[coordIndex]
+                                .add(trafo.multMatrixVec( restNormal )
+                                    .subtract( restNormal )
+                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
+                                 ); //in case of not enough weights
+                        });
+                    }
+                }
+                
+                for (var i=0; i<n; i++) {
+                    if ( (cnode = this._childNodes[i]) ) {
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                    }
+                }
+            }
+        }    
+               
+                //TODO: for skinned animation
+                //custom collectDrawableObjects which receives skinCoord and skinNormal fields
+                //or use fieldChanged and search for skinCoord
+                //or search for Humanoid, skinCoord at nodeChanged
     )
 );
