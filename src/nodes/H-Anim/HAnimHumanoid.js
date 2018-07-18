@@ -308,21 +308,46 @@ x3dom.registerNodeType(
                     clipPlanes = localClipPlanes.concat(clipPlanes);
                 }
                 
-                this._cf.skeleton.nodes.forEach(function(cnode){
+                //reset skin coords and normals before traversing skeleton
+                if (this._cf.skinCoord.node)
+                    this._cf.skinCoord.node._vf.point.setValues(this._restCoords);
+                
+                if (this._cf.skinNormal.node)
+                    this._cf.skinNormal.node._vf.vector.setValues(this._restNormals);
+
+                
+                this._cf.skeleton.nodes.forEach(function(cnode) {
                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 });
                 
-                this._cf.skin.nodes.forEach(function(cnode){
+                this._cf.skin.nodes.forEach(function(cnode) {
                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 });
+                
+                //force coord update
+                if (this._cf.skinCoord.node) {
+                    this._cf.skinCoord.node._parentNodes.forEach( function(node) {
+                        node.fieldChanged('coord');// may need to be more general
+                    });
+                }
+            },
+        
+            nodeChanged: function()
+            {
+                //save initial, resting pose
+                if (this._cf.skinCoord.node)
+                    this._restCoords = this._cf.skinCoord.node._vf.point.copy() ;
+                if (this._cf.skinNormal.node)
+                    this._restNormals = this._cf.skinNormal.node._vf.vector.copy();
             }
-            // TODO skeleton   contains the HumanoidRoot Joint object functionality: map similar to children of Group
             // TODO skeleton   add functionality for HAnimSite also (unaffected by internal transformations)
-            // TODO joints     add functionality
-            // TODO segments   add functionality
-            // TODO sites      add functionality
-            // TODO skin...    add functionality
-            // TODO viewpoints add functionality
+            // TODO joints     add functionality: mostly done
+            // TODO segments   add functionality: mostly done
+            // TODO sites      add functionality: mostly done
+            // TODO skin...    add functionality: move to shader
+            // TODO viewpoints add functionality: seems to work
+            // TODO binding fields: for non default configurations
+
         }
     )
 );
