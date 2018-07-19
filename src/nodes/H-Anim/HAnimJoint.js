@@ -156,7 +156,9 @@ x3dom.registerNodeType(
 
                 // check if sub-graph can be culled away or render flag was set to false
                 planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask < 0) {
+                // do skinning in any case
+                var skinCoord = this._humanoid._cf.skinCoord.node;
+                if (planeMask < 0 && !skinCoord) {
                     return;
                 }
 
@@ -192,7 +194,6 @@ x3dom.registerNodeType(
                 //skin
                 
                 var skinCoordIndex, skinCoordWeight, humanoid, trafo, displacers;
-                var skinCoord = this._humanoid._cf.skinCoord.node;
                 
                 if ( skinCoord ) {               
                     humanoid = this._humanoid;
@@ -237,7 +238,8 @@ x3dom.registerNodeType(
                     if (skinCoordIndex.length !== 0) {
                         skinCoordWeight = this._vf.skinCoordWeight;
                         humanoid = this._humanoid;
-                        trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();//factor in root trafo
+                        // use inverse transpose for normal
+                        trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();
                         //blend in contribution rel. to undeformed resting
                         skinCoordIndex.forEach(function(coordIndex, i) {
                             //update coord
