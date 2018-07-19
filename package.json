@@ -1,0 +1,22 @@
+{
+	"name": "x3dom",
+	"version": "1.7.3",
+	"description": "A framework for integrating and manipulating X3D scenes as HTML5/DOM elements",
+	"license": "MIT OR GPL-3.0",
+	"keywords": [
+		"3d",
+		"x3d",
+		"x3dom",
+		"webgl"
+	],
+	"homepage": "http://x3dom.org",
+	"main": "x3dom.js",
+	"style": "x3dom.css",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jamesleesaunders/x3dom"
+	},
+	"bugs": {
+		"url": "https://github.com/jamesleesaunders/x3dom/issues"
+	}
+}
