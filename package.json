@@ -10,8 +10,8 @@
 		"webgl"
 	],
 	"homepage": "http://x3dom.org",
-	"main": "x3dom.js",
-	"style": "x3dom.css",
+	"main": "dist/x3dom.js",
+	"style": "dist/x3dom.css",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/x3dom/x3dom"
