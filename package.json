@@ -14,7 +14,7 @@
 	"style": "x3dom.css",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/jamesleesaunders/x3dom"
+		"url": "https://github.com/x3dom/x3dom"
 	},
 	"bugs": {
 		"url": "https://github.com/jamesleesaunders/x3dom/issues"
