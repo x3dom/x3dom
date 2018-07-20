@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -12,7 +12,7 @@
 /**
  * The Namespace container for x3dom objects.
  * @namespace x3dom
- * */
+ */
 var x3dom = {
     canvases : [],
 
@@ -25,34 +25,37 @@ var x3dom = {
 /**
  * The x3dom.nodeTypes namespace.
  * @namespace x3dom.nodeTypes
- * */
+ */
 x3dom.nodeTypes = {};
 
 /**
  * The x3dom.nodeTypesLC namespace. Stores nodetypes in lowercase
  * @namespace x3dom.nodeTypesLC
- * */
+ */
 x3dom.nodeTypesLC = {};
 
 /**
  * The x3dom.components namespace.
  * @namespace x3dom.components
- * */
+ */
 x3dom.components = {};
 
-/** Cache for primitive nodes (Box, Sphere, etc.) */
+/**
+ * Cache for primitive nodes (Box, Sphere, etc.)
+ */
 x3dom.geoCache = [];
 
-/** Stores information about Browser and hardware capabilities */
+/**
+ * Stores information about Browser and hardware capabilities
+ */
 x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent, RENDERMODE: "HARDWARE" };
 
-/** Registers the node defined by @p nodeDef.
-
-    The node is registered with the given @p nodeTypeName and @p componentName.
-
-    @param nodeTypeName the name of the node type (e.g. Material, Shape, ...)
-    @param componentName the name of the component the node type belongs to
-    @param nodeDef the definition of the node type
+/**
+ * Registers the node defined by @p nodeDef.
+ * The node is registered with the given @p nodeTypeName and @p componentName.
+ * @param nodeTypeName the name of the node type (e.g. Material, Shape, ...)
+ * @param componentName the name of the component the node type belongs to
+ * @param nodeDef the definition of the node type
  */
 x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     //console.log("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
@@ -66,7 +69,10 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
 };
 
-/** Test if node is registered X3D element */
+/**
+ * Test if node is registered X3D element
+ * @param node
+ */
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     var name = (node.nodeType === Node.ELEMENT_NODE && node.localName) ? node.localName.toLowerCase() : null;
@@ -74,25 +80,21 @@ x3dom.isX3DElement = function(node) {
             name == "x3d" || name == "websg" || name == "route"));
 };
 
-/*
- *	Function: x3dom.extend
+/**
+ * Function: x3dom.extend
  *
- *	Returns a prototype object suitable for extending the given class
- *	_f_. Rather than constructing a new instance of _f_ to serve as
- *	the prototype (which unnecessarily runs the constructor on the created
- *	prototype object, potentially polluting it), an anonymous function is
- *	generated internally that shares the same prototype:
+ * Returns a prototype object suitable for extending the given class
+ * _f_. Rather than constructing a new instance of _f_ to serve as
+ * the prototype (which unnecessarily runs the constructor on the created
+ * prototype object, potentially polluting it), an anonymous function is
+ * generated internally that shares the same prototype:
  *
- *	Parameters:
- *   	f - Method f a constructor
+ * @param f - Method f a constructor
+ * @return A suitable prototype object
  *
- *	Returns:
- * 		A suitable prototype object
- *
- *	See Also:
- *		Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
+ * @see Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
+ * @todo unify with defineClass, which does basically the same
  */
-// TODO; unify with defineClass, which does basically the same
 x3dom.extend = function(f) {
   function G() {}
   G.prototype = f.prototype || f;
@@ -101,17 +103,13 @@ x3dom.extend = function(f) {
 
 /**
  * Function x3dom.getStyle
- * 
+ *
  * Computes the value of the specified CSS property <tt>p</tt> on the
  * specified element <tt>e</tt>.
  *
- * Parameters:
- *     oElm       - The element on which to compute the CSS property
- *     strCssRule - The name of the CSS property
- *
- *	Returns:
- *
- * 		The computed value of the CSS property
+ * @param oElm       - The element on which to compute the CSS property
+ * @param strCssRule - The name of the CSS property
+ * @eturn - The computed value of the CSS property
  */
 x3dom.getStyle = function(oElm, strCssRule) {
     var strValue = "";
@@ -126,14 +124,14 @@ x3dom.getStyle = function(oElm, strCssRule) {
     return strValue;
 };
 
-
-/** Utility function for defining a new class.
-
-    @param parent the parent class of the new class
-    @param ctor the constructor of the new class
-    @param methods an object literal containing the methods of the new class
-    @return the constructor function of the new class
-  */
+/**
+ * Utility function for defining a new class.
+ *
+ * @param parent the parent class of the new class
+ * @param ctor the constructor of the new class
+ * @param methods an object literal containing the methods of the new class
+ * @return the constructor function of the new class
+ */
 function defineClass(parent, ctor, methods) {
     if (parent) {
         function Inheritance() {}
@@ -151,14 +149,14 @@ function defineClass(parent, ctor, methods) {
     return ctor;
 }
 
-/** Utility function for testing a node type.
-
-    @param object the object to test
-    @param clazz the type of the class
-    @return true or false
-  */
+/**
+ * Utility function for testing a node type.
+ * @param object the object to test
+ * @param clazz the type of the class
+ * @return true or false
+ */
 x3dom.isa = function(object, clazz) {
-    /*
+  /*
 	if (!object || !object.constructor || object.constructor.superClass === undefined) {
 		return false;
 	}
@@ -176,18 +174,19 @@ x3dom.isa = function(object, clazz) {
         return false;
     }
     return f(object.constructor.superClass);
-    */
-    return (object instanceof clazz);
+  */
+
+  return (object instanceof clazz);
 };
 
-
-/// helper
+/**
+ * Get Global Helper
+ */
 x3dom.getGlobal = function () {
     return (function () {
         return this;
     }).call(null);
 };
-
 
 /**
  * Load javascript file either by performing an synchronous jax request
@@ -241,7 +240,9 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
     }
 };
 
-// helper
+/**
+ * Array to Object Helper
+ */
 function array_to_object(a) {
   var o = {};
   for(var i=0;i<a.length;i++) {
