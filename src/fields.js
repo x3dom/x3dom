@@ -1451,7 +1451,6 @@ x3dom.fields.SFVec2f = function(x, y) {
     }
 };
 
-
 x3dom.fields.SFVec2f.copy = function(v) {
     return new x3dom.fields.SFVec2f(v.x, v.y);
 };
@@ -1718,7 +1717,6 @@ x3dom.fields.SFVec4f = function(x, y, z, w) {
 x3dom.fields.SFVec4f.copy = function(v) {
     return new x3dom.fields.SFVec4f(v.x, v.y, v.z, v.w);
 };
-
 
 x3dom.fields.SFVec4f.prototype.copy = function() {
     return x3dom.fields.SFVec4f(this);
@@ -4032,8 +4030,8 @@ x3dom.fields.FrustumVolume = function(clipMat)
  * Return value 0 is a rare case, indicating that the object intersects
  * with all planes of the frustum.
  *
- * @param {array} vol
- * @param {bool} planeMask
+ * @param vol
+ * @param planeMask
  */
 x3dom.fields.FrustumVolume.prototype.intersect = function(vol, planeMask)
 {
