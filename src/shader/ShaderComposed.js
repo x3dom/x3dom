@@ -37,6 +37,8 @@ x3dom.shader.ComposedShader.prototype.generateVertexShader = function(gl, shape)
 {
 	var shader = shape._cf.appearance.node._shader._vertex._vf.url[0];
 
+	shader = this.injectVRPartsVS(shader);	
+
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, shader);
     gl.compileShader(vertexShader);
@@ -55,6 +57,8 @@ x3dom.shader.ComposedShader.prototype.generateFragmentShader = function(gl, shap
 {
 	var shader = shape._cf.appearance.node._shader._fragment._vf.url[0];
 
+	shader = this.injectVRPartsFS(shader);	
+
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);
     gl.compileShader(fragmentShader);
@@ -64,4 +68,79 @@ x3dom.shader.ComposedShader.prototype.generateFragmentShader = function(gl, shap
 	}
 	
 	return fragmentShader;
+};
+
+x3dom.shader.ComposedShader.prototype.injectVRPartsVS = function(shader)
+{
+	var vrPart01 = "attribute float eyeIdx;\n"+
+				   "uniform   float isVR;\n"+
+				   "uniform   mat4  modelViewProjectionMatrix2;\n" +
+				   "varying   float vrOffset;\n"+
+				   "varying   float fragEyeIdx;\n";
+				   
+	var vrPart02 = "fragEyeIdx = eyeIdx;\n" +
+
+				   "if(isVR == 1.0)\n" +
+				   "{\n" +
+				   "    if(eyeIdx == -1.0) {\n" +
+				   "        gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+				   "    } else if(eyeIdx == -1.0) {\n" +
+				   "        gl_Position = modelViewProjectionMatrix2 * vec4(position, 1.0);\n" +
+                   "    }\n" +
+				   "    vrOffset = eyeIdx * 0.5;\n" +
+				   "    gl_Position.x *= 0.5;\n" +
+				   "    gl_Position.x += vrOffset * gl_Position.w;\n" +
+				   "}";
+
+    var sections = this.extractShaderSections(shader);
+
+	return sections.before + 
+		   vrPart01 + 
+		   sections.mainStart + 
+		   sections.main + 
+		   vrPart02 + 
+		   sections.mainEnd;
+};
+
+x3dom.shader.ComposedShader.prototype.injectVRPartsFS = function(shader)
+{
+	var vrPart01 = "uniform   float isVR;\n"+
+				   "uniform   float screenWidth;\n" +
+	               "varying   float vrOffset;\n"+
+				   "varying   float fragEyeIdx;\n";
+				   
+	var vrPart02 = "if ( isVR == 1.0) {\n" +
+		           "    if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
+	               "}\n";
+
+    var sections = this.extractShaderSections(shader);
+
+	return sections.before + 
+		   vrPart01 + 
+		   sections.mainStart + 
+		   vrPart02 + 
+		   sections.main + 
+		   sections.mainEnd;
+};
+
+x3dom.shader.ComposedShader.prototype.extractShaderSections = function(shader)
+{
+	var regex = /void\s*main\s*\(\)\s*{[\s\S]*}/;
+
+	var match = regex.exec( shader );
+
+	var start = match[0].indexOf("{") + match.index + 1;
+	var end   = match[0].lastIndexOf("}") + match.index;
+
+	var before    = shader.substring(0, match.index);
+	var mainStart = shader.substring(match.index, start);
+	var main      = shader.substring(start, end);
+	var mainEnd   = shader.substring(end, shader.lebgth);
+
+	return {
+		before:	   before,	
+		mainStart: mainStart,
+		main:      main,
+		mainEnd:   mainEnd
+	};
 };

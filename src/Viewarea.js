@@ -154,13 +154,63 @@ x3dom.Viewarea = function (document, scene) {
     this._animationStateChanged = false;
 
     this.vrFrameData = null;
+    this.gamepads = null;
     this.vrLeftViewMatrix = new x3dom.fields.SFMatrix4f();
     this.vrRightViewMatrix = new x3dom.fields.SFMatrix4f();
 
     this.vrLeftProjMatrix = new x3dom.fields.SFMatrix4f();
     this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
 
+    this.vrControllerManager = new x3dom.VRControllerManager();
+
     this.arc = null;
+};
+
+x3dom.Viewarea.prototype.setVRFrameData = function(vrFrameData)
+{
+    this.vrFrameData = vrFrameData;
+
+    if(this.vrFrameData)
+    {
+        this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
+        this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)
+    }
+};
+
+x3dom.Viewarea.prototype.updateGamepads = function(vrDisplay)
+{
+    this.vrControllerManager.update(this, vrDisplay);
+
+    // var allGamepads = navigator.getGamepads();
+    // var gamepads = [];
+
+    // for(var i = 0; i < allGamepads.length; i++ )
+    // {
+    //     if(allGamepads[i] && allGamepads[i].displayId != undefined && allGamepads[i].displayId == vrDisplay.displayId)
+    //     {
+    //         gamepads.push(allGamepads[i]);
+    //     }
+    // }
+
+    // if(gamepads.length)
+    // {
+    //     var axes = gamepads[0].axes;
+
+    //     var dx = axes[0];
+    //     var dy = axes[1];
+
+    //     var d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+    //     d = ((d < x3dom.fields.Eps) ? 1 : d) * 5;
+
+    //     var viewDir = this.vrLeftViewMatrix.e2();
+    //     var rightDir = this.vrLeftViewMatrix.e0();
+
+    //     viewDir = new x3dom.fields.SFVec3f(-viewDir.x, -viewDir.y, viewDir.z).multiply(d*(dy)/this._height);
+    //     rightDir = new x3dom.fields.SFVec3f(-rightDir.x, -rightDir.y, rightDir.z).multiply((d*dx/this._width));
+
+    //     this._movement = this._movement.add(rightDir).add(viewDir);
+    //     this._transMat = x3dom.fields.SFMatrix4f.translation(this._movement);
+    // }
 };
 
 /**
@@ -317,6 +367,17 @@ x3dom.Viewarea.prototype.getLights = function () {
     return enabledLights;
 };
 
+x3dom.Viewarea.prototype.hasPhysicalEnvironmentLight = function () {
+    for (var i=0; i<this._doc._nodeBag.lights.length; i++)
+    {
+        if (x3dom.isa(this._doc._nodeBag.lights[i], x3dom.nodeTypes.PhysicalEnvironmentLight))
+        {
+            return true;
+        }
+    }
+    return false;
+};
+
 x3dom.Viewarea.prototype.getLightsShadow = function () {
 	var lights = this._doc._nodeBag.lights;
 	for(var l=0; l<lights.length; l++) {
@@ -386,7 +447,7 @@ x3dom.Viewarea.prototype.getViewMatrix = function ()
 {
     if(this.vrFrameData)
     {
-        return this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix);
+        return this.vrLeftViewMatrix;
     }
     else
     {
@@ -398,8 +459,8 @@ x3dom.Viewarea.prototype.getViewMatrices = function()
 {
     if(this.vrFrameData)
     {
-        return [this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
-                this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)];
+        return [this.vrLeftViewMatrix,
+                this.vrRightViewMatrix];
     }
     else
     {

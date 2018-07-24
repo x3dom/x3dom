@@ -773,7 +773,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-}
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1047,6 +1047,11 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
  */
 x3dom.X3DCanvas.prototype._watchForResize = function() {
 
+    if(this.vrDisplay && this.vrDisplay.isPresenting)
+    {
+        return;
+    }
+
     var new_dim = [
         parseInt(x3dom.getStyle(this.canvas, "width")),
         parseInt(x3dom.getStyle(this.canvas, "height"))
@@ -1192,7 +1197,7 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
 
 		// picking might require another pass
 		
-		this.doc.render(this.gl, this.vrFrameData);
+		this.doc.render(this.gl, this.vrFrameData, this.vrDisplay);
 
 		if (!this.doc._scene._vf.doPickPass)
 		{

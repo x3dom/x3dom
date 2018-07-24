@@ -74,10 +74,10 @@ x3dom.shader.BackgroundCubeTextureShader.prototype.generateFragmentShader = func
 				"}" +
 				"\n" +
 				"void main(void) {\n" +
-				"    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));\n" +
-				"    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z))\n" +
-				"        normal.xz = -normal.xz;\n" +
-				"    gl_FragColor = textureCube(tex, normal);\n" +
+				// "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));\n" +
+				// "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z))\n" +
+				// "        normal.xz = -normal.xz;\n" +
+				"    gl_FragColor = textureCube(tex, fragNormal);\n" +
 				"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);

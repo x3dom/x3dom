@@ -62,7 +62,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'allowViewpointInside', true)
+            this.addField_SFBool(ctx, 'allowViewpointInside', true);
 
             //Neccesary for counting the textures which are added on each style, number of textures can be variable
             this._textureID = 0;

@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'radius', ctx ? 1 : 10000);
+            this.addField_SFFloat(ctx, 'radius', ctx ? 1 : 1000);
 
             /**
              * Specifies the number of faces that are generated to approximate the surface of the sphere.

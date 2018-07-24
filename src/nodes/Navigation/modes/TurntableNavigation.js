@@ -14,7 +14,7 @@ x3dom.TurntableNavigation.prototype.constructor = x3dom.TurntableNavigation;
 
 x3dom.TurntableNavigation.prototype.onDrag = function(view, x, y, buttonState)
 {
-    navi = this.navi;
+    var navi = this.navi;
     
     if (!view._flyMat)
         this.initTurnTable(view, false);
@@ -170,7 +170,7 @@ x3dom.TurntableNavigation.prototype.zoom = function(view, zoomAmount)
     view._from = view._flyMat.e3(); // eye
 
     // zoom in/out
-    cor = view._at;
+    var cor = view._at;
 
     var lastDir  = cor.subtract(view._from);
     var lastDirL = lastDir.length();

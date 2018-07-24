@@ -328,14 +328,14 @@ x3dom.registerNodeType(
                     this.vrcSinglePassShaderVertex._vf.url[0] = this.vertexShaderText();;
 
                     this.vrcSinglePassShaderFragment._vf.type = 'fragment';
-                    shaderText =
-                    this.fragmentPreamble+
-                    this.defaultUniformsShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY)+
-                    this.styleUniformsShaderText()+
-                    this.styleShaderText()+
-                    this.texture3DFunctionShaderText+
-                    this.normalFunctionShaderText()+
-                    this.lightEquationShaderText();
+                    var shaderText =
+                        this.fragmentPreamble+
+                        this.defaultUniformsShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY)+
+                        this.styleUniformsShaderText()+
+                        this.styleShaderText()+
+                        this.texture3DFunctionShaderText+
+                        this.normalFunctionShaderText()+
+                        this.lightEquationShaderText();
                     shaderText += "void main()\n"+
                     "{\n"+
                     "  vec3 cam_pos = vec3(modelViewMatrixInverse[3][0], modelViewMatrixInverse[3][1], modelViewMatrixInverse[3][2]);\n"+

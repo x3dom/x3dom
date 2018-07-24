@@ -96,6 +96,9 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
             case x3dom.shader.BACKGROUND_CUBETEXTURE:
                 program = new x3dom.shader.BackgroundCubeTextureShader(gl);
                 break;
+            case x3dom.shader.BACKGROUND_CUBETEXTURE_DDS:
+                program = new x3dom.shader.BackgroundCubeTextureDDSShader(gl);
+                break;
             case x3dom.shader.SHADOW:
                 program = new x3dom.shader.ShadowShader(gl);
                 break;

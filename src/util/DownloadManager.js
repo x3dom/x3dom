@@ -216,8 +216,8 @@ x3dom.DownloadManager = {
       
       //insert requests
       for (k = 0; k < urls.length; ++k) {
-        if (!onloadCallbacks[k] === undefined || !priorities[k] === undefined) {
-          x3dom.debug.logError('DownloadManager: No onload callback and / or priority specified. Ignoring request for \"' + url + '\"');
+        if (onloadCallbacks[k] == undefined || priorities[k] == undefined) { // == also checks for null
+          x3dom.debug.logError('DownloadManager: No onload callback and / or priority specified. Ignoring request for \"' + urls[k] + '\"');
           continue;
         }
         else {

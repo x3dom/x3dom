@@ -823,7 +823,7 @@ x3dom.registerNodeType(
                 var frustum =  new x3dom.fields.FrustumVolume( projMatrix.mult(viewMatrix) );
 
                 var selection = [];
-                var volumes = this._partVolume;
+                var id, volumes = this._partVolume;
                 for(id in volumes){
                     if(!volumes.hasOwnProperty(id))
                         continue;
