@@ -179,14 +179,19 @@ x3dom.registerNodeType(
 
                     if(that._vf.nameSpaceName.length != 0)
                     {
-                        Array.forEach ( inlScene.childNodes, function (childDomNode)
-                        {
-                            if(childDomNode instanceof Element)
-                            {
-                                setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
-                                that._xmlNode.appendChild(childDomNode);
-                            }
-                        } );
+                        while (inlScene.children.length) {
+                            var childDomNode = inlScene.children[0];
+                            setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
+                            that._xmlNode.appendChild(childDomNode);    
+                        }
+//                         Array.forEach ( inlScene.childNodes, function (childDomNode)
+//                         {
+//                             if(childDomNode instanceof Element)
+//                             {
+//                                 setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
+//                                 that._xmlNode.appendChild(childDomNode);
+//                             }
+//                         } );
                     }
                 }
                 else {
