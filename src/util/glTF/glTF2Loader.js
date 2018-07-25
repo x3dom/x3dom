@@ -27,17 +27,60 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     //Get the scene
     var scene = this._gltf.scenes[ sceneID ];
 
+
+    // Get the nodes
     for( var i = 0; i < scene.nodes.length; i++ )
     {
         var node = this._gltf.nodes[ scene.nodes[ i ] ];
 
         this._traverseNodes(node, x3dScene, scene.nodes[ i ] );
+
+    }
+
+    //Get the animations
+    var scope = this;
+    if ( scope._gltf.animations )
+    { 
+        scope._gltf.animations.forEach ( function (animation, a_i)
+        {
+            animation.channels.forEach ( function (channel, c_i)
+            {
+                scope._generateX3DAnimation ( x3dScene, animation.samplers[channel.sampler], channel.target, "ANI"+a_i+"CH"+c_i );
+            });  
+
+        });
     }
 
     console.log(x3dScene.cloneNode());
 
     return x3dScene;
 }
+
+/**
+ * generate and  append ROUTE, Interpolator, TimeSensor combos
+ * @param {X3DNode} parent - A X3D-Node
+ * @param {Object} sampler - glTF sampler
+ * @param {Object} target - glTF target
+ */
+x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, sampler, target, aniID)
+{
+    console.log( sampler, target );
+    var ts = '<TimeSensor loop="true" cycleInterval="' + 
+        this._gltf.accessors[sampler.input].max[0] +
+        '" DEF="clock' + aniID + '"></TimeSensor>';
+    var routeTS2INT = '<ROUTE fromField="fraction_changed" fromNode="clock' + aniID +
+        '" toField="set_fraction"' +
+        ' toNode="inter' + aniID + '"></ROUTE>';
+    var routeINT2NODE = '<ROUTE fromField="value_changed" fromNode="inter' + aniID +
+        '" toField="set_' + target.path +
+        '" toNode="' + this._nodeNamePrefix + target.node + '"></ROUTE>';
+    var inter = '<SomeInterpolator DEF="inter' + aniID +
+        '" key="sampler.input.array" keyValue="sampler.output.array"></SomeInterpolator>';
+    
+    console.log(ts,inter,routeTS2INT, routeINT2NODE);
+
+};
+
 
 /**
  * Traverses all glTF nodes
