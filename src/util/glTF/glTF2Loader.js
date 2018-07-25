@@ -7,6 +7,7 @@ x3dom.glTF2Loader = function(nameSpace)
 {
     this._nameSpace = nameSpace;
     this._binaryData = null;
+    this._nodeNamePrefix = "NODE";
 }
 
 /**
@@ -30,10 +31,10 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     {
         var node = this._gltf.nodes[ scene.nodes[ i ] ];
 
-        this._traverseNodes(node, x3dScene);
+        this._traverseNodes(node, x3dScene, scene.nodes[ i ] );
     }
 
-    console.log(x3dScene);
+    console.log(x3dScene.cloneNode());
 
     return x3dScene;
 }
@@ -43,9 +44,9 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
  * @param {Object} node - A glTF-Node
  * @param {X3DNode} parent - A X3D-Node
  */
-x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent)
+x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent, index)
 {
-    var x3dNode = this._generateX3DNode(node, parent);
+    var x3dNode = this._generateX3DNode(node, parent, index);
 
     parent.appendChild(x3dNode);
 
@@ -55,7 +56,7 @@ x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent)
         {
             var child = this._gltf.nodes[ node.children[i] ];
     
-            this._traverseNodes(child, x3dNode);
+            this._traverseNodes(child, x3dNode, node.children[i]);
         }
     }
 };
@@ -64,7 +65,7 @@ x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent)
  * Generates a X3D node from a glTF node
  * @param {Object} node - A glTF-Node
  */
-x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
+x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
 {
     var x3dNode;
 
@@ -95,11 +96,18 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
         } 
     }
 
-    if ( node.name != undefined )
+    if ( node.name === undefined )
     {
+        node.name = this._nodeNamePrefix + index;
+    }
+
+
+//    if ( node.name != undefined )
+//    {
         x3dNode.setAttribute( "id", node.name );
         x3dNode.setAttribute( "DEF", node.name );
-    }
+//    }
+    
 
     return x3dNode;
 };
