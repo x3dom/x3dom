@@ -100,8 +100,8 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, sampler, ta
     
 
     var inter = '<' + interpolator + ' DEF="inter' + aniID +
-        '" key="sampler.input.array" keyValue="sampler.output.array" buffer="' +
-        bufferURI + '"">' +
+        '" key="sampler.input.array" keyValue="sampler.output.array" buffer="' + bufferURI +
+        '">' +
         '</' + interpolator + '>';
 
     var interNode = _domFromString(inter);
