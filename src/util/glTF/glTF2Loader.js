@@ -65,20 +65,75 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
 x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, sampler, target, aniID)
 {
     console.log( sampler, target );
+    var input_accessor = this._gltf.accessors[sampler.input];
+    var output_accessor = this._gltf.accessors[sampler.output];
+
+    var container=document.createElement('container');
+
+    function _domFromString(string) {
+        container.innerHTML = string;
+        return container.firstChild;
+    }
+
+
     var ts = '<TimeSensor loop="true" cycleInterval="' + 
-        this._gltf.accessors[sampler.input].max[0] +
+        input_accessor.max[0] +
         '" DEF="clock' + aniID + '"></TimeSensor>';
+    parent.appendChild(_domFromString(ts));
+
+    
+    var path2Interpolator = {
+        'translation' : 'PositionInterpolator' ,
+        'rotation' : 'OrientationInterpolator' ,
+        'scale' : 'PositionInterpolator',
+        'weight' : 'ScalarInterpolator' // not sure
+    };
+
+    var interpolator = path2Interpolator[target.path];
+
+    var views = this._gltf.bufferViews;
+    var input_view = views[input_accessor.bufferView];
+    input_view.id = input_accessor.bufferView; //fix to cached viewID
+    var output_view = views[output_accessor.bufferView];
+    output_view.id = output_accessor.bufferView;
+    var bufferURI = x3dom.Utils.dataURIToObjectURL(this._gltf.buffers[input_view.buffer].uri); //output_view hopefully has same buffer
+    
+
+    var inter = '<' + interpolator + ' DEF="inter' + aniID +
+        '" key="sampler.input.array" keyValue="sampler.output.array" buffer="' +
+        bufferURI + '"">' +
+        '</' + interpolator + '>';
+
+    var interNode = _domFromString(inter);
+    interNode.appendChild(this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView));
+    interNode.appendChild(this._generateX3DBufferAccessor('SAMPLER_OUTPUT', output_accessor, output_accessor.bufferView));
+
+//     console.log(ts, inter, routeTS2INT, routeINT2NODE);
+
+//     console.log(this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView));
+//     console.log(this._generateX3DBufferAccessor('SAMPLER_OUTPUT', output_accessor, output_accessor.bufferView));
+
+    
+    interNode.appendChild(this._generateX3DBufferView(input_view));
+    interNode.appendChild(this._generateX3DBufferView(output_view));
+
+//     console.log(this._generateX3DBufferView(views[input_accessor.bufferView]));
+//     console.log(this._generateX3DBufferView(views[output_accessor.bufferView]));
+
+    parent.appendChild(interNode);
+
     var routeTS2INT = '<ROUTE fromField="fraction_changed" fromNode="clock' + aniID +
         '" toField="set_fraction"' +
         ' toNode="inter' + aniID + '"></ROUTE>';
     var routeINT2NODE = '<ROUTE fromField="value_changed" fromNode="inter' + aniID +
         '" toField="set_' + target.path +
         '" toNode="' + this._nodeNamePrefix + target.node + '"></ROUTE>';
-    var inter = '<SomeInterpolator DEF="inter' + aniID +
-        '" key="sampler.input.array" keyValue="sampler.output.array"></SomeInterpolator>';
-    
-    console.log(ts,inter,routeTS2INT, routeINT2NODE);
 
+    parent.appendChild(_domFromString(routeTS2INT));
+    parent.appendChild(_domFromString(routeINT2NODE));
+
+    console.log(parent.children);
+    
 };
 
 
