@@ -48,9 +48,28 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'set_fraction', 0);
+
+             /**
+             * The url to the binary file, that contains the buffer data.
+             * @var {x3dom.fields.SFString} buffer
+             * @memberof x3dom.nodeTypes.BufferGeometry
+             * @initvalue ""
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'buffer', "");
+
+            this.addField_MFNode('views', x3dom.nodeTypes.BufferGeometryView );
+            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferGeometryAccessor );
         
         },
         {
+            nodeChanged: function () {
+                if (this._vf.buffer) {
+                    console.log(this);
+                }
+            },
+
             linearInterp: function (time, interp) {
                 if (time <= this._vf.key[0])
                     return this._vf.keyValue[0];
