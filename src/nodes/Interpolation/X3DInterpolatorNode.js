@@ -68,25 +68,88 @@ x3dom.registerNodeType(
                 var scope = this;
                 function initBufferViews (arraybuffer)
                 {
-                    console.log(arraybuffer);
+                    //console.log(arraybuffer);
                 }
-                function initAccessors ()
+                function initAccessors (arraybuffer)
                 {
+                    var arrayConstructor = {
+                            "5120": Int8Array,
+                            "5121": Uint8Array,
+                            "5122": Int16Array,
+                            "5123": Uint16Array,
+                            "5125": Uint32Array,
+                            "5126": Float32Array
+                    };
+                    var that = scope;
                     scope._cf.accessors.nodes.forEach(function(accessor)
                     {
-                        var view = getBufferView(accessor._vf.view);
-                        
+                        var view = findBufferView(accessor._vf.view);
+                        var byteOffset = accessor._vf.byteOffset + view._vf.byteOffset;
+                        var typeLength = accessor._vf.count * accessor._vf.components;
+                        var array;
+                        if (accessor._vf.bufferType === 'SAMPLER_INPUT')
+                        {
+                            if(accessor._vf.componentType === 5126)
+                            {
+                                array = new Float32Array(arraybuffer, byteOffset, typeLength);
+                                that._vf.key = new x3dom.fields.MFFloat( array );
+                                console.log(that._vf.key);
+                            }
+                            else 
+                            {
+                                x3dom.debug.logWarning('glTF animation input needs to be FLOAT but is '+ accessor._vf.componentType);
+                            }
+                        }
+                        if (accessor._vf.bufferType === 'SAMPLER_OUTPUT')
+                        {
+                            array = new arrayConstructor[accessor._vf.componentType](arraybuffer, byteOffset, typeLength);
+                            if (x3dom.isa(that, x3dom.nodeTypes.OrientationInterpolator))
+                            {
+                                var keyValue = new x3dom.fields.MFRotation();
+                                array.forEach( function (val, i)
+                                {
+                                    if (i%4 == 3) {
+                                        keyValue.push( new x3dom.fields.Quaternion (
+                                            array[i-3],
+                                            array[i-2],
+                                            array[i-1],
+                                            val
+                                        ));  
+                                    }
+                                })
+                            }
+                            else if (x3dom.isa(that, x3dom.nodeTypes.PositionInterpolator))
+                            {
+                                var keyValue = new x3dom.fields.MFVec3f();
+                                array.forEach( function (val, i)
+                                {
+                                    if (i%3 == 2) {
+                                        keyValue.push( new x3dom.fields.SFVec3f (
+                                            array[i-2],
+                                            array[i-1],
+                                            val
+                                        ));  
+                                    }
+                                })
+                            }
+                            else // Scalar
+                            {
+                                var keyValue = array;
+                            }
+                            that._vf.keyValue = keyValue;
+                            console.log(keyValue);
+                        }
                     });
                     console.log(scope._cf.accessors);
                 }
-                function getBufferView(view) {
-                    return scope._cf.views.nodes.filter(function(bview){return bview._vf.id === view});
+                function findBufferView(view) {
+                    return scope._cf.views.nodes.find(function(bview){return bview._vf.id === view});
                 }
                 
                 if (this._vf.buffer) {
                     console.log(this);
                     var URL = this._nameSpace.getURL(this._vf.buffer);
-                    //from BinaryContainerLoadet Bufferetup
+                    //from BinaryContainerLoader Buffersetup
 //                     this.bufferGeoCache = {};
 //                     if(this.bufferGeoCache[URL] != undefined)
 //                     {
@@ -106,7 +169,7 @@ x3dom.registerNodeType(
 
                             var xhr = new XMLHttpRequest();
 
-                            xhr.open("GET", URL);
+                            xhr.open("GET", URL);//avoid getting twice, with geometry buffer
 
                             xhr.responseType = "arraybuffer";
 
@@ -121,7 +184,7 @@ x3dom.registerNodeType(
 
                                 initBufferViews(xhr.response);
 
-                                initAccessors();
+                                initAccessors(xhr.response);
 
                                 //computeNormals(xhr.response);
 
