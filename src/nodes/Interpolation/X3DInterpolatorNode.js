@@ -92,7 +92,10 @@ x3dom.registerNodeType(
                             if(accessor._vf.componentType === 5126)
                             {
                                 array = new Float32Array(arraybuffer, byteOffset, typeLength);
-                                that._vf.key = new x3dom.fields.MFFloat( array );
+                                var max = array.reduce(function(a, b) {
+                                    return Math.max(a, b);
+                                });
+                                that._vf.key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
                                 console.log(that._vf.key);
                             }
                             else 
