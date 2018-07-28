@@ -56,8 +56,17 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     return x3dScene;
 
     function _findLongestInput (animation)
-    {
-        return 10;
+    {   
+        var duration = -1;
+        animation.channels.forEach( function (channel)
+        {
+            var input_accessor = 
+                scope._gltf.accessors[    
+                    animation.samplers[
+                        channel.sampler].input];
+            duration = Math.max(input_accessor.max[0], duration);
+        });
+        return duration;
     }
 }
 
@@ -110,7 +119,9 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         '</' + interpolator + '>';
 
     var interNode = _domFromString(inter);
-    interNode.appendChild(this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView));
+    var input_accessor_dom = this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView); 
+    input_accessor_dom.duration = duration;
+    interNode.appendChild(input_accessor_dom);
     interNode.appendChild(this._generateX3DBufferAccessor('SAMPLER_OUTPUT', output_accessor, output_accessor.bufferView));
 
 //     console.log(ts, inter, routeTS2INT, routeINT2NODE);
@@ -816,4 +827,3 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
         }
     }
 };
-
