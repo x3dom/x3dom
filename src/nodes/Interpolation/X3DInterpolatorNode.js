@@ -65,8 +65,84 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function () {
+                var scope = this;
+                function initBufferViews (arraybuffer)
+                {
+                    console.log(arraybuffer);
+                }
+                function initAccessors ()
+                {
+                    scope._cf.accessors.nodes.forEach(function(accessor)
+                    {
+                        var view = getBufferView(accessor._vf.view);
+                        
+                    });
+                    console.log(scope._cf.accessors);
+                }
+                function getBufferView(view) {
+                    return scope._cf.views.nodes.filter(function(bview){return bview._vf.id === view});
+                }
+                
                 if (this._vf.buffer) {
                     console.log(this);
+                    var URL = this._nameSpace.getURL(this._vf.buffer);
+                    //from BinaryContainerLoadet Bufferetup
+//                     this.bufferGeoCache = {};
+//                     if(this.bufferGeoCache[URL] != undefined)
+//                     {
+//                         this.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+
+//                             initBufferViews(arraybuffer);
+//                             initAccessors();
+//                             //computeNormals(arraybuffer);
+//                         });
+//                     }
+//                     else
+//                     {
+//                         this.bufferGeoCache[URL] = {};
+//                         this.bufferGeoCache[URL].buffers = [];
+//                         this.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) 
+//                         {
+
+                            var xhr = new XMLHttpRequest();
+
+                            xhr.open("GET", URL);
+
+                            xhr.responseType = "arraybuffer";
+
+                            xhr.onload = function(e)
+                            {
+                                if(xhr.status != 200)
+                                {
+                                    scope._nameSpace.doc.downloadCount -= 1;
+//                                     reject();
+                                    return;
+                                }
+
+                                initBufferViews(xhr.response);
+
+                                initAccessors();
+
+                                //computeNormals(xhr.response);
+
+//                                 resolve(xhr.response);
+
+                                scope._nameSpace.doc.downloadCount -= 1;
+
+                                scope._nameSpace.doc.needRender = true;
+                            }
+
+                            xhr.onerror = function(e)
+                            {
+                                scope._nameSpace.doc.downloadCount -= 1;
+//                                 reject();
+                            }
+
+                            x3dom.RequestManager.addRequest( xhr );
+
+//                             scope._nameSpace.doc.downloadCount += 1;
+//                         });    
+//                     }
                 }
             },
 
