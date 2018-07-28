@@ -43,17 +43,22 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     { 
         scope._gltf.animations.forEach ( function (animation, a_i)
         {
+            var animation_length = _findLongestInput (animation);
             animation.channels.forEach ( function (channel, c_i)
             {
-                scope._generateX3DAnimation ( x3dScene, animation.samplers[channel.sampler], channel.target, "ANI"+a_i+"CH"+c_i );
+                scope._generateX3DAnimation ( x3dScene, animation_length, animation.samplers[channel.sampler], channel.target, "ANI"+a_i+"CH"+c_i );
             });  
-
         });
     }
 
     console.log(x3dScene.cloneNode());
 
     return x3dScene;
+
+    function _findLongestInput (animation)
+    {
+        return 10;
+    }
 }
 
 /**
@@ -62,7 +67,7 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
  * @param {Object} sampler - glTF sampler
  * @param {Object} target - glTF target
  */
-x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, sampler, target, aniID)
+x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, sampler, target, aniID)
 {
     console.log( sampler, target );
     var input_accessor = this._gltf.accessors[sampler.input];
@@ -75,9 +80,9 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, sampler, ta
         return container.firstChild;
     }
 
-
     var ts = '<TimeSensor loop="true" cycleInterval="' + 
-        input_accessor.max[0] +
+        //input_accessor.max[0] +
+        duration +
         '" DEF="clock' + aniID + '"></TimeSensor>';
     parent.appendChild(_domFromString(ts));
 
