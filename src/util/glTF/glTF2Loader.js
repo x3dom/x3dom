@@ -121,20 +121,12 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
     var interNode = _domFromString(inter);
     var input_accessor_dom = this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView); 
     input_accessor_dom.duration = duration;
+
     interNode.appendChild(input_accessor_dom);
     interNode.appendChild(this._generateX3DBufferAccessor('SAMPLER_OUTPUT', output_accessor, output_accessor.bufferView));
-
-//     console.log(ts, inter, routeTS2INT, routeINT2NODE);
-
-//     console.log(this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView));
-//     console.log(this._generateX3DBufferAccessor('SAMPLER_OUTPUT', output_accessor, output_accessor.bufferView));
-
     
     interNode.appendChild(this._generateX3DBufferView(input_view));
     interNode.appendChild(this._generateX3DBufferView(output_view));
-
-//     console.log(this._generateX3DBufferView(views[input_accessor.bufferView]));
-//     console.log(this._generateX3DBufferView(views[output_accessor.bufferView]));
 
     parent.appendChild(interNode);
 
@@ -143,12 +135,12 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         ' toNode="inter' + aniID + '"></ROUTE>';
     var routeINT2NODE = '<ROUTE fromField="value_changed" fromNode="inter' + aniID +
         '" toField="set_' + target.path +
-        '" toNode="' + this._nodeNamePrefix + target.node + '"></ROUTE>';
+        '" toNode="' + this._gltf.nodes[target.node].name + '"></ROUTE>';
 
     parent.appendChild(_domFromString(routeTS2INT));
     parent.appendChild(_domFromString(routeINT2NODE));
 
-    console.log(parent.children);
+//    console.log(parent.children);
     
 };
 
