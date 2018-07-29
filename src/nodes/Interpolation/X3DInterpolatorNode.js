@@ -80,7 +80,9 @@ x3dom.registerNodeType(
                             "5125": Uint32Array,
                             "5126": Float32Array
                     };
+                    
                     var that = scope;
+                    var key, keyValue;
                     scope._cf.accessors.nodes.forEach(function(accessor)
                     {
                         var view = findBufferView(accessor._vf.view);
@@ -96,7 +98,7 @@ x3dom.registerNodeType(
 //                                     return Math.max(a, b);
 //                                 });
                                 var max = accessor._xmlNode.duration;
-                                that._vf.key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
+                                key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
 //                                 console.log(that._vf.key);
                             }
                             else 
@@ -109,7 +111,7 @@ x3dom.registerNodeType(
                             array = new arrayConstructor[accessor._vf.componentType](arraybuffer, byteOffset, typeLength);
                             if (x3dom.isa(that, x3dom.nodeTypes.OrientationInterpolator))
                             {
-                                var keyValue = new x3dom.fields.MFRotation();
+                                keyValue = new x3dom.fields.MFRotation();
                                 array.forEach( function (val, i)
                                 {
                                     if (i%4 == 3) {
@@ -124,7 +126,7 @@ x3dom.registerNodeType(
                             }
                             else if (x3dom.isa(that, x3dom.nodeTypes.PositionInterpolator))
                             {
-                                var keyValue = new x3dom.fields.MFVec3f();
+                                keyValue = new x3dom.fields.MFVec3f();
                                 array.forEach( function (val, i)
                                 {
                                     if (i%3 == 2) {
@@ -138,14 +140,35 @@ x3dom.registerNodeType(
                             }
                             else // Scalar
                             {
-                                var keyValue = array;
+                                keyValue = array;
                             }
-                            that._vf.keyValue = keyValue;
+                            //that._vf.keyValue = keyValue;
                             //console.log(keyValue);
                         }
                     });
- //                   console.log(scope._cf.accessors);
+                    //modify for STEP
+                    if (scope._xmlNode.interpolation === 'STEP')
+                    {
+                        //keys: 0,0.5,1 -> 0,0.5,0.5,1,1
+                        //values: 1,2,3 -> 1,1  ,2  ,2,3
+
+                        var stepKey = key.copy();
+                        for(var i=1; i<key.length; i++)
+                        {
+                            stepKey.splice(i*2,0, key[i]);
+                        };
+                        var stepValue = keyValue.copy();
+                        for(var i=0; i<key.length-1; i++)
+                        {
+                            stepValue.splice(i*2+1, 0, keyValue[i]);
+                        };
+                        key = stepKey;
+                        keyValue = stepValue;
+                    }
+                    scope._vf.key = key;
+                    scope._vf.keyValue = keyValue;
                 }
+                
                 function findBufferView(view) {
                     return scope._cf.views.nodes.find(function(bview){return bview._vf.id === view});
                 }
