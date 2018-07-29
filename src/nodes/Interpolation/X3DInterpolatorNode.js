@@ -92,11 +92,12 @@ x3dom.registerNodeType(
                             if(accessor._vf.componentType === 5126)
                             {
                                 array = new Float32Array(arraybuffer, byteOffset, typeLength);
-                                var max = array.reduce(function(a, b) {
-                                    return Math.max(a, b);
-                                });
+//                                 var max = array.reduce(function(a, b) {
+//                                     return Math.max(a, b);
+//                                 });
+                                var max = accessor._xmlNode.duration;
                                 that._vf.key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
-                                console.log(that._vf.key);
+//                                 console.log(that._vf.key);
                             }
                             else 
                             {
@@ -140,17 +141,17 @@ x3dom.registerNodeType(
                                 var keyValue = array;
                             }
                             that._vf.keyValue = keyValue;
-                            console.log(keyValue);
+                            //console.log(keyValue);
                         }
                     });
-                    console.log(scope._cf.accessors);
+ //                   console.log(scope._cf.accessors);
                 }
                 function findBufferView(view) {
                     return scope._cf.views.nodes.find(function(bview){return bview._vf.id === view});
                 }
                 
                 if (this._vf.buffer) {
-                    console.log(this);
+                    //console.log(this);
                     var URL = this._nameSpace.getURL(this._vf.buffer);
                     //from BinaryContainerLoader Buffersetup
 //                     this.bufferGeoCache = {};
