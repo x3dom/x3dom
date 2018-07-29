@@ -179,15 +179,15 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
     {
         x3dNode = this._generateX3DMatrixTransform(node);
     }
-    else if( node.translation != undefined || 
-             node.rotation    != undefined ||
-             node.scale       != undefined)
-    {
-        x3dNode = this._generateX3DTransform(node);
-    }
+//     else if( node.translation != undefined || 
+//              node.rotation    != undefined ||
+//              node.scale       != undefined)
+//     {
+//         x3dNode = this._generateX3DTransform(node);
+//     }
     else
     {
-        x3dNode = this._generateX3DGroup(node);
+        x3dNode = this._generateX3DTransform(node); // always use Transform in case of animations
     }
 
     if( node.mesh != undefined )
