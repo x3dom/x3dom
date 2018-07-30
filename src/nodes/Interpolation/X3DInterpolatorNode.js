@@ -249,6 +249,26 @@ x3dom.registerNodeType(
                                 (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
                 }
                 return this._vf.keyValue[0];
+            },
+
+            cubicSplineInterp: function (time, interp) {
+                
+                if (time <= this._vf.key[0])
+                    return this._vf.keyValue[1];
+
+                else if (time >= this._vf.key[this._vf.key.length-1])
+                    return this._vf.keyValue[this._vf.key.length-2];
+
+                for (var i = 0, i3; i < this._vf.key.length-1; ++i) {
+                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
+                        i3 = i*3;
+                        return interp( 
+                                this._vf.keyValue[i3], this._vf.keyValue[i3+1], this._vf.keyValue[i3+2], this._vf.keyValue[i3+4],
+                                this._vf.key[i+1] - this._vf.key[i],
+                                (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+                    }
+                }
+                return this._vf.keyValue[0];
             }
         }
     )
