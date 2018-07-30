@@ -269,6 +269,18 @@ x3dom.registerNodeType(
                     }
                 }
                 return this._vf.keyValue[0];
+            },
+
+            cubicSplineFactors: function (t, interval)
+            {
+                var t2 = t*t;
+                var t3 = t2*t;
+                var a1 = 2*t3 - 3*t2 + 1;
+                var a2 = interval*(t3-2*t2+t);
+                var a3 = -a1 + 1; //-2*t3+3*t2;
+                var a4 = interval*(t3-t2);
+
+                return {'a1':a1, 'a2':a2, 'a3':a3, 'a4':a4}
             }
         }
     )
