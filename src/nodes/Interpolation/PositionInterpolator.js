@@ -43,10 +43,72 @@ x3dom.registerNodeType(
             {
                 if(fieldName === "set_fraction")
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                    var value;
+                    if (this._xmlNode.interpolation)
+                    {
+                        if (this._xmlNode.interpolation === 'CUBICSPLINE')
+                        {
+                            var scope = this;
+                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, interval, t) {
+
+/* the gltf formula
+A spline segment between two keyframes is represented in a cubic Hermite spline form
+
+    p(t) = (2t^3 - 3t^2 + 1)p0 + (t^3 - 2t^2 + t)m0 + (-2t^3 + 3t^2)p1 + (t^3 - t^2)m1
+
+Where
+
+    t is a value between 0 and 1
+    p0 is the starting vertex at t = 0
+    m0 is the starting tangent at t = 0
+    p1 is the ending vertex at t = 1
+    m1 is the ending tangent at t = 1
+    p(t) is the resulting value
+
+Where at input offset tcurrent with keyframe index k
+
+    t = (tcurrent - tk) / (tk+1 - tk)
+    p0 = vk
+    m0 = (tk+1 - tk)bk
+    p1 = vk+1
+    m1 = (tk+1 - tk)ak+1
+*/
+
+                                var factors = scope.cubicSplineFactors(t, interval);
+                                var a1 = factors.a1;
+                                var a2 = factors.a2;
+                                var a3 = factors.a3;
+                                var a4 = factors.a4;
+
+                                function _addScaled(axis)//p0, m0, p1, m1, axis)
+                                {                                   
+                                    return a1 * start[axis] + a2 * startInTangent[axis] + a3 * end[axis] + a4 * endOutTangent[axis];
+                                }
+                                
+                                var result = new x3dom.fields.SFVec3f();
+
+                                // do not use SFVec3f methods to avoid generating objects
+
+                                result.x = _addScaled('x');//start.x, startInTangent.x, end.x, endOutTangent.x );
+                                result.y = _addScaled('y');//start.y, startInTangent.y, end.y, endOutTangent.y );
+                                result.z = _addScaled('z');//start.z, startInTangent.z, end.z, endOutTangent.z );
+                                return result;
+
+//                                 return start.multiply (2*t3 - 3*t2 + 1)
+//                                         .add( startInTangent.multiply (interval*(t3-2*t2+t)))
+//                                         .add( end.multiply (-2*t3+3*t2))
+//                                         .add( endOutTangent.multiply (interval*(t3-t2)));
+                          
+                            });
+                            this.postMessage('value_changed', value);
+                            return;
+                        }
+                    }
+                                        
+                    value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
                         return a.multiply(1.0-t).add(b.multiply(t));
                     });
-
+                    
                     this.postMessage('value_changed', value);
                 }
             }
