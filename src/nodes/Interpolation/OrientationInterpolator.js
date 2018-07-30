@@ -50,6 +50,42 @@ x3dom.registerNodeType(
             {
                 if(fieldName === "set_fraction")
                 {
+                    var value;
+                    if (this._xmlNode.interpolation)
+                    {
+                        if (this._xmlNode.interpolation === 'CUBICSPLINE')
+                        {
+                            var scope = this;
+                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, interval, t) {
+
+                                var factors = scope.cubicSplineFactors(t, interval);
+                                var a1 = factors.a1;
+                                var a2 = factors.a2;
+                                var a3 = factors.a3;
+                                var a4 = factors.a4;
+
+                                function _addScaled(axis)//p0, m0, p1, m1, axis)
+                                {                                   
+                                    return a1 * start[axis] + a2 * startInTangent[axis] + a3 * end[axis] + a4 * endOutTangent[axis];
+                                }
+                                
+                                var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
+
+                                // do not use Quaternion methods to avoid generating objects
+
+                                result.x = _addScaled('x');
+                                result.y = _addScaled('y');
+                                result.z = _addScaled('z');
+                                result.w = _addScaled('w');
+                                
+                                return result.normalize(result);
+                          
+                            });
+                            this.postMessage('value_changed', value);
+                            return;
+                        }
+                    }
+                    
                     var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
                         return a.slerp(b, t);
                     });
