@@ -77,8 +77,15 @@ x3dom.registerNodeType(
                                 result.y = _addScaled('y');
                                 result.z = _addScaled('z');
                                 result.w = _addScaled('w');
-                                
-                                return result.normalize(result);
+
+                                var s = Math.sqrt(1/result.dot(result));
+
+                                result.x *= s;
+                                result.y *= s;
+                                result.z *= s;
+                                result.w *= s;
+
+                                return result;//normalize(result);
                           
                             });
                             this.postMessage('value_changed', value);
