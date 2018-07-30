@@ -119,6 +119,8 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         '</' + interpolator + '>';
 
     var interNode = _domFromString(inter);
+    interNode.interpolation=sampler.interpolation;
+    
     var input_accessor_dom = this._generateX3DBufferAccessor('SAMPLER_INPUT', input_accessor, input_accessor.bufferView); 
     input_accessor_dom.duration = duration;
 
