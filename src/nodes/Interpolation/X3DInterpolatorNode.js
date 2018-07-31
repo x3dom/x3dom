@@ -259,28 +259,32 @@ x3dom.registerNodeType(
                 else if (time >= this._vf.key[this._vf.key.length-1])
                     return this._vf.keyValue[this._vf.keyValue.length-2];
 
-                for (var i = 0, i3; i < this._vf.key.length-1; ++i) {
+                var i, i3, interval, basis; 
+
+                for (i = 0; i < this._vf.key.length-1; ++i) {
                     if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
                         i3 = i*3;
+                        interval = this._vf.key[i+1] - this._vf.key[i];
+                        basis = this.cubicSplineBasis((time - this._vf.key[i]) / interval, interval )
                         return interp( 
                                 this._vf.keyValue[i3], this._vf.keyValue[i3+1], this._vf.keyValue[i3+2], this._vf.keyValue[i3+4],
-                                this._vf.key[i+1] - this._vf.key[i],
-                                (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+                                basis.h00, basis.h10, basis.h01, basis.h11                       
+                                );
                     }
                 }
                 return this._vf.keyValue[0];
             },
 
-            cubicSplineFactors: function (t, interval)
+            cubicSplineBasis: function (t, interval)
             {
                 var t2 = t*t;
                 var t3 = t2*t;
-                var a1 = 2*t3 - 3*t2 + 1;
-                var a2 = interval*(t3-2*t2+t);
-                var a3 = -a1 + 1; //-2*t3+3*t2;
-                var a4 = interval*(t3-t2);
+                var h00 = 2*t3 - 3*t2 + 1;
+                var h10 = interval*(t3-2*t2+t);
+                var h01 = -h00 + 1; //-2*t3+3*t2;
+                var h11 = interval*(t3-t2);
 
-                return {'a1':a1, 'a2':a2, 'a3':a3, 'a4':a4}
+                return {'h00':h00, 'h10':h10, 'h01':h01, 'h11':h11};
             }
         }
     )
