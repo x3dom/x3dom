@@ -61,26 +61,30 @@ x3dom.registerNodeType(
 
             this.addField_MFNode('views', x3dom.nodeTypes.BufferGeometryView );
             this.addField_MFNode('accessors', x3dom.nodeTypes.BufferGeometryAccessor );
+
+            this.constructorFromType = {
+                "5120": Int8Array,
+                "5121": Uint8Array,
+                "5122": Int16Array,
+                "5123": Uint16Array,
+                "5125": Uint32Array,
+                "5126": Float32Array
+            };
+            this.normalizeFromType = {
+                "5120": function(c) {return Math.max(c / 127.0, -1.0)},
+                "5121": function(c) {return c / 255.0;},
+                "5122": function(c) {return Math.max(c / 32767.0, -1.0)},
+                "5123": function(c) {return c / 65535.0;},
+                "5125": function(c) {return c / 4294967295;},
+                "5126": function(c) {return c;},
+            };
         
         },
         {
             nodeChanged: function () {
                 var scope = this;
-                function initBufferViews (arraybuffer)
-                {
-                    //console.log(arraybuffer);
-                }
                 function initAccessors (arraybuffer)
                 {
-                    var arrayConstructor = {
-                            "5120": Int8Array,
-                            "5121": Uint8Array,
-                            "5122": Int16Array,
-                            "5123": Uint16Array,
-                            "5125": Uint32Array,
-                            "5126": Float32Array
-                    };
-                    
                     var that = scope;
                     var key, keyValue;
                     scope._cf.accessors.nodes.forEach(function(accessor)
@@ -94,12 +98,8 @@ x3dom.registerNodeType(
                             if(accessor._vf.componentType === 5126)
                             {
                                 array = new Float32Array(arraybuffer, byteOffset, typeLength);
-//                                 var max = array.reduce(function(a, b) {
-//                                     return Math.max(a, b);
-//                                 });
                                 var max = accessor._xmlNode.duration;
                                 key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
-//                                 console.log(that._vf.key);
                             }
                             else 
                             {
@@ -108,42 +108,8 @@ x3dom.registerNodeType(
                         }
                         if (accessor._vf.bufferType === 'SAMPLER_OUTPUT')
                         {
-                            array = new arrayConstructor[accessor._vf.componentType](arraybuffer, byteOffset, typeLength);
-                            if (x3dom.isa(that, x3dom.nodeTypes.OrientationInterpolator))
-                            {
-                                keyValue = new x3dom.fields.MFRotation();
-                                array.forEach( function (val, i)
-                                {
-                                    if (i%4 == 3) {
-                                        keyValue.push( new x3dom.fields.Quaternion (
-                                            array[i-3],
-                                            array[i-2],
-                                            array[i-1],
-                                            val
-                                        ));  
-                                    }
-                                })
-                            }
-                            else if (x3dom.isa(that, x3dom.nodeTypes.PositionInterpolator))
-                            {
-                                keyValue = new x3dom.fields.MFVec3f();
-                                array.forEach( function (val, i)
-                                {
-                                    if (i%3 == 2) {
-                                        keyValue.push( new x3dom.fields.SFVec3f (
-                                            array[i-2],
-                                            array[i-1],
-                                            val
-                                        ));  
-                                    }
-                                })
-                            }
-                            else // Scalar
-                            {
-                                keyValue = array;
-                            }
-                            //that._vf.keyValue = keyValue;
-                            //console.log(keyValue);
+                            array = new that.constructorFromType[accessor._vf.componentType](arraybuffer, byteOffset, typeLength);
+                            keyValue = that.keyValueFromAccessor(array, accessor._vf.componentType);
                         }
                     });
                     //modify for STEP
@@ -208,8 +174,6 @@ x3dom.registerNodeType(
 //                                     reject();
                                     return;
                                 }
-
-                                initBufferViews(xhr.response);
 
                                 initAccessors(xhr.response);
 
@@ -285,6 +249,11 @@ x3dom.registerNodeType(
                 var h11 = interval*(t3-t2);
 
                 return {'h00':h00, 'h10':h10, 'h01':h01, 'h11':h11};
+            },
+
+            keyValueFromArray: function (array) // to be redefined by interpolators
+            {
+                return array;
             }
         }
     )
