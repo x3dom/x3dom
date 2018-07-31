@@ -92,6 +92,24 @@ x3dom.registerNodeType(
                     });
                     this.postMessage('value_changed', value);
                 }
+            },
+            
+            keyValueFromAccessor: function(array, type)
+            {
+                var keyValue = new x3dom.fields.MFRotation();
+                var normalize = this.normalizeFromType[type];
+                array.forEach( function (val, i)
+                {
+                    if (i%4 == 3) {
+                        keyValue.push( new x3dom.fields.Quaternion (
+                            normalize(array[i-3]),
+                            normalize(array[i-2]),
+                            normalize(array[i-1]),
+                            normalize(val)
+                        ));  
+                    }
+                })
+                return keyValue;
             }
         }
     )
