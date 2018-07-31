@@ -56,17 +56,11 @@ x3dom.registerNodeType(
                         if (this._xmlNode.interpolation === 'CUBICSPLINE')
                         {
                             var scope = this;
-                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, interval, t) {
-
-                                var factors = scope.cubicSplineFactors(t, interval);
-                                var a1 = factors.a1;
-                                var a2 = factors.a2;
-                                var a3 = factors.a3;
-                                var a4 = factors.a4;
+                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
                                 function _addScaled(axis)//p0, m0, p1, m1, axis)
                                 {                                   
-                                    return a1 * start[axis] + a2 * startInTangent[axis] + a3 * end[axis] + a4 * endOutTangent[axis];
+                                    return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
                                 }
                                 
                                 var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
