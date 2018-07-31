@@ -257,7 +257,7 @@ x3dom.registerNodeType(
                     return this._vf.keyValue[1];
 
                 else if (time >= this._vf.key[this._vf.key.length-1])
-                    return this._vf.keyValue[this._vf.key.length-2];
+                    return this._vf.keyValue[this._vf.keyValue.length-2];
 
                 for (var i = 0, i3; i < this._vf.key.length-1; ++i) {
                     if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
