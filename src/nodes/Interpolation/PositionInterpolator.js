@@ -49,7 +49,7 @@ x3dom.registerNodeType(
                         if (this._xmlNode.interpolation === 'CUBICSPLINE')
                         {
                             var scope = this;
-                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, interval, t) {
+                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
 /* the gltf formula
 A spline segment between two keyframes is represented in a cubic Hermite spline form
@@ -74,30 +74,19 @@ Where at input offset tcurrent with keyframe index k
     m1 = (tk+1 - tk)ak+1
 */
 
-                                var factors = scope.cubicSplineFactors(t, interval);
-                                var a1 = factors.a1;
-                                var a2 = factors.a2;
-                                var a3 = factors.a3;
-                                var a4 = factors.a4;
-
                                 function _addScaled(axis)//p0, m0, p1, m1, axis)
                                 {                                   
-                                    return a1 * start[axis] + a2 * startInTangent[axis] + a3 * end[axis] + a4 * endOutTangent[axis];
+                                    return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
                                 }
                                 
                                 var result = new x3dom.fields.SFVec3f();
 
                                 // do not use SFVec3f methods to avoid generating objects
 
-                                result.x = _addScaled('x');//start.x, startInTangent.x, end.x, endOutTangent.x );
-                                result.y = _addScaled('y');//start.y, startInTangent.y, end.y, endOutTangent.y );
-                                result.z = _addScaled('z');//start.z, startInTangent.z, end.z, endOutTangent.z );
+                                result.x = _addScaled('x');
+                                result.y = _addScaled('y');
+                                result.z = _addScaled('z');
                                 return result;
-
-//                                 return start.multiply (2*t3 - 3*t2 + 1)
-//                                         .add( startInTangent.multiply (interval*(t3-2*t2+t)))
-//                                         .add( end.multiply (-2*t3+3*t2))
-//                                         .add( endOutTangent.multiply (interval*(t3-t2)));
                           
                             });
                             this.postMessage('value_changed', value);
