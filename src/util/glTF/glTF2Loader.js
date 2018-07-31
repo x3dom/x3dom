@@ -44,9 +44,10 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         scope._gltf.animations.forEach ( function (animation, a_i)
         {
             var animation_length = _findLongestInput (animation);
+            scope._generateX3DAnimationClock( x3dScene, animation_length, "ANI"+a_i );
             animation.channels.forEach ( function (channel, c_i)
             {
-                scope._generateX3DAnimation ( x3dScene, animation_length, animation.samplers[channel.sampler], channel.target, "ANI"+a_i+"CH"+c_i );
+                scope._generateX3DAnimation ( x3dScene, animation_length, animation.samplers[channel.sampler], channel.target, "ANI"+a_i,"CH"+c_i );
             });  
         });
     }
@@ -70,17 +71,39 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     }
 }
 
+
+
+/**
+ * generate and  append TimeSensor
+ * @param {X3DNode} parent - A X3D-Node
+ * @param {Number} duration - cycle interval
+ * @param {String} aniID - DEF name
+ */
+x3dom.glTF2Loader.prototype._generateX3DAnimationClock = function(parent, duration, aniID)
+{
+    var clock = document.createElement('TimeSensor');
+    clock.setAttribute('loop','true');
+    clock.setAttribute('cycleInterval', duration);
+    clock.setAttribute('DEF','clock' + aniID);
+    parent.appendChild(clock);
+};
+
 /**
  * generate and  append ROUTE, Interpolator, TimeSensor combos
  * @param {X3DNode} parent - A X3D-Node
+ * @param {Number} duration - cycle interval, for normalization
  * @param {Object} sampler - glTF sampler
  * @param {Object} target - glTF target
+ * @param {String} animID - animation name
+ * @param {String} animID - channel name, for DEF construction
  */
-x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, sampler, target, aniID)
+x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, sampler, target, animID, chID)
 {
-    console.log( sampler, target );
+    //console.log( sampler, target );
+    var aniID = animID + chID;
     var input_accessor = this._gltf.accessors[sampler.input];
     var output_accessor = this._gltf.accessors[sampler.output];
+
 
     var container=document.createElement('container');
 
@@ -88,13 +111,6 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         container.innerHTML = string;
         return container.firstChild;
     }
-
-    var ts = '<TimeSensor loop="true" cycleInterval="' + 
-        //input_accessor.max[0] +
-        duration +
-        '" DEF="clock' + aniID + '"></TimeSensor>';
-    parent.appendChild(_domFromString(ts));
-
     
     var path2Interpolator = {
         'translation' : 'PositionInterpolator' ,
@@ -132,7 +148,7 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
 
     parent.appendChild(interNode);
 
-    var routeTS2INT = '<ROUTE fromField="fraction_changed" fromNode="clock' + aniID +
+    var routeTS2INT = '<ROUTE fromField="fraction_changed" fromNode="clock' + animID +
         '" toField="set_fraction"' +
         ' toNode="inter' + aniID + '"></ROUTE>';
     var routeINT2NODE = '<ROUTE fromField="value_changed" fromNode="inter' + aniID +
