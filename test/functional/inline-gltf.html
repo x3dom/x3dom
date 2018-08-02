@@ -94,12 +94,15 @@
         function onDownloadsFinished()
         {
             g_runtime.showAll(g_direction, true);
+            g_runtime.resetView(); // needed to trigger buffer loading if viewpoint
         };
     
         function onload()
         {
             x3d = document.getElementById("x3d");           
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
+            x3d.querySelector("Inline").
+            	addEventListener( "load", onDownloadsFinished);
             
             g_runtime = x3d.runtime;
         };
