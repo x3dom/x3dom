@@ -95,7 +95,11 @@ Where at input offset tcurrent with keyframe index k
                     }
                                         
                     value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.multiply(1.0-t).add(b.multiply(t));
+                        var result = a.multiply(1.0-t);
+                        result.x += t*b.x;
+                        result.y += t*b.y;
+                        result.z += t*b.z;
+                        return result;//a.multiply(1.0-t).add(b.multiply(t));
                     });
                     
                     this.postMessage('value_changed', value);
