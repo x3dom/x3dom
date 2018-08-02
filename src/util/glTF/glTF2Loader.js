@@ -52,7 +52,7 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         });
     }
 
-    console.log(x3dScene.cloneNode());
+    //console.log(x3dScene.cloneNode());
 
     return x3dScene;
 
@@ -70,8 +70,6 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         return duration;
     }
 }
-
-
 
 /**
  * generate and  append TimeSensor
@@ -220,6 +218,15 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
         } 
     }
 
+    if( node.camera != undefined )
+    {
+        var camera = this._gltf.cameras[node.camera];
+        var viewpoint = this._generateX3DViewpoint(camera);
+        viewpoint.setAttribute('DEF','CAMERA' + node.camera);
+
+        x3dNode.appendChild(viewpoint);
+    }
+
     if ( node.name === undefined )
     {
         node.name = this._nodeNamePrefix + index;
@@ -307,16 +314,18 @@ x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
  */
 x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
 {
-    var viewpoint = document.createElement("viewpoint");
+    if (camera.type === 'orthographic') return this._generateX3DOrthoViewpoint(camera);
 
-    var fov   = camera.yfov  || 0.785398;
-    var znear = camera.znear || -1;
-    var zfar  = camera.zfar  || -1;
+    var viewpoint = document.createElement("Viewpoint");
+
+    var fov   = camera.perspective.yfov  || 0.785398;
+    var znear = camera.perspective.znear || -1;
+    var zfar  = camera.perspective.zfar  || -1;
 
     viewpoint.setAttribute("fieldOfView", fov);
     viewpoint.setAttribute("zNear", znear);
     viewpoint.setAttribute("zFar", zfar);
-    viewpoint.setAttribute("position", "0 0 0");
+    //viewpoint.setAttribute("position", "0 0 0");
 
     return viewpoint;
 };
@@ -329,18 +338,18 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
  */
 x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(camera)
 {
-    var viewpoint = document.createElement("orthoviewpoint");
+    var viewpoint = document.createElement("Orthoviewpoint");
 
-    var xmag  = camera.xmag  ||  1;
-    var ymag  = camera.ymag  ||  1;
-    var znear = camera.znear || -1;
-    var zfar  = camera.zfar  || -1;
+    var xmag  = camera.orthographic.xmag  ||  1;
+    var ymag  = camera.orthographic.ymag  ||  1;
+    var znear = camera.orthographic.znear || -1;
+    var zfar  = camera.orthographic.zfar  || -1;
     var fov   = [-xmag, -ymag, xmag, ymag];
 
     viewpoint.setAttribute("fieldOfView", fov);
     viewpoint.setAttribute("zNear", znear);
     viewpoint.setAttribute("zFar", zfar);
-    viewpoint.setAttribute("position", "0 0 0");
+    //viewpoint.setAttribute("position", "0 0 0");
 
     return viewpoint;
 };
