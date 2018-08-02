@@ -189,12 +189,13 @@ x3dom.registerNodeType(
                             xhr.onerror = function(e)
                             {
                                 scope._nameSpace.doc.downloadCount -= 1;
+                                return;
 //                                 reject();
                             }
 
                             x3dom.RequestManager.addRequest( xhr );
 
-//                             scope._nameSpace.doc.downloadCount += 1;
+                            scope._nameSpace.doc.downloadCount += 1;
 //                         });    
 //                     }
                 }
