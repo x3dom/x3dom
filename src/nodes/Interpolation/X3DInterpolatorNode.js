@@ -98,8 +98,8 @@ x3dom.registerNodeType(
                             if(accessor._vf.componentType === 5126)
                             {
                                 array = new Float32Array(arraybuffer, byteOffset, typeLength);
-                                var max = accessor._xmlNode.duration;
-                                key = new x3dom.fields.MFFloat( array.map(function(a){return a/max;}) );
+                                that.duration = accessor._xmlNode.duration;
+                                key = new x3dom.fields.MFFloat( array.map(function(a){return a/that.duration;}) );
                             }
                             else 
                             {
@@ -230,9 +230,9 @@ x3dom.registerNodeType(
                     if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
                         i3 = i*3;
                         interval = this._vf.key[i+1] - this._vf.key[i];
-                        basis = this.cubicSplineBasis((time - this._vf.key[i]) / interval, interval )
+                        basis = this.cubicSplineBasis( (time - this._vf.key[i]) / interval, interval * this.duration );
                         return interp( 
-                                this._vf.keyValue[i3], this._vf.keyValue[i3+1], this._vf.keyValue[i3+2], this._vf.keyValue[i3+4],
+                                this._vf.keyValue[i3+2], this._vf.keyValue[i3+1], this._vf.keyValue[i3+3], this._vf.keyValue[i3+4],
                                 basis.h00, basis.h10, basis.h01, basis.h11                       
                                 );
                     }
@@ -240,14 +240,14 @@ x3dom.registerNodeType(
                 return this._vf.keyValue[0];
             },
 
-            cubicSplineBasis: function (t, interval)
+            cubicSplineBasis: function (t, intervalInSeconds)
             {
                 var t2 = t*t;
                 var t3 = t2*t;
                 var h00 = 2*t3 - 3*t2 + 1;
-                var h10 = interval*(t3-2*t2+t);
+                var h10 = intervalInSeconds*( t3-2 * t2 + t );
                 var h01 = -h00 + 1; //-2*t3+3*t2;
-                var h11 = interval*(t3-t2);
+                var h11 = intervalInSeconds * ( t3-t2 );
 
                 return {'h00':h00, 'h10':h10, 'h01':h01, 'h11':h11};
             },
