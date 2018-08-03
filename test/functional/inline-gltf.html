@@ -94,7 +94,8 @@
         function onDownloadsFinished()
         {
             g_runtime.showAll(g_direction, true);
-            g_runtime.resetView(); // needed to trigger buffer loading if viewpoint
+            if (g_direction == "useVP") g_runtime.resetView(); // needed to trigger buffer loading if viewpoint
+            
         };
     
         function onload()
@@ -202,7 +203,7 @@
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
-    	    <div class="sidebar-entry" onclick="load('VC')">Virtual City</div>
+    	    <div class="sidebar-entry" onclick="load('VC',undefined,'useVP')">Virtual City</div>
     
             <div class="sidebar-header">PBR Tests</div>
         
