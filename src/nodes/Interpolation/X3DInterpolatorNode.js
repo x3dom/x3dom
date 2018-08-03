@@ -244,12 +244,13 @@ x3dom.registerNodeType(
             {
                 var t2 = t*t;
                 var t3 = t2*t;
-                var h00 = 2*t3 - 3*t2 + 1;
-                var h10 = intervalInSeconds*( t3-2 * t2 + t );
-                var h01 = -h00 + 1; //-2*t3+3*t2;
-                var h11 = intervalInSeconds * ( t3-t2 );
+                var h01 = -2*t3 + 3*t2;
+                var h11 = t3 - t2;
+                var h00 = 1 - h01; //2*t3 - 3*t2 + 1;
+                var h10 = h11 - t2 + t; //t3 - 2*t2 + t;
+                
 
-                return {'h00':h00, 'h10':h10, 'h01':h01, 'h11':h11};
+                return {'h00':h00, 'h10': intervalInSeconds * h10, 'h01':h01, 'h11': intervalInSeconds * h11};
             },
 
             keyValueFromArray: function (array) // to be redefined by interpolators
