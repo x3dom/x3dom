@@ -14,12 +14,11 @@
  * @namespace x3dom
  */
 var x3dom = {
-    canvases : [],
-
-    x3dNS    : 'http://www.web3d.org/specifications/x3d-namespace',
-    x3dextNS : 'http://philip.html5.org/x3d/ext',
-    xsltNS   : 'http://www.w3.org/1999/XSL/x3dom.Transform',
-    xhtmlNS  : 'http://www.w3.org/1999/xhtml'
+    canvases: [],
+    x3dNS:    'http://www.web3d.org/specifications/x3d-namespace',
+    x3dextNS: 'http://philip.html5.org/x3d/ext',
+    xsltNS:   'http://www.w3.org/1999/XSL/x3dom.Transform',
+    xhtmlNS:  'http://www.w3.org/1999/xhtml'
 };
 
 /**
@@ -53,12 +52,13 @@ x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent, RENDERM
 /**
  * Registers the node defined by @p nodeDef.
  * The node is registered with the given @p nodeTypeName and @p componentName.
+ *
  * @param nodeTypeName the name of the node type (e.g. Material, Shape, ...)
  * @param componentName the name of the component the node type belongs to
  * @param nodeDef the definition of the node type
  */
 x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
-    //console.log("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
+    // console.log("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
     if (x3dom.components[componentName] === undefined) {
         x3dom.components[componentName] = {};
     }
@@ -71,13 +71,14 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 
 /**
  * Test if node is registered X3D element
+ *
  * @param node
  */
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     var name = (node.nodeType === Node.ELEMENT_NODE && node.localName) ? node.localName.toLowerCase() : null;
     return (name && (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[name] ||
-            name == "x3d" || name == "websg" || name == "route"));
+        name == "x3d" || name == "websg" || name == "route"));
 };
 
 /**
@@ -96,9 +97,10 @@ x3dom.isX3DElement = function(node) {
  * @todo unify with defineClass, which does basically the same
  */
 x3dom.extend = function(f) {
-  function G() {}
-  G.prototype = f.prototype || f;
-  return new G();
+    function G() {}
+
+    G.prototype = f.prototype || f;
+    return new G();
 };
 
 /**
@@ -109,6 +111,7 @@ x3dom.extend = function(f) {
  *
  * @param oElm       - The element on which to compute the CSS property
  * @param strCssRule - The name of the CSS property
+ *
  * @eturn - The computed value of the CSS property
  */
 x3dom.getStyle = function(oElm, strCssRule) {
@@ -116,11 +119,11 @@ x3dom.getStyle = function(oElm, strCssRule) {
     var style = document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(oElm, null) : null;
     if (style) {
         strValue = style.getPropertyValue(strCssRule);
-    }
-    else if(oElm.currentStyle){
-        strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
+    } else if (oElm.currentStyle) {
+        strCssRule = strCssRule.replace(/\-(\w)/g, function(strMatch, p1) { return p1.toUpperCase(); });
         strValue = oElm.currentStyle[strCssRule];
     }
+
     return strValue;
 };
 
@@ -130,36 +133,41 @@ x3dom.getStyle = function(oElm, strCssRule) {
  * @param parent the parent class of the new class
  * @param ctor the constructor of the new class
  * @param methods an object literal containing the methods of the new class
+ *
  * @return the constructor function of the new class
  */
 function defineClass(parent, ctor, methods) {
     if (parent) {
         function Inheritance() {}
+
         Inheritance.prototype = parent.prototype;
 
         ctor.prototype = new Inheritance();
         ctor.prototype.constructor = ctor;
         ctor.superClass = parent;
     }
+
     if (methods) {
         for (var m in methods) {
             ctor.prototype[m] = methods[m];
         }
     }
+
     return ctor;
 }
 
 /**
  * Utility function for testing a node type.
+ *
  * @param object the object to test
  * @param clazz the type of the class
  * @return true or false
  */
 x3dom.isa = function(object, clazz) {
-  /*
-	if (!object || !object.constructor || object.constructor.superClass === undefined) {
-		return false;
-	}
+    /*
+    if (!object || !object.constructor || object.constructor.superClass === undefined) {
+        return false;
+    }
     if (object.constructor === clazz) {
         return true;
     }
@@ -173,17 +181,20 @@ x3dom.isa = function(object, clazz) {
         }
         return false;
     }
-    return f(object.constructor.superClass);
-  */
 
-  return (object instanceof clazz);
+    return f(object.constructor.superClass);
+    */
+
+    return (object instanceof clazz);
 };
 
 /**
  * Get Global Helper
+ *
+ * @returns {*}
  */
-x3dom.getGlobal = function () {
-    return (function () {
+x3dom.getGlobal = function() {
+    return (function() {
         return this;
     }).call(null);
 };
@@ -229,13 +240,13 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
         var loadpath = (path_prefix) ? path_prefix.trim() + src : src;
         if (head) {
             x3dom.debug.logError("Trying to load external JS file: " + loadpath);
-            //alert("Trying to load external JS file: " + loadpath);
+            // alert("Trying to load external JS file: " + loadpath);
             script.type = "text/javascript";
             script.src = loadpath;
             head.appendChild(script);
         } else {
             alert("No document object found. Can't load components!");
-            //x3dom.debug.logError("No document object found. Can't load components");
+            // x3dom.debug.logError("No document object found. Can't load components");
         }
     }
 };
@@ -244,26 +255,27 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
  * Array to Object Helper
  */
 function array_to_object(a) {
-  var o = {};
-  for(var i=0;i<a.length;i++) {
-    o[a[i]]='';
-  }
-  return o;
+    var o = {};
+    for (var i = 0; i < a.length; i++) {
+        o[a[i]] = '';
+    }
+    return o;
 }
 
 /**
  * Provides requestAnimationFrame in a cross browser way.
- * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
+ *
+ * @see https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
  */
 window.requestAnimFrame = (function() {
-	return window.requestAnimationFrame ||
-    	   window.webkitRequestAnimationFrame ||
-           window.mozRequestAnimationFrame ||
-           window.oRequestAnimationFrame ||
-           window.msRequestAnimationFrame ||
-           function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-             window.setTimeout(callback, 16);
-           };
+    return window.requestAnimationFrame ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+            window.setTimeout(callback, 16);
+        };
 })();
 
 /**
@@ -273,23 +285,18 @@ x3dom.toggleFullScreen = function() {
     if (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen) {
         if (document.cancelFullScreen) {
             document.cancelFullScreen();
-        }
-        else if (document.mozCancelFullScreen) {
+        } else if (document.mozCancelFullScreen) {
             document.mozCancelFullScreen();
-        }
-        else if (document.webkitCancelFullScreen) {
+        } else if (document.webkitCancelFullScreen) {
             document.webkitCancelFullScreen();
         }
-    }
-    else {
+    } else {
         var docElem = document.documentElement;
         if (docElem.requestFullScreen) {
             docElem.requestFullScreen();
-        }
-        else if (docElem.mozRequestFullScreen) {
+        } else if (docElem.mozRequestFullScreen) {
             docElem.mozRequestFullScreen();
-        }
-        else if (docElem.webkitRequestFullScreen) {
+        } else if (docElem.webkitRequestFullScreen) {
             docElem.webkitRequestFullScreen();
         }
     }
