@@ -142,62 +142,47 @@ x3dom.registerNodeType(
                 if (this._vf.buffer) {
                     //console.log(this);
                     var URL = this._nameSpace.getURL(this._vf.buffer);
-                    //from BinaryContainerLoader Buffersetup
-//                     this.bufferGeoCache = {};
-//                     if(this.bufferGeoCache[URL] != undefined)
-//                     {
-//                         this.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+                    if(x3dom.bufferCache[URL])
+                    {
+                        initAccessors(x3dom.bufferCache[URL]);
+                        return;
+                    }
+                    var xhr;
 
-//                             initBufferViews(arraybuffer);
-//                             initAccessors();
-//                             //computeNormals(arraybuffer);
-//                         });
-//                     }
-//                     else
-//                     {
-//                         this.bufferGeoCache[URL] = {};
-//                         this.bufferGeoCache[URL].buffers = [];
-//                         this.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) 
-//                         {
+                    if (x3dom.XHRCache[URL] === undefined)
+                    {
+                        xhr = new XMLHttpRequest();
 
-                            var xhr = new XMLHttpRequest();
+                        xhr.open("GET", URL);//avoid getting twice, with geometry buffer
 
-                            xhr.open("GET", URL);//avoid getting twice, with geometry buffer
+                        xhr.responseType = "arraybuffer";
+                        x3dom.XHRCache[URL] = xhr;
+                        x3dom.RequestManager.addRequest( xhr );
+                        scope._nameSpace.doc.downloadCount += 1;
+                        xhr.counted = false;
+                    }
+                    else xhr = x3dom.XHRCache[URL];
 
-                            xhr.responseType = "arraybuffer";
+                    xhr.addEventListener('load', function(e)
+                    {
+                        if (!xhr.counted)
+                        {   
+                            scope._nameSpace.doc.downloadCount -= 1;
+                            xhr.counted = true;
+                        }
+                        if(xhr.status != 200) return;
+                        x3dom.bufferCache[URL] = xhr.response;
 
-                            xhr.onload = function(e)
-                            {
-                                if(xhr.status != 200)
-                                {
-                                    scope._nameSpace.doc.downloadCount -= 1;
-//                                     reject();
-                                    return;
-                                }
+                        initAccessors(xhr.response);
 
-                                initAccessors(xhr.response);
+                        scope._nameSpace.doc.needRender = true;
+                    });
 
-                                //computeNormals(xhr.response);
-
-//                                 resolve(xhr.response);
-
-                                scope._nameSpace.doc.downloadCount -= 1;
-
-                                scope._nameSpace.doc.needRender = true;
-                            }
-
-                            xhr.onerror = function(e)
-                            {
-                                scope._nameSpace.doc.downloadCount -= 1;
-                                return;
-//                                 reject();
-                            }
-
-                            x3dom.RequestManager.addRequest( xhr );
-
-                            scope._nameSpace.doc.downloadCount += 1;
-//                         });    
-//                     }
+                    xhr.onerror = function(e) // ok to do only once
+                    {
+                        scope._nameSpace.doc.downloadCount -= 1;
+                        return;
+                    }                            
                 }
             },
 
@@ -260,3 +245,6 @@ x3dom.registerNodeType(
         }
     )
 );
+//global caches
+x3dom.bufferCache={};
+x3dom.XHRCache={};
