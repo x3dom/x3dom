@@ -158,6 +158,14 @@ x3dom.registerNodeType(
                     if (texCoordNode._vf.point) {
                         hasTexCoord = true;
                         texCoords = texCoordNode._vf.point;
+                        if ( !hasTexCoordInd )
+                        {
+                            var i, lastTexCoord = texCoords.length;
+                            for (i = lastTexCoord; i<positions.length; i++)
+                            {
+                                texCoords.push( texCoords[ i % lastTexCoord ] );
+                            }
+                        }
 
                         if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
                             numTexComponents = 3;
@@ -762,6 +770,14 @@ x3dom.registerNodeType(
                         if (texCoordNode._vf.point) {
                             hasTexCoord = true;
                             texCoords = texCoordNode._vf.point;
+                            if ( !hasTexCoordInd )
+                            {
+                                var i, lastTexCoord = texCoords.length;
+                                for (i = lastTexCoord; i<positions.length; i++)
+                                {
+                                    texCoords.push( texCoords[ i % lastTexCoord ] );
+                                }
+                            }
 
                             if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
                                 numTexComponents = 3;
