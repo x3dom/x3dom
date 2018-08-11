@@ -300,7 +300,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function(domNode, parent) {
             };
         }
 
-        // TODO: dynamic update of USE attribute during runtime
+        // TODO (?): dynamic update of USE attribute during runtime
         if (domNode.hasAttribute('USE') || domNode.hasAttribute('use')) {
             //fix usage of lowercase 'use'
             if (!domNode.hasAttribute('USE')) {
