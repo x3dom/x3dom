@@ -207,9 +207,9 @@ x3dom.fields.SFMatrix4f.translation = function(vec) {
 };
 
 /**
- * Returns a new rotation matrix , rotating around the x axis.
+ * Returns a new rotation matrix, rotating around the x axis.
  *
- * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @param {Number} a - angle in radians
  * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
  */
 x3dom.fields.SFMatrix4f.rotationX = function(a) {
@@ -224,9 +224,9 @@ x3dom.fields.SFMatrix4f.rotationX = function(a) {
 };
 
 /**
- * Returns a new rotation matrix , rotating around the y axis.
+ * Returns a new rotation matrix, rotating around the y axis.
  *
- * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @param {Number} a - angle in radians
  * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
  */
 x3dom.fields.SFMatrix4f.rotationY = function(a) {
@@ -241,9 +241,9 @@ x3dom.fields.SFMatrix4f.rotationY = function(a) {
 };
 
 /**
- * Returns a new rotation matrix , rotating around the z axis.
+ * Returns a new rotation matrix, rotating around the z axis.
  *
- * @param {x3dom.fields.SFVec3f} a - angle in radians
+ * @param {Number} a - angle in radians
  * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
  */
 x3dom.fields.SFMatrix4f.rotationZ = function(a) {
