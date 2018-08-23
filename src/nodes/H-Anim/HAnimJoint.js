@@ -178,7 +178,7 @@ x3dom.registerNodeType(
                 var n = this._childNodes.length;
 
                 if (x3dom.nodeTypes.ClipPlane.count > 0) {
-                    var localClipectPlanes = [];
+                    var localClipPlanes = [];
 
                     for (var j = 0; j < n; j++) {
                         if ( (cnode = this._childNodes[j]) ) {
