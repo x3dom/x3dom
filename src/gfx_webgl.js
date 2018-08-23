@@ -1266,6 +1266,8 @@ x3dom.gfx_webgl = (function () {
 
                 gl.disableVertexAttribArray(sp.position);
 
+                this.disableVertexAttribEyeIdx(gl, sp);
+
                 gl.activeTexture(gl.TEXTURE0);
                 if (bgnd._webgl.texture.textureCubeReady) {
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -2082,6 +2084,8 @@ x3dom.gfx_webgl = (function () {
                 if (sp.id !== undefined && s_gl.buffers[q6 + 5]) {
                     gl.disableVertexAttribArray(sp.id);
                 }
+
+                this.disableVertexAttribEyeIdx(gl, sp);
             }
 
             //Clean Texture units for IG
@@ -2613,6 +2617,7 @@ x3dom.gfx_webgl = (function () {
         sp.modelViewMatrixInverse = model_view_inv.toGL();
 
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
+        sp.modelViewProjectionInverseMatrix = mat_scene.mult(transform).inverse().toGL();
 
         sp.viewMatrixInverse = mat_view.inverse().toGL();
 
@@ -2791,6 +2796,8 @@ x3dom.gfx_webgl = (function () {
                 sp.modelViewMatrixInverse = model_view_inv.toGL();
 
                 sp.modelViewProjectionMatrix = mat_scene.mult(model).toGL();
+
+                sp.modelViewProjectionInverseMatrix = mat_scene.mult(model).inverse().toGL();
 
                 sp.worldInverseTranspose = model.inverse().transpose().toGL();
 
@@ -2981,6 +2988,9 @@ x3dom.gfx_webgl = (function () {
             if (sp.normal !== undefined) {
                 gl.disableVertexAttribArray(sp.normal);
             }
+            
+            this.disableVertexAttribEyeIdx(gl, sp);
+
             if (sp.texcoord !== undefined) {
                 gl.disableVertexAttribArray(sp.texcoord);
             }
@@ -4953,7 +4963,7 @@ x3dom.gfx_webgl = (function () {
     {
         if(x3dom.caps.INSTANCED_ARRAYS)
         {
-            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
 
             if(!this.eyeIdxBuffer)
             {
@@ -4972,6 +4982,17 @@ x3dom.gfx_webgl = (function () {
                 gl.enableVertexAttribArray(sp.eyeIdx);
                 instancedArrays.vertexAttribDivisorANGLE(sp.eyeIdx, 1);
             }
+        }
+    };
+
+    Context.prototype.disableVertexAttribEyeIdx = function(gl, sp)
+    {
+        if(x3dom.caps.INSTANCED_ARRAYS && sp.eyeIdx != undefined)
+        {
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
+            
+            gl.disableVertexAttribArray(sp.eyeIdx);
+            instancedArrays.vertexAttribDivisorANGLE(sp.eyeIdx, 0);
         }
     };
 
@@ -4999,7 +5020,7 @@ x3dom.gfx_webgl = (function () {
 
         if(x3dom.caps.INSTANCED_ARRAYS)
         {
-            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
             instancedArrays.drawElementsInstancedANGLE(mode, count, type, offset, instanceCount);
         }
         else
@@ -5016,7 +5037,7 @@ x3dom.gfx_webgl = (function () {
 
         if(x3dom.caps.INSTANCED_ARRAYS)
         {
-            var instancedArrays = x3dom.caps.INSTANCED_ARRAYS;
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
             instancedArrays.drawArraysInstancedANGLE(mode, first, count, instanceCount);
         }
         else

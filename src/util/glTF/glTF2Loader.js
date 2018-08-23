@@ -260,7 +260,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var alphaCutoff       = material.alphaCutoff || 0.5;
     var seperateOcclusion = true
     var model             = undefined;
-    var pbr          = undefined;
+    var pbr               = undefined;
 
     if( material.pbrMetallicRoughness )
     {

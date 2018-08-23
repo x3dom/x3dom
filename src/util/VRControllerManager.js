@@ -60,7 +60,7 @@ x3dom.VRControllerManager.prototype._onGamePadConnected = function( e )
 
         var display = displays[0];
 
-        if(gamepad.displayId == display.displayId)
+        if(display && gamepad.displayId == display.displayId)
         {
             var controller = this.controllers[ display.displayName ];
 
