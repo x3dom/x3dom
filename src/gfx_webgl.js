@@ -1266,7 +1266,7 @@ x3dom.gfx_webgl = (function () {
 
                 gl.disableVertexAttribArray(sp.position);
 
-                this.disableVertexAttribEyeIdx(gl, sp);
+                that.disableVertexAttribEyeIdx(gl, sp);
 
                 gl.activeTexture(gl.TEXTURE0);
                 if (bgnd._webgl.texture.textureCubeReady) {
