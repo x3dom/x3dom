@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -16,19 +16,17 @@
  * perform interaction (for instance, selecting or dragging objects) and navigation at the same time
  */
 x3dom.InputTypes = {
-    NAVIGATION:  1,
+    NAVIGATION: 1,
     INTERACTION: 2
 };
 
-
 /**
-* Constructor.
-*
-* @class represents a view area
-* @param {x3dom.X3DDocument} document - the target X3DDocument
-* @param {Object} scene - the scene
-*/
-// ### Viewarea ###
+ * Viewarea Constructor.
+ *
+ * @class represents a view area
+ * @param {x3dom.X3DDocument} document - the target X3DDocument
+ * @param {Object} scene - the scene
+ */
 x3dom.Viewarea = function (document, scene) {
     this._doc = document; // x3ddocument
     this._scene = scene; // FIXME: updates ?!
@@ -131,7 +129,7 @@ x3dom.Viewarea = function (document, scene) {
      * @protected
      */
     this._height = 300;
-    
+
     this._dx = 0;
     this._dy = 0;
     this._lastX = -1;
@@ -142,15 +140,15 @@ x3dom.Viewarea = function (document, scene) {
 
     this._points = 0;   // old render mode flag (but think of better name!)
     this._numRenderedNodes = 0;
-    
+
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-    
+
     this._isAnimating = false;
     this._isMoving = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
-	this._interpolator = new x3dom.FieldInterpolator();
+    this._interpolator = new x3dom.FieldInterpolator();
     this._animationStateChanged = false;
 
     this.arc = null;
@@ -158,30 +156,27 @@ x3dom.Viewarea = function (document, scene) {
 
 /**
  * Method gets called every frame with the current timestamp
+ *
  * @param {Number} timeStamp - current time stamp
- * @return {Boolean} view area animation state
+ * @returns {Boolean} view area animation state
  */
-x3dom.Viewarea.prototype.tick = function(timeStamp)
-{
+x3dom.Viewarea.prototype.tick = function(timeStamp) {
     var needMixAnim = false;
     var env = this._scene.getEnvironment();
 
-    if (env._vf.enableARC && this.arc == null)
-    {
+    if (env._vf.enableARC && this.arc == null) {
         this.arc = new x3dom.arc.AdaptiveRenderControl(this._scene);
     }
 
-    if (this._mixer.isActive() )
-    {
-		var mat = this._mixer.mix( timeStamp );
-		this._scene.getViewpoint().setView( mat );
+    if (this._mixer.isActive()) {
+        var mat = this._mixer.mix(timeStamp);
+        this._scene.getViewpoint().setView(mat);
     }
-	
-	if ( this._interpolator.isActive() )
-	{
-		var value = this._interpolator.interpolate( timeStamp );
-		this._scene.getViewpoint().setZoom( value );
-	}
+
+    if (this._interpolator.isActive()) {
+        var value = this._interpolator.interpolate(timeStamp);
+        this._scene.getViewpoint().setZoom(value);
+    }
 
     var needNavAnim = this.navigateTo(timeStamp);
 
@@ -190,17 +185,13 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
     this._lastTS = timeStamp;
     this._isAnimating = (this._mixer.isMixing || this._interpolator.isInterpolating || needNavAnim);
 
-    if ( this._isAnimating != lastIsAnimating )
-    {
+    if (this._isAnimating != lastIsAnimating) {
         this._animationStateChanged = true;
-    }
-    else
-    {
+    } else {
         this._animationStateChanged = false;
     }
 
-    if (this.arc != null )
-    {
+    if (this.arc != null) {
         this.arc.update(this.isMovingOrAnimating() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
     }
 
@@ -209,25 +200,26 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
 /**
  * Returns moving state of view are
- * @return {Boolean} moving state of view area
+ *
+ * @returns {Boolean} moving state of view area
  */
-x3dom.Viewarea.prototype.isMoving = function()
-{
+x3dom.Viewarea.prototype.isMoving = function() {
     return this._isMoving;
 };
 
 /**
  * Returns animation state of view area
- * @return {Boolean} animation state of view area
+ *
+ * @returns {Boolean} animation state of view area
  */
-x3dom.Viewarea.prototype.isAnimating = function()
-{
+x3dom.Viewarea.prototype.isAnimating = function() {
     return this._isAnimating;
 };
 
 /**
  * Returns if the animation state has changed since the last update
- * @return {Boolean} animation state of view area
+ *
+ * @returns {Boolean} animation state of view area
  */
 x3dom.Viewarea.prototype.hasAnimationStateChanged = function()
 {
@@ -236,80 +228,115 @@ x3dom.Viewarea.prototype.hasAnimationStateChanged = function()
 
 /**
  * is view area moving or animating
- * @return {Boolean} view area moving or animating state
+ *
+ * @returns {Boolean} view area moving or animating state
  */
-x3dom.Viewarea.prototype.isMovingOrAnimating = function()
-{
+x3dom.Viewarea.prototype.isMovingOrAnimating = function() {
     return (this._isMoving || this._isAnimating);
 };
 
 /**
  * triggers view area to move to something by passing the timestamp
  * returning a flag if the view area needs a navigation animation
- * @return {Boolean} flag if the view area need a navigation state
+ *
+ * @returns {Boolean} flag if the view area need a navigation state
  */
-x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
-{
+x3dom.Viewarea.prototype.navigateTo = function(timeStamp) {
     var navi = this._scene.getNavigationInfo();
     return navi._impl.navigateTo(this, timeStamp);
 };
 
-x3dom.Viewarea.prototype.moveFwd = function()
-{
+/**
+ * Move Forward
+ *
+ */
+x3dom.Viewarea.prototype.moveFwd = function() {
     var navi = this._scene.getNavigationInfo();
     navi._impl.moveForward(this);
 };
 
-x3dom.Viewarea.prototype.moveBwd = function()
-{
+/**
+ * Move Backwards
+ *
+ */
+x3dom.Viewarea.prototype.moveBwd = function() {
     var navi = this._scene.getNavigationInfo();
-    navi._impl.moveBackwards(this);    
+    navi._impl.moveBackwards(this);
 };
 
-x3dom.Viewarea.prototype.strafeRight = function()
-{
+/**
+ * Strafe Right
+ *
+ */
+x3dom.Viewarea.prototype.strafeRight = function() {
     var navi = this._scene.getNavigationInfo();
     navi._impl.strafeRight(this);
-    
 };
 
-x3dom.Viewarea.prototype.strafeLeft = function()
-{
+/**
+ * Strafe Left
+ *
+ */
+x3dom.Viewarea.prototype.strafeLeft = function() {
     var navi = this._scene.getNavigationInfo();
     navi._impl.strafeLeft(this);
-    
 };
 
-x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
-{
+/**
+ * Animate To
+ *
+ * @param target
+ * @param prev
+ * @param dur
+ */
+x3dom.Viewarea.prototype.animateTo = function(target, prev, dur) {
     var navi = this._scene.getNavigationInfo();
     navi._impl.animateTo(this, target, prev, dur);
 };
 
-x3dom.Viewarea.prototype.orthoAnimateTo = function( target, prev, duration )
-{
+/**
+ * Ortho Animate To
+ *
+ * @param target
+ * @param prev
+ * @param duration
+ */
+x3dom.Viewarea.prototype.orthoAnimateTo = function(target, prev, duration) {
     var navi = this._scene.getNavigationInfo();
     navi._impl.orthoAnimateTo(this, target, prev, duration);
 };
 
-x3dom.Viewarea.prototype.zoom = function( zoomAmount )
-{
+/**
+ * Zoom
+ *
+ * @param zoomAmount
+ */
+x3dom.Viewarea.prototype.zoom = function(zoomAmount) {
     var navi = this._scene.getNavigationInfo();
     navi._impl.zoom(this, zoomAmount);
 };
 
+/**
+ * Get Lights
+ *
+ * @returns {Array}
+ */
 x3dom.Viewarea.prototype.getLights = function () {
     var enabledLights = [];
-    for (var i=0; i<this._doc._nodeBag.lights.length; i++)
-    {
-        if (this._doc._nodeBag.lights[i]._vf.on == true)
-        {
+    for (var i = 0; i < this._doc._nodeBag.lights.length; i++) {
+        if (this._doc._nodeBag.lights[i]._vf.on == true) {
             enabledLights.push(this._doc._nodeBag.lights[i]);
         }
     }
+
     return enabledLights;
 };
 
+/**
+ * Get Lights Shadow
+ *
+ * @returns {boolean}
+ */
 x3dom.Viewarea.prototype.getLightsShadow = function () {
 	var lights = this._doc._nodeBag.lights;
 	for(var l=0; l<lights.length; l++) {
@@ -320,13 +347,18 @@ x3dom.Viewarea.prototype.getLightsShadow = function () {
     return false;
 };
 
+/**
+ * Update Special Navigation
+ *
+ * @param viewpoint
+ * @param mat_viewpoint
+ */
 x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_viewpoint) {
     var navi = this._scene.getNavigationInfo();
     var navType = navi.getType();
-    
+
     // helicopter mode needs to manipulate view matrix specially
-    if (navType == "helicopter" && !navi._heliUpdated)
-    {
+    if (navType == "helicopter" && !navi._heliUpdated) {
         var typeParams = navi.getTypeParams();
         var theta = typeParams[0];
         var currViewMat = viewpoint.getViewMatrix().mult(mat_viewpoint.inverse()).inverse();
@@ -359,21 +391,22 @@ x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_view
 
 /**
  * Get the view areas view point matrix
- * @return {x3dom.fields.SFMatrix4f} view areas view point matrix
+ *
+ * @returns {x3dom.fields.SFMatrix4f} view areas view point matrix
  */
 x3dom.Viewarea.prototype.getViewpointMatrix = function ()
 {
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();
-    
+
     this.updateSpecialNavigation(viewpoint, mat_viewpoint);
-    
+
     return viewpoint.getViewMatrix().mult(mat_viewpoint.inverse());
 };
 
 /**
  * Get the view areas view matrix
- * @return {x3dom.fields.SFMatrix4f} view areas view matrix
+ * @returns {x3dom.fields.SFMatrix4f} view areas view matrix
  */
 x3dom.Viewarea.prototype.getViewMatrix = function ()
 {
@@ -445,42 +478,43 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 
 /**
  * Get six WCtoLCMatrices for point light
+ *
  * @param {x3dom.fields.SFMatrix4f} view - the view matrix
  * @param {x3dom.nodeTypes.X3DNode} lightNode - the light node
  * @param {x3dom.fields.SFMatrix4f} mat_proj - the projection matrix
- * @return {Array} six WCtoLCMatrices
+ * @returns {Array} six WCtoLCMatrices
  */
 x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view, lightNode, mat_proj)
-{	 
+{
 	var zNear = lightNode._vf.zNear;
 	var zFar = lightNode._vf.zFar;
-	
+
 	var proj = this.getLightProjectionMatrix(view, zNear, zFar, false, mat_proj);
-	
+
 	//set projection matrix to 90 degrees FOV (vertical and horizontal)
 	proj._00 = 1;
 	proj._11 = 1;
-	
+
 	var matrices = [];
-	
+
 	//create six matrices to cover all directions of point light
 	matrices[0] = proj.mult(view);
-		
+
 	var rotationMatrix;
-	
+
 	//y-rotation
-	for (var i=1; i<=3; i++){	
+	for (var i=1; i<=3; i++){
 		rotationMatrix = x3dom.fields.SFMatrix4f.rotationY(i*Math.PI/2);
 		matrices[i] = proj.mult(rotationMatrix.mult(view));
 	}
-	
+
 	//x-rotation
 	rotationMatrix = x3dom.fields.SFMatrix4f.rotationX(Math.PI/2);
 	matrices[4] = proj.mult(rotationMatrix.mult(view));
-	
+
 	rotationMatrix = x3dom.fields.SFMatrix4f.rotationX(3*Math.PI/2);
 	matrices[5] = proj.mult(rotationMatrix.mult(view));
-	
+
     return matrices;
 };
 
@@ -496,18 +530,18 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode, m
 	var isSpotLight = x3dom.isa(lightNode, x3dom.nodeTypes.SpotLight);
 	var zNear = lightNode._vf.zNear;
 	var zFar = lightNode._vf.zFar;
-	
+
 	var proj = this.getLightProjectionMatrix(view, zNear, zFar, true, mat_proj);
-	
+
 	if (isSpotLight){
 		//set FOV to 90 degrees
 		proj._00 = 1;
 		proj._11 = 1;
-	}	
-	
+	}
+
 	//get view projection matrix
-	var viewProj = proj.mult(view);	
-	
+	var viewProj = proj.mult(view);
+
 	var matrices = [];
 
 	if (numCascades == 1){
@@ -515,48 +549,48 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode, m
 		matrices[0] = viewProj;
 		return matrices;
 	}
-	
+
 	//compute split positions of view frustum
 	var cascadeSplits = this.getShadowSplitDepths(numCascades, splitFactor, splitOffset, true, mat_proj);
-	
+
 	//calculate fitting matrices and multiply with view projection
 	for (var i=0; i<numCascades; i++){
 		var fittingMat = this.getLightFittingMatrix(viewProj, cascadeSplits[i], cascadeSplits[i+1], mat_proj);
 		matrices[i] = fittingMat.mult(viewProj);
-	}	
-	
+	}
+
 	return matrices;
 };
 
 x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, highPrecision, mat_proj)
 {
     var proj = x3dom.fields.SFMatrix4f.copy(mat_proj);
-	
+
 	if (!highPrecision || zNear > 0 || zFar > 0) {
 		//replace near and far plane of projection matrix
 		//by values adapted to the light position
-		
+
 		var lightPos = lMat.inverse().e3();
-		
+
 		var nearScale = 0.8;
 		var farScale = 1.2;
-		
+
 		var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
-		var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax); 
+		var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
 
 		var dia = max.subtract(min);
 		var sRad = dia.length() / 2;
-		
+
 		var sCenter = min.add(dia.multiply(0.5));
 		var vDist = (lightPos.subtract(sCenter)).length();
-		
+
 		var near, far;
-		
+
 		if (sRad) {
 			if (vDist > sRad)
-				near = (vDist - sRad) * nearScale; 
+				near = (vDist - sRad) * nearScale;
 			else
-				near = 1;                           
+				near = 1;
 			far = (vDist + sRad) * farScale;
 		}
 		if (zNear > 0) near = zNear;
@@ -564,13 +598,13 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 
 		proj._22 = -(far+near)/(far-near);
 		proj._23 = -2.0*far*near / (far-near);
-		
+
 		return proj;
 	}
     else {
 		//should be more accurate, but also more expensive
 		var cropMatrix = this.getLightCropMatrix(proj.mult(lMat));
-		
+
 		return cropMatrix.mult(proj);
 	}
 };
@@ -585,7 +619,7 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
 /**
  * Get the view frustum for a given clipping matrix
  * @param {x3dom.fields.SFMatrix4f} clipMat - the clipping matrix
- * @return {x3dom.fields.FrustumVolume} the resulting view frustum
+ * @returns {x3dom.fields.FrustumVolume} the resulting view frustum
  */
 x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
 {
@@ -596,7 +630,7 @@ x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
         if (arguments.length == 0) {
             var proj = this.getProjectionMatrix();
             var view = this.getViewMatrix();
-    
+
             return new x3dom.fields.FrustumVolume(proj.mult(view));
         }
         else {
@@ -609,7 +643,7 @@ x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
 
 /**
  * Get the world coordinates to clipping coordinates matrix by multiplying the projection and view matrices
- * @return {x3dom.fields.SFMatrix4f} world coordinates to clipping coordinates matrix
+ * @returns {x3dom.fields.SFMatrix4f} world coordinates to clipping coordinates matrix
  */
 x3dom.Viewarea.prototype.getWCtoCCMatrix = function()
 {
@@ -621,7 +655,7 @@ x3dom.Viewarea.prototype.getWCtoCCMatrix = function()
 
 /**
  * Get the clipping coordinates to world coordinates matrix by multiplying the projection and view matrices
- * @return {x3dom.fields.SFMatrix4f} clipping coordinates to world coordinates  matrix
+ * @returns {x3dom.fields.SFMatrix4f} clipping coordinates to world coordinates  matrix
  */
 x3dom.Viewarea.prototype.getCCtoWCMatrix = function()
 {
@@ -690,7 +724,7 @@ x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation)
 
     var isOrtho = x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint);
 
-    var dia = max.subtract(min); 
+    var dia = max.subtract(min);
     var dia2 = dia.multiply(0.5);
     var center = min.add(dia2);
 
@@ -779,7 +813,7 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation)
 x3dom.Viewarea.prototype.resetView = function()
 {
     var navi = this._scene.getNavigationInfo();
-    navi._impl.resetView(this);    
+    navi._impl.resetView(this);
 };
 
 x3dom.Viewarea.prototype.resetNavHelpers = function()
@@ -874,14 +908,14 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
     try {
         var anObj = obj;
-        
+
         if ( anObj && anObj._xmlNode && anObj._cf.geometry &&
              !anObj._xmlNode[eventType] &&
              !anObj._xmlNode.hasAttribute(eventType) &&
              !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;
         }
-        
+
         if (anObj && that.callEvtHandler(anObj, eventType, event) === true) {
             needRecurse = false;
         }
@@ -1164,7 +1198,7 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
         this._doc._x3dElem.getAttribute('disableDoubleClick') === 'true') {
         return;
     }
-    
+
     var navi = this._scene.getNavigationInfo();
     navi._impl.onDoubleClick(this, x,y);
 };
@@ -1346,8 +1380,7 @@ x3dom.Viewarea.prototype.getRenderMode = function()
 };
 
 
-x3dom.Viewarea.prototype.getShadowedLights = function()
-{	
+x3dom.Viewarea.prototype.getShadowedLights = function() {
 	var shadowedLights = [];
 	var shadowIndex = 0;
 	var slights = this.getLights();
@@ -1360,63 +1393,62 @@ x3dom.Viewarea.prototype.getShadowedLights = function()
 	return shadowedLights;
 };
 
-
 /**
  * Calculate view frustum split positions for the given number of cascades
+ *
  * @param {Number} numCascades - the number of cascades
  * @param {Number} splitFactor - the splitting factor
  * @param {Number} splitOffset - the offset for the splits
  * @param {Array} postProject - the post projection something
  * @param {x3dom.fields.SFMatrix4f} mat_proj - the projection matrix
- * @return {Array} the post projection something
+ * @returns {Array} the post projection something
  */
-x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFactor, splitOffset, postProject, mat_proj)
-{
+x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFactor, splitOffset, postProject, mat_proj) {
 	var logSplit;
 	var practSplit = [];
-	
+
 	var viewPoint = this._scene.getViewpoint();
-	
+
 	var zNear = viewPoint.getNear();
 	var zFar = viewPoint.getFar();
 
 	practSplit[0] = zNear;
-	
+
 	//pseudo near plane for bigger cascades near camera
 	zNear = zNear + splitOffset*(zFar-zNear)/10;
-	
+
 	//calculate split depths according to "practical split scheme"
 	for (var i=1;i<numCascades;i++){
 		logSplit = zNear * Math.pow((zFar / zNear), i / numCascades);
 		practSplit[i] = splitFactor * logSplit + (1 - splitFactor) * (zNear + i / (numCascades * (zNear-zFar)));
 	}
 	practSplit[numCascades] = zFar;
-	
+
 	//return in view coords
 	if (!postProject)
         return practSplit;
-	
+
 	//return in post projective coords
 	var postProj = [];
-	
+
 	for (var j=0; j<=numCascades; j++){
 		postProj[j] = mat_proj.multFullMatrixPnt(new x3dom.fields.SFVec3f(0,0,-practSplit[j])).z;
 	}
-	
+
 	return postProj;
 };
 
 
 /*
- * calculate a matrix to enhance the placement of 
+ * calculate a matrix to enhance the placement of
  * the near and far planes of the light projection matrix
 */
 x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
-{	
+{
 	//get corner points of scene bounds
 	var sceneMin = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
 	var sceneMax = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
-	
+
 	var sceneCorners = [];
 	sceneCorners[0] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMin.z);
 	sceneCorners[1] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMax.z);
@@ -1426,36 +1458,36 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	sceneCorners[5] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMin.y, sceneMax.z);
 	sceneCorners[6] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMax.y, sceneMin.z);
 	sceneCorners[7] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMax.y, sceneMax.z);
-	
+
 	//transform scene bounds into light space
     var i;
 	for (i=0; i<8; i++){
 		sceneCorners[i] = WCToLCMatrix.multFullMatrixPnt(sceneCorners[i]);
 	}
-	
+
 	//determine min and max values in light space
 	var minScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
 	var maxScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
-	
+
 	for (i=1; i<8; i++){
-		minScene.z = Math.min(sceneCorners[i].z, minScene.z); 
-		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z); 
+		minScene.z = Math.min(sceneCorners[i].z, minScene.z);
+		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z);
 	}
 
 	var scaleZ = 2.0 / (maxScene.z - minScene.z);
-	var offsetZ = -(scaleZ * (maxScene.z + minScene.z)) / 2.0;	
-		
+	var offsetZ = -(scaleZ * (maxScene.z + minScene.z)) / 2.0;
+
 	//var scaleZ = 1.0 / (maxScene.z - minScene.z);
 	//var offsetZ = -minScene.z * scaleZ;
 
 	var cropMatrix = x3dom.fields.SFMatrix4f.identity();
-	
+
 	cropMatrix._22 = scaleZ;
-	cropMatrix._23 = offsetZ;	
-	
-	return cropMatrix;	
+	cropMatrix._23 = offsetZ;
+
+	return cropMatrix;
 };
-	
+
 
 /*
  * Calculate a matrix to fit the given wctolc-matrix to the split boundaries
@@ -1465,7 +1497,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	var mat_view = this.getViewMatrix();
 	var mat_view_proj = mat_proj.mult(mat_view);
 	var mat_view_proj_inverse = mat_view_proj.inverse();
-	
+
 	//define view frustum corner points in post perspective view space
 	var frustumCorners = [];
 	frustumCorners[0] = new x3dom.fields.SFVec3f(-1, -1, zFar);
@@ -1476,7 +1508,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	frustumCorners[5] = new x3dom.fields.SFVec3f( 1, -1, zNear);
 	frustumCorners[6] = new x3dom.fields.SFVec3f( 1,  1, zFar);
 	frustumCorners[7] = new x3dom.fields.SFVec3f( 1,  1, zNear);
-	
+
 
 	//transform corner points into post perspective light space
     var i;
@@ -1484,22 +1516,22 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 		frustumCorners[i] = mat_view_proj_inverse.multFullMatrixPnt(frustumCorners[i]);
 		frustumCorners[i] = WCToLCMatrix.multFullMatrixPnt(frustumCorners[i]);
 	}
-	
+
 	//calculate minimum and maximum values
 	var minFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
 	var maxFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
 
 	for (i=1; i<8; i++){
-		minFrustum.x = Math.min(frustumCorners[i].x, minFrustum.x); 
+		minFrustum.x = Math.min(frustumCorners[i].x, minFrustum.x);
 		minFrustum.y = Math.min(frustumCorners[i].y, minFrustum.y);
-		minFrustum.z = Math.min(frustumCorners[i].z, minFrustum.z); 
-		
-		maxFrustum.x = Math.max(frustumCorners[i].x, maxFrustum.x); 
-		maxFrustum.y = Math.max(frustumCorners[i].y, maxFrustum.y); 
-		maxFrustum.z = Math.max(frustumCorners[i].z, maxFrustum.z); 
+		minFrustum.z = Math.min(frustumCorners[i].z, minFrustum.z);
+
+		maxFrustum.x = Math.max(frustumCorners[i].x, maxFrustum.x);
+		maxFrustum.y = Math.max(frustumCorners[i].y, maxFrustum.y);
+		maxFrustum.z = Math.max(frustumCorners[i].z, maxFrustum.z);
 	}
-	
-	
+
+
 	//clip values to box (-1,-1,-1),(1,1,1)
 	function clip(min,max)
     {
@@ -1509,7 +1541,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 		var xMax = max.x;
 		var yMax = max.y;
 		var zMax = max.z;
-		
+
 		if (xMin > 1.0 || xMax < -1.0) {
 			xMin = -1.0;
 			xMax =  1.0;
@@ -1517,7 +1549,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 			xMin = Math.max(xMin,-1.0);
 			xMax = Math.min(xMax, 1.0);
 		}
-		
+
 		if (yMin > 1.0 || yMax < -1.0) {
 			yMin = -1.0;
 			yMax =  1.0;
@@ -1525,7 +1557,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 			yMin = Math.max(yMin,-1.0);
 			yMax = Math.min(yMax, 1.0);
 		}
-					   
+
 		if (zMin > 1.0 || zMax < -1.0){
 			zMin = -1.0;
 			zMax = 1.0;
@@ -1538,7 +1570,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 
 		return new x3dom.fields.BoxVolume(minValues,maxValues);
 	}
-	
+
 	var frustumBB = clip(minFrustum, maxFrustum);
 
 	//define fitting matrix
@@ -1546,9 +1578,9 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	var scaleY = 2.0 / (frustumBB.max.y - frustumBB.min.y);
 	var offsetX = -(scaleX * (frustumBB.max.x + frustumBB.min.x)) / 2.0;
 	var offsetY = -(scaleY * (frustumBB.max.y + frustumBB.min.y)) / 2.0;
-	
+
 	var fittingMatrix = x3dom.fields.SFMatrix4f.identity();
-	
+
 	fittingMatrix._00 = scaleX;
 	fittingMatrix._11 = scaleY;
 	fittingMatrix._03 = offsetX;
