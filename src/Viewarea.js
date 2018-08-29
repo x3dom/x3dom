@@ -442,8 +442,7 @@ x3dom.Viewarea.prototype.getLightMatrix = function() {
                 if (x3dom.isa(lights[i], x3dom.nodeTypes.PointLight)) {
                     var wcLoc = lights[i].getCurrentTransform().multMatrixPnt(lights[i]._vf.location);
                     dia = dia.subtract(wcLoc).normalize();
-                }
-                else {
+                } else {
                     var dir = lights[i].getCurrentTransform().multMatrixVec(lights[i]._vf.direction);
                     dir = dir.normalize().negate();
                     dia = dia.add(dir.multiply(1.2 * (dist1 > dist2 ? dist1 : dist2)));
@@ -649,8 +648,9 @@ x3dom.Viewarea.prototype.getViewfrustum = function(clipMat) {
             var view = this.getViewMatrix();
 
             return new x3dom.fields.FrustumVolume(proj.mult(view));
-        }
-        else {
+
+        } else {
+
             return new x3dom.fields.FrustumVolume(clipMat);
         }
     }
@@ -1184,7 +1184,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function(x, y, buttonState, prevButton
         var len = dir.length();
         dir = dir.normalize();
 
-        //var newUp = new x3dom.fields.SFVec3f(0, 1, 0);
+        // var newUp = new x3dom.fields.SFVec3f(0, 1, 0);
         var newAt = from.addScaled(dir, len);
 
         var s = dir.cross(up).normalize();
@@ -1245,7 +1245,7 @@ x3dom.Viewarea.prototype.onMouseOut = function(x, y, buttonState) {
     this._lastY = y;
     this._deltaT = 0;
 
-    //vif the mouse is moved out of the canvas, reset the list of currently affected pointing sensors
+    // if the mouse is moved out of the canvas, reset the list of currently affected pointing sensors
     // (this behaves similar to a mouse release inside the canvas)
     var i;
     var affectedPointingSensorsList = this._doc._nodeBag.affectedPointingSensors;
@@ -1536,7 +1536,7 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFacto
  * @returns {x3dom.fields.SFMatrix4f}
  */
 x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix) {
-    //get corner points of scene bounds
+    // get corner points of scene bounds
     var sceneMin = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
     var sceneMax = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
 
