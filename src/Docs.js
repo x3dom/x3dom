@@ -60,7 +60,7 @@ x3dom.docs.specBaseURL = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-
 /**
  * The dump-nodetype tree functionality in a function
  *
- * @return {string} HTML Node TYpe List.
+ * @returns {string} HTML Node TYpe List.
  */
 x3dom.docs.getNodeTreeInfo = function() {
 
@@ -120,7 +120,7 @@ x3dom.docs.getNodeTreeInfo = function() {
 /**
  * Get Component Info
  *
- * @return {string} HTML Component List.
+ * @returns {string} HTML Component List.
  */
 x3dom.docs.getComponentInfo = function() {
     // Dump nodetypes by component
