@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -9,13 +9,28 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-x3dom.Cache = function () {
+/**
+ * Cache Constructor
+ *
+ * @constructor
+ */
+x3dom.Cache = function() {
     this.textures = [];
     this.shaders = [];
 };
 
 /**
  * Returns a Texture 2D
+ *
+ * @param gl
+ * @param doc
+ * @param url
+ * @param bgnd
+ * @param crossOrigin
+ * @param scale
+ * @param genMipMaps
+ *
+ * @returns {*}
  */
 x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY) {
     var textureIdentifier = url;
@@ -30,8 +45,14 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, 
 
 /**
  * Returns a Texture 2D
+ *
+ * @param gl
+ * @param nameSpace
+ * @param def
+ *
+ * @returns {*}
  */
-x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
+x3dom.Cache.prototype.getTexture2DByDEF = function(gl, nameSpace, def) {
     var textureIdentifier = nameSpace.name + "_" + def;
 
     if (this.textures[textureIdentifier] === undefined) {
@@ -43,6 +64,16 @@ x3dom.Cache.prototype.getTexture2DByDEF = function (gl, nameSpace, def) {
 
 /**
  * Returns a Cube Texture
+ *
+ * @param gl
+ * @param doc
+ * @param url
+ * @param bgnd
+ * @param crossOrigin
+ * @param scale
+ * @param genMipMaps
+ *
+ * @returns {*}
  */
 x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY) {
     var textureIdentifier = "";
@@ -61,13 +92,18 @@ x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, crossOrigin
 
 /**
  * Returns one of the default shader programs
+ *
+ * @param gl
+ * @param shaderIdentifier
+ *
+ * @returns {*}
  */
-x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
+x3dom.Cache.prototype.getShader = function(gl, shaderIdentifier) {
     var program = null;
 
-    //Check if shader is in cache
+    // Check if shader is in cache
     if (this.shaders[shaderIdentifier] === undefined) {
-        //Choose shader based on identifier
+        // Choose shader based on identifier
         switch (shaderIdentifier) {
             case x3dom.shader.PICKING:
                 program = new x3dom.shader.PickingShader(gl);
@@ -106,7 +142,7 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
                 program = new x3dom.shader.BlurShader(gl);
                 break;
             case x3dom.shader.DEPTH:
-                //program = new x3dom.shader.DepthShader(gl);
+                // program = new x3dom.shader.DepthShader(gl);
                 break;
             case x3dom.shader.NORMAL:
                 program = new x3dom.shader.NormalShader(gl);
@@ -118,10 +154,11 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
                 break;
         }
 
-        if (program)
+        if (program) {
             this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program, shaderIdentifier);
-        else
+        } else {
             x3dom.debug.logError("Couldn't create shader: " + shaderIdentifier);
+        }
     }
 
     return this.shaders[shaderIdentifier];
@@ -129,9 +166,13 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
 
 /**
  * Returns a dynamic generated shader program by viewarea and shape
+ *
+ * @param gl
+ * @param viewarea
+ * @param shape
  */
-x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
-    //Generate Properties
+x3dom.Cache.prototype.getDynamicShader = function(gl, viewarea, shape) {
+    // Generate Properties
     var properties = x3dom.Utils.generateProperties(viewarea, shape);
 
     var shaderID = properties.id;
@@ -142,8 +183,8 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
             program = new x3dom.shader.ComposedShader(gl, shape);
         } else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
-                            new x3dom.shader.DynamicMobileShader(gl, properties) :
-                            new x3dom.shader.DynamicShader(gl, properties);
+                new x3dom.shader.DynamicMobileShader(gl, properties) :
+                new x3dom.shader.DynamicShader(gl, properties);
         }
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
@@ -153,40 +194,43 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 
 /**
  * Returns a dynamic generated shader program by properties
+ *
+ * @param gl
+ * @param shape
+ * @param properties
+ * @param pickMode
+ * @param shadows
  */
-x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, pickMode, shadows) {
+x3dom.Cache.prototype.getShaderByProperties = function(gl, shape, properties, pickMode, shadows) {
 
-    //Get shaderID
+    // Get shaderID
     var shaderID = properties.id;
 
-    if(pickMode !== undefined && pickMode !== null) {
+    if (pickMode !== undefined && pickMode !== null) {
         shaderID += pickMode;
     }
 
-    if(shadows !== undefined && shadows !== null) {
+    if (shadows !== undefined && shadows !== null) {
         shaderID += "S";
     }
 
-    if (this.shaders[shaderID] === undefined)
-    {
+    if (this.shaders[shaderID] === undefined) {
         var program = null;
-        
+
         if (pickMode !== undefined && pickMode !== null) {
             program = new x3dom.shader.DynamicShaderPicking(gl, properties, pickMode);
-        }
-        else if (shadows !== undefined && shadows !== null) {
+        } else if (shadows !== undefined && shadows !== null) {
             program = new x3dom.shader.DynamicShadowShader(gl, properties);
-        }
-        else if (properties.CSHADER != -1)
+        } else if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
-        else if(properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0)
+        } else if (properties.KHR_MATERIAL_COMMONS != null && properties.KHR_MATERIAL_COMMONS != 0) {
             program = new x3dom.shader.KHRMaterialCommonsShader(gl, properties);
-        else if(properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0)
-            return {"shaderID": shaderID};
-        else {
+        } else if (properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0) {
+            return { "shaderID": shaderID };
+        } else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
-                        new x3dom.shader.DynamicMobileShader(gl, properties) :
-                        new x3dom.shader.DynamicShader(gl, properties);
+                new x3dom.shader.DynamicMobileShader(gl, properties) :
+                new x3dom.shader.DynamicShader(gl, properties);
         }
 
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
@@ -197,16 +241,22 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties, p
 
 /**
  * Returns the dynamically created shadow rendering shader
+ *
+ * @param gl
+ * @param shadowedLights
+ *
+ * @returns {*}
  */
-x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights) {
+x3dom.Cache.prototype.getShadowRenderingShader = function(gl, shadowedLights) {
     var ID = "shadow";
     for (var i = 0; i < shadowedLights.length; i++) {
-        if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight))
+        if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight)) {
             ID += "S";
-        else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
+        } else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight)) {
             ID += "P";
-        else
+        } else {
             ID += "D";
+        }
     }
 
     if (this.shaders[ID] === undefined) {
@@ -218,8 +268,11 @@ x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights) {
 
 /**
  * Release texture and shader resources
+ *
+ * @param gl
+ * @constructor
  */
-x3dom.Cache.prototype.Release = function (gl) {
+x3dom.Cache.prototype.Release = function(gl) {
     for (var texture in this.textures) {
         gl.deleteTexture(this.textures[texture]);
     }
@@ -228,7 +281,7 @@ x3dom.Cache.prototype.Release = function (gl) {
     for (var shaderId in this.shaders) {
         var shader = this.shaders[shaderId];
         var glShaders = gl.getAttachedShaders(shader.program);
-        for (var i=0; i<glShaders.length; ++i) {
+        for (var i = 0; i < glShaders.length; ++i) {
             gl.detachShader(shader.program, glShaders[i]);
             gl.deleteShader(glShaders[i]);
         }

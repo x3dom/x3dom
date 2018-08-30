@@ -30,7 +30,14 @@ x3dom.registerNodeType(
 
 
             /**
-             *
+             * Each Site object shall have a name field that is used for identifying the object. Within the local scope of a Humanoid
+             * object, each Site object can be referenced by its name alone (e.g., r_neck_base, l_femoral_lateral_epicn, sellion, etc.).
+             * However, when referring to a Site object within a larger or global scope, the name of the Humanoid object shall be added
+             * as a distinguishing prefix.
+             * Depending on the intended purpose, the Site object's name field shall be altered to appropriately describe its function.
+             * If used as an end effector, the Site object shall have a name consisting of the name of the Segment to which it is
+             * attached with an "_tip" suffix appended. Site objects that are used to define viewpoint locations shall have a "_view"
+             * suffix appended. Site objects that are not end effectors and not camera locations shall have an "_pt" suffix.
              * @var {x3dom.fields.SFString} name
              * @memberof x3dom.nodeTypes.HAnimSite
              * @initvalue ""

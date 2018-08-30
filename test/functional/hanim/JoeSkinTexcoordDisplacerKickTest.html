@@ -1,0 +1,27 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>JoeKick Inline</title>
+
+    <script type="text/javascript" src="../../x3dom-full_include.js"></script>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+        <Scene>
+            <NavigationInfo DEF='Start_NavigationInfo' headlight='false' speed='2.5' type='"EXAMINE" "ANY"'></NavigationInfo>
+            <SpotLight DEF='light1' ambientIntensity='0.7' beamWidth='1.5' color='0.8 0.8 1' cutOffAngle='0.6' direction='0 0 0' location='0 3 3' on='true' radius='10'></SpotLight>
+            <PointLight DEF='light2' ambientIntensity='0.7' color='0.8 0.8 1' location='0 10 -7' on='true'></PointLight>
+            <!-- External from the Humanoid viewpoints -->
+            <Viewpoint DEF='Scene_InclinedView' centerOfRotation='0 0.85 0' description='Scene_Inclined View' orientation='-0.113 0.993 0.0347 0.671' position='1.62 1.05 3.06'></Viewpoint>
+            <Viewpoint DEF='Scene_IFrontView' centerOfRotation='0 0.8 0' description='Scene_Front View' orientation='0 0 1 0' position='0 0.8 2.58'></Viewpoint>
+            <Viewpoint DEF='Scene_ISideView' centerOfRotation='0 0.8 0' description='Scene_Side View' orientation='0 1 0 1.5708' position='2.6 0.5 0'></Viewpoint>
+            <Viewpoint DEF='Scene_BackView' centerOfRotation='0 1.5 0' description='Scene_Back View' orientation='0 1 0 3.14' position='0 2.5 -3'></Viewpoint>
+            <Viewpoint DEF='Scene_TopView' centerOfRotation='0 1.5 0' description='Scene_Top View' orientation='1 0 0 -1.5708' position='0 3.5 0'></Viewpoint>
+            <Transform>
+                <Inline id="inline" nameSpaceName="hanim" mapDEFToID="true" url="JoeSkinTexcoordDisplacerKickTest.x3d"></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+</body>
+</html>
