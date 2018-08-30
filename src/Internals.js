@@ -91,7 +91,7 @@ x3dom.isX3DElement = function(node) {
  * generated internally that shares the same prototype:
  *
  * @param f - Method f a constructor
- * @return A suitable prototype object
+ * @returns A suitable prototype object
  *
  * @see Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
  * @todo unify with defineClass, which does basically the same
@@ -134,7 +134,7 @@ x3dom.getStyle = function(oElm, strCssRule) {
  * @param ctor the constructor of the new class
  * @param methods an object literal containing the methods of the new class
  *
- * @return the constructor function of the new class
+ * @returns the constructor function of the new class
  */
 function defineClass(parent, ctor, methods) {
     if (parent) {
@@ -161,7 +161,7 @@ function defineClass(parent, ctor, methods) {
  *
  * @param object the object to test
  * @param clazz the type of the class
- * @return true or false
+ * @returns true or false
  */
 x3dom.isa = function(object, clazz) {
     /*

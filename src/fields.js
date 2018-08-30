@@ -432,7 +432,7 @@ x3dom.fields.SFMatrix4f.prototype.setRotate = function(quat) {
  * Creates a new matrix from a column major string representation, with values separated by commas
  *
  * @param {String} str - string to parse
- * @return {x3dom.fields.SFMatrix4f} the new matrix
+ * @returns {x3dom.fields.SFMatrix4f} the new matrix
  */
 x3dom.fields.SFMatrix4f.parseRotation = function(str) {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
@@ -464,7 +464,7 @@ x3dom.fields.SFMatrix4f.parseRotation = function(str) {
  * Creates a new matrix from a X3D-conformant string representation
  *
  * @param {String} str - string to parse
- * @return {x3dom.fields.SFMatrix4f} the new rotation matrix
+ * @returns {x3dom.fields.SFMatrix4f} the new rotation matrix
  */
 x3dom.fields.SFMatrix4f.parse = function(str) {
     var needTranspose = false;
@@ -507,7 +507,7 @@ x3dom.fields.SFMatrix4f.parse = function(str) {
  * Returns the result of multiplying this matrix with the given one, using "post-multiplication" / "right multiply".
  *
  * @param {x3dom.fields.SFMatrix4f} that - matrix to multiply with this one
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.mult = function(that) {
     return new x3dom.fields.SFMatrix4f(
@@ -535,7 +535,7 @@ x3dom.fields.SFMatrix4f.prototype.mult = function(that) {
  * (ignores projection part of matrix for speedup in standard cases).
  *
  * @param {x3dom.fields.SFVec3f} vec - point to transform
- * @return {x3dom.fields.SFVec3f} resulting point
+ * @returns {x3dom.fields.SFVec3f} resulting point
  */
 x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function(vec) {
     return new x3dom.fields.SFVec3f(
@@ -549,7 +549,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function(vec) {
  * Transforms a given 3D vector, using this matrix as a homogenous transform matrix.
  *
  * @param {x3dom.fields.SFVec3f} vec - vector to transform
- * @return {x3dom.fields.SFVec3f} resulting vector
+ * @returns {x3dom.fields.SFVec3f} resulting vector
  */
 x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function(vec) {
     return new x3dom.fields.SFVec3f(
@@ -565,7 +565,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function(vec) {
  * The resulting point is normalized by a w component.
  *
  * @param {x3dom.fields.SFVec3f} vec - point to transform
- * @return {x3dom.fields.SFVec3f} resulting point
+ * @returns {x3dom.fields.SFVec3f} resulting point
  */
 x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function(vec) {
     var w = this._30 * vec.x + this._31 * vec.y + this._32 * vec.z + this._33;
@@ -585,7 +585,7 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function(vec) {
  * The resulting point is normalized by a w component.
  *
  * @param {x3dom.fields.SFVec4f} plane - plane to transform
- * @return {x3dom.fields.SFVec4f} resulting plane
+ * @returns {x3dom.fields.SFVec4f} resulting plane
  */
 x3dom.fields.SFMatrix4f.prototype.multMatrixPlane = function(plane) {
 
@@ -607,7 +607,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixPlane = function(plane) {
 /**
  * Returns a transposed version of this matrix.
  *
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.transpose = function() {
     return new x3dom.fields.SFMatrix4f(
@@ -621,7 +621,7 @@ x3dom.fields.SFMatrix4f.prototype.transpose = function() {
 /**
  * Returns a negated version of this matrix.
  *
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.negate = function() {
     return new x3dom.fields.SFMatrix4f(
@@ -636,7 +636,7 @@ x3dom.fields.SFMatrix4f.prototype.negate = function() {
  * Returns a scaled version of this matrix.
  *
  * @param {Number} s - scale factor
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.multiply = function(s) {
     return new x3dom.fields.SFMatrix4f(
@@ -651,7 +651,7 @@ x3dom.fields.SFMatrix4f.prototype.multiply = function(s) {
  * Returns the result of adding the given matrix to this matrix.
  *
  * @param {x3dom.fields.SFMatrix4f} that - the other matrix
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.add = function(that) {
     return new x3dom.fields.SFMatrix4f(
@@ -668,7 +668,7 @@ x3dom.fields.SFMatrix4f.prototype.add = function(that) {
  *
  * @param {x3dom.fields.SFMatrix4f} that - the other matrix
  * @param {Number} s - the scale factor
- * @return {x3dom.fields.SFMatrix4f} resulting matrix
+ * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.addScaled = function(that, s) {
     return new x3dom.fields.SFMatrix4f(
@@ -786,7 +786,7 @@ x3dom.fields.SFMatrix4f.prototype.at = function(i, j) {
 /**
  * Computes the square root of the matrix, assuming that its determinant is greater than zero.
  *
- * @return {SFMatrix4f} a matrix containing the result
+ * @returns {SFMatrix4f} a matrix containing the result
  */
 x3dom.fields.SFMatrix4f.prototype.sqrt = function() {
     var Y = x3dom.fields.SFMatrix4f.identity();
@@ -2929,7 +2929,7 @@ x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
 x3dom.fields.MFVec3f.prototype.setValues = function(vec3Array) {
     var i,
         n = Math.min(vec3Array.length, this.length);
-    
+
     for (i=0; i<n; i++) {
         this[i].setValues( vec3Array[i] )
     }
