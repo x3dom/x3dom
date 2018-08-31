@@ -313,7 +313,7 @@ x3dom.gfx_webgl = (function() {
             // Check if we need a new shader
             shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
-            if (!needFullReInit && shape._webgl.binaryGeometry == 0 && shape._webgl.bufferGeometry == 0)    // THINKABOUTME: What about PopGeo & Co.? {
+            if (!needFullReInit && shape._webgl.binaryGeometry == 0 && shape._webgl.bufferGeometry == 0) {   // THINKABOUTME: What about PopGeo & Co.? {
                 for (q = 0; q < shape._webgl.positions.length; q++) {
                     q6 = 6 * q;
 
