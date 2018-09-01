@@ -313,7 +313,8 @@ x3dom.gfx_webgl = (function() {
             // Check if we need a new shader
             shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
-            if (!needFullReInit && shape._webgl.binaryGeometry == 0 && shape._webgl.bufferGeometry == 0)    // THINKABOUTME: What about PopGeo & Co.? {
+            if (!needFullReInit && shape._webgl.binaryGeometry == 0 && shape._webgl.bufferGeometry == 0) {
+                // THINKABOUTME: What about PopGeo & Co.?
                 for (q = 0; q < shape._webgl.positions.length; q++) {
                     q6 = 6 * q;
 
@@ -1200,14 +1201,14 @@ x3dom.gfx_webgl = (function() {
                             texture.y = viewport.y;
                             texture.x = texture.x * ratio;
                         }
-                        
+
 						var scale       = viewport.divideComponents( texture );
 						var translation = texture.subtract( viewport ).multiply( 0.5 ).divideComponents( texture );
 					} else {
 						var scale       = new x3dom.fields.SFVec2f(1.0, 1.0);
 						var translation = new x3dom.fields.SFVec2f(0.0, 0.0);
 					}
-					
+
 					sp.scale = scale.toGL();
                     sp.translation = translation.toGL();
                 }
