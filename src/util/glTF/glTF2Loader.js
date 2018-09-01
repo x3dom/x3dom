@@ -27,32 +27,28 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     //Get the scene
     var scene = this._gltf.scenes[ sceneID ];
 
-
     // Get the nodes
     for( var i = 0; i < scene.nodes.length; i++ )
     {
         var node = this._gltf.nodes[ scene.nodes[ i ] ];
 
         this._traverseNodes(node, x3dScene, scene.nodes[ i ] );
-
     }
 
     //Get the animations
     var scope = this;
     if ( scope._gltf.animations )
     { 
-        scope._gltf.animations.forEach ( function (animation, a_i)
+        scope._gltf.animations.forEach( function( animation, a_i )
         {
-            var animation_length = _findLongestInput (animation);
+            var animation_length = _findLongestInput( animation );
             scope._generateX3DAnimationClock( x3dScene, animation_length, "ANI"+a_i );
-            animation.channels.forEach ( function (channel, c_i)
+            animation.channels.forEach ( function (channel, c_i )
             {
                 scope._generateX3DAnimation ( x3dScene, animation_length, animation.samplers[channel.sampler], channel.target, "ANI"+a_i,"CH"+c_i );
             });  
         });
     }
-
-    //console.log(x3dScene.cloneNode());
 
     return x3dScene;
 
