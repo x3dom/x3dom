@@ -9,26 +9,26 @@
 
 /* ### BinaryGeometry ### */
 x3dom.registerNodeType(
-    "BufferGeometryView",
+    "BufferView",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DNode,
-        
+
         /**
-         * Constructor for BufferGeometryView
-         * @constructs x3dom.nodeTypes.BufferGeometryView
+         * Constructor for BufferView
+         * @constructs x3dom.nodeTypes.BufferView
          * @x3d x.x
          * @component Geometry3D
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The BufferGeometryAccessor node is experimental.
+         * @classdesc The BufferAccessor node is experimental.
          */
         function (ctx) {
-            x3dom.nodeTypes.BufferGeometryView.superClass.call(this, ctx);
+            x3dom.nodeTypes.BufferView.superClass.call(this, ctx);
 
             /**
              * The buffer target vertex or index
              * @var {x3dom.fields.SFInt32} target
-             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 34962
              * @field x3dom
              * @instance
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
             /**
              * The buffer byteOffset
              * @var {x3dom.fields.SFInt32} byteOffset
-             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
             /**
              * The buffer byteStride
              * @var {x3dom.fields.SFInt32} byteStride
-             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
             /**
              * The buffer byteLength
              * @var {x3dom.fields.SFInt32} byteLength
-             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 0
              * @field x3dom
              * @instance
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
             /**
              * The buffer id
              * @var {x3dom.fields.SFInt32} id
-             * @memberof x3dom.nodeTypes.BufferGeometryView
+             * @memberof x3dom.nodeTypes.BufferView
              * @initvalue 0
              * @field x3dom
              * @instance

@@ -36,7 +36,7 @@
                 {"path": "MatrixMixer.js"},
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
-                {"path": "fields.js"},		
+                {"path": "fields.js"},
                 {"path": "Docs.js"},
                 {"path": "util/json/JSONParser.js"},
                 {"path": "util/json/PrototypeExpander.js"}
@@ -269,8 +269,8 @@
                     {"file": "ImageGeometry.js"},
                     {"file": "IndexedFaceSet.js"},
                     {"file": "BufferGeometry.js"},
-                    {"file": "BufferGeometryViews.js"},
-                    {"file": "BufferGeometryAccessor.js"}
+                    {"file": "BufferView.js"},
+                    {"file": "BufferAccessor.js"}
                 ]},
                 {"name": "Texturing3D", "filePrefix": "nodes/Texturing3D/", "files":[
                     {"file": "X3DTexture3DNode.js"},
@@ -381,13 +381,13 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
-                ]}              
+                ]}
             ]
 		},
 
 		{"group": "PHYSIC_EXTENSIONS",
             "data": [
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
                     {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},
@@ -408,7 +408,7 @@
 
         {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
-                    {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
+                    {"name": "Ammo", "filePrefix": "../lib/", "files":[
                         {"file": "ammo.js"}
                     ]}
             ]
