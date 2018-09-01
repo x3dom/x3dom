@@ -20,11 +20,10 @@ x3dom.registerNodeType(
          * @component Geometry3D
          * @extends x3dom.nodeTypes.X3DNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The BufferGAccessor node is experimental.
+         * @classdesc The BufferAccessor node is experimental.
          */
         function (ctx) {
             x3dom.nodeTypes.BufferAccessor.superClass.call(this, ctx);
-
 
             /**
              * The target vertex attribute or vertex index
