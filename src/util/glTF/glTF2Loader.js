@@ -95,6 +95,15 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
         } 
     }
 
+    if( node.camera != undefined )
+    {
+        var camera = this._gltf.cameras[node.camera];
+        var viewpoint = this._generateX3DViewpoint(camera);
+        viewpoint.setAttribute('DEF','glTFCamera' + node.camera);
+
+        x3dNode.appendChild(viewpoint);
+    }
+
     if ( node.name != undefined )
     {
         x3dNode.setAttribute( "id", node.name );
