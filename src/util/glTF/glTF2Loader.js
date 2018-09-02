@@ -177,7 +177,7 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
 {
     if (camera.type === 'orthographic') return this._generateX3DOrthoViewpoint(camera);
 
-    var viewpoint = document.createElement("Viewpoint");
+    var viewpoint = document.createElement("viewpoint");
 
     var fov   = camera.perspective.yfov  || 0.785398;
     var znear = camera.perspective.znear || -1;
