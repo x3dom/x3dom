@@ -70,7 +70,7 @@ x3dom.registerNodeType(
             this.addField_MFVec3f(ctx, 'displacements', []);
 
             // TODO displacement (add functionality e.g. via matrix palette skinning in shader)
-            x3dom.debug.logWarning("HAnimDisplacer NYI!");
+            x3dom.debug.logWarning("HAnimDisplacer in Segments NYI.");
         
         }
     )

@@ -1248,6 +1248,9 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
     var URL;
     var isDataURL = false;
     var bufferGeo = shape._cf.geometry.node;
+    var idxAccessor = null;
+    var posAccessor = null;
+    var needNormalComputation = true;
 
     // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
     shape._webgl.bufferGeometry = (bufferGeo._indexed) ? 1 : -1;
@@ -1270,15 +1273,18 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             switch(bufferType)
             {
                 case "INDEX":
+                    idxAccessor = accessor;
                     shape._webgl.indexType = componentType;
                     shape._indexOffset = byteOffset;
                     break;
                 case "POSITION":
+                    posAccessor = accessor;
                     shape._coordStrideOffset = [byteStride, byteOffset];
                     shape._webgl.coordType = componentType;
                     bufferGeo._mesh._numPosComponents = components;
                     break;
                 case "NORMAL":
+                    needNormalComputation = false;
                     shape._normalStrideOffset = [byteStride, byteOffset];
                     shape._webgl.normalType = componentType;
                     bufferGeo._mesh._numNormComponents = components;
@@ -1326,7 +1332,8 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             var byteOffset = view._vf.byteOffset;
             var byteLength = view._vf.byteLength;
 
-            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined)
+            if(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID] == undefined || 
+               !gl.isBuffer(x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers[bufferID]))
             {
                 var bufferData = new Uint8Array(arraybuffer, byteOffset, byteLength);
 
@@ -1341,6 +1348,153 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         }
     };
 
+    var getPositions = function(arraybuffer)
+    {
+        var positions
+
+        if(posAccessor)
+        {
+            var posView = bufferGeo._cf.views.nodes[posAccessor._vf.view];
+
+            var byteOffset = posAccessor._vf.byteOffset + posView._vf.byteOffset;
+            var byteLength = posAccessor._vf.count * posAccessor._vf.components;
+
+            if(posAccessor._vf.componentType == 5120)
+            {
+                positions = new Int8Array(arraybuffer, byteOffset, byteLength);
+            }
+            if(posAccessor._vf.componentType == 5121)
+            {
+                positions = new Uint8Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(posAccessor._vf.componentType == 5122)
+            {
+                positions = new Int16Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(posAccessor._vf.componentType == 5123)
+            {
+                positions = new Uint16Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(posAccessor._vf.componentType == 5125)
+            {
+                positions = new Uint32Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(posAccessor._vf.componentType == 5126)
+            {
+                positions = new Float32Array(arraybuffer, byteOffset, byteLength);
+            }
+        }
+
+        return positions;
+    };
+
+    var getIndices = function(arraybuffer)
+    {
+        var indices;
+
+        if(idxAccessor)
+        {
+            var idxView = bufferGeo._cf.views.nodes[idxAccessor._vf.view];
+
+            var byteOffset = idxAccessor._vf.byteOffset + idxView._vf.byteOffset;
+            var byteLength = idxAccessor._vf.count * idxAccessor._vf.components;
+
+            if(idxAccessor._vf.componentType == 5121)
+            {
+                indices = new Uint8Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(idxAccessor._vf.componentType == 5123)
+            {
+                indices = new Uint16Array(arraybuffer, byteOffset, byteLength);
+            }
+            else if(idxAccessor._vf.componentType == 5125)
+            {
+                indices = new Uint32Array(arraybuffer, byteOffset, byteLength);
+            }
+        }
+
+        return indices;
+    };
+
+    var computeNormals = function(arraybuffer)
+    {
+        if(needNormalComputation == false)
+        {
+            return;
+        }
+
+        var positions = getPositions(arraybuffer),
+            indices   = getIndices(arraybuffer),
+            normals   = new Float32Array(posAccessor._vf.count * 3);
+        
+        var vA = new x3dom.fields.SFVec3f(), 
+            vB = new x3dom.fields.SFVec3f(), 
+            vC = new x3dom.fields.SFVec3f();
+        
+        var ab = new x3dom.fields.SFVec3f(), 
+            cb = new x3dom.fields.SFVec3f();
+        
+        if ( indices )
+        {         
+            var i0, i1, i2;
+            
+            for ( var i = 0; i < indices.length; i += 3 )
+            {
+                i0 = indices[ i     ] * 3;
+                i1 = indices[ i + 1 ] * 3;
+                i2 = indices[ i + 2 ] * 3;
+                
+                vA.set( positions[ i0 ], positions[ i0 + 1 ], positions[ i0 + 2 ] );     
+                vB.set( positions[ i1 ], positions[ i1 + 1 ], positions[ i1 + 2 ] );
+                vC.set( positions[ i2 ], positions[ i2 + 1 ], positions[ i2 + 2 ] );
+                
+                ab = ab.subtractVectors( vA, vB );
+                cb = cb.subtractVectors( vC, vB );
+                cb = cb.cross( ab );
+
+                cb = cb.normalize();
+                
+                normals[ i0     ] = normals[ i1     ] = normals[ i2     ] = cb.x;
+                normals[ i0 + 1 ] = normals[ i1 + 1 ] = normals[ i2 + 1 ] = cb.y;
+                normals[ i0 + 2 ] = normals[ i1 + 2 ] = normals[ i2 + 2 ] = cb.z;
+            }
+        }
+        else if( positions )
+        {
+            for ( var i = 0; i < positions.length; i += 9 )
+            {              
+                vA.set( positions[ i     ], positions[ i + 1 ], positions[ i + 2 ] );     
+                vB.set( positions[ i + 3 ], positions[ i + 4 ], positions[ i + 5 ] );
+                vC.set( positions[ i + 6 ], positions[ i + 7 ], positions[ i + 8 ] );
+                
+                ab = ab.subtractVectors( vA, vB );
+                cb = cb.subtractVectors( vC, vB );
+                cb = cb.cross( ab );
+
+                cb = cb.normalize();
+                
+                normals[ i     ] = normals[ i + 3 ] = normals[ i + 6 ] = cb.x;
+                normals[ i + 1 ] = normals[ i + 4 ] = normals[ i + 7 ] = cb.y;
+                normals[ i + 2 ] = normals[ i + 5 ] = normals[ i + 8 ] = cb.z;          
+            }      
+        }
+
+        var buffer = gl.createBuffer();
+    
+        gl.bindBuffer(34962, buffer);
+        gl.bufferData(34962, normals, gl.STATIC_DRAW);
+        gl.bindBuffer(34962, null);
+
+        var bufferIdx = currContext.BUFFER_IDX[ "NORMAL" ];
+
+        shape._webgl.buffers[bufferIdx] = buffer;
+        shape._normalStrideOffset = [12, 0];
+        shape._webgl.normalType = 5126;
+        bufferGeo._mesh._numNormComponents = 3;
+
+        console.log(positions, indices, normals);
+    }
+
     if(bufferGeo._vf.buffer != "")
     {
         URL = shape._nameSpace.getURL(bufferGeo._vf.buffer);
@@ -1351,6 +1505,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
 
                 initBufferViews(arraybuffer);
                 initAccessors();
+                computeNormals(arraybuffer);
 
             });
         }
@@ -1378,6 +1533,8 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
                     initBufferViews(xhr.response);
 
                     initAccessors();
+
+                    computeNormals(xhr.response);
 
                     resolve(xhr.response);
                 

@@ -135,7 +135,7 @@ x3dom.registerNodeType(
                     this._indexOffset = [];
                     this._mesh._primType = 'TRIANGLESTRIP';
 
-                    var indexOffset = [ 0 ];
+                    var i, indexOffset = [ 0 ];
 
                     for (i=0; i<indexes.length; i++)
                     {
@@ -227,7 +227,8 @@ x3dom.registerNodeType(
                             n1 = p1;
                             n2 = p2;
                             n3 = p3;
-                        } else if (!normPerVert) {
+                        } else //if (!normPerVert)
+                        {
                             n1 = n2 = n3 = faceCnt;
                         }
 
@@ -239,7 +240,8 @@ x3dom.registerNodeType(
                             c1 = p1;
                             c2 = p2;
                             c3 = p3;
-                        } else if (!colPerVert) {
+                        } else //if (!colPerVert)
+                        {
                             c1 = c2 = c3 = faceCnt;
                         }
 
@@ -442,7 +444,8 @@ x3dom.registerNodeType(
                                     n1 = p1;
                                     n2 = p2;
                                     n3 = p3;
-                                } else if (!normPerVert) {
+                                } else //if (!normPerVert)
+                                {
                                     n1 = n2 = n3 = faceCnt;
                                 }
 
@@ -454,7 +457,8 @@ x3dom.registerNodeType(
                                     c1 = p1;
                                     c2 = p2;
                                     c3 = p3;
-                                } else if (!colPerVert) {
+                                } else //if (!colPerVert)
+                                {
                                     c1 = c2 = c3 = faceCnt;
                                 }
 
@@ -556,23 +560,23 @@ x3dom.registerNodeType(
 
                             this._mesh._positions[0] = positions.toGL();
 
-                            if (hasNormal) {
-                                this._mesh._normals[0] = normals.toGL();
-                            }
-                            else {
+                            //if (hasNormal) { // always false here, since true is above
+                            //    this._mesh._normals[0] = normals.toGL();
+                            //}
+                            //else {
                                 this._mesh.calcNormals(Math.PI);
-                            }
-                            if (hasTexCoord) {
-                                this._mesh._texCoords[0] = texCoords.toGL();
-                                this._mesh._numTexComponents = numTexComponents;
-                            }
-                            else {
+                            //}
+                            //if (hasTexCoord) { // always false here, since true is above
+                            //    this._mesh._texCoords[0] = texCoords.toGL();
+                            //    this._mesh._numTexComponents = numTexComponents;
+                            //}
+                            //else {
                                 this._mesh.calcTexCoords(texMode);
-                            }
-                            if (hasColor) {
-                                this._mesh._colors[0] = colors.toGL();
-                                this._mesh._numColComponents = numColComponents;
-                            }
+                            //}
+                            //if (hasColor) { // always false here, since true is above
+                            //    this._mesh._colors[0] = colors.toGL();
+                            //    this._mesh._numColComponents = numColComponents;
+                            //}
 
                         }
 
@@ -747,7 +751,7 @@ x3dom.registerNodeType(
                             this._mesh._texCoords[0].push(tex[t2].x);
                             this._mesh._texCoords[0].push(tex[t2].y);
                             if (numTexComponents === 3) {
-                                this._mesh._texCoords[0].tex(col[t2].z);
+                                this._mesh._texCoords[0].push(tex[t2].z);
                             }
                             this._mesh._texCoords[0].push(tex[t3].x);
                             this._mesh._texCoords[0].push(tex[t3].y);

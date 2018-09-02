@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -9,9 +9,14 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+/**
+ * Namespace container for Runtime module
+ * @namespace x3dom.runtime
+ */
+x3dom.runtime = {};
 
 /**
- * Class: x3dom.runtime
+ * Runtime
  *
  * Runtime proxy object to get and set runtime parameters. This object
  * is attached to each X3D element and can be used in the following manner:
@@ -20,48 +25,69 @@
  * > e.runtime.showAll();
  * > e.runtime.resetView();
  * > ...
+ *
+ * @param doc
+ * @param canvas
+ * @constructor
  */
-
-// Global runtime
-/**
- * Namespace container for Runtime module
- * @namespace x3dom.runtime
- */
-x3dom.runtime = {};
-
-/** c'tor */
 x3dom.Runtime = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
-    
     this.config = {};
     this.isReady = false;
-    
     this.fps = 0;
-      
+
+    this.VRMode = false;
+
     this.states = { measurements: [], infos: [] };
 };
 
-
+/**
+ * Add Measurement
+ *
+ * @param title
+ * @param value
+ */
 x3dom.Runtime.prototype.addMeasurement = function (title, value) {
     this.states.measurements[title] = value;
 };
 
+/**
+ * Remove Measurement
+ *
+ * @param title
+ */
 x3dom.Runtime.prototype.removeMeasurement = function (title) {
     if (this.states.measurements[title]) {
         delete this.states.measurements[title];
     }
 };
 
+/**
+ * Add Info
+ *
+ * @param title
+ * @param value
+ */
 x3dom.Runtime.prototype.addInfo = function (title, value) {
     this.states.infos[title] = value;
 };
 
+/**
+ * Remove Info
+ *
+ * @param title
+ */
 x3dom.Runtime.prototype.removeInfo = function (title) {
     delete this.states.infos[title];
 };
 
-
+/**
+ * Initialize
+ *
+ * @param doc
+ * @param canvas
+ */
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
@@ -70,15 +96,14 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     // format and structure needs to be decided.
     this.config = {};
     this.isReady = false;
-    
+
     this.fps = 0;
 };
-
 
 /**
  * APIFunction: noBackendFound
  *
- * This method is called once the system initialized and is not ready to 
+ * This method is called once the system initialized and is not ready to
  * render the first time because there is no backend found. By default this
  * method noop. You can however override it with your own implementation.
  *
@@ -86,8 +111,8 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
  * >    alert("Dingel Dingel Ding Dong...");
  * > }
  *
- * It is important to create this override before the document onLoad event has 
- * fired. Therefore putting it directly under the inclusion of x3dom.js is the 
+ * It is important to create this override before the document onLoad event has
+ * fired. Therefore putting it directly under the inclusion of x3dom.js is the
  * preferred way to ensure overloading of this function.
  */
 x3dom.Runtime.prototype.noBackendFound = function() {
@@ -165,8 +190,7 @@ x3dom.Runtime.prototype.exitFrame = function() {
 /**
  * APIFunction: triggerRedraw
  *
- * triggers a redraw of the scene
- *
+ * Triggers a redraw of the scene.
  */
 x3dom.Runtime.prototype.triggerRedraw = function() {
     this.canvas.doc.needRender = true;
@@ -185,11 +209,9 @@ x3dom.Runtime.prototype.triggerRedraw = function() {
  *   > bindable = element.runtime.getActiveBindable('background');
  *   > bindable.setAttribute('bind', 'false');
  *
- * Parameters:
- * 		typeName - Bindable type name
+ * @param typeName - Bindable type name
  *
- * Returns:
- * 		The active DOM element
+ * @returns The active DOM element
  */
 x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
     var stacks;
@@ -206,11 +228,11 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
         return null;
     }
 
-    for (i=0; i < stacks.length; i++) {
+    for (i = 0; i < stacks.length; i++) {
         current = stacks[i].getActive();
-            if (current._xmlNode !== undefined && x3dom.isa(current, type) ) {
-                result.push(current);
-            }
+        if (current._xmlNode !== undefined && x3dom.isa(current, type)) {
+            result.push(current);
+        }
     }
     return result[0] ? result[0]._xmlNode : null;
 };
@@ -218,8 +240,7 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
 /**
  * APIFunction: nextView
  *
- * Navigates tho the next viewpoint
- *
+ * Navigates to the next viewpoint.
  */
 x3dom.Runtime.prototype.nextView = function() {
     var stack = this.canvas.doc._scene.getViewpoint()._stack;
@@ -233,8 +254,7 @@ x3dom.Runtime.prototype.nextView = function() {
 /**
  * APIFunction: prevView
  *
- * Navigates tho the previous viewpoint
- *
+ * Navigates tho the previous viewpoint.
  */
 x3dom.Runtime.prototype.prevView = function() {
     var stack = this.canvas.doc._scene.getViewpoint()._stack;
@@ -250,8 +270,7 @@ x3dom.Runtime.prototype.prevView = function() {
  *
  * Returns the current viewpoint.
  *
- * Returns:
- * 		The viewpoint
+ * @returns The viewpoint
  */
 x3dom.Runtime.prototype.viewpoint = function() {
     return this.canvas.doc._scene.getViewpoint();
@@ -262,8 +281,7 @@ x3dom.Runtime.prototype.viewpoint = function() {
  *
  * Returns the current view matrix.
  *
- * Returns:
- * 		Matrix object
+ * @returns Matrix object
  */
 x3dom.Runtime.prototype.viewMatrix = function() {
     return this.canvas.doc._viewarea.getViewMatrix();
@@ -286,8 +304,7 @@ x3dom.Runtime.prototype.projectionMatrix = function() {
  *
  * Returns the current world to camera coordinates matrix.
  *
- * Returns:
- * 		Matrix object
+ * @returns Matrix object
  */
 x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function() {
     return this.canvas.doc._viewarea.getWCtoCCMatrix();
@@ -298,8 +315,7 @@ x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function() {
  *
  * Returns the current camera to world coordinates matrix.
  *
- * Returns:
- * 		Matrix object
+ * @returns Matrix object
  */
 x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
     return this.canvas.doc._viewarea.getCCtoWCMatrix();
@@ -310,8 +326,7 @@ x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
  *
  * Returns the viewing ray for a given (x, y) position.
  *
- * Returns:
- * 		Ray object
+ * @returns Ray object
  */
 x3dom.Runtime.prototype.getViewingRay = function(x, y) {
     return this.canvas.doc._viewarea.calcViewRay(x, y);
@@ -322,8 +337,10 @@ x3dom.Runtime.prototype.getViewingRay = function(x, y) {
  *
  * Returns pickPosition, pickNormal, and pickObject for a given (x, y) position.
  *
- * Returns:
- * 		{pickPosition, pickNormal, pickObject}
+ * @param x
+ * @param y
+ *
+ * @returns {{pickPosition: *, pickNormal: *, pickObject: null}}
  */
 x3dom.Runtime.prototype.shootRay = function(x, y) {
     var doc = this.canvas.doc;
@@ -332,16 +349,16 @@ x3dom.Runtime.prototype.shootRay = function(x, y) {
     doc.onPick(this.canvas.gl, x, y);
 
     return {
-        pickPosition: info.pickObj ? info.pickPos  : null,
-        pickNormal:   info.pickObj ? info.pickNorm : null,
-        pickObject:   info.pickObj ? info.pickObj._xmlNode : null
+        pickPosition: info.pickObj ? info.pickPos : null,
+        pickNormal: info.pickObj ? info.pickNorm : null,
+        pickObject: info.pickObj ? info.pickObj._xmlNode : null
     };
 };
 
 /**
  * Function: getWidth
  *
- * Returns the width of the canvas element.
+ * @returns the width of the canvas element.
  */
 x3dom.Runtime.prototype.getWidth = function() {
     return this.canvas.doc._viewarea._width;
@@ -364,7 +381,7 @@ x3dom.Runtime.prototype.getHeight = function() {
  */
 x3dom.Runtime.prototype.mousePosition = function(event) {
     var pos = this.canvas.mousePosition(event);
-    
+
     return [pos.x, pos.y];
 };
 
@@ -372,52 +389,55 @@ x3dom.Runtime.prototype.mousePosition = function(event) {
  * Function: calcCanvasPos
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ *
+ * @param wx
+ * @param wy
+ * @param wz
+ * @returns {*[]}
  */
 x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
-
     var DPR = window.devicePixelRatio || 1;
 
     var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
-    
+
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
     var pos = mat.multFullMatrixPnt(pnt);
-    
+
     var w = this.canvas.doc._viewarea._width / DPR;
     var h = this.canvas.doc._viewarea._height / DPR;
-    
+
     var x = Math.round((pos.x + 1) * (w - 1) / 2);
     var y = Math.round((h - 1) * (1 - pos.y) / 2);
-    
+
     return [x, y];
 };
 
 /**
  * Function: getBBoxPoints
  *
- * Returns the eight point of the scene bounding box
+ * @returns The eight point of the scene bounding box
  */
 x3dom.Runtime.prototype.getBBoxPoints = function() {
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
     return [
-        {x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMin.z},
-        {x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMin.z},
-        {x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMin.z},
-        {x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMin.z},
-        {x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMax.z},
-        {x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMax.z},
-        {x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMax.z},
-        {x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMax.z},
+        { x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMin.z },
+        { x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMin.z },
+        { x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMin.z },
+        { x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMin.z },
+        { x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMax.z },
+        { x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMax.z },
+        { x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMax.z },
+        { x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMax.z },
     ];
 
 };
 
-
-    /**
+/**
  * Function: calcPagePos
  *
- * Returns the 2d rect of the scene volume
+ * @returns The 2d rect of the scene volume
  */
 x3dom.Runtime.prototype.getSceneBRect = function() {
     var min = { x: Number.MAX_VALUE, y: Number.MAX_VALUE };
@@ -425,15 +445,14 @@ x3dom.Runtime.prototype.getSceneBRect = function() {
 
     var points = this.getBBoxPoints();
 
-    for ( var i = 0; i < points.length; i++ )
-    {
+    for (var i = 0; i < points.length; i++) {
         var pos2D = this.calcCanvasPos(points[i].x, points[i].y, points[i].z);
 
-        min.x = ( pos2D[0] <  min.x ) ? pos2D[0] : min.x;
-        min.y = ( pos2D[1] <  min.y ) ? pos2D[1] : min.y;
+        min.x = (pos2D[0] < min.x) ? pos2D[0] : min.x;
+        min.y = (pos2D[1] < min.y) ? pos2D[1] : min.y;
 
-        max.x = ( pos2D[0] >  max.x ) ? pos2D[0] : max.x;
-        max.y = ( pos2D[1] >  max.y ) ? pos2D[1] : max.y;
+        max.x = (pos2D[0] > max.x) ? pos2D[0] : max.x;
+        max.y = (pos2D[1] > max.y) ? pos2D[1] : max.y;
     }
 
     var rect = {
@@ -449,8 +468,13 @@ x3dom.Runtime.prototype.getSceneBRect = function() {
 /**
  * Function: calcClientPos
  *
- * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] 
+ * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy]
  * for a given point [wx, wy, wz] in world coordinates.
+ *
+ * @param wx
+ * @param wy
+ * @param wz
+ * @returns {*}
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
     var elem = this.canvas.canvas.offsetParent;
@@ -464,16 +488,16 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
     var mousePos = this.calcCanvasPos(wx, wy, wz);
 
     var compStyle = document.defaultView.getComputedStyle(elem, null);
-	
-	var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
-	var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
-		
-	var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
-	var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
-	
-	var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
+
+    var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
+    var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
+
+    var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
+    var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
+
+    var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
     var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
-    
+
     return [x, y];
 };
 
@@ -482,34 +506,32 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
  *
  * Returns a Base64 encoded png image consisting of the current rendering.
  *
- * Returns:
- * 		The Base64 encoded PNG image string
+ * @eturns The Base64 encoded PNG image string
  */
 x3dom.Runtime.prototype.getScreenshot = function() {
-	var url = "";
-	var backend = this.canvas.backend;
-	var canvas = this.canvas.canvas;
+    var url = "";
+    var backend = this.canvas.backend;
+    var canvas = this.canvas.canvas;
 
-	if(canvas) {
-		if(backend == "flash") {
-			url = canvas.getScreenshot();
-		}
-		else {
-			// first flip along y axis
-			var canvas2d = document.createElement("canvas");
-			canvas2d.width = canvas.width;
-			canvas2d.height = canvas.height;
+    if (canvas) {
+        if (backend == "flash") {
+            url = canvas.getScreenshot();
+        } else {
+            // first flip along y axis
+            var canvas2d = document.createElement("canvas");
+            canvas2d.width = canvas.width;
+            canvas2d.height = canvas.height;
 
-			var ctx = canvas2d.getContext("2d");
-			ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-			ctx.scale(1, -1);
-			ctx.translate(0, -canvas.height);
+            var ctx = canvas2d.getContext("2d");
+            ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+            ctx.scale(1, -1);
+            ctx.translate(0, -canvas.height);
 
-			url = canvas2d.toDataURL();
-		}
-	}
-	
-	return url;
+            url = canvas2d.toDataURL();
+        }
+    }
+
+    return url;
 };
 
 /**
@@ -517,8 +539,7 @@ x3dom.Runtime.prototype.getScreenshot = function() {
  *
  * Returns the internal canvas element (only valid for WebGL backend)
  *
- * Returns:
- * 		The internal canvas element
+ * @returns The internal canvas element
  */
 x3dom.Runtime.prototype.getCanvas = function() {
     return this.canvas.canvas;
@@ -529,8 +550,7 @@ x3dom.Runtime.prototype.getCanvas = function() {
  *
  * Returns the current light matrix.
  *
- * Returns:
- * 		The light matrix
+ * @returns The light matrix
  */
 x3dom.Runtime.prototype.lightMatrix = function() {
     this.canvas.doc._viewarea.getLightMatrix();
@@ -540,7 +560,6 @@ x3dom.Runtime.prototype.lightMatrix = function() {
  * APIFunction: resetView
  *
  * Resets the view to initial.
- *
  */
 x3dom.Runtime.prototype.resetView = function() {
     this.canvas.doc._viewarea.resetView();
@@ -551,13 +570,12 @@ x3dom.Runtime.prototype.resetView = function() {
  *
  * Navigates to the first light, if any.
  *
- * Returns:
- * 		True if navigation was possible, false otherwise.
+ * @returns True if navigation was possible, false otherwise.
  */
 x3dom.Runtime.prototype.lightView = function() {
     if (this.canvas.doc._nodeBag.lights.length > 0) {
         this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0],
-                                            this.canvas.doc._scene.getViewpoint());
+            this.canvas.doc._scene.getViewpoint());
         return true;
     } else {
         x3dom.debug.logInfo("No lights to navigate to.");
@@ -569,7 +587,6 @@ x3dom.Runtime.prototype.lightView = function() {
  * APIFunction: uprightView
  *
  * Navigates to upright view
- *
  */
 x3dom.Runtime.prototype.uprightView = function() {
     this.canvas.doc._viewarea.uprightView();
@@ -580,12 +597,9 @@ x3dom.Runtime.prototype.uprightView = function() {
  *
  * Zooms so that all objects are fully visible. Without change the actual Viewpoint orientation
  *
- * Parameter:
- *     updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
- *
+ * @param updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set.
  */
-x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
-{
+x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation) {
     if (updateCenterOfRotation === undefined) {
         updateCenterOfRotation = true;
     }
@@ -601,14 +615,11 @@ x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation)
  *
  * Zooms so that a given object are fully visible. Without change the actual Viewpoint orientation
  *
- * Parameter:
- *     updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
- *
+ * @param obj
+ * @param updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
  */
-x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
-{
-    if (obj && obj._x3domNode)
-    {
+x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation) {
+    if (obj && obj._x3domNode) {
         if (updateCenterOfRotation === undefined) {
             updateCenterOfRotation = true;
         }
@@ -624,12 +635,11 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
         min = mat.multMatrixPnt(min);
         max = mat.multMatrixPnt(max);
 
-        //TODO: revise separation of "getVolume" and "getCurrentTransform"
+        // TODO: revise separation of "getVolume" and "getCurrentTransform"
         //      for the transform nodes - currently, both "overlap" because
         //      both include the transform's own matrix
         //      but which is what you usually expect from both methods...
-        if (x3dom.isa(obj._x3domNode, x3dom.nodeTypes.X3DTransformNode))
-        {
+        if (x3dom.isa(obj._x3domNode, x3dom.nodeTypes.X3DTransformNode)) {
             var invMat = obj._x3domNode._trafo.inverse();
             min = invMat.multMatrixPnt(min);
             max = invMat.multMatrixPnt(max);
@@ -644,10 +654,8 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation)
  *
  * Zooms so that all objects are fully visible.
  *
- * Parameter:
- *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
- *     updateCenterOfRotation - sets the center of rotation to the center of the scene volume
- *
+ * @param axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ * @param updateCenterOfRotation - sets the center of rotation to the center of the scene volume
  */
 x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
     this.canvas.doc._viewarea.showAll(axis, updateCenterOfRotation);
@@ -658,14 +666,12 @@ x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
  *
  * Zooms so that a given object is fully visible in the middle of the screen.
  *
- * Parameter:
- *     obj  - the scene-graph element on which to focus
- *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ * @param obj  - the scene-graph element on which to focus
+ * @param axis - the axis as string: posX, negX, posY, negY, posZ, negZ
  */
-x3dom.Runtime.prototype.showObject = function(obj, axis)
-{
-    if (obj && obj._x3domNode)
-    {
+x3dom.Runtime.prototype.showObject = function(obj, axis) {
+    if (obj && obj._x3domNode) {
+        if (axis === undefined) axis = "negZ";
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
 
@@ -681,12 +687,11 @@ x3dom.Runtime.prototype.showObject = function(obj, axis)
 
         // assume FOV_smaller as camera's fovMode
         var focalLen = (viewarea._width < viewarea._height) ?
-                        viewarea._width : viewarea._height;
+            viewarea._width : viewarea._height;
 
         var n0;    // facingDir
 
-        switch( axis )
-        {
+        switch(axis) {
             case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0); break;
             case "negX": n0 = new x3dom.fields.SFVec3f(-1,  0,  0); break;
             case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0); break;
@@ -748,19 +753,16 @@ x3dom.Runtime.prototype.showObject = function(obj, axis)
  *
  * Returns the center of a X3DShapeNode or X3DGeometryNode.
  *
- * Parameters:
- *    domNode: the node for which its center shall be returned
+ * @param domNode - the node for which its center shall be returned
  *
- *  Returns:
- *    Node center (or null if no Shape or Geometry)
+ * @returns Node center (or null if no Shape or Geometry)
  */
 x3dom.Runtime.prototype.getCenter = function(domNode) {
     if (domNode && domNode._x3domNode &&
-        (this.isA(domNode, "X3DShapeNode") || this.isA(domNode, "X3DGeometryNode")))
-    {
+        (this.isA(domNode, "X3DShapeNode") || this.isA(domNode, "X3DGeometryNode"))) {
         return domNode._x3domNode.getCenter();
     }
-    
+
     return null;
 };
 
@@ -769,18 +771,15 @@ x3dom.Runtime.prototype.getCenter = function(domNode) {
  *
  * Returns the current to world transformation of a node.
  *
- * Parameters:
- *    domNode: the node for which its transformation shall be returned
+ * @param domNode - the node for which its transformation shall be returned
  *
- *  Returns:
- *    Transformation matrix (or null no valid node is given)
+ * @returns Transformation matrix (or null no valid node is given)
  */
 x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
-    if (domNode && domNode._x3domNode)
-    {
+    if (domNode && domNode._x3domNode) {
         return domNode._x3domNode.getCurrentTransform();
     }
-    
+
     return null;
 };
 
@@ -789,15 +788,12 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *
  * Returns the bounding box of a node.
  *
- * Parameters:
- *    domNode: the node for which its volume shall be returned
+ * @param domNode - the node for which its volume shall be returned
  *
- *  Returns:
- *    The min and max positions of the node's bounding box.
+ * @returns The min and max positions of the node's bounding box.
  */
 x3dom.Runtime.prototype.getBBox = function(domNode) {
-    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject"))
-    {
+    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject")) {
         var vol = domNode._x3domNode.getVolume();
 
         return {
@@ -814,13 +810,12 @@ x3dom.Runtime.prototype.getBBox = function(domNode) {
  *
  * Returns the bounding box of the scene.
  *
- *  Returns:
- *    The min and max positions of the scene's bounding box.
+ * @returns The min and max positions of the scene's bounding box.
  */
 x3dom.Runtime.prototype.getSceneBBox = function() {
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
-    
+
     return {
         min: x3dom.fields.SFVec3f.copy(scene._lastMin),
         max: x3dom.fields.SFVec3f.copy(scene._lastMax)
@@ -833,28 +828,25 @@ x3dom.Runtime.prototype.getSceneBBox = function() {
  * Displays or hides the debug window. If parameter is omitted,
  * the current visibility status is returned.
  *
- * Parameter:
- *     show - true to show debug window, false to hide
+ * @param show - true to show debug window, false to hide
  *
- * Returns:
- *     Current visibility status of debug window (true=visible, false=hidden)
+ * @returns Current visibility status of debug window (true=visible, false=hidden)
  */
 x3dom.Runtime.prototype.debug = function(show) {
     var doc = this.canvas.doc;
-    if (doc._viewarea._visDbgBuf === undefined)
+    if (doc._viewarea._visDbgBuf === undefined) {
         doc._viewarea._visDbgBuf = (doc._x3dElem.getAttribute("showLog") === 'true');
+    }
 
     if (arguments.length > 0) {
         if (show === true) {
             doc._viewarea._visDbgBuf = true;
             x3dom.debug.logContainer.style.display = "block";
-        }
-        else {
+        } else {
             doc._viewarea._visDbgBuf = false;
             x3dom.debug.logContainer.style.display = "none";
         }
-    }
-    else {
+    } else {
         doc._viewarea._visDbgBuf = !doc._viewarea._visDbgBuf;
         x3dom.debug.logContainer.style.display = (doc._viewarea._visDbgBuf == true) ? "block" : "none";
     }
@@ -868,8 +860,7 @@ x3dom.Runtime.prototype.debug = function(show) {
  *
  * Readout of the currently active navigation.
  *
- * Returns:
- *     A string representing the active navigation type
+ * @returns A string representing the active navigation type
  */
 x3dom.Runtime.prototype.navigationType = function() {
     return this.canvas.doc._scene.getNavigationInfo().getType();
@@ -969,16 +960,16 @@ x3dom.Runtime.prototype.helicopter = function() {
  *
  * Resets all variables required by examine mode to init state
  */
- x3dom.Runtime.prototype.resetExamin = function() {
+x3dom.Runtime.prototype.resetExamin = function() {
     var viewarea = this.canvas.doc._viewarea;
     viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
     viewarea._needNavigationMatrixUpdate = true;
     this.canvas.doc.needRender = true;
- };
- 
- /**
+};
+
+/**
  * APIFunction: disableKeys
  *
  * Disable keys
@@ -987,7 +978,7 @@ x3dom.Runtime.prototype.disableKeys = function() {
     this.canvas.disableKeys = true;
 };
 
- /**
+/**
  * APIFunction: enableKeys
  *
  * Enable keys
@@ -996,7 +987,7 @@ x3dom.Runtime.prototype.enableKeys = function() {
     this.canvas.disableKeys = false;
 };
 
- /**
+/**
  * APIFunction: disableLeftDrag
  *
  * Disable left drag
@@ -1005,7 +996,7 @@ x3dom.Runtime.prototype.disableLeftDrag = function() {
     this.canvas.disableLeftDrag = true;
 };
 
- /**
+/**
  * APIFunction: enableLeftDrag
  *
  * Enable left drag
@@ -1014,7 +1005,7 @@ x3dom.Runtime.prototype.enableLeftDrag = function() {
     this.canvas.disableLeftDrag = false;
 };
 
- /**
+/**
  * APIFunction: disableRightDrag
  *
  * Disable right drag
@@ -1023,7 +1014,7 @@ x3dom.Runtime.prototype.disableRightDrag = function() {
     this.canvas.disableRightDrag = true;
 };
 
- /**
+/**
  * APIFunction: enableRightDrag
  *
  * Enable right drag
@@ -1032,7 +1023,7 @@ x3dom.Runtime.prototype.enableRightDrag = function() {
     this.canvas.disableRightDrag = false;
 };
 
- /**
+/**
  * APIFunction: disableMiddleDrag
  *
  * Disable middle drag
@@ -1041,7 +1032,7 @@ x3dom.Runtime.prototype.disableMiddleDrag = function() {
     this.canvas.disableMiddleDrag = true;
 };
 
- /**
+/**
  * APIFunction: enableMiddleDrag
  *
  * Enable right drag
@@ -1054,6 +1045,9 @@ x3dom.Runtime.prototype.enableMiddleDrag = function() {
  * Function: togglePoints
  *
  * Toggles points attribute
+ *
+ * @param lines
+ * @returns {*}
  */
 x3dom.Runtime.prototype.togglePoints = function(lines) {
     var doc = this.canvas.doc;
@@ -1068,8 +1062,14 @@ x3dom.Runtime.prototype.togglePoints = function(lines) {
 /**
  * Function: pickRect
  *
- * Returns an array of all shape elements that are within the picked rectangle 
+ * Returns an array of all shape elements that are within the picked rectangle
  * defined by (x1, y1) and (x2, y2) in canvas coordinates
+ *
+ * @param x1
+ * @param y1
+ * @param x2
+ * @param y2
+ * @returns {*}
  */
 x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
     return this.canvas.doc.onPickRect(this.canvas.gl, x1, y1, x2, y2);
@@ -1080,12 +1080,10 @@ x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
  *
  * Get the current pickMode intersect type
  *
- * Parameters:
- *		internal - true/false. If given return the internal representation.
+ * @param internal - true/false. If given return the internal representation.
  *                 Only use for debugging.
  *
- * Returns:
- * 		The current intersect type value suitable to use with changePickMode
+ * @returns The current intersect type value suitable to use with changePickMode
  *      If parameter is, given, provide with internal representation.
  */
 x3dom.Runtime.prototype.pickMode = function(options) {
@@ -1101,11 +1099,9 @@ x3dom.Runtime.prototype.pickMode = function(options) {
  * Alter the value of intersect type. Can be one of: box, idBuf, idBuf24, idBufId, color, texCoord.
  * Other values are ignored.
  *
- * Parameters:
- *		type - The new intersect type: box, idBuf, idBuf24, idBufId, color, texCoord
+ * @param type - The new intersect type: box, idBuf, idBuf24, idBufId, color, texCoord
  *
- * Returns:
- * 		true if the type has been changed, false otherwise
+ * @returns true if the type has been changed, false otherwise
  */
 x3dom.Runtime.prototype.changePickMode = function(type) {
     // pick type one of : box, idBuf, idBuf24, idBufId, color, texCoord
@@ -1135,13 +1131,11 @@ x3dom.Runtime.prototype.changePickMode = function(type) {
 /**
  * APIFunction: speed
  *
- *	Get the current speed value. If parameter is given the new speed value is set.
+ * Get the current speed value. If parameter is given the new speed value is set.
  *
- * Parameters:
- *		newSpeed - The new speed value (optional)
+ * @param newSpeed - The new speed value (optional)
  *
- * Returns:
- * 		The current speed value
+ * @returns The current speed value
  */
 x3dom.Runtime.prototype.speed = function(newSpeed) {
     var navi = this.canvas.doc._scene.getNavigationInfo();
@@ -1155,11 +1149,9 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
 /**
  * APIFunction: zoom
  *
- *	Modifies the zoom of current viewpoint with the specified zoom value.
+ * Modifies the zoom of current viewpoint with the specified zoom value.
  *
- * Parameters:
- *		zoomAmount - The zoom amount
- *
+ * @param zoomAmount - The zoom amount
  */
 x3dom.Runtime.prototype.zoom = function(zoomAmount) {
     this.canvas.doc._viewarea.zoom( zoomAmount );
@@ -1172,11 +1164,9 @@ x3dom.Runtime.prototype.zoom = function(zoomAmount) {
  * Get or set statistics info. If parameter is omitted, this method
  * only returns the the visibility status of the statistics info overlay.
  *
- * Parameters:
- *		mode - true or false. To enable or disable the statistics info
+ * @param mode - true or false. To enable or disable the statistics info
  *
- * Returns:
- * 		The current visibility of the statistics info (true = visible, false = invisible)
+ * @returns The current visibility of the statistics info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.statistics = function(mode) {
     var states = this.canvas.stateViewer;
@@ -1185,12 +1175,10 @@ x3dom.Runtime.prototype.statistics = function(mode) {
         if (mode === true) {
             states.display(mode);
             return true;
-        }
-        else if (mode === false) {
+        } else if (mode === false) {
             states.display(mode);
             return false;
-        }
-        else {
+        } else {
             states.display(!states.active);
             // if no parameter is given return current status (false = not visible, true = visible)
             return states.active;
@@ -1205,11 +1193,9 @@ x3dom.Runtime.prototype.statistics = function(mode) {
  * Enable or disable the process indicator. If parameter is omitted, this method
  * only returns the the visibility status of the progress bar overlay.
  *
- * Parameters:
- *		mode - true or false. To enable or disable the progress indicator
+ * @param mode - true or false. To enable or disable the progress indicator
  *
- * Returns:
- * 		The current visibility of the progress indicator info (true = visible, false = invisible)
+ * @returns The current visibility of the progress indicator info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.processIndicator = function(mode) {
     var processDiv = this.canvas.progressDiv;
@@ -1217,8 +1203,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
         if (mode === true) {
             processDiv.style.display = 'inline';
             return true;
-        }
-        else if (mode === false) {
+        } else if (mode === false) {
             processDiv.style.display = 'none';
             return false;
         }
@@ -1229,21 +1214,32 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
     return false;
 };
 
-/** Get properties */
+/**
+ * Get properties
+ *
+ * @returns {*}
+ */
 x3dom.Runtime.prototype.properties = function() {
     return this.canvas.doc.properties;
 };
 
-/** Get current backend name */
+/**
+ * Get current backend name
+ *
+ * @returns {*}
+ */
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
 };
 
-/** Get current framerate */
+/**
+ * Get current framerate
+ *
+ * @returns {number}
+ */
 x3dom.Runtime.prototype.getFPS = function() {
     return this.fps;
 };
-
 
 /**
  * APIMethod isA
@@ -1251,24 +1247,22 @@ x3dom.Runtime.prototype.getFPS = function() {
  * Test a DOM node object against a node type string. This method
  * can be used to determine the "type" of a DOM node.
  *
- * Parameters:
- *    domNode: the node to test for
- *    nodeType: node name to test domNode against
+ * @param domNode - the node to test for
+ * @param nodeType - node name to test domNode against
  *
- *  Returns:
- *    True or false
+ * @returns True or false
  */
 x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
     var inherits = false;
-    
+
     if (nodeType && domNode && domNode._x3domNode) {
         if (nodeType === "") {
             nodeType = "X3DNode";
         }
-        inherits = x3dom.isa(domNode._x3domNode, 
-                             x3dom.nodeTypesLC[nodeType.toLowerCase()]);
+        inherits = x3dom.isa(domNode._x3domNode,
+            x3dom.nodeTypesLC[nodeType.toLowerCase()]);
     }
-    
+
     return inherits;
 };
 
@@ -1278,24 +1272,21 @@ x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
  * Returns the virtual scale of one pixel for the current orthographic viewpoint.
  * The returned vector contains scale values for the x and y direction. The z value is always null.
  *
- * Parameters:
- *
- *  Returns:
- *    x3dom.fields.SFVec3f or null if non orthographic view
+ * @returns x3dom.fields.SFVec3f or null if non orthographic view
  */
-x3dom.Runtime.prototype.getPixelScale = function(){
+x3dom.Runtime.prototype.getPixelScale = function() {
     var vp = this.viewpoint();
-    if(!x3dom.isa(vp, x3dom.nodeTypes.OrthoViewpoint)){
+    if (!x3dom.isa(vp, x3dom.nodeTypes.OrthoViewpoint)) {
         x3dom.debug.logError("getPixelScale is only implemented for orthographic Viewpoints");
         return null;
     }
 
     var zoomLevel = vp.getZoom();
-    
-    var left   = zoomLevel[0];
+
+    var left = zoomLevel[0];
     var bottom = zoomLevel[1];
-    var right  = zoomLevel[2];
-    var top    = zoomLevel[3];
+    var right = zoomLevel[2];
+    var top = zoomLevel[3];
 
     var x = right - left;
     var y = top - bottom;
@@ -1303,21 +1294,63 @@ x3dom.Runtime.prototype.getPixelScale = function(){
     var pixelScaleX = x / this.getWidth();
     var pixelScaleY = y / this.getHeight();
 
-    return new x3dom.fields.SFVec3f(pixelScaleX,pixelScaleY,0.0);
+    return new x3dom.fields.SFVec3f(pixelScaleX, pixelScaleY, 0.0);
 };
 
+/**
+ * APIMethod onAnimationStarted
+ *
+ */
 x3dom.Runtime.prototype.onAnimationStarted = function() {
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
 };
 
+/**
+ * APIMethod onAnimationFinished
+ *
+ */
 x3dom.Runtime.prototype.onAnimationFinished = function() {
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
 };
 
-x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
-{
+x3dom.Runtime.prototype.enterVR = function() {
+
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.requestPresent([{ source: this.canvas.canvas }]).then(function() {
+            this.canvas.doc.needRender = true;
+        }.bind(this));
+    }
+};
+
+x3dom.Runtime.prototype.exitVR = function() {
+    if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.exitPresent();
+    }
+};
+
+x3dom.Runtime.prototype.toggleVR = function() {
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.enterVR();
+    }
+    else if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.exitVR();
+    }
+};
+
+/**
+ * APIMethod toggleProjection
+ *
+ * @param perspViewID
+ * @param orthoViewID
+ * @returns {number}
+ */
+x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID ) {
     var dist;
     var factor = 2.2;
     var runtime = document.getElementById("x3d").runtime;
@@ -1339,8 +1372,7 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
         dist = persp._viewMatrix.e3().length() / factor;
 
         ortho.setZoom(dist);
-    }
-    else if (ortho._vf.isActive) {
+    } else if (ortho._vf.isActive) {
         persp._viewMatrix = ortho._viewMatrix;
 
         document.getElementById(perspViewID).setAttribute("set_bind", "true");
@@ -1358,4 +1390,160 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID )
     persp._bindAnimation = true;
 
     return (persp._vf.isActive) ? 0 : 1;
+};
+
+/**
+ * APIFunction: replaceWorld
+ *
+ * Replaces the current scene element
+ *
+ * For example:
+ *   > var element, x3d, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * @param scene - scene element to substitute
+ *
+ * @note replaceWorld replaces the current x3d element. It is
+ *       therefore necessary to get the replaced x3d element
+ *       each time to access the new runtime.
+ */
+x3dom.Runtime.prototype.replaceWorld = function(scene) {
+    var x3dElement = this.doc.cloneNode(false);
+    var child, name;
+    while (child = scene.firstChild) {
+        name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
+        if (name == 'HEAD' || name == 'SCENE') x3dElement.appendChild(child);
+        else {
+            child.remove();
+        }
+    }
+    this.doc.parentNode.replaceChild(x3dElement, this.doc);
+    this.doc = x3dElement;
+    x3dom.reload();
+    return;
+};
+
+/**
+ * APIFunction: createX3DFromJS
+ *
+ * Creates a x3d element from a JSON JavaScript X3D object
+ *
+ * For example:
+ *   > var element, x3d, jsobject, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromJS(jsobject, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * @param jsobject - JavaScript JSON object of X3D object
+ * @param optionalURL - if specified, does a PROTO expansion on jsobject.
+ *                      JSON ExternProtoDeclare's are loaded relative to this URL.
+ *
+ * @returns The x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
+    if (optionalURL) {
+        jsobject = x3dom.protoExpander.prototypeExpander(optionalURL, jsobject);
+    }
+    var jsonParser = new x3dom.JSONParser();
+    return jsonParser.parseJavaScript(jsobject);
+};
+
+/**
+ * APIFunction: createX3DFromString
+ *
+ * Creates a x3d element from a JSON or XML String
+ *
+ * For example:
+ *
+ *   > var element, x3d, jsonOrXML, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromString(jsonOrXML, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * @param jsonOrXML - JSON or XML of X3D object
+ * @param optionalURL - if specified, does a PROTO expansion on json.
+ * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *
+ * @returns The x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
+    try {
+        var jsobject = JSON.parse(jsonOrXML);
+        return this.createX3DFromJS(jsobject, optionalURL);
+    } catch (e) {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(jsonOrXML, 'application/xml');
+        var scene = doc.querySelector('X3D');
+        if (scene == null) {
+            doc = parser.parseFromString(jsonOrXML, 'text/html');
+            scene = doc.querySelector('X3D');
+        }
+        return scene;
+    }
+};
+
+/**
+ * APIFunction: createX3DFromURLPromise
+ *
+ * Creates a Promise resolved to the x3d element from a Url
+ *
+ * For example:
+ *   > var element, x3d, json, optionalUrl;
+ *   > element = document.getElementById('the_x3delement');
+ *   > x3d = element.runtime.createX3DFromURK(Url, optionalUrl);
+ *   > element.runtime.replaceWorld(x3d);
+ *
+ * @param url - url of XML or JSON of X3D object
+ * @param optionalURL - if specified, does a PROTO expansion on json, only.
+ * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *
+ * @returns A Promise resolved to the x3d element
+ */
+x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
+    this.canvas.doc.downloadCount++;
+    that = this;
+    return fetch(url)
+        .then(function(r) { return r.text(); })
+        .then(function(text) {
+            that.canvas.doc.downloadCount--;
+            return that.createX3DFromString(text, optionalURL);
+        })
+        .catch(function(r) {
+            that.canvas.doc.downloadCount--;
+            x3dom.debug.logError('fetch failed: ' + r);
+            return null;
+        });
+};
+
+/**
+ * APIFunction: loadURL
+ *
+ * loads asynchronuously a scene from a URL with json or xml content.
+ * The function returns before the world is loaded. Use events or .ready
+ * to determine when the scene is available.
+ * For more control use .createX3DFromURLPromise(url, optionalURL).
+ *
+ * Example:
+ *   > var element, url , optionalUrl;
+ *   > element.runtime.loadURL(url, optionalUrl);
+ *
+ * @param url - url of XML or JSON of X3D object
+ * @param optionalURL - if specified, does a PROTO expansion on json, only.
+ * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *
+ * @returns undefined
+ *
+ * @note replaceWorld replaces the current x3d element. It is
+ *       therefore necessary to get the replaced x3d element
+ *       each time to access the new runtime.
+ */
+x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
+    that = this;
+    this.createX3DFromURLPromise(url, optionalURL)
+        .then(function(x3d) {
+            if (x3d != null) that.replaceWorld(x3d);
+            else x3dom.debug.logError("loadURL: could not fetch or parse " + url);
+        });
 };

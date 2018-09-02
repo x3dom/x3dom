@@ -192,6 +192,27 @@ x3dom.registerNodeType(
                             this._vf.sortType = 'opaque';
                         }
                     }
+                    else if(x3dom.isa(this._cf.material.node, x3dom.nodeTypes.PhysicalMaterial))
+                    {
+                        var material = this._cf.material.node;
+
+                        if(material._vf.alphaMode == "OPAQUE")
+                        {
+                            this._vf.sortType = 'opaque';
+                        }
+                        else if(material._vf.alphaMode == "BLEND" || material._vf.alphaMode == "MASK")
+                        {
+                            this._vf.sortType = 'transparent';
+                        }
+
+                        var baseColorTexture = material._cf.baseColorTexture.node;
+
+                        if(this._vf.sortType == 'opaque' && baseColorTexture && baseColorTexture._vf.url.length && 
+                           baseColorTexture._vf.url[0].toLowerCase().indexOf('.png') >= 0)
+                        {
+                            this._vf.sortType = 'transparent';
+                        }
+                    }
                     else {
                         this._vf.sortType = 'opaque';
                     }

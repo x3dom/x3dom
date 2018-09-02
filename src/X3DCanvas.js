@@ -47,6 +47,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 
     this.doc = null;
 
+    this.vrDisplay = null;
+    this.vrFrameData = null;
+
     this.devicePixelRatio = window.devicePixelRatio || 1;
 
     this.lastMousePos = { x: 0, y: 0 };
@@ -146,6 +149,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.progressDiv = this._createProgressDiv();
     this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
     this.x3dElem.appendChild(this.progressDiv);
+
+    // vr button
+    this.vrDiv = this._createVRDiv();
+    this.x3dElem.appendChild(this.vrDiv);
 
     // touch visualization
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
@@ -350,6 +357,33 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         this.parent.doc.needRender = true;
     }
 
+    this.onVrDisplayPresentChange = function(evt) {
+        if(this.vrDisplay && this.vrDisplay.isPresenting)
+        {
+            var leftEye = this.vrDisplay.getEyeParameters('left');
+            var rightEye = this.vrDisplay.getEyeParameters('right');
+
+            this._oldCanvasWidth  = this.canvas.width;
+            this._oldCanvasHeight = this.canvas.height;
+
+            this.canvas.width = Math.max(leftEye.renderWidth, rightEye.renderWidth) * 2;
+            this.canvas.height = Math.max(leftEye.renderHeight, rightEye.renderHeight);
+
+            this.gl.VRMode = 2;
+            this.doc.needRender = true;
+        }
+        else if(this.vrDisplay && !this.vrDisplay.isPresenting)
+        {
+            this.canvas.width  = this._oldCanvasWidth;
+            this.canvas.height = this._oldCanvasHeight;
+
+            this.vrFrameData = null;
+
+            this.gl.VRMode = 1;
+            this.doc.needRender = true;
+        }
+    };
+
     if (this.canvas !== null && this.gl !== null && this.hasRuntime) {
         // event handler for mouse interaction
         this.canvas.mouse_dragging = false;
@@ -376,6 +410,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             event.preventDefault();
         }, false);
 
+        // VR Events
+        window.addEventListener('vrdisplaypresentchange', this.onVrDisplayPresentChange.bind(this), false);
 
         // Mouse Events
         this.canvas.addEventListener('mousedown', this.onMouseDown , false);
@@ -737,7 +773,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-}
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1011,6 +1047,11 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
  */
 x3dom.X3DCanvas.prototype._watchForResize = function() {
 
+    if(this.vrDisplay && this.vrDisplay.isPresenting)
+    {
+        return;
+    }
+
     var new_dim = [
         parseInt(x3dom.getStyle(this.canvas, "width")),
         parseInt(x3dom.getStyle(this.canvas, "height"))
@@ -1047,6 +1088,27 @@ x3dom.X3DCanvas.prototype._createProgressDiv = function() {
         return false;
     };
     return progressDiv;
+};
+
+/**
+ * Creates the div for progression visualization
+ */
+x3dom.X3DCanvas.prototype._createVRDiv = function() {
+    var vrDiv = document.createElement('div');
+    vrDiv.setAttribute("class", "x3dom-vr");
+
+    vrDiv.onclick = function()
+    {
+        this.x3dElem.runtime.toggleVR();
+    }.bind(this);
+
+    vrDiv.oncontextmenu = function(evt) {
+        evt.preventDefault();
+        evt.stopPropagation();
+        return false;
+    };
+
+    return vrDiv;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1119,9 +1181,23 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
 
         runtime.enterFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
 
+        if(this.vrDisplay && this.vrDisplay.isPresenting)
+        {
+            if(!this.vrFrameData)
+            {
+                this.vrFrameData = new VRFrameData();
+            }
+
+            this.vrDisplay.getFrameData(this.vrFrameData);
+        }
+        else
+        {
+            this.doc.needRender = false;
+        }
+
 		// picking might require another pass
-		this.doc.needRender = false;
-		this.doc.render(this.gl);
+		
+		this.doc.render(this.gl, this.vrFrameData, this.vrDisplay);
 
 		if (!this.doc._scene._vf.doPickPass)
 		{
@@ -1130,6 +1206,11 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
                 
 
         runtime.exitFrame( {"total": this._totalTime, "elapsed": this._elapsedTime} );
+
+        if(this.vrDisplay && this.vrDisplay.isPresenting)
+        {
+            this.vrDisplay.submitFrame();
+        }
     }
 
     if (this.progressDiv) {
@@ -1192,7 +1273,36 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                 if (x3dCanvas.doc && x3dCanvas.x3dElem.runtime) {
                     x3dCanvas._watchForResize();
                     x3dCanvas.tick(timestamp);
-                    window.requestAnimFrame(mainloop, x3dCanvas);
+
+                    if(navigator.getVRDisplays)
+                    {
+                        if(x3dCanvas.vrDisplay)
+                        {
+                            x3dCanvas.vrDisplay.requestAnimationFrame(mainloop, x3dCanvas);
+                        }
+                        else
+                        {
+                            navigator.getVRDisplays().then( function (displays) {
+
+                                x3dCanvas.vrDisplay = displays[0];
+    
+                                if(x3dCanvas.vrDisplay)
+                                {
+                                    x3dCanvas.vrDisplay.requestAnimationFrame(mainloop, x3dCanvas);
+
+                                    x3dCanvas.vrDiv.style.display = "block";
+                                }
+                                else
+                                {
+                                    window.requestAnimFrame(mainloop, x3dCanvas);
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        window.requestAnimFrame(mainloop, x3dCanvas);
+                    }
                 }
 		    })();
 

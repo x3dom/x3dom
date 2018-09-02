@@ -75,7 +75,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName)
             {
-                if (fieldName == "url") {
+                if (fieldName == "url" || fieldName == "load") {
 
                     //Remove the childs of the x3domNode
                     for (var i=0; i<this._childNodes.length; i++)
@@ -164,6 +164,11 @@ x3dom.registerNodeType(
 
             loadX3D: function(inlScene, nameSpace)
             {
+                if (!this._vf.load) {
+                    x3dom.debug.logInfo('Inline: load field prevented loading of ' + this._vf.url[0]);
+                    return;
+                }
+              
                 var that = this;
 
                 var newScene = null;
@@ -185,10 +190,7 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
-                    if (xml && xml.localName)
-                        x3dom.debug.logError('No Scene in ' + xml.localName);
-                    else
-                        x3dom.debug.logError('No Scene in resource');
+                    x3dom.debug.logError('No Scene in resource');
                 }
 
                 // trick to free memory, assigning a property to global object, then deleting it
@@ -240,7 +242,7 @@ x3dom.registerNodeType(
 
             loadInline: function ()
             {
-                var that = this; 
+                var that = this;
 
                 var suffix = this.getSuffix();
 
@@ -261,9 +263,9 @@ x3dom.registerNodeType(
 
                                 var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
 
-                                x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' +
                                                     'Next request in ' + refreshTime + ' seconds');
-                          
+
                                 window.setTimeout(function() {
                                     that._nameSpace.doc.downloadCount -= 1;
                                     that.loadInline();
@@ -271,7 +273,7 @@ x3dom.registerNodeType(
                             }
                             else
                             {
-                                x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
+                                x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' +
                                                      'No Retries left');
 
                                 that._nameSpace.doc.downloadCount -= 1;
@@ -294,10 +296,43 @@ x3dom.registerNodeType(
                                 if(xhr.response)
                                 {
                                     var loader = new x3dom.glTF2Loader(namespace);
- 
+
                                     inlineScene = loader.load(xhr.response, isBinary);
-                                    
+
                                     that.loadX3D( inlineScene, namespace );
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError('Invalide XHR Response');
+
+                                    that.fireEvents("error");
+
+                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that.count = 0;
+                                }
+                            }
+                            else if (suffix == ".json")
+                            {
+                                if(xhr.response)
+                                {
+                                    var json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, xhr.response);
+                                    var parser = new x3dom.JSONParser();
+
+                                    var xml = parser.parseJavaScript(json);
+
+                                    if (xml !== undefined && xml !== null)
+                                    {
+                                        inlineScene = xml.getElementsByTagName('Scene')[0] ||
+                                                      xml.getElementsByTagName('scene')[0];
+
+                                        that.loadX3D( inlineScene, namespace );
+                                    }
+                                    else
+                                    {
+                                        that.fireEvents("error");
+                                        that._nameSpace.doc.downloadCount -= 1;
+                                        that.count = 0;
+                                    }
                                 }
                                 else
                                 {
@@ -324,8 +359,8 @@ x3dom.registerNodeType(
 
                                 if (xml !== undefined && xml !== null)
                                 {
-                                    inlScene = xml.getElementsByTagName('Scene')[0] ||
-                                               xml.getElementsByTagName('scene')[0];
+                                    inlineScene = xml.getElementsByTagName('Scene')[0] ||
+                                                  xml.getElementsByTagName('scene')[0];
 
                                     that.loadX3D( inlineScene, namespace );
                                 }
@@ -360,6 +395,11 @@ x3dom.registerNodeType(
                         if( suffix == ".x3d" )
                         {
                             xhr.overrideMimeType('text/xml');
+                        }
+                        if( suffix == ".json" )
+                        {
+                            xhr.overrideMimeType('application/json');
+                            xhr.responseType = "json";
                         }
                         else if( suffix == ".gltf" )
                         {

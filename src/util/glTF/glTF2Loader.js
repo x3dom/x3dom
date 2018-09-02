@@ -35,8 +35,6 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
 
     console.log(x3dScene);
 
-    console.log(this._gltf);
-
     return x3dScene;
 }
 
@@ -94,8 +92,7 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
             var shape = this._generateX3DShape(mesh.primitives[i]);
 
             x3dNode.appendChild(shape);
-        }
-        
+        } 
     }
 
     if ( node.name != undefined )
@@ -112,7 +109,9 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node)
  */
 x3dom.glTF2Loader.prototype._generateX3DScene = function()
 {
-    return document.createElement("scene");
+    var scene = document.createElement( "scene" );
+    
+    return scene;
 };
 
 /**
@@ -169,6 +168,52 @@ x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 };
 
 /**
+ * Generates a X3D viewpoint node
+ * @private
+ * @param {Object} camera - A glTF camera node
+ * @return {Viewpoint}
+ */
+x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
+{
+    var viewpoint = document.createElement("viewpoint");
+
+    var fov   = camera.yfov  || 0.785398;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
+
+    viewpoint.setAttribute("fieldOfView", fov);
+    viewpoint.setAttribute("zNear", znear);
+    viewpoint.setAttribute("zFar", zfar);
+    viewpoint.setAttribute("position", "0 0 0");
+
+    return viewpoint;
+};
+
+/**
+ * Generates a X3D orthoviewpoint node
+ * @private
+ * @param {Object} camera - A glTF camera node
+ * @return {OrthoViewpoint}
+ */
+x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(camera)
+{
+    var viewpoint = document.createElement("orthoviewpoint");
+
+    var xmag  = camera.xmag  ||  1;
+    var ymag  = camera.ymag  ||  1;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
+    var fov   = [-xmag, -ymag, xmag, ymag];
+
+    viewpoint.setAttribute("fieldOfView", fov);
+    viewpoint.setAttribute("zNear", znear);
+    viewpoint.setAttribute("zFar", zfar);
+    viewpoint.setAttribute("position", "0 0 0");
+
+    return viewpoint;
+};
+
+/**
  * Generates a X3D shape node
  * @private
  * @param {Object} primitive - A glTF primitive node
@@ -207,32 +252,79 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var mat = document.createElement("physicalmaterial");
 
     var texture;
-    var baseColorFactor = [1,1,1,1];
-    var emissiveFactor  = material.emissiveFactor || [0,0,0];
-    var metallicFactor  = 0;
-    var roughnessFactor = 0.6;
+    var baseColorFactor   = [1,1,1,1];
+    var emissiveFactor    = material.emissiveFactor || [0,0,0];
+    var metallicFactor    = 1;
+    var roughnessFactor   = 1;
+    var alphaMode         = material.alphaMode || "OPAQUE";
+    var alphaCutoff       = material.alphaCutoff || 0.5;
+    var seperateOcclusion = true
+    var model             = undefined;
+    var pbr               = undefined;
 
-    var pbr = material.pbrMetallicRoughness;
-
-    if(pbr)
+    if( material.pbrMetallicRoughness )
     {
-        baseColorFactor = pbr.baseColorFactor || baseColorFactor;
-        metallicFactor  = pbr.metallicFactor  || metallicFactor;
-        roughnessFactor = pbr.roughnessFactor || roughnessFactor;
+        pbr = material.pbrMetallicRoughness;
+        model = "roughnessMetallic";
+    }
+    else if(material.extensions && material.extensions.KHR_materials_pbrSpecularGlossiness)
+    {
+        pbr = material.extensions.KHR_materials_pbrSpecularGlossiness;
+        model = "specularGlossiness";
     }
 
-    if(pbr && pbr.baseColorTexture)
+    if( model == "roughnessMetallic" )
     {
-        texture = this._gltf.textures[pbr.baseColorTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
-    }
+        var baseColorFactor = pbr.baseColorFactor || [1,1,1,1];
+        var metallicFactor  = (pbr.metallicFactor  != undefined) ? pbr.metallicFactor  : 1;
+        var roughnessFactor = (pbr.roughnessFactor != undefined) ? pbr.roughnessFactor : 1;
 
-    if(pbr && pbr.metallicRoughnessTexture)
+        if(pbr.baseColorTexture )
+        {
+            texture = this._gltf.textures[pbr.baseColorTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+        }
+
+        if(pbr.metallicRoughnessTexture)
+        {
+            texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
+
+            if( material.occlusionTexture && material.occlusionTexture.index == pbr.metallicRoughnessTexture.index)
+            {
+                seperateOcclusion = false;
+                mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture"));
+            }
+            else
+            {
+                mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture"));
+            }
+        }
+
+        mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+        mat.setAttribute("metallicFactor",  metallicFactor);
+        mat.setAttribute("roughnessFactor", roughnessFactor);
+    }
+    else if ( model == "specularGlossiness" )
     {
-        metallicFactor = 1;
-        roughnessFactor = 1;
-        texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "metallicRoughnessTexture"));
+        var diffuseFactor    = pbr.diffuseFactor || [ 1, 1, 1, ];
+        var specularFactor   = pbr.specularFactor || [ 1, 1, 1 ];
+        var glossinessFactor = (pbr.glossinessFactor != undefined) ? pbr.glossinessFactor : 1;
+
+        if ( pbr.diffuseTexture )
+        {
+            texture = this._gltf.textures[pbr.diffuseTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+        }
+        
+        if ( pbr.specularGlossinessTexture )
+        {
+            texture = this._gltf.textures[pbr.specularGlossinessTexture.index];
+            mat.appendChild(this._generateX3DImageTexture(texture, "specularGlossinessTexture"));
+        }
+
+        mat.setAttribute("diffuseFactor", diffuseFactor.join(" "));
+        mat.setAttribute("specularFactor",  specularFactor.join(" "));
+        mat.setAttribute("glossinessFactor", glossinessFactor);
     }
 
     if(material.normalTexture)
@@ -247,16 +339,15 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
         mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture"));
     }
 
-    if(material.occlusionTexture)
+    if(material.occlusionTexture && seperateOcclusion)
     {
         texture = this._gltf.textures[material.occlusionTexture.index];
         mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));
     }
-
-    mat.setAttribute("baseColorFactor", baseColorFactor.join(" "));
+    
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
-    mat.setAttribute("metallicFactor",  metallicFactor);
-    mat.setAttribute("roughnessFactor", roughnessFactor);
+    mat.setAttribute("alphaMode",  alphaMode);
+    mat.setAttribute("alphaCutoff", alphaCutoff);
     
     return mat;
 };
@@ -329,7 +420,6 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 {
     var views = [];
-    var isLit = false;
     var bufferGeometry = document.createElement("buffergeometry");
     var centerAndSize = this._getCenterAndSize(primitive);
  
@@ -371,11 +461,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
 
     for(var attribute in primitive.attributes)
     {
-        if(attribute == "NORMAL")
-        {
-            isLit = true;
-        }
-
         var accessor = this._gltf.accessors[ primitive.attributes[attribute] ];
 
         var view = this._gltf.bufferViews[accessor.bufferView];
@@ -396,8 +481,6 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
     {
         bufferGeometry.appendChild(this._generateX3DBufferView(views[i]));
     }
-
-    bufferGeometry.setAttribute("lit", isLit);
 
     return bufferGeometry;
 }
@@ -431,6 +514,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, access
 
     bufferAccessor.setAttribute("components", components);
     bufferAccessor.setAttribute("componentType", accessor.componentType);
+    bufferAccessor.setAttribute("count", accessor.count);
 
     return bufferAccessor;
 };
@@ -610,7 +694,7 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
         {
             var image = gltf.images[i];
 
-            if( image.bufferView )
+            if( image.bufferView != undefined )
             {
                 var bufferView = gltf.bufferViews[image.bufferView];
 

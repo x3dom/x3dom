@@ -20,14 +20,14 @@
 // http://www.khronos.org/registry/typedarray/specs/latest
 
 /*
-MFVec3f.prototype = 
+MFVec3f.prototype =
 {
   construction : function() { console.log("construction"); },
   toString : function() { return "toString"; },
   toLocaleString : function() { return "toLocaleString"; },
-  
+
   isArray : function(arg) { console.log(typeof arg); return true; },
-  
+
   concat : function() { console.log("concat"); },
   join : function() { console.log("join"); },
   pop : function() { console.log("pop"); },
@@ -50,21 +50,21 @@ MFVec3f.prototype =
   reduceRight : function() { console.log("reduceRight"); }
 };
 */
-  
+
 function init()
 {
-  var s1 = new x3dom.SFVec3f(4,5,6);  
-  console.log(s1.toString());
-  
-  var s2 = new x3dom.SFVec3f(7,8,9);  
+  var s1 = new x3dom.fields.SFVec3f(4,5,6);
   console.log(s1.toString());
 
-  var m1 = new x3dom.MFVec3f([1,2,3]);
+  var s2 = new x3dom.fields.SFVec3f(7,8,9);
+  console.log(s1.toString());
+
+  var m1 = new x3dom.fields.MFVec3f([1,2,3]);
   console.log(m1.toString());
-  
-  var m2 = new x3dom.MFVec3f(4);
+
+  var m2 = new x3dom.fields.MFVec3f([4]);
   console.log(m2.toString());
-  
+
   m1.push(s1);
   console.log(m1.toString());
   m1.unshift([7,8,9]);
@@ -83,29 +83,29 @@ function init()
       // view or typed array
       if(arguments[0] instanceof math.Float32Array)
         var _array = arguments[0];
-      
+
       else
       {
         // count elements
         var counter = function(arguments)
         {
           var elements = 0;
-          
+
           for(var i=0; i<arguments.length; ++i)
           {
             if(arguments[i] instanceof math.Float32Array)
               elements += arguments[i].length;
-              
+
             else if(arguments[i] instanceof Array)
               elements += counter(arguments[i]);
-              
+
             else if(!(arguments[i] instanceof Object))
               elements += 1;
           }
-          
+
           return elements;
         };
-        
+
         // copy elements to buffer
         var merger = function(arguments, destination, offset)
         {
@@ -115,7 +115,7 @@ function init()
             {
               for(var j=0; j<arguments[i].length; ++j)
                 destination[offset + j] = arguments[i][j];
-                
+
               offset += arguments[i].length;
             }
             else if(arguments[i] instanceof Array)
@@ -128,13 +128,13 @@ function init()
           }
           return elements;
         };
-        
+
         // count elements & merge to buffer
         var _array = new math.Float32Array(counter(arguments));
         merger(arguments, _array, 0);
       }
     }
-    
+
     return _array;
   }
 */

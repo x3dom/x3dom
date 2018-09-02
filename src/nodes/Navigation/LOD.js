@@ -41,6 +41,17 @@ x3dom.registerNodeType(
              */
             this.addField_MFFloat(ctx, "range", []);
 
+            /**
+             * outputOnly field which is emitted when the level changes to another range index. When L(d) is activated for display, the LOD node generates a level_changed event with value i where the value of i identifies which value of L was activated for display. Indicates current level of LOD children when activated.
+             * @var {x3dom.fields.SFInt32} level_changed
+             * @range [0, inf]
+             * @memberof x3dom.nodeTypes.LOD
+             * @initvalue 0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFInt32(ctx, "level_changed", 0);
+
             this._lastRangePos = -1;
         
         },
@@ -67,6 +78,12 @@ x3dom.registerNodeType(
                 if (i && i >= n) {
                     i = n - 1;
                 }
+              
+                if (i !== this._lastRangePos) {
+                    //x3dom.debug.logInfo('Changed from '+this._lastRangePos+' th range to '+i+' th.');
+                    this.postMessage('level_changed', i);
+                }
+              
                 this._lastRangePos = i;
 
                 var cnode = this._childNodes[i];

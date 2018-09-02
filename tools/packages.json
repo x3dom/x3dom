@@ -25,6 +25,8 @@
                 {"path": "util/glTF/glTFLoader.js"},
                 {"path": "util/glTF/glTF2Loader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
+                {"path": "util/DDSLoader.js"},
+                {"path": "util/VRControllerManager.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -35,7 +37,9 @@
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
                 {"path": "fields.js"},		
-                {"path": "Docs.js"}
+                {"path": "Docs.js"},
+                {"path": "util/json/JSONParser.js"},
+                {"path": "util/json/PrototypeExpander.js"}
             ]},
 
         {"group": "SHADER",
@@ -52,6 +56,7 @@
                 {"path": "shader/ShaderBackgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundSkyTexture.js"},
                 {"path": "shader/ShaderBackgroundCubeTexture.js"},
+                {"path": "shader/ShaderBackgroundCubeTextureDDS.js"},
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
@@ -141,7 +146,8 @@
                     {"file": "X3DLightNode.js"},
                     {"file": "DirectionalLight.js"},
                     {"file": "PointLight.js"},
-                    {"file": "SpotLight.js"}
+                    {"file": "SpotLight.js"},
+                    {"file": "PhysicalEnvironmentLight.js"}
                 ]},
                 {"name": "Followers", "filePrefix": "nodes/Followers/", "files":[
                     {"file": "X3DFollowerNode.js"},

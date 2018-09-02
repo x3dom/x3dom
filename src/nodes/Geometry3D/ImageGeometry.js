@@ -339,7 +339,7 @@ x3dom.registerNodeType(
             {
                 var textures = [];
 
-                var index = this.getIndexTexture();
+                var i, index = this.getIndexTexture();
                 if(index) textures.push(index);
 
                 for(i=0; i<this.numCoordinateTextures(); i++) {

@@ -26,6 +26,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
 
+            this.addField_SFString(ctx, 'model', "roughnessMetallic");
+
             /**
              * The RGBA components of the base color of the material. The fourth component (A) is the 
              * alpha coverage of the material. The `alphaMode` property specifies how alpha is interpreted. 
@@ -43,7 +45,7 @@ x3dom.registerNodeType(
              * The metalness of the material. A value of 1.0 means the material is a metal.
              * A value of 0.0 means the material is a dielectric. Values in between are for blending
              * between metals and dielectrics such as dirty metallic surfaces. This value is linear.
-             * If a metallicRoughnessTexture is specified, this value is multiplied with
+             * If a roughnessMetallicTexture is specified, this value is multiplied with
              * the metallic texel values.
              * @var {x3dom.fields.SFFloat} metallicFactor
              * @range [0, 1]
@@ -57,7 +59,7 @@ x3dom.registerNodeType(
             /**
              * The roughness of the material. A value of 1.0 means the material is completely rough. 
              * A value of 0.0 means the material is completely smooth. This value is linear. 
-             * If a metallicRoughnessTexture is specified, this value is multiplied with 
+             * If a roughnessMetallicTexture is specified, this value is multiplied with 
              * the roughness texel values.
              * @var {x3dom.fields.SFFloat} roughnessFactor
              * @range [0, 1]
@@ -67,6 +69,37 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFFloat(ctx, 'roughnessFactor', 0.2);
+
+            /**
+             * Toto
+             * @var {x3dom.fields.SFColor} diffuseFactor
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1,1,1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFColorRGBA(ctx, 'diffuseFactor', 1, 1, 1, 1);
+
+            /**
+             * Todo
+             * @var {x3dom.fields.SFColor} specularFactor
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1,1,1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFColor(ctx, 'specularFactor', 1, 1, 1);
+
+            /**
+             * todo
+             * @var {x3dom.fields.SFFloat} glossinessFactor
+             * @range [0, 1]
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'glossinessFactor', 1);
 
             /**
              * The RGB components of the emissive color of the material. These values are linear.
@@ -91,6 +124,33 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalSpace', 'TANGENT');
 
             /**
+             * The material's alpha rendering mode enumeration specifying the interpretation 
+             * of the alpha value of the main factor and texture.
+             * @var {x3dom.fields.SFString} alphaMode
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 'OPAQUE'
+             * @range [OPAQUE, BLEND, MASK]
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'alphaMode', 'OPAQUE');
+
+            /**
+             * Specifies the cutoff threshold when in `MASK` mode. 
+             * If the alpha value is greater than or equal to this value then 
+             * it is rendered as fully opaque, otherwise, it is rendered as fully transparent. 
+             * A value greater than 1.0 will render the entire material as fully transparent. 
+             * This value is ignored for other modes."
+             * @var {x3dom.fields.SFFloat} alphaCutoff
+             * @range [0, 1]
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue 0.5
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'alphaCutoff', 0.5);
+
+            /**
              * Bias to apply to normal sampled from normalTexture
              * @var {x3dom.fields.SFVec3f} normalBias
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
@@ -99,6 +159,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, 1);
+
+            /**
+             * Scale to apply to normal sampled from normalTexture
+             * @var {x3dom.fields.SFVec3f} normalBias
+             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @initvalue 1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'normalScale', 1);
 
             /**
              * The base color texture. This texture contains RGB(A) components in sRGB color space. 
@@ -130,13 +200,37 @@ x3dom.registerNodeType(
              * A set of parameter values that are used to define the
              * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
-             * @var {x3dom.nodeTypes.X3DTextureNode} metallicRoughnessTexture
+             * @var {x3dom.nodeTypes.X3DTextureNode} roughnessMetallicTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('metallicRoughnessTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('roughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             * A set of parameter values that are used to define the
+             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
+             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * @var {x3dom.nodeTypes.X3DTextureNode} specularGlossinessTexture
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode('specularGlossinessTexture', x3dom.nodeTypes.X3DTextureNode);
+
+            /**
+             * A set of parameter values that are used to define the
+             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
+             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode('occlusionRoughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
              * A tangent space normal map. The texture contains RGB components in linear space. 
@@ -190,7 +284,7 @@ x3dom.registerNodeType(
                         this._cf.normalTexture.node    ||
                         this._cf.occlusionTexture.node ||
                         this._cf.emissiveTexture.node  ||
-                        this._cf.metallicRoughnessTexture.node);
+                        this._cf.roughnessMetallicTexture.node);
             },
 
             getTextures: function()
@@ -225,12 +319,27 @@ x3dom.registerNodeType(
                     textures.push(this._cf.emissiveTexture.node);
                 }
 
-                if(this._cf.metallicRoughnessTexture.node)
+                if(this._cf.roughnessMetallicTexture.node)
                 {
-                    this._cf.metallicRoughnessTexture.node._type = "metallicRoughnessMap";
+                    this._cf.roughnessMetallicTexture.node._type = "roughnessMetallicMap";
 
-                    textures.push(this._cf.metallicRoughnessTexture.node);
+                    textures.push(this._cf.roughnessMetallicTexture.node);
                 }
+
+                if(this._cf.specularGlossinessTexture.node)
+                {
+                    this._cf.specularGlossinessTexture.node._type = "specularGlossinessMap";
+
+                    textures.push(this._cf.specularGlossinessTexture.node);
+                }
+
+                if(this._cf.occlusionRoughnessMetallicTexture.node)
+                {
+                    this._cf.occlusionRoughnessMetallicTexture.node._type = "occlusionRoughnessMetallicMap";
+
+                    textures.push(this._cf.occlusionRoughnessMetallicTexture.node);
+                }
+
 
                 return textures;
             }

@@ -10,13 +10,13 @@
         }
         function set_cot(){
             var vp = document.getElementById('vp1');
-            var vm = document.getElementById("someUniqueId").runtime.viewMatrix();
+            var vm = document.getElementById("x3d").runtime.viewMatrix();
             var vec = new x3dom.fields.SFVec3f(0, 0, 0);
             var cot = vm.multMatrixPnt(vec);
             console.log(vp._x3domNode._nameSpace.doc._viewarea.getViewMatrix());
             console.log(vp._x3domNode._nameSpace.doc._viewarea._transMat);
             console.log(vp._x3domNode._nameSpace.doc._viewarea._rotMat);
-            console.log(document.getElementById("someUniqueId").runtime.viewMatrix());
+            console.log(document.getElementById("x3d").runtime.viewMatrix());
 //            var cot = document.getElementById("someUniqueId").runtime.getWorldToCameraCoordinatesMatrix();
 //            var cot = document.getElementById("someUniqueId").runtime.viewMatrix();
             console.log(cot);
