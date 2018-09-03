@@ -10,21 +10,22 @@
    <body>
       <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" x="0px" y="0px" width="300" height="300">
          <Scene pickMode="box">
-            <Background skyColor="0.5 0.5 0.5"/>
-            <Viewpoint position="0 0 7" description="View1-Front" fieldOfView="1.49809"/>
+            <Viewpoint position="0 0 7" description="View1-Front" fieldOfView="1.49809"></Viewpoint>
             <Transform>
 	      <Shape>
 		<NurbsTrimmedSurface solid='false' uDimension='2' uKnot='-4 -4 4 4' uOrder='2' vDimension='2' vKnot='-4 -4 4 4' vOrder='2' weight='1 1 1 1' containerField='geometry'>
-		  <Coordinate containerField='controlPoint' point='-4 -4 3 4 -4 0 -4 4 0 4 4 0'/>
+		  <Coordinate containerField='controlPoint' point='-4 -4 3 4 -4 0 -4 4 0 4 4 0'></Coordinate>
 		  <Contour2D containerField='trimmingContour'>
-		    <NurbsCurve2D controlPoint='-4 -4 3 -4 4 4 -4 4 -4 -4' knot='0 0 0.25 0.5 0.75 1 1' order='2' weight='1 1 1 1 1' containerField='children'/>
+		    <NurbsCurve2D controlPoint='-4 -4 3 -4 4 4 -4 4 -4 -4' knot='0 0 0.25 0.5 0.75 1 1' order='2' weight='1 1 1 1 1' containerField='children'>
+		    </NurbsCurve2D>
 		  </Contour2D>
 		  <Contour2D containerField='trimmingContour'>
-		    <NurbsCurve2D controlPoint='1 0 0.7071 -0.7071 0 -1 -0.7071 -0.7071 -1 0 -0.7071 0.7071 0 1 0.7071 0.7071 1 0' knot='0 0 0 0.25 0.25 0.5 0.5 0.75 0.75 1 1 1' weight='1 0.7071 1 0.7071 1 0.7071 1 0.7071 1' containerField='children'/>
+		    <NurbsCurve2D controlPoint='1 0 0.7071 -0.7071 0 -1 -0.7071 -0.7071 -1 0 -0.7071 0.7071 0 1 0.7071 0.7071 1 0' knot='0 0 0 0.25 0.25 0.5 0.5 0.75 0.75 1 1 1' weight='1 0.7071 1 0.7071 1 0.7071 1 0.7071 1' containerField='children'>
+		    </NurbsCurve2D>
 		  </Contour2D>
 		</NurbsTrimmedSurface>
 		<Appearance>
-		  <Material diffuseColor='0 0 1'/>
+		  <Material diffuseColor='0 0 1'></Material>
 		</Appearance>
 	      </Shape> 
             </Transform>
