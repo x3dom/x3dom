@@ -12,7 +12,7 @@ x3dom.registerNodeType(
     "BufferGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
+
         /**
          * Constructor for BufferGeometry
          * @constructs x3dom.nodeTypes.BufferGeometry
@@ -36,16 +36,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'buffer', "");
 
-            this.addField_MFNode('views', x3dom.nodeTypes.BufferGeometryView);
-            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferGeometryAccessor);
+            this.addField_MFNode('views', x3dom.nodeTypes.BufferView);
+            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferAccessor);
 
-            this._hasColor = false
-            this._indexed = false
+            this._hasColor = false;
+            this._indexed = false;
         },
         {
             parentAdded: function(parent)
             {
-                
+
             },
 
             nodeChanged: function()
