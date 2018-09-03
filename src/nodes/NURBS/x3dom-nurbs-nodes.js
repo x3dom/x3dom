@@ -264,7 +264,7 @@ x3dom.registerNodeType(
 		if(this.workerTask)
 		    this.workerTask.discard = true;
 
-		this.workerTask = new WorkerTask('x3dom-nurbs-worker.js',
+		this.workerTask = new WorkerTask('https://raw.githubusercontent.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
 						 this, onmessage, startmessage);
 
 		tessWorkerPool.addWorkerTask(this.workerTask);
