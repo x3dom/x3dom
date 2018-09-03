@@ -123,7 +123,7 @@
             // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
             var repo = "http://localhost/glTF-Sample-Models/2.0/";
 
-            url = repo + file + "/glTF" + type + "/" + file + suffix;
+            var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             
             updateInline(url);
         }
@@ -153,13 +153,20 @@
     <section class="topbar">
         <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
         <span class="topbar-label">X3DOM // GLTF 2.0</span>
+        <div class="topbar-label" onclick="load(this.children[0].value,'direct')">
+                url:
+                <input type='url' size='150'
+                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'
+                value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf' />
+            </div>
+
     </section>
   
 
     <section class="main-wrapper">
 
         <section class="sidebar">
-
+            
             <div class="sidebar-header">Basic Tests</div>
     
             <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
