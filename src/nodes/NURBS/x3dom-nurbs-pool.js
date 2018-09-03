@@ -74,6 +74,6 @@ function WorkerTask(script, caller, callback, msg) {
 };
 
 // TODO: var poolSize = Math.max(3,navigator.hardwareConcurrency);
-var poolSize = 3;
+var poolSize = 1;//3 crashes more
 var tessWorkerPool = new WorkerPool(poolSize);
 tessWorkerPool.init();
