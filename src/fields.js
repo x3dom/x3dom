@@ -3187,6 +3187,7 @@ x3dom.fields.MFString.copy = function(stringArray) {
 
 x3dom.fields.MFString.parse = function(str) {
     var arr = [];
+    str = str.trim();
     // ignore leading whitespace?
     if (str.length && str[0] == '"') {
         var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
