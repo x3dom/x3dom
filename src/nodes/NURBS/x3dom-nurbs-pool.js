@@ -55,7 +55,7 @@ function WorkerThread(workerPool) {
     this.workerTask = {};
 
     this.run = function(workerTask) {
-        this.workerTask = workerTask;
+        _this.workerTask = workerTask;
         var worker = new Worker(workerTask.script);
 	worker.caller = workerTask.caller;
 	worker.onmessage = function(e) {
