@@ -73,7 +73,10 @@ function WorkerTask(script, caller, callback, msg) {
     this.startMessage = msg;
 };
 
-// TODO: var poolSize = Math.max(3,navigator.hardwareConcurrency);
-var poolSize = 2;//3 crashes more
+var poolSize = 1;
+if (navigator.hardwareConcurrency) { //IE
+    poolSize = Math.max(1, navigator.hardwareConcurrency - 1);
+}
+
 var tessWorkerPool = new WorkerPool(poolSize);
 tessWorkerPool.init();
