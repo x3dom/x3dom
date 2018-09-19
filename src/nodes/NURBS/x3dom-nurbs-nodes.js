@@ -149,16 +149,16 @@ function tessProgress(x3de, onoff) {
 //     )
 // );
 
-x3dom.registerNodeType(
-    "ContourPolyline2D",
-    "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        function (ctx) {
-            x3dom.nodeTypes.ContourPolyline2D.superClass.call(this, ctx);
-            this.addField_MFFloat(ctx, 'controlPoint', []);
-	}, { }
-    )
-);
+// x3dom.registerNodeType(
+//     "ContourPolyline2D",
+//     "Grouping",
+//     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+//         function (ctx) {
+//             x3dom.nodeTypes.ContourPolyline2D.superClass.call(this, ctx);
+//             this.addField_MFFloat(ctx, 'controlPoint', []);
+// 	}, { }
+//     )
+// );
 
 x3dom.registerNodeType(
     "Contour2D",
