@@ -371,6 +371,13 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
+                ]},
+                {"name": "NURBS", "filePrefix": "nodes/NURBS/", "files":[
+                    {"file": "NurbsPatchSurface.js"},
+                    {"file": "x3dom-nurbs-nodes.js"},
+                    {"file": "x3dom-nurbs-pool.js"},
+                    {"file": "x3dom-nurbs-worker.js"},
+                    {"file": "x3dom-nurbs-tess.js"}
                 ]}              
             ]
 		},
