@@ -376,9 +376,7 @@
                     {"file": "NurbsPatchSurface.js"},
 		    {"file": "NurbsCurve2D.js"},
                     {"file": "x3dom-nurbs-nodes.js"},
-                    {"file": "x3dom-nurbs-pool.js"},
-                    {"file": "x3dom-nurbs-worker.js"},
-                    {"file": "x3dom-nurbs-tess.js"}
+                    {"file": "x3dom-nurbs-pool.js"}
                 ]}              
             ]
 		},
