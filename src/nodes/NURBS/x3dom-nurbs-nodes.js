@@ -134,20 +134,20 @@ function tessProgress(x3de, onoff) {
 //     )
 // );
 
-x3dom.registerNodeType(
-    "NurbsCurve2D",
-    "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        function (ctx) {
-            x3dom.nodeTypes.NurbsCurve2D.superClass.call(this, ctx);
+// x3dom.registerNodeType(
+//     "NurbsCurve2D",
+//     "Grouping",
+//     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+//         function (ctx) {
+//             x3dom.nodeTypes.NurbsCurve2D.superClass.call(this, ctx);
 
-            this.addField_SFInt32(ctx, 'order', 3);
-            this.addField_MFFloat(ctx, 'knot', []);
-            this.addField_MFFloat(ctx, 'controlPoint', []);
-            this.addField_MFFloat(ctx, 'weight', []);
-	}, { }
-    )
-);
+//             this.addField_SFInt32(ctx, 'order', 3);
+//             this.addField_MFFloat(ctx, 'knot', []);
+//             this.addField_MFFloat(ctx, 'controlPoint', []);
+//             this.addField_MFFloat(ctx, 'weight', []);
+// 	}, { }
+//     )
+// );
 
 x3dom.registerNodeType(
     "ContourPolyline2D",
