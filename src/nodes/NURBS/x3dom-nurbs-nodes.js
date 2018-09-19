@@ -100,39 +100,39 @@ function tessProgress(x3de, onoff) {
 } /* tessProgress */
 
 
-x3dom.registerNodeType(
-    "NurbsPatchSurface",
-    "Rendering",
-    defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
-        function (ctx) {
-            x3dom.nodeTypes.NurbsPatchSurface.superClass.call(this, ctx);
+// x3dom.registerNodeType(
+//     "NurbsPatchSurface",
+//     "Rendering",
+//     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+//         function (ctx) {
+//             x3dom.nodeTypes.NurbsPatchSurface.superClass.call(this, ctx);
 
-            this.addField_SFInt32(ctx, 'uDimension', 0);
-            this.addField_SFInt32(ctx, 'vDimension', 0);
-            this.addField_SFInt32(ctx, 'uOrder', 3);
-            this.addField_SFInt32(ctx, 'vOrder', 3);
-            this.addField_SFFloat(ctx, 'uTessellation', 0.0);
-            this.addField_SFFloat(ctx, 'vTessellation', 0.0);
-            this.addField_MFFloat(ctx, 'uKnot', []);
-            this.addField_MFFloat(ctx, 'vKnot', []);
-            this.addField_MFFloat(ctx, 'weight', []);
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
-            this.addField_SFNode('controlPoint',
-				 x3dom.nodeTypes.X3DCoordinateNode);
-            this._needReRender = true;
-	    this._myctx = ctx;
-        },
-        {
-            nodeChanged: function() {
-	x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
-		return;
-            },
-            fieldChanged: function(fieldName) {
-		this.nodeChanged();
-            }
-        }
-    )
-);
+//             this.addField_SFInt32(ctx, 'uDimension', 0);
+//             this.addField_SFInt32(ctx, 'vDimension', 0);
+//             this.addField_SFInt32(ctx, 'uOrder', 3);
+//             this.addField_SFInt32(ctx, 'vOrder', 3);
+//             this.addField_SFFloat(ctx, 'uTessellation', 0.0);
+//             this.addField_SFFloat(ctx, 'vTessellation', 0.0);
+//             this.addField_MFFloat(ctx, 'uKnot', []);
+//             this.addField_MFFloat(ctx, 'vKnot', []);
+//             this.addField_MFFloat(ctx, 'weight', []);
+//             this.addField_SFBool(ctx, 'normalPerVertex', true);
+//             this.addField_SFNode('controlPoint',
+// 				 x3dom.nodeTypes.X3DCoordinateNode);
+//             this._needReRender = true;
+// 	    this._myctx = ctx;
+//         },
+//         {
+//             nodeChanged: function() {
+// 	x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
+// 		return;
+//             },
+//             fieldChanged: function(fieldName) {
+// 		this.nodeChanged();
+//             }
+//         }
+//     )
+// );
 
 x3dom.registerNodeType(
     "NurbsCurve2D",
