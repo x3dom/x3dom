@@ -172,10 +172,14 @@ function curvePoint2DH(n, p, U, P, W, u)
 
   for(j = 0; j <= p; j++)
     {
-      k = (span-p+j)*2; // for MFVec2f: (span-p+j)
-      Cw[0] = Cw[0] + N[j]*P[k]; // for MFVec2f: P.x
-      Cw[1] = Cw[1] + N[j]*P[k+1]; // for MFVec2f: P.y
-      Cw[2] = Cw[2] + N[j]*W[span-p+j]; // for MFVec2f: k
+      //k = (span-p+j)*2; // for MFVec2f: (span-p+j)
+      k = (span-p+j); // for MFVec2f: (span-p+j)
+      //Cw[0] = Cw[0] + N[j]*P[k]; // for MFVec2f: P.x
+      Cw[0] = Cw[0] + N[j]*P[k].x; // for MFVec2f: P.x
+      //Cw[1] = Cw[1] + N[j]*P[k+1]; // for MFVec2f: P.y
+      Cw[1] = Cw[1] + N[j]*P[k].y; // for MFVec2f: P.y
+      //Cw[2] = Cw[2] + N[j]*W[span-p+j]; // for MFVec2f: k
+	    Cw[2] = Cw[2] + N[j]*W[k]; // for MFVec2f: k
     }
 
   for(j = 0; j < 2; j++) // for MFVec2f
@@ -195,9 +199,12 @@ function curvePoint2D(n, p, U, P, u)
 
   for(j = 0; j <= p; j++)
     {
-      k = (span-p+j)*2; // for MFVec2f: see above
-      C[0] = C[0] + N[j]*P[k];
-      C[1] = C[1] + N[j]*P[k+1];
+//       k = (span-p+j)*2; // for MFVec2f: see above
+//       C[0] = C[0] + N[j]*P[k];
+//       C[1] = C[1] + N[j]*P[k+1];
+      k = (span-p+j); // for MFVec2f: see above
+      C[0] = C[0] + N[j]*P[k].x;
+      C[1] = C[1] + N[j]*P[k].y;
     }
 
  return C;
@@ -451,71 +458,71 @@ function Tessellator(nurb) {
 	}
     } /* diceTri */
 
-    /* Compute a point on the NURBS surface. */
-    this.computeSurface = function(uv, nooutput) {
-	// first try the hash
-	var indu = Math.floor(uv[0]*10e10);
-	var indv = Math.floor(uv[1]*10e10);
-	if(this.surfaceHash[indu]) {
-	    var memoizedPoint = this.surfaceHash[indu][indv];
-	    if(memoizedPoint)
-		return memoizedPoint;
-	}
-	// hash lookup failed, compute the point
-	var pnt;
-	if(this.W) {
-	    pnt = surfacePoint3DH(this.w, this.h, this.p, this.q,
-				  this.U, this.V, this.P, this.W,
-				  uv[0], uv[1]);
-	} else {
-	    pnt = surfacePoint3D(this.w, this.h, this.p, this.q,
-				 this.U, this.V, this.P,
-				 uv[0], uv[1]);
-	}
+  /* Compute a point on the NURBS surface. */
+  this.computeSurface = function(uv, nooutput) {
+    // first try the hash
+    var indu = Math.floor(uv[0]*10e10);
+    var indv = Math.floor(uv[1]*10e10);
+    if(this.surfaceHash[indu]) {
+        var memoizedPoint = this.surfaceHash[indu][indv];
+        if(memoizedPoint)
+      return memoizedPoint;
+    }
+    // hash lookup failed, compute the point
+    var pnt;
+    if(this.W) {
+        pnt = surfacePoint3DH(this.w, this.h, this.p, this.q,
+            this.U, this.V, this.P, this.W,
+            uv[0], uv[1]);
+    } else {
+        pnt = surfacePoint3D(this.w, this.h, this.p, this.q,
+           this.U, this.V, this.P,
+           uv[0], uv[1]);
+    }
 
-	// do not memoize this point whilst tesselating trim curves
-	if(this.curveHash)
-	    return pnt;
+    // do not memoize this point whilst tesselating trim curves
+    if(this.curveHash)
+        return pnt;
 
-	// memoize pnt
-	if(!this.surfaceHash[indu])
-	    this.surfaceHash[indu] = [];
-	this.surfaceHash[indu][indv] = pnt;
+    // memoize pnt
+    if(!this.surfaceHash[indu])
+        this.surfaceHash[indu] = [];
+    this.surfaceHash[indu][indv] = pnt;
 
-	// do not output this point whilst checking edge curvature
-	if(nooutput)
-	    return pnt;
+    // do not output this point whilst checking edge curvature
+    if(nooutput)
+        return pnt;
 
-	if(!this.indexHash[indu])
-	    this.indexHash[indu] = [];
-	this.indexHash[indu][indv] = this.coordIndex;
-	this.coordIndex++;
-	this.coordinates.push(pnt);
-	this.texcoords.push([uv[0],uv[1]]);
-	return pnt;
-    } /* computeSurface */
+    if(!this.indexHash[indu])
+        this.indexHash[indu] = [];
+    this.indexHash[indu][indv] = this.coordIndex;
+    this.coordIndex++;
+    this.coordinates.push(pnt);
+    this.texcoords.push([uv[0],uv[1]]);
+    return pnt;
+  } /* computeSurface */
 
-    /* Compute a point on a trim curve. */
-    this.computeCurve = function(loop, seg, u) {
-	// first try the hash
-	var indu = Math.floor(u*10e10);
-	if(this.curveHash[loop][seg]) {
-	    var memoizedPoint = this.curveHash[loop][seg][indu];
-	    if(memoizedPoint)
-		return memoizedPoint;
-	}
-	// hash lookup failed, compute the point
-	var pnt, crv = this.tloops[loop][seg];
-	if(crv[4] && crv[4].length) {
-	    pnt = curvePoint2DH(crv[0], crv[1], crv[2], crv[3], crv[4], u);
-	} else {
-	    pnt = curvePoint2D(crv[0], crv[1], crv[2], crv[3], u);
-	}
-	// memoize pnt
-	if(!this.curveHash[loop][seg])
-	    this.curveHash[loop][seg] = [];
-	this.curveHash[loop][seg][indu] = pnt;
-	return pnt;
+  /* Compute a point on a trim curve. */
+  this.computeCurve = function(loop, seg, u) {
+    // first try the hash
+    var indu = Math.floor(u*10e10);
+    if(this.curveHash[loop][seg]) {
+        var memoizedPoint = this.curveHash[loop][seg][indu];
+        if(memoizedPoint)
+      return memoizedPoint;
+    }
+    // hash lookup failed, compute the point
+    var pnt, crv = this.tloops[loop][seg];
+    if(crv[4] && crv[4].length) {
+        pnt = curvePoint2DH(crv[0], crv[1], crv[2], crv[3], crv[4], u);
+    } else {
+        pnt = curvePoint2D(crv[0], crv[1], crv[2], crv[3], u);
+    }
+    // memoize pnt
+    if(!this.curveHash[loop][seg])
+        this.curveHash[loop][seg] = [];
+    this.curveHash[loop][seg][indu] = pnt;
+    return pnt;
     } /* computeCurve */
 
     /* Decide if an edge should be split;
