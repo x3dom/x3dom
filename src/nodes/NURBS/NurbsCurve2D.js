@@ -70,7 +70,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFDouble(ctx, 'controlPoint', []); //should be MFVec2d
+            this.addField_MFVec2f(ctx, 'controlPoint', []); //should be MFVec2d, was MFDouble
             
             /**
              * control point weights: P[i].w = weight[ i ]
