@@ -172,13 +172,13 @@ function curvePoint2DH(n, p, U, P, W, u)
 
   for(j = 0; j <= p; j++)
     {
-      k = (span-p+j)*2;
-      Cw[0] = Cw[0] + N[j]*P[k];
-      Cw[1] = Cw[1] + N[j]*P[k+1];
-      Cw[2] = Cw[2] + N[j]*W[span-p+j];
+      k = (span-p+j)*2; // for MFVec2f: (span-p+j)
+      Cw[0] = Cw[0] + N[j]*P[k]; // for MFVec2f: P.x
+      Cw[1] = Cw[1] + N[j]*P[k+1]; // for MFVec2f: P.y
+      Cw[2] = Cw[2] + N[j]*W[span-p+j]; // for MFVec2f: k
     }
 
-  for(j = 0; j < 2; j++)
+  for(j = 0; j < 2; j++) // for MFVec2f
     C[j] = Cw[j]/Cw[2];
 
  return C;
@@ -195,7 +195,7 @@ function curvePoint2D(n, p, U, P, u)
 
   for(j = 0; j <= p; j++)
     {
-      k = (span-p+j)*2;
+      k = (span-p+j)*2; // for MFVec2f: see above
       C[0] = C[0] + N[j]*P[k];
       C[1] = C[1] + N[j]*P[k+1];
     }
