@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'controlPoint', []); //should be MFVec2d
-	      }, { }
+            this.addField_MFVec2f(ctx, 'controlPoint', []); //should be MFVec2d
+	    }, { }
     )
 );
