@@ -374,8 +374,9 @@
                 ]},
                 {"name": "NURBS", "filePrefix": "nodes/NURBS/", "files":[
                     {"file": "NurbsPatchSurface.js"},
-		    {"file": "NurbsCurve2D.js"},
-		    {"file": "ContourPolyline2D.js"},
+                    {"file": "NurbsCurve2D.js"},
+                    {"file": "NurbsTrimmedSurface.js"},
+                    {"file": "ContourPolyline2D.js"},
                     {"file": "Contour2D.js"},
                     {"file": "x3dom-nurbs-nodes.js"},
                     {"file": "x3dom-nurbs-pool.js"}
