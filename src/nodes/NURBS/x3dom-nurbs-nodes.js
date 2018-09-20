@@ -217,15 +217,15 @@ x3dom.registerNodeType(
 				    knots.push(0);
 				    knots.push(0);
 				    for(var k = 2;
-					k < tc._vf.controlPoint.length/2; k++)
+					k < tc._vf.controlPoint.length/2; k++) //controlPoint.length when MFVec2f
 					knots.push(k-1);
 				    knots.push(knots[knots.length-1]+1);
 				    knots.push(knots[knots.length-1]);
 				    tc._vf.knot = knots;
 				}
-				T[i].push([tc._vf.controlPoint.length-1,
+				T[i].push([tc._vf.controlPoint.length-1, //T[0] needs attention when MFVec2f
 					   tc._vf.order-1, tc._vf.knot,
-					   tc._vf.controlPoint, tc._vf.weight]);
+					   tc._vf.controlPoint, tc._vf.weight]); //T[3] needs attention when MFVec2f
 			    }
 			}
 		    }
