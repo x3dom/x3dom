@@ -160,16 +160,16 @@ function tessProgress(x3de, onoff) {
 //     )
 // );
 
-x3dom.registerNodeType(
-    "Contour2D",
-    "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        function (ctx) {
-            x3dom.nodeTypes.Contour2D.superClass.call(this, ctx);
-            this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
-	}, { }
-    )
-);
+// x3dom.registerNodeType(
+//     "Contour2D",
+//     "Grouping",
+//     defineClass(x3dom.nodeTypes.X3DGroupingNode,
+//         function (ctx) {
+//             x3dom.nodeTypes.Contour2D.superClass.call(this, ctx);
+//             this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
+// 	}, { }
+//     )
+// );
 
 x3dom.registerNodeType(
     "NurbsTrimmedSurface",
