@@ -217,7 +217,7 @@ x3dom.registerNodeType(
 				    knots.push(0);
 				    knots.push(0);
 				    for(var k = 2;
-					k < tc._vf.controlPoint.length/2; k++) //controlPoint.length when MFVec2f
+					k < tc._vf.controlPoint.length; k++) //controlPoint.length when MFVec2f, was /2
 					knots.push(k-1);
 				    knots.push(knots[knots.length-1]+1);
 				    knots.push(knots[knots.length-1]);
