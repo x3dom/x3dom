@@ -78,25 +78,25 @@ function createITS(data, node) {
 // } /* createCoarseITS */
 
 
-function tessProgress(x3de, onoff) {
-    if(!x3de.tessProgressDiv) {
-	var progressDiv = document.createElement('div');
-	progressDiv.setAttribute('class', 'x3dom-progress');
-	var _text = document.createElement('strong');
-	_text.appendChild(document.createTextNode('Tessellating...'));
-	progressDiv.appendChild(_text);
-	var _inner = document.createElement('span');
-	_inner.setAttribute('style', 'width: 25%;');
-	_inner.appendChild(document.createTextNode(' '));
-	progressDiv.appendChild(_inner);
-	x3de.tessProgressDiv = progressDiv;
-	x3de.appendChild(progressDiv);
-    }
-    var pd = x3de.tessProgressDiv;
-    if(onoff)
-	pd.style.display = 'inline';
-    else
-	pd.style.display = 'none';
+// function tessProgress(x3de, onoff) {
+//     if(!x3de.tessProgressDiv) {
+// 	var progressDiv = document.createElement('div');
+// 	progressDiv.setAttribute('class', 'x3dom-progress');
+// 	var _text = document.createElement('strong');
+// 	_text.appendChild(document.createTextNode('Tessellating...'));
+// 	progressDiv.appendChild(_text);
+// 	var _inner = document.createElement('span');
+// 	_inner.setAttribute('style', 'width: 25%;');
+// 	_inner.appendChild(document.createTextNode(' '));
+// 	progressDiv.appendChild(_inner);
+// 	x3de.tessProgressDiv = progressDiv;
+// 	x3de.appendChild(progressDiv);
+//     }
+//     var pd = x3de.tessProgressDiv;
+//     if(onoff)
+// 	pd.style.display = 'inline';
+//     else
+// 	pd.style.display = 'none';
 } /* tessProgress */
 
 
