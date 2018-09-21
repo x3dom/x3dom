@@ -236,7 +236,32 @@ x3dom.registerNodeType(
                 its.nodeChanged();
                 its._xmlNode = node._xmlNode;
                 return its;
-            } /* createCoarseITS */
+            }, /* createCoarseITS */
+            createITS: function (data, node) {
+                var its = new x3dom.nodeTypes.IndexedTriangleSet();
+                its._nameSpace = node._nameSpace;
+                its._vf.normalPerVertex = node._vf.normalPerVertex;
+                its._vf.solid = false;
+                its._vf.ccw = false;
+                its._vf.index = data[0];
+                var co = new x3dom.nodeTypes.Coordinate();
+                co._nameSpace = node._nameSpace;
+                co._vf.point = new x3dom.fields.MFVec3f();
+                for(var i = 0; i < data[1].length; i++)
+                co._vf.point.push(
+                      new x3dom.fields.SFVec3f(data[1][i][0],data[1][i][1],data[1][i][2]));
+                its.addChild(co);
+                var tc = new x3dom.nodeTypes.TextureCoordinate();
+                tc._nameSpace = node._nameSpace;
+                tc._vf.point = new x3dom.fields.MFVec2f();
+                for(var i = 0; i < data[2].length; i++)
+                tc._vf.point.push(
+                    new x3dom.fields.SFVec2f(data[2][i][0],data[2][i][1]));
+                its.addChild(tc);
+                its.nodeChanged();
+                its._xmlNode = node._xmlNode;
+                return its;
+            } /* createITS */
         }
     )
 );
