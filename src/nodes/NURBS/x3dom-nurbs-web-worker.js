@@ -50,7 +50,7 @@ onmessage = function(e) {
     } else {
         postMessage([tess.indices, tess.coordinates, tess.texcoords]);
     }
-
+    close();//deprecated?
 }
 
 /*
