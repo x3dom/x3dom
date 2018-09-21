@@ -14,7 +14,11 @@
 
 //importScripts('x3dom-nurbs-tess.js');
 
-tessWorkerScript = URL.createObjectURL(new Blob(['('+tessWorker.toString()+')()'], {type: 'application/javascript'}));
+//encapsulate scope
+
+function () {
+
+x3dom.tessWorkerScript = URL.createObjectURL(new Blob(['('+tessWorker.toString()+')()'], {type: 'application/javascript'}));
 
 //wrapper
 
@@ -1075,3 +1079,5 @@ function Tessellator(nurb) {
 } /* Tessellator */
 
 } /* wrapper */
+	
+} /* anonymous encapsulation */
