@@ -51,7 +51,6 @@ x3dom.registerNodeType(
             this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
             
             this._needReRender = true;
-	          this._myctx = ctx;
         },
         {
             nodeChanged: function() {
@@ -64,9 +63,6 @@ x3dom.registerNodeType(
                     this._mesh = its._mesh;
                     this._hasCoarseMesh = true;
                 }
-
-                var x3de = this._myctx.doc._x3dElem;
-                tessProgress(x3de, true);
 
                 var T = [];
                 if(this._cf.trimmingContour &&
@@ -103,22 +99,25 @@ x3dom.registerNodeType(
                 }
 
                 var onmessage = function(e) {
-                    if(e.data.length >= 3){
-                  var its = createITS(e.data, this.caller);
-                  this.caller.workerTask = null;
-                  this.caller._mesh = its._mesh;
-                  if(this.caller._cleanupGLObjects)
-                      this.caller._cleanupGLObjects(true);
-                  Array.forEach(this.caller._parentNodes,
+                  if(e.data.length >= 3){
+                      var its = createITS(e.data, this.caller);
+                      this.caller.workerTask = null;
+                      this.caller._mesh = its._mesh;
+                      if(this.caller._cleanupGLObjects)
+                          this.caller._cleanupGLObjects(true);
+                      Array.forEach(this.caller._parentNodes,
                           function (node) {
-                        node.setAllDirty();
+                            node.setAllDirty();
                           });
-                  if(tessWorkerPool.taskQueue.length == 0) {
-                      var x3de = this.caller._myctx.doc._x3dElem;
-                      tessProgress(x3de, false);
+                      var x3de = this.caller._nameSpace.doc._x3dElem;
+                      var tasks = tessWorkerPool.taskQueue.length;
+                      x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
+//                       if(tessWorkerPool.taskQueue.length == 0) {
+
+//                           tessProgress(x3de, false);
+//                       }
+                      this.caller._nameSpace.doc.needRender = true;
                   }
-                  this.caller._nameSpace.doc.needRender = true;
-                    }
                 }
                 var coordNode = this._cf.controlPoint.node;
                 x3dom.debug.assert(coordNode);
