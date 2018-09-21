@@ -100,7 +100,7 @@ x3dom.registerNodeType(
 
                 var onmessage = function(e) {
                   if(e.data.length >= 3){
-                      var its = createITS(e.data, this.caller);
+                      var its = this.caller.createITS(e.data, this.caller);
                       this.caller.workerTask = null;
                       this.caller._mesh = its._mesh;
                       if(this.caller._cleanupGLObjects)
