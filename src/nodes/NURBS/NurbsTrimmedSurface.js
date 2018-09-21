@@ -141,45 +141,7 @@ x3dom.registerNodeType(
             },
             fieldChanged: function(fieldName) {
 		            this.nodeChanged();
-            },
-            createCoarseITS: function(node) {
-                var w = node._vf.uDimension;
-                var h = node._vf.vDimension;
-                var coordNode = node._cf.controlPoint.node;
-
-                var its = new x3dom.nodeTypes.IndexedTriangleSet();
-                its._nameSpace = node._nameSpace;
-                its._vf.solid = false;
-                its._vf.ccw = false;
-                var ind = [], i1 = 0, i2 = w;
-                for(var i = 0; i < h-1; i++){
-                for(var j = 0; j < w-1; j++){
-                    ind.push(i1);
-                    ind.push(i1+1);
-                    ind.push(i2);
-                    ind.push(i2);
-                    ind.push(i1+1);
-                    ind.push(i2+1);
-                    i1++;
-                    i2++;
-                }
-                i1++;
-                i2++;
-                }
-                its._vf.index = ind;
-
-                its.addChild(coordNode)
-                if(0){
-                var tc = new x3dom.nodeTypes.TextureCoordinate();
-                tc._nameSpace = node._nameSpace;
-                tc._vf.point = new x3dom.fields.MFVec2f(data[2]/*tess.texcoords*/);
-                its.addChild(tc)
-                }
-
-                its.nodeChanged();
-                its._xmlNode = node._xmlNode;
-                return its;
-            } /* createCoarseITS */
+            }
         }
     )
 );
