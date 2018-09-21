@@ -16,7 +16,7 @@
 
 //encapsulate scope
 
-function () {
+(function () {
 
 x3dom.tessWorkerScript = URL.createObjectURL(new Blob(['('+tessWorker.toString()+')()'], {type: 'application/javascript'}));
 
@@ -1080,4 +1080,4 @@ function Tessellator(nurb) {
 
 } /* wrapper */
 	
-} /* anonymous encapsulation */
+})(); /* anonymous encapsulation */
