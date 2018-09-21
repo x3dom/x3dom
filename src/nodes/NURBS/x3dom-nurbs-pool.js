@@ -80,7 +80,7 @@ x3dom.WorkerTask = function (script, caller, callback, msg) {
     if (navigator.hardwareConcurrency) { //IE
         poolSize = Math.max(1, navigator.hardwareConcurrency - 1);
     }
-    x3dom.tessWorkerPool = new x3dom.workerPool(poolSize);
+    x3dom.tessWorkerPool = new x3dom.WorkerPool(poolSize);
     x3dom.tessWorkerPool.init();
 })();
 
