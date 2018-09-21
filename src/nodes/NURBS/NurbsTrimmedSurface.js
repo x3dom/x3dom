@@ -59,7 +59,7 @@ x3dom.registerNodeType(
                 this._vf.solid = false;
                 this._vf.useGeoCache = false;
                 if(!this._hasCoarseMesh){
-                    var its = x3dom.nodeTypes.NurbsTrimmedSurface.prototype.createCoarseITS(this);
+                    var its = this.createCoarseITS(this); //x3dom.nodeTypes.NurbsTrimmedSurface.prototype.createCoarseITS(this);
                     this._mesh = its._mesh;
                     this._hasCoarseMesh = true;
                 }
