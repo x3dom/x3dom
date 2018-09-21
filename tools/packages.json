@@ -378,7 +378,7 @@
                     {"file": "NurbsTrimmedSurface.js"},
                     {"file": "ContourPolyline2D.js"},
                     {"file": "Contour2D.js"},
-                    {"file": "x3dom-nurbs-tessworker.js"},
+                    {"file": "x3dom-nurbs-web-worker.js"},
                     {"file": "x3dom-nurbs-pool.js"}
                 ]}              
             ]
