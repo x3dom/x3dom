@@ -97,7 +97,7 @@ function createITS(data, node) {
 // 	pd.style.display = 'inline';
 //     else
 // 	pd.style.display = 'none';
-} /* tessProgress */
+//} /* tessProgress */
 
 
 // x3dom.registerNodeType(
