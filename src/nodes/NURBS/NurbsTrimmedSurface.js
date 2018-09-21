@@ -59,7 +59,7 @@ x3dom.registerNodeType(
                 this._vf.solid = false;
                 this._vf.useGeoCache = false;
                 if(!this._hasCoarseMesh){
-                    var its = this.createCoarseITS(this); //x3dom.nodeTypes.NurbsTrimmedSurface.prototype.createCoarseITS(this);
+                    var its = this.createCoarseITS(this);
                     this._mesh = its._mesh;
                     this._hasCoarseMesh = true;
                 }
@@ -112,10 +112,6 @@ x3dom.registerNodeType(
                       var x3de = this.caller._nameSpace.doc._x3dElem;
                       var tasks = tessWorkerPool.taskQueue.length;
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
-//                       if(tessWorkerPool.taskQueue.length == 0) {
-
-//                           tessProgress(x3de, false);
-//                       }
                       this.caller._nameSpace.doc.needRender = true;
                   }
                 }
@@ -137,7 +133,7 @@ x3dom.registerNodeType(
                 //this.workerTask = new WorkerTask('https://rawgit.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
                 //         this, onmessage, startmessage);
                 
-                this.workerTask = new WorkerTask(tessWorkerScript,
+                this.workerTask = new WorkerTask(x3dom.tessWorkerScript,
                          this, onmessage, startmessage);
 
                 tessWorkerPool.addWorkerTask(this.workerTask);
