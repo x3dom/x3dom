@@ -12,7 +12,8 @@
 
 /* NURBS for x3dom */
 
-function WorkerPool(size) {
+
+x3dom.WorkerPool = function (size) {
     var _this = this;
     this.taskQueue = [];
     this.workerQueue = [];
@@ -49,7 +50,7 @@ function WorkerPool(size) {
     } // freeWorkerThread
 }; /* WorkerPool */
 
-function WorkerThread(workerPool) {
+x3dom.WorkerThread = function (workerPool) {
     var _this = this;
     this.workerPool = workerPool;
     this.workerTask = {};
@@ -57,8 +58,8 @@ function WorkerThread(workerPool) {
     this.run = function(workerTask) {
         _this.workerTask = workerTask;
         var worker = new Worker(workerTask.script);
-	worker.caller = workerTask.caller;
-	worker.onmessage = function(e) {
+        worker.caller = workerTask.caller;
+        worker.onmessage = function(e) {
 	    _this.workerTask.callback(e);
 	    _this.workerPool.freeWorkerThread(_this);
 	}
@@ -66,17 +67,20 @@ function WorkerThread(workerPool) {
     } // run
 }; /* WorkerThread */
 
-function WorkerTask(script, caller, callback, msg) {
+x3dom.WorkerTask = function (script, caller, callback, msg) {
     this.script = script;
     this.caller = caller;
     this.callback = callback;
     this.startMessage = msg;
 };
 
-var poolSize = 1;
-if (navigator.hardwareConcurrency) { //IE
-    poolSize = Math.max(1, navigator.hardwareConcurrency - 1);
-}
 
-var tessWorkerPool = new WorkerPool(poolSize);
-tessWorkerPool.init();
+(function () {
+    var poolSize = 1;
+    if (navigator.hardwareConcurrency) { //IE
+        poolSize = Math.max(1, navigator.hardwareConcurrency - 1);
+    }
+    x3dom.tessWorkerPool = new x3dom.workerPool(poolSize);
+    x3dom.tessWorkerPool.init();
+})();
+
