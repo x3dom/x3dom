@@ -22,7 +22,7 @@ x3dom.WorkerPool = function (size) {
     this.init = function() {
         // create 'size' number of worker threads
         for (var i = 0 ; i < this.poolSize ; i++) {
-            _this.workerQueue.push(new WorkerThread(_this));
+            _this.workerQueue.push(new x3dom.WorkerThread(_this));
         }
     } // init
 
