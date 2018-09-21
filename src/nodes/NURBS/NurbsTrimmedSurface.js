@@ -133,7 +133,7 @@ x3dom.registerNodeType(
                 //this.workerTask = new WorkerTask('https://rawgit.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
                 //         this, onmessage, startmessage);
                 
-                this.workerTask = new WorkerTask(x3dom.tessWorkerScript, //global script
+                this.workerTask = new x3dom.WorkerTask(x3dom.tessWorkerScript, //global script
                          this, onmessage, startmessage);
 
                 x3dom.tessWorkerPool.addWorkerTask(this.workerTask); //global pool
