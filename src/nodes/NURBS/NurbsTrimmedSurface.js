@@ -110,7 +110,7 @@ x3dom.registerNodeType(
                             node.setAllDirty();
                           });
                       var x3de = this.caller._nameSpace.doc._x3dElem;
-                      var tasks = tessWorkerPool.taskQueue.length;
+                      var tasks = x3dom.tessWorkerPool.taskQueue.length;
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
                       this.caller._nameSpace.doc.needRender = true;
                   }
