@@ -144,6 +144,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     // progress bar
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this._createProgressDiv();
+    this.progressText = "";
     this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
     this.x3dElem.appendChild(this.progressDiv);
 
@@ -1140,14 +1141,16 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
         }
 
         if (this.doc.properties.getProperty("showProgress") !== 'false') {
-            if (this.progressDiv) {
-                this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
+            //if (this.progressDiv) {
+            	this.progressDiv.style.display = 'inline';
                 if (this.doc.downloadCount > 0) {
-                    this.progressDiv.style.display = 'inline';
+                	this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);                    
+                } else if (this.progressText) {
+                	this.progressDiv.childNodes[0].textContent = this.progressText;
                 } else {
                     this.progressDiv.style.display = 'none';
                 }
-            }
+            //}
         } else {
             this.progressDiv.style.display = 'none';
         }
