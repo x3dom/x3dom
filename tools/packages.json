@@ -374,7 +374,7 @@
                 ]},
                 {"name": "NURBS", "filePrefix": "nodes/NURBS/", "files":[
                     {"file": "X3DParametricGeometryNode.js"},
-                    {"file": "X3DNurbsSurfaceGeometryNode..js"},
+                    {"file": "X3DNurbsSurfaceGeometryNode.js"},
                     {"file": "NurbsPatchSurface.js"},
                     {"file": "NurbsCurve2D.js"},
                     {"file": "NurbsTrimmedSurface.js"},
