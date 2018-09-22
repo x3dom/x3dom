@@ -38,7 +38,7 @@ x3dom.registerNodeType(
             },
 
             parentAdded: function (parent) {
-                if (parent._mesh && parent._cf.coord.node !== this) {
+                if (parent._mesh && parent._cf.coord && parent._cf.coord.node !== this) {
                     parent.fieldChanged("coord");
                 }
             }
