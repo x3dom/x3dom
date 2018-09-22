@@ -218,11 +218,11 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'normalPerVertex', true);
             
             this._needReRender = true;
-            this._myctx = ctx;
+            //this._myctx = ctx;
         },
         {
             nodeChanged: function() { //overwritten
-                x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
+                //x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
 		            return;
             },
             fieldChanged: function(fieldName) {//overwritten
