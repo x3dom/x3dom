@@ -22,7 +22,7 @@
 x3dom.registerNodeType(
     "NurbsTrimmedSurface",
     "NURBS",
-    defineClass(x3dom.nodeTypes.NurbsPatchSurface, //X3DNurbsSurfaceGeometryNode
+    defineClass(x3dom.nodeTypes.X3DNurbsSurfaceGeometryNode, //NurbsPatchSurface
         
         /**
          * Constructor for NurbsTrimmedSurface
@@ -30,7 +30,7 @@ x3dom.registerNodeType(
          * @x3d 3.3
          * @component NURBS
          * @status experimental
-         * @extends x3dom.nodeTypes.NurbsPatchSurface //X3DNurbsSurfaceGeometryNode
+         * @extends x3dom.nodeTypes.X3DNurbsSurfaceGeometryNode //NurbsPatchSurface
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The NurbsTrimmedSurface node defines a NURBS surface that is trimmed by a set of trimming loops.
          */
@@ -130,9 +130,6 @@ x3dom.registerNodeType(
                 if(this.workerTask)
                     this.workerTask.discard = true;
 
-                //this.workerTask = new WorkerTask('https://rawgit.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
-                //         this, onmessage, startmessage);
-                
                 this.workerTask = new x3dom.WorkerTask(x3dom.tessWorkerScript, //global script
                          this, onmessage, startmessage);
 
