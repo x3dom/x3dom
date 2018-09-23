@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0'  xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation =' http://www.web3d.org/specifications/x3d-3.0.xsd '>
+<head>
+<component level='1' name='NURBS'/>
+<meta name='title' content='NurbsCurveExample.x3d'/>
+<meta name='description' content='NurbsCurve exemplar showing controlPoint animation. Upper example has knot values explicitly defined, lower example has implicit knot values.'/>
+<meta name='creator' content='Charles Adams, Vincent Marchetti, Don Brutzman'/>
+<meta name='created' content='4 February 2003'/>
+<meta name='modified' content='15 November 2017'/>
+<meta name='MovingImage' content='videos/NurbsCurveExample.mov'/>
+<meta name='TODO' content='check NurbsCurve containerField handling and weight defaults'/>
+<meta name='reference' content=' http://edocs.nps.edu/npspubs/scholarly/theses/2003/Jun/03Jun_Adams.pdf '/>
+<meta name='subject' content='NURBS Curve Example'/>
+<meta name='identifier' content=' http://www.web3d.org/x3d/content/examples/Basic/NURBS/NurbsCurveExample.x3d '/>
+<meta name='generator' content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit'/>
+<meta name='license' content=' ../license.html'/>
+</head>
+<!--
+Index for DEF nodes : ci, GridXY_20x20Fixed, GridXY_20x20Fixed_AdjustScale, LightBlueAppearance, LightGreenAppearance, np, NurbsCurveKnotted, NurbsCurveUnknotted, ts
+Index for Viewpoint image : Viewpoint_1
+-->
+<Scene>
+<Viewpoint description='NurbsCurve' position='12 7 18'/>
+<Transform translation='0 5 0'>
+<Shape>
+<NurbsCurve DEF='NurbsCurveKnotted' knot='0 0 0 0 0.5 1 1 1 1' order='4' tessellation='30' weight='1 1 1 1 1'>
+<!-- ROUTE information for np node:  [from ci.value_changed to set_point ] -->
+<Coordinate DEF='np' containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
+</NurbsCurve>
+<Appearance DEF='LightGreenAppearance'>
+<Material diffuseColor='0.8 1 0.8' emissiveColor='0.8 1 0.8'/>
+</Appearance>
+</Shape>
+<Transform translation='0 7 0'>
+<Shape>
+<Text string='"NurbsCurve with knots"'/>
+<Appearance USE='LightGreenAppearance'/>
+</Shape>
+</Transform>
+</Transform>
+<Shape>
+<NurbsCurve DEF='NurbsCurveUnknotted' order='4' tessellation='30'>
+<Coordinate USE='np' containerField='controlPoint'/>
+</NurbsCurve>
+<Appearance DEF='LightBlueAppearance'>
+<Material diffuseColor='0.8 0.8 1' emissiveColor='0.8 0.8 1'/>
+</Appearance>
+</Shape>
+<Transform translation='0 7 0'>
+<Shape>
+<Text string='"NurbsCurve without knots"'/>
+<Appearance USE='LightBlueAppearance'/>
+</Shape>
+</Transform>
+<!-- ROUTE information for ci node:  [from ts.fraction_changed to set_fraction ] [from value_changed to np.set_point ] -->
+<CoordinateInterpolator DEF='ci' key='0 .5 1' keyValue='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0 4 6 0 7 0 0 11 6 0 15 10 0 20 6 0 4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
+<!-- ROUTE information for ts node:  [from fraction_changed to ci.set_fraction ] -->
+<TimeSensor DEF='ts' cycleInterval='6' loop='true'/>
+<ROUTE fromNode='ts' fromField='fraction_changed' toNode='ci' toField='set_fraction'/>
+<ROUTE fromNode='ci' fromField='value_changed' toNode='np' toField='set_point'/>
+<!-- Authoring hint -->
+</Scene>
+</X3D>
