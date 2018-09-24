@@ -143,7 +143,22 @@ x3dom.registerNodeType(
                 ils.nodeChanged();
                 ils._xmlNode = node._xmlNode;
                 return ils;
-            }
+            },
+            createILS: function (data, node) {
+                var ils = new x3dom.nodeTypes.IndexedLineSet();
+                ils._nameSpace = node._nameSpace;
+                its._vf.coordIndex = data[0];
+                var co = new x3dom.nodeTypes.Coordinate();
+                co._nameSpace = node._nameSpace;
+                co._vf.point = new x3dom.fields.MFVec3f();
+                for(var i = 0; i < data[1].length; i++)
+                    co._vf.point.push(
+                        new x3dom.fields.SFVec3f(data[1][i][0],data[1][i][1],data[1][i][2]));
+                ils.addChild(co);
+                ils.nodeChanged();
+                ils._xmlNode = node._xmlNode;
+                return ils;
+                } /* createILS */
         }
     )
 );
