@@ -76,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode(ctx, 'controlPoint', x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode('controlPoint', x3dom.nodeTypes.X3DCoordinateNode);
             
             /**
              * control point weights: P[i].w = weight[ i ]
