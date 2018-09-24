@@ -376,6 +376,7 @@
                     {"file": "X3DParametricGeometryNode.js"},
                     {"file": "X3DNurbsSurfaceGeometryNode.js"},
                     {"file": "NurbsPatchSurface.js"},
+                    {"file": "NurbsCurve.js"},
                     {"file": "NurbsCurve2D.js"},
                     {"file": "NurbsTrimmedSurface.js"},
                     {"file": "ContourPolyline2D.js"},
