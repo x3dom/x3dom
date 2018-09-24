@@ -133,13 +133,13 @@ x3dom.registerNodeType(
                 var ils = new x3dom.nodeTypes.IndexedLineSet();
                 ils._nameSpace = node._nameSpace;
                 var ind = [];
-                for(var i = 0; i < coordNode.length-1; i++){
+                for(var i = 0; i < coordNode._vf.point.length-1; i++){
                     ind.push(i);
                     ind.push(i+1);
                     ind.push(-1);
                 }
                 
-                ils._vf.index = ind;
+                ils._vf.coordIndex = ind;
 
                 ils.addChild(coordNode);
 
