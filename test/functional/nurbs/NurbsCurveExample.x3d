@@ -21,6 +21,7 @@ Index for DEF nodes : ci, GridXY_20x20Fixed, GridXY_20x20Fixed_AdjustScale, Ligh
 Index for Viewpoint image : Viewpoint_1
 -->
 <Scene>
+<Background skyColor='0.1 0.1 0.3'/> 
 <Viewpoint description='NurbsCurve' position='12 7 18'/>
 <Transform translation='0 5 0'>
 <Shape>
