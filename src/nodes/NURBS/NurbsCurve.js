@@ -125,7 +125,7 @@ x3dom.registerNodeType(
                 return;
             },
             fieldChanged: function(fieldName) {
-		            this.nodeChanged();
+                this.nodeChanged();
             },
             createCoarseILS: function(node) {
                 var coordNode = node._cf.controlPoint.node;
@@ -133,16 +133,13 @@ x3dom.registerNodeType(
                 var ils = new x3dom.nodeTypes.IndexedLineSet();
                 ils._nameSpace = node._nameSpace;
                 var ind = [];
-                for(var i = 0; i < coordNode._vf.point.length-1; i++){
+                for(var i = 0; i < coordNode._vf.point.length; i++){
                     ind.push(i);
-                    ind.push(i+1);
-                    ind.push(-1);
-                }
+	    	    }
+	    	    ind.push(-1);
                 
                 ils._vf.coordIndex = ind;
-
                 ils.addChild(coordNode);
-
                 ils.nodeChanged();
                 ils._xmlNode = node._xmlNode;
                 return ils;
