@@ -121,11 +121,12 @@ x3dom.registerNodeType(
                     this._hasCoarseMesh = true;
                 }
                 if (this._vf.knot.length == 0) this.createDefaultKnots();
-                var tessPoints = this.calcTessPoints(this._vf.tessellation, 
-                                                      this._cf.controlPoint.node._vf.point.length);
-                this.ulist = this.listPoints(tessPoints, this._vf.knot);
-		        //var data = this.tessellate();
-                //var ils = this.createILS(data,this);
+                var tessPoints = this.calcTessPoints(
+                    this._vf.tessellation, 
+                    this._cf.controlPoint.node._vf.point.length);
+                this.uList = this.listPoints(tessPoints, this._vf.knot);
+                var data = this.tessellate();
+                //var ils = this.createILS(data, this);
                 //this._mesh = ils._mesh;
                 return;
             },
@@ -156,8 +157,20 @@ x3dom.registerNodeType(
                 //todo: go through knots and move nearest u if necessary
                 return list;
             },
-
-                
+            tessellate: function () {
+                var tessellator = new CurveTessellator(
+                    {
+                        dimension: this.uList.length-1,
+                        u: this.uList,
+                        order: this._vf.order-1,
+                        knots: this._vf.knot,
+                        points: this._cf.controlPoint.node._vf.points,
+                        weights: this._vf.weight,
+                        closed: this._vf.closed
+                    });
+                tessellator.tessellate();
+                return tessellator.coordinates;
+            },
             createCoarseILS: function(node) {
                 var coordNode = node._cf.controlPoint.node;
 
@@ -193,6 +206,24 @@ x3dom.registerNodeType(
         }
     )
 );
+
+function CurveTessellator(nurb) {
+    this.w = nurb.dimension;
+    this.p = nurb.order;
+    this.U = nurb.knots;
+    this.P = nurb.points;
+    this.W = nurb.weights;
+    this.surfaceHash = [];
+    this.indexHash = [];
+    this.curveHash = null;
+    this.coordinates = [];
+    this.texcoords = [];
+    this.indices = [];
+    this.coordIndex = 0;
+
+    this.tessellate = function () {
+    };
+}
 
 function findSpan(n, p, u, U)
 {
@@ -392,7 +423,7 @@ function curvePoint2D(n, p, U, P, u)
 } /* curvePoint2D */
 
 
-function Tessellator(nurb) {
+function CTessellator(nurb) {
     this.use_objectspace = true;
     this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
@@ -409,7 +440,6 @@ function Tessellator(nurb) {
     this.P = nurb[6];
     this.W = nurb[7];
     this.tloops = nurb[10];
-
     this.surfaceHash = [];
     this.indexHash = [];
     this.curveHash = null;
