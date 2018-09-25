@@ -122,11 +122,41 @@ x3dom.registerNodeType(
                     this._mesh = ils._mesh;
                     this._hasCoarseMesh = true;
                 }
+                if (this._vf.knot.length == 0) this.createDefaultKnots(this._vf.knot);
+                var tessPoints = this.calcTessPoints(this._vf.tessellation, 
+                                                      this._cf.controlPoint.node._vf.point.length);
+                this.ulist = this.listPoints(tessPoints, this._vf.knot);
+		    
                 return;
             },
             fieldChanged: function(fieldName) {
                 this.nodeChanged();
             },
+            createDefaultKnots: function (knots) {
+                knots = [];
+                knots.push(0);
+                knots.push(0);
+                for (var k = 2;
+                    k < this._cf.controlPoint.node._vf.point.length; k++)
+                    knots.push(k-1);
+                knots.push(knots[knots.length-1]+1);
+                knots.push(knots[knots.length-1]);
+            },
+            calcTessPoints: function(tess, controls) {
+                if (tess > 0) return tess + 1;
+                if (tess == 0) return 2 * controls + 1;
+                return -tess * controls + 1;
+            },
+            listPoints: function(points, knots) {
+                var step = knots[knots.length-1] - knots[0];
+                step = step/(points-1);
+                var list = [];
+                for(var i=0; i <= points; i++) list.push(knots[0] + i*step);
+                //todo: go through knots and move nearest u if necessary
+                return list;
+            },
+
+                
             createCoarseILS: function(node) {
                 var coordNode = node._cf.controlPoint.node;
 
