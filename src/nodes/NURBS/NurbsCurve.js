@@ -122,7 +122,7 @@ x3dom.registerNodeType(
                     this._mesh = ils._mesh;
                     this._hasCoarseMesh = true;
                 }
-                if (this._vf.knot.length == 0) this.createDefaultKnots(this._vf.knot);
+                if (this._vf.knot.length == 0) this.createDefaultKnots();
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, 
                                                       this._cf.controlPoint.node._vf.point.length);
                 this.ulist = this.listPoints(tessPoints, this._vf.knot);
@@ -132,8 +132,8 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName) {
                 this.nodeChanged();
             },
-            createDefaultKnots: function (knots) {
-                knots = [];
+            createDefaultKnots: function () {
+                var knots = [];
                 knots.push(0);
                 knots.push(0);
                 for (var k = 2;
@@ -141,6 +141,7 @@ x3dom.registerNodeType(
                     knots.push(k-1);
                 knots.push(knots[knots.length-1]+1);
                 knots.push(knots[knots.length-1]);
+	    	this._vf.knot = knots;
             },
             calcTessPoints: function(tess, controls) {
                 if (tess > 0) return tess + 1;
@@ -151,7 +152,7 @@ x3dom.registerNodeType(
                 var step = knots[knots.length-1] - knots[0];
                 step = step/(points-1);
                 var list = [];
-                for(var i=0; i <= points; i++) list.push(knots[0] + i*step);
+                for(var i=0; i < points; i++) list.push(knots[0] + i*step);
                 //todo: go through knots and move nearest u if necessary
                 return list;
             },
