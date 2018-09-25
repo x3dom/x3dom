@@ -109,10 +109,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'closed', false); //NYI
-            
-            
-	    }, 
+            this.addField_SFBool(ctx, 'closed', false); //NYI    
+        },
         {
             nodeChanged: function() {
                 this._needReRender = true;
@@ -126,7 +124,9 @@ x3dom.registerNodeType(
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, 
                                                       this._cf.controlPoint.node._vf.point.length);
                 this.ulist = this.listPoints(tessPoints, this._vf.knot);
-		    
+		        //var data = this.tessellate();
+                //var ils = this.createILS(data,this);
+                //this._mesh = ils._mesh;
                 return;
             },
             fieldChanged: function(fieldName) {
