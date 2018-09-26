@@ -122,7 +122,7 @@ x3dom.registerNodeType(
                 }
                 if (this._vf.knot.length == 0) this.createDefaultKnots();
                 var points = this._cf.controlPoint.node._vf.point.length;
-                if (this._vf.weights.length != points) this._vf.weights = Array(points).fill(1.0);
+                if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
                 this.uList = this.listPoints(tessPoints, this._vf.knot);
                 var data = this.tessellate();
@@ -164,7 +164,7 @@ x3dom.registerNodeType(
                         u: this.uList,
                         order: this._vf.order-1,
                         knots: this._vf.knot,
-                        points: this._cf.controlPoint.node._vf.points,
+                        points: this._cf.controlPoint.node._vf.point,
                         weights: this._vf.weight,
                         closed: this._vf.closed
                     });
@@ -227,7 +227,7 @@ function CurveTessellator(nurb) {
     this.tessellate = function () {
         
         this.coordinates = this.u.map(function(u){
-            return curvePoint3DH((this.n, this.p, this.U, this.P, this.W, this.u));
+            return curvePoint3DH(this.n, this.p, this.U, this.P, this.W, this.u);
         }, this);
         
     };
@@ -309,7 +309,7 @@ function curvePoint3DH(n, p, U, P, W, u)
 // 	  temp[j+k] = 0.0;
       for(k = 0; k <= p; k++)
         {
-            i = indu+k+(indv*(n+1));
+            i = indu+k;
             temp[j+0] += Nu[k]*P[i].x;
             temp[j+1] += Nu[k]*P[i].y;
             temp[j+2] += Nu[k]*P[i].z;
