@@ -121,12 +121,12 @@ x3dom.registerNodeType(
                     this._hasCoarseMesh = true;
                 }
                 if (this._vf.knot.length == 0) this.createDefaultKnots();
-                var tessPoints = this.calcTessPoints(
-                    this._vf.tessellation, 
-                    this._cf.controlPoint.node._vf.point.length);
+                var points = this._cf.controlPoint.node._vf.point.length;
+                if (this._vf.weights.length != points) this._vf.weights = Array(points).fill(1.0);
+                var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
                 this.uList = this.listPoints(tessPoints, this._vf.knot);
                 var data = this.tessellate();
-                //var ils = this.createILS(data, this);
+                //var ils = this.createILS([0,data], this);
                 //this._mesh = ils._mesh;
                 return;
             },
@@ -191,13 +191,15 @@ x3dom.registerNodeType(
             createILS: function (data, node) {
                 var ils = new x3dom.nodeTypes.IndexedLineSet();
                 ils._nameSpace = node._nameSpace;
-                its._vf.coordIndex = data[0];
+                //ils._vf.coordIndex = data[0];
                 var co = new x3dom.nodeTypes.Coordinate();
                 co._nameSpace = node._nameSpace;
                 co._vf.point = new x3dom.fields.MFVec3f();
-                for(var i = 0; i < data[1].length; i++)
+                for(var i = 0; i < data[1].length; i++) {
                     co._vf.point.push(
                         new x3dom.fields.SFVec3f(data[1][i][0],data[1][i][1],data[1][i][2]));
+                    ils._vf.coordIndex.push(i);
+                }
                 ils.addChild(co);
                 ils.nodeChanged();
                 ils._xmlNode = node._xmlNode;
@@ -208,20 +210,26 @@ x3dom.registerNodeType(
 );
 
 function CurveTessellator(nurb) {
-    this.w = nurb.dimension;
+    this.n = nurb.dimension;
+    this.u = nurb.u;
     this.p = nurb.order;
     this.U = nurb.knots;
     this.P = nurb.points;
     this.W = nurb.weights;
-    this.surfaceHash = [];
-    this.indexHash = [];
-    this.curveHash = null;
+//     this.surfaceHash = [];
+//     this.indexHash = [];
+//     this.curveHash = null;
     this.coordinates = [];
-    this.texcoords = [];
-    this.indices = [];
-    this.coordIndex = 0;
+//     this.texcoords = [];
+//     this.indices = [];
+//     this.coordIndex = 0;
 
     this.tessellate = function () {
+        
+        this.coordinates = this.u.map(function(u){
+            return curvePoint3DH((this.n, this.p, this.U, this.P, this.W, this.u));
+        }, this);
+        
     };
 }
 
@@ -282,6 +290,49 @@ function basisFuns(i, u, p, U)
  return N;
 } /* basisFuns */
 
+
+function curvePoint3DH(n, p, U, P, W, u)
+{
+ var spanu, spanv, indu, indv, l, k, i, j = 0;
+ var Nu, Nv, C = [], Cw = [0.0,0.0,0.0,0.0], temp = [];
+
+  spanu = findSpan(n, p, u, U);
+  Nu = basisFuns(spanu, u, p, U);
+  //spanv = findSpan(m, q, v, V);
+  //Nv = basisFuns(spanv, v, q, V);
+
+  indu = spanu - p;
+//   for(l = 0; l <= q; l++)
+//     {
+//       indv = spanv - q + l;
+//       for(k = 0; k < 4; k++)
+// 	  temp[j+k] = 0.0;
+      for(k = 0; k <= p; k++)
+        {
+            i = indu+k+(indv*(n+1));
+            temp[j+0] += Nu[k]*P[i].x;
+            temp[j+1] += Nu[k]*P[i].y;
+            temp[j+2] += Nu[k]*P[i].z;
+            temp[j+3] += Nu[k]*W[i];
+        }
+//       j += 4;
+//     }
+
+  j = 0;
+//   for(l = 0; l <= q; l++)
+//     {
+//       Cw[0] += Nv[l]*temp[j+0];
+//       Cw[1] += Nv[l]*temp[j+1];
+//       Cw[2] += Nv[l]*temp[j+2];
+//       Cw[3] += Nv[l]*temp[j+3];
+//       j += 4;
+//     }
+
+  for(j = 0; j < 3; j++)
+    C[j] = temp[j]/temp[3];
+
+ return C;
+} /* curvePoint3DH */
 
 function surfacePoint3DH(n, m, p, q, U, V, P, W, u, v)
 {
@@ -423,7 +474,7 @@ function curvePoint2D(n, p, U, P, u)
 } /* curvePoint2D */
 
 
-function CTessellator(nurb) {
+function Tessellator(nurb) {
     this.use_objectspace = true;
     this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
