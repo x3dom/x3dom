@@ -162,7 +162,7 @@ x3dom.registerNodeType(
                     {
                         dimension: this.uList.length-1,
                         u: this.uList,
-                        order: this._vf.order-1,
+                        degree: this._vf.order-1,
                         knots: this._vf.knot,
                         points: this._cf.controlPoint.node._vf.point,
                         weights: this._vf.weight,
@@ -212,7 +212,7 @@ x3dom.registerNodeType(
 function CurveTessellator(nurb) {
     this.n = nurb.dimension;
     this.u = nurb.u;
-    this.p = nurb.order;
+    this.p = nurb.degree;
     this.U = nurb.knots;
     this.P = nurb.points;
     this.W = nurb.weights;
