@@ -127,8 +127,8 @@ x3dom.registerNodeType(
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
                 this.uList = this.listPoints(tessPoints, this._vf.knot);
                 var data = this.tessellate();
-                //var ils = this.createILS([0,data], this);
-                //this._mesh = ils._mesh;
+                var ils = this.createILS([0,data], this);
+                this._mesh = ils._mesh;
                 return;
             },
             fieldChanged: function(fieldName) {
@@ -228,7 +228,7 @@ function CurveTessellator(nurb) {
     this.tessellate = function () {
         
         this.coordinates = this.u.map(function(u){
-            return curvePoint3DH(this.n, this.p, this.U, this.P, this.W, this.u);
+            return curvePoint3DH(this.n, this.p, this.U, this.P, this.W, u);
         }, this);
         
     };
@@ -306,8 +306,8 @@ function curvePoint3DH(n, p, U, P, W, u)
 //   for(l = 0; l <= q; l++)
 //     {
 //       indv = spanv - q + l;
-//       for(k = 0; k < 4; k++)
-// 	  temp[j+k] = 0.0;
+      for(k = 0; k < 4; k++)
+       	  temp[j+k] = 0.0;
       for(k = 0; k <= p; k++)
         {
             i = indu+k;
