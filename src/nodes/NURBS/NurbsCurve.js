@@ -109,7 +109,13 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'closed', false); //NYI    
+            this.addField_SFBool(ctx, 'closed', false); //NYI
+
+            this.points = []; //MFVec3f controlPoints
+            this.uList = []; //Array of tessellated u values
+            this.basisFunsCache = {}; //N[u]
+            this.ils = new x3dom.nodeTypes.IndexedLineSet();
+            this.ils.addChild(new x3dom.nodeTypes.Coordinate());
         },
         {
             nodeChanged: function() {
@@ -120,16 +126,8 @@ x3dom.registerNodeType(
                     this._mesh = ils._mesh;
                     this._hasCoarseMesh = true;
                 }
-                this.points = this._cf.controlPoint.node._vf.point; 
-                var points = this.points.length;
-                if (this._vf.knot.length == 0) this.createDefaultKnots();
-                if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
-                var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
-                this.uList = this.listPoints(tessPoints, this._vf.knot);
-                var data = this.tessellate();
-                var ils = this.createILS([0,data], this);
-                this._mesh = ils._mesh;
-                return;
+                this.generateGeometry();
+                
             },
             fieldChanged: function(fieldName) {
 		        //this.invalidateVolume();
@@ -137,7 +135,25 @@ x3dom.registerNodeType(
                     node._dirty.positions = true;
                     node.invalidateVolume();
                 });
-                this.nodeChanged();
+                switch (fieldName) {
+                	case 'tessellation': this.uList = []; break;
+                	case 'knot':
+                	case 'order':
+                	case 'closed': this.uList = []; this.basisFunsCache = {}; break;
+                }
+                this.generateGeometry();
+            },
+            generateGeometry: function () {
+            	this.points = this._cf.controlPoint.node._vf.point; 
+                var points = this.points.length;
+                if (this._vf.knot.length == 0) this.createDefaultKnots();
+                if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
+                var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
+                if (this.uList.length == 0) this.uList = this.listPoints(tessPoints, this._vf.knot);
+                var data = this.tessellate();
+                var ils = this.createILS( data, this );
+                this._mesh = this.ils._mesh;
+                return;
             },
             createDefaultKnots: function () {
                 var knots = Array(this.points.length+this._vf.order).fill(0);
@@ -163,19 +179,94 @@ x3dom.registerNodeType(
                 return list;
             },
             tessellate: function () {
-                var tessellator = new CurveTessellator(
-                    {
-                        dimension: this.points.length-1,
-                        u: this.uList,
-                        degree: this._vf.order-1,
-                        knots: this._vf.knot,
-                        points: this.points,
-                        weights: this._vf.weight,
-                        closed: this._vf.closed
-                    });
-                tessellator.tessellate();
-                return tessellator.coordinates;
+            	var nurb = {
+					dimension: this.points.length-1,
+					u: this.uList,
+					degree: this._vf.order-1,
+					knots: this._vf.knot,
+					points: this.points,
+					weights: this._vf.weight,
+					closed: this._vf.closed
+				};
+				return nurb.u.map(function(u){
+            		return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);
+        		}, this);
+
             },
+            curvePoint3DH: function (n, p, U, P, W, u) {
+
+				var spanu, indu, k, i;
+				var Nu, temp = [0, 0, 0, 0];
+
+				spanu = this.findSpan(n, p, u, U);
+				Nu = this.basisFuns(spanu, u, p, U);
+
+				indu = spanu - p;
+
+				for(k = 0; k <= p; k++)
+				{
+					i = indu+k;
+					temp[0] += Nu[k]*P[i].x;
+					temp[1] += Nu[k]*P[i].y;
+					temp[2] += Nu[k]*P[i].z;
+					temp[3] += Nu[k]*W[i];
+				}
+
+				return new x3dom.fields.SFVec3f(
+					temp[0]/temp[3],
+					temp[1]/temp[3],
+					temp[2]/temp[3]);
+					
+			},
+			findSpan: function (n, p, u, U) {
+				var low, mid, high;
+
+				if(u >= U[n]) return n;
+
+				if(u <= U[p]) return p;
+
+				low = 0;
+				high = n+1;
+				mid = Math.floor((low+high)/2);
+
+				while(u < U[mid] || u >= U[mid+1])
+				{
+					if(u < U[mid]) high = mid;
+					else low = mid;
+
+					mid = Math.floor((low+high)/2);
+				}
+
+				return mid;
+			}, /* findSpan */
+			basisFuns: function (i, u, p, U) {
+				var uKey = Math.floor(u*10e10);
+				if (this.basisFunsCache[uKey]) return this.basisFunsCache[uKey];
+				var N = [], left = [], right = [], saved, temp;
+				var j, r;
+
+				N[0] = 1.0;
+				for(j = 0; j <= p; j++) {
+					left[j] = 0;
+					right[j] = 0;
+				}
+				for(j = 1; j <= p; j++)	{
+					left[j] = u - U[i+1-j];
+					right[j] = U[i+j] - u;
+					saved = 0.0;
+
+					for(r = 0; r < j; r++) {
+						temp = N[r] / (right[r+1] + left[j-r]);
+						N[r] = saved + right[r+1] * temp;
+						saved = left[j-r] * temp;
+					}
+
+					N[j] = saved;
+				}
+				this.basisFunsCache[uKey] = N;
+
+				return N;
+			}, /* basisFuns */
             createCoarseILS: function(node) {
                 var coordNode = node._cf.controlPoint.node;
 
@@ -194,21 +285,21 @@ x3dom.registerNodeType(
                 return ils;
             },
             createILS: function (data, node) {
-                var ils = new x3dom.nodeTypes.IndexedLineSet();
-                ils._nameSpace = node._nameSpace;
-                //ils._vf.coordIndex = data[0];
-                var co = new x3dom.nodeTypes.Coordinate();
+                //var ils = new x3dom.nodeTypes.IndexedLineSet();
+                this.ils._nameSpace = node._nameSpace;
+                this.ils._vf.coordIndex = [];
+                //var co = new x3dom.nodeTypes.Coordinate();
+                var co = this.ils._cf.coord.node;
                 co._nameSpace = node._nameSpace;
                 co._vf.point = new x3dom.fields.MFVec3f();
-                for(var i = 0; i < data[1].length; i++) {
-                    co._vf.point.push(
-                        new x3dom.fields.SFVec3f(data[1][i][0],data[1][i][1],data[1][i][2]));
-                    ils._vf.coordIndex.push(i);
+                for(var i = 0; i < data.length; i++) {
+                    co._vf.point.push(data[i]);
+                    this.ils._vf.coordIndex.push(i);
                 }
-                ils.addChild(co);
-                ils.nodeChanged();
-                ils._xmlNode = node._xmlNode;
-                return ils;
+                //ils.addChild(co);
+                this.ils.nodeChanged();
+                this.ils._xmlNode = node._xmlNode;
+                return this.ils;
                 } /* createILS */
         }
     )
