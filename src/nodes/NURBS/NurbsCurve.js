@@ -120,9 +120,9 @@ x3dom.registerNodeType(
                     this._mesh = ils._mesh;
                     this._hasCoarseMesh = true;
                 }
-                if (this._vf.knot.length == 0) this.createDefaultKnots();
                 this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
+                if (this._vf.knot.length == 0) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
                 this.uList = this.listPoints(tessPoints, this._vf.knot);
@@ -135,14 +135,13 @@ x3dom.registerNodeType(
                 this.nodeChanged();
             },
             createDefaultKnots: function () {
-                var knots = [];
-                knots.push(0);
-                knots.push(0);
-                for (var k = 2;
-                    k < this._cf.controlPoint.node._vf.point.length; k++)
-                    knots.push(k-1);
-                knots.push(knots[knots.length-1]+1);
-                knots.push(knots[knots.length-1]);
+                var knots = Array(this.points.length+this._vf.order).fill(0);
+                for (var k = this._vf.order;
+                    k < this.points.length; k++)
+                    knots[k]=k-1;
+                for (var k = knots.length-this._vf.order;
+                    k < knots.length; k++)
+                    knots[k]=this.points.length-1;
 	    	this._vf.knot = knots;
             },
             calcTessPoints: function(tess, controls) {
