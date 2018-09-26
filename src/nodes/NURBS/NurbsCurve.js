@@ -132,6 +132,11 @@ x3dom.registerNodeType(
                 return;
             },
             fieldChanged: function(fieldName) {
+		        //this.invalidateVolume();
+                Array.forEach(this._parentNodes, function (node) {
+                    node._dirty.positions = true;
+                    node.invalidateVolume();
+                });
                 this.nodeChanged();
             },
             createDefaultKnots: function () {
@@ -142,7 +147,7 @@ x3dom.registerNodeType(
                 for (var k = knots.length-this._vf.order;
                     k < knots.length; k++)
                     knots[k]=this.points.length-1;
-	    	this._vf.knot = knots;
+                this._vf.knot = knots;
             },
             calcTessPoints: function(tess, controls) {
                 if (tess > 0) return tess + 1;
