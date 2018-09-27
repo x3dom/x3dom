@@ -112,16 +112,16 @@ x3dom.registerNodeType(
 //                 }
                 if(fieldName === "set_fraction")
                 {
-                    var value = this.getValue();
+                    var value = this.getValue(this._vf.set_fraction);
                     this.postMessage('value_changed', value);
                 }
             },
-            getValue: function () {
+            getValue: function (u) {
                 this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
                 if (this._vf.knot.length !== points + this._vf.order) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
-                return this.curvePoint();
+                return this.curvePoint(u);
             },
             createDefaultKnots: function () {
                 var points = this.points.length;
@@ -134,7 +134,7 @@ x3dom.registerNodeType(
                     knots[k] = 1; //points-1;
                 this._vf.knot = knots;
             },
-            curvePoint: function () {
+            curvePoint: function (u) {
                 var nurb = {
                     dimension: this.points.length-1,
                     degree: this._vf.order-1,
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
                     weights: this._vf.weight
                 };
                return x3dom.nodeTypes.NurbsCurve.prototype.curvePoint3DH.call(
-		        this, nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, this._vf.set_fraction);    
+		        this, nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);    
             },
             findSpan: function (n, p, u, U) {
                 return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);
