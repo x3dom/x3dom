@@ -98,7 +98,7 @@ function basisFuns(i, u, p, U)
 {
  //AP: add cache
  var uHash = U.toString()+Math.floor(u*10e10);
- if (basisFunsCache.has(uHash) return basisFunsCache.get(uHash);
+ if (basisFunsCache.has(uHash)) return basisFunsCache.get(uHash);
  var N = [], left = [], right = [], saved, temp;
  var j, r;
 
