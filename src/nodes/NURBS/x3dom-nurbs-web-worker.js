@@ -122,7 +122,7 @@ function basisFuns(i, u, p, U)
 
       N[j] = saved;
     }
- basisFunsCache.set([u, U], N);
+ basisFunsCache.set(uHash, N);
  return N;
 } /* basisFuns */
 
