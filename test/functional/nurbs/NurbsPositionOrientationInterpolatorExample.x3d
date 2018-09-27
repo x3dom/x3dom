@@ -26,8 +26,8 @@
         <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
     </NurbsPositionInterpolator> 
     <!-- ROUTE information for ball node:  [from npi.value_changed to set_translation ] -->
-    <Transform DEF='tipDownZ' rotation='1 0 0 1.57'>
-        <Transform DEF='ball'>
+    <Transform DEF='ball'>
+        <Transform DEF='tipDownZ' rotation='1 0 0 1.57'>
             <Shape>
                 <Appearance>
                 <Material diffuseColor='1 1 0'/>
