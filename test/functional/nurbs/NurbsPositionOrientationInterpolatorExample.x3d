@@ -22,7 +22,10 @@
     <!-- ROUTE information for ts node:  [from fraction_changed to npi.set_fraction ] -->
     <TimeSensor DEF='ts' cycleInterval='4' loop='true'/> 
     <!-- ROUTE information for npi node:  [from ts.fraction_changed to set_fraction ] [from value_changed to ball.set_translation ] -->
-    <NurbsPositionInterpolator DEF='npi' knot='0 .25 .5 .75 1' order='4'>
+    <NurbsPositionInterpolator DEF='npi' knot='0 0 0 .25 .5 .75 1 1 1' order='4'>
+        <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
+    </NurbsPositionInterpolator> 
+    <NurbsOrientationInterpolator DEF='noi' knot='0 0 0 .25 .5 .75 1 1 1' order='4'>
         <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
     </NurbsPositionInterpolator> 
     <!-- ROUTE information for ball node:  [from npi.value_changed to set_translation ] -->
@@ -38,13 +41,15 @@
     </Transform> 
     <Shape>
     <NurbsCurve DEF='nc' order='4' tessellation='30' containerField='geometry'>
-    <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
+        <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
     </NurbsCurve> 
     <Appearance>
-    <Material emissiveColor='1 1 1'/>
+        <Material emissiveColor='1 0 0'/>
     </Appearance>
     </Shape> 
     <ROUTE fromNode='ts' fromField='fraction_changed' toNode='npi' toField='set_fraction'/> 
+    <ROUTE fromNode='ts' fromField='fraction_changed' toNode='noi' toField='set_fraction'/> 
     <ROUTE fromNode='npi' fromField='value_changed' toNode='ball' toField='set_translation'/>
+    <ROUTE fromNode='noi' fromField='value_changed' toNode='ball' toField='set_rotation'/>
 </Scene>
 </X3D> 
