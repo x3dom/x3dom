@@ -100,9 +100,19 @@ x3dom.registerNodeType(
 
                 var onmessage = function(e) {
                   if(e.data.length >= 3){
+		            if (this.call.uv.length) {
+                        var data = e.data[1];
+                        var point = new x3dom.fields.MFVec3f();
+                        for(var i = 0; i < data.length; i++)
+                            point.push(
+                                new x3dom.fields.SFVec3f(data[i][0],data[i][1],data[i][2]));
+                        
+			          this.caller._mesh.positions = point.toGL();
+                    } else {
                       var its = this.caller.createITS(e.data, this.caller);
                       this.caller.workerTask = null;
                       this.caller._mesh = its._mesh;
+                    }
                       if(this.caller._cleanupGLObjects)
                           this.caller._cleanupGLObjects(true);
                       Array.forEach(this.caller._parentNodes,
@@ -147,7 +157,6 @@ x3dom.registerNodeType(
                         this.basisFunsCache = new Map();
                         this.uv = [];
                     }
-
                     this.nodeChanged();
             }
         }
