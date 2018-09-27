@@ -100,14 +100,16 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'set_fraction', 0);
             
             this.points = []; //MFVec3f controlPoints
-            this.basisFunsCache = {}; //N[u]
+            //this.basisFunsCache = {}; //N[u]
+            //this evaluates the curve at set_fraction
+            //alternatively, tessellate at some degree dependant resolution and turn into linear positioninterpolator
         },
         {
             fieldChanged: function(fieldName) {
-                switch (fieldName) {
-                    case 'knot':
-                    case 'order': this.basisFunsCache = {};
-                }
+//                 switch (fieldName) {
+//                     case 'knot':
+//                     case 'order': this.basisFunsCache = {};
+//                 }
                 if(fieldName === "set_fraction")
                 {
                     var value = this.getValue();
@@ -132,7 +134,6 @@ x3dom.registerNodeType(
                     knots[k] = 1; //points-1;
                 this._vf.knot = knots;
             },
-            
             curvePoint: function () {
                 var nurb = {
                     dimension: this.points.length-1,
@@ -141,49 +142,14 @@ x3dom.registerNodeType(
                     points: this.points,
                     weights: this._vf.weight
                 };
-               return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, this._vf.set_fraction);    
+               return x3dom.nodeTypes.NurbsCurve.prototype.curvePoint3DH.call(
+		        this, nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, this._vf.set_fraction);    
             },
-            curvePoint3DH: function (n, p, U, P, W, u) {
-                var spanu, indu, k, i;
-                var Nu, temp = [0, 0, 0, 0];
-
-                spanu = this.findSpan(n, p, u, U);
-                Nu = this.basisFuns(spanu, u, p, U);
-
-                indu = spanu - p;
-
-                for (k = 0; k <= p; k++) {
-                    i = indu+k;
-                    temp[0] += Nu[k]*P[i].x;
-                    temp[1] += Nu[k]*P[i].y;
-                    temp[2] += Nu[k]*P[i].z;
-                    temp[3] += Nu[k]*W[i];
-                }
-
-                return new x3dom.fields.SFVec3f(
-                    temp[0]/temp[3],
-                    temp[1]/temp[3],
-                    temp[2]/temp[3] );
-			},
             findSpan: function (n, p, u, U) {
-                var low, mid, high;
-
-                if(u >= U[n]) return n;
-                if(u <= U[p]) return p;
-
-                low = 0;
-                high = n+1;
-                mid = Math.floor((low+high)/2);
-
-                while( u < U[mid] || u >= U[mid+1] ) {
-                    if(u < U[mid]) high = mid;
-                    else low = mid;
-                    mid = Math.floor((low+high)/2);
-                }
-                return mid;
+                return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);
             }, /* findSpan */
-            basisFuns: function (i, u, p, U) {
-                var uKey = Math.floor(u*10e10);
+            basisFuns: function (i, u, p, U) { // modified to disable cache
+                //var uKey = Math.floor(u*10e10);
                 //if (this.basisFunsCache[uKey]) return this.basisFunsCache[uKey];
                 var N = [], left = [], right = [], saved, temp;
                 var j, r;
@@ -208,7 +174,6 @@ x3dom.registerNodeType(
                     N[j] = saved;
                 }
                 //this.basisFunsCache[uKey] = N;
-
                 return N;
             } /* basisFuns */
         }
