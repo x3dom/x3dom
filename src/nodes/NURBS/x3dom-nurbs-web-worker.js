@@ -31,13 +31,18 @@ onmessage = function(e) {
       basisFunsCache = new Map();
     }
     var tess = new Tessellator(e.data);
-    tess.adjustThresholds(e.data[8], e.data[9]);
-    if(e.data[10] && e.data[10].length){
-       tess.initTrims();
-    } else {
-        tess.tloops = null;
+    if(e.data[12] && e.data[12].length){
+        tess.deform();
     }
-    tess.tessellate();
+    else {
+        tess.adjustThresholds(e.data[8], e.data[9]);
+        if(e.data[10] && e.data[10].length){
+            tess.initTrims();
+        } else {
+        tess.tloops = null;
+        }
+        tess.tessellate();
+    }
 
     if(tess.have_transferables){
         var indices = new Uint32Array(tess.indices.length);
@@ -53,7 +58,7 @@ onmessage = function(e) {
             tcoords[i] = tess.texcoords[i];
         postMessage(tcoords.buffer, [tcoords.buffer]);
     } else {
-        postMessage([tess.indices, tess.coordinates, tess.texcoords, basisFunsCache]);
+        postMessage([tess.indices, tess.coordinates, tess.texcoords, basisFunsCache, tess.uv]);
     }
     close();//deprecated?
 }
@@ -284,14 +289,23 @@ function Tessellator(nurb) {
     this.P = nurb[6];
     this.W = nurb[7];
     this.tloops = nurb[10];
-
+    this.useUV = nurb[12];
+    
     this.surfaceHash = [];
     this.indexHash = [];
     this.curveHash = null;
     this.coordinates = [];
     this.texcoords = [];
     this.indices = [];
+    this.uv = [];
     this.coordIndex = 0;
+    
+    this.deform = function () {
+        this.useUV.forEach(function(uv){
+            this.computeSurface(uv, false);
+        }, this);
+        //this.uv = this.useUV;
+    }
 
     this.tessellate = function () {
 	if(this.W && this.W.length != (this.w+1)*(this.h+1))
@@ -555,6 +569,8 @@ function Tessellator(nurb) {
     this.coordIndex++;
     this.coordinates.push(pnt);
     this.texcoords.push([uv[0],uv[1]]);
+    //output uv in same order
+    this.uv.push(uv);
     return pnt;
   } /* computeSurface */
 
