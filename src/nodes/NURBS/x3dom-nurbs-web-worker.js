@@ -288,6 +288,7 @@ function Tessellator(nurb) {
     this.V = nurb[5];
     this.P = nurb[6];
     this.W = nurb[7];
+    
     this.tloops = nurb[10];
     this.useUV = nurb[12];
     
@@ -540,7 +541,7 @@ function Tessellator(nurb) {
     }
     // hash lookup failed, compute the point
     var pnt;
-    if(this.W) {
+    if(Object.keys(this.W).length) {
         pnt = surfacePoint3DH(this.w, this.h, this.p, this.q,
             this.U, this.V, this.P, this.W,
             uv[0], uv[1]);
