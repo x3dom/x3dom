@@ -18,7 +18,7 @@
  *
  */
 
-/* ### NurbsCurve ### */
+/* ### NurbsPositionInterpolator ### */
 x3dom.registerNodeType(
     "NurbsPositionInterpolator",
     "NURBS",
@@ -140,8 +140,8 @@ x3dom.registerNodeType(
                     points: this.points,
                     weights: this._vf.weight
                 };
-               return x3dom.nodeTypes.NurbsCurve.prototype.curvePoint3DH.call(
-		        this, nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);    
+                return x3dom.nodeTypes.NurbsCurve.prototype.curvePoint3DH.call(
+                    this, nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);    
             },
             findSpan: function (n, p, u, U) {
                 return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);
