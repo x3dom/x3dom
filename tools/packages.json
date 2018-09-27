@@ -378,6 +378,7 @@
                     {"file": "NurbsPatchSurface.js"},
                     {"file": "NurbsCurve.js"},
                     {"file": "NurbsPositionInterpolator.js"},
+                    {"file": "NurbsOrientationInterpolator.js"},
                     {"file": "NurbsCurve2D.js"},
                     {"file": "NurbsTrimmedSurface.js"},
                     {"file": "ContourPolyline2D.js"},
