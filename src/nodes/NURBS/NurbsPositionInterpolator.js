@@ -67,9 +67,6 @@ x3dom.registerNodeType(
              * controlPoint defines the X3DCoordinateNode instance that provides the source of coordinates used to control
              * the curve or surface. Depending on the weight value and the order, this piecewise linear curve is approximated
              * by the resulting parametric curve. The number of control points shall be equal to or greater than the order.
-             * A closed B-Spline curve can be specified by repeating the limiting control points, specifying a periodic knot vector,
-             * and setting the closed field to TRUE. If the last control point is not identical to the first or there exists a
-             * non-unitary value of weight within (order-1) control points of the seam, the closed field is ignored.
              * @var {x3dom.fields.MFVec2d} controlPoint
              * @memberof x3dom.nodeTypes.NurbsPositionInterpolator
              * @initvalue null
@@ -90,7 +87,8 @@ x3dom.registerNodeType(
             this.addField_MFDouble(ctx, 'weight', []);
         
             /**
-             * The set_fraction inputOnly field receives an SFFloat event and causes the interpolator node function to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
+             * The set_fraction inputOnly field receives an SFFloat event and causes the interpolator node function
+	     * to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
              * @var {x3dom.fields.SFFloat} set_fraction
              * @memberof x3dom.nodeTypes.NurbsPositionInterpolator
              * @initvalue 0
