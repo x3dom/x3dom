@@ -218,15 +218,17 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'normalPerVertex', true);
             
             this._needReRender = true;
+            this.basisFunsCache = new Map();
+
             //this._myctx = ctx;
         },
         {
             nodeChanged: function() { //overwritten
                 //x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
-		            return;
+                return;
             },
             fieldChanged: function(fieldName) {//overwritten
-		            this.nodeChanged();
+                this.nodeChanged();
             },
             
             createCoarseITS: function(node) {
