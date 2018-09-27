@@ -219,41 +219,7 @@ x3dom.registerNodeType(
                 this.basisFunsCache[uKey] = N;
 
                 return N;
-            }, /* basisFuns */
-            createCoarseILS: function(node) {
-                var coordNode = node._cf.controlPoint.node;
-                var ils = new x3dom.nodeTypes.IndexedLineSet();
-                
-                ils._nameSpace = node._nameSpace;
-                var ind = [];
-                for(var i = 0; i < coordNode._vf.point.length; i++){
-                    ind.push(i);
-	    	    }
-	    	    ind.push(-1);
-                
-                ils._vf.coordIndex = ind;
-                ils.addChild(coordNode);
-                ils.nodeChanged();
-                ils._xmlNode = node._xmlNode;
-                return ils;
-            },
-            createILS: function (data, node) {
-                //var ils = new x3dom.nodeTypes.IndexedLineSet();
-                this.ils._nameSpace = node._nameSpace;
-                this.ils._vf.coordIndex = [];
-                //var co = new x3dom.nodeTypes.Coordinate();
-                var co = this.ils._cf.coord.node;
-                co._nameSpace = node._nameSpace;
-                co._vf.point = new x3dom.fields.MFVec3f();
-                for(var i = 0; i < data.length; i++) {
-                    co._vf.point.push(data[i]);
-                    this.ils._vf.coordIndex.push(i);
-                }
-                //ils.addChild(co);
-                this.ils.nodeChanged();
-                this.ils._xmlNode = node._xmlNode;
-                return this.ils;
-                } /* createILS */
+            } /* basisFuns */
         }
     )
 );
