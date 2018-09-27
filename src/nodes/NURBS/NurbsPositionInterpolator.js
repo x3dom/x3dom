@@ -120,7 +120,7 @@ x3dom.registerNodeType(
             getValue: function () {
                 this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
-                if (this._vf.knot.length == 0) this.createDefaultKnots();
+                if (this._vf.knot.length !== points+this._vf.order) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
                 return this.curvePoint();
             },
@@ -141,8 +141,7 @@ x3dom.registerNodeType(
                     degree: this._vf.order-1,
                     knots: this._vf.knot,
                     points: this.points,
-                    weights: this._vf.weight,
-                    closed: this._vf.closed
+                    weights: this._vf.weight
                 };
                return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, this._vf.set_fraction);    
             },
@@ -187,7 +186,7 @@ x3dom.registerNodeType(
             }, /* findSpan */
             basisFuns: function (i, u, p, U) {
                 var uKey = Math.floor(u*10e10);
-                if (this.basisFunsCache[uKey]) return this.basisFunsCache[uKey];
+                //if (this.basisFunsCache[uKey]) return this.basisFunsCache[uKey];
                 var N = [], left = [], right = [], saved, temp;
                 var j, r;
 
@@ -210,7 +209,7 @@ x3dom.registerNodeType(
 
                     N[j] = saved;
                 }
-                this.basisFunsCache[uKey] = N;
+                //this.basisFunsCache[uKey] = N;
 
                 return N;
             } /* basisFuns */
