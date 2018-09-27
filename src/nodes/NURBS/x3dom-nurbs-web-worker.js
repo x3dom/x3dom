@@ -23,8 +23,13 @@ x3dom.tessWorkerScript = URL.createObjectURL(new Blob(['('+tessWorker.toString()
 //wrapper
 
 function tessWorker() {
-
+  
 onmessage = function(e) {
+    if (e.data[11] && e.data[11].size) {
+      basisFunsCache = e.data[11];
+    } else {
+      basisFunsCache = new Map();
+    }
     var tess = new Tessellator(e.data);
     tess.adjustThresholds(e.data[8], e.data[9]);
     if(e.data[10] && e.data[10].length){
@@ -48,7 +53,7 @@ onmessage = function(e) {
             tcoords[i] = tess.texcoords[i];
         postMessage(tcoords.buffer, [tcoords.buffer]);
     } else {
-        postMessage([tess.indices, tess.coordinates, tess.texcoords]);
+        postMessage([tess.indices, tess.coordinates, tess.texcoords, basisFunsCache]);
     }
     close();//deprecated?
 }
@@ -91,6 +96,8 @@ function findSpan(n, p, u, U)
 
 function basisFuns(i, u, p, U)
 {
+ //AP: add cache
+ if (basisFunsCache.has([u, U])) return basisFunsCache.get([u, U]);
  var N = [], left = [], right = [], saved, temp;
  var j, r;
 
@@ -114,7 +121,7 @@ function basisFuns(i, u, p, U)
 
       N[j] = saved;
     }
-
+ basisFunsCache.set([u, U], N);
  return N;
 } /* basisFuns */
 
