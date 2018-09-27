@@ -113,7 +113,7 @@ x3dom.registerNodeType(
                       var tasks = x3dom.tessWorkerPool.taskQueue.length;
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
                       this.caller._nameSpace.doc.needRender = true;
-                      this.basisFunsCache = e.data[3];
+                      this.caller.basisFunsCache = e.data[3];
                   }
                 }
                 var coordNode = this._cf.controlPoint.node;
