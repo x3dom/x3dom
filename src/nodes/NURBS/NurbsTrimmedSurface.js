@@ -114,10 +114,12 @@ x3dom.registerNodeType(
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
                       this.caller._nameSpace.doc.needRender = true;
                       this.caller.basisFunsCache = e.data[3];
+                      this.caller.needIndices = false;
                   }
                 }
+		
                 var coordNode = this._cf.controlPoint.node;
-                x3dom.debug.assert(coordNode);
+                //x3dom.debug.assert(coordNode);
                 var startmessage = [
                         this._vf.uDimension-1,
                         this._vf.vDimension-1,
@@ -128,7 +130,8 @@ x3dom.registerNodeType(
                         this._vf.uTessellation,
                         this._vf.vTessellation,
                         T,
-                        this.basisFunsCache
+                        this.basisFunsCache,
+                        this.needIndices
                 ];
 
                 if(this.workerTask)
@@ -140,8 +143,12 @@ x3dom.registerNodeType(
                 x3dom.tessWorkerPool.addWorkerTask(this.workerTask); //global pool
             },
             fieldChanged: function(fieldName) {
-                    if (fieldName == 'order' || fieldName == 'knot') this.basisFunsCache = new Map();
-		            this.nodeChanged();
+                    if (fieldName == 'order' || fieldName == 'knot') {
+                        this.basisFunsCache = new Map();
+                        this.needIndices = true;
+                    }
+
+                    this.nodeChanged();
             }
         }
     )
