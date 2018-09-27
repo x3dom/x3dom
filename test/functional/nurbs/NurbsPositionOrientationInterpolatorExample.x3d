@@ -27,7 +27,7 @@
     </NurbsPositionInterpolator> 
     <NurbsOrientationInterpolator DEF='noi' knot='0 0 0 .25 .5 .75 1 1 1' order='4'>
         <Coordinate containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
-    </NurbsPositionInterpolator> 
+    </NurbsOrientationInterpolator> 
     <!-- ROUTE information for ball node:  [from npi.value_changed to set_translation ] -->
     <Transform DEF='ball'>
         <Transform DEF='tipDownZ' rotation='1 0 0 1.57'>
