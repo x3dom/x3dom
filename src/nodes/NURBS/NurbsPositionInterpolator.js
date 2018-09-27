@@ -107,11 +107,6 @@ x3dom.registerNodeType(
                 
             },
             fieldChanged: function(fieldName) {
-		        //this.invalidateVolume();
-                Array.forEach(this._parentNodes, function (node) {
-                    node._dirty.positions = true;
-                    node.invalidateVolume();
-                });
                 switch (fieldName) {
                 	case 'knot':
                 	case 'order': this.basisFunsCache = {};
@@ -143,14 +138,13 @@ x3dom.registerNodeType(
             curvePoint: function () {
                 var nurb = {
                     dimension: this.points.length-1,
-                    u: this._vf.set_fraction,
                     degree: this._vf.order-1,
                     knots: this._vf.knot,
                     points: this.points,
                     weights: this._vf.weight,
                     closed: this._vf.closed
                 };
-               return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);    
+               return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, this._vf.set_fraction);    
             },
             curvePoint3DH: function (n, p, U, P, W, u) {
                 var spanu, indu, k, i;
