@@ -88,9 +88,18 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFDouble(ctx, 'weight', []);
+        
+            /**
+             * The set_fraction inputOnly field receives an SFFloat event and causes the interpolator node function to evaluate, resulting in a value_changed output event of the specified type with the same timestamp as the set_fraction event.
+             * @var {x3dom.fields.SFFloat} set_fraction
+             * @memberof x3dom.nodeTypes.NurbsPositionInterpolator
+             * @initvalue 0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'set_fraction', 0);
             
             this.points = []; //MFVec3f controlPoints
-            this.uList = []; //Array of tessellated u values
             this.basisFunsCache = {}; //N[u]
         },
         {
@@ -104,19 +113,21 @@ x3dom.registerNodeType(
                     node.invalidateVolume();
                 });
                 switch (fieldName) {
-                	case 'tessellation': this.uList = []; break;
                 	case 'knot':
-                	case 'order':
-                	case 'closed': this.uList = []; this.basisFunsCache = {}; break;
+                	case 'order': this.basisFunsCache = {};
                 }
-                
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.getValue();
+                    this.postMessage('value_changed', value);
+                }
             },
-            generateGeometry: function () {
-            	  this.points = this._cf.controlPoint.node._vf.point; 
+            getValue: function () {
+                this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
                 if (this._vf.knot.length == 0) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
-                return;
+                return this.curvePoint();
             },
             createDefaultKnots: function () {
                 var knots = Array(this.points.length+this._vf.order).fill(0);
@@ -129,19 +140,17 @@ x3dom.registerNodeType(
                 this._vf.knot = knots;
             },
             
-            tessellate: function () {
+            curvePoint: function () {
                 var nurb = {
                     dimension: this.points.length-1,
-                    u: this.uList,
+                    u: this._vf.set_fraction,
                     degree: this._vf.order-1,
                     knots: this._vf.knot,
                     points: this.points,
                     weights: this._vf.weight,
                     closed: this._vf.closed
                 };
-                return nurb.u.map(function(u){
-                    return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);
-                }, this);
+               return this.curvePoint3DH(nurb.dimension, nurb.degree, nurb.knots, nurb.points, nurb.weights, u);    
             },
             curvePoint3DH: function (n, p, U, P, W, u) {
                 var spanu, indu, k, i;
