@@ -97,7 +97,7 @@ function findSpan(n, p, u, U)
 function basisFuns(i, u, p, U)
 {
  //AP: add cache
- var uHash = U.values().toString()+Math.floor(u*10e10);
+ var uHash = Object.values(U).toString()+Math.floor(u*10e10);
  if (basisFunsCache.has(uHash)) return basisFunsCache.get(uHash);
  var N = [], left = [], right = [], saved, temp;
  var j, r;
