@@ -25,7 +25,7 @@ x3dom.tessWorkerScript = URL.createObjectURL(new Blob(['('+tessWorker.toString()
 function tessWorker() {
   
 onmessage = function(e) {
-    if (e.data[11] && e.data[11].size) {
+    if (e.data[11]) { // always the case
       basisFunsCache = e.data[11];
     } else {
       basisFunsCache = new Map();
