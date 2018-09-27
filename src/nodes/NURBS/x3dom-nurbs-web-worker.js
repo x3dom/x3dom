@@ -310,7 +310,7 @@ function Tessellator(nurb) {
 
     this.tessellate = function () {
 	if(this.W && this.W.length != (this.w+1)*(this.h+1))
-	    this.W = null;
+	    this.W = {};
 	// TODO: find multiple control points/internal knots and add initial
 	// triangles for them to make sure those important surface features
 	// (hard edges) are preserved
