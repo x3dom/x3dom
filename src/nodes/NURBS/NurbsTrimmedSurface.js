@@ -51,6 +51,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
             
             this._needReRender = true;
+            this.basisFunsCache = new Map();
         },
         {
             nodeChanged: function() {
@@ -113,11 +114,13 @@ x3dom.registerNodeType(
                       var tasks = x3dom.tessWorkerPool.taskQueue.length;
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
                       this.caller._nameSpace.doc.needRender = true;
+                      this.basisFunsCache = e.data[4];
                   }
                 }
                 var coordNode = this._cf.controlPoint.node;
                 x3dom.debug.assert(coordNode);
-                var startmessage = [this._vf.uDimension-1,
+                var startmessage = [
+                        this._vf.uDimension-1,
                         this._vf.vDimension-1,
                         this._vf.uOrder-1, this._vf.vOrder-1,
                         this._vf.uKnot, this._vf.vKnot,
@@ -125,7 +128,9 @@ x3dom.registerNodeType(
                         this._vf.weight,
                         this._vf.uTessellation,
                         this._vf.vTessellation,
-                        T];
+                        T,
+                        this.basisFunsCache
+                ];
 
                 if(this.workerTask)
                     this.workerTask.discard = true;
@@ -136,6 +141,7 @@ x3dom.registerNodeType(
                 x3dom.tessWorkerPool.addWorkerTask(this.workerTask); //global pool
             },
             fieldChanged: function(fieldName) {
+                    if (fieldName == 'order' || fieldName == 'knot') this.basisFunsCache = new Map();
 		            this.nodeChanged();
             }
         }
