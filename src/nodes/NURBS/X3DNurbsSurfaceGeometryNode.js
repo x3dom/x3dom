@@ -219,7 +219,7 @@ x3dom.registerNodeType(
             
             this._needReRender = true;
             this.basisFunsCache = new Map();
-            this.needIndices = true; // trigger triangulation
+            this.uv = []; // trigger triangulation
 
             //this._myctx = ctx;
         },
