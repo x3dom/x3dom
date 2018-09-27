@@ -146,7 +146,7 @@ x3dom.registerNodeType(
             generateGeometry: function () {
             	this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
-                if (this._vf.knot.length == 0) this.createDefaultKnots();
+                if (this._vf.knot.length !== points + this._vf.order) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
                 var tessPoints = this.calcTessPoints(this._vf.tessellation, points);
                 if (this.uList.length == 0) this.uList = this.listPoints(tessPoints, this._vf.knot);
