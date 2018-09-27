@@ -51,7 +51,6 @@ x3dom.registerNodeType(
             this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
             
             this._needReRender = true;
-            this.basisFunsCache = new Map();
         },
         {
             nodeChanged: function() {
