@@ -103,13 +103,10 @@ x3dom.registerNodeType(
             this.basisFunsCache = {}; //N[u]
         },
         {
-            nodeChanged: function() {
-                
-            },
             fieldChanged: function(fieldName) {
                 switch (fieldName) {
-                	case 'knot':
-                	case 'order': this.basisFunsCache = {};
+                    case 'knot':
+                    case 'order': this.basisFunsCache = {};
                 }
                 if(fieldName === "set_fraction")
                 {
@@ -120,18 +117,19 @@ x3dom.registerNodeType(
             getValue: function () {
                 this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
-                if (this._vf.knot.length !== points+this._vf.order) this.createDefaultKnots();
+                if (this._vf.knot.length !== points + this._vf.order) this.createDefaultKnots();
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
                 return this.curvePoint();
             },
             createDefaultKnots: function () {
-                var knots = Array(this.points.length+this._vf.order).fill(0);
+                var points = this.points.length;
+                var knots = Array(points + this._vf.order).fill(0);
                 for (var k = this._vf.order;
-                    k < this.points.length; k++)
-                    knots[k]=k-1;
-                for (var k = knots.length-this._vf.order;
+                    k < points; k++)
+                    knots[k] = (k-1) / (points-1);
+                for (var k = knots.length - this._vf.order;
                     k < knots.length; k++)
-                    knots[k]=this.points.length-1;
+                    knots[k] = 1; //points-1;
                 this._vf.knot = knots;
             },
             
