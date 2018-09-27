@@ -114,7 +114,7 @@ x3dom.registerNodeType(
                       x3de.runtime.canvas.progressText = tasks == 0 ? "" : "Tesselation tasks: " + tasks;
                       this.caller._nameSpace.doc.needRender = true;
                       this.caller.basisFunsCache = e.data[3];
-                      this.caller.needIndices = false;
+                      this.caller.uv = e.data[4];
                   }
                 }
 		
@@ -131,7 +131,7 @@ x3dom.registerNodeType(
                         this._vf.vTessellation,
                         T,
                         this.basisFunsCache,
-                        this.needIndices
+                        this.uv
                 ];
 
                 if(this.workerTask)
@@ -145,7 +145,7 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName) {
                     if (fieldName == 'order' || fieldName == 'knot') {
                         this.basisFunsCache = new Map();
-                        this.needIndices = true;
+                        this.uv = [];
                     }
 
                     this.nodeChanged();
