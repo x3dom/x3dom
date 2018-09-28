@@ -227,21 +227,11 @@ function curvePoint2DH(n, p, U, P, W, u)
 
   for(j = 0; j <= p; j++)
     {
-      //k = (span-p+j)*2; // for MFVec2f: (span-p+j)
       k = (span-p+j); // for MFVec2f: (span-p+j)
-      //Cw[0] = Cw[0] + N[j]*P[k]; // for MFVec2f: P.x
-      //Cw[0] = Cw[0] + N[j]*P[k].x; // for MFVec2f: P.x
       Cw0 += N[j]*P[k].x; // for MFVec2f: P.x
-      //Cw[1] = Cw[1] + N[j]*P[k+1]; // for MFVec2f: P.y
-      //Cw[1] = Cw[1] + N[j]*P[k].y; // for MFVec2f: P.y
       Cw1 += N[j]*P[k].y; // for MFVec2f: P.y
-      //Cw[2] = Cw[2] + N[j]*W[span-p+j]; // for MFVec2f: k
-      //Cw[2] = Cw[2] + N[j]*W[k]; // for MFVec2f: k
       Cw2 += N[j]*W[k]; // for MFVec2f: k
     }
-
-//   for(j = 0; j < 2; j++) // for MFVec2f
-//     C[j] = Cw[j]/Cw[2];
 
   return [Cw0/Cw2, Cw1/Cw2];
 } /* curvePoint2DH */
@@ -250,7 +240,6 @@ function curvePoint2DH(n, p, U, P, W, u)
 function curvePoint2D(n, p, U, P, u)
 {
   var span, j, k;
-  //var N, C = [0.0, 0.0];
   var N = [], C0 = 0.0, C1 = 0.0;
 
   span = findSpan(n, p, u, U);
@@ -258,12 +247,7 @@ function curvePoint2D(n, p, U, P, u)
 
   for(j = 0; j <= p; j++)
     {
-//       k = (span-p+j)*2; // for MFVec2f: see above
-//       C[0] = C[0] + N[j]*P[k];
-//       C[1] = C[1] + N[j]*P[k+1];
       k = (span-p+j); // for MFVec2f: see above
-//       C[0] = C[0] + N[j]*P[k].x;
-//       C[1] = C[1] + N[j]*P[k].y;
       C0 += N[j]*P[k].x;
       C1 += N[j]*P[k].y;
     }
@@ -302,7 +286,7 @@ function Tessellator(nurb) {
     this.uv = [];
     this.coordIndex = 0;
     
-    this.deform = function () {
+    this.deform = function () { // for animation without remeshing
         this.useUV.forEach(function(uv){
             this.computeSurface(uv, false);
         }, this);
