@@ -44,10 +44,7 @@ x3dom.registerNodeType(
             nodeChanged: function() {
                 x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
 		            return;
-            },
-            fieldChanged: function(fieldName) {
-		            this.nodeChanged();
-            },
+            }
         }
     )
 );
