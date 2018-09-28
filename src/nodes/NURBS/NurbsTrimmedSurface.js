@@ -100,14 +100,14 @@ x3dom.registerNodeType(
 
                 var onmessage = function(e) {
                   if(e.data.length >= 3){
-		            if (this.caller.uv.length) {
+                        if (this.caller.uv.length) {
                         var data = e.data[1];
                         var point = new x3dom.fields.MFVec3f();
                         for(var i = 0; i < data.length; i++)
                             point.push(
                                 new x3dom.fields.SFVec3f(data[i][0],data[i][1],data[i][2]));
                         
-                        this.caller._mesh.positions[0] = point.toGL();
+                        this.caller._mesh._positions[0] = point.toGL();
                     } else {
                       var its = this.caller.createITS(e.data, this.caller);
                       this.caller.workerTask = null;
