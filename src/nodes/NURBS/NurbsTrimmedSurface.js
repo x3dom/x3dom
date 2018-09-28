@@ -151,13 +151,6 @@ x3dom.registerNodeType(
                          this, onmessage, startmessage);
 
                 x3dom.tessWorkerPool.addWorkerTask(this.workerTask); //global pool
-            },
-            fieldChanged: function(fieldName) {
-                    if (fieldName == 'order' || fieldName == 'knot') {
-                        this.basisFunsCache = new Map();
-                        this.uv = [];
-                    }
-                    this.nodeChanged();
             }
         }
     )
