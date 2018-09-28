@@ -228,8 +228,15 @@ x3dom.registerNodeType(
                 //x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
                 return;
             },
-            fieldChanged: function(fieldName) {//overwritten
-                this.nodeChanged();
+            fieldChanged: function(fieldName) {
+                if (fieldName == 'order' || fieldName == 'knot' || fieldName.includes('Tessellation')) {
+                    this.basisFunsCache = new Map();
+                    this.uv = [];
+                    this.nodeChanged();
+                    return
+                }
+                else if (this.uv.length) this.nodeChanged();
+                // do nothing until first tessellation
             },
             
             createCoarseITS: function(node) {
