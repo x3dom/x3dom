@@ -155,23 +155,25 @@ x3dom.registerNodeType(
                     this.postMessage('value_changed', value);
                 }
             },
-            getValue: function (u) {
+            getValue: function (uv) {
                 this.points = this._cf.controlPoint.node._vf.point; 
                 var points = this.points.length;
-                if (this._vf.knot.length !== points + this._vf.order) this.createDefaultKnots();
+                if (this._vf.uKnot.length !== this._vf.uDimension + this._vf.uOrder) 
+					this._vf.uKnot = this.createDefaultKnots(this._vf.uDimension, this._vf.uOrder);
+                if (this._vf.vKnot.length !== this._vf.vDimension + this._vf.vOrder) 
+					this._vf.vKnot = this.createDefaultKnots(this._vf.vDimension, this._vf.vOrder);
                 if (this._vf.weight.length != points) this._vf.weight = Array(points).fill(1.0);
-                return this.curvePoint(u);
+                return this.surfacePoint(uv);
             },
-            createDefaultKnots: function () {
-                var points = this.points.length;
-                var knots = Array(points + this._vf.order).fill(0);
-                for (var k = this._vf.order;
-                    k < points; k++)
-                    knots[k] = (k-1) / (points-1);
-                for (var k = knots.length - this._vf.order;
+            createDefaultKnots: function (n, o) {
+                var knots = Array(n + o).fill(0);
+                for (var k = o;
+                    k < n; k++)
+                    knots[k] = (k-1) / (n-1);
+                for (var k = knots.length - o;
                     k < knots.length; k++)
                     knots[k] = 1; //points-1;
-                this._vf.knot = knots;
+                return knots;
             },
             curvePoint: function (u) {
                 var nurb = {
