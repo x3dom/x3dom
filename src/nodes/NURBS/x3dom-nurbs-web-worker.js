@@ -273,6 +273,7 @@ function curvePoint2D(n, p, U, P, u)
 
 
 function Tessellator(nurb) {
+    this.bbox_split = 2.0; //5.0; default tessellation density
     this.use_objectspace = true;
     this.edge_thresh = 0.1;
     this.trim_thresh = 0.1;
@@ -356,7 +357,7 @@ function Tessellator(nurb) {
 	    }
 	    var ex = Math.sqrt((bb[0]-bb[3])*(bb[0]-bb[3])+
 			       (bb[1]-bb[4])*(bb[1]-bb[4])+
-			       (bb[2]-bb[5])*(bb[2]-bb[5]))/5.0;
+			       (bb[2]-bb[5])*(bb[2]-bb[5]))/this.bbox_split;
 	    if(uparam <= 10e-6)
 		uparam = 1.0;
 	    this.edge_thresh *= ex * uparam;
