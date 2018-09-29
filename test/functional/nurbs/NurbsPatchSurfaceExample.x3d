@@ -29,8 +29,8 @@ Index for Viewpoint image : Viewpoint_1
     <Transform rotation='1 0 0 -1.5'>
       <Shape>
         <!-- ROUTE information for NS node:  [from CI.value_changed to set_controlPoint ] -->
-        <NurbsPatchSurface DEF='NS' solid='false' uDimension='5' uOrder='4' uTessellation='20' vDimension='5' vOrder='4'
-        vTessellation='20' containerField='geometry'>
+        <NurbsPatchSurface DEF='NS' solid='false' uDimension='5' uOrder='4' uTessellation='100' vDimension='5' vOrder='4'
+        vTessellation='100' containerField='geometry'>
           <Coordinate DEF='CP' containerField='controlPoint'
           point='-10 -10 0 -10 -5 0 -10 0 0 -10 5 0 -10 10 0 -5 -10 0 -5 -5 2.5 -5 0 5 -5 5 2.5 -5 10 0 0 -10 0 0 -5 2.5 0 0 5 0 5 2.5 0 10 0 5 -10 0 5 -5 2.5 5 0 15 5 5 2.5 5 10 0 10 -10 0 10 -5 0 10 0 0 10 5 0 10 10 0' />
         </NurbsPatchSurface>
