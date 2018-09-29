@@ -100,7 +100,7 @@ Index for Viewpoint images : Viewpoint_1, Viewpoint_2, Viewpoint_3
     <ROUTE fromNode='ts' fromField='fraction_changed' toNode='uvs' toField='set_fraction'/> 
     <ROUTE fromNode='uvs' fromField='value_changed' toNode='nsi' toField='set_fraction'/> 
     <ROUTE fromNode='nsi' fromField='position_changed' toNode='ball' toField='set_translation'/>
-    <ROUTE fromNode='nsi' fromField='normal_changed' toNode='ball' toField='set_rotation'/>
+    <!--ROUTE fromNode='nsi' fromField='normal_changed' toNode='ball' toField='set_rotation'/-->
   </Scene>
 </X3D>
 <!--
