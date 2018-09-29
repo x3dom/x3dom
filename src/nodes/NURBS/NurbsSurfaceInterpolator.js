@@ -156,10 +156,11 @@ x3dom.registerNodeType(
             if (fieldName === "set_fraction") {
                 var value = this.getValue(this._vf.set_fraction);
                 this.postMessage('position_changed', value.position);
-                this.postMessage('position_changed', value.normal);
+                this.postMessage('normal_changed', value.normal);
             }
         },
         getValue: function (uv) {
+            var u=uv.x, v=uv.y;
             this.points = this._cf.controlPoint.node._vf.point;
             var points = this.points.length;
             var uKnot = this._vf.uKnot;
@@ -172,8 +173,8 @@ x3dom.registerNodeType(
                 this._vf.weight = Array(points).fill(1.0);
             var uShift = (uKnot[uKnot.length-1] - uKnot[0]) * this._fractionalShift;
             var vShift = (vKnot[vKnot.length-1] - vKnot[0]) * this._fractionalShift;
-            var uDiff = this.surfacePoint(u+uShift, v).subtract(this.curvePoint(u, v));
-            var vDiff = this.surfacePoint(u, v+vShift).subtract(this.curvePoint(u, v));
+            var uDiff = this.surfacePoint(u+uShift, v).subtract(this.surfacePoint(u, v));
+            var vDiff = this.surfacePoint(u, v+vShift).subtract(this.surfacePoint(u, v));
             return {
                 position: this.surfacePoint(u, v),
                 normal: uDiff.cross(vDiff).normalize()
@@ -192,7 +193,7 @@ x3dom.registerNodeType(
         surfacePoint: function (u, v) {
             return this.surfacePoint3DH(
                 this._vf.uDimension - 1,
-                this._vf.uDimension - 1,
+                this._vf.vDimension - 1,
                 this._vf.uOrder - 1,
                 this._vf.vOrder - 1,
                 this._vf.uKnot,
@@ -204,40 +205,10 @@ x3dom.registerNodeType(
         },
         findSpan: function (n, p, u, U) {
             return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);
+            
         }, /* findSpan */
         basisFuns: function (i, u, p, U) { // modified to disable cache
             return x3dom.nodeTypes.NurbsPositionInterpolator.prototype.basisFuns(i, u, p, U);
-            //var uKey = Math.floor(u*10e10);
-            //if (this.basisFunsCache[uKey]) return this.basisFunsCache[uKey];
-            var N = [],
-                left = [],
-                right = [],
-                saved,
-                temp;
-                var j,
-                r;
-
-            N[0] = 1.0;
-            for (j = 0; j <= p; j++) {
-                left[j] = 0;
-                right[j] = 0;
-            }
-
-            for (j = 1; j <= p; j++) {
-                left[j] = u - U[i + 1 - j];
-                right[j] = U[i + j] - u;
-                saved = 0.0;
-
-                for (r = 0; r < j; r++) {
-                    temp = N[r] / (right[r + 1] + left[j - r]);
-                    N[r] = saved + right[r + 1] * temp;
-                    saved = left[j - r] * temp;
-                }
-
-                N[j] = saved;
-            }
-            //this.basisFunsCache[uKey] = N;
-            return N;
         }, /* basisFuns */
         surfacePoint3DH: function (n, m, p, q, U, V, P, W, u, v)
         {
