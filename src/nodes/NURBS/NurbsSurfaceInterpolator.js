@@ -147,6 +147,8 @@ x3dom.registerNodeType(
     }, 
     {
         nodeChanged: function () {
+            this.points = this._cf.controlPoint.node._vf.point;
+            this.pointsLength = this.points.length;//save size in case points are shared and mofified by other node
         },
         fieldChanged: function (fieldName) {
             //                 switch (fieldName) {
@@ -162,15 +164,14 @@ x3dom.registerNodeType(
         getValue: function (uv) {
             var u=uv.x, v=uv.y;
             this.points = this._cf.controlPoint.node._vf.point;
-            var points = this.points.length;
             var uKnot = this._vf.uKnot;
             var vKnot = this._vf.vKnot;
             if (uKnot.length !== this._vf.uDimension + this._vf.uOrder)
                 uKnot = this.createDefaultKnots(this._vf.uDimension, this._vf.uOrder);
             if (vKnot.length !== this._vf.vDimension + this._vf.vOrder)
                 vKnot = this.createDefaultKnots(this._vf.vDimension, this._vf.vOrder);
-            if (this._vf.weight.length != points)
-                this._vf.weight = Array(points).fill(1.0);
+            if (this._vf.weight.length != this.pointsLength)
+                this._vf.weight = Array(this.pointsLength).fill(1.0);
             var uShift = (uKnot[uKnot.length-1] - uKnot[0]) * this._fractionalShift;
             var vShift = (vKnot[vKnot.length-1] - vKnot[0]) * this._fractionalShift;
             var uDiff = this.surfacePoint(u+uShift, v).subtract(this.surfacePoint(u, v));
@@ -204,8 +205,7 @@ x3dom.registerNodeType(
             );
         },
         findSpan: function (n, p, u, U) {
-            return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);
-            
+            return x3dom.nodeTypes.NurbsCurve.prototype.findSpan(n, p, u, U);          
         }, /* findSpan */
         basisFuns: function (i, u, p, U) { // modified to disable cache
             return x3dom.nodeTypes.NurbsPositionInterpolator.prototype.basisFuns(i, u, p, U);
