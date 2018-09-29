@@ -222,7 +222,8 @@ x3dom.registerNodeType(
         this.uv = []; // trigger triangulation
 
         //this._myctx = ctx;
-    }, {
+    }, 
+    {
         nodeChanged: function () {
             this._needReRender = true;
             this._vf.ccw = false;
@@ -233,6 +234,13 @@ x3dom.registerNodeType(
                 this._mesh = its._mesh;
                 this._hasCoarseMesh = true;
             }
+            
+            var uKnot = this._vf.uKnot;
+            var vKnot = this._vf.vKnot;
+            if (uKnot.length !== this._vf.uDimension + this._vf.uOrder)
+                uKnot = this.createDefaultKnots(this._vf.uDimension, this._vf.uOrder);
+            if (vKnot.length !== this._vf.vDimension + this._vf.vOrder)
+                vKnot = this.createDefaultKnots(this._vf.vDimension, this._vf.vOrder);
 
             var T = [];
             if (this._cf.trimmingContour &&
@@ -323,6 +331,7 @@ x3dom.registerNodeType(
 
             x3dom.tessWorkerPool.addWorkerTask(this.workerTask); //global pool
         },
+        
         fieldChanged: function (fieldName) {
             if (fieldName == 'order' || fieldName == 'knot' || fieldName.includes('Tessellation')) {
                 this.basisFunsCache = new Map();
@@ -332,6 +341,17 @@ x3dom.registerNodeType(
             } else if (this.uv.length)
                 this.nodeChanged();
             // do nothing until first tessellation
+        },
+        
+        createDefaultKnots: function (n, o) {
+            var knots = Array(n + o).fill(0);
+            for (var k = o;
+                k < n; k++)
+                knots[k] = (k - 1) / (n - 1);
+            for (var k = knots.length - o;
+                k < knots.length; k++)
+                knots[k] = 1; //points-1;
+            return knots;
         },
 
         createCoarseITS: function (node) {
