@@ -24,7 +24,7 @@ x3dom.registerNodeType(
          * @classdesc The PositionInterpolator2D node linearly interpolates among a list of 2D vectors to produce an SFVec2f value_changed event. The keyValue field shall contain exactly as many values as in the key field.
          */
         function (ctx) {
-            x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
+            x3dom.nodeTypes.PositionInterpolator2D.superClass.call(this, ctx);
 
 
             /**
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'keyValue', []);
+            this.addField_MFVec2f(ctx, 'keyValue', []);
         
         },
         {
