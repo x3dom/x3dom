@@ -4,17 +4,33 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
     <title>Inline nurbs test</title>
     <script type="text/javascript" src="../../x3dom-full_include.js"></script>
-    <!--script type="text/javascript" src="../../../src/nodes/NURBS/x3dom-nurbs-pool.js"></script>
-    <script type="text/javascript" src="../../../src/nodes/NURBS/x3dom-nurbs-nodes.js"></script-->
 
 </head>
 <body>
     <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
         <Scene>
             <Transform>
-                <Inline id="inline" nameSpaceName="nurbs" mapDEFToID="true" url="FourDucks.x3d" ></Inline>
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="nurbs" mapDEFToID="true" url="FourDucks.x3d" ></Inline>
             </Transform>
         </Scene>
     </X3D>
+    <label for="x3d-select">Choose an example:</label>
+    <select id="x3d-select" onchange='handleChange(event)'>
+        <option>FourDucks.x3d</option>
+        <option>NurbsCurveExample.x3d</option>
+        <option>NurbsPatchSurfaceExample.x3d</option>
+        <option>NurbsPositionOrientationInterpolatorExample.x3d</option>
+        <option>NurbsSurfaceInterpolatorExample.x3d</option>
+        <option value="none" selected>--Please choose a x3d scene--</option>
+    </select>
 </body>
+<script>
+    const inline = document.querySelector('#Inline');
+    function handleChange(event) {
+        inline.setAttribute('url', event.target.options[event.target.selectedIndex].value);
+    }
+    function handleLoad(event) {
+        document.querySelector('X3D').runtime.showAll('negZ');
+    }
+</script>
 </html>
