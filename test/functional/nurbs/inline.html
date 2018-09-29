@@ -16,18 +16,20 @@
     </X3D>
     <label for="x3d-select">Choose an example:</label>
     <select id="x3d-select" onchange='handleChange(event)'>
-        <option>FourDucks.x3d</option>
-        <option>NurbsCurveExample.x3d</option>
-        <option>NurbsPatchSurfaceExample.x3d</option>
-        <option>NurbsPositionOrientationInterpolatorExample.x3d</option>
-        <option>NurbsSurfaceInterpolatorExample.x3d</option>
+        <option>FourDucks</option>
+        <option>NurbsCurveExample</option>
+        <option>NurbsPatchSurfaceExample</option>
+        <option>NurbsPositionOrientationInterpolatorExample</option>
+        <option>NurbsSurfaceInterpolatorExample</option>
+        <option>TrimmingContourExample</option>
         <option value="none" selected>--Please choose a x3d scene--</option>
     </select>
 </body>
 <script>
     const inline = document.querySelector('#Inline');
+    const ext = '.x3d';
     function handleChange(event) {
-        inline.setAttribute('url', event.target.options[event.target.selectedIndex].value);
+        inline.setAttribute('url', event.target.options[event.target.selectedIndex].value + ext);
     }
     function handleLoad(event) {
         document.querySelector('X3D').runtime.showAll('negZ');
