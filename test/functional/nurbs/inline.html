@@ -15,6 +15,7 @@
             font-style: italic;
             font-family: monospace;
         }
+    </style>
 </head>
 <body>
     <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
@@ -24,8 +25,11 @@
             </Transform>
         </Scene>
     </X3D>
-    <label for="x3d-select">Choose an example:</label>
-    <select id="x3d-select" onchange='handleChange(event)'>
+    <label _style='margin: 5px;' for="x3d-select">Choose an example:</label>
+    <select _style='padding: 5px;
+            border-width: thick;
+            borderr-radius: 5px;'
+            id="x3d-select" onchange='handleChange(event)'>
         <option>FourDucks</option>
         <option>NurbsCurveExample</option>
         <option>NurbsPatchSurfaceExample</option>
