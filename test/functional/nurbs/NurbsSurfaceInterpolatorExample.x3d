@@ -48,12 +48,12 @@ Index for Viewpoint images : Viewpoint_1, Viewpoint_2, Viewpoint_3
     </NurbsSurfaceInterpolator> 
     <!-- ROUTE information for ball node:  [from npi.value_changed to set_translation ] -->
     <Transform DEF='ball'>
-        <Transform DEF='tipDownZ' scale='0.1 0.1 0.1' rotation='1 0 0 0'>
+        <Transform DEF='tipDownZ' scale='0.05 0.05 0.05' rotation='1 0 0 0'>
             <Shape>
                 <Appearance>
                 <Material diffuseColor='1 0 0'/>
                 </Appearance> 
-                <Cone/>
+                <Sphere/>
             </Shape>
         </Transform> 
     </Transform> 
