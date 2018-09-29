@@ -235,12 +235,10 @@ x3dom.registerNodeType(
                 this._hasCoarseMesh = true;
             }
             
-            var uKnot = this._vf.uKnot;
-            var vKnot = this._vf.vKnot;
-            if (uKnot.length !== this._vf.uDimension + this._vf.uOrder)
-                uKnot = this.createDefaultKnots(this._vf.uDimension, this._vf.uOrder);
-            if (vKnot.length !== this._vf.vDimension + this._vf.vOrder)
-                vKnot = this.createDefaultKnots(this._vf.vDimension, this._vf.vOrder);
+            if (this._vf.uKnot.length !== this._vf.uDimension + this._vf.uOrder)
+                this._vf.uKnot = this.createDefaultKnots(this._vf.uDimension, this._vf.uOrder);
+            if (this._vf.vKnot.length !== this._vf.vDimension + this._vf.vOrder)
+                this._vf.vKnot = this.createDefaultKnots(this._vf.vDimension, this._vf.vOrder);
 
             var T = [];
             if (this._cf.trimmingContour &&
