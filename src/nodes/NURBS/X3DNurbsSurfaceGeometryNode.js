@@ -220,6 +220,7 @@ x3dom.registerNodeType(
         this._needReRender = true;
         this.basisFunsCache = new Map();
         this.uv = []; // trigger triangulation
+        this.lastTime = -1; // time of last its creation
 
         //this._myctx = ctx;
     }, 
@@ -275,7 +276,7 @@ x3dom.registerNodeType(
             }
 
             var onmessage = function (e) {
-                if (e.data.length >= 3) {
+                if (e.data.length >= 3 && e.data[5] > this.caller.lastTime) {
                     if (this.caller.uv.length) {
                         var data = e.data[1];
                         var point = new x3dom.fields.MFVec3f();
@@ -302,6 +303,7 @@ x3dom.registerNodeType(
                     });
                     this.caller.basisFunsCache = e.data[3];
                     this.caller.uv = e.data[4];
+                    this.caller.lastTime = e.data[5];
                 }
             }
 
@@ -318,7 +320,8 @@ x3dom.registerNodeType(
                 this._vf.vTessellation,
                 T,
                 this.basisFunsCache,
-                this.uv
+                this.uv,
+                performance.now()
             ];
 
             if (this.workerTask)
