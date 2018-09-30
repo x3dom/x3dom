@@ -58,7 +58,7 @@ onmessage = function(e) {
             tcoords[i] = tess.texcoords[i];
         postMessage(tcoords.buffer, [tcoords.buffer]);
     } else {
-        postMessage([tess.indices, tess.coordinates, tess.texcoords, basisFunsCache, tess.uv]);
+        postMessage([tess.indices, tess.coordinates, tess.texcoords, basisFunsCache, tess.uv, e.data[13]]);
     }
     close();//deprecated?
 }
