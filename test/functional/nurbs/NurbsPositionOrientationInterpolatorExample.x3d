@@ -19,7 +19,7 @@
     <meta name='license' content=' ../license.html'/>
 </head> 
 <Scene>
-    <Viewpoint description='NurbsPositionInterpolator path' position='11 4.6 18'/> 
+    <Viewpoint description='Nurbs path' position='11 4.6 18'/> 
     <!-- ROUTE information for ts node:  [from fraction_changed to npi.set_fraction ] -->
     <TimeSensor DEF='ts' cycleInterval='4' loop='true'/> 
     <!-- ROUTE information for npi node:  [from ts.fraction_changed to set_fraction ] [from value_changed to cone.set_translation ] -->
