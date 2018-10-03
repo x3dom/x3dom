@@ -73,6 +73,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
                     that.doc.needRender = true;
+                    that._current_dim[0] = that.doc._viewarea._width;
                 }
                 break;
 
@@ -81,6 +82,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"), 0);
                     that.doc.needRender = true;
+                    that._current_dim[1] = that.doc._viewarea._height;
                 }
                 break;
 
@@ -1017,7 +1019,6 @@ x3dom.X3DCanvas.prototype._watchForResize = function() {
     ];
 
     if ((this._current_dim[0] != new_dim[0]) || (this._current_dim[1] != new_dim[1])) {
-        this._current_dim = new_dim;
         this.x3dElem.setAttribute("width", new_dim[0]+"px");
         this.x3dElem.setAttribute("height", new_dim[1]+"px");
     }
