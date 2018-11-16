@@ -48,6 +48,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.doc = null;
 
     this.vrDisplay = null;
+    this.vrDisplayPromise = null;
     this.vrFrameData = null;
 
     this.devicePixelRatio = window.devicePixelRatio || 1;
@@ -1282,7 +1283,12 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                         }
                         else
                         {
-                            navigator.getVRDisplays().then( function (displays) {
+                            if(!this.vrDisplayPromise)
+                            {
+                                this.vrDisplayPromise = navigator.getVRDisplays();
+                            }
+
+                            this.vrDisplayPromise.then( function (displays) {
 
                                 x3dCanvas.vrDisplay = displays[0];
     

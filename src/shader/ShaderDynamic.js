@@ -967,7 +967,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
 
 				shader += "_shininess = 1.0 - roughnessMetallic.g;\n";
-				shader += "_metallic  = roughnessMetallic.b;\n";		
+				shader += "_metallic  = roughnessMetallic.b * metallicFactor;\n";		
 			}
 
 			if(properties.SPECULARGLOSSINESSMAP)
@@ -1045,16 +1045,20 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 			if(properties.PHYSICALENVLIGHT)
 			{
-				shader += "float camDistance = length(cameraPosWS.xyz - fragPositionWS.xyz);"
+				shader += "float camDistance = length(cameraPosWS.xyz - fragPositionWS.xyz);\n";
 				shader += "vec3 N = (mat_vi * vec4(normal, 0.0)).rgb;\n";
 				shader += "vec3 V = normalize ( cameraPosWS.xyz - fragPositionWS.xyz );\n";
 				shader += "vec3 R = normalize( reflect ( -V, N ) );\n";
+
+				// shader += "float h = clamp( dot( N, V ), 0.0, 1.0 );\n";
+				// shader += "h = 0.5 - h * 0.5;\n";
+				// shader += "_shininess = mix( _shininess, 1.0, h*h );\n";
 
 				shader += "float roughness  =  1.0 - _shininess;\n";
 				shader += "float NoV = dot( N, V );\n";
 				shader += "float lod = roughness * 6.0;"
 
-				shader += "diffuse = textureCube( diffuseEnvironmentMap, N ).rgb / 3.14159;\n";
+				shader += "diffuse = textureCube( diffuseEnvironmentMap, N ).rgb;\n";
 
 				if(x3dom.caps.TEXTURE_LOD)
 				{
