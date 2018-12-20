@@ -624,7 +624,8 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     var d, vec, cor, mat = null;
     var alpha, beta;
 
-    buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
+    //buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
+    buttonState = buttonState & navRestrict;
     
     if (buttonState & 1) //left
     {
