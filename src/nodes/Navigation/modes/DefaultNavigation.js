@@ -703,10 +703,12 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, tra
     {
         var navi = this.navi;
         var viewpoint = view._scene.getViewpoint();
+        
+        var navRestrict = navi.getExplorationMode();
 
-        if (navi.getType() === "examine")
+        if (navi.getType() === "examine" && navRestrict !== 0)
         {
-            if (translation)
+            if (translation && navRestrict & 4)
             {
                 var distance = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
                 distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
@@ -727,7 +729,7 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, tra
                     mult(viewpoint.getViewMatrix());
             }
 
-            if (rotation)
+            if (rotation && navRestrict & 1)
             {
                 var center = viewpoint.getCenterOfRotation();
                 var mat = view.getViewMatrix();
