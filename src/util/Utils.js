@@ -1085,6 +1085,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
+        property.HANIM            = (geometry._cf.coord.node._parentNodes.some( 
+                                     function(parent) {return x3dom.isa(parent,x3dom.nodeTypes.HAnimHumanoid)})) ? 1 : 0;
         //console.log(property);
 	}
 
