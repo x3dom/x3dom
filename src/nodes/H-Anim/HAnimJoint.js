@@ -218,6 +218,8 @@ x3dom.registerNodeType(
                     // then add weighted skinCoordIndex
                     skinCoordIndex = this._vf.skinCoordIndex;
                     if ( skinCoordIndex.length !== 0 ) {
+                        //collect joint for shape
+                        skinCoord.joints.push( trafo );
                         skinCoordWeight = this._vf.skinCoordWeight;
                         //blend in contribution rel. to undeformed resting
                         skinCoordIndex.forEach(function(coordIndex, i) {
