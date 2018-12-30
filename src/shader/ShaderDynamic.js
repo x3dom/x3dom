@@ -461,8 +461,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
         shader += "vec4 joints = vec4( 0, 1, 2, 3 );\n"; // will be attribute
         shader += "vec4 weights = vec4( 0.8, 0.1, 0.05, 0.05 );\n"; // will be attribute
         
-        shader += "mat4 skinMatrix  = weights.x * jointMatrix[ int ( joints.x ) ];\n";
-        shader += "mat4 skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
+        shader += "mat4 skinMatrix = weights.x * jointMatrix[ int ( joints.x ) ];\n";
+        shader += "skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
 
         shader += "vertPosition = (skinMatrix * vec4(vertPosition, 1.0)).xyz;\n";
     }
