@@ -313,7 +313,7 @@ x3dom.registerNodeType(
                 if (skinCoord) {
                     skinCoord._vf.point.setValues(this._restCoords);
                     //reset ad hoc joints collections attached to coord node
-                    skinCoord = [];
+                    skinCoord.joints = [];
                 }
                 
                 if (this._cf.skinNormal.node)
