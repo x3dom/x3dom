@@ -309,8 +309,11 @@ x3dom.registerNodeType(
                 }
                 
                 //reset skin coords and normals before traversing skeleton
-                if (this._cf.skinCoord.node)
+                if (this._cf.skinCoord.node) {
                     this._cf.skinCoord.node._vf.point.setValues(this._restCoords);
+                    //reset ad hoc joints collections attached to coord node
+                    this._cf.skinCoord.node.joints = null;
+                }
                 
                 if (this._cf.skinNormal.node)
                     this._cf.skinNormal.node._vf.vector.setValues(this._restNormals);
