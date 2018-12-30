@@ -51,8 +51,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	} else if(properties.POSCOMPONENTS == 4) {
 		shader += "attribute vec4 position;\n";
 	}
+    
+    //HAnim skinning
+    if(properties.HANIM) {
+        //replace with float texture store
+        //put as constant 
+        var maxJoints =  Math.floor((x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS - 52) / 4);
+	    shader += "uniform mat4 jointMatrix[" + maxJoints + "];\n";
+    }
 	
-  //IG stuff
+    //IG stuff
 	if(properties.IMAGEGEOMETRY) {
 		shader += "uniform vec3 IG_bboxMin;\n";
 		shader += "uniform vec3 IG_bboxMax;\n";
@@ -446,6 +454,17 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     else if (properties.DIFFPLACEMENTMAP)
     {
         shader += "vertPosition += normalize(vertNormal) * texture2D(diffuseDisplacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).a * displacementFactor;\n";
+    }
+    
+    //HAnim skinning
+    if (properties.HANIM) {
+        shader += "vec4 joints = vec4( 0, 1, 2, 3 );\n"; // will be attribute
+        shader += "vec4 weights = vec4( 0.8, 0.1, 0.05, 0.05 );\n"; // will be attribute
+        
+        shader += "mat4 skinMatrix  = weights.x * jointMatrix[ int ( joints.x ) ];\n";
+        shader += "mat4 skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
+
+        shader += "vertPosition = (skinMatrix * vec4(vertPosition, 1.0)).xyz;\n";
     }
   
     //Positions
