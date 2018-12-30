@@ -2322,6 +2322,12 @@ x3dom.gfx_webgl = (function() {
         sp.modelViewMatrixInverse = model_view_inv.toGL();
 
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
+        
+        //HAnim skinning
+        var hasJoints = s_geo._cf.coord && s_geo._cf.coord.node.joints;
+        if (hasJoints) {
+                sp.jointMatrix = s_geo._cf.coord.node.joints; // needs length adjustment to match shader
+        }
 
         if (isUserDefinedShader || shape._clipPlanes && shape._clipPlanes.length) {
             sp.viewMatrixInverse = mat_view.inverse().toGL();
