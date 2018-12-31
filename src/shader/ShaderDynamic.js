@@ -55,9 +55,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     //HAnim skinning
     if(properties.HANIM) {
         //replace with float texture store
-        //put as constant 
-        var maxJoints =  Math.floor((x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS - 52) / 4);
-	    shader += "uniform mat4 jointMatrix[" + maxJoints + "];\n";
+        shader += "uniform mat4 jointMatrix[" + properties.HANIMJOINTS + "];\n";
     }
 	
     //IG stuff
