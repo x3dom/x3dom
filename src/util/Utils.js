@@ -1217,8 +1217,12 @@ x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 					(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new Float32Array(val)); }; })(loc));
 				break;
 			case gl.FLOAT_MAT4:
-				shader.__defineSetter__(obj.name,
-					(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new Float32Array(val)); }; })(loc));
+				var uniformName = obj.name;
+				if (uniformName.indexOf("[0]") != -1) uniformName = uniformName.substring(0, obj.name.length-3);
+				shader.__defineSetter__(uniformName,
+					(function (loc) { return function (val) { 
+						gl.uniformMatrix4fv(loc, false, new Float32Array(val)); 
+					}; })(loc));
 				break;
 			case gl.INT:
 				shader.__defineSetter__(obj.name,
