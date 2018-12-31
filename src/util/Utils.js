@@ -1087,6 +1087,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.KHR_MATERIAL_COMMONS = 0;
         property.HANIM            = (geometry._cf.coord.node._parentNodes.some( 
                                      function(parent) {return x3dom.isa(parent,x3dom.nodeTypes.HAnimHumanoid)})) ? 1 : 0;
+		property.HANIMJOINTS      = property.HANIM && Math.floor(Math.min(
+                                     geometry._cf.coord.node.joints.length / 16, (x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS - 52) / 4));
         //console.log(property);
 	}
 
