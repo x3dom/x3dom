@@ -218,12 +218,16 @@ x3dom.gfx_webgl = (function() {
         var normals, normalBuffer;
         var colors, colorBuffer;
 
+        var joints, jointBuffer;
+        var jointBufferIndex = 8;
+        var weightBufferIndex = 9;
+
         var shape = drawable.shape;
         var geoNode = shape._cf.geometry.node;
 
         if (shape._webgl !== undefined) {
             var needFullReInit = false;
-
+ 
             // TODO: do same for texcoords etc.!
             if (shape._dirty.colors === true &&
                 shape._webgl.shader.color === undefined && geoNode._mesh._colors[0].length) {
@@ -288,7 +292,7 @@ x3dom.gfx_webgl = (function() {
 
             if (!needFullReInit && shape._webgl.binaryGeometry == 0) {
                 // THINKABOUTME: What about PopGeo & Co.?
-                for (q = 0; q < shape._webgl.positions.length; q++) {
+                for (q = 0; q < shape._webgl.positions.length; q++) { //for split mesh
                     q6 = 6 * q;
 
                     if (shape._dirty.positions == true || shape._dirty.indexes == true) {
@@ -569,7 +573,7 @@ x3dom.gfx_webgl = (function() {
 
         // init vertex attribs
         var sp = shape._webgl.shader;
-        var currAttribs = 0;
+        var currAttribs = 0; // for dynamic fields
 
         shape._webgl.buffers = [];
         shape._webgl.dynamicFields = [];
@@ -699,7 +703,42 @@ x3dom.gfx_webgl = (function() {
                         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizeArr), gl.STATIC_DRAW);
                     }
                 }
+                if (sp.joints !== undefined) {
+                        var jointBuffer = gl.createBuffer();
+                        shape._webgl.buffers[q6 + jointBufferIndex] = jointBuffer;
+
+                        var joints = new Float32Array(geoNode._cf.coord.node.jointIdxGl); //try ivec4 and Uint16Array
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, jointBuffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, joints, gl.STATIC_DRAW);
+
+                        gl.vertexAttribPointer(sp.joints,
+                        4,
+                        gl.FLOAT, false,
+                        0, 0);
+                        gl.enableVertexAttribArray(sp.joints);
+
+                        joints = null;
+                }
+                if (sp.weights !== undefined) {
+                        var weightBuffer = gl.createBuffer();
+                        shape._webgl.buffers[q6 + weightBufferIndex] = weightBuffer;
+
+                        var weights = new Float32Array(geoNode._cf.coord.node.weightGl);
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, weightBuffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, weights, gl.STATIC_DRAW);
+
+                        gl.vertexAttribPointer(sp.weights,
+                        4,
+                        gl.FLOAT, false,
+                        0, 0);
+                        gl.enableVertexAttribArray(sp.weights);
+
+                        weights = null;
+                }
             }
+
 
             // FIXME: handle geometry with split mesh that has dynamic fields!
             for (var df in geoNode._mesh._dynamicFields) {
@@ -2500,6 +2539,30 @@ x3dom.gfx_webgl = (function() {
                         gl.enableVertexAttribArray(sp.particleSize);
                     }
                 }
+
+//HAnim skinning
+                if (sp.joints !== undefined) {
+                        gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 8]);
+                        
+                        gl.vertexAttribPointer(sp.joints,
+                        4,
+                        gl.FLOAT, false,
+                        0, 0);
+
+                        gl.enableVertexAttribArray(sp.joints);
+                }
+                if (sp.weights !== undefined) {
+                        gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 9]);
+                        
+                        gl.vertexAttribPointer(sp.weights,
+                        4,
+                        gl.FLOAT, false,
+                        0, 0);
+
+                        gl.enableVertexAttribArray(sp.weights);
+                }
+
+
                 if (s_gl.popGeometry != 0 && s_gl.buffers[q6 + 5]) {
                     // special case: mimic gl_VertexID
                     gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q6 + 5]);
