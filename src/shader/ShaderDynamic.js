@@ -56,6 +56,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     if(properties.HANIM) {
         //replace with float texture store
         shader += "uniform mat4 jointMatrix[" + properties.HANIMJOINTS + "];\n";
+        shader += "attribute vec4 joints;\n";
+        shader += "attribute vec4 weights;\n";
     }
 	
     //IG stuff
@@ -456,11 +458,13 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     
     //HAnim skinning
     if (properties.HANIM) {
-        shader += "vec4 joints = vec4( 0, 1, 2, 3 );\n"; // will be attribute
-        shader += "vec4 weights = vec4( 0.8, 0.1, 0.05, 0.05 );\n"; // will be attribute
+        shader += "vec4 _joints = vec4( 0, 1, 2, 3);\n"; // will be attribute
+        shader += "vec4 _weights = vec4( 0.8, 0.1, 0.05, 0.05 );\n"; // will be attribute
         
         shader += "mat4 skinMatrix = weights.x * jointMatrix[ int ( joints.x ) ];\n";
         shader += "skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
+		shader += "skinMatrix += weights.z * jointMatrix[ int ( joints.z ) ];\n";
+		shader += "skinMatrix += weights.a * jointMatrix[ int ( joints.a ) ];\n";
 
         shader += "vertPosition = (skinMatrix * vec4(vertPosition, 1.0)).xyz;\n";
     }
@@ -512,7 +516,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "uniform mat4 modelMatrix;\n";
     shader += "uniform mat4 modelViewMatrix;\n";
     shader += "uniform mat4 viewMatrixInverse;\n";
-	
+
 	//Material
     shader += x3dom.shader.material();
 
