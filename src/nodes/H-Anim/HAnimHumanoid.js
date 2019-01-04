@@ -324,16 +324,20 @@ x3dom.registerNodeType(
                     this._cf.skinNormal.node._vf.vector.setValues(this._restNormals);
 
                 
+                this._hasDisplacers = false; // displacers may have been replaced
+                
                 this._cf.skeleton.nodes.forEach(function(cnode) {
                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 });
+
+                this._needsJointsUpdate = false;
                 
                 this._cf.skin.nodes.forEach(function(cnode) {
                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 });
                 
-                //force coord update
-                if (this._cf.skinCoord.node) {
+                //force coord update, only needed for displacers
+                if (this._cf.skinCoord.node && this._hasDisplacers) {
                     this._cf.skinCoord.node._parentNodes.forEach( function(node) {
                         node.fieldChanged('coord');// may need to be more general
                     });
@@ -342,6 +346,8 @@ x3dom.registerNodeType(
         
             nodeChanged: function()
             {
+                this._needsJointsUpdate = true;
+
                 //save initial, resting pose
                 if (this._cf.skinCoord.node)
                     this._restCoords = this._cf.skinCoord.node._vf.point.copy() ;
