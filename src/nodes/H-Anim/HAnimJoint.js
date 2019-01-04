@@ -143,6 +143,15 @@ x3dom.registerNodeType(
                     return _findRoot(parent._xmlNode);
                 }
             },
+
+            fieldChanged: function (field)
+            {
+                if (field == 'skinCoordIndex' || field == 'skinCoordWeight')
+                { 
+                    this._humanoid._needsJointsUpdate = true;
+                }
+                x3dom.nodeTypes.Transform.prototype.fieldChanged.call(this, field);
+            },
         
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
             {
@@ -198,10 +207,13 @@ x3dom.registerNodeType(
                 if ( skinCoord ) {               
                     humanoid = this._humanoid;
                     trafo = humanoid.getCurrentTransform().inverse().mult(childTransform);//factor in root trafo
-                    
+                    //collect joint for shape as uniform array
+                    skinCoord.joints = skinCoord.joints.concat( trafo.toGL() );
+                        
                     // first add displacers
                     displacers = this._cf.displacers.nodes;
                     if ( displacers.length !== 0) {
+                        humanoid._hasDisplacers = true;
                         displacers.forEach( function(displacer) {
                             var weight = displacer._vf.weight;
                             var MFdisplacements = displacer._vf.displacements;
@@ -215,16 +227,15 @@ x3dom.registerNodeType(
                         });
                     }
                     
-                    // then add weighted skinCoordIndex
-                    skinCoordIndex = this._vf.skinCoordIndex;
-                    if ( skinCoordIndex.length !== 0 ) {
-                        //collect joint for shape as uniform array
-                        skinCoord.joints = skinCoord.joints.concat( trafo.toGL() );
-                        
-                        skinCoordWeight = this._vf.skinCoordWeight;
+                    if ( humanoid._needsJointsUpdate ) {
+                        // then add weighted skinCoordIndex
+                        skinCoordIndex = this._vf.skinCoordIndex;
+                        if ( skinCoordIndex.length !== 0 ) {
 
-                        skinCoordIndex.forEach(function(coordIndex, i) { //only update when dirty
-                            if (skinCoord.jointIdx[coordIndex] === undefined) {
+                            skinCoordWeight = this._vf.skinCoordWeight;
+
+                            skinCoordIndex.forEach(function(coordIndex, i) { //only update when dirty
+                                if (skinCoord.jointIdx[coordIndex] === undefined) {
                                     skinCoord.jointIdx[coordIndex]=[];
                                     //add vec4 to flat gl array
                                     //expand if necessary
@@ -232,8 +243,8 @@ x3dom.registerNodeType(
                                     if (expansion > 0) {
                                         skinCoord.jointIdxGl = skinCoord.jointIdxGl.concat( Array(expansion).fill(0) );
                                     }
-                            }
-                            if (skinCoord.weight[coordIndex] === undefined) {
+                                }
+                                if (skinCoord.weight[coordIndex] === undefined) {
                                     skinCoord.weight[coordIndex]=[];
                                     //add vec4 to flat gl array
                                     //expand if necessary
@@ -241,29 +252,30 @@ x3dom.registerNodeType(
                                     if (expansion > 0) {
                                         skinCoord.weightGl = skinCoord.weightGl.concat( Array(expansion).fill(0) );
                                     }
-                            }
+                                }
 
-                            var jointIdx = Math.floor(skinCoord.joints.length / 16) - 1;
+                                var jointIdx = Math.floor(skinCoord.joints.length / 16) - 1;
 
-                            skinCoord.jointIdx[coordIndex].push(jointIdx);
-                            skinCoord.jointIdxGl[coordIndex * 4 + skinCoord.jointIdx[coordIndex].length - 1] = jointIdx;
+                                skinCoord.jointIdx[coordIndex].push(jointIdx);
+                                skinCoord.jointIdxGl[coordIndex * 4 + skinCoord.jointIdx[coordIndex].length - 1] = jointIdx;
 
-                            var weight = skinCoordWeight[ Math.min( i, skinCoordWeight.length - 1 ) ];
-                            skinCoord.weight[coordIndex].push(weight);
-                            skinCoord.weightGl[coordIndex * 4 + skinCoord.weight[coordIndex].length - 1] = weight;
+                                var weight = skinCoordWeight[ Math.min( i, skinCoordWeight.length - 1 ) ];
+                                skinCoord.weight[coordIndex].push(weight);
+                                skinCoord.weightGl[coordIndex * 4 + skinCoord.weight[coordIndex].length - 1] = weight;
 
-                        });
+                            });
 
-                        //blend in contribution rel. to undeformed resting
-//                         skinCoordIndex.forEach(function(coordIndex, i) {
-//                             //update coord
-//                             var restCoord = humanoid._restCoords[coordIndex];
-//                             skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
-//                                 .add( trafo.multMatrixPnt( restCoord )
-//                                     .subtract( restCoord )
-//                                     .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-//                                  ); //in case of not enough weights
-//                         });
+                                    //blend in contribution rel. to undeformed resting
+            //                         skinCoordIndex.forEach(function(coordIndex, i) {
+            //                             //update coord
+            //                             var restCoord = humanoid._restCoords[coordIndex];
+            //                             skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
+            //                                 .add( trafo.multMatrixPnt( restCoord )
+            //                                     .subtract( restCoord )
+            //                                     .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
+            //                                  ); //in case of not enough weights
+            //                         });
+                        }
                     }
                 }
                 
