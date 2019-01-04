@@ -357,10 +357,29 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	* End of special Geometry switch
 	********************************************************************************/
 	
-	
+	//HAnim skinning
+    if (properties.HANIM) {
+        
+        shader += "mat4 skinMatrix = weights.x * jointMatrix[ int ( joints.x ) ];\n";
+        shader += "skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
+		shader += "skinMatrix += weights.z * jointMatrix[ int ( joints.z ) ];\n";
+		shader += "skinMatrix += weights.a * jointMatrix[ int ( joints.a ) ];\n";
+
+    }
+
+	//HAnim skinning
+	if (properties.LIGHTS || properties.NORMALMAP) {
+		if (properties.HANIM) {
+			shader += "mat4 effNormalMatrix = normalMatrix * skinMatrix;\n"; //should use inverse transpose but would need another uniform
+		}
+		else {
+			shader += "mat4 effNormalMatrix = normalMatrix;\n";
+		}
+	}
+
 	//Normals
 	if(properties.LIGHTS) {
-        if ((properties.DISPLACEMENTMAP || properties.DIFFPLACEMENTMAP) && !properties.NORMALMAP) {
+		if ((properties.DISPLACEMENTMAP || properties.DIFFPLACEMENTMAP) && !properties.NORMALMAP) {
           //Map-Tile Size
           shader += "float dx = 1.0 / displacementWidth;\n";
           shader += "float dy = 1.0 / displacementHeight;\n";
@@ -398,14 +417,14 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 
           //normalized Normal
           shader += "calcNormal = normalize(calcNormal);\n";
-          shader += "fragNormal = (normalMatrix * vec4(calcNormal, 0.0)).xyz;\n";
+          shader += "fragNormal = (effNormalMatrix * vec4(calcNormal, 0.0)).xyz;\n";
         }
 		else if (properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
 			//Nothing to do
 		}
         else
         {
-            shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
+            shader += "fragNormal = (effNormalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
         }
 	}
     
@@ -429,19 +448,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 
 		if(properties.NORMALMAP && properties.NORMALSPACE == "TANGENT" && !x3dom.caps.STD_DERIVATIVES) {
-			shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
-			shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
+			shader += "fragTangent  = (effNormalMatrix * vec4(tangent, 0.0)).xyz;\n";
+			shader += "fragBinormal = (effNormalMatrix * vec4(binormal, 0.0)).xyz;\n";
 		}
 	}
 	
-	//Lights & Fog
-	if(properties.LIGHTS || properties.FOG || properties.CLIPPLANES){
-		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0));\n";
-		if (properties.FOG) {
-			shader += "fragEyePosition = eyePosition - fragPosition.xyz;\n";
-		}
-	}
-
     //Vertex ID's
     if (properties.MULTIDIFFALPMAP) {
         shader += "fragID = id;\n";
@@ -458,16 +469,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     
     //HAnim skinning
     if (properties.HANIM) {
-        shader += "vec4 _joints = vec4( 0, 1, 2, 3);\n"; // will be attribute
-        shader += "vec4 _weights = vec4( 0.8, 0.1, 0.05, 0.05 );\n"; // will be attribute
-        
-        shader += "mat4 skinMatrix = weights.x * jointMatrix[ int ( joints.x ) ];\n";
-        shader += "skinMatrix += weights.y * jointMatrix[ int ( joints.y ) ];\n";
-		shader += "skinMatrix += weights.z * jointMatrix[ int ( joints.z ) ];\n";
-		shader += "skinMatrix += weights.a * jointMatrix[ int ( joints.a ) ];\n";
-
         shader += "vertPosition = (skinMatrix * vec4(vertPosition, 1.0)).xyz;\n";
     }
+    
+    //Lights & Fog
+	if(properties.LIGHTS || properties.FOG || properties.CLIPPLANES){
+		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0));\n";
+		if (properties.FOG) {
+			shader += "fragEyePosition = eyePosition - fragPosition.xyz;\n";
+		}
+	}
   
     //Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
