@@ -267,26 +267,26 @@ x3dom.registerNodeType(
                     }
                 }
                 
-                var skinNormal = this._humanoid._cf.skinNormal.node;
-                if (skinNormal) {
-                    skinCoordIndex = this._vf.skinCoordIndex;
-                    if (skinCoordIndex.length !== 0) {
-                        skinCoordWeight = this._vf.skinCoordWeight;
-                        humanoid = this._humanoid;
-                        // use inverse transpose for normal
-                        trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();
-                        //blend in contribution rel. to undeformed resting
-                        skinCoordIndex.forEach(function(coordIndex, i) {
-                            //update coord
-                            var restNormal = humanoid._restNormals[coordIndex];
-                            skinNormal._vf.vector[coordIndex] = skinNormal._vf.vector[coordIndex]
-                                .add(trafo.multMatrixVec( restNormal )
-                                    .subtract( restNormal )
-                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-                                 ); //in case of not enough weights
-                        });
-                    }
-                }
+//                 var skinNormal = this._humanoid._cf.skinNormal.node;
+//                 if (skinNormal) {
+//                     skinCoordIndex = this._vf.skinCoordIndex;
+//                     if (skinCoordIndex.length !== 0) {
+//                         skinCoordWeight = this._vf.skinCoordWeight;
+//                         humanoid = this._humanoid;
+//                         // use inverse transpose for normal
+//                         trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();
+//                         //blend in contribution rel. to undeformed resting
+//                         skinCoordIndex.forEach(function(coordIndex, i) {
+//                             //update coord
+//                             var restNormal = humanoid._restNormals[coordIndex];
+//                             skinNormal._vf.vector[coordIndex] = skinNormal._vf.vector[coordIndex]
+//                                 .add(trafo.multMatrixVec( restNormal )
+//                                     .subtract( restNormal )
+//                                     .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
+//                                  ); //in case of not enough weights
+//                         });
+//                     }
+//                 }
                 
                 for (var i=0; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
