@@ -7,15 +7,48 @@
     <script type="text/javascript" src="../../x3dom-full_include.js"></script>
 </head>
 <body>
-    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" width="500px" height="500px">
         <Scene>
-            <!--Viewpoint centerOfRotation='0 0.9149 0.0016' description='front' position='0 0.4 4'></Viewpoint>
+            <!--Viewpoint centerOfRotation='0 0.9149 0.0016' description='front' position='0 0.4 4'></Viewpoint-->
             <DirectionalLight direction='-1 -1 -1' intensity='0.4'></DirectionalLight>
-            <DirectionalLight direction='1 -1 -1' intensity='0.4'></DirectionalLight-->
-            <Viewpoint position='0 0 10'></Viewpoint>
+            <DirectionalLight direction='1 -1 -1' intensity='0.4'></DirectionalLight>
+            <Viewpoint position='0 0 20'></Viewpoint>
             <Background skyColor='0 0 0'></Background>
-            <Transform>
-                <Inline id="inline" nameSpaceName="hanim" mapDEFToID="true" url="RiggedSimple.x3d" ></Inline>
+            <Transform DEF='fivex3x3'>
+            <Transform DEF='fivex3'>
+                <Transform DEF='five'>
+                    <Transform>
+                        <Inline id="inline" nameSpaceName="test1" mapDEFToID="true" url="RiggedSimple.x3d" bboxsize='100 100 100'></Inline>
+                    </Transform>
+                    <Transform translation='-1 0 0'>
+                        <Inline url="RiggedSimple.x3d" bboxsize='100 100 100'></Inline>
+                    </Transform>
+                    <Transform translation='1 0 0'>
+                        <Inline url="RiggedSimple.x3d" bboxsize='100 100 100'></Inline>
+                    </Transform>
+                    <Transform translation='-2 0 0'>
+                        <Inline url="RiggedSimple.x3d" bboxsize='100 100 100'></Inline>
+                    </Transform>
+                    <Transform translation='2 0 0'>
+                        <Inline url="RiggedSimple.x3d" bboxsize='100 100 100'></Inline>
+                    </Transform>
+                </Transform>
+                <Transform rotation='0 1 0 1.07'>
+                    <Transform USE='five'></Transform>
+                </Transform>
+                <Transform rotation='0 1 0 -1.07'>
+                    <Transform USE='five'></Transform>
+                </Transform>
+            </Transform>
+            <Transform rotation='1 0 0 -1.07'>
+                <Transform USE='fivex3'></Transform>
+            </Transform>
+            <Transform rotation='1 0 0 1.07'>
+                <Transform USE='fivex3'></Transform>
+            </Transform>
+            </Transform>
+            <Transform rotation='0 1 0 0.535'>
+                <Transform USE='fivex3x3'></Transform>
             </Transform>
         </Scene>
     </X3D>
