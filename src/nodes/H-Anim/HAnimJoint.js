@@ -234,71 +234,26 @@ x3dom.registerNodeType(
 
                             skinCoordWeight = this._vf.skinCoordWeight;
 
-                            skinCoordIndex.forEach(function(coordIndex, i) { //only update when dirty
+                            skinCoordIndex.forEach(function(coordIndex, i) {
                                 if (skinCoord.jointIdx[coordIndex] === undefined) {
                                     skinCoord.jointIdx[coordIndex]=[];
-                                    //add vec4 to flat gl array
-                                    //expand if necessary
-                                    var expansion = coordIndex * 4 - skinCoord.jointIdxGl.length + 4;
-                                    if (expansion > 0) {
-                                        skinCoord.jointIdxGl = skinCoord.jointIdxGl.concat( Array(expansion).fill(0) );
-                                    }
+                                    
                                 }
                                 if (skinCoord.weight[coordIndex] === undefined) {
                                     skinCoord.weight[coordIndex]=[];
-                                    //add vec4 to flat gl array
-                                    //expand if necessary
-                                    var expansion = coordIndex * 4 - skinCoord.weightGl.length + 4;
-                                    if (expansion > 0) {
-                                        skinCoord.weightGl = skinCoord.weightGl.concat( Array(expansion).fill(0) );
-                                    }
+                                    
                                 }
 
                                 var jointIdx = Math.floor(skinCoord.joints.length / 16) - 1;
-
                                 skinCoord.jointIdx[coordIndex].push(jointIdx);
-                                skinCoord.jointIdxGl[coordIndex * 4 + skinCoord.jointIdx[coordIndex].length - 1] = jointIdx;
-
+                                
                                 var weight = skinCoordWeight[ Math.min( i, skinCoordWeight.length - 1 ) ];
                                 skinCoord.weight[coordIndex].push(weight);
-                                skinCoord.weightGl[coordIndex * 4 + skinCoord.weight[coordIndex].length - 1] = weight;
-
+                                
                             });
-
-                                    //blend in contribution rel. to undeformed resting
-            //                         skinCoordIndex.forEach(function(coordIndex, i) {
-            //                             //update coord
-            //                             var restCoord = humanoid._restCoords[coordIndex];
-            //                             skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
-            //                                 .add( trafo.multMatrixPnt( restCoord )
-            //                                     .subtract( restCoord )
-            //                                     .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-            //                                  ); //in case of not enough weights
-            //                         });
                         }
                     }
                 }
-                
-//                 var skinNormal = this._humanoid._cf.skinNormal.node;
-//                 if (skinNormal) {
-//                     skinCoordIndex = this._vf.skinCoordIndex;
-//                     if (skinCoordIndex.length !== 0) {
-//                         skinCoordWeight = this._vf.skinCoordWeight;
-//                         humanoid = this._humanoid;
-//                         // use inverse transpose for normal
-//                         trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();
-//                         //blend in contribution rel. to undeformed resting
-//                         skinCoordIndex.forEach(function(coordIndex, i) {
-//                             //update coord
-//                             var restNormal = humanoid._restNormals[coordIndex];
-//                             skinNormal._vf.vector[coordIndex] = skinNormal._vf.vector[coordIndex]
-//                                 .add(trafo.multMatrixVec( restNormal )
-//                                     .subtract( restNormal )
-//                                     .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-//                                  ); //in case of not enough weights
-//                         });
-//                     }
-//                 }
                 
                 for (var i=0; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
