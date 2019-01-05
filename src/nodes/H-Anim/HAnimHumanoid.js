@@ -311,13 +311,15 @@ x3dom.registerNodeType(
                 //reset skin coords and normals before traversing skeleton
                 var skinCoord = this._cf.skinCoord.node;
                 if (skinCoord) {
-                    skinCoord._vf.point.setValues(this._restCoords);
+                    skinCoord._vf.point.setValues(this._restCoords); //until displacer in shader
                     //reset ad hoc joints collections attached to coord node
                     skinCoord.joints = [];
-                    skinCoord.jointIdx = [];
-                    skinCoord.jointIdxGl = [];
-                    skinCoord.weight = [];
-                    skinCoord.weightGl = [];
+                    if (this._needsJointsUpdate) {
+                                skinCoord.jointIdx = [];
+                                skinCoord.jointIdxGl = [];
+                                skinCoord.weight = [];
+                                skinCoord.weightGl = [];
+                    }
                 }
                 
                 if (this._cf.skinNormal.node)
@@ -327,8 +329,23 @@ x3dom.registerNodeType(
                 this._hasDisplacers = false; // displacers may have been replaced
                 
                 this._cf.skeleton.nodes.forEach(function(cnode) {
-                   cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
                 });
+
+                if (this._needsJointsUpdate) {
+                    skinCoord.jointIdxGl = vecXArrayToVec4gl(skinCoord.jointIdx);
+                    skinCoord.weightGl = vecXArrayToVec4gl(skinCoord.weight);
+                }
+
+                function vecXArrayToVec4gl (vecXArray) {
+                    var glArray = Array(vecXArray.length * 4).fill(0);
+                    vecXArray.forEach( function (a, i) {
+                        a.forEach( function (val, j) {
+                            glArray[ i*4 + j ] = val;
+                        })
+                    })
+                    return glArray;
+                }
 
                 this._needsJointsUpdate = false;
                 
