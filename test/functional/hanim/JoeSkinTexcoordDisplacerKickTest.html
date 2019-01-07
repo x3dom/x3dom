@@ -18,15 +18,26 @@
             <Viewpoint DEF='Scene_ISideView' centerOfRotation='0 0.8 0' description='Scene_Side View' orientation='0 1 0 1.5708' position='2.6 0.5 0'></Viewpoint>
             <Viewpoint DEF='Scene_BackView' centerOfRotation='0 1.5 0' description='Scene_Back View' orientation='0 1 0 3.14' position='0 2.5 -3'></Viewpoint>
             <Viewpoint DEF='Scene_TopView' centerOfRotation='0 1.5 0' description='Scene_Top View' orientation='1 0 0 -1.5708' position='0 3.5 0'></Viewpoint>
-            <Transform>
-                <Inline DEF="inline" nameSpaceName="hanim" mapDEFToID="true" url="JoeSkinTexcoordDisplacerKickTest.x3d"></Inline>
+            <Transform DEF='sixtet'>
+            <Transform DEF='trio'>
+                <Transform DEF='mono'>
+                    <Inline DEF="inline" nameSpaceName="hanim" mapDEFToID="true" url="JoeSkinTexcoordDisplacerKickTest.x3d"></Inline>
+                </Transform>
+                <Transform translation='3 0 0' rotation='0 1 0 -0.6'>
+                    <Transform USE='mono'></Transform>
+                </Transform>
+                <Transform translation='-3 0 0' rotation='0 1 0 0.5'>
+                    <Transform USE='mono'></Transform>
+                </Transform>
             </Transform>
-            <Transform translation='3 0 0' rotation='0 1 0 -0.6'>
-                <Inline DEF="inline2" nameSpaceName="hanim2" mapDEFToID="true" url="JoeSkinTexcoordDisplacerKickTest.x3d"></Inline>
+            <Transform translation='-1.5 0 -1' rotation='0 1 0 0.1'>
+                <Transform USE='trio'></Transform>
             </Transform>
-            <Transform translation='-3 0 0' rotation='0 1 0 0.5'>
-                <Inline DEF="inline3" nameSpaceName="hanim3" mapDEFToID="true" url="JoeSkinTexcoordDisplacerKickTest.x3d"></Inline>
             </Transform>
+            <Transform translation='1 0 -2' rotation='0 1 0 -0.1'>
+                <Transform USE='sixtet'></Transform>
+            </Transform>
+            
         </Scene>
     </X3D>
 </body>
