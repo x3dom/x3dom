@@ -325,8 +325,10 @@ x3dom.registerNodeType(
                 if (this._cf.skinNormal.node)
                     this._cf.skinNormal.node._vf.vector.setValues(this._restNormals);
 
-                
                 this._hasDisplacers = false; // displacers may have been replaced
+
+                //save current trafo, inverse, for joints matrices
+                this._currentTransformInverse = childTransform.inverse();
                 
                 this._cf.skeleton.nodes.forEach(function(cnode) {
                     cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
