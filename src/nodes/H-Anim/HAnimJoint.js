@@ -206,7 +206,7 @@ x3dom.registerNodeType(
                 
                 if ( skinCoord ) {               
                     humanoid = this._humanoid;
-                    trafo = humanoid.getCurrentTransform().inverse().mult(childTransform);//factor in root trafo
+                    trafo = humanoid._currentTransformInverse.mult(childTransform);//factor in root trafo
                     //collect joint for shape as uniform array
                     skinCoord.joints = skinCoord.joints.concat( trafo.toGL() );
                         
