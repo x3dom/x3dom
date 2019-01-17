@@ -1340,7 +1340,7 @@ x3dom.Utils.forbiddenBySOP = function (uri_string) {
         Port = Host_Port[1];
     } // else will return false for an invalid URL or URL without authority
 
-    Port = Port || "80";
+    Port = Port || originPort;
     Host = Host || document.location.host;
     Scheme = Scheme || document.location.protocol;
     return !(Port === originPort && Host === document.location.host && Scheme === document.location.protocol);
