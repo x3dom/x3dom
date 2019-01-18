@@ -332,7 +332,6 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
             return this._generateX3DPerspectiveViewpoint(camera.perspective);
     }
 };
-
 /**
  * Generates a X3D viewpoint node
  * @private
