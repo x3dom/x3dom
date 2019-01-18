@@ -186,7 +186,7 @@ x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent, index)
         {
             var child = this._gltf.nodes[ node.children[i] ];
 
-            this._traverseNodes(child, x3dNode);
+            this._traverseNodes(child, x3dNode, node.children[i]);
         }
     }
 };
