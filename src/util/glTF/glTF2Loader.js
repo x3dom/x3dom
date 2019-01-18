@@ -315,7 +315,7 @@ x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 };
 
 /**
- * Generates a X3D viewpoint node
+ * Generates a X3D viewpoint or orthoviepoint node
  * @private
  * @param {Object} camera - A glTF camera node
  * @return {Viewpoint}
@@ -342,15 +342,15 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
 x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(camera)
 {
     var viewpoint = document.createElement("viewpoint");
-    
-    var fov   = camera.perspective.yfov  || 0.785398;
-    var znear = camera.perspective.znear || -1;
-    var zfar  = camera.perspective.zfar  || -1;
+
+    var fov   = camera.yfov  || 0.785398;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
 
     viewpoint.setAttribute("fieldOfView", fov);
     viewpoint.setAttribute("zNear", znear);
     viewpoint.setAttribute("zFar", zfar);
-    //viewpoint.setAttribute("position", "0 0 0");
+    viewpoint.setAttribute("position", "0 0 0");
 
     return viewpoint;
 };
@@ -363,18 +363,18 @@ x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(camera)
  */
 x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(camera)
 {
-    var viewpoint = document.createElement("Orthoviewpoint");
+    var viewpoint = document.createElement("orthoviewpoint");
 
-    var xmag  = camera.orthographic.xmag  ||  1;
-    var ymag  = camera.orthographic.ymag  ||  1;
-    var znear = camera.orthographic.znear || -1;
-    var zfar  = camera.orthographic.zfar  || -1;
+    var xmag  = camera.xmag  ||  1;
+    var ymag  = camera.ymag  ||  1;
+    var znear = camera.znear || -1;
+    var zfar  = camera.zfar  || -1;
     var fov   = [-xmag, -ymag, xmag, ymag];
 
     viewpoint.setAttribute("fieldOfView", fov);
     viewpoint.setAttribute("zNear", znear);
     viewpoint.setAttribute("zFar", zfar);
-    //viewpoint.setAttribute("position", "0 0 0");
+    viewpoint.setAttribute("position", "0 0 0");
 
     return viewpoint;
 };
