@@ -1236,7 +1236,7 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
     }
 
     //fire downloadsfinished event, if necessary
-    if (this.doc.downloadCount == 0 && this.doc.previousDownloadCount > 0)
+    if (this.doc.downloadCount <= 0 && this.doc.previousDownloadCount > 0)
     {
         var evt;
         if (document.createEvent) {
