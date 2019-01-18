@@ -186,7 +186,7 @@ x3dom.glTF2Loader.prototype._traverseNodes = function(node, parent, index)
         {
             var child = this._gltf.nodes[ node.children[i] ];
     
-            this._traverseNodes(child, x3dNode, node.children[i]);
+            this._traverseNodes(child, x3dNode);
         }
     }
 };
@@ -203,12 +203,12 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
     {
         x3dNode = this._generateX3DMatrixTransform(node);
     }
-//     else if( node.translation != undefined || 
-//              node.rotation    != undefined ||
-//              node.scale       != undefined)
-//     {
-//         x3dNode = this._generateX3DTransform(node);
-//     }
+    else if( node.translation != undefined || 
+             node.rotation    != undefined ||
+             node.scale       != undefined)
+    {
+        x3dNode = this._generateX3DTransform(node);
+    }
     else
     {
         x3dNode = this._generateX3DTransform(node); // always use Transform in case of animations
@@ -322,10 +322,26 @@ x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
  */
 x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
 {
-    if (camera.type === 'orthographic') return this._generateX3DOrthoViewpoint(camera);
+    switch(camera.type)
+    {
+        case "orthographic":
+            return this._generateX3DOrthoViewpoint(camera.orthographic);
+        case "perspective":
+            return this._generateX3DPerspectiveViewpoint(camera.perspective);
+        default:
+            return this._generateX3DPerspectiveViewpoint(camera.perspective);
+    }
+};
 
-    var viewpoint = document.createElement("Viewpoint");
-
+/**
+ * Generates a X3D viewpoint node
+ * @private
+ * @param {Object} camera - A glTF camera node
+ * @return {Viewpoint}
+ */
+x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(camera)
+{
+    var viewpoint = document.createElement("viewpoint");
     var fov   = camera.perspective.yfov  || 0.785398;
     var znear = camera.perspective.znear || -1;
     var zfar  = camera.perspective.zfar  || -1;
