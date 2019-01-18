@@ -332,6 +332,7 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
             return this._generateX3DPerspectiveViewpoint(camera.perspective);
     }
 };
+
 /**
  * Generates a X3D viewpoint node
  * @private
@@ -341,6 +342,7 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(camera)
 x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(camera)
 {
     var viewpoint = document.createElement("viewpoint");
+    
     var fov   = camera.perspective.yfov  || 0.785398;
     var znear = camera.perspective.znear || -1;
     var zfar  = camera.perspective.zfar  || -1;
