@@ -94,16 +94,12 @@
         function onDownloadsFinished()
         {
             g_runtime.showAll(g_direction, true);
-            if (g_direction == "useVP") g_runtime.resetView(); // needed to trigger buffer loading if viewpoint
-            
         };
     
         function onload()
         {
             x3d = document.getElementById("x3d");           
             x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
-            x3d.querySelector("Inline").
-            	addEventListener( "load", onDownloadsFinished);
             
             g_runtime = x3d.runtime;
         };
@@ -124,8 +120,8 @@
 
             g_direction = direction || "posZ";
             
-            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
-            // var repo = "http://localhost/glTF-Sample-Models/2.0/";
+            // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            var repo = "http://localhost/glTF-Sample-Models/2.0/";
 
             var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             
@@ -158,11 +154,12 @@
         <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
         <span class="topbar-label">X3DOM // GLTF 2.0</span>
         <div class="topbar-label" onclick="load(this.children[0].value,'direct')">
-            url:
-            <input type='url' size='150'
-            placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'
-            value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'       />
-        </div>
+                url:
+                <input type='url' size='150'
+                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'
+                value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf' />
+            </div>
+
     </section>
   
 
@@ -190,7 +187,6 @@
             <div class="sidebar-header">Advanced Tests</div>
     
             <div class="sidebar-entry" onclick="load('Box')">Box</div>
-            <div class="sidebar-entry" onclick="load('BoxAnimated')">Box with animated translation</div>
             <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
             <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
             <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
@@ -203,7 +199,6 @@
             <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
             <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
             <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
-    	    <div class="sidebar-entry" onclick="load('VC',undefined,'useVP')">Virtual City</div>
     
             <div class="sidebar-header">PBR Tests</div>
         
