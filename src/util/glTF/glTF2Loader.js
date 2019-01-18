@@ -14,7 +14,6 @@ x3dom.glTF2Loader = function(nameSpace)
     this._clockPrefix = this._prefix + "CLOCK";
     this._interpolatorPrefix = this._prefix + "INTR";
     this._cameraPrefix = this._prefix + "CAM";
-    
 }
 
 /**
@@ -103,7 +102,7 @@ x3dom.glTF2Loader.prototype._generateX3DAnimationClock = function(parent, durati
     var clock = document.createElement('TimeSensor');
     clock.setAttribute('loop','true');
     clock.setAttribute('cycleInterval', duration);
-    clock.setAttribute('DEF',this._clockPrefix + aniID);
+    clock.setAttribute('DEF', this._clockPrefix + aniID);
     parent.appendChild(clock);
 };
 
@@ -169,14 +168,13 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         return route;
     };
     
-    var DEFNodeName = this._nodeNamePrefix + this._gltf.nodes[target.node].name;
+    var targetDEF = this._nodeNamePrefix + this._gltf.nodes[target.node].name;
     
     var routeTS2INT = _createROUTEElement("fraction_changed", this._clockPrefix + animID, "set_fraction", interDEF);
-    var routeINT2NODE = _createROUTEElement("value_changed", interDEF, "set_" + target.path, DEFNodeName);
+    var routeINT2NODE = _createROUTEElement("value_changed", interDEF, "set_" + target.path, targetDEF);
  
     parent.appendChild(routeTS2INT);
     parent.appendChild(routeINT2NODE);
-    
 };
 
 /**
@@ -259,10 +257,10 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
         node.name = index;
     }
     
-    var DEFNodeName = this._nodeNamePrefix + node.name;
+    var nodeDEF = this._nodeNamePrefix + node.name;
 
-    x3dNode.setAttribute( "id", DEFNodeName );
-    x3dNode.setAttribute( "DEF", DEFNodeName );
+    x3dNode.setAttribute( "id", nodeDEF );
+    x3dNode.setAttribute( "DEF", nodeDEF );
 
     return x3dNode;
 };
