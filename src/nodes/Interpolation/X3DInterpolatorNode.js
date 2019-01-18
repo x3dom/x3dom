@@ -59,8 +59,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'buffer', "");
 
-            this.addField_MFNode('views', x3dom.nodeTypes.BufferGeometryView );
-            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferGeometryAccessor );
+            this.addField_MFNode('views', x3dom.nodeTypes.BufferView );
+            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferAccessor );
 
             this.constructorFromType = {
                 "5120": Int8Array,
