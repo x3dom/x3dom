@@ -7,7 +7,13 @@ x3dom.glTF2Loader = function(nameSpace)
 {
     this._nameSpace = nameSpace;
     this._binaryData = null;
-    this._nodeNamePrefix = "NODE";
+    this._prefix = "gltf";
+    this._nodeNamePrefix = this._prefix + "NODE";
+    this._animationPrefix = "CLIP";
+    this._channelPrefix = "CHANNEL";
+    this._clockPrefix = this._prefix + "CLOCK";
+    this._interpolatorPrefix = this._prefix + "INTR";
+    this._cameraPrefix = this._prefix + "CAM";
 }
 
 /**
@@ -75,12 +81,13 @@ x3dom.glTF2Loader.prototype._findLongestInput = function (animation)
 x3dom.glTF2Loader.prototype._generateX3DAnimationNodes = function(x3dScene, animation, a_i)
 {
     var animation_length = this._findLongestInput( animation );
-    this._generateX3DAnimationClock( x3dScene, animation_length, "ANI"+a_i );
+    var animationID = this._animationPrefix + a_i;
+    this._generateX3DAnimationClock( x3dScene, animation_length, animationID );
     animation.channels.forEach (function ( channel, c_i )
     {
         this._generateX3DAnimation( x3dScene, animation_length,
                                    animation.samplers[channel.sampler], channel.target,
-                                   "ANI"+a_i, "CH"+c_i );
+                                   animationID, this._channelPrefix + c_i );
     }, this);
 };
 
@@ -95,7 +102,7 @@ x3dom.glTF2Loader.prototype._generateX3DAnimationClock = function(parent, durati
     var clock = document.createElement('TimeSensor');
     clock.setAttribute('loop','true');
     clock.setAttribute('cycleInterval', duration);
-    clock.setAttribute('DEF','clock' + aniID);
+    clock.setAttribute('DEF', this._clockPrefix + aniID);
     parent.appendChild(clock);
 };
 
@@ -132,7 +139,8 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
     var bufferURI = x3dom.Utils.dataURIToObjectURL(this._gltf.buffers[input_view.buffer].uri); //output_view hopefully has same buffer
     
     var interNode = document.createElement(interpolator);
-    interNode.setAttribute('DEF', 'inter'+aniID);
+    var interDEF = this._interpolatorPrefix + aniID;
+    interNode.setAttribute('DEF', interDEF);
     interNode.setAttribute('key', 'sampler.input.array');
     interNode.setAttribute('keyValue', 'sampler.output.array');
     interNode.setAttribute('buffer', bufferURI);
@@ -160,14 +168,14 @@ x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, s
         return route;
     };
     
-    var routeTS2INT = _createROUTEElement("fraction_changed", "clock" + animID, "set_fraction", "inter" + aniID);
-    var routeINT2NODE = _createROUTEElement("value_changed", "inter" + aniID, "set_" + target.path, this._gltf.nodes[target.node].name);
+    var targetDEF = this._nodeNamePrefix + this._gltf.nodes[target.node].name;
+    
+    var routeTS2INT = _createROUTEElement("fraction_changed", this._clockPrefix + animID, "set_fraction", interDEF);
+    var routeINT2NODE = _createROUTEElement("value_changed", interDEF, "set_" + target.path, targetDEF);
  
     parent.appendChild(routeTS2INT);
     parent.appendChild(routeINT2NODE);
-    
 };
-
 
 /**
  * Traverses all glTF nodes
@@ -239,23 +247,20 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
     {
         var camera = this._gltf.cameras[node.camera];
         var viewpoint = this._generateX3DViewpoint(camera);
-        viewpoint.setAttribute('DEF','CAMERA' + node.camera);
+        viewpoint.setAttribute('DEF', this._cameraPrefix + node.camera);
 
         x3dNode.appendChild(viewpoint);
     }
 
     if ( node.name === undefined )
     {
-        node.name = this._nodeNamePrefix + index;
+        node.name = index;
     }
-
-
-//    if ( node.name != undefined )
-//    {
-        x3dNode.setAttribute( "id", node.name );
-        x3dNode.setAttribute( "DEF", node.name );
-//    }
     
+    var nodeDEF = this._nodeNamePrefix + node.name;
+
+    x3dNode.setAttribute( "id", nodeDEF );
+    x3dNode.setAttribute( "DEF", nodeDEF );
 
     return x3dNode;
 };

@@ -58,7 +58,7 @@ x3dom.registerNodeType(
                             var scope = this;
                             value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
-                                function _addScaled(axis)//p0, m0, p1, m1, axis)
+                                function _applyBasis(axis)//p0, m0, p1, m1, axis)
                                 {                                   
                                     return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
                                 }
@@ -67,10 +67,10 @@ x3dom.registerNodeType(
 
                                 // do not use Quaternion methods to avoid generating objects
 
-                                result.x = _addScaled('x');
-                                result.y = _addScaled('y');
-                                result.z = _addScaled('z');
-                                result.w = _addScaled('w');
+                                result.x = _applyBasis('x');
+                                result.y = _applyBasis('y');
+                                result.z = _applyBasis('z');
+                                result.w = _applyBasis('w');
 
                                 var s = Math.sqrt(1/result.dot(result));
 
