@@ -62,7 +62,8 @@
                 {"path": "shader/ShaderBlur.js"},
                 {"path": "shader/ShaderKHRMaterialCommons.js"},
                 {"path": "shader/ShaderSSAO.js", "type": "file"},
-                {"path": "shader/ShaderSSAOBlur.js", "type": "file"}
+                {"path": "shader/ShaderSSAOBlur.js", "type": "file"},
+                {"path": "shader/ShaderConverter.js", "type": "file"}
             ]},
 
         {"group": "GFX",

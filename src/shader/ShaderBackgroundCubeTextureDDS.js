@@ -76,11 +76,14 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateVertexShader = fun
  */
 x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = function(gl)
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
+	var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+	shader += "precision highp float;\n";
+	shader += "#else\n";
+	shader += " precision mediump float;\n";
+	shader += "#endif\n\n";
+
+	shader += x3dom.shader.gammaCorrectionDecl({});
+	shader += x3dom.shader.toneMapping();
 
 	shader +=	"uniform float isVR;\n" +
 				"varying float vrOffset;\n" +
@@ -93,7 +96,11 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
 				"	if ( isVR == 1.0) {\n" +
 				"   	if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
 				"	}\n"+
-				"   gl_FragColor = textureCube(tex, fragNormal);\n" +
+				"   vec4 color = textureCube(tex, fragNormal);\n" +
+				"   color.rgb = tonemapUncharted2(color.rgb, 2.0);\n" +
+				"   color = " + x3dom.shader.encodeGamma({}, "color") +";\n" +
+
+				"   gl_FragColor = color;\n" +
 				"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);

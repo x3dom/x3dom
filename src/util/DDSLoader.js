@@ -339,9 +339,19 @@ x3dom.DDSLoader._readData = function( dds, buffer, texture, options )
                 dds.data[ dds.targets[ i ] ][ m ] = byteArray;
             }
     
-            offset += byteArray.length * byteArray.BYTES_PER_ELEMENT;
+            offset += byteArray.length * byteArray.BYTES_PER_ELEMENT * dds.format.bytesPerElementFactor;
 
         }
+    }
+
+    if(dds.format.overwriteType)
+    {
+        dds.format.type = dds.format.overwriteType;
+    }
+
+    if(dds.format.overwriteInternalType)
+    {
+        dds.format.internal = dds.format.overwriteInternalType;
     }
     
     return dds;
@@ -357,6 +367,8 @@ x3dom.DDSLoader._readCompressedData = function( buffer, width, height, offset, b
 
 x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset, format, type )
 {
+    format.bytesPerElementFactor = 1;
+
     if ( format.internal == 6406 )
     {
         return new Uint8Array( buffer.slice( offset, offset + width * height ) );
@@ -391,13 +403,38 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
     }
     else if ( format.internal == 34842 || format.type == 36193 )
     {
-        // format.type = 5121;
-        // return x3dom.DDSLoader.F16_To_UB8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
-        return new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) );
+        if( x3dom.caps.HFP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2)
+        {
+            return new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) );
+        }
+        else if( x3dom.caps.FP_TEXTURES )
+        {
+            format.overwriteType = 5126;
+            format.overwriteInternalType = (x3dom.caps.WEBGL_VERSION == 2) ? 34836 : 6408;
+            format.bytesPerElementFactor = 0.5;
+
+            return x3dom.DDSLoader.UI16_To_F32( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
+        }
+        else
+        {
+            format.overwriteType = 5121;
+            format.overwriteInternalType = 6408;
+            format.bytesPerElementFactor = 2;
+
+            return x3dom.DDSLoader.UI16_To_UI8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
+        }
     }
     else if ( format.internal == 34836 || format.type == 5126)
     {
-        return new Float32Array( buffer.slice( offset, offset + width * height * 4 * 4 ) );
+        if( x3dom.caps.FP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2)
+        {
+            return new Float32Array( buffer.slice( offset, offset + width * height * 4 * 4 ) );
+        }
+        else
+        {
+
+        }
+        
     }
     else if ( format.internal == 35898 )
     {
@@ -431,23 +468,24 @@ x3dom.DDSLoader._readFormat = function( dds )
         }
         else if ( pixelFormat.dwFourCC == "t" )
         {
-            //dds.format = { internal: 34836, format: 6408, type: 5126 };
-            //WEBGL 1.0
-            dds.format = { internal: 6408, format: 6408, type: 5126 };
+            if(x3dom.caps.WEBGL_VERSION == 2)
+            {
+                dds.format = { internal: 34836, format: 6408, type: 5126 };
+            }
+            else
+            {
+                dds.format = { internal: 6408, format: 6408, type: 5126 };
+            }
         }
         else if ( pixelFormat.dwFourCC == "q"  || pixelFormat.dwFourCC == "$" )
         {
-            // dds.format = { internal: 34842, format: 6408, type: 5131 };
-            //WEBGL 1.0
-            dds.format = { internal: 6408, format: 6408, type: 36193 };
-        }
-        else if ( pixelFormat.dwFourCC == "DX10")
-        {
-            switch ( dds.header10.dxgiFormat )
+            if(x3dom.caps.WEBGL_VERSION == 2)
             {
-                case LUX.DDSUtils.DXGIFormat.DXGI_FORMAT_R11G11B10_FLOAT:
-                    dds.format = { internal: 35898, format: 6407, type: 35899 };
-                    break;
+                dds.format = { internal: 34842, format: 6408, type: 5131 };
+            }
+            else
+            {
+                dds.format = { internal: 6408, format: 6408, type: 36193 };
             }
         }
         else
@@ -580,22 +618,66 @@ x3dom.DDSLoader.A8R8G8B8_To_A8B8G8R8 = function ( src )
     return dst;
 };
 
-x3dom.DDSLoader.F16_To_UB8 = function ( src )
+x3dom.DDSLoader.UI16_To_UI8 = function ( src )
 {
     var dst = new Uint8Array( src.length );
 
     for ( var i = 0; i < src.length; i += 4 )
     {
-        dst[ i     ] = Math.round(src[ i     ] / 16384 * 255);
-        dst[ i + 1 ] = Math.round(src[ i + 1 ] / 16384 * 255);
-        dst[ i + 2 ] = Math.round(src[ i + 2 ] / 16384 * 255);
-        dst[ i + 3 ] = Math.round(src[ i + 3 ] / 16384 * 255);
+        dst[ i     ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i     ]) * 255;
+        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 1 ]) * 255;
+        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 2 ]) * 255;
+        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 3 ]) * 255;
     }
-
-    console.log(src, dst);
 
     return dst;
 };
+
+x3dom.DDSLoader.UI16_To_F32 = function ( src )
+{
+    var dst = new Float32Array( src.length );
+
+    for ( var i = 0; i < src.length; i += 4 )
+    {
+        dst[ i     ] = x3dom.DDSLoader.UI16_To_F16(src[ i     ]);
+        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 1 ]);
+        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 2 ]);
+        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 3 ]);
+    }
+
+    return dst;
+};
+
+x3dom.DDSLoader.UI16_To_F16 = function( interger )
+{
+    var sign     = (interger >> 15) & 0x1;
+    var exponent = (interger >> 10) & 0x3ff;
+    var fraction = interger & (Math.pow(2, 10) - 1);
+    var result;
+
+    if (exponent === 0)
+    {
+        if( fraction === 0 )
+        {
+            result = 0.0;
+        }
+        else
+        {
+            result = Math.pow(-1, sign) * fraction / Math.pow(2,10) * Math.pow(2,-14)
+        }
+    }
+
+    result = Math.pow(-1, sign) * (1 + fraction / Math.pow(2,10)) * Math.pow(2, exponent - 15);
+
+    return result;
+}
+
+x3dom.DDSLoader.UI16_To_UI8_2 = function( interger )
+{
+    var float = x3dom.DDSLoader.UI16_To_F16(interger)
+
+    return float / (float + 1);
+}
 
 x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
 

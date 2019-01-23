@@ -16,8 +16,8 @@ x3dom.shader.DynamicShader = function(gl, properties)
 {
 	this.program = gl.createProgram();
 	
-	var vertexShader 	= this.generateVertexShader(gl, properties);
-	var fragmentShader 	= this.generateFragmentShader(gl, properties);
+	var vertexShader 	= this.generateVertexShader(gl, properties, x3dom.caps.WEBGL_VERSION);
+	var fragmentShader 	= this.generateFragmentShader(gl, properties, x3dom.caps.WEBGL_VERSION);
 	
 	gl.attachShader(this.program, vertexShader);
     gl.attachShader(this.program, fragmentShader);
@@ -33,7 +33,7 @@ x3dom.shader.DynamicShader = function(gl, properties)
 /**
  * Generate the vertex shader
  */
-x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, properties)
+x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, properties, version)
 {
 	var shader = "";
 	
@@ -520,6 +520,14 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
   
 	//END OF SHADER
 	shader += "}\n";
+
+	if( version == 2 )
+	{
+		shader = x3dom.shader.convertVertexShader(shader);
+	}
+
+	
+    console.log("VS", shader);
 	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, shader);
@@ -536,7 +544,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 /**
  * Generate the fragment shader
  */
-x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties)
+x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties, version)
 {
 	var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
 	shader += " precision highp float;\n";
@@ -554,6 +562,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "#extension GL_OES_standard_derivatives:enable\n";
 	}
 
+
+	shader += "//@insertFragColor\n";
+
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings
 	********************************************************************************/
@@ -569,7 +580,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Material
 	shader += x3dom.shader.material();
 
-	if(properties.PBR_MATERIAL && !x3dom.caps.TEXTURE_LOD)
+	shader += x3dom.shader.toneMapping()
+
+	if(properties.PBR_MATERIAL && !x3dom.caps.TEXTURE_LOD && x3dom.caps.WEBGL_VERSION == 1)
 	{
 		shader += x3dom.shader.calcMipLevel();
 	}
@@ -683,7 +696,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
             shader += "uniform vec3 normalBias;\n";
 			if(properties.NORMALSPACE == "TANGENT") {
 
-				if (x3dom.caps.STD_DERIVATIVES) {
+				if (x3dom.caps.STD_DERIVATIVES || x3dom.caps.WEBGL_VERSION == 2) {
 					shader += x3dom.shader.TBNCalculation();
 				} else {
 					shader += "varying vec3 fragTangent;\n";
@@ -889,7 +902,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 					shader += "vec3 n = normal;\n";
 
-					if (!properties.TANGENTDATA && x3dom.caps.STD_DERIVATIVES) {
+					if (!properties.TANGENTDATA && (x3dom.caps.STD_DERIVATIVES || x3dom.caps.WEBGL_VERSION == 2)) {
 						shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y), _normalBias);\n";
 					} else {
 						shader += "vec3 t = normalize( fragTangent );\n";
@@ -1060,7 +1073,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 				shader += "diffuse = textureCube( diffuseEnvironmentMap, N ).rgb;\n";
 
-				if(x3dom.caps.TEXTURE_LOD)
+				if(x3dom.caps.TEXTURE_LOD || x3dom.caps.WEBGL_VERSION == 2)
 				{
 					shader += "specular = textureCubeLodEXT( specularEnvironmentMap, R, lod ).rgb;\n";
 				}
@@ -1134,10 +1147,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "if (color.a <= alphaCutoff) discard;\n";
 	}
 
-
-
-    //Output the gamma encoded result.
-    shader += "color = clamp(color, 0.0, 1.0);\n";
+	//Output the gamma encoded result.
+    shader += "color.rgb = tonemapUncharted2(color.rgb, 2.0);\n";
+    // shader += "color.rgb = color.rgb / (color.rgb + 1.0);\n";
     shader += "color = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
 	
 	//Fog
@@ -1150,6 +1162,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	
 	//End Of Shader
 	shader += "}\n";
+
+	if( version == 2 )
+	{
+		shader = x3dom.shader.convertFragmentShader(shader);
+	}
+
+	
+    console.log("FS", shader);
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);

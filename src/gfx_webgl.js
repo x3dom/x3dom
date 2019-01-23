@@ -65,7 +65,7 @@ x3dom.gfx_webgl = (function() {
      * @returns {*}
      */
     function setupContext(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, x3dElem) {
-        var validContextNames = ['webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
+        var validContextNames = ['webgl2', 'webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
         if (tryWebGL2) {
             validContextNames = ['webgl2', 'experimental-webgl2'].concat(validContextNames);
@@ -112,6 +112,7 @@ x3dom.gfx_webgl = (function() {
                         // Save CAPS
                         x3dom.caps.VENDOR = ctx.getParameter(ctx.VENDOR);
                         x3dom.caps.VERSION = ctx.getParameter(ctx.VERSION);
+                        x3dom.caps.WEBGL_VERSION = (x3dom.caps.VERSION.indexOf("WebGL 2.0") === -1) ? 1 : 2
                         x3dom.caps.RENDERER = ctx.getParameter(ctx.RENDERER);
                         x3dom.caps.SHADING_LANGUAGE_VERSION = ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION);
                         x3dom.caps.RED_BITS = ctx.getParameter(ctx.RED_BITS);
@@ -1218,10 +1219,23 @@ x3dom.gfx_webgl = (function() {
 
                 if(that.VRMode == 2)
                 {
+                    
+
                     var mat_view_R = viewarea.getViewMatrices()[1];
+
+                    var camPosR = mat_view_R.e3();
+
+                    mat_view_R._03 = 0;
+                    mat_view_R._13 = 0;
+                    mat_view_R._23 = 0;
+
                     var mat_proj_R = viewarea.getProjectionMatrices()[1];
                     var mat_scene_R = mat_proj_R.mult(mat_view_R);
                     sp.modelViewProjectionMatrix2 = mat_scene_R.toGL();
+
+                    mat_view_R._03 = camPosR.x;
+                    mat_view_R._13 = camPosR.y;
+                    mat_view_R._23 = camPosR.z;
 
                     sp.isVR = 1.0;
                 }
@@ -4830,7 +4844,27 @@ x3dom.gfx_webgl = (function() {
 
     Context.prototype.setVertexAttribEyeIdx = function(gl, sp)
     {
-        if(x3dom.caps.INSTANCED_ARRAYS)
+        if(x3dom.caps.WEBGL_VERSION == 2)
+        {
+            if(!this.eyeIdxBuffer)
+            {
+                this.eyeIdxBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.eyeIdxBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1.0, 1.0]), gl.STATIC_DRAW);
+
+                gl.vertexAttribPointer(sp.eyeIdx, 1, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.eyeIdx);
+                gl.vertexAttribDivisor(sp.eyeIdx, 1);
+            }
+            else
+            {
+                gl.bindBuffer(gl.ARRAY_BUFFER, this.eyeIdxBuffer);
+                gl.vertexAttribPointer(sp.eyeIdx, 1, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.eyeIdx);
+                gl.vertexAttribDivisor(sp.eyeIdx, 1);
+            }
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
 
@@ -4894,7 +4928,11 @@ x3dom.gfx_webgl = (function() {
 
         instanceCount *= this.VRMode;
 
-        if(x3dom.caps.INSTANCED_ARRAYS)
+        if(x3dom.caps.WEBGL_VERSION == 2)
+        {
+            gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
             instancedArrays.drawElementsInstancedANGLE(mode, count, type, offset, instanceCount);
@@ -4911,7 +4949,11 @@ x3dom.gfx_webgl = (function() {
 
         instanceCount *= this.VRMode;
 
-        if(x3dom.caps.INSTANCED_ARRAYS)
+        if(x3dom.caps.WEBGL_VERSION == 2)
+        {
+            gl.drawArraysInstanced(mode, first, count, instanceCount);
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
             instancedArrays.drawArraysInstancedANGLE(mode, first, count, instanceCount);

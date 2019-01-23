@@ -583,3 +583,35 @@ x3dom.shader.TBNCalculation = function() {
 
     return shaderPart;
 };
+
+/*******************************************************************************
+ * tonemapping
+ ********************************************************************************/
+x3dom.shader.toneMapping = function() {
+    var shaderPart = "";
+
+	shaderPart += "vec3 tonemapReinhard(vec3 color) { \n" +
+	"	return color / (color + 1.0);\n"+ 	
+	"}\n\n";
+
+	shaderPart += "vec3 _tonemapUncharted2(vec3 color) { \n" +
+	"	float A = 0.15;\n" +
+	"	float B = 0.50;\n" +
+	"	float C = 0.10;\n" +
+	"	float D = 0.20;\n" +
+	"	float E = 0.02;\n" +
+	"	float F = 0.30;\n" +
+	"	float W = 1000.0;\n" +
+
+	"	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemapUncharted2(vec3 color, float exposureBias) { \n" +
+	"	float W = 11.2;\n" +
+	"	vec3 curr = _tonemapUncharted2(exposureBias * color);\n" +
+	"	vec3 whiteScale = 1.0 / _tonemapUncharted2(vec3(W));\n" +
+	"	return curr * whiteScale;\n" +
+	"}\n\n";
+
+    return shaderPart;
+};
