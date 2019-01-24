@@ -26,6 +26,10 @@ x3dom.shader.BackgroundCubeTextureDDSShader = function(gl)
     gl.bindAttribLocation(this.program, 0, "position");
     
 	gl.linkProgram(this.program);
+
+	if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
+		throw ("Error linking shaders:" + gl.getProgramInfoLog(this.program));
+	}
 	
 	return this.program;
 };
@@ -82,8 +86,8 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
 	shader += " precision mediump float;\n";
 	shader += "#endif\n\n";
 
-	shader += x3dom.shader.gammaCorrectionDecl({});
 	shader += x3dom.shader.toneMapping();
+	shader += x3dom.shader.gammaCorrectionDecl({});
 
 	shader +=	"uniform float isVR;\n" +
 				"varying float vrOffset;\n" +
@@ -93,11 +97,21 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
 				"varying vec3 fragNormal;\n" +
 				"\n" +
 				"void main(void) {\n" +
-				"	if ( isVR == 1.0) {\n" +
+				"	if ( isVR == 1.0 ) {\n" +
 				"   	if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
 				"	}\n"+
 				"   vec4 color = textureCube(tex, fragNormal);\n" +
-				"   color.rgb = tonemapUncharted2(color.rgb, 2.0);\n" +
+
+				"	if(tonemappingOperator == 1.0) {\n" +
+				"   	color.rgb = tonemapReinhard(color.rgb);\n" +
+				"	}\n" +
+				"	if(tonemappingOperator == 2.0) {\n" +
+				"   	color.rgb = tonemapUncharted2(color.rgb);\n" +
+				"	}\n" +
+				"	if(tonemappingOperator == 3.0) {\n" +
+				"   	color.rgb = tonemapeFilmic(color.rgb);\n" +
+				"	}\n" +
+
 				"   color = " + x3dom.shader.encodeGamma({}, "color") +";\n" +
 
 				"   gl_FragColor = color;\n" +

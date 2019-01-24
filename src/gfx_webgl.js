@@ -1217,10 +1217,10 @@ x3dom.gfx_webgl = (function() {
                 sp.isVR = -1.0;
                 sp.screenWidth = that.canvas.width;
 
+                that.setTonemappingOperator(viewarea, sp);                
+
                 if(that.VRMode == 2)
                 {
-                    
-
                     var mat_view_R = viewarea.getViewMatrices()[1];
 
                     var camPosR = mat_view_R.e3();
@@ -2532,6 +2532,8 @@ x3dom.gfx_webgl = (function() {
         sp.viewMatrixInverse = mat_view.inverse().toGL();
 
         sp.cameraPosWS = mat_view.inverse().e3().toGL();
+
+        this.setTonemappingOperator(viewarea, sp);       
 
         // only calculate on "request" (maybe of interest for users)
         // may be used by external materials
@@ -4978,6 +4980,31 @@ x3dom.gfx_webgl = (function() {
 
         }
     };
+
+    Context.prototype.setTonemappingOperator = function(viewarea, sp)
+    {
+        var scene = viewarea._scene;
+        var env = scene.getEnvironment();
+
+        switch(env._vf.tonemapping)
+        {
+            case "none":
+                sp.tonemappingOperator = 0.0;
+                break;
+            case "reinhard":
+                sp.tonemappingOperator = 1.0;
+                break;
+            case "uncharted":
+                sp.tonemappingOperator = 2.0;
+                break;
+            case "filmic":
+                sp.tonemappingOperator = 3.0;
+                break;
+            default:
+                sp.tonemappingOperator = 0.0;
+                break;
+        }
+    }
 
     /**
      * Set Vertex Attrib Pointer Tex Coord

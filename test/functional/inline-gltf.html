@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; font-family: 'Roboto', 'sans serif'; font-size: 15px; user-select: none;}
+        x3d { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; background: rgb(44, 44, 44); }
         .x3dom-canvas {  cursor: default; }
         .x3dom-logcontainer {  cursor: default; position: absolute; bottom: 15px; right: 15px; width: 400px; opacity: 0.5;}
         
@@ -38,50 +39,47 @@
             color: white;
             font-size: 22px;
             font-weight: 500;
-            margin-left: 15px;
+            margin-left: 16px;
+            flex-grow: 10;
         }
 
-        .main-wrapper
-        {
-            width: 100%;
-            height: calc(100% - 56px);
+        .inputbar
+        { 
             position: absolute;
-            top: 56px;
-            left: 0;
+            left: 100%;
+            z-index: 4;
             display: flex;
-            flex-direction: row;
-        }
-        
-        .sidebar
-        {
-            display: flex; 
-            flex-direction: column; 
-            width: 250px; 
-            height: 100%; 
-            background: rgba(255,255,255,0.95); 
-            overflow-x: hidden;
-            overflow-y: scroll;
-            box-sizing: border-box; 
-            padding-bottom: 8px;
-            flex-shrink: 0;
+            width: 100%;
+            height: 56px;
+            background: white;
+            align-items: center;
+            padding: 0 16px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
-            position: relative;
-            left: 0;
-        }  
+        }
+
+        .inputbar-icon
+        {
+            color: black;
+            cursor: pointer;
+        }
+
+        input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
+
+        .main-wrapper { width: 100%; height: calc(100% - 56px); position: absolute; top: 56px; left: 0; display: flex; flex-direction: row; }
+        
+        .sidebar { display: flex; flex-direction: column; width: 250px; height: 100%; background: rgba(255,255,255,0.95); overflow-x: hidden; overflow-y: scroll; box-sizing: border-box;  padding-bottom: 8px; flex-shrink: 0; transition: all 0.3s ease; position: relative; left: 0;}  
         .sidebar-entry {width: 100%; font-size: 14px; color: #888; cursor: pointer; padding: 8px 32px; box-sizing: border-box; font-weight: 500; white-space: nowrap;}
         .sidebar-entry:hover { background: #ddd; }
         .sidebar-header {width: 100%; font-size: 14px; margin: 0 0 5px 0; font-weight: 500; color: #000000; padding: 16px; box-sizing: border-box; white-space: nowrap;}
         
-        x3d
-        { 
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            border: none;
-            background: rgb(44, 44, 44);
-        }
+        .tonemapping-selector { position: absolute; top: 25px; right: 25px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 15px;}
+        .tonemapping-heading { margin-bottom: 5px; font-size: 18px; font-weight: bold; color: white}
+
+        label { color: white; font-size: 16px;}
+
+        
 
     </style>
 
@@ -90,6 +88,7 @@
         var g_runtime;
         var g_direction = "posZ";
         var g_open = true;
+        var g_input_open = false;
 
         function onDownloadsFinished()
         {
@@ -108,8 +107,7 @@
         {
             document.getElementById("inline").setAttribute("url", url);
 
-            g_runtime.showAll(g_direction, true);
-            
+            g_runtime.showAll(g_direction, true);   
         }
 
         function load(file, type, direction)
@@ -143,6 +141,35 @@
                 g_open = true;
             }
         }
+
+        function toggleURLInput()
+        {
+            if(g_input_open)
+            {
+                document.querySelector(".inputbar").style.left = "100%";
+                g_input_open = false;
+            }
+            else
+            {
+                document.querySelector(".inputbar").style.left = "0px";
+                g_input_open = true;
+            }
+        }
+
+        function setTonemapping( operator )
+        {
+            document.querySelector("environment").setAttribute("tonemapping", operator);
+        }
+
+        function onKeyPress( e )
+        {
+            if( e.keyCode == 13 )
+            {
+                var url = document.querySelector("#externalURL").value;
+                toggleURLInput();
+                updateInline(url);
+            }
+        }
     
     </script>
 </head>
@@ -153,13 +180,13 @@
     <section class="topbar">
         <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
         <span class="topbar-label">X3DOM // GLTF 2.0</span>
-        <div class="topbar-label" onclick="load(this.children[0].value,'direct')">
-                url:
-                <input type='url' size='150'
-                placeholder='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf'
-                value='https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf' />
-            </div>
+        <i class="material-icons topbar-icon" onclick="toggleURLInput();">link</i>    
+    </section>
 
+    <section class="inputbar">
+        <i class="material-icons inputbar-icon">link</i>
+        <input id="externalURL" type="url" placeholder="URL to a glTF file..." onkeypress="onKeyPress(event)">
+        <i class="material-icons inputbar-icon" onclick="toggleURLInput();">clear</i> 
     </section>
   
 
@@ -219,6 +246,10 @@
             <div class="sidebar-entry" onclick="load('adamHead')">Adam Head</div>
             <div class="sidebar-entry" onclick="load('microphone')">Microphone</div>
             <div class="sidebar-entry" onclick="load('Sponza')">Sponza</div>
+            <div class="sidebar-entry" onclick="load('ZIS101ASport')">ZIS-101A Sport</div>
+            <div class="sidebar-entry" onclick="load('DreamBike')">Dream Bike</div>
+            <div class="sidebar-entry" onclick="load('MotorCycle')">Motor Cycle</div>
+            <div class="sidebar-entry" onclick="load('WildWestBike')">Wild West Bike</div>
            
 
 			<div class="sidebar-header">VR Controller</div>
@@ -235,11 +266,32 @@
 		   
         </section>
 
-        
+        <section class="tonemapping-selector">
+            <div class="tonemapping-heading">
+                Tonemapping
+            </div>
+            <div>
+                <input type="radio" id="none" name="tonemapping" onclick="setTonemapping('none')">
+                <label for="dewey">None</label>
+            </div>
+            <div>
+                <input type="radio" id="reinhard" name="tonemapping" onclick="setTonemapping('reinhard')" checked>
+                <label for="reinhard">Reinhard</label>
+            </div>
+            <div>
+                <input type="radio" id="uncharted" name="tonemapping" onclick="setTonemapping('uncharted')">
+                <label for="uncharted">Uncharted</label>
+            </div>
+            <div>
+                <input type="radio" id="filmic" name="tonemapping" onclick="setTonemapping('filmic')">
+                <label for="filmic">Filmic</label>
+            </div>
+        </section>
 
         <X3D id="x3d" >
             <Scene>
                 <navigationinfo headlight="false"></navigationinfo>
+                <environment tonemapping="reinhard"></environment>
                 <physicalenvironmentlight></physicalenvironmentlight>
                 <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
                 <Transform translation="0 0 0">

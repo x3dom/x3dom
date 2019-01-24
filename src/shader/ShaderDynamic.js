@@ -525,9 +525,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	{
 		shader = x3dom.shader.convertVertexShader(shader);
 	}
-
-	
-    console.log("VS", shader);
 	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, shader);
@@ -916,6 +913,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 
 				} else if(properties.NORMALSPACE == "OBJECT") {
 					shader += "normal = texture2D( normalMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
+					
 					shader += "normal = 2.0 * normal - 1.0;\n";
 					shader += "normal = (mat_n * vec4(normal, 0.0)).xyz;\n";
 					shader += "normal = normalize(normal);\n";
@@ -978,7 +976,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			//Specularmap
 			if(properties.ROUGHNESSMETALLICMAP) {
 				shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
-
 				shader += "_shininess = 1.0 - roughnessMetallic.g;\n";
 				shader += "_metallic  = roughnessMetallic.b * metallicFactor;\n";		
 			}
@@ -992,7 +989,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			//Specularmap
 			if(properties.OCCLUSIONROUGHNESSMETALLICMAP) {
 				shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
-
 				shader += "_occlusion = occlusionRoughnessMetallic.r;\n";
 				shader += "_shininess = 1.0 - occlusionRoughnessMetallic.g;\n";
 				shader += "_metallic  = occlusionRoughnessMetallic.b;\n";
@@ -1063,10 +1059,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec3 V = normalize ( cameraPosWS.xyz - fragPositionWS.xyz );\n";
 				shader += "vec3 R = normalize( reflect ( -V, N ) );\n";
 
-				// shader += "float h = clamp( dot( N, V ), 0.0, 1.0 );\n";
-				// shader += "h = 0.5 - h * 0.5;\n";
-				// shader += "_shininess = mix( _shininess, 1.0, h*h );\n";
-
 				shader += "float roughness  =  1.0 - _shininess;\n";
 				shader += "float NoV = dot( N, V );\n";
 				shader += "float lod = roughness * 6.0;"
@@ -1091,7 +1083,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 
 		shader += "color.rgb = (_emissiveColor + ((ambient + diffuse) * color.rgb) + specular * _specularColor) * _occlusion;\n";	
-		// shader += "color.rgb = vec3(dirToCubeUV(N), 0.0);\n";	
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {
@@ -1148,8 +1139,16 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	}
 
 	//Output the gamma encoded result.
-    shader += "color.rgb = tonemapUncharted2(color.rgb, 2.0);\n";
-    // shader += "color.rgb = color.rgb / (color.rgb + 1.0);\n";
+    shader += "if(tonemappingOperator == 1.0) {\n";
+	shader += "   	color.rgb = tonemapReinhard(color.rgb);\n";
+	shader += "	}\n";
+	shader += "	if(tonemappingOperator == 2.0) {\n";
+	shader += "   	color.rgb = tonemapUncharted2(color.rgb);\n";
+	shader += "	}\n";
+	shader += "	if(tonemappingOperator == 3.0) {\n";
+	shader += "   	color.rgb = tonemapeFilmic(color.rgb);\n";
+	shader += "	}\n";
+
     shader += "color = " + x3dom.shader.encodeGamma(properties, "color") + ";\n";
 	
 	//Fog
@@ -1167,9 +1166,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	{
 		shader = x3dom.shader.convertFragmentShader(shader);
 	}
-
-	
-    console.log("FS", shader);
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);

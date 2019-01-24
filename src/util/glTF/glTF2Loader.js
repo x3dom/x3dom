@@ -50,6 +50,8 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
         }, this );
     }
 
+    console.log(x3dScene);
+
     return x3dScene;
 };
 

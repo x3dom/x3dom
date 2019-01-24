@@ -95,6 +95,9 @@ x3dom.VRControllerManager.prototype._addInlines = function()
     
         this.rightTransform  = document.createElement("matrixtransform");
         this.rightInline     = document.createElement("inline");
+
+        this.leftInline.setAttribute("render", "false");
+        this.rightInline.setAttribute("render", "false");
     
         this.leftTransform.appendChild(this.leftInline);
         this.rightTransform.appendChild(this.rightInline);
@@ -126,19 +129,23 @@ x3dom.VRControllerManager.prototype.update = function( viewarea, vrDisplay )
 {
     if ( !vrDisplay || (vrDisplay && !vrDisplay.isPresenting) )
     {
-        this.leftInline.setAttribute("render", "false");
-        this.rightInline.setAttribute("render", "false");
-
-        this.wasPresenting = false;
+        if(this.wasPresenting)
+        {
+            this.leftInline.setAttribute("render", "false");
+            this.rightInline.setAttribute("render", "false");
+    
+            this.wasPresenting = false;
+        }
+        
         return;
     }
     else
     {
-        this.leftInline.setAttribute("render", "true");
-        this.rightInline.setAttribute("render", "true");
-
         if(!this.wasPresenting)
         {
+            this.leftInline.setAttribute("render", "true");
+            this.rightInline.setAttribute("render", "true");
+
             this.fit(viewarea, vrDisplay);
         }
 

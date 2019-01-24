@@ -56,6 +56,17 @@ x3dom.registerNodeType(
              */
             this.addField_SFString(ctx, 'gammaCorrectionDefault', "linear");
 
+            /**
+             * Specifies the used tonemapping operator
+             * @var {x3dom.fields.SFString} tonemapping
+             * @memberof x3dom.nodeTypes.Environment
+             * @initvalue "none"
+             * @range ["none", "reinhard", "uncharted", "filmic"]
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'tonemapping', "none");
+
             // boolean flags for feature (de)activation
 
            /**

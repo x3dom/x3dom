@@ -590,27 +590,53 @@ x3dom.shader.TBNCalculation = function() {
 x3dom.shader.toneMapping = function() {
     var shaderPart = "";
 
+	shaderPart += "uniform float tonemappingOperator;\n";
+
 	shaderPart += "vec3 tonemapReinhard(vec3 color) { \n" +
-	"	return color / (color + 1.0);\n"+ 	
+	"	return color / (color + vec3(1.0));\n"+ 	
 	"}\n\n";
 
-	shaderPart += "vec3 _tonemapUncharted2(vec3 color) { \n" +
+	shaderPart += "vec3 uncharted2Tonemap(vec3 color) { \n" +
 	"	float A = 0.15;\n" +
 	"	float B = 0.50;\n" +
 	"	float C = 0.10;\n" +
 	"	float D = 0.20;\n" +
 	"	float E = 0.02;\n" +
 	"	float F = 0.30;\n" +
-	"	float W = 1000.0;\n" +
 
 	"	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;\n" +
 	"}\n\n";
 
-	shaderPart += "vec3 tonemapUncharted2(vec3 color, float exposureBias) { \n" +
+	shaderPart += "vec3 tonemapUncharted2(vec3 color) { \n" +
 	"	float W = 11.2;\n" +
-	"	vec3 curr = _tonemapUncharted2(exposureBias * color);\n" +
-	"	vec3 whiteScale = 1.0 / _tonemapUncharted2(vec3(W));\n" +
+	"   float exposureBias = 2.0;\n" +
+	"	vec3 curr = uncharted2Tonemap(exposureBias * color);\n" +
+	"	vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));\n" +
 	"	return curr * whiteScale;\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemapeFilmic(vec3 color) { \n" +
+	"	const float a = 2.51;\n" +
+	"	const float b = 0.03;\n" +
+	"	const float c = 2.43;\n" +
+	"	const float d = 0.59;\n" +
+	"	const float e = 0.14;\n" +
+	"	return clamp((color * (a * color + b)) / (color * (c * color + d ) + e), 0.0, 1.0);\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemap(vec3 color) { \n" +
+	"	if(tonemappingOperator == 0.0) {\n" +
+	"   	return color;\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 1.0) {\n" +
+	"   	return tonemapReinhard(color);\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 2.0) {\n" +
+	"   	return tonemapUncharted2(color);\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 3.0) {\n" +
+	"   	return tonemapeFilmic(color);\n" +
+	"	}\n" +
 	"}\n\n";
 
     return shaderPart;
