@@ -100,7 +100,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	
     this.backend = ( this.backend ) ? this.backend.toLowerCase() : 'none';
         
-	this.canvas = this._createHTMLCanvas( x3dElem );
+    this.canvas = this._createHTMLCanvas( x3dElem );
+
+    x3dom.debug.appendElement(x3dElem);
 	
 	this.canvas.parent = this;
 	
