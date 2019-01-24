@@ -148,7 +148,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     // progress bar
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this._createProgressDiv();
-    this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
+    this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "flex" : "none";
     this.x3dElem.appendChild(this.progressDiv);
 
     // vr button
@@ -1074,14 +1074,14 @@ x3dom.X3DCanvas.prototype._createProgressDiv = function() {
     var progressDiv = document.createElement('div');
     progressDiv.setAttribute("class", "x3dom-progress");
 
-    var _text = document.createElement('strong');
-    _text.appendChild(document.createTextNode('Loading...'));
-    progressDiv.appendChild(_text);
+    var spinnerDiv = document.createElement('div');
+    spinnerDiv.setAttribute("class", "x3dom-progress-spinner");
+    progressDiv.appendChild(spinnerDiv);
 
-    var _inner = document.createElement('span');
-    _inner.setAttribute('style', "width: 25%;");
-    _inner.appendChild(document.createTextNode(' '));  // this needs to be a protected whitespace
-    progressDiv.appendChild(_inner);
+    var text = document.createElement('div');
+    text.setAttribute("id", "x3domProgessCount");
+    text.appendChild(document.createTextNode('Loading...'));
+    progressDiv.appendChild(text);
 
     progressDiv.oncontextmenu = progressDiv.onmousedown = function(evt) {
         evt.preventDefault();
@@ -1223,15 +1223,16 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
 
         if (this.doc.properties.getProperty("showProgress") !== 'false') {
             if (this.progressDiv) {
-                this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
+                var count = Math.max(+this.doc.downloadCount, 0);
+                this.progressDiv.childNodes[1].textContent = "" + count;
                 if (this.doc.downloadCount > 0) {
-                    this.progressDiv.style.display = 'inline';
+                    this.progressDiv.style.opacity = '1';
                 } else {
-                    this.progressDiv.style.display = 'none';
+                    this.progressDiv.style.opacity = '0';
                 }
             }
         } else {
-            this.progressDiv.style.display = 'none';
+            this.progressDiv.style.opacity = '0';
         }
     }
 

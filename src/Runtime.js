@@ -1201,7 +1201,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
     var processDiv = this.canvas.progressDiv;
     if (processDiv) {
         if (mode === true) {
-            processDiv.style.display = 'inline';
+            processDiv.style.display = 'flex';
             return true;
         } else if (mode === false) {
             processDiv.style.display = 'none';
