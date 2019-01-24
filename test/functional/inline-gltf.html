@@ -73,8 +73,9 @@
         .sidebar-entry:hover { background: #ddd; }
         .sidebar-header {width: 100%; font-size: 14px; margin: 0 0 5px 0; font-weight: 500; color: #000000; padding: 16px; box-sizing: border-box; white-space: nowrap;}
         
-        .tonemapping-selector { position: absolute; top: 25px; right: 25px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 15px;}
-        .tonemapping-heading { margin-bottom: 5px; font-size: 18px; font-weight: bold; color: white}
+        .environment-selector { position: absolute; top: 16px; right: 16px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 8px; width: 126px; box-sizing: border-box;}
+        .tonemapping-selector { position: absolute; top: 160px; right: 16px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 8px; width: 126px; box-sizing: border-box;}
+        .tonemapping-heading, .environment-heading { margin-bottom: 5px; font-size: 18px; font-weight: bold; color: white}
 
         label { color: white; font-size: 16px;}
     </style>
@@ -163,6 +164,16 @@
         function setTonemapping( operator )
         {
             document.querySelector("environment").setAttribute("tonemapping", operator);
+        }
+
+        function setEnvironment( environment )
+        {
+            var diffuse  = "https://x3dom.org/download/assets/pbr/" + environment + "Diffuse.dds";
+            var specular = "https://x3dom.org/download/assets/pbr/" + environment + "Specular.dds";
+
+            document.querySelector("background").setAttribute("backUrl", diffuse);
+            document.querySelector("physicalenvironmentlight").setAttribute("diffuse", diffuse);
+            document.querySelector("physicalenvironmentlight").setAttribute("specular", specular);
         }
 
         function onKeyPress( e )
@@ -270,6 +281,28 @@
 		   
         </section>
 
+        <section class="environment-selector">
+            <div class="environment-heading">
+                Environment
+            </div>
+            <div>
+                <input type="radio" id="papermill" name="environment" onclick="setEnvironment('papermill')" checked>
+                <label for="papermill">Papermill</label>
+            </div>
+            <div>
+                <input type="radio" id="museum" name="environment" onclick="setEnvironment('museum')">
+                <label for="museum">Museum</label>
+            </div>
+            <div>
+                <input type="radio" id="castle" name="environment" onclick="setEnvironment('castle')">
+                <label for="castle">Castle</label>
+            </div>
+            <div>
+                <input type="radio" id="simple" name="environment" onclick="setEnvironment('simple')">
+                <label for="simple">Simple</label>
+            </div>
+        </section>
+
         <section class="tonemapping-selector">
             <div class="tonemapping-heading">
                 Tonemapping
@@ -296,7 +329,9 @@
             <Scene>
                 <navigationinfo headlight="false"></navigationinfo>
                 <environment tonemapping="reinhard"></environment>
-                <physicalenvironmentlight></physicalenvironmentlight>
+                <physicalenvironmentlight diffuse="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"
+                                          specular="https://x3dom.org/download/assets/pbr/papermillSpecular.dds">
+                </physicalenvironmentlight>
                 <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
                 <Transform translation="0 0 0">
                     <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
