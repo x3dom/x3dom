@@ -100,6 +100,8 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'flipY', false);
 
+            this.addField_SFInt32(ctx, 'channel', 0);
+
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
             this._type = "diffuseMap";

@@ -1289,10 +1289,16 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
                     shape._webgl.normalType = componentType;
                     bufferGeo._mesh._numNormComponents = components;
                     break;
+                case "TEXCOORD_0":
                 case "TEXCOORD":
                     shape._texCoordStrideOffset = [byteStride, byteOffset];
                     shape._webgl.texCoordType = componentType;
                     bufferGeo._mesh._numTexComponents = components;
+                    break;
+                case "TEXCOORD_1":
+                    shape._texCoord2StrideOffset = [byteStride, byteOffset];
+                    shape._webgl.texCoord2Type = componentType;
+                    bufferGeo._mesh._numTex2Components = components;
                     break;
                 case "COLOR":
                     shape._colorStrideOffset = [byteStride, byteOffset];
@@ -1322,7 +1328,6 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
     var initBufferViews = function(arraybuffer)
     {
         var views = bufferGeo._cf.views.nodes;
-        var buffers = [];
 
         for(var i = 0; i < views.length; i++)
         {

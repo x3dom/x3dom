@@ -40,6 +40,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('accessors', x3dom.nodeTypes.BufferAccessor);
 
             this._hasColor = false;
+            this._hasMultiTexCoord = false;
             this._indexed = false;
         },
         {
@@ -72,6 +73,10 @@ x3dom.registerNodeType(
 
             hasColor: function() {
                 return this._hasColor;
+            },
+
+            hasMultiTexCoord: function() {
+                return this._hasMultiTexCoord;
             },
 
             getPrecisionMax: function(type)

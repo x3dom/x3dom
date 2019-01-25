@@ -38,9 +38,11 @@ x3dom.gfx_webgl = (function() {
                 POSITION: 1,
                 NORMAL: 2,
                 TEXCOORD: 3,
+                TEXCOORD_0 : 3,
                 COLOR: 4,
                 TANGENT: 6,
-                BITANGENT: 7
+                BITANGENT: 7,
+                TEXCOORD_1: 8,
             };
     }
 
@@ -69,6 +71,15 @@ x3dom.gfx_webgl = (function() {
 
         if (tryWebGL2) {
             validContextNames = ['webgl2', 'experimental-webgl2'].concat(validContextNames);
+        }
+
+        var isAppleDevice   = (/mac|ip(hone|od|ad)/i).test(navigator.platform);
+        var isSafariBrowser = (/safari/i).test(navigator.userAgent);
+        
+        //Remove WebGL2 Support for Apple devices
+        if(isAppleDevice)
+        {
+            validContextNames.splice(0, 1);
         }
 
         var ctx = null;
@@ -194,6 +205,18 @@ x3dom.gfx_webgl = (function() {
                         }
 
                         x3dom.caps.MOBILE = false;
+
+                        //Disable half float textures on apple devices
+                        if(isAppleDevice)
+                        {
+                            x3dom.caps.HFP_TEXTURES = false;
+                        }
+
+                        //Disable texture lod on safari browsers
+                        if(isSafariBrowser)
+                        {
+                            x3dom.caps.TEXTURE_LOD = false;
+                        }
 
                         if (x3dom.caps.MOBILE) {
                             if (forbidMobileShaders) {
@@ -588,6 +611,7 @@ x3dom.gfx_webgl = (function() {
             coordType: gl.FLOAT,
             normalType: gl.FLOAT,
             texCoordType: gl.FLOAT,
+            texCoord2Type: gl.FLOAT,
             colorType: gl.FLOAT,
             tangentType: gl.FLOAT,
             binormalType: gl.FLOAT,
@@ -2783,6 +2807,7 @@ x3dom.gfx_webgl = (function() {
                 this.setVertexAttribPointerPosition(gl, shape, q6, q);
                 this.setVertexAttribPointerNormal(gl, shape, q6, q);
                 this.setVertexAttribPointerTexCoord(gl, shape, q6, q);
+                this.setVertexAttribPointerTexCoord2(gl, shape, q6, q);
                 this.setVertexAttribPointerColor(gl, shape, q6, q);
                 this.setVertexAttribPointerTangent(gl, shape, q6, q);
                 this.setVertexAttribPointerBinormal(gl, shape, q6, q);
@@ -2886,6 +2911,9 @@ x3dom.gfx_webgl = (function() {
 
             if (sp.texcoord !== undefined) {
                 gl.disableVertexAttribArray(sp.texcoord);
+            }
+            if (sp.texcoord2 !== undefined) {
+                gl.disableVertexAttribArray(sp.texcoord2);
             }
             if (sp.color !== undefined) {
                 gl.disableVertexAttribArray(sp.color);
@@ -4981,31 +5009,6 @@ x3dom.gfx_webgl = (function() {
         }
     };
 
-    Context.prototype.setTonemappingOperator = function(viewarea, sp)
-    {
-        var scene = viewarea._scene;
-        var env = scene.getEnvironment();
-
-        switch(env._vf.tonemapping)
-        {
-            case "none":
-                sp.tonemappingOperator = 0.0;
-                break;
-            case "reinhard":
-                sp.tonemappingOperator = 1.0;
-                break;
-            case "uncharted":
-                sp.tonemappingOperator = 2.0;
-                break;
-            case "filmic":
-                sp.tonemappingOperator = 3.0;
-                break;
-            default:
-                sp.tonemappingOperator = 0.0;
-                break;
-        }
-    }
-
     /**
      * Set Vertex Attrib Pointer Tex Coord
      *
@@ -5024,6 +5027,28 @@ x3dom.gfx_webgl = (function() {
                 s_geo._mesh._numTexComponents, shape._webgl.texCoordType, false,
                 shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.texcoord);
+
+        }
+    };
+
+    /**
+     * Set Vertex Attrib Pointer Tex Coord 2
+     *
+     * @param gl
+     * @param shape
+     * @param q6
+     * @param q
+     */
+    Context.prototype.setVertexAttribPointerTexCoord2 = function(gl, shape, q6, q) {
+        var sp = shape._webgl.shader;
+        if (sp.texcoord2 !== undefined && shape._webgl.buffers[q6 + 8]) {
+            var s_geo = shape._cf.geometry.node;
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + 8]);
+            gl.vertexAttribPointer(sp.texcoord2,
+                s_geo._mesh._numTex2Components, shape._webgl.texCoord2Type, false,
+                shape._texCoord2StrideOffset[0], shape._texCoord2StrideOffset[1]);
+            gl.enableVertexAttribArray(sp.texcoord2);
 
         }
     };
@@ -5078,6 +5103,31 @@ x3dom.gfx_webgl = (function() {
             gl.enableVertexAttribArray(sp.binormal);
         }
     };
+
+    Context.prototype.setTonemappingOperator = function(viewarea, sp)
+    {
+        var scene = viewarea._scene;
+        var env = scene.getEnvironment();
+
+        switch(env._vf.tonemapping)
+        {
+            case "none":
+                sp.tonemappingOperator = 0.0;
+                break;
+            case "reinhard":
+                sp.tonemappingOperator = 1.0;
+                break;
+            case "uncharted":
+                sp.tonemappingOperator = 2.0;
+                break;
+            case "filmic":
+                sp.tonemappingOperator = 3.0;
+                break;
+            default:
+                sp.tonemappingOperator = 0.0;
+                break;
+        }
+    }
 
     return setupContext;
 

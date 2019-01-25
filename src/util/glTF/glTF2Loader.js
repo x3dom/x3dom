@@ -443,6 +443,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var seperateOcclusion = true
     var model             = undefined;
     var pbr               = undefined;
+    var channel           = 0;  
 
     if( material.pbrMetallicRoughness )
     {
@@ -463,22 +464,24 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 
         if(pbr.baseColorTexture )
         {
+            channel = (pbr.baseColorTexture.texCoord) ? 1 : 0;
             texture = this._gltf.textures[pbr.baseColorTexture.index];
-            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture", channel));
         }
 
         if(pbr.metallicRoughnessTexture)
         {
+            channel = (pbr.metallicRoughnessTexture.texCoord) ? 1 : 0;
             texture = this._gltf.textures[pbr.metallicRoughnessTexture.index];
 
             if( material.occlusionTexture && material.occlusionTexture.index == pbr.metallicRoughnessTexture.index)
             {
-                seperateOcclusion = false;
-                mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture"));
+                seperateOcclusion = false;        
+                mat.appendChild(this._generateX3DImageTexture(texture, "occlusionRoughnessMetallicTexture", channel));
             }
             else
             {
-                mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture"));
+                mat.appendChild(this._generateX3DImageTexture(texture, "roughnessMetallicTexture", channel));
             }
         }
 
@@ -494,14 +497,16 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 
         if ( pbr.diffuseTexture )
         {
+            channel = (pbr.diffuseTexture.texCoord) ? 1 : 0;
             texture = this._gltf.textures[pbr.diffuseTexture.index];
-            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture"));
+            mat.appendChild(this._generateX3DImageTexture(texture, "baseColorTexture", channel));
         }
 
         if ( pbr.specularGlossinessTexture )
         {
+            channel = (pbr.specularGlossinessTexture.texCoord) ? 1 : 0;
             texture = this._gltf.textures[pbr.specularGlossinessTexture.index];
-            mat.appendChild(this._generateX3DImageTexture(texture, "specularGlossinessTexture"));
+            mat.appendChild(this._generateX3DImageTexture(texture, "specularGlossinessTexture", channel));
         }
 
         mat.setAttribute("diffuseFactor", diffuseFactor.join(" "));
@@ -511,20 +516,23 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 
     if(material.normalTexture)
     {
+        channel = (material.normalTexture.texCoord) ? 1 : 0;
         texture = this._gltf.textures[material.normalTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "normalTexture"));
+        mat.appendChild(this._generateX3DImageTexture(texture, "normalTexture", channel));
     }
 
     if(material.emissiveTexture)
     {
+        channel = (material.emissiveTexture.texCoord) ? 1 : 0;
         texture = this._gltf.textures[material.emissiveTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture"));
+        mat.appendChild(this._generateX3DImageTexture(texture, "emissiveTexture", channel));
     }
 
     if(material.occlusionTexture && seperateOcclusion)
     {
+        channel = (material.occlusionTexture.texCoord) ? 1 : 0;
         texture = this._gltf.textures[material.occlusionTexture.index];
-        mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture"));
+        mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture", channel));
     }
 
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
@@ -540,7 +548,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
  * @param {Object} image - A glTF image node
  * @return {Imagetexture}
  */
-x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, containerField)
+x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, containerField, channel)
 {
     var image   = this._gltf.images[texture.source];
 
@@ -565,6 +573,10 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, contain
         imagetexture.appendChild(this._createX3DTextureProperties(sampler));
     }
 
+    if(channel)
+    {
+        imagetexture.setAttribute("channel", "1");
+    }
 
     return imagetexture;
 };

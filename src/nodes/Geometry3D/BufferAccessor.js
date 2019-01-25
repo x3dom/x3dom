@@ -102,6 +102,7 @@ x3dom.registerNodeType(
                 {
                     case "COLOR" : parent._hasColor = true; break;
                     case "INDEX" : parent._indexed = true; break;
+                    case "TEXCOORD_1" : parent._hasMultiTexCoord = true; break;
                 }
             }
         }

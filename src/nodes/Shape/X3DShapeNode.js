@@ -95,6 +95,7 @@ x3dom.registerNodeType(
             this._coordStrideOffset = [0, 0];
             this._normalStrideOffset = [0, 0];
             this._texCoordStrideOffset = [0, 0];
+            this._texCoord2StrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
             this._idStrideOffset = [0, 0];
             this._tangentStrideOffset = [0, 0];

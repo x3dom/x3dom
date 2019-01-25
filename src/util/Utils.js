@@ -1030,7 +1030,18 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                      (property.BUFFERGEOMETRY && geometry.hasColor()) ||
                                      (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
         property.CLIPPLANES       = shape._clipPlanes.length;
-		property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
+        property.ALPHATHRESHOLD	  = (appearance) ? appearance._vf.alphaClipThreshold.toFixed(2) : 0.1;
+        property.MULTITEXCOORD	  = (property.BUFFERGEOMETRY && geometry.hasMultiTexCoord()) ? 1 : 0;
+
+
+        property.DIFFUSEMAPCHANNEL = (property.PBR_MATERIAL && property.DIFFUSEMAP && material._cf.baseColorTexture.node._vf.channel === 0) ? 0 : 1;
+        property.NORMALMAPCHANNEL  = (property.PBR_MATERIAL && property.NORMALMAP && material._cf.normalTexture.node._vf.channel === 0) ? 0 : 1;
+        property.EMISSIVEMAPCHANNEL = (property.PBR_MATERIAL && property.EMISSIVEMAP && material._cf.emissiveTexture.node._vf.channel === 0) ? 0 : 1;
+        property.OCCLUSIONMAPCHANNEL = (property.PBR_MATERIAL && property.OCCLUSIONMAP && material._cf.occlusionTexture.node._vf.channel === 0) ? 0 : 1;
+        property.ROUGHNESSMETALLICMAPCHANNEL = (property.PBR_MATERIAL && property.ROUGHNESSMETALLICMAP && material._cf.roughnessMetallicTexture.node._vf.channel === 0) ? 0 : 1;
+        property.OCCLUSIONROUGHNESSMETALLICMAPCHANNEL = (property.PBR_MATERIAL && property.OCCLUSIONROUGHNESSMETALLICMAP && material._cf.occlusionRoughnessMetallicTexture.node._vf.channel === 0) ? 0 : 1;
+        property.SPECULARGLOSSINESSMAPCHANNEL = (property.PBR_MATERIAL && property.SPECULARGLOSSINESSMAP && material._cf.specularGlossinessTexture.node._vf.channel === 0) ? 0 : 1;
+
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
