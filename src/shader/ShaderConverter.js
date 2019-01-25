@@ -1,3 +1,5 @@
+x3dom.shader.FRAG_COLOR = "x3dom_fragColor";
+
 x3dom.shader.convertVertexShader = function ( shader )
 {
     //Converts all "attribute" to "in"

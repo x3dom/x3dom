@@ -756,11 +756,18 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "varying vec3 fragNormal;\n";
 		}
 
-		if(properties.PBR_MATERIAL)
+		var numLights = properties.LIGHTS;
+
+		if(properties.PHYSICALENVLIGHT)
+		{
+			numLights--;
+		}
+
+		if(properties.PBR_MATERIAL && numLights)
 		{
 			shader += x3dom.shader.lightPBR(properties.LIGHTS);
 		}
-		else
+		else if(numLights)
 		{
 			shader += x3dom.shader.light(properties.LIGHTS);
 		}	
@@ -1100,16 +1107,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 
 		//Calculate lights
-        if (properties.LIGHTS) {
+        if (numLights) {
 
-			var numLights = properties.LIGHTS;
-
-			if(properties.PHYSICALENVLIGHT)
-			{
-				numLights--;
-			}
-
-            for(var l=0; l<properties.LIGHTS; l++) {
+            for(var l=0; l<numLights; l++) {
                 var lightCol = "light"+l+"_Color";
                 shader += " lighting(light"+l+"_Type, " +
                                     "light"+l+"_Location, " +
@@ -1132,7 +1132,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.PBR_MATERIAL)
 		{
 			//shader += "_specularColor = vec3(1.0);\n";
-
 			if(properties.PHYSICALENVLIGHT)
 			{
 				shader += "float camDistance = length(cameraPosWS.xyz - fragPositionWS.xyz);\n";
@@ -1141,7 +1140,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "vec3 R = normalize( reflect ( -V, N ) );\n";
 
 				shader += "float roughness  =  1.0 - _shininess;\n";
-				shader += "float NoV = dot( N, V );\n";
+				shader += "float NoV = clamp(dot( N, V ), 0.0, 1.0);\n";
 				shader += "float lod = roughness * 6.0;"
 
 				shader += "diffuse = textureCube( diffuseEnvironmentMap, N ).rgb;\n";
@@ -1158,12 +1157,12 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				}
 				
 				//Calculate specular lighting from precomputed maps
-				shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, 1.0 - roughness ) ).rgb;\n";
+				shader += "vec3 brdf      = texture2D( brdfMap, vec2( NoV, roughness ) ).rgb;\n";
 				shader += "_specularColor = ( _specularColor * brdf.x + brdf.y );\n";		
 			}
 		}
 
-		shader += "color.rgb = (_emissiveColor + ((ambient + diffuse) * color.rgb) + specular * _specularColor) * _occlusion;\n";	
+		shader += "color.rgb = _emissiveColor + ((ambient + diffuse) * color.rgb + specular * _specularColor) * _occlusion;\n";	
 		
 	} else {
 		if (properties.APPMAT && !properties.VERTEXCOLOR && !properties.TEXTURED && !properties.PBR_MATERIAL) {
