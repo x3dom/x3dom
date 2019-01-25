@@ -1503,6 +1503,12 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         {
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
 
+                if(shape._webgl == undefined)
+                {
+                    x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
+                    return;
+                }
+
                 initBufferViews(arraybuffer);
                 initAccessors();
                 computeNormals(arraybuffer);
@@ -1523,6 +1529,13 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         
                 xhr.onload = function(e)
                 {
+                    if(shape._webgl == undefined)
+                    {
+                        x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
+                        reject();
+                        return;
+                    }
+
                     if(xhr.status != 200)
                     {
                         shape._nameSpace.doc.downloadCount -= 1;
