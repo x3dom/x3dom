@@ -15,6 +15,7 @@ X3D, x3d {
     margin: 0;
     padding: 0;
     outline: none;
+    display: block;
 }
 
 X3D:hover, 
@@ -205,13 +206,4 @@ x3d:hover,
 .x3dom-nox3d a { 
     color: #fff;
     font-size: 14px;
-}
-
-/* self-clearing floats */
-.group:after {
-    content: "."; 
-    display: block; 
-    height: 0; 
-    clear: both; 
-    visibility: hidden;
 }

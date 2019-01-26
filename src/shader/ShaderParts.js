@@ -93,12 +93,13 @@ x3dom.shader.clipPlanes = function(numClipPlanes) {
 
     for(c=0; c<numClipPlanes; c++) {
 
-		shader += "if(eyeIdx == 1.0){\n"
-    	shader += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse2;\n";
-    	shader += "}else{\n";
-    	shader += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
-    	shader += "}\n";
-        shaderPart += "    float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
+		shaderPart += "vec4 clipPlane" + c + ";\n";
+		shaderPart += "if(fragEyeIdx == 1.0){\n"
+    	shaderPart += "    clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse2;\n";
+    	shaderPart += "}else{\n";
+    	shaderPart += "    clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
+    	shaderPart += "}\n";
+        shaderPart += "float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
     }
 
     shaderPart += "    if( ";

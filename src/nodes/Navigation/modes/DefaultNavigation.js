@@ -773,8 +773,6 @@ x3dom.DefaultNavigation.prototype.onDoubleClick = function (view, x, y)
     viewpoint.setCenterOfRotation(view._pick);
     x3dom.debug.logInfo("New center of Rotation:  " + view._pick);
 
-    console.log(view._pick);
-
     var mat = view.getViewMatrix().inverse();
 
     var from = mat.e3();

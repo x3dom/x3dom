@@ -250,7 +250,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             // coordinates
             var buffer = gl.createBuffer();
-            shape._webgl.buffers[1] = buffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION] = buffer;
 
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER,
@@ -263,7 +263,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             // normals
             buffer = gl.createBuffer();
-            shape._webgl.buffers[2] = buffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.NORMAL] = buffer;
 
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
             gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normBuf), gl.STATIC_DRAW);
@@ -277,7 +277,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (this.texCoord)
             {
                 buffer = gl.createBuffer();
-                shape._webgl.buffers[3] = buffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferData(gl.ARRAY_BUFFER,
@@ -294,7 +294,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             if (this.color)
             {
                 buffer = gl.createBuffer();
-                shape._webgl.buffers[4] = buffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.COLOR] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferData(gl.ARRAY_BUFFER,
@@ -419,7 +419,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR0/ index load time: " + t11 + " ms");
 
-            shape._webgl.buffers[0] = indicesBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.INDEX] = indicesBuffer;
         };
     }
 
@@ -487,7 +487,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             if (geoNode._vf.normal.length > 0)
             {
-                shape._webgl.buffers[2] = buffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.NORMAL] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
@@ -500,7 +500,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             if (geoNode._vf.texCoord.length > 0)
             {
-                shape._webgl.buffers[3] = buffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
@@ -513,7 +513,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
 
             if (geoNode._vf.color.length > 0)
             {
-                shape._webgl.buffers[4] = buffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.COLOR] = buffer;
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                 gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
@@ -536,7 +536,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR/ interleaved array load time: " + t11 + " ms");
 
-            shape._webgl.buffers[1] = buffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION] = buffer;
 
         };
     }
@@ -636,7 +636,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms");
 
-            shape._webgl.buffers[1] = positionBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION] = positionBuffer;
         };
     }
 
@@ -698,7 +698,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR2/ normal load time: " + t11 + " ms");
 
-            shape._webgl.buffers[2] = normalBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.NORMAL] = normalBuffer;
         };
     }
 
@@ -762,7 +762,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 gl.bufferData(gl.ARRAY_BUFFER, ids, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-                shape._webgl.buffers[5] = idBuffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.ID] = idBuffer;
             }
             else
             {
@@ -772,7 +772,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, null);
 
-                shape._webgl.buffers[3] = texcBuffer;
+                shape._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD] = texcBuffer;
             }
             // Test reading Data
             //x3dom.debug.logWarning("arraybuffer[0].tx="+texCoords[0]);
@@ -849,7 +849,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR4/ color load time: " + t11 + " ms");
 
-            shape._webgl.buffers[4] = colorBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.COLOR] = colorBuffer;
         };
     }
 
@@ -911,7 +911,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR5/ normal load time: " + t11 + " ms");
 
-            shape._webgl.buffers[6] = tangentBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.TANGENT] = tangentBuffer;
         };
     }
 
@@ -973,7 +973,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var t11 = new Date().getTime() - t00;
             x3dom.debug.logInfo("XHR6/ normal load time: " + t11 + " ms");
 
-            shape._webgl.buffers[7] = binormalBuffer;
+            shape._webgl.buffers[x3dom.BUFFER_IDX.BITANGENT] = binormalBuffer;
         };
     }
 };
@@ -991,28 +991,28 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
     if (popGeo.hasIndex()) {
         shape._webgl.popGeometry = 1;
 
-        shape._webgl.buffers[0] = gl.createBuffer();
+        shape._webgl.buffers[x3dom.BUFFER_IDX.INDEX] = gl.createBuffer();
 
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, popGeo.getTotalNumberOfIndices()*2, gl.STATIC_DRAW);
 
         //this is a workaround to mimic gl_VertexID
-        shape._webgl.buffers[5] = gl.createBuffer();
+        shape._webgl.buffers[x3dom.BUFFER_IDX.ID] = gl.createBuffer();
 
         var idBuffer = new Float32Array(popGeo._vf.vertexBufferSize);
 
         (function(){ for (var i = 0; i < idBuffer.length; ++i) idBuffer[i] = i; })();
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5]);
+        gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[x3dom.BUFFER_IDX.ID]);
         gl.bufferData(gl.ARRAY_BUFFER, idBuffer, gl.STATIC_DRAW);
     }
     else {
         shape._webgl.popGeometry = -1;
     }
 
-    shape._webgl.buffers[1] = gl.createBuffer();
+    shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION] = gl.createBuffer();
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
     gl.bufferData(gl.ARRAY_BUFFER, (popGeo._vf.attributeStride * popGeo._vf.vertexBufferSize), gl.STATIC_DRAW);
 
 
@@ -1034,7 +1034,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
         shape._normalStrideOffset[0] = popGeo.getAttributeStride();
         shape._normalStrideOffset[1] = popGeo.getNormalOffset();
 
-        shape._webgl.buffers[2] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
+        shape._webgl.buffers[x3dom.BUFFER_IDX.NORMAL] = shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION]; //use interleaved vertex data buffer
 
         gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, shape._webgl.normalType,
                                false, shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
@@ -1044,7 +1044,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
         attribTypeStr             = popGeo._vf.texCoordType;
         shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-        shape._webgl.buffers[3] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
+        shape._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD] = shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION]; //use interleaved vertex data buffer
 
         shape._texCoordStrideOffset[0] = popGeo.getAttributeStride();
         shape._texCoordStrideOffset[1] = popGeo.getTexCoordOffset();
@@ -1057,7 +1057,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
         attribTypeStr          = popGeo._vf.colorType;
         shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-        shape._webgl.buffers[4] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
+        shape._webgl.buffers[x3dom.BUFFER_IDX.COLOR] = shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION]; //use interleaved vertex data buffer
 
         shape._colorStrideOffset[0] = popGeo.getAttributeStride();
         shape._colorStrideOffset[1] = popGeo.getColorOffset();
@@ -1100,7 +1100,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
 
                     var indexDataView = new Uint8Array(data, 0, indexDataLengthInBytes);
 
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
                     //index data is always placed where it belongs, as we have to keep the order of rendering
                     (function() {
                         var indexDataOffset = 0;
@@ -1119,7 +1119,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
 
                 var attributeDataView = new Uint8Array(data, indexDataLengthInBytes, vertexDataLengthInBytes);
 
-                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
                 if (!popGeo.hasIndex()) {
                     //on non-indexed rendering, vertex data is just appended, the order of vertex data packages doesn't matter
                     gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices       * popGeo.getAttributeStride(),
@@ -1222,7 +1222,7 @@ x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, curr
         currContext.IG_PositionBuffer = gl.createBuffer();
     }
 
-    shape._webgl.buffers[1] = currContext.IG_PositionBuffer;
+    shape._webgl.buffers[x3dom.BUFFER_IDX.POSITION] = currContext.IG_PositionBuffer;
     gl.bindBuffer(gl.ARRAY_BUFFER, currContext.IG_PositionBuffer);
 
     var vertices = new Float32Array(shape._webgl.positions[0]);
@@ -1317,7 +1317,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
                     break;
             }
 
-            var bufferIdx = currContext.BUFFER_IDX[ accessor._vf.bufferType ];
+            var bufferIdx = x3dom.BUFFER_IDX[ accessor._vf.bufferType ];
 
             var bufferViewID = bufferGeo._cf.views.nodes[view]._vf.id;
 
@@ -1490,14 +1490,10 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         gl.bufferData(34962, normals, gl.STATIC_DRAW);
         gl.bindBuffer(34962, null);
 
-        var bufferIdx = currContext.BUFFER_IDX[ "NORMAL" ];
-
-        shape._webgl.buffers[bufferIdx] = buffer;
+        shape._webgl.buffers[x3dom.BUFFER_IDX.NORMAL] = buffer;
         shape._normalStrideOffset = [12, 0];
         shape._webgl.normalType = 5126;
         bufferGeo._mesh._numNormComponents = 3;
-
-        console.log(positions, indices, normals);
     }
 
     if(bufferGeo._vf.buffer != "")

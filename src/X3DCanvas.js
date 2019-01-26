@@ -68,12 +68,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         this.__setAttribute(attrName, newVal);
 
         // scale resolution so device pixel are used rather then css pixels
-        newVal = parseInt(newVal) * that.devicePixelRatio;
+        newVal = parseInt(newVal);
 
         switch(attrName) {
 
             case "width":
-                that.canvas.setAttribute("width", newVal);
+                x3dElem.style.width = newVal;
+                that.canvas.setAttribute("width", newVal * that.devicePixelRatio);
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
                     that.doc.needRender = true;
@@ -81,7 +82,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 break;
 
             case "height":
-                that.canvas.setAttribute("height", newVal);
+                x3dElem.style.height = newVal;
+                that.canvas.setAttribute("height", newVal * that.devicePixelRatio);
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"), 0);
                     that.doc.needRender = true;
@@ -1026,6 +1028,7 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
             x3dom.debug.logWarning("The width attribute is to be specified in pixels not in percent.");
         }
         canvas.style.width = w;
+        x3dElem.style.width = w;
         canvas.setAttribute("width", w);
     }
 
@@ -1035,6 +1038,7 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
             x3dom.debug.logWarning("The height attribute is to be specified in pixels not in percent.");
         }
         canvas.style.height = h;
+        x3dElem.style.height = h;
         canvas.setAttribute("height", h);
     }
 

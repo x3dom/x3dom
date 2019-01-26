@@ -119,7 +119,6 @@ x3dom.glTF2Loader.prototype._generateX3DAnimationClock = function(parent, durati
  */
 x3dom.glTF2Loader.prototype._generateX3DAnimation = function(parent, duration, sampler, target, animID, chID)
 {
-    //console.log( sampler, target );
     var aniID = animID + chID;
     var input_accessor = this._gltf.accessors[sampler.input];
     var output_accessor = this._gltf.accessors[sampler.output];

@@ -48,45 +48,45 @@ x3dom.glTF.glTFMesh = function()
 
 x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointer = function(gl, shaderProgram)
 {
-    if(this.buffers[glTF_BUFFER_IDX.INDEX]){
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[glTF_BUFFER_IDX.INDEX].idx);
+    if(this.buffers[x3dom.BUFFER_IDX.INDEX]){
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[x3dom.BUFFER_IDX.INDEX].idx);
     }
 
     if(this.material != null && this.material.attributeMapping != null)
     {
         var mapping = this.material.attributeMapping;
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.NORMAL]], this.buffers[glTF_BUFFER_IDX.NORMAL]);
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.TEXCOORD]], this.buffers[glTF_BUFFER_IDX.TEXCOORD]);
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.COLOR]], this.buffers[glTF_BUFFER_IDX.COLOR]);
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.TANGENT]], this.buffers[glTF_BUFFER_IDX.TANGENT]);
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.BITANGENT]], this.buffers[glTF_BUFFER_IDX.BITANGENT]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.POSITION]], this.buffers[x3dom.BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.NORMAL]], this.buffers[x3dom.BUFFER_IDX.NORMAL]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.TEXCOORD]], this.buffers[x3dom.BUFFER_IDX.TEXCOORD]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.COLOR]], this.buffers[x3dom.BUFFER_IDX.COLOR]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.TANGENT]], this.buffers[x3dom.BUFFER_IDX.TANGENT]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.BITANGENT]], this.buffers[x3dom.BUFFER_IDX.BITANGENT]);
     }
     else
     {
-        this._bindVertexAttribPointer(gl, shaderProgram.position, this.buffers[glTF_BUFFER_IDX.POSITION]);
-        this._bindVertexAttribPointer(gl, shaderProgram.normal, this.buffers[glTF_BUFFER_IDX.NORMAL]);
-        this._bindVertexAttribPointer(gl, shaderProgram.texcoord, this.buffers[glTF_BUFFER_IDX.TEXCOORD]);
-        this._bindVertexAttribPointer(gl, shaderProgram.color, this.buffers[glTF_BUFFER_IDX.COLOR]);
-        this._bindVertexAttribPointer(gl, shaderProgram.tangent, this.buffers[glTF_BUFFER_IDX.TANGENT]);
-        this._bindVertexAttribPointer(gl, shaderProgram.bitangent, this.buffers[glTF_BUFFER_IDX.BITANGENT]);
+        this._bindVertexAttribPointer(gl, shaderProgram.position, this.buffers[x3dom.BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, shaderProgram.normal, this.buffers[x3dom.BUFFER_IDX.NORMAL]);
+        this._bindVertexAttribPointer(gl, shaderProgram.texcoord, this.buffers[x3dom.BUFFER_IDX.TEXCOORD]);
+        this._bindVertexAttribPointer(gl, shaderProgram.color, this.buffers[x3dom.BUFFER_IDX.COLOR]);
+        this._bindVertexAttribPointer(gl, shaderProgram.tangent, this.buffers[x3dom.BUFFER_IDX.TANGENT]);
+        this._bindVertexAttribPointer(gl, shaderProgram.bitangent, this.buffers[x3dom.BUFFER_IDX.BITANGENT]);
     }
 };
 
 x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointerPosition = function(gl, shaderProgram, useMaterial)
 {
-    if(this.buffers[glTF_BUFFER_IDX.INDEX]){
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[glTF_BUFFER_IDX.INDEX].idx);
+    if(this.buffers[x3dom.BUFFER_IDX.INDEX]){
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.buffers[x3dom.BUFFER_IDX.INDEX].idx);
     }
 
     if(useMaterial == true && this.material != null && this.material.attributeMapping != null)
     {
         var mapping = this.material.attributeMapping;
-        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[x3dom.BUFFER_IDX.POSITION]], this.buffers[x3dom.BUFFER_IDX.POSITION]);
     }
     else
     {
-        this._bindVertexAttribPointer(gl, shaderProgram.position, this.buffers[glTF_BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, shaderProgram.position, this.buffers[x3dom.BUFFER_IDX.POSITION]);
     }
 };
 
@@ -115,8 +115,8 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
     if(polyMode == null || polyMode > this.primitiveType)
         polyMode = this.primitiveType;
 
-    if(this.buffers[glTF_BUFFER_IDX.INDEX])
-        gl.drawElements(polyMode, this.drawCount, this.buffers[glTF_BUFFER_IDX.INDEX].type, this.buffers[glTF_BUFFER_IDX.INDEX].offset);
+    if(this.buffers[x3dom.BUFFER_IDX.INDEX])
+        gl.drawElements(polyMode, this.drawCount, this.buffers[x3dom.BUFFER_IDX.INDEX].type, this.buffers[x3dom.BUFFER_IDX.INDEX].offset);
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
 
@@ -243,11 +243,11 @@ x3dom.glTF.PBRMaterial = function()
     this.technique = PBR_MATERIAL_TECHNIQUE.METALLICROUGHNESS;
 
     this.attributeMapping = {};
-    this.attributeMapping[glTF_BUFFER_IDX.POSITION] = "position";
-    this.attributeMapping[glTF_BUFFER_IDX.NORMAL] = "normal";
-    this.attributeMapping[glTF_BUFFER_IDX.TEXCOORD] = "texcoord";
-    this.attributeMapping[glTF_BUFFER_IDX.TANGENT] = "tangent";
-    this.attributeMapping[glTF_BUFFER_IDX.BITANGENT] = "bitangent";
+    this.attributeMapping[x3dom.BUFFER_IDX.POSITION] = "position";
+    this.attributeMapping[x3dom.BUFFER_IDX.NORMAL] = "normal";
+    this.attributeMapping[x3dom.BUFFER_IDX.TEXCOORD] = "texcoord";
+    this.attributeMapping[x3dom.BUFFER_IDX.TANGENT] = "tangent";
+    this.attributeMapping[x3dom.BUFFER_IDX.BITANGENT] = "bitangent";
 };
 
 x3dom.glTF.PBRMaterial.prototype.created = function()
@@ -368,10 +368,10 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
     this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.PHONG;
 
     this.attributeMapping = {};
-    this.attributeMapping[glTF_BUFFER_IDX.POSITION] = "position";
-    this.attributeMapping[glTF_BUFFER_IDX.NORMAL] = "normal";
-    this.attributeMapping[glTF_BUFFER_IDX.TEXCOORD] = "texcoord";
-    this.attributeMapping[glTF_BUFFER_IDX.COLOR] = "color";
+    this.attributeMapping[x3dom.BUFFER_IDX.POSITION] = "position";
+    this.attributeMapping[x3dom.BUFFER_IDX.NORMAL] = "normal";
+    this.attributeMapping[x3dom.BUFFER_IDX.TEXCOORD] = "texcoord";
+    this.attributeMapping[x3dom.BUFFER_IDX.COLOR] = "color";
 };
 
 x3dom.glTF.glTFKHRMaterialCommons.prototype.created = function()
@@ -550,16 +550,16 @@ x3dom.glTF.glTFMaterial = function(technique)
             if (parameter.semantic != null)
                 switch (parameter.semantic) {
                     case "POSITION":
-                        this.attributeMapping[glTF_BUFFER_IDX.POSITION] = key;
+                        this.attributeMapping[x3dom.BUFFER_IDX.POSITION] = key;
                         break;
                     case "NORMAL":
-                        this.attributeMapping[glTF_BUFFER_IDX.NORMAL] = key;
+                        this.attributeMapping[x3dom.BUFFER_IDX.NORMAL] = key;
                         break;
                     case "TEXCOORD_0":
-                        this.attributeMapping[glTF_BUFFER_IDX.TEXCOORD] = key;
+                        this.attributeMapping[x3dom.BUFFER_IDX.TEXCOORD] = key;
                         break;
                     case "COLOR":
-                        this.attributeMapping[glTF_BUFFER_IDX.COLOR] = key;
+                        this.attributeMapping[x3dom.BUFFER_IDX.COLOR] = key;
                         break;
                     default:
                         break;

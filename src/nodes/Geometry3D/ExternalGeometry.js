@@ -410,13 +410,6 @@ var ExternalGeometrySRC =
     {
         shape.meshes = [];
 
-        var INDEX_BUFFER_IDX    = 0;
-        var POSITION_BUFFER_IDX = 1;
-        var NORMAL_BUFFER_IDX   = 2;
-        var TEXCOORD_BUFFER_IDX = 3;
-        var COLOR_BUFFER_IDX    = 4;
-        var ID_BUFFER_IDX       = 5;
-
         var MAX_NUM_BUFFERS_PER_DRAW = 6;
 
         var indexViews = srcHeaderObj["accessors"]["indexViews"];
@@ -503,10 +496,10 @@ var ExternalGeometrySRC =
                 renderMesh.numFaces  = indexView["count"] / 3;
                 x3domMesh._numFaces += indexView["count"] / 3;
 
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset] = {};
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].offset = indexView["byteOffset"];
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].type   = indexView["componentType"];
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].idx    = viewIDsToGLBufferIDs[indexView["bufferView"]];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset] = {};
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].offset = indexView["byteOffset"];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].type   = indexView["componentType"];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].idx    = viewIDsToGLBufferIDs[indexView["bufferView"]];
             }
             else
             {
@@ -530,7 +523,7 @@ var ExternalGeometrySRC =
                     case "position":
                         x3domTypeID      = "coord";
                         x3domShortTypeID = "Pos";
-                        idx = POSITION_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.POSITION + bufferOffset;
                         //for non-indexed rendering, we assume that all attributes have the same count
                         if (mesh["indices"] == "")
                         {
@@ -545,25 +538,25 @@ var ExternalGeometrySRC =
                     case "normal":
                         x3domTypeID      = "normal";
                         x3domShortTypeID = "Norm";
-                        idx = NORMAL_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.NORMAL + bufferOffset;
                         break;
 
                     case "texcoord":
                         x3domTypeID      = "texCoord";
                         x3domShortTypeID = "Tex";
-                        idx = TEXCOORD_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.TEXCOORD + bufferOffset;
                         break;
 
                     case "color":
                         x3domTypeID      = "color";
                         x3domShortTypeID = "Col";
-                        idx = COLOR_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.COLOR+ bufferOffset;
                         break;
 
                     case "id":
                         x3domTypeID      = "id";
                         x3domShortTypeID = "Id";
-                        idx = ID_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.ID + bufferOffset;
                         shape._cf.geometry.node._vf.idsPerVertex = true;
                         break;
                 }
