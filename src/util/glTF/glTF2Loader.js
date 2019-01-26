@@ -240,15 +240,6 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
     {
         var camera = this._gltf.cameras[node.camera];
         var viewpoint = this._generateX3DViewpoint(camera);
-        viewpoint.setAttribute('DEF','glTFCamera' + node.camera);
-
-        x3dNode.appendChild(viewpoint);
-    }
-
-    if( node.camera != undefined )
-    {
-        var camera = this._gltf.cameras[node.camera];
-        var viewpoint = this._generateX3DViewpoint(camera);
         viewpoint.setAttribute('DEF', this._cameraPrefix + node.camera);
 
         x3dNode.appendChild(viewpoint);
