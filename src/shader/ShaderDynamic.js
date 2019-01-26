@@ -885,11 +885,21 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "_ambientIntensity = emiAmb.a;\n";
     }
 			
-	if(properties.VERTEXCOLOR) {
-		if(properties.COLCOMPONENTS === 3){
-			shader += "color.rgb = fragColor;\n";
-		}else if(properties.COLCOMPONENTS === 4){
-			shader += "color = fragColor;\n";
+	if (properties.VERTEXCOLOR) {
+		if (properties.COLCOMPONENTS === 3) {
+            if (properties.PBR_MATERIAL) {
+                shader += "color.rgb *= fragColor;\n";
+            }
+            else {
+			    shader += "color.rgb = fragColor;\n";
+            }
+		} else if (properties.COLCOMPONENTS === 4) {
+			if (properties.PBR_MATERIAL) {
+                shader += "color *= fragColor;\n";
+            }
+            else {
+			    shader += "color = fragColor;\n";
+            }
 		}
 	}
 	
