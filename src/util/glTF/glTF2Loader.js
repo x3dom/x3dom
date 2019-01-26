@@ -245,14 +245,13 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, parent, index)
         x3dNode.appendChild(viewpoint);
     }
 
-    if ( node.name === undefined )
+    if ( !node.name )
     {
         node.name = index;
     }
     
     var nodeDEF = this._nodeNamePrefix + node.name;
 
-    x3dNode.setAttribute( "id", nodeDEF );
     x3dNode.setAttribute( "DEF", nodeDEF );
 
     return x3dNode;
