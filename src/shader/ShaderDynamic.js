@@ -251,7 +251,14 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 
 	if(properties.LIGHTS || properties.PBR_MATERIAL)
 	{
-		shader += "mat4 mat_n   = normalMatrix;\n"
+		if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
+			//do nothing
+		}
+		else
+		{
+			shader += "mat4 mat_n   = normalMatrix;\n"
+		}
+		
 	}
 
 	shader += "if(eyeIdx == 1.0){\n"
@@ -260,9 +267,17 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	if(properties.CUBEMAP || properties.PBR_MATERIAL) {
 		shader += "    mat_v   = viewMatrix2;\n";
 	}
-	if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT")
+	
+	if(properties.LIGHTS || properties.PBR_MATERIAL)
 	{
-		shader += "    mat_n   = normalMatrix2;\n";
+		if(properties.NORMALMAP && properties.NORMALSPACE == "OBJECT") {
+			//do nothing
+		}
+		else
+		{
+			shader += "mat4 mat_n   = normalMatrix2;\n"
+		}
+		
 	}
 
 	shader += "}\n";
