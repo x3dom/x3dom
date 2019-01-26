@@ -4921,7 +4921,12 @@ x3dom.gfx_webgl = (function() {
 
     Context.prototype.disableVertexAttribEyeIdx = function(gl, sp)
     {
-        if(x3dom.caps.INSTANCED_ARRAYS && sp.eyeIdx != undefined)
+        if(x3dom.caps.WEBGL_VERSION == 2 && sp.eyeIdx != undefined)
+        {
+            gl.disableVertexAttribArray(sp.eyeIdx);
+            gl.vertexAttribDivisor(sp.eyeIdx, 0);
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS && sp.eyeIdx != undefined)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
 
