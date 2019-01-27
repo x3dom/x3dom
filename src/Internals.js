@@ -55,6 +55,7 @@ x3dom.BUFFER_IDX =
     TEXCOORD: 3,
     TEXCOORD_0 : 3,
     COLOR: 4,
+    COLOR_0: 4,
     ID: 5,
     TANGENT: 6,
     BITANGENT: 7,

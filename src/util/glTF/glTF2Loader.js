@@ -694,6 +694,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferAccessor = function(buffer, access
     bufferAccessor.setAttribute("view", viewID);
     bufferAccessor.setAttribute("byteOffset", byteOffset || 0);
     bufferAccessor.setAttribute("byteStride", bufferView.byteStride || 0);
+    bufferAccessor.setAttribute("normalized", accessor.normalized || false);
 
     bufferAccessor.setAttribute("components", components);
     bufferAccessor.setAttribute("componentType", accessor.componentType);

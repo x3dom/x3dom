@@ -1059,8 +1059,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				{
 					shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
 				}
-				shader += "_shininess = 1.0 - roughnessMetallic.g;\n";
-				shader += "_metallic  = roughnessMetallic.b * metallicFactor;\n";		
+				shader += "_shininess = 1.0 - (roughnessMetallic.g * (1.0 - _shininess));\n";
+				shader += "_metallic  = roughnessMetallic.b * metallicFactor;\n";				
 			}
 
 			if(properties.SPECULARGLOSSINESSMAP)

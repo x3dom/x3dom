@@ -94,6 +94,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFInt32(ctx, 'count', 0);
+
+            /**
+             * Attribute normalization
+             * @var {x3dom.fields.SFInt32} normalized
+             * @memberof x3dom.nodeTypes.BufferAccessor
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'normalized', false);
         },
         {
             parentAdded: function(parent)

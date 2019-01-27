@@ -1268,6 +1268,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             var bufferType = accessor._vf.bufferType;
             var components = accessor._vf.components;
             var componentType = accessor._vf.componentType;
+            var normalized = accessor._vf.normalized;
             var view = accessor._vf.view;
 
             switch(bufferType)
@@ -1281,38 +1282,46 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
                     posAccessor = accessor;
                     shape._coordStrideOffset = [byteStride, byteOffset];
                     shape._webgl.coordType = componentType;
+                    shape._webgl.coordNormalized = normalized;
                     bufferGeo._mesh._numPosComponents = components;
                     break;
                 case "NORMAL":
                     needNormalComputation = false;
                     shape._normalStrideOffset = [byteStride, byteOffset];
                     shape._webgl.normalType = componentType;
+                    shape._webgl.normalNormalized = normalized;
                     bufferGeo._mesh._numNormComponents = components;
                     break;
                 case "TEXCOORD_0":
                 case "TEXCOORD":
                     shape._texCoordStrideOffset = [byteStride, byteOffset];
                     shape._webgl.texCoordType = componentType;
+                    shape._webgl.texCoordNormalized = normalized;
                     bufferGeo._mesh._numTexComponents = components;
                     break;
                 case "TEXCOORD_1":
                     shape._texCoord2StrideOffset = [byteStride, byteOffset];
                     shape._webgl.texCoord2Type = componentType;
+                    shape._webgl.texCoord2Normalized = normalized;
                     bufferGeo._mesh._numTex2Components = components;
                     break;
                 case "COLOR":
+                case "COLOR_0":
                     shape._colorStrideOffset = [byteStride, byteOffset];
                     shape._webgl.colorType = componentType;
+                    shape._webgl.colorNormalized = normalized;
                     bufferGeo._mesh._numColComponents = components;
                     break;
                 case "TANGENT":
                     shape._tangentStrideOffset = [byteStride, byteOffset];
                     shape._webgl.tangentType = componentType;
+                    shape._webgl.tangentNormalized = normalized;
                     bufferGeo._mesh._numTangentComponents = components;
                     break;
                 case "BITANGENT":
                     shape._binormalStrideOffset = [byteStride, byteOffset];
                     shape._webgl.binormalType = componentType;
+                    shape._webgl.binormalNormalized = normalized;
                     bufferGeo._mesh._numBinormalComponents = components;
                     break;
             }

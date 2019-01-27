@@ -616,6 +616,13 @@ x3dom.gfx_webgl = (function() {
             colorType: gl.FLOAT,
             tangentType: gl.FLOAT,
             binormalType: gl.FLOAT,
+            coordNormalized : false,
+            normalNormalized : false,
+            texCoordNormalized : false,
+            texCoord2Normalized : false,
+            colorNormalized : false,
+            tangentNormalized : false,
+            binormalNormalized : false,
             texture: [],
             dirtyLighting: x3dom.Utils.checkDirtyLighting(viewarea),
             imageGeometry: 0,   // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
@@ -4873,6 +4880,48 @@ x3dom.gfx_webgl = (function() {
         this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
     };
 
+    Context.prototype.drawElements = function(gl, mode, count, type, offset, instanceCount)
+    {
+        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
+
+        instanceCount *= this.VRMode;
+
+        if(x3dom.caps.WEBGL_VERSION == 2)
+        {
+            gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS)
+        {
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
+            instancedArrays.drawElementsInstancedANGLE(mode, count, type, offset, instanceCount);
+        }
+        else
+        {
+            gl.drawElements(mode, count, type, offset);
+        }
+    };
+
+    Context.prototype.drawArrays = function(gl, mode, first, count, instanceCount)
+    {
+        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
+
+        instanceCount *= this.VRMode;
+
+        if(x3dom.caps.WEBGL_VERSION == 2)
+        {
+            gl.drawArraysInstanced(mode, first, count, instanceCount);
+        }
+        else if(x3dom.caps.INSTANCED_ARRAYS)
+        {
+            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
+            instancedArrays.drawArraysInstancedANGLE(mode, first, count, instanceCount);
+        }
+        else
+        {
+            gl.drawArrays(mode, first, count);
+        }
+    };
+
     Context.prototype.setVertexAttribEyeIdx = function(gl, sp)
     {
         if(x3dom.caps.WEBGL_VERSION == 2)
@@ -4951,52 +5000,10 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.POSITION]);
             gl.vertexAttribPointer(sp.position,
-                s_geo._mesh._numPosComponents, shape._webgl.coordType, false,
+                s_geo._mesh._numPosComponents, shape._webgl.coordType, shape._webgl.coordNormalized,
                 shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.position);
 
-        }
-    };
-
-    Context.prototype.drawElements = function(gl, mode, count, type, offset, instanceCount)
-    {
-        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
-
-        instanceCount *= this.VRMode;
-
-        if(x3dom.caps.WEBGL_VERSION == 2)
-        {
-            gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
-        }
-        else if(x3dom.caps.INSTANCED_ARRAYS)
-        {
-            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
-            instancedArrays.drawElementsInstancedANGLE(mode, count, type, offset, instanceCount);
-        }
-        else
-        {
-            gl.drawElements(mode, count, type, offset);
-        }
-    };
-
-    Context.prototype.drawArrays = function(gl, mode, first, count, instanceCount)
-    {
-        instanceCount = (instanceCount == undefined) ? 1 : instanceCount;
-
-        instanceCount *= this.VRMode;
-
-        if(x3dom.caps.WEBGL_VERSION == 2)
-        {
-            gl.drawArraysInstanced(mode, first, count, instanceCount);
-        }
-        else if(x3dom.caps.INSTANCED_ARRAYS)
-        {
-            var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
-            instancedArrays.drawArraysInstancedANGLE(mode, first, count, instanceCount);
-        }
-        else
-        {
-            gl.drawArrays(mode, first, count);
         }
     };
 
@@ -5008,7 +5015,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.NORMAL]);
             gl.vertexAttribPointer(sp.normal,
-                s_geo._mesh._numNormComponents, shape._webgl.normalType, true,
+                s_geo._mesh._numNormComponents, shape._webgl.normalType, shape._webgl.normalNormalized,
                 shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
             gl.enableVertexAttribArray(sp.normal);
 
@@ -5030,7 +5037,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.TEXCOORD]);
             gl.vertexAttribPointer(sp.texcoord,
-                s_geo._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                s_geo._mesh._numTexComponents, shape._webgl.texCoordType, shape._webgl.texCoordNormalized,
                 shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.texcoord);
 
@@ -5052,7 +5059,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.TEXCOORD_1]);
             gl.vertexAttribPointer(sp.texcoord2,
-                s_geo._mesh._numTex2Components, shape._webgl.texCoord2Type, false,
+                s_geo._mesh._numTex2Components, shape._webgl.texCoord2Type, shape._webgl.texCoord2Normalized,
                 shape._texCoord2StrideOffset[0], shape._texCoord2StrideOffset[1]);
             gl.enableVertexAttribArray(sp.texcoord2);
 
@@ -5074,7 +5081,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.COLOR]);
             gl.vertexAttribPointer(sp.color,
-                s_geo._mesh._numColComponents, shape._webgl.colorType, false,
+                s_geo._mesh._numColComponents, shape._webgl.colorType, shape._webgl.colorNormalized,
                 shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
             gl.enableVertexAttribArray(sp.color);
         }
@@ -5089,7 +5096,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.TANGENT]);
             gl.vertexAttribPointer(sp.tangent,
-                s_geo._mesh._numTangentComponents, shape._webgl.tangentType, false,
+                s_geo._mesh._numTangentComponents, shape._webgl.tangentType, shape._webgl.tangentNormalized,
                 shape._tangentStrideOffset[0], shape._tangentStrideOffset[1]);
             gl.enableVertexAttribArray(sp.tangent);
         }
@@ -5104,7 +5111,7 @@ x3dom.gfx_webgl = (function() {
 
             gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.BITANGENT]);
             gl.vertexAttribPointer(sp.binormal,
-                s_geo._mesh._numBinormalComponents, shape._webgl.binormalType, false,
+                s_geo._mesh._numBinormalComponents, shape._webgl.binormalType, shape._webgl.binormalNormalized,
                 shape._binormalStrideOffset[0], shape._binormalStrideOffset[1]);
             gl.enableVertexAttribArray(sp.binormal);
         }
