@@ -1007,7 +1007,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				}
 			}
 
-			if(properties.ALPHAMODE != "BLEND")
+			if(properties.ALPHAMODE == "OPAQUE")
 			{
 				shader += "texColor.a = 1.0;\n";
 			}
@@ -1237,6 +1237,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	else if(properties.ALPHAMASK)
 	{
 		shader += "if (color.a <= alphaCutoff) discard;\n";
+		shader += "color.a = 1.0;\n";
 	}
 
 	//Output the gamma encoded result.
