@@ -1233,7 +1233,9 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Kill pixel
 	if(properties.TEXT) {
 		shader += "if (color.a <= 0.5) discard;\n";
-	} else {
+	}
+	else if(properties.ALPHAMASK)
+	{
 		shader += "if (color.a <= alphaCutoff) discard;\n";
 	}
 

@@ -1041,13 +1041,11 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.ROUGHNESSMETALLICMAPCHANNEL = (property.PBR_MATERIAL && property.ROUGHNESSMETALLICMAP && material._cf.roughnessMetallicTexture.node._vf.channel === 1) ? 1 : 0;
         property.OCCLUSIONROUGHNESSMETALLICMAPCHANNEL = (property.PBR_MATERIAL && property.OCCLUSIONROUGHNESSMETALLICMAP && material._cf.occlusionRoughnessMetallicTexture.node._vf.channel === 1) ? 1 : 0;
         property.SPECULARGLOSSINESSMAPCHANNEL = (property.PBR_MATERIAL && property.SPECULARGLOSSINESSMAP && material._cf.specularGlossinessTexture.node._vf.channel === 1) ? 1 : 0;
-
+        property.ALPHAMASK                    = (property.PBR_MATERIAL && (material._vf.alphaMode == "BLEND" || material._vf.alphaMode == "OPAQUE")) ? 0 : 1;
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
         property.KHR_MATERIAL_COMMONS = 0;
-
-        //console.log(property);
 	}
 
 	property.toIdentifier = function() {

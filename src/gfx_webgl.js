@@ -2321,6 +2321,7 @@ x3dom.gfx_webgl = (function() {
             sp.normalBias       = mat._vf.normalBias.toGL();
             sp.ambientIntensity = 1.0;
             sp.alphaCutoff      = mat._vf.alphaCutoff;
+
         } else if (mat) {
             sp.diffuseColor      = mat._vf.diffuseColor.toGL();
             sp.specularColor     = mat._vf.specularColor.toGL();
@@ -2505,9 +2506,25 @@ x3dom.gfx_webgl = (function() {
                 this.stateManager.disable(gl.BLEND);
             }
         } else {
-            // Set Defaults
-            this.stateManager.enable(gl.BLEND);
-            this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+            //Get it from physicalmaterial or set defaults
+            if(mat && x3dom.isa(mat, x3dom.nodeTypes.PhysicalMaterial))
+            {
+                if(mat._vf.alphaMode == "BLEND")
+                {
+                    this.stateManager.enable(gl.BLEND);
+                    this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+                }
+                else if(mat._vf.alphaMode == "MASK")
+                {
+                    this.stateManager.disable(gl.BLEND);
+                }
+            }
+            else
+            {
+                // Set Defaults
+                this.stateManager.enable(gl.BLEND);
+                this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
+            }
         }
 
         // Set ColorMaskMode
