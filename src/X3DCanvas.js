@@ -73,7 +73,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         switch(attrName) {
 
             case "width":
-                x3dElem.style.width = newVal;
                 that.canvas.setAttribute("width", newVal * that.devicePixelRatio);
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
@@ -82,7 +81,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
                 break;
 
             case "height":
-                x3dElem.style.height = newVal;
                 that.canvas.setAttribute("height", newVal * that.devicePixelRatio);
                 if (that.doc && that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"), 0);
