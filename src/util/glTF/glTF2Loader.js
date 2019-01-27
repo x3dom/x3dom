@@ -545,6 +545,11 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
         mat.appendChild(this._generateX3DImageTexture(texture, "occlusionTexture", channel, transform));
     }
 
+    if(material.extensions && material.extensions.KHR_materials_unlit)
+    {
+        mat.setAttribute("unlit", true);
+    }
+
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
     mat.setAttribute("alphaMode",  alphaMode);
     mat.setAttribute("alphaCutoff", alphaCutoff);

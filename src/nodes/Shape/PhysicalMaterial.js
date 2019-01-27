@@ -171,6 +171,17 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'normalScale', 1);
 
             /**
+             * Set the material to unlit
+             * Final color is the product of baseColorFactor, baseColorTexture, and vertex color (if any)
+             * @var {x3dom.fields.SFBool} unlit
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'unlit', false);
+
+            /**
              * The base color texture. This texture contains RGB(A) components in sRGB color space. 
              * The first three components (RGB) specify the base color of the material. 
              * If the fourth component (A) is present, it represents the alpha coverage of the material. 
@@ -260,8 +271,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('occlusionTexture', x3dom.nodeTypes.X3DTextureNode);
-        
+            this.addField_SFNode('occlusionTexture', x3dom.nodeTypes.X3DTextureNode);        
         },
         {
             fieldChanged: function(fieldName)

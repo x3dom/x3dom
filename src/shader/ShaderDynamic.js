@@ -912,7 +912,29 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         }
     }
 	
-	if(properties.LIGHTS) {
+	if(properties.UNLIT)
+	{
+		if(properties.DIFFUSEMAP)
+		{
+			if(properties.DIFFUSEMAPCHANNEL)
+			{
+				shader += "texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, vec2(fragTexcoord2.x, 1.0 - fragTexcoord2.y))") + ";\n";
+			}
+			else
+			{
+				shader += "texColor = " + x3dom.shader.decodeGamma(properties, "texture2D(diffuseMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y))") + ";\n";
+			}
+
+			if(properties.ALPHAMODE == "OPAQUE")
+			{
+				shader += "texColor.a = 1.0;\n";
+			}
+
+			shader += "color *= texColor;\n";
+		}
+	}
+	else if(properties.LIGHTS)
+	{
 		shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 		shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";

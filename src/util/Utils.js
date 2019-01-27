@@ -1042,6 +1042,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.OCCLUSIONROUGHNESSMETALLICMAPCHANNEL = (property.PBR_MATERIAL && property.OCCLUSIONROUGHNESSMETALLICMAP && material._cf.occlusionRoughnessMetallicTexture.node._vf.channel === 1) ? 1 : 0;
         property.SPECULARGLOSSINESSMAPCHANNEL = (property.PBR_MATERIAL && property.SPECULARGLOSSINESSMAP && material._cf.specularGlossinessTexture.node._vf.channel === 1) ? 1 : 0;
         property.ALPHAMASK                    = (property.PBR_MATERIAL && (material._vf.alphaMode == "BLEND" || material._vf.alphaMode == "OPAQUE")) ? 0 : 1;
+        property.UNLIT = (property.PBR_MATERIAL && material._vf.unlit) ? 1 : 0;
 
         property.GAMMACORRECTION  = environment._vf.gammaCorrectionDefault;
 
