@@ -1007,7 +1007,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				}
 			}
 
-			if(properties.ALPHAMODE == "OPAQUE")
+			if(properties.ALPHAMODE != "BLEND")
 			{
 				shader += "texColor.a = 1.0;\n";
 			}
@@ -1067,13 +1067,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			{
 				if(properties.SPECULARGLOSSINESSMAPCHANNEL)
 				{
-					shader += "vec4 specularGlossiness = texture2D(specularGlossinessMap, vec2(fragTexcoord2.x, 1.0-fragTexcoord2.y));\n";
+					shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma(properties, "texture2D(specularGlossinessMap, vec2(fragTexcoord2.x, 1.0 - fragTexcoord2.y))") + ";\n";	
 				}
 				else
 				{
-					shader += "vec4 specularGlossiness = texture2D(specularGlossinessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
+					shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma(properties, "texture2D(specularGlossinessMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y))") + ";\n";	
 				}
-				shader += "_shininess = specularGlossiness.a;\n";
+				shader += "_shininess = specularGlossiness.a * _shininess;\n";
 			}
 
 			//Specularmap
@@ -1122,7 +1122,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		else if(properties.PBR_MATERIAL && properties.SPECULARGLOSSINESSMAP)
 		{
-			shader += "_specularColor = specularGlossiness.rgb;\n";
+			shader += "_specularColor = specularGlossiness.rgb * _specularColor;\n";
 		}
 
 		//Calculate lights

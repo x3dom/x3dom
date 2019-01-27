@@ -491,7 +491,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     }
     else if ( model == "specularGlossiness" )
     {
-        var diffuseFactor    = pbr.diffuseFactor || [ 1, 1, 1, ];
+        var diffuseFactor    = pbr.diffuseFactor || [ 1, 1, 1, 1 ];
         var specularFactor   = pbr.specularFactor || [ 1, 1, 1 ];
         var glossinessFactor = (pbr.glossinessFactor != undefined) ? pbr.glossinessFactor : 1;
 
@@ -548,6 +548,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     mat.setAttribute("emissiveFactor",  emissiveFactor.join(" "));
     mat.setAttribute("alphaMode",  alphaMode);
     mat.setAttribute("alphaCutoff", alphaCutoff);
+    mat.setAttribute("model", model);
 
     return mat;
 };

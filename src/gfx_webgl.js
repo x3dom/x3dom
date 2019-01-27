@@ -2306,11 +2306,11 @@ x3dom.gfx_webgl = (function() {
             } else {
                 sp.diffuseColor     = [mat._vf.diffuseFactor.r,
                                        mat._vf.diffuseFactor.g,
-                                       mat._vf.diffusefactor.b];
+                                       mat._vf.diffuseFactor.b];
 
-                sp.specularColor    = [mat._vf.specularfactor.r,
-                                       mat._vf.specularfactor.g,
-                                       mat._vf.specularfactor.b];
+                sp.specularColor    = [mat._vf.specularFactor.r,
+                                       mat._vf.specularFactor.g,
+                                       mat._vf.specularFactor.b];
 
 
                 sp.shininess        = mat._vf.glossinessFactor;
