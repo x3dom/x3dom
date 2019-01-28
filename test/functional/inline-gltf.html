@@ -22,7 +22,7 @@
             height: 56px;
             background: #000000;
             align-items: center;
-            padding: 0 16px;
+            padding: 0 8px;
             box-sizing: border-box;
             box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
         }
@@ -31,6 +31,7 @@
         {
             color: white;
             cursor: pointer;
+            padding: 0 12px;
         }
 
         .topbar-label
@@ -38,7 +39,7 @@
             color: white;
             font-size: 22px;
             font-weight: 500;
-            margin-left: 16px;
+            margin-left: 8px;
             flex-grow: 10;
         }
 
@@ -64,8 +65,49 @@
             cursor: pointer;
         }
 
-        input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
+        .overflow-menu
+        {
+            position: absolute;
+            background: white;
+            right: 20px;
+            top: 2px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            transform-origin: 100% 0;
+            transform: scale(0);
+            opacity: 0;
+            white-space: nowrap;
+            outline: none;
+            animation-fill-mode: both;
+            animation-duration: .2s;
+            animation-timing-function: ease-in-out;
+            box-sizing: border-box;
+        }
 
+        .overflow-menu-header
+        {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            padding: 6px 16px;
+        }
+
+        .overflow-menu-entry
+        {
+            font-size: 14px;
+            font-weight: normal;
+            color: black;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px 16px;
+        }
+
+        .overflow-menu-entry:hover { background: #ccc; }
+        .overflow-text { flex-grow: 10; color: #333; pointer-events: none;}
+        .overflow-icon-environment, .overflow-icon-tonemapping { font-size: 20px; color: #666;  pointer-events: none;}
+        input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
         .main-wrapper { width: 100%; height: calc(100% - 56px); position: absolute; top: 56px; left: 0; display: flex; flex-direction: row; }
         
         .sidebar { display: flex; flex-direction: column; width: 250px; height: 100%; background: rgba(255,255,255,0.95); overflow-x: hidden; overflow-y: scroll; box-sizing: border-box;  padding-bottom: 8px; flex-shrink: 0; transition: all 0.3s ease; position: relative; left: 0;}  
@@ -78,6 +120,12 @@
         .tonemapping-heading, .environment-heading { margin-bottom: 5px; font-size: 18px; font-weight: bold; color: white}
 
         label { color: white; font-size: 16px;}
+
+        @-webkit-keyframes slideIn { 0% {transform: scale(0); opacity: 1;} 100% {transform: scale(1); opacity: 1;} }
+        @keyframes slideIn { 0% {transform: scale(0); opacity: 1;} 100% {transform: scale(1); opacity: 1;} }
+
+        @-webkit-keyframes slideOut { 0% {transform: scale(1); opacity: 1;} 100% { transform: scale(0);  opacity: 0;}  }
+        @keyframes slideOut { 0% {transform: scale(1); opacity: 1;} 100% { transform: scale(0);  opacity: 0;} }
     </style>
 
     <script>
@@ -154,6 +202,19 @@
             }
         }
 
+        function openOverflowMenu()
+        {
+            var menu = document.querySelector(".overflow-menu");
+            menu.style.animationName = "slideIn";
+            menu.focus();
+        }
+
+        function closeOverflowMenu()
+        {
+            var menu = document.querySelector(".overflow-menu");
+            menu.style.animationName = "slideOut";
+        }
+
         function onBlur()
         {
             document.querySelector(".inputbar").style.left = "100%";
@@ -161,19 +222,41 @@
             g_input_open = false;
         }
 
-        function setTonemapping( operator )
+        function setTonemapping( event, operator )
         {
+            var allRadios = document.querySelectorAll(".overflow-icon-tonemapping");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
             document.querySelector("environment").setAttribute("tonemapping", operator);
+
+            closeOverflowMenu();
         }
 
-        function setEnvironment( environment )
+        function setEnvironment( event, environment )
         {
+            var allRadios = document.querySelectorAll(".overflow-icon-environment");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
             var diffuse  = "https://x3dom.org/download/assets/pbr/" + environment + "Diffuse.dds";
             var specular = "https://x3dom.org/download/assets/pbr/" + environment + "Specular.dds";
 
             document.querySelector("background").setAttribute("backUrl", diffuse);
             document.querySelector("physicalenvironmentlight").setAttribute("diffuse", diffuse);
             document.querySelector("physicalenvironmentlight").setAttribute("specular", specular);
+
+            closeOverflowMenu();
         }
 
         function onKeyPress( e )
@@ -193,17 +276,55 @@
 <body onload="onload();">
 
     <section class="topbar">
-        <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
-        <span class="topbar-label">X3DOM // GLTF 2.0</span>
-        <i class="material-icons topbar-icon" onclick="toggleURLInput();">link</i>    
+        <section style="position: relative; display: flex; align-items: center; width: 100%;">
+            <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
+            <span class="topbar-label">X3DOM // GLTF 2.0</span>
+            <i class="material-icons topbar-icon" onclick="toggleURLInput();">link</i>    
+            <i class="material-icons topbar-icon" onclick="openOverflowMenu()" >more_vert</i>
+            <section class="overflow-menu" tabindex="1">
+                <div class="overflow-menu-header">Environment</div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'papermill');">
+                    <div class="overflow-text">Papermill</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'museum');">
+                    <div class="overflow-text">Museum</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'castle');">
+                    <div class="overflow-text">Castle</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'simple');">
+                    <div class="overflow-text">Simple</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-header">Tonemapping</div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'none')">
+                    <div class="overflow-text">None</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'reinhard')">
+                    <div class="overflow-text">Reinhard</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'uncharted')">
+                    <div class="overflow-text">Uncharted</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'filmic')">
+                    <div class="overflow-text">Filmic</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+            </section>
+        </section>
     </section>
 
     <section class="inputbar">
         <i class="material-icons inputbar-icon">link</i>
         <input id="externalURL" type="url" placeholder="URL to a glTF file..." onkeypress="onKeyPress(event)" onblur="onBlur()" tabindex="0">
-        <i class="material-icons inputbar-icon" onclick="toggleURLInput();">clear</i> 
-    </section>
-  
+        <i class="material-icons inputbar-icon" onclick="toggleURLInput();">clear</i>
+    </section>  
 
     <section class="main-wrapper">
 
@@ -285,51 +406,7 @@
 		   
         </section>
 
-        <section class="environment-selector">
-            <div class="environment-heading">
-                Environment
-            </div>
-            <div>
-                <input type="radio" id="papermill" name="environment" onclick="setEnvironment('papermill')" checked>
-                <label for="papermill">Papermill</label>
-            </div>
-            <div>
-                <input type="radio" id="museum" name="environment" onclick="setEnvironment('museum')">
-                <label for="museum">Museum</label>
-            </div>
-            <div>
-                <input type="radio" id="castle" name="environment" onclick="setEnvironment('castle')">
-                <label for="castle">Castle</label>
-            </div>
-            <div>
-                <input type="radio" id="simple" name="environment" onclick="setEnvironment('simple')">
-                <label for="simple">Simple</label>
-            </div>
-        </section>
-
-        <section class="tonemapping-selector">
-            <div class="tonemapping-heading">
-                Tonemapping
-            </div>
-            <div>
-                <input type="radio" id="none" name="tonemapping" onclick="setTonemapping('none')">
-                <label for="dewey">None</label>
-            </div>
-            <div>
-                <input type="radio" id="reinhard" name="tonemapping" onclick="setTonemapping('reinhard')" checked>
-                <label for="reinhard">Reinhard</label>
-            </div>
-            <div>
-                <input type="radio" id="uncharted" name="tonemapping" onclick="setTonemapping('uncharted')">
-                <label for="uncharted">Uncharted</label>
-            </div>
-            <div>
-                <input type="radio" id="filmic" name="tonemapping" onclick="setTonemapping('filmic')">
-                <label for="filmic">Filmic</label>
-            </div>
-        </section>
-
-        <X3D id="x3d" >
+        <X3D id="x3d">
             <Scene>
                 <navigationinfo headlight="false"></navigationinfo>
                 <environment tonemapping="reinhard"></environment>
