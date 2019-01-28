@@ -1013,7 +1013,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
         property.NORMALSPACE      = (property.NORMALMAP && property.CSSHADER) ? appearance._shader._vf.normalSpace.toUpperCase() :
                                     (property.NORMALMAP && property.PBR_MATERIAL) ? material._vf.normalSpace.toUpperCase() : "TANGENT";
 
-        property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || (property.ALPHAMODE == "BLEND")|| (texture && texture._blending)) ? 1 : 0;
+        property.BLENDING         = (property.TEXT || property.CUBEMAP || property.CSSHADER || (property.PBR_MATERIAL)|| (texture && texture._blending)) ? 1 : 0;
         property.REQUIREBBOX      = (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
         property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
         property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;

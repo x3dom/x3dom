@@ -110,6 +110,7 @@ x3dom.registerNodeType(
             {
                 switch(this._vf.bufferType)
                 {
+                    case "COLOR_0":
                     case "COLOR" : parent._hasColor = true; break;
                     case "INDEX" : parent._indexed = true; break;
                     case "TEXCOORD_1" : parent._hasMultiTexCoord = true; break;
