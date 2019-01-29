@@ -450,6 +450,11 @@ x3dom.registerNodeType(
                     return event.cancelBubble;
                 }
 
+                if(!node._xmlNode.getAttribute(eventType) && !node._xmlNode[eventType])
+                {
+                    return event.cancelBubble;
+                }
+
                 try {
                     var attrib = node._xmlNode[eventType];
                     event.target = node._xmlNode;

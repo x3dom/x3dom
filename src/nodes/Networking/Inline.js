@@ -184,14 +184,6 @@ x3dom.registerNodeType(
                             setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
                             that._xmlNode.appendChild(childDomNode);    
                         }
-//                         Array.forEach ( inlScene.childNodes, function (childDomNode)
-//                         {
-//                             if(childDomNode instanceof Element)
-//                             {
-//                                 setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
-//                                 that._xmlNode.appendChild(childDomNode);
-//                             }
-//                         } );
                     }
                 }
                 else {
@@ -214,11 +206,6 @@ x3dom.registerNodeType(
                     that.addChild(newScene);
 
                     that.invalidateVolume();
-                    //that.invalidateCache();
-
-                    that._nameSpace.doc.downloadCount -= 1;
-                    that._nameSpace.doc.needRender = true;
-                    x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
 
                     // recalc changed scene bounding box twice
                     var theScene = that._nameSpace.doc._scene;
@@ -233,6 +220,9 @@ x3dom.registerNodeType(
 
                             theScene.updateVolume();
                             that._nameSpace.doc.needRender = true;
+                            that._nameSpace.doc.decrementDownloads();
+                            that._nameSpace.doc.needRender = true;
+                            x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
                         }, 1000 );
                     }
 
@@ -272,7 +262,7 @@ x3dom.registerNodeType(
                                                     'Next request in ' + refreshTime + ' seconds');
 
                                 window.setTimeout(function() {
-                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that._nameSpace.doc.decrementDownloads();;
                                     that.loadInline();
                                 }, refreshTime * 1000);
                             }
@@ -281,7 +271,7 @@ x3dom.registerNodeType(
                                 x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' +
                                                      'No Retries left');
 
-                                that._nameSpace.doc.downloadCount -= 1;
+                                that._nameSpace.doc.decrementDownloads();;
 
                                 that.count = 0;
                             }
@@ -312,7 +302,7 @@ x3dom.registerNodeType(
 
                                     that.fireEvents("error");
 
-                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that._nameSpace.doc.decrementDownloads();;
                                     that.count = 0;
                                 }
                             }
@@ -335,7 +325,7 @@ x3dom.registerNodeType(
                                     else
                                     {
                                         that.fireEvents("error");
-                                        that._nameSpace.doc.downloadCount -= 1;
+                                        that._nameSpace.doc.decrementDownloads();
                                         that.count = 0;
                                     }
                                 }
@@ -345,7 +335,7 @@ x3dom.registerNodeType(
 
                                     that.fireEvents("error");
 
-                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that._nameSpace.doc.decrementDownloads();
                                     that.count = 0;
                                 }
                             }
@@ -372,7 +362,7 @@ x3dom.registerNodeType(
                                 else
                                 {
                                     that.fireEvents("error");
-                                    that._nameSpace.doc.downloadCount -= 1;
+                                    that._nameSpace.doc.decrementDownloads();
                                     that.count = 0;
                                 }
                             }
@@ -383,7 +373,7 @@ x3dom.registerNodeType(
 
                             that.fireEvents("error");
 
-                            that._nameSpace.doc.downloadCount -= 1;
+                            that._nameSpace.doc.decrementDownloads();
                             that.count = 0;
                         }
                     }
@@ -418,14 +408,15 @@ x3dom.registerNodeType(
                         }
                     }
 
-                    this._nameSpace.doc.downloadCount += 1;
-
-                    try {
+                    try
+                    {
+                        this._nameSpace.doc.incrementDownloads();
                         x3dom.RequestManager.addRequest(xhr);
                     }
                     catch(ex) {
                         this.fireEvents("error");
                         x3dom.debug.logError(this._vf.url[0] + ": " + ex);
+                        this._nameSpace.doc.decrementDownloads();
                     }
                 }
             },

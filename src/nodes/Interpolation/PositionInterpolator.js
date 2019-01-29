@@ -44,65 +44,42 @@ x3dom.registerNodeType(
                 if(fieldName === "set_fraction")
                 {
                     var value;
-                    if (this._xmlNode.interpolation)
+       
+                    if (this._vf.interpolation === 'CUBICSPLINE')
                     {
-                        if (this._xmlNode.interpolation === 'CUBICSPLINE')
-                        {
-                            var scope = this;
-                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
+                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
-/* the gltf formula
-A spline segment between two keyframes is represented in a cubic Hermite spline form
+                            function _applyBasis(axis)//p0, m0, p1, m1, axis)
+                            {                                   
+                                return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
+                            }
+                            
+                            var result = new x3dom.fields.SFVec3f();
 
-    p(t) = (2t^3 - 3t^2 + 1)p0 + (t^3 - 2t^2 + t)m0 + (-2t^3 + 3t^2)p1 + (t^3 - t^2)m1
+                            // do not use SFVec3f methods to avoid generating objects
 
-Where
-
-    t is a value between 0 and 1
-    p0 is the starting vertex at t = 0
-    m0 is the starting tangent at t = 0
-    p1 is the ending vertex at t = 1
-    m1 is the ending tangent at t = 1
-    p(t) is the resulting value
-
-Where at input offset tcurrent with keyframe index k
-
-    t = (tcurrent - tk) / (tk+1 - tk)
-    p0 = vk
-    m0 = (tk+1 - tk)bk
-    p1 = vk+1
-    m1 = (tk+1 - tk)ak+1
-*/
-
-                                function _applyBasis(axis)//p0, m0, p1, m1, axis)
-                                {                                   
-                                    return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
-                                }
-                                
-                                var result = new x3dom.fields.SFVec3f();
-
-                                // do not use SFVec3f methods to avoid generating objects
-
-                                result.x = _applyBasis('x');
-                                result.y = _applyBasis('y');
-                                result.z = _applyBasis('z');
-                                return result;
-                          
-                            });
-                            this.postMessage('value_changed', value);
-                            return;
-                        }
+                            result.x = _applyBasis('x');
+                            result.y = _applyBasis('y');
+                            result.z = _applyBasis('z');
+                            return result;
+                        });
+                    }
+                    else
+                    {
+                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                            var result = a.multiply(1.0-t);
+                            result.x += t*b.x;
+                            result.y += t*b.y;
+                            result.z += t*b.z;
+                            return result;//a.multiply(1.0-t).add(b.multiply(t));
+                        });
                     }
                                         
-                    value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        var result = a.multiply(1.0-t);
-                        result.x += t*b.x;
-                        result.y += t*b.y;
-                        result.z += t*b.z;
-                        return result;//a.multiply(1.0-t).add(b.multiply(t));
-                    });
-                    
-                    this.postMessage('value_changed', value);
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
             },
             

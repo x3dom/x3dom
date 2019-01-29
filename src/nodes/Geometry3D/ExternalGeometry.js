@@ -100,7 +100,7 @@ x3dom.registerNodeType(
 
                 //TODO: check SOURCE child nodes
                 shape._webgl.internalDownloadCount  = 1;
-                shape._nameSpace.doc.downloadCount  = 1;
+                shape._nameSpace.doc.incrementDownloads();
 
                 //post request
                 xhr = new XMLHttpRequest();
@@ -122,7 +122,7 @@ x3dom.registerNodeType(
 
                 xhr.onload = function() {
                     shape._webgl.internalDownloadCount  = 0;
-                    shape._nameSpace.doc.downloadCount  = 0;
+                    shape._nameSpace.doc.decrementDownloads();
 
                     shape._webgl.primType    = [];
                     shape._webgl.indexOffset = [];
@@ -294,7 +294,7 @@ var ExternalGeometrySRC =
 
         //TODO: check SOURCE child nodes
         shape._webgl.internalDownloadCount  = 1;
-        shape._nameSpace.doc.downloadCount  = 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //TODO: check this object - when is it called, where is it really needed?
         //shape._webgl.makeSeparateTris = {...};
@@ -316,7 +316,7 @@ var ExternalGeometrySRC =
         //TODO: currently, we assume that the referenced file is always an SRC file
         xhr.onload = function() {
             shape._webgl.internalDownloadCount  = 0;
-            shape._nameSpace.doc.downloadCount  = 0;
+            shape._nameSpace.doc.decrementDownloads();
 
             var responseBeginUint32 = new Uint32Array(xhr.response, 0, 12);
 

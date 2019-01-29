@@ -747,3 +747,13 @@ x3dom.X3DDocument.prototype.isAnimating = function () {
 
     return this._viewarea.isAnimating();
 };
+
+x3dom.X3DDocument.prototype.incrementDownloads = function()
+{
+    this.downloadCount++;
+}
+
+x3dom.X3DDocument.prototype.decrementDownloads = function()
+{
+    this.downloadCount--;
+}

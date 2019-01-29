@@ -51,46 +51,48 @@ x3dom.registerNodeType(
                 if(fieldName === "set_fraction")
                 {
                     var value;
-                    if (this._xmlNode.interpolation)
+  
+                    if (this._vf.interpolation === "CUBICSPLINE")
                     {
-                        if (this._xmlNode.interpolation === 'CUBICSPLINE')
-                        {
-                            var scope = this;
-                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
+                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
-                                function _applyBasis(axis)//p0, m0, p1, m1, axis)
-                                {                                   
-                                    return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
-                                }
-                                
-                                var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
+                            function _applyBasis(axis)//p0, m0, p1, m1, axis)
+                            {                                   
+                                return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
+                            }
+                            
+                            var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
 
-                                // do not use Quaternion methods to avoid generating objects
+                            // do not use Quaternion methods to avoid generating objects
 
-                                result.x = _applyBasis('x');
-                                result.y = _applyBasis('y');
-                                result.z = _applyBasis('z');
-                                result.w = _applyBasis('w');
+                            result.x = _applyBasis('x');
+                            result.y = _applyBasis('y');
+                            result.z = _applyBasis('z');
+                            result.w = _applyBasis('w');
 
-                                var s = Math.sqrt(1/result.dot(result));
+                            var s = Math.sqrt(1/result.dot(result));
 
-                                result.x *= s;
-                                result.y *= s;
-                                result.z *= s;
-                                result.w *= s;
+                            result.x *= s;
+                            result.y *= s;
+                            result.z *= s;
+                            result.w *= s;
 
-                                return result;//normalize(result);
-                          
-                            });
-                            this.postMessage('value_changed', value);
-                            return;
-                        }
+                            return result;//normalize(result);
+                        
+                        });
                     }
-                    
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.slerp(b, t);
-                    });
-                    this.postMessage('value_changed', value);
+                    else
+                    {
+                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                            return a.slerp(b, t);
+                        });
+                    }
+
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
             },
             

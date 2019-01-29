@@ -45,25 +45,28 @@ x3dom.registerNodeType(
                 if(fieldName === "set_fraction")
                 {
                     var value;
-                    if (this._xmlNode.interpolation)
+
+                    if (this._vf.interpolation === 'CUBICSPLINE')
                     {
-                        if (this._xmlNode.interpolation === 'CUBICSPLINE')
-                        {
-                            var scope = this;
-                            value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
+                        var scope = this;
+                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
-                                return h00 * start + h10 * startInTangent + h01 * end + h11 * endOutTangent;
-                          
-                            });
-                            this.postMessage('value_changed', value);
-                            return;
-                        }
+                            return h00 * start + h10 * startInTangent + h01 * end + h11 * endOutTangent;
+                        
+                        });
                     }
-                    value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return (1.0-t)*a + t*b;
-                    });
-
-                    this.postMessage('value_changed', value);
+                    else
+                    {
+                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                            return (1.0-t)*a + t*b;
+                        });
+                    }
+                   
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
             },
 

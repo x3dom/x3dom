@@ -346,14 +346,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp0.open("GET", shape._nameSpace.getURL(binGeo._vf.index), true);
         xmlhttp0.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp0.send(null);
         x3dom.RequestManager.addRequest( xmlhttp0 );
 
         xmlhttp0.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp0.status != 200) {
@@ -430,14 +430,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp.open("GET", shape._nameSpace.getURL(binGeo._vf.coord), true);
         xmlhttp.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp.send(null);
         x3dom.RequestManager.addRequest( xmlhttp );
 
         xmlhttp.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp.status != 200) {
@@ -548,14 +548,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp1.open("GET", shape._nameSpace.getURL(binGeo._vf.coord), true);
         xmlhttp1.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp1.send(null);
         x3dom.RequestManager.addRequest( xmlhttp1 );
 
         xmlhttp1.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp1.status != 200) {
@@ -647,14 +647,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp2.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
         xmlhttp2.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp2.send(null);
         x3dom.RequestManager.addRequest( xmlhttp2 );
 
         xmlhttp2.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp2.status != 200) {
@@ -709,7 +709,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp3.open("GET", shape._nameSpace.getURL(binGeo._vf.texCoord), true);
         xmlhttp3.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp3.send(null);
         x3dom.RequestManager.addRequest( xmlhttp3 );
@@ -719,7 +719,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
             var i, j;
             var tmp;
 
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp3.status != 200) {
@@ -798,14 +798,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp4.open("GET", shape._nameSpace.getURL(binGeo._vf.color), true);
         xmlhttp4.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp4.send(null);
         x3dom.RequestManager.addRequest( xmlhttp4 );
 
         xmlhttp4.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp4.status != 200) {
@@ -860,14 +860,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp5.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
         xmlhttp5.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp2.send(null);
         x3dom.RequestManager.addRequest( xmlhttp5 );
 
         xmlhttp5.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp5.status != 200) {
@@ -922,14 +922,14 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, curr
         xmlhttp6.open("GET", shape._nameSpace.getURL(binGeo._vf.normal), true);
         xmlhttp6.responseType = "arraybuffer";
 
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //xmlhttp2.send(null);
         x3dom.RequestManager.addRequest( xmlhttp6 );
 
         xmlhttp6.onload = function()
         {
-            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.decrementDownloads();
             shape._webgl.internalDownloadCount -= 1;
 
             if (xmlhttp6.status != 200) {
@@ -1185,11 +1185,11 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, curr
     //use the DownloadManager to prioritize loading
 
     for (var i = 0; i < dataURLs.length; ++i) {
-        shape._nameSpace.doc.downloadCount += 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         (function(idx) {
             downloadCallbacks.push(function(data) {
-                shape._nameSpace.doc.downloadCount -= 1;
+                shape._nameSpace.doc.decrementDownloads();
                 return uploadDataToGPU(data, idx);
             });
         })(i);
@@ -1255,6 +1255,9 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
     // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
     shape._webgl.bufferGeometry = (bufferGeo._indexed) ? 1 : -1;
 
+    bufferGeo._mesh._numCoords = bufferGeo._vf.vertexCount[0];
+    bufferGeo._mesh._numFaces = bufferGeo._vf.vertexCount[0] / 3;
+    
     var initAccessors = function()
     {
         var accessors = bufferGeo._cf.accessors.nodes;
@@ -1373,30 +1376,10 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             var byteOffset = posAccessor._vf.byteOffset + posView._vf.byteOffset;
             var byteLength = posAccessor._vf.count * posAccessor._vf.components;
 
-            if(posAccessor._vf.componentType == 5120)
-            {
-                positions = new Int8Array(arraybuffer, byteOffset, byteLength);
-            }
-            if(posAccessor._vf.componentType == 5121)
-            {
-                positions = new Uint8Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(posAccessor._vf.componentType == 5122)
-            {
-                positions = new Int16Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(posAccessor._vf.componentType == 5123)
-            {
-                positions = new Uint16Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(posAccessor._vf.componentType == 5125)
-            {
-                positions = new Uint32Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(posAccessor._vf.componentType == 5126)
-            {
-                positions = new Float32Array(arraybuffer, byteOffset, byteLength);
-            }
+            positions = x3dom.BinaryContainerLoader.getArrayBufferFromType(posAccessor._vf.componentType, 
+                                                                           arraybuffer,
+                                                                           byteOffset,
+                                                                           byteLength);
         }
 
         return positions;
@@ -1413,18 +1396,10 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
             var byteOffset = idxAccessor._vf.byteOffset + idxView._vf.byteOffset;
             var byteLength = idxAccessor._vf.count * idxAccessor._vf.components;
 
-            if(idxAccessor._vf.componentType == 5121)
-            {
-                indices = new Uint8Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(idxAccessor._vf.componentType == 5123)
-            {
-                indices = new Uint16Array(arraybuffer, byteOffset, byteLength);
-            }
-            else if(idxAccessor._vf.componentType == 5125)
-            {
-                indices = new Uint32Array(arraybuffer, byteOffset, byteLength);
-            }
+            indices = x3dom.BinaryContainerLoader.getArrayBufferFromType(idxAccessor._vf.componentType, 
+                                                                         arraybuffer,
+                                                                         byteOffset,
+                                                                         byteLength);
         }
 
         return indices;
@@ -1509,26 +1484,13 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
     {
         URL = shape._nameSpace.getURL(bufferGeo._vf.buffer);
 
-        if(x3dom.BinaryContainerLoader.bufferGeoCache[URL] != undefined)
+        if(x3dom.BinaryContainerLoader.bufferGeoCache[URL] == undefined)
         {
-            x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+            shape._nameSpace.doc.incrementDownloads();
 
-                if(shape._webgl == undefined)
-                {
-                    x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
-                    return;
-                }
-
-                initBufferViews(arraybuffer);
-                initAccessors();
-                computeNormals(arraybuffer);
-
-            });
-        }
-        else
-        {
             x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {};
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers = [];
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = true;
             x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) {
 
                 var xhr = new XMLHttpRequest();
@@ -1539,44 +1501,213 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function(shape, sp, gl, viewarea, c
         
                 xhr.onload = function(e)
                 {
-                    if(shape._webgl == undefined)
-                    {
-                        x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
-                        reject();
-                        return;
-                    }
-
                     if(xhr.status != 200)
                     {
-                        shape._nameSpace.doc.downloadCount -= 1;
                         reject();
-                        return;
                     }
-        
-                    initBufferViews(xhr.response);
-
-                    initAccessors();
-
-                    computeNormals(xhr.response);
-
-                    resolve(xhr.response);
-                
-                    shape._nameSpace.doc.downloadCount -= 1;
-        
-                    shape._nameSpace.doc.needRender = true;
+                    else
+                    {
+                        resolve(xhr.response);
+                    }
                 }
         
                 xhr.onerror = function(e)
                 {
-                    shape._nameSpace.doc.downloadCount -= 1;
                     reject();
                 }
         
                 x3dom.RequestManager.addRequest( xhr );
-        
-                shape._nameSpace.doc.downloadCount += 1;
             });    
-             
-        }      
+        }
+
+        x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer) {
+
+            if(shape._webgl == undefined)
+            {
+                x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
+                return;
+            }
+
+            initBufferViews(arraybuffer);
+            initAccessors();
+            computeNormals(arraybuffer);
+
+            if( x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload )
+            {
+                x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = false;
+                shape._nameSpace.doc.decrementDownloads();
+                shape._nameSpace.doc.needRender = true;
+            }
+
+        }).catch(function()
+        {
+            if( x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload )
+            {
+                x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = false;
+                shape._nameSpace.doc.decrementDownloads();
+            }
+        });     
     }
 };
+
+/** setup/download buffer geometry */
+x3dom.BinaryContainerLoader.setupBufferInterpolator = function(interpolator)
+{
+    var getKeys = function(interpolator, accessor, arraybuffer)
+    {
+        var view          = interpolator._cf.views.nodes[accessor._vf.view];
+        var byteOffset    = accessor._vf.byteOffset + view._vf.byteOffset;
+        var byteLength    = accessor._vf.count * accessor._vf.components;
+        var componentType = accessor._vf.componentType;
+
+        var data = x3dom.BinaryContainerLoader.getArrayBufferFromType(componentType, 
+                                                                      arraybuffer,
+                                                                      byteOffset,
+                                                                      byteLength);
+
+        for( var i = 0, n = data.length; i < n; i++)
+        {
+            data[i] = data[i] / interpolator._vf.duration
+        }
+
+        return data;
+    };
+
+    var getKeyValues = function(interpolator, accessor, arraybuffer)
+    {
+        var view          = interpolator._cf.views.nodes[accessor._vf.view];
+        var byteOffset    = accessor._vf.byteOffset + view._vf.byteOffset;
+        var byteLength    = accessor._vf.count * accessor._vf.components;
+        var componentType = accessor._vf.componentType;
+
+        var data = x3dom.BinaryContainerLoader.getArrayBufferFromType(componentType, 
+                                                                      arraybuffer,
+                                                                      byteOffset,
+                                                                      byteLength);
+
+        return interpolator.keyValueFromAccessor(data, componentType);
+    };
+
+    var initAccessors = function(arraybuffer)
+    {
+        var key;
+        var keyValue;
+        var accessors  = interpolator._cf.accessors.nodes;
+        
+        for(var i = 0; i < accessors.length; i++)
+        {
+            var accessor = accessors[i];
+
+            switch(accessor._vf.bufferType)
+            {
+                case "SAMPLER_INPUT":
+                    key = getKeys(interpolator, accessor, arraybuffer);
+                    break;
+                case "SAMPLER_OUTPUT":
+                    keyValue = getKeyValues(interpolator, accessor, arraybuffer);
+                    break;
+            }
+        }
+
+
+        //modify for STEP
+        if (interpolator._vf.interpolation === "STEP")
+        {
+            var stepKey   = key.slice();
+            var stepValue = keyValue.slice();
+
+            for(var i = 1, n = key.length; i<n; i++)
+            {
+                stepKey.splice(i*2, 0, key[i]);
+            }
+
+            for(var i = 0, n = keyValue.length; i<n; i++)
+            {
+                stepValue.splice(i*2+1, 0, keyValue[i]);
+            }
+
+            key = stepKey;
+            keyValue = stepValue;
+        }
+
+        interpolator._vf.key = key;
+        interpolator._vf.keyValue = keyValue;
+    };
+
+    var URL = interpolator._nameSpace.getURL(interpolator._vf.buffer);
+
+    if(x3dom.BinaryContainerLoader.bufferGeoCache[URL] == undefined)
+    {
+        interpolator._nameSpace.doc.incrementDownloads();
+
+        x3dom.BinaryContainerLoader.bufferGeoCache[URL] = {};
+        x3dom.BinaryContainerLoader.bufferGeoCache[URL].buffers = [];
+        x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = true;
+        x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise = new Promise(function(resolve, reject) {
+
+            var xhr = new XMLHttpRequest();
+
+            xhr.open("GET", URL);
+
+            xhr.responseType = "arraybuffer";
+
+            xhr.onload = function(e)
+            {
+                if(xhr.status != 200)
+                {
+                    reject();
+                }
+                else
+                {
+                    resolve(xhr.response);
+                } 
+            }
+    
+            xhr.onerror = function(e)
+            {
+                reject();
+            }
+    
+            x3dom.RequestManager.addRequest( xhr );
+        });
+    }
+
+    x3dom.BinaryContainerLoader.bufferGeoCache[URL].promise.then( function(arraybuffer)
+    {
+        if(interpolator == undefined)
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL] = undefined;
+            return;
+        }
+
+        initAccessors(arraybuffer);
+
+        if( x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload )
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = false;
+            interpolator._nameSpace.doc.decrementDownloads();
+            interpolator._nameSpace.doc.needRender = true;
+        }
+        
+    }).catch( function()
+    {
+        if( x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload )
+        {
+            x3dom.BinaryContainerLoader.bufferGeoCache[URL].decrementDownload = false;
+            interpolator._nameSpace.doc.decrementDownloads();
+        }
+    });
+};
+
+x3dom.BinaryContainerLoader.getArrayBufferFromType = function(componentType, arraybuffer, byteOffset, byteLength)
+{
+    switch(componentType)
+    {
+        case 5120: return new Int8Array(arraybuffer, byteOffset, byteLength);
+        case 5121: return new Uint8Array(arraybuffer, byteOffset, byteLength);
+        case 5122: return new Int16Array(arraybuffer, byteOffset, byteLength);
+        case 5123: return new Uint16Array(arraybuffer, byteOffset, byteLength);
+        case 5125: return new Uint32Array(arraybuffer, byteOffset, byteLength);
+        case 5126: return new Float32Array(arraybuffer, byteOffset, byteLength);
+    }
+}

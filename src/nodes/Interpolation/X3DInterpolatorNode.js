@@ -52,24 +52,38 @@ x3dom.registerNodeType(
              /**
              * The url to the binary file, that contains the buffer data.
              * @var {x3dom.fields.SFString} buffer
-             * @memberof x3dom.nodeTypes.BufferGeometry
+             * @memberof x3dom.nodeTypes.X3DInterpolatorNode
              * @initvalue ""
              * @field x3dom
              * @instance
              */
             this.addField_SFString(ctx, 'buffer', "");
 
+            /**
+             * Contains the interpolation method
+             * @var {x3dom.fields.SFString} interpolation
+             * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue "LINEAR"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'interpolation', "LINEAR");
+
+            /**
+             * Specifies the duration
+             * @var {x3dom.fields.SFString} duration
+             * @memberof x3dom.nodeTypes.X3DInterpolatorNode
+             * @initvalue "0"
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'duration', 0);
+
             this.addField_MFNode('views', x3dom.nodeTypes.BufferView );
             this.addField_MFNode('accessors', x3dom.nodeTypes.BufferAccessor );
 
-            this.constructorFromType = {
-                "5120": Int8Array,
-                "5121": Uint8Array,
-                "5122": Int16Array,
-                "5123": Uint16Array,
-                "5125": Uint32Array,
-                "5126": Float32Array
-            };
+            this._lastValue = undefined;
+
             this.normalizeFromType = {
                 "5120": function(c) {return Math.max(c / 127.0, -1.0)},
                 "5121": function(c) {return c / 255.0;},
@@ -81,146 +95,82 @@ x3dom.registerNodeType(
         
         },
         {
-            nodeChanged: function () {
-                var scope = this;
-                function initAccessors (arraybuffer)
+            nodeChanged: function ()
+            {
+                if (this._vf.buffer)
                 {
-                    var that = scope;
-                    var key, keyValue;
-                    scope._cf.accessors.nodes.forEach(function(accessor)
-                    {
-                        var view = findBufferView(accessor._vf.view);
-                        var byteOffset = accessor._vf.byteOffset + view._vf.byteOffset;
-                        var typeLength = accessor._vf.count * accessor._vf.components;
-                        var array;
-                        if (accessor._vf.bufferType === 'SAMPLER_INPUT')
-                        {
-                            if(accessor._vf.componentType === 5126)
-                            {
-                                array = new Float32Array(arraybuffer, byteOffset, typeLength);
-                                that.duration = accessor._xmlNode.duration;
-                                key = new x3dom.fields.MFFloat( array.map(function(a){return a/that.duration;}) );
-                            }
-                            else 
-                            {
-                                x3dom.debug.logWarning('glTF animation input needs to be FLOAT but is '+ accessor._vf.componentType);
-                            }
-                        }
-                        if (accessor._vf.bufferType === 'SAMPLER_OUTPUT')
-                        {
-                            array = new that.constructorFromType[accessor._vf.componentType](arraybuffer, byteOffset, typeLength);
-                            keyValue = that.keyValueFromAccessor(array, accessor._vf.componentType);
-                        }
-                    });
-                    //modify for STEP
-                    if (scope._xmlNode.interpolation === 'STEP')
-                    {
-                        //keys: 0,0.5,1 -> 0,0.5,0.5,1,1
-                        //values: 1,2,3 -> 1,1  ,2  ,2,3
-
-                        var stepKey = key.copy();
-                        for(var i=1; i<key.length; i++)
-                        {
-                            stepKey.splice(i*2,0, key[i]);
-                        };
-                        var stepValue = keyValue.copy();
-                        for(var i=0; i<key.length-1; i++)
-                        {
-                            stepValue.splice(i*2+1, 0, keyValue[i]);
-                        };
-                        key = stepKey;
-                        keyValue = stepValue;
-                    }
-                    scope._vf.key = key;
-                    scope._vf.keyValue = keyValue;
-                }
-                
-                function findBufferView(view) {
-                    return scope._cf.views.nodes.find(function(bview){return bview._vf.id === view});
-                }
-                
-                if (this._vf.buffer) {
-                    //console.log(this);
-                    var URL = this._nameSpace.getURL(this._vf.buffer);
-                    if(x3dom.XHRCache[URL] && x3dom.XHRCache[URL].response !== null)
-                    {
-                        initAccessors(x3dom.XHRCache[URL].response);
-                        return;
-                    }
-                    var xhr;
-
-                    if (x3dom.XHRCache[URL] === undefined)
-                    {
-                        xhr = new XMLHttpRequest();
-
-                        xhr.open("GET", URL);//avoid getting twice, with geometry buffer
-
-                        xhr.responseType = "arraybuffer";
-                        x3dom.XHRCache[URL] = xhr;
-                        x3dom.RequestManager.addRequest( xhr );
-                        scope._nameSpace.doc.downloadCount += 1;
-                        xhr.counted = false;
-                    }
-                    else xhr = x3dom.XHRCache[URL];
-
-                    xhr.addEventListener('load', function(e)
-                    {
-                        if (!xhr.counted)
-                        {   
-                            scope._nameSpace.doc.downloadCount -= 1;
-                            xhr.counted = true;
-                        }
-                        if(xhr.status != 200) return;
-                        
-                        initAccessors(xhr.response);
-
-                        scope._nameSpace.doc.needRender = true;
-                    });
-
-                    xhr.onerror = function(e) // ok to do only once
-                    {
-                        scope._nameSpace.doc.downloadCount -= 1;
-                        return;
-                    }                            
+                    x3dom.BinaryContainerLoader.setupBufferInterpolator(this);
                 }
             },
 
-            linearInterp: function (time, interp) {
-                if (time <= this._vf.key[0])
-                    return this._vf.keyValue[0];
-
-                else if (time >= this._vf.key[this._vf.key.length-1])
-                    return this._vf.keyValue[this._vf.key.length-1];
-
-                for (var i = 0; i < this._vf.key.length-1; ++i) {
-                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
-                        return interp( this._vf.keyValue[i], this._vf.keyValue[i+1],
-                                (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+            linearInterp: function (time, interp)
+            {
+                if(this._vf.key.length == 0)
+                {
+                    return;
                 }
+
+                if (time <= this._vf.key[0])
+                {
+                    return this._vf.keyValue[0];
+                }
+                else if (time >= this._vf.key[this._vf.key.length-1])
+                {
+                    return this._vf.keyValue[this._vf.key.length-1];
+                }
+                    
+                for (var i = 0, n = this._vf.key.length-1; i<n; ++i)
+                {
+                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
+                    {
+                        return interp( this._vf.keyValue[i],
+                                       this._vf.keyValue[i+1],
+                                       (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
+                    }            
+                }
+
                 return this._vf.keyValue[0];
             },
 
-            cubicSplineInterp: function (time, interp) {
-                
+            cubicSplineInterp: function (time, interp)
+            {
+                if(this._vf.key.length == 0)
+                {
+                    return;
+                }
+
+                var i, i3, interval, basis, t, intervalInSeconds; 
+
                 if (time <= this._vf.key[0])
+                {
                     return this._vf.keyValue[1];
-
+                }
                 else if (time >= this._vf.key[this._vf.key.length-1])
+                {
                     return this._vf.keyValue[this._vf.keyValue.length-2];
+                }
+                    
+                for (i = 0, n = this._vf.key.length-1; i < n; ++i)
+                {
+                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
+                    {
+                        i3                = i*3;
+                        interval          = this._vf.key[i+1] - this._vf.key[i];
+                        t                 = (time - this._vf.key[i]) / interval;
+                        intervalInSeconds = interval * this.duration;
+                        basis             = this.cubicSplineBasis( t, intervalInSeconds );
 
-                var i, i3, interval, basis; 
-
-                for (i = 0; i < this._vf.key.length-1; ++i) {
-                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1])) {
-                        i3 = i*3;
-                        interval = this._vf.key[i+1] - this._vf.key[i];
-                        basis = this.cubicSplineBasis( (time - this._vf.key[i]) / interval, interval * this.duration );
-                        return interp( 
-                                this._vf.keyValue[i3+2], this._vf.keyValue[i3+1], this._vf.keyValue[i3+3], this._vf.keyValue[i3+4],
-                                basis.h00, basis.h10, basis.h01, basis.h11                       
-                                );
+                        return interp( this._vf.keyValue[i3+2],
+                                       this._vf.keyValue[i3+1],
+                                       this._vf.keyValue[i3+3],
+                                       this._vf.keyValue[i3+4],
+                                       basis.h00,
+                                       basis.h10,
+                                       basis.h01,
+                                       basis.h11 );
                     }
                 }
+
                 return this._vf.keyValue[0];
             },
 
@@ -233,8 +183,12 @@ x3dom.registerNodeType(
                 var h00 = 1 - h01; //2*t3 - 3*t2 + 1;
                 var h10 = h11 - t2 + t; //t3 - 2*t2 + t;
                 
-
-                return {'h00':h00, 'h10': intervalInSeconds * h10, 'h01':h01, 'h11': intervalInSeconds * h11};
+                return {
+                    'h00':h00,
+                    'h10': intervalInSeconds * h10,
+                    'h01':h01,
+                    'h11': intervalInSeconds * h11
+                };
             },
 
             keyValueFromArray: function (array) // to be redefined by interpolators

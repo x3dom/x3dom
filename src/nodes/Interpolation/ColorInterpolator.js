@@ -51,7 +51,11 @@ x3dom.registerNodeType(
                         return a.multiply(1.0-t).add(b.multiply(t));
                     });
 
-                    this.postMessage('value_changed', value);
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
             }
         }

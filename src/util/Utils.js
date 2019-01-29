@@ -108,7 +108,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 
 	image.src = src;
 
-	doc.downloadCount++;
+	doc.incrementDownloads();
 
 	image.onload = function() {
 		
@@ -137,18 +137,18 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 		texture.height = image.height;
 		texture.ready = true;
 
-		doc.downloadCount--;
+		doc.decrementDownloads();
 		doc.needRender = true;
 	};
 
     image.onerror = function(error)
     {
         x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY).then( function() {
-            doc.downloadCount--;
+            doc.decrementDownloads();
             doc.needRender = true;
         }, function() {
             x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
-            doc.downloadCount--;
+            doc.decrementDownloads();
         });
 	};
 
@@ -275,12 +275,14 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 
     if ( src.length == 1 )
     {
-        x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY).then( function() {
-            doc.downloadCount--;
+        doc.incrementDownloads();
+
+        x3dom.Utils.tryDDSLoading(texture, gl, doc, src[0], genMipMaps, flipY).then( function() {
+            doc.decrementDownloads();
             doc.needRender = true;
         }, function() {
             x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
-            doc.downloadCount--;
+            doc.decrementDownloads();
         });
     }
     else if ( src.length == 6 )
@@ -309,7 +311,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
             }
 
             texture.pendingTextureLoads++;
-            doc.downloadCount++;
+            doc.incrementDownloads();
 
             image.onload = (function(texture, face, image, swap) {
                 return function() {
@@ -330,7 +332,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
 
                     texture.pendingTextureLoads--;
-                    doc.downloadCount--;
+                    doc.decrementDownloads();
 
                     if (texture.pendingTextureLoads < 0) {
                         //Save image size also for cube tex
@@ -352,7 +354,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
 
             image.onerror = function()
             {
-                doc.downloadCount--;
+                doc.decrementDownloads();
 
                 x3dom.debug.logError("[Utils|createTextureCube] Can't load CubeMap!");
             };
@@ -361,8 +363,6 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
             image.src = src[i];
         }
     }
-
-
 
 	return texture;
 };
