@@ -413,7 +413,7 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
         return;
     }
 
-    if (this._viewarea._scene._vf.doPickPass)
+    if (this._viewarea._scene._vf.doPickPass && !this._viewarea._isMoving)
         ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onDrag(x, y, buttonState);
 };

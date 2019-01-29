@@ -1498,7 +1498,6 @@ x3dom.Viewarea.prototype.onDrag = function(x, y, buttonState) {
     if (this._currentInputType == x3dom.InputTypes.NAVIGATION) {
         this._scene.getNavigationInfo()._impl.onDrag(this, x, y, buttonState);
     }
-
 };
 
 /**
