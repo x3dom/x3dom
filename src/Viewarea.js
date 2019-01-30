@@ -409,9 +409,12 @@ x3dom.Viewarea.prototype.getLightsShadow = function() {
  * @returns {boolean}
  */
 x3dom.Viewarea.prototype.hasPhysicalEnvironmentLight = function () {
+    var light;
     for (var i=0; i<this._doc._nodeBag.lights.length; i++)
     {
-        if (x3dom.isa(this._doc._nodeBag.lights[i], x3dom.nodeTypes.PhysicalEnvironmentLight))
+        var light = this._doc._nodeBag.lights[i];
+        if (x3dom.isa(light, x3dom.nodeTypes.PhysicalEnvironmentLight) &&
+           light._vf.on)
         {
             return true;
         }
