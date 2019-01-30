@@ -724,6 +724,14 @@ x3dom.Utils.checkDirtyLighting = function(viewarea)
 };
 
 /*****************************************************************************
+ * Checks for PhysicalEnvironmentLight change
+ *****************************************************************************/
+x3dom.Utils.checkDirtyPhysicalEnvironmentLight = function(viewarea, shaderProperties)
+{
+    return (!!shaderProperties.PHYSICALENVLIGHT != viewarea.hasPhysicalEnvironmentLight());
+};
+
+/*****************************************************************************
  * Checks for environment
  *****************************************************************************/
 x3dom.Utils.checkDirtyEnvironment = function(viewarea, shaderProperties)
