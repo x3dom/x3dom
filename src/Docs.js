@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -9,15 +9,13 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+/* This module adds documentation related functionality to the library. */
 
-// This module adds documentation related functionality
-// to the library.
-
-/** The x3dom.docs namespace.
+/**
+ * The x3dom.docs namespace.
  * @namespace x3dom.docs
  */
 x3dom.docs = {};
-
 
 x3dom.docs.specURLMap = {
     CADGeometry: "CADGeometry.html",
@@ -59,8 +57,11 @@ x3dom.docs.specURLMap = {
 
 x3dom.docs.specBaseURL = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
 
-
-// the dump-nodetype tree functionality in a function
+/**
+ * The dump-nodetype tree functionality in a function
+ *
+ * @returns {string} HTML Node Type List.
+ */
 x3dom.docs.getNodeTreeInfo = function() {
 
     // Create the nodetype hierarchy
@@ -68,7 +69,7 @@ x3dom.docs.getNodeTreeInfo = function() {
     var types = "";
 
     var objInArray = function(array, obj) {
-        for(var i=0; i<array.length; i++) {
+        for (var i = 0; i < array.length; i++) {
             if (array[i] === obj) {
                 return true;
             }
@@ -77,46 +78,50 @@ x3dom.docs.getNodeTreeInfo = function() {
     };
 
     var dump = function(t, indent) {
-        for (var i=0; i<indent; i++) {
+        for (var i = 0; i < indent; i++) {
             types += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         }
 
         types += "<a href='" +
-                        x3dom.docs.specBaseURL + x3dom.docs.specURLMap[x3dom.nodeTypes[t]._compName] + "#" + t +
-                        "' style='color:black; text-decoration:none; font-weight:bold;'>" +
-                        t + "</a> &nbsp; <a href='" +
-                        x3dom.docs.specBaseURL + x3dom.docs.specURLMap[x3dom.nodeTypes[t]._compName] +
-                        "' style='color:black; text-decoration:none; font-style:italic;'>" +
-                        x3dom.nodeTypes[t]._compName + "</a><br/>";
+            x3dom.docs.specBaseURL + x3dom.docs.specURLMap[x3dom.nodeTypes[t]._compName] + "#" + t +
+            "' style='color:black; text-decoration:none; font-weight:bold;'>" +
+            t + "</a> &nbsp; <a href='" +
+            x3dom.docs.specBaseURL + x3dom.docs.specURLMap[x3dom.nodeTypes[t]._compName] +
+            "' style='color:black; text-decoration:none; font-style:italic;'>" +
+            x3dom.nodeTypes[t]._compName + "</a><br/>";
 
         for (var i in x3dom.nodeTypes[t].childTypes[t]) {
-            dump(x3dom.nodeTypes[t].childTypes[t][i], indent+1);
+            dump(x3dom.nodeTypes[t].childTypes[t][i], indent + 1);
         }
     };
 
     for (tn in x3dom.nodeTypes) {
-     var t = x3dom.nodeTypes[tn];
-         if (t.childTypes === undefined) {
-             t.childTypes = {};
-         }
+        var t = x3dom.nodeTypes[tn];
+        if (t.childTypes === undefined) {
+            t.childTypes = {};
+        }
 
-         while (t.superClass) {
-             if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
-                 t.superClass.childTypes[t.superClass._typeName] = [];
-             }
-             if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
-                 t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
-             }
-             t = t.superClass;
-         }
-     }
+        while (t.superClass) {
+            if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
+                t.superClass.childTypes[t.superClass._typeName] = [];
+            }
+            if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
+                t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
+            }
+            t = t.superClass;
+        }
+    }
 
     dump("X3DNode", 0);
 
     return "<div class='x3dom-doc-nodes-tree'>" + types + "</div>";
 };
 
-
+/**
+ * Get Component Info
+ *
+ * @returns {string} HTML Component List.
+ */
 x3dom.docs.getComponentInfo = function() {
     // Dump nodetypes by component
     // but first sort alphabetically
@@ -130,7 +135,7 @@ x3dom.docs.getComponentInfo = function() {
     }
     components.sort();
 
-    //for (var c in x3dom.components) {
+    // for (var c in x3dom.components) {
     for (cn in components) {
         c = components[cn];
         component = x3dom.components[c];
@@ -141,12 +146,12 @@ x3dom.docs.getComponentInfo = function() {
 
         result += "<ul style='list-style-type:circle;'>";
 
-        //var $ul = $("#components ul:last");
+        // var $ul = $("#components ul:last");
         for (var t in component) {
             result += "<li><a href='" +
                 x3dom.docs.specBaseURL + x3dom.docs.specURLMap[c] + "#" + t +
-                    "' style='color:black; text-decoration:none; font-weight:bold;'>" +
-                    t + "</a></li>";
+                "' style='color:black; text-decoration:none; font-weight:bold;'>" +
+                t + "</a></li>";
         }
         result += "</ul>";
     }

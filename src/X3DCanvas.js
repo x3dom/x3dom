@@ -737,7 +737,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-}
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------

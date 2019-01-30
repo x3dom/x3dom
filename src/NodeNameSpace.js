@@ -1,4 +1,4 @@
-/*
+/**
  * X3DOM JavaScript Library
  * http://www.x3dom.org
  *
@@ -9,8 +9,14 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-/// NodeNameSpace constructor
-x3dom.NodeNameSpace = function (name, document) {
+/**
+ * NodeNameSpace constructor
+ *
+ * @param name
+ * @param document
+ * @constructor
+ */
+x3dom.NodeNameSpace = function(name, document) {
     this.name = name;
     this.doc = document;
     this.baseURL = "";
@@ -19,12 +25,23 @@ x3dom.NodeNameSpace = function (name, document) {
     this.childSpaces = [];
 };
 
-x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
+/**
+ * NodeNameSpace Add Node
+ *
+ * @param node
+ * @param name
+ */
+x3dom.NodeNameSpace.prototype.addNode = function(node, name) {
     this.defMap[name] = node;
     node._nameSpace = this;
 };
 
-x3dom.NodeNameSpace.prototype.removeNode = function (name) {
+/**
+ * NodeNameSpace Remove Node
+ *
+ * @param name
+ */
+x3dom.NodeNameSpace.prototype.removeNode = function(name) {
     var node = name ? this.defMap[name] : null;
     if (node) {
         delete this.defMap[name];
@@ -32,48 +49,84 @@ x3dom.NodeNameSpace.prototype.removeNode = function (name) {
     }
 };
 
-x3dom.NodeNameSpace.prototype.getNamedNode = function (name) {
+/**
+ * NodeNameSpace Get Named Node
+ *
+ * @param name
+ * @returns {*}
+ */
+x3dom.NodeNameSpace.prototype.getNamedNode = function(name) {
     return this.defMap[name];
 };
 
-x3dom.NodeNameSpace.prototype.getNamedElement = function (name) {
+/**
+ * NodeNameSpace Get Named Element
+ *
+ * @param name
+ * @returns {null}
+ */
+x3dom.NodeNameSpace.prototype.getNamedElement = function(name) {
     var node = this.defMap[name];
     return (node ? node._xmlNode : null);
 };
 
-x3dom.NodeNameSpace.prototype.addSpace = function (space) {
+/**
+ * NodeNameSpace Add Space
+ *
+ * @param space
+ */
+x3dom.NodeNameSpace.prototype.addSpace = function(space) {
     this.childSpaces.push(space);
     space.parent = this;
 };
 
-x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
+/**
+ * NodeNameSpace Remove Space
+ *
+ * @param space
+ */
+x3dom.NodeNameSpace.prototype.removeSpace = function(space) {
     space.parent = null;
-    for (var it=0; it<this.childSpaces.length; it++) {
+    for (var it = 0; it < this.childSpaces.length; it++) {
         if (this.childSpaces[it] == space) {
             this.childSpaces.splice(it, 1);
         }
     }
 };
 
-x3dom.NodeNameSpace.prototype.setBaseURL = function (url) {
-    var i = url.lastIndexOf ("/");
-    this.baseURL = (i >= 0) ? url.substr(0,i+1) : "";
+/**
+ * NodeNameSpace Set Base URL
+ *
+ * @param url
+ */
+x3dom.NodeNameSpace.prototype.setBaseURL = function(url) {
+    var i = url.lastIndexOf("/");
+    this.baseURL = (i >= 0) ? url.substr(0, i + 1) : "";
 
     x3dom.debug.logInfo("setBaseURL: " + this.baseURL);
 };
 
-x3dom.NodeNameSpace.prototype.getURL = function (url) {
+/**
+ * NodeNameSpace Get URL
+ *
+ * @param url
+ * @returns {*}
+ */
+x3dom.NodeNameSpace.prototype.getURL = function(url) {
     if (url === undefined || !url.length) {
         return "";
-    }
-    else {
+    } else {
         return ((url[0] === '/') || (url.indexOf(":") >= 0)) ? url : (this.baseURL + url);
     }
 };
 
-// helper to check an element's attribute
-x3dom.hasElementAttribute = function(attrName)
-{
+/**
+ * Helper to check an element's attribute
+ *
+ * @param attrName
+ * @returns {*}
+ */
+x3dom.hasElementAttribute = function(attrName) {
     var ok = this.__hasAttribute(attrName);
     if (!ok && attrName) {
         ok = this.__hasAttribute(attrName.toLowerCase());
@@ -81,9 +134,13 @@ x3dom.hasElementAttribute = function(attrName)
     return ok;
 };
 
-// helper to get an element's attribute
-x3dom.getElementAttribute = function(attrName)
-{
+/**
+ * Helper to get an element's attribute
+ *
+ * @param attrName
+ * @returns {*}
+ */
+x3dom.getElementAttribute = function(attrName) {
     var attrib = this.__getAttribute(attrName);
     if (!attrib && attrib != "" && attrName) {
         attrib = this.__getAttribute(attrName.toLowerCase());
@@ -91,15 +148,18 @@ x3dom.getElementAttribute = function(attrName)
 
     if (attrib || !this._x3domNode) {
         return attrib;
-    }
-    else {
+    } else {
         return this._x3domNode._vf[attrName];
     }
 };
 
-// helper to set an element's attribute
-x3dom.setElementAttribute = function(attrName, newVal)
-{
+/**
+ * Helper to set an element's attribute
+ *
+ * @param attrName
+ * @param newVal
+ */
+x3dom.setElementAttribute = function(attrName, newVal) {
     //var prevVal = this.getAttribute(attrName);
     this.__setAttribute(attrName, newVal);
     //newVal = this.getAttribute(attrName);
@@ -117,20 +177,16 @@ x3dom.setElementAttribute = function(attrName, newVal)
  *
  * @param {String} fieldName - the name of the field
  */
-x3dom.getFieldValue = function(fieldName)
-{
+x3dom.getFieldValue = function(fieldName) {
     var x3dNode = this._x3domNode;
 
     if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
 
         var fieldValue = x3dNode._vf[fieldName];
 
-        if(fieldValue instanceof Object && 'copy' in fieldValue)
-        {
+        if (fieldValue instanceof Object && 'copy' in fieldValue) {
             return x3dNode._vf[fieldName].copy();
-        }
-        else
-        {
+        } else {
             //f.i. SFString SFBool aren't objects
             return x3dNode._vf[fieldName];
         }
@@ -138,7 +194,6 @@ x3dom.getFieldValue = function(fieldName)
 
     return null;
 };
-
 
 /**
  * Sets the value of the field with the given name to the given value.
@@ -152,19 +207,16 @@ x3dom.setFieldValue = function(fieldName, fieldvalue) {
     if (x3dNode && (x3dNode._vf[fieldName] !== undefined)) {
 
         // SF/MF object types are cloned based on a copy function
-        if(fieldvalue instanceof Object && 'copy' in fieldvalue)
-        {
+        if (fieldvalue instanceof Object && 'copy' in fieldvalue) {
             x3dNode._vf[fieldName] = fieldvalue.copy();
-        }
-        //f.i. SFString SFBool aren't objects
-        else
+        } else {
+            //f.i. SFString SFBool aren't objects
             x3dNode._vf[fieldName] = fieldvalue;
-
+        }
         x3dNode.fieldChanged(fieldName);
         x3dNode._nameSpace.doc.needRender = true;
     }
 };
-
 
 /**
  * Returns the field object of the field with the given name.
@@ -174,17 +226,14 @@ x3dom.setFieldValue = function(fieldName, fieldvalue) {
  *
  * @param {String} fieldName - the name of the field
  */
-x3dom.requestFieldRef = function(fieldName)
-{
+x3dom.requestFieldRef = function(fieldName) {
     var x3dNode = this._x3domNode;
-    if (x3dNode && x3dNode._vf[fieldName])
-    {
+    if (x3dNode && x3dNode._vf[fieldName]) {
         return x3dNode._vf[fieldName];
     }
 
     return null;
 };
-
 
 /**
  * Commits all changes made to the internal field object of the field with the given name.
@@ -192,18 +241,22 @@ x3dom.requestFieldRef = function(fieldName)
  *
  * @param {String} fieldName - the name of the field
  */
-x3dom.releaseFieldRef = function(fieldName)
-{
+x3dom.releaseFieldRef = function(fieldName) {
     var x3dNode = this._x3domNode;
-    if (x3dNode && x3dNode._vf[fieldName])
-    {
+    if (x3dNode && x3dNode._vf[fieldName]) {
         x3dNode.fieldChanged(fieldName);
         x3dNode._nameSpace.doc.needRender = true;
     }
 };
 
-
-x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
+/**
+ * NodeNameSpace Setup Tree
+ *
+ * @param domNode
+ * @param parent
+ * @returns {*}
+ */
+x3dom.NodeNameSpace.prototype.setupTree = function(domNode, parent) {
     var n = null;
 
     parent = parent || null;
@@ -215,11 +268,10 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
             x3dom.debug.logWarning('Tree is already initialized');
             return null;
         }
-        
+
         // workaround since one cannot find out which handlers are registered
-        if ( (domNode.tagName !== undefined) &&
-            (!domNode.__addEventListener) && (!domNode.__removeEventListener) )
-        {
+        if ((domNode.tagName !== undefined) &&
+            (!domNode.__addEventListener) && (!domNode.__removeEventListener)) {
             // helper to track an element's listeners
             domNode.__addEventListener = domNode.addEventListener;
             domNode.addEventListener = function(type, func, phase) {
@@ -236,7 +288,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
             domNode.removeEventListener = function(type, func, phase) {
                 var list = this._x3domNode._listeners[type];
                 if (list) {
-                    for (var it=0; it<list.length; it++) {
+                    for (var it = 0; it < list.length; it++) {
                         if (list[it] == func) {
                             list.splice(it, 1);
                             //x3dom.debug.logInfo('removeEventListener for ' +
@@ -249,8 +301,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
         }
 
         // TODO (?): dynamic update of USE attribute during runtime
-        if (domNode.hasAttribute('USE') || domNode.hasAttribute('use'))
-        {
+        if (domNode.hasAttribute('USE') || domNode.hasAttribute('use')) {
             //fix usage of lowercase 'use'
             if (!domNode.hasAttribute('USE')) {
                 domNode.setAttribute('USE', domNode.getAttribute('use'));
@@ -265,10 +316,11 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
                     while (otherNS) {
                         if (otherNS.name == nsName[0])
                             n = otherNS.defMap[nsName[1]];
-                        if (n)
+                        if (n) {
                             otherNS = null;
-                        else
+                        } else {
                             otherNS = otherNS.parent;
+                        }
                     }
                     if (!n) {
                         n = null;
@@ -280,8 +332,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
                 domNode._x3domNode = n;
             }
             return n;
-        }
-        else {
+        } else {
             // check and create ROUTEs
             if (domNode.localName.toLowerCase() === 'route') {
                 var route = domNode;
@@ -289,10 +340,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
                 var tnAtt = route.getAttribute('toNode') || route.getAttribute('tonode');
                 var fromNode = this.defMap[fnAtt];
                 var toNode = this.defMap[tnAtt];
-                if (! (fromNode && toNode)) {
+                if (!(fromNode && toNode)) {
                     x3dom.debug.logWarning("Broken route - can't find all DEFs for " + fnAtt + " -> " + tnAtt);
-                }
-                else {
+                } else {
                     //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
                     fnAtt = route.getAttribute('fromField') || route.getAttribute('fromfield');
                     tnAtt = route.getAttribute('toField') || route.getAttribute('tofield');
@@ -303,7 +353,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
                 return null;
             }
 
-            //attach X3DOM's custom field interface functions
+            // attach X3DOM's custom field interface functions
             domNode.requestFieldRef = x3dom.requestFieldRef;
             domNode.releaseFieldRef = x3dom.releaseFieldRef;
             domNode.getFieldValue = x3dom.getFieldValue;
@@ -313,11 +363,10 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
             if (nodeType === undefined) {
                 x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
-            }
-            else {
+            } else {
                 //active workaround for missing DOMAttrModified support
-                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
-                      && (domNode instanceof Element) ) {
+                if ((x3dom.userAgentFeature.supportsDOMAttrModified === false)
+                    && (domNode instanceof Element)) {
                     if (domNode.setAttribute && !domNode.__setAttribute) {
                         domNode.__setAttribute = domNode.setAttribute;
                         domNode.setAttribute = x3dom.setElementAttribute;
@@ -346,17 +395,15 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
                 if (domNode.hasAttribute('DEF')) {
                     n._DEF = domNode.getAttribute('DEF');
                     this.defMap[n._DEF] = n;
-                }
-                else {
+                } else {
                     if (domNode.hasAttribute('id')) {
                         n._DEF = domNode.getAttribute('id');
                         this.defMap[n._DEF] = n;
                     }
                 }
-                
+
                 // add experimental highlighting functionality
-                if (domNode.highlight === undefined) 
-                {
+                if (domNode.highlight === undefined) {
                     domNode.highlight = function(enable, colorStr) {
                         var color = x3dom.fields.SFColor.parse(colorStr);
                         this._x3domNode.highlight(enable, color);
@@ -370,31 +417,26 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode, parent) {
 
                 // call children
                 var that = this;
-                Array.forEach ( domNode.childNodes, function (childDomNode) {
+                Array.forEach(domNode.childNodes, function(childDomNode) {
                     var c = that.setupTree(childDomNode, n);
                     if (c) {
                         n.addChild(c, childDomNode.getAttribute("containerField"));
                     }
-                } );
+                });
 
                 n.nodeChanged();
                 return n;
             }
         }
-    }
-    else if (domNode.localName)
-    {
-        if ( parent && domNode.localName.toLowerCase() == "x3dommetagroup" )
-        {
-            Array.forEach ( domNode.childNodes, function (childDomNode) {
+    } else if (domNode.localName) {
+        if (parent && domNode.localName.toLowerCase() == "x3dommetagroup") {
+            Array.forEach(domNode.childNodes, function(childDomNode) {
                 var c = this.setupTree(childDomNode, parent);
                 if (c) {
                     parent.addChild(c, childDomNode.getAttribute("containerField"));
                 }
-            }.bind(this) );
-        }
-        else
-        {
+            }.bind(this));
+        } else {
             // be nice to users who use nodes not (yet) known to the system
             x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             n = null;

@@ -122,7 +122,7 @@ x3dom.registerNodeType(
                 {
                     if (this._key_changed) { // avoid loop this way since no timestamping
                         this._key_changed = false;
-                        return
+                        return;
                     }
                     this._key_changed = true;
                     this.postMessage('key', this._vf.key);
@@ -132,7 +132,7 @@ x3dom.registerNodeType(
                 {
                     if (this._keyValue_changed) { // avoid loop this way since no timestamping
                         this._keyValue_changed = false;
-                        return
+                        return;
                     }
                     this._keyValue_changed = true;
                     this.postMessage('keyValue', this._vf.keyValue);
