@@ -716,7 +716,7 @@ x3dom.glTF2Loader.prototype._generateX3DInterpolator = function(id, path, sample
         case "rotation":
             interpolator = document.createElement("OrientationInterpolator");
             break;
-        case "weight":
+        case "weights":
             interpolator = document.createElement("ScalarInterpolator");
             break;
     }
