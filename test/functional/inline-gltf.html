@@ -106,7 +106,7 @@
 
         .overflow-menu-entry:hover { background: #ccc; }
         .overflow-text { flex-grow: 10; color: #333; pointer-events: none;}
-        .overflow-icon-environment, .overflow-icon-tonemapping { font-size: 20px; color: #666;  pointer-events: none;}
+        .overflow-icon-environment, .overflow-icon-tonemapping , .overflow-icon-light { font-size: 20px; color: #666;  pointer-events: none;}
         input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
         .main-wrapper { width: 100%; height: calc(100% - 56px); position: absolute; top: 56px; left: 0; display: flex; flex-direction: row; }
         
@@ -259,6 +259,23 @@
             closeOverflowMenu();
         }
 
+        function setLight( event, ibl )
+        {
+            var allRadios = document.querySelectorAll(".overflow-icon-light");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
+            document.querySelector("navigationinfo").setAttribute("headlight", !ibl);
+            document.querySelector("physicalenvironmentlight").setAttribute("on", ibl);
+
+            closeOverflowMenu();
+        }
+
         function onKeyPress( e )
         {
             if( e.keyCode == 13 )
@@ -315,6 +332,15 @@
                 <div class="overflow-menu-entry" onclick="setTonemapping(event, 'filmic')">
                     <div class="overflow-text">Filmic</div>
                     <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-header">Lighting</div>
+                <div class="overflow-menu-entry" onclick="setLight(event, true)">
+                    <div class="overflow-text">IBL</div>
+                    <i class="material-icons overflow-icon-light">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setLight(event, false)">
+                    <div class="overflow-text">Headlight</div>
+                    <i class="material-icons overflow-icon-light">radio_button_unchecked</i>
                 </div>
             </section>
         </section>

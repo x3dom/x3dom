@@ -849,6 +849,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	shader += "float _transparency     = transparency;\n";
 	shader += "float _occlusion        = 1.0;\n";
 
+	if(properties.ALPHAMODE == "OPAQUE")
+	{
+		shader += "color.a = 1.0;\n";
+	}
+
 	if(properties.PBR_MATERIAL && properties.ISROUGHNESSMETALLIC)
 	{	
 		shader += "float _metallic         = metallicFactor;\n";
@@ -900,14 +905,22 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
         shader += "_ambientIntensity = emiAmb.a;\n";
     }
 			
-    if (properties.VERTEXCOLOR) {
-        if (properties.COLCOMPONENTS === 3 && properties.PBR_MATERIAL) {
-            shader += "color.rgb *= fragColor;\n";
-        } else if (properties.COLCOMPONENTS === 3 && !properties.PBR_MATERIAL) {
-            shader += "color.rgb = fragColor;\n";
-        } else if (properties.COLCOMPONENTS === 4 && properties.PBR_MATERIAL) {
+	if (properties.VERTEXCOLOR)
+	{
+		if ((properties.COLCOMPONENTS === 3 || properties.ALPHAMODE == "OPAQUE") && properties.PBR_MATERIAL)
+		{
+            shader += "color.rgb *= fragColor.rgb;\n";
+		}
+		else if (properties.COLCOMPONENTS === 3 && !properties.PBR_MATERIAL)
+		{
+            shader += "color.rgb = fragColor.rgb;\n";
+		}
+		else if (properties.COLCOMPONENTS === 4 && properties.PBR_MATERIAL)
+		{
             shader += "color *= fragColor;\n";
-        } else if (properties.COLCOMPONENTS === 4 && !properties.PBR_MATERIAL) {
+		}
+		else if (properties.COLCOMPONENTS === 4 && !properties.PBR_MATERIAL)
+		{
             shader += "color = fragColor;\n";
         }
     }
