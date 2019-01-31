@@ -97,6 +97,8 @@ x3dom.glTF2Loader.prototype._generateX3DMetadata = function(node, parent)
     
     var metadata = _generateMetadata ("extras", node.extras);
     
+    metadata.setAttribute("containerfield", "metadata");
+    
     parent.appendChild(metadata);
     
     return;
@@ -165,7 +167,7 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
 {
     var x3dNode;
     
-    node.name = (node.name) ? node.name : index; 
+    node.name = (node.name) ? node.name : index;
 
     if( node.matrix != undefined )
     {
@@ -181,6 +183,8 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
     {
         x3dNode = this._generateX3DTransform(node); // always use Transform in case of animations
     }
+    
+    this._generateX3DMetadata(node, x3dNode);
     
     if( node.mesh != undefined )
     {
@@ -304,6 +308,8 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(node)
 x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(id, camera)
 {
     var viewpoint = document.createElement("viewpoint");
+    
+    this._generateX3DMetadata(camera, viewpoint);
 
     var fov   = camera.yfov  || 0.785398;
     var znear = camera.znear || -1;
@@ -327,6 +333,8 @@ x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(id, came
 x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(id, camera)
 {
     var viewpoint = document.createElement("orthoviewpoint");
+    
+    this._generateX3DMetadata(camera, viewpoint);
 
     var xmag  = camera.xmag  ||  1;
     var ymag  = camera.ymag  ||  1;
@@ -352,6 +360,8 @@ x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(id, camera)
 x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 {
     var shape = document.createElement("shape");
+    
+    this._generateX3DMetadata(primitive, shape);
 
     var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : {};
 
@@ -371,6 +381,8 @@ x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
+    
+    this._generateX3DMetadata(material, appearance);
 
     appearance.appendChild(this._generateX3DPhysicalMaterial(material));
 
@@ -528,6 +540,8 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, contain
     var image   = this._gltf.images[texture.source];
 
     var imagetexture = document.createElement("imagetexture");
+    
+    this._generateX3DMetadata(texture, imagetexture);
 
     imagetexture.setAttribute("origChannelCount", "2");
     imagetexture.setAttribute("flipY", "true");
@@ -588,7 +602,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 /**
  * Generates a X3D TextureTransform node
  * @private
- * @param {Object} primitive - A glTF texture transform node
+ * @param {Object} transform - A glTF texture transform node
  * @return {TextureTransform}
  */
 x3dom.glTF2Loader.prototype._createX3DTextureTransform = function(imagetexture, transform)
