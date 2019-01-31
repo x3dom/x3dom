@@ -285,6 +285,15 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
 
+    if(material.alphaMode === "BLEND")
+    {
+        appearance.setAttribute("sortType", "transparent");
+    }
+    else
+    {
+        appearance.setAttribute("sortType", "opaque");
+    }
+
     appearance.appendChild(this._generateX3DPhysicalMaterial(material));
 
     if(this._textureTransform)
