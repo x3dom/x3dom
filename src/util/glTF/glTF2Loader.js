@@ -326,6 +326,9 @@ x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(id, came
     var fov   = camera.yfov  || 0.785398;
     var znear = camera.znear || -1;
     var zfar  = camera.zfar  || -1;
+    
+    var _zratio = 100000;
+    if ( zfar / znear > _zratio) { zfar = znear = -1; }
 
     viewpoint.setAttribute("DEF", id);
     viewpoint.setAttribute("fieldOfView", fov);
