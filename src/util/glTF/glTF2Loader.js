@@ -18,6 +18,9 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
 
     //generate X3D scene
     var x3dScene = this._generateX3DScene();
+    
+    //generate worldinfo from asset properties and extras
+    this._generateX3DWorldInfo(x3dScene);
 
     //Get the scene ID
     var sceneID = this._gltf.scene || 0;
@@ -46,6 +49,90 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     }
 
     return x3dScene;
+};
+
+/**
+ * extract asset properties, extras and append as WorldInfo, metadata
+ * @param {X3DNode} parent - A X3D-Node
+ */
+x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(parent)
+{
+    
+    if (this._gltf.asset) //should always exist
+    {
+        var asset = this._gltf.asset;
+        var assetProperties = ['copyright', 'generator', 'version', 'minversion'];
+        var worldInfo = document.createElement("worldinfo");
+
+        var info = new x3dom.fields.MFString();
+        var property, i;
+        for(i = 0; i < assetProperties.length; i++)
+        {
+            property = assetProperties[i];
+            if (asset[property]) {
+                info.push('"' + assetProperties[i] + ":" + asset[property] + '"');  //toString() does not put in quotes
+            }
+        }
+        worldInfo.setAttribute('info', info.toString());
+        
+        if (asset.extras && asset.extras.title)
+        {
+            worldInfo.setAttribute('title', asset.extras.title);
+        }
+        
+        this._generateX3DMetadata(asset, worldInfo);
+        
+        parent.appendChild(worldInfo);
+    }
+};
+
+/**
+ * append metadata nodes from extras
+ * @param {Object} node - A glTF node with extras
+ * @param {X3DNode} parent - A X3D-Node
+ */
+x3dom.glTF2Loader.prototype._generateX3DMetadata = function(node, parent)
+{
+    if (!node.extras) { return; }
+    
+    var metadata = _generateMetadata ("extras", node.extras);
+    
+    parent.appendChild(metadata);
+    
+    return;
+    
+    function _generateMetadata (name, value) {
+        
+        var type = typeof value;
+
+        if (type == 'string' || value === null || type == 'undefined')
+        {
+            return _generateX3DMetadataNode('MetadataString', name, JSON.stringify(value));
+        }
+        else if (type == 'number')  { return _generateX3DMetadataNode('MetadataFloat', name, value); }
+        else if (type == 'boolean') { return _generateX3DMetadataNode('MetadataBoolean', name, value); }
+        else if (type == 'object')  { return _generateX3DMetadataSetNode(name, value); }
+        return _generateX3DMetadataNode('MetadataString', name, value); // should never happen
+    }
+    
+    function _generateX3DMetadataNode (nodename, name, value) {
+        var x3dnode = document.createElement(nodename);
+        x3dnode.setAttribute('name', name);
+        x3dnode.setAttribute('value', value);
+        return x3dnode;
+    }
+    
+    function _generateX3DMetadataSetNode (name, value) {
+        var x3dnode = document.createElement('MetadataSet');
+        x3dnode.setAttribute('name', name);
+        var keys = Object.keys(value), key, i;
+        for (i=0; i < keys.length; i++)
+        {
+            key = keys[i];
+            x3dnode.appendChild( _generateMetadata(key, value[key]) );
+        }
+        return x3dnode;
+     }
 };
 
 /**
