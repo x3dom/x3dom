@@ -18,6 +18,9 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
 
     //generate X3D scene
     var x3dScene = this._generateX3DScene();
+    
+    //generate worldinfo from asset properties and extras
+    this._generateX3DWorldInfo(x3dScene);
 
     //Get the scene ID
     var sceneID = this._gltf.scene || 0;
@@ -46,6 +49,92 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     }
 
     return x3dScene;
+};
+
+/**
+ * extract asset properties, extras and append as WorldInfo, metadata
+ * @param {X3DNode} parent - A X3D-Node
+ */
+x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(parent)
+{
+    
+    if (this._gltf.asset) //should always exist
+    {
+        var asset = this._gltf.asset;
+        var assetProperties = ['copyright', 'generator', 'version', 'minversion'];
+        var worldInfo = document.createElement("worldinfo");
+
+        var info = new x3dom.fields.MFString();
+        var property, i;
+        for(i = 0; i < assetProperties.length; i++)
+        {
+            property = assetProperties[i];
+            if (asset[property]) {
+                info.push('"' + assetProperties[i] + ":" + asset[property] + '"');  //toString() does not put in quotes
+            }
+        }
+        worldInfo.setAttribute('info', info.toString());
+        
+        if (asset.extras && asset.extras.title)
+        {
+            worldInfo.setAttribute('title', asset.extras.title);
+        }
+        
+        this._generateX3DMetadata(asset, worldInfo);
+        
+        parent.appendChild(worldInfo);
+    }
+};
+
+/**
+ * append metadata nodes from extras
+ * @param {Object} node - A glTF node with extras
+ * @param {X3DNode} parent - A X3D-Node
+ */
+x3dom.glTF2Loader.prototype._generateX3DMetadata = function(node, parent)
+{
+    if (!node.extras) { return; }
+    
+    var metadata = _generateMetadata ("extras", node.extras);
+    
+    metadata.setAttribute("containerfield", "metadata");
+    
+    parent.appendChild(metadata);
+    
+    return;
+    
+    function _generateMetadata (name, value) {
+        
+        var type = typeof value;
+
+        if (type == 'string' || value === null || type == 'undefined')
+        {
+            return _generateX3DMetadataNode('MetadataString', name, JSON.stringify(value));
+        }
+        else if (type == 'number')  { return _generateX3DMetadataNode('MetadataFloat', name, value); }
+        else if (type == 'boolean') { return _generateX3DMetadataNode('MetadataBoolean', name, value); }
+        else if (type == 'object')  { return _generateX3DMetadataSetNode(name, value); }
+        return _generateX3DMetadataNode('MetadataString', name, value); // should never happen
+    }
+    
+    function _generateX3DMetadataNode (nodename, name, value) {
+        var x3dnode = document.createElement(nodename);
+        x3dnode.setAttribute('name', name);
+        x3dnode.setAttribute('value', value);
+        return x3dnode;
+    }
+    
+    function _generateX3DMetadataSetNode (name, value) {
+        var x3dnode = document.createElement('MetadataSet');
+        x3dnode.setAttribute('name', name);
+        var keys = Object.keys(value), key, i;
+        for (i=0; i < keys.length; i++)
+        {
+            key = keys[i];
+            x3dnode.appendChild( _generateMetadata(key, value[key]) );
+        }
+        return x3dnode;
+     }
 };
 
 /**
@@ -78,7 +167,7 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
 {
     var x3dNode;
     
-    node.name = (node.name) ? node.name : index; 
+    node.name = (node.name) ? node.name : index;
 
     if( node.matrix != undefined )
     {
@@ -94,6 +183,8 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
     {
         x3dNode = this._generateX3DTransform(node); // always use Transform in case of animations
     }
+    
+    this._generateX3DMetadata(node, x3dNode);
     
     if( node.mesh != undefined )
     {
@@ -217,6 +308,8 @@ x3dom.glTF2Loader.prototype._generateX3DViewpoint = function(node)
 x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(id, camera)
 {
     var viewpoint = document.createElement("viewpoint");
+    
+    this._generateX3DMetadata(camera, viewpoint);
 
     var fov   = camera.yfov  || 0.785398;
     var znear = camera.znear || -1;
@@ -240,6 +333,8 @@ x3dom.glTF2Loader.prototype._generateX3DPerspectiveViewpoint = function(id, came
 x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(id, camera)
 {
     var viewpoint = document.createElement("orthoviewpoint");
+    
+    this._generateX3DMetadata(camera, viewpoint);
 
     var xmag  = camera.xmag  ||  1;
     var ymag  = camera.ymag  ||  1;
@@ -265,6 +360,8 @@ x3dom.glTF2Loader.prototype._generateX3DOrthoViewpoint = function(id, camera)
 x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 {
     var shape = document.createElement("shape");
+    
+    this._generateX3DMetadata(primitive, shape);
 
     var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : {};
 
@@ -284,6 +381,8 @@ x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
 x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 {
     var appearance = document.createElement("appearance");
+    
+    this._generateX3DMetadata(material, appearance);
 
     if(material.alphaMode === "BLEND")
     {
@@ -450,6 +549,8 @@ x3dom.glTF2Loader.prototype._generateX3DImageTexture = function(texture, contain
     var image   = this._gltf.images[texture.source];
 
     var imagetexture = document.createElement("imagetexture");
+    
+    this._generateX3DMetadata(texture, imagetexture);
 
     imagetexture.setAttribute("origChannelCount", "2");
     imagetexture.setAttribute("flipY", "true");
@@ -510,7 +611,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
 /**
  * Generates a X3D TextureTransform node
  * @private
- * @param {Object} primitive - A glTF texture transform node
+ * @param {Object} transform - A glTF texture transform node
  * @return {TextureTransform}
  */
 x3dom.glTF2Loader.prototype._createX3DTextureTransform = function(imagetexture, transform)
