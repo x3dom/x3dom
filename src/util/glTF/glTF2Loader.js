@@ -19,14 +19,14 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
     //generate X3D scene
     var x3dScene = this._generateX3DScene();
     
-    //generate worldinfo from asset properties and extras
-    this._generateX3DWorldInfo(x3dScene);
-
     //Get the scene ID
     var sceneID = this._gltf.scene || 0;
 
     //Get the scene
     var scene = this._gltf.scenes[ sceneID ];
+    
+    //generate worldinfo from asset properties and extras
+    this._generateX3DWorldInfo(scene, x3dScene);
 
     // Get the nodes
     for( var i = 0; i < scene.nodes.length; i++ )
@@ -53,9 +53,10 @@ x3dom.glTF2Loader.prototype.load = function(input, binary)
 
 /**
  * extract asset properties, extras and append as WorldInfo, metadata
+ * @param {Object} scene - A gltf scene node
  * @param {X3DNode} parent - A X3D-Node
  */
-x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(parent)
+x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(scene, parent)
 {
     
     if (this._gltf.asset) //should always exist
@@ -80,7 +81,15 @@ x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(parent)
             worldInfo.setAttribute('title', asset.extras.title);
         }
         
-        this._generateX3DMetadata(asset, worldInfo);
+        //need holder for both asset and scene extras
+        var metadata = document.createElement('MetadataSet');
+        metadata.setAttribute('name', 'global');
+        metadata.setAttribute('containerfield', 'metadata');
+        
+        this._generateX3DMetadata(asset, metadata, "asset_extras", "value");
+        this._generateX3DMetadata(scene, metadata, "scene_extras", "value");
+        
+        if (metadata.hasChildNodes()) { worldInfo.appendChild(metadata); }
         
         parent.appendChild(worldInfo);
     }
@@ -90,53 +99,56 @@ x3dom.glTF2Loader.prototype._generateX3DWorldInfo = function(parent)
  * append metadata nodes from extras
  * @param {Object} node - A glTF node with extras
  * @param {X3DNode} parent - A X3D-Node
+ * @param {X3DNode} name - name for name field
  */
-x3dom.glTF2Loader.prototype._generateX3DMetadata = function(node, parent)
+x3dom.glTF2Loader.prototype._generateX3DMetadata = function(node, parent, name, containerfield)
 {
     if (!node.extras) { return; }
     
-    var metadata = _generateMetadata ("extras", node.extras);
+    name = name || "extras";
+    containerfield = containerfield || "metadata";
     
-    metadata.setAttribute("containerfield", "metadata");
+    var metadata = _generateMetadata (name, node.extras, containerfield);
     
     parent.appendChild(metadata);
     
     return;
     
-    function _generateMetadata (name, value) {
+    function _generateMetadata (name, value, cf) {
         
         var type = typeof value;
 
         if (type == 'string' || value === null || type == 'undefined')
         {
-            return _generateX3DMetadataNode('MetadataString', name, JSON.stringify(value));
+            return _generateX3DMetadataNode('MetadataString', name, JSON.stringify(value), cf);
         }
-        else if (type == 'number')  { return _generateX3DMetadataNode('MetadataFloat', name, value); }
-        else if (type == 'boolean') { return _generateX3DMetadataNode('MetadataBoolean', name, value); }
-        else if (type == 'object')  { return _generateX3DMetadataSetNode(name, value); }
-        return _generateX3DMetadataNode('MetadataString', name, value); // should never happen
+        else if (type == 'number')  { return _generateX3DMetadataNode('MetadataFloat', name, value, cf); }
+        else if (type == 'boolean') { return _generateX3DMetadataNode('MetadataBoolean', name, value, cf); }
+        else if (type == 'object')  { return _generateX3DMetadataSetNode(name, value, cf); }
+        return _generateX3DMetadataNode('MetadataString', name, value, cf); // should never happen
     }
     
-    function _generateX3DMetadataNode (nodename, name, value) {
+    function _generateX3DMetadataNode (nodename, name, value, cf) {
         var x3dnode = document.createElement(nodename);
         x3dnode.setAttribute('name', name);
         x3dnode.setAttribute('value', value);
+        x3dnode.setAttribute('containerfield', cf);
         return x3dnode;
     }
     
-    function _generateX3DMetadataSetNode (name, value) {
+    function _generateX3DMetadataSetNode (name, value, cf) {
         var x3dnode = document.createElement('MetadataSet');
         x3dnode.setAttribute('name', name);
+        x3dnode.setAttribute('containerfield', cf);
         var keys = Object.keys(value), key, i;
         for (i=0; i < keys.length; i++)
         {
             key = keys[i];
-            x3dnode.appendChild( _generateMetadata(key, value[key]) );
+            x3dnode.appendChild( _generateMetadata(key, value[key], "value") );
         }
         return x3dnode;
      }
 };
-
 /**
  * Traverses all glTF nodes
  * @param {Object} node - A glTF-Node
