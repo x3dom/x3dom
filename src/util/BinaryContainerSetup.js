@@ -1570,7 +1570,7 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function(interpolator)
             data[i] = data[i] / interpolator._vf.duration
         }
 
-        return data;
+        return new x3dom.fields.MFFloat( data );
     };
 
     var getKeyValues = function(interpolator, accessor, arraybuffer)
@@ -1613,8 +1613,8 @@ x3dom.BinaryContainerLoader.setupBufferInterpolator = function(interpolator)
         //modify for STEP
         if (interpolator._vf.interpolation === "STEP")
         {
-            var stepKey   = key.slice();
-            var stepValue = keyValue.slice();
+            var stepKey   = key.copy();
+            var stepValue = keyValue.copy();
 
             for(var i = 1, n = key.length; i<n; i++)
             {
