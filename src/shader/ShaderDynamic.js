@@ -1062,10 +1062,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "color = texColor;\n";
 			}
 
-			if(properties.SHINMAP){
-				shader += "_shininess = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
-			}
-
+        if(properties.SHINMAP){
+            shader += "_shininess *= texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+        }
+			
 			//Specularmap
 			if(properties.SPECMAP) {
 				shader += "_specularColor = texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
