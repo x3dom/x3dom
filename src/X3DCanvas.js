@@ -155,7 +155,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.disableTouch = x3dElem.getAttribute("disableTouch");
     this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
 	
-	this.disableKeys = x3dElem.getAttribute("keysEnabled");
+	this.disableKeys = x3dElem.getAttribute("disableKeys");
 	this.disableKeys = this.disableKeys ? (this.disableKeys.toLowerCase() == "true") : false;
 	
 	this.disableRightDrag = x3dElem.getAttribute("disableRightDrag");

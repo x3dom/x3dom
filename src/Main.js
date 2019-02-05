@@ -48,7 +48,7 @@ x3dom.userAgentFeature = {
             'flashrenderer',
             'swfpath',
             'runtimeEnabled',
-            'keysEnabled',
+            'disableKeys',
             'showTouchpoints',
             'disableTouch',
             'maxActiveDownloads'
