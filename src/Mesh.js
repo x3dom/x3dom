@@ -68,30 +68,6 @@ x3dom.Mesh.prototype._numFaces = 0;
 x3dom.Mesh.prototype._numCoords = 0;
 
 /**
- * Set Mesh Data
- *
- * @param positions
- * @param normals
- * @param texCoords
- * @param colors
- * @param indices
- */
-x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, colors, indices, tangents, binormals)
-{
-    this._positions[0] = positions;
-    this._normals[0]   = normals;
-    this._texCoords[0] = texCoords;
-    this._colors[0]    = colors;
-    this._indices[0]   = indices;
-    this._tangents[0]  = tangents;
-    this._binormals[0] = binormals;
-
-    this._invalidate = true;
-    this._numFaces = this._indices[0].length / 3;
-    this._numCoords = this._positions[0].length / 3;
-};
-
-/**
  * Get Volume
  *
  * @returns {null}
