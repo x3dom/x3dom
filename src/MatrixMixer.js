@@ -84,7 +84,7 @@ x3dom.MatrixMixer.prototype._prepareQuaternionAnimation = function() {
  *
  * @private
  */
-x3dom.MatrixMixer.prototype._reset = function() {
+x3dom.MatrixMixer.prototype.reset = function() {
     this.beginTime = 0;
     this.endTime = 0;
     this._useQuaternion = false;
@@ -112,6 +112,15 @@ x3dom.MatrixMixer.prototype.setBeginMatrix = function(mat) {
 };
 
 /**
+ * MatrixMixer get End Matrix
+ *
+ * @return mat
+ */
+x3dom.MatrixMixer.prototype.getBeginMatrix = function(mat) {
+    return this._beginMat;
+};
+
+/**
  * MatrixMixer Set End Matrix
  *
  * @param mat
@@ -125,6 +134,15 @@ x3dom.MatrixMixer.prototype.setEndMatrix = function(mat) {
 
     this._endLogMat = this._endMat.mult(this._beginInvMat).log();
     this._logDiffMat = this._endLogMat.addScaled(this._beginLogMat, -1);
+};
+
+/**
+ * MatrixMixer get End Matrix
+ *
+ * @return mat
+ */
+x3dom.MatrixMixer.prototype.getEndMatrix = function(mat) {
+    return this._endMat;
 };
 
 /**
@@ -165,7 +183,7 @@ x3dom.MatrixMixer.prototype.mix = function(time) {
     if (time <= this.beginTime) {
         return this._beginMat;
     } else if (time >= this.endTime) {
-        this._reset();
+        this.reset();
         return this._endMat;
     } else {
         this.isMixing = true;

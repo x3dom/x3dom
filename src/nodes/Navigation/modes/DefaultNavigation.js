@@ -509,33 +509,46 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
 x3dom.DefaultNavigation.prototype.animateTo = function(view, target, prev, dur)
 {
     var navi = this.navi;
+    var prevTargetMat;
+    var prevMat;
     
-    if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
+    if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode))
+    {
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
     }
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && dur != 0 && navi.getType() !== "game")
     {
-        if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
-            prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).
-                         mult(view._transMat).mult(view._rotMat);
+        if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode))
+        {
+            prevMat = prev.getViewMatrix().
+                           mult(prev.getCurrentTransform().inverse()).
+                           mult(view._transMat).mult(view._rotMat);
+
+            if(view._mixer.isActive())
+            {
+                prev.setView(view._mixer.getEndMatrix());
+                view._mixer.reset();
+            }
 
             view._mixer.beginTime = view._lastTS;
 
-            if (arguments.length >= 4 && arguments[3] != null) {
-                // for lookAt to assure travel speed of 1 m/s
+            if (arguments.length >= 4 && arguments[3] != null)
+            {
                 view._mixer.endTime = view._lastTS + dur;
             }
-            else {
+            else
+            {
                 view._mixer.endTime = view._lastTS + navi._vf.transitionTime;
             }
 
-            view._mixer.setBeginMatrix (prev);
+            view._mixer.setBeginMatrix (prevMat);
             view._mixer.setEndMatrix (target);
             
-            view._scene.getViewpoint().setView(prev);
+            view._scene.getViewpoint().setView(prevMat);
         }
-        else {
+        else
+        {
             view._scene.getViewpoint().setView(target);
         }
     }
@@ -587,7 +600,8 @@ x3dom.DefaultNavigation.prototype.resetView = function(view)
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
 
         view._mixer.setEndMatrix(target);
-    } else
+    }
+    else
     {
         view._scene.getViewpoint().resetView();
     }
