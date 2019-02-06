@@ -588,7 +588,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                 for(i = 0; i < evt.touches.length; i++) {
                     pos = this.parent.mousePosition(evt.touches[i]);
                     doc.onPick(that.gl, pos.x, pos.y);
+
+                    //Trigger onmouseover to collect affected X3DPointingDeviceSensorNodes 
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 0, "onmouseover");
                     doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
+
                     doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
                 }
             }
@@ -616,16 +620,6 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             var touch0, touch1, distance, middle, squareDistance, deltaMiddle, deltaZoom, deltaMove;
 
             if (touches.examineNavType == 1) {
-                /*
-                 if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
-                 for(var i = 0; i < evt.touches.length; i++) {
-                 pos = this.parent.mousePosition(evt.touches[i]);
-                 doc.onPick(that.gl, pos.x, pos.y);
-
-                 doc._viewarea.handleMoveEvt(pos.x, pos.y, 1);
-                 }
-                 }
-                 */
 
                 // one finger: x/y rotation
                 if(evt.touches.length == 1) {
@@ -639,6 +633,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                     rotMatrix = mx.mult(my);
 
                     doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
+
+                    //Trigger onmousemove to notify X3DPointingDeviceSensorNodes 
+                    pos = this.parent.mousePosition(evt.touches[0]);
+                    doc.onPick(that.gl, pos.x, pos.y);
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousemove");
                 }
                 // two fingers: scale, translation, rotation around view (z) axis
                 else if(evt.touches.length >= 2) {
@@ -707,6 +706,19 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             // reinit first finger for rotation
             if (touches.numTouches == 2 && evt.touches.length == 1)
                 touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+
+
+            // if all touches are released, reset the list of currently affected pointing sensors
+            if(evt.touches.length == 0)
+            {   
+                var affectedPointingSensorsList = doc._nodeBag.affectedPointingSensors;
+                for (var i = 0; i < affectedPointingSensorsList.length; ++i)
+                {
+                    affectedPointingSensorsList[i].pointerReleased();
+                }
+
+                doc._nodeBag.affectedPointingSensors = [];
+            }
 
             var dblClick = false;
 
