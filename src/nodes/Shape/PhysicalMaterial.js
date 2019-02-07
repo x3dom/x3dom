@@ -189,7 +189,6 @@ x3dom.registerNodeType(
              * how alpha is interpreted. The stored texels must not be premultiplied.
              * @var {x3dom.nodeTypes.X3DTextureNode} baseColorTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -201,7 +200,6 @@ x3dom.registerNodeType(
              * If a fourth component (A) is present, it is ignored.
              * @var {x3dom.nodeTypes.X3DTextureNode} emissiveTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -213,7 +211,6 @@ x3dom.registerNodeType(
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
              * @var {x3dom.nodeTypes.X3DTextureNode} roughnessMetallicTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -225,7 +222,6 @@ x3dom.registerNodeType(
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
              * @var {x3dom.nodeTypes.X3DTextureNode} specularGlossinessTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -237,7 +233,6 @@ x3dom.registerNodeType(
              * When not specified, all the default values of `pbrMetallicRoughness` apply.
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -254,7 +249,6 @@ x3dom.registerNodeType(
              * Client implementations should normalize the normal vectors before using them in lighting equations."
              * @var {x3dom.nodeTypes.X3DTextureNode} normalTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
@@ -267,7 +261,6 @@ x3dom.registerNodeType(
              * are present (GBA), they are ignored for occlusion calculations.
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
              * @field x3d
              * @instance
              */
