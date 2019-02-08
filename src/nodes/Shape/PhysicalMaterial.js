@@ -79,7 +79,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'roughnessFactor', 0.2);
 
             /**
-             * The diffuse factor used in the spec.-gloss. model.
+             * The RGBA components of the reflected diffuse color of the material used in the spec.-gloss. model.
+             * Metals have a diffuse value of '0.0, 0.0, 0.0'. The fourth component (A) is the opacity of the material.
+             * The values are linear.
              * @var {x3dom.fields.SFColor} diffuseFactor
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1,1,1
@@ -89,7 +91,7 @@ x3dom.registerNodeType(
             this.addField_SFColorRGBA(ctx, 'diffuseFactor', 1, 1, 1, 1);
 
             /**
-             * The specular factor used in the spec.-gloss. model.
+             * The specular RGB color of the material used in the spec.-gloss. model. This value is linear.
              * @var {x3dom.fields.SFColor} specularFactor
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1,1,1
@@ -99,7 +101,9 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'specularFactor', 1, 1, 1);
 
             /**
-             * The glossiness factor used in the spec.-gloss. model.
+             * The glossiness or smoothness of the material used in the spec.-gloss. model.
+             * A value of 1.0 means the material has full glossiness or is perfectly smooth.
+             * A value of 0.0 means the material has no glossiness or is perfectly rough. This value is linear.
              * @var {x3dom.fields.SFFloat} glossinessFactor
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.PhysicalMaterial
@@ -190,7 +194,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'unlit', false);
 
             /**
-             * The base color texture. This texture contains RGB(A) components in sRGB color space. 
+             * The base color texture in the met. rough. model. This texture contains RGB(A) components in sRGB color space. 
              * The first three components (RGB) specify the base color of the material. 
              * If the fourth component (A) is present, it represents the alpha coverage of the material. 
              * Otherwise, an alpha of 1.0 is assumed. The `alphaMode` property specifies 
@@ -214,7 +218,9 @@ x3dom.registerNodeType(
             this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * see glTF 2.0 spec
+             * The metallic-roughness texture. The metalness values are sampled from the B channel.
+             * The roughness values are sampled from the G channel. These values are linear.
+             * If other channels are present (R or A), they are ignored for metallic-roughness calculations.
              * @var {x3dom.nodeTypes.X3DTextureNode} roughnessMetallicTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @field x3dom
@@ -223,7 +229,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('roughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * see glTF 2.0 spec
+             * The specular-glossiness texture is a RGBA texture, containing the specular color (RGB) in sRGB space
+             * and the glossiness value (A) in linear space.
              * @var {x3dom.nodeTypes.X3DTextureNode} specularGlossinessTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @field x3dom
@@ -232,7 +239,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('specularGlossinessTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * see glTF 2.0 spec
+             * Specifies a texture with the packing Occlusion (R), Roughness (G), Metallic (B)
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @field x3dom
@@ -248,7 +255,7 @@ x3dom.registerNodeType(
              * where +X is right and +Y is up. +Z points toward the viewer. In GLSL, 
              * this vector would be unpacked like so: 
              * `float3 normalVector = tex2D(<sampled normal map texture value>, texCoord) * 2 - 1`. 
-             * Client implementations should normalize the normal vectors before using them in lighting equations."
+             * Client implementations should normalize the normal vectors before using them in lighting equations.
              * @var {x3dom.nodeTypes.X3DTextureNode} normalTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @field x3dom
