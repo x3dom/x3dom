@@ -14,9 +14,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DLightNode,
         
         /**
-         * Constructor for DirectionalLight
+         * Constructor for PhysicalEnvironmentLight
          * @constructs x3dom.nodeTypes.PhysicalEnvironmentLight
-         * @x3d 3.3
+         * @x3d x.x
          * @component Lighting
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLightNode
@@ -37,10 +37,12 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
 
             /**
-             * The direction field specifies the direction vector of the illumination emanating from the light source in the local coordinate system.
+             * 
+             * The diffuse component of the environment light.
+             * The node supports only pre-computed HDR .dds files and these should be linear by default.
              * @var {x3dom.nodeTypes.X3DTextureNode} diffuse
              * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
-             * @initvalue 0,0,-1
+             * @initvalue papermillDiffuse.dds
              * @field x3dom
              * @instance
              */
@@ -48,9 +50,11 @@ x3dom.registerNodeType(
 
             /**
              *
+             * The specular component of the environment light.
+             * The node supports only pre-computed HDR .dds files and these should be linear by default.
              * @var {x3dom.nodeTypes.X3DTextureNode} specular
              * @memberof x3dom.nodeTypes.PhysicalEnvironmentLight
-             * @initvalue 1
+             * @initvalue papermillSpecular.dds
              * @field x3dom
              * @instance
              */
