@@ -47,10 +47,83 @@ x3dom.registerNodeType(
             hasIndexOffset: function() {
                 return this._hasIndexOffset;
             },
+            handleAttribs: function(hasNormals) {
+                var i, j, k, n = this._cf.attrib.nodes.length;
+                var val, index, numComponents, nb_index;
+                // Test if the geometry has indices as index or coordIndex
+                var indices = this._vf.index;;
+                if (!indices) { indices = this._vf.coordIndex; }
 
+                for (i=0; i<n; i++)
+                {
+                    var name = this._cf.attrib.nodes[i]._vf.name;
+
+                    switch (name.toLowerCase())
+                    {
+                    case "position":
+                        this._mesh._positions[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "normal":
+                        this._mesh._normals[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "texcoord":
+                        this._mesh._texCoords[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    case "color":
+                        this._mesh._colors[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                        break;
+                    default:
+                        this._mesh._dynamicFields[name] = {};
+                        this._mesh._dynamicFields[name].numComponents =
+                            this._cf.attrib.nodes[i]._vf.numComponents;
+                        numComponents = this._cf.attrib.nodes[i]._vf.numComponents;
+                        this._mesh._dynamicFields[name].numComponents = numComponents;
+
+                        if (indices && hasNormals) {
+                            this._mesh._dynamicFields[name].value =[];
+                            // The parsing of IndexedTriangleStripSet is special
+                            var count = 0;
+                            index = [0, 0, 0];
+                            for (j = 0, nb_index = indices.length; j < nb_index; j++) {
+                                switch (count) {
+                                case -1:
+                                    count = 0;
+                                    break;
+                                case 0:
+                                    index[0] = indices[j]*numComponents;
+                                    count++;
+                                    break;
+                                case 1:
+                                    index[1] = indices[j]*numComponents;
+                                    count++;
+                                    break;
+                                default:
+                                    index[2] = indices[j]*numComponents;
+                                    for (var l=0; l< 3; l++)
+                                        for (k=0; k< numComponents; k++) {
+                                            val = this._cf.attrib.nodes[i]._vf.value[index[l]+k];
+                                            this._mesh._dynamicFields[name].value.push(val);
+                                        }
+                                    // The triangles'order are switched for each new vertex in the  TriangleStripSet
+                                    if (count % 2 )
+                                        index[0]= index[1], index[1] = index[2];
+                                    else index[0] = index[2];
+                                    count = indices[j+1] ==-1? -1: count+1;
+                                    break;
+                                }
+                            }
+                        }
+                        else { // Pasing other Geometry
+                            this._mesh._dynamicFields[name].value =
+                                this._cf.attrib.nodes[i]._vf.value.toGL();
+                        }
+
+                        break;
+                    }
+                }
+            },
             nodeChanged: function()
             {
-                this.handleAttribs();   // check if method is still functional
 
                 var hasNormal = false, hasTexCoord = false, hasColor = false;
 
@@ -128,8 +201,9 @@ x3dom.registerNodeType(
                 this._mesh._numCoords = 0;
 
                 var faceCnt = 0, cnt = 0;
-
-                if (hasNormal && positions.length <= x3dom.Utils.maxIndexableCoords)
+                var test = hasNormal && positions.length <= x3dom.Utils.maxIndexableCoords;
+                this.handleAttribs(test);
+                if (test)
                 {
                     this._hasIndexOffset = true;
                     this._indexOffset = [];
