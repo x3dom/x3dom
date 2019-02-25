@@ -16,7 +16,7 @@ x3dom.registerNodeType(
     "MPRVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
-        
+
         /**
          * Constructor for MPRVolumeStyle
          * @constructs x3dom.nodeTypes.MPRVolumeStyle
@@ -32,7 +32,7 @@ x3dom.registerNodeType(
 
 
             /**
-             * The originLine field specifies the base line of the slice plane. 
+             * The originLine field specifies the base line of the slice plane.
              * @var {x3dom.fields.SFVec3f} originLine
              * @memberof x3dom.nodeTypes.MPRVolumeStyle
              * @initvalue 1.0,1.0,0.0
@@ -71,11 +71,22 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
 
+            /**
+             * The forceOpaque field is a boolean flag that forces the reconstructed planes to be opaque, if false the opacity (alpha channel) from the transferFunction field will be applied.
+             * @var {x3dom.fields.SFBool} forceOpaque
+             * @memberof x3dom.nodeTypes.MPRVolumeStyle
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'forceOpaque', true);
+
             this.uniformVec3fOriginLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformVec3fFinalLine = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatPosition = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
-        
+            this.uniformBoolForceOpaque = new x3dom.nodeTypes.Uniform(ctx);
+
         },
         {
             fieldChanged: function(fieldName) {
@@ -91,6 +102,10 @@ x3dom.registerNodeType(
                     case 'finalLine':
                         this.uniformVec3fFinalLine._vf.value = this._vf.finalLine;
                         this.uniformVec3fFinalLine.fieldChanged("value");
+                        break;
+                    case 'forceOpaque':
+                        this.uniformBoolForceOpaque._vf.value = this._vf.forceOpaque;
+                        this.uniformBoolForceOpaque.fieldChanged("value");
                         break;
                 }
             },
@@ -119,7 +134,12 @@ x3dom.registerNodeType(
                     this.uniformSampler2DTransferFunction._vf.value = this._volumeDataParent._textureID++;
                     unis.push(this.uniformSampler2DTransferFunction);
                 }
-  
+
+                this.uniformBoolForceOpaque._vf.name = 'forceOpaque';
+                this.uniformBoolForceOpaque._vf.type = 'SFBool';
+                this.uniformBoolForceOpaque._vf.value = this._vf.forceOpaque;
+                unis.push(this.uniformBoolForceOpaque);
+
                 return unis;
             },
 
@@ -135,7 +155,7 @@ x3dom.registerNodeType(
             },
 
             styleUniformsShaderText: function(){
-                var uniformShaderText = "uniform vec3 originLine;\nuniform vec3 finalLine;\nuniform float positionLine;\n";
+                var uniformShaderText = "uniform vec3 originLine;\nuniform vec3 finalLine;\nuniform float positionLine;\nuniform bool forceOpaque;\n";
                 if (this._cf.transferFunction.node) {
                     uniformShaderText += "uniform sampler2D uTransferFunction;\n";
                 }
@@ -143,7 +163,7 @@ x3dom.registerNodeType(
             },
 
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
-                var shader = 
+                var shader =
                 this._parentNodes[0].fragmentPreamble+
                 this._parentNodes[0].defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
@@ -159,11 +179,19 @@ x3dom.registerNodeType(
                 "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
                 "  vec3 pos = d*dir+pos.rgb;\n"+
                 "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
-                "    vec3 intesity = cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb;\n";
+                "    vec4 intesity = cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY);\n";
                 if (this._cf.transferFunction.node){
-                    shader += "    color = vec4(texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgb, 1.0);\n";
+                    shader += "    if (forceOpaque){\n"+
+                    "      color = vec4(texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgb, 1.0);\n"+
+                    "    }else{\n"+
+                    "      color = texture2D(uTransferFunction, vec2(intesity.r,0.5)).rgba;\n"+
+                    "    }\n";
                 }else{
-                    shader += "    color = vec4(intesity,1.0);\n";
+                    shader += "    if (forceOpaque){\n"+
+                    "      color = vec4(intesity.rgb,1.0);\n"+
+                    "    }else{\n"+
+                    "      color = intesity;\n"+
+                    "    }\n";
                 }
                 shader += "  }\n"+
                 "  gl_FragColor = color;\n"+

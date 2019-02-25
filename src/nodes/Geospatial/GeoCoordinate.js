@@ -223,7 +223,7 @@ x3dom.registerNodeType(
                 {
                     x = (eastingFirst ? coords[i].x : coords[i].y);
                     y = (eastingFirst ? coords[i].y : coords[i].x);
-                    z = coords[i].z;
+                    //z = coords[i].z; //not used
 
                     //var M = M0 + y/k0; //Arc length along standard meridian.
                     //var M = y/k0;
@@ -413,7 +413,7 @@ x3dom.registerNodeType(
                     p = Math.sqrt(x*x + y*y);
                     q = Math.atan((z * a) / (p * b));
                     lat = Math.atan((z + eps * b * Math.pow(Math.sin(q),3))/(p - esq * a * Math.pow(Math.cos(q),3)));
-                    nu = a / Math.sqrt(1-esq * Math.pow(Math.sin(lat),2));
+                    nu = a / Math.sqrt(1 - esq * Math.pow(Math.sin(lat),2));
                     elev = p/Math.cos(lat) - nu;
                     // atan2 gets the sign correct for longitude; is exact since in circular section
                     lon = Math.atan2(y, x);

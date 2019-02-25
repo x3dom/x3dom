@@ -101,9 +101,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	this.canvas.parent = this;
 	
 	this.gl = this._initContext( this.canvas, (this.backend.search("desktop") >= 0),
-											  (this.backend.search("mobile") >= 0),
-											  (this.backend.search("flashie") >= 0),
-											  (this.backend.search("webgl2") >= 0));
+		(this.backend.search("mobile") >= 0),
+		(this.backend.search("webgl2") >= 0));
 	this.backend = 'webgl';
 	
 	if (this.gl == null)
@@ -156,7 +155,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.disableTouch = x3dElem.getAttribute("disableTouch");
     this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
 	
-	this.disableKeys = x3dElem.getAttribute("keysEnabled");
+	this.disableKeys = x3dElem.getAttribute("disableKeys");
 	this.disableKeys = this.disableKeys ? (this.disableKeys.toLowerCase() == "true") : false;
 	
 	this.disableRightDrag = x3dElem.getAttribute("disableRightDrag");
@@ -258,14 +257,15 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             
             if ( pos.x != that.lastMousePos.x || pos.y != that.lastMousePos.y ) {
                 that.lastMousePos = pos;
-                if (evt.shiftKey) { this.mouse_button = 1; }
-                if (evt.ctrlKey)  { this.mouse_button = 4; }
-                if (evt.altKey)   { this.mouse_button = 2; }
-
+                
                 this.mouse_drag_x = pos.x;
                 this.mouse_drag_y = pos.y;
 
                 if (this.mouse_dragging) {
+                    
+                    if (evt.shiftKey) { this.mouse_button = 1; }
+                    if (evt.ctrlKey)  { this.mouse_button = 4; }
+                    if (evt.altKey)   { this.mouse_button = 2; }
                     
                     if ( this.mouse_button == 1 && !this.parent.disableLeftDrag ||
                          this.mouse_button == 2 && !this.parent.disableRightDrag ||
@@ -292,8 +292,12 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.focus();
 
             var originalY = this.parent.mousePosition(evt).y;
-
-            this.mouse_drag_y += 2 * evt.detail;
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
+                this.mouse_drag_y -= 2 * evt.detail;
+            }
+            else{
+                this.mouse_drag_y += 2 * evt.detail;
+            }
 
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
@@ -305,6 +309,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
 
     this.onKeyPress = function (evt) {
         if (!this.parent.disableKeys) {
+            evt.preventDefault();
             this.parent.doc.onKeyPress(evt.charCode);
         }
         this.parent.doc.needRender = true;
@@ -315,8 +320,13 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.focus();
 
             var originalY = this.parent.mousePosition(evt).y;
-
-            this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+            
+            if(this.parent.doc._scene.getNavigationInfo()._vf.reverseScroll == true){
+                this.mouse_drag_y += 0.1 * evt.wheelDelta;
+            }
+            else{
+                this.mouse_drag_y -= 0.1 * evt.wheelDelta;
+            }
 
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
@@ -539,7 +549,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                 for(i = 0; i < evt.touches.length; i++) {
                     pos = this.parent.mousePosition(evt.touches[i]);
                     doc.onPick(that.gl, pos.x, pos.y);
+
+                    //Trigger onmouseover to collect affected X3DPointingDeviceSensorNodes 
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 0, "onmouseover");
                     doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
+
                     doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
                 }
             }
@@ -567,16 +581,6 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             var touch0, touch1, distance, middle, squareDistance, deltaMiddle, deltaZoom, deltaMove;
 
             if (touches.examineNavType == 1) {
-                /*
-                 if (doc._scene._vf.doPickPass && doc._scene._vf.pickMode.toLowerCase() !== "box") {
-                 for(var i = 0; i < evt.touches.length; i++) {
-                 pos = this.parent.mousePosition(evt.touches[i]);
-                 doc.onPick(that.gl, pos.x, pos.y);
-
-                 doc._viewarea.handleMoveEvt(pos.x, pos.y, 1);
-                 }
-                 }
-                 */
 
                 // one finger: x/y rotation
                 if(evt.touches.length == 1) {
@@ -590,6 +594,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
                     rotMatrix = mx.mult(my);
 
                     doc.onMoveView(that.gl, evt, touches, null, rotMatrix);
+
+                    //Trigger onmousemove to notify X3DPointingDeviceSensorNodes 
+                    pos = this.parent.mousePosition(evt.touches[0]);
+                    doc.onPick(that.gl, pos.x, pos.y);
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousemove");
                 }
                 // two fingers: scale, translation, rotation around view (z) axis
                 else if(evt.touches.length >= 2) {
@@ -659,6 +668,19 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             if (touches.numTouches == 2 && evt.touches.length == 1)
                 touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 
+
+            // if all touches are released, reset the list of currently affected pointing sensors
+            if(evt.touches.length == 0)
+            {   
+                var affectedPointingSensorsList = doc._nodeBag.affectedPointingSensors;
+                for (var i = 0; i < affectedPointingSensorsList.length; ++i)
+                {
+                    affectedPointingSensorsList[i].pointerReleased();
+                }
+
+                doc._nodeBag.affectedPointingSensors = [];
+            }
+
             var dblClick = false;
 
             if (evt.touches.length < 2) {
@@ -727,7 +749,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
-}
+};
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1076,6 +1098,18 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
     // update routes and stuff
     this.doc.advanceTime(d / 1000.0);
     var animD = new Date().getTime() - d;
+
+    if ( this.doc.hasAnimationStateChanged() )
+    {
+        if (this.doc.isAnimating())
+        {
+            runtime.onAnimationStarted();
+        }
+        else
+        {
+            runtime.onAnimationFinished();
+        }
+    }
 
     if (this.doc.needRender) {
         // calc average frames per second

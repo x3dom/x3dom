@@ -57,11 +57,11 @@ x3dom.registerNodeType(
              * The orientation fields of the Viewpoint node specifies relative orientation to the default orientation.
              * @var {x3dom.fields.SFRotation} orientation
              * @memberof x3dom.nodeTypes.Viewpoint
-             * @initvalue 0,0,0,1
+             * @initvalue 0,0,1,0
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+            this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
 
             /**
              * The centerOfRotation field specifies a center about which to rotate the user's eyepoint when in EXAMINE mode.

@@ -92,7 +92,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
             image.crossOrigin = 'anonymous';
         } break;
         case 'use-credentials': {
-            image.crossOrigin = 'use-credentials'
+            image.crossOrigin = 'use-credentials';
         } break;
         case 'none': {
             //this is needed to omit the default case, if default is none, erase this and the default case
@@ -195,7 +195,7 @@ x3dom.Utils.createCompressedTexture2D = function(gl, doc, src, bgnd, crossOrigin
 
   //start loading
 
-  ddsXhr = new XMLHttpRequest();
+  var ddsXhr = new XMLHttpRequest();
 
   var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
 
@@ -224,7 +224,7 @@ x3dom.Utils.tryCompressedTexture2D = function(texture, gl, doc, src, bgnd, cross
 {
   //start loading
 
-  ddsXhr = new XMLHttpRequest();
+  var ddsXhr = new XMLHttpRequest();
 
   var ext = gl.getExtension('WEBGL_compressed_texture_s3tc');
 
@@ -413,7 +413,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
                 image.crossOrigin = 'anonymous';
             } break;
             case 'use-credentials': {
-                image.crossOrigin = 'use-credentials'
+                image.crossOrigin = 'use-credentials';
             } break;
             case 'none': {
                 //this is needed to omit the default case, if default is none, erase this and the default case
@@ -1293,7 +1293,7 @@ x3dom.Utils.forbiddenBySOP = function (uri_string) {
         Port = Host_Port[1];
     } // else will return false for an invalid URL or URL without authority
 
-    Port = Port || "80";
+    Port = Port || originPort;
     Host = Host || document.location.host;
     Scheme = Scheme || document.location.protocol;
     return !(Port === originPort && Host === document.location.host && Scheme === document.location.protocol);

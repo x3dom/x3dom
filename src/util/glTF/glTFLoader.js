@@ -33,15 +33,15 @@ x3dom.glTF.glTFLoader.prototype.getScene = function(shape,shaderProgram, gl, sce
     this.updateScene(shape, shaderProgram, gl, scene);
 };
 
-x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, meshName)
+x3dom.glTF.glTFLoader.prototype.getMesh = function(shape, shaderProgram, gl, meshName)
 {
     this.reset(shape,gl);
 
     var mesh;
-    if(meshName == null)
+    if (meshName == null)
     {
         mesh = Object.keys(this.scene.meshes)[0];
-    }else
+    } else
     {
         for(var key in this.scene.meshes){
             if(this.scene.meshes.hasOwnProperty(key)
@@ -52,7 +52,7 @@ x3dom.glTF.glTFLoader.prototype.getMesh = function(shape,shaderProgram, gl, mesh
             }
         }
     }
-    this.updateMesh(shape, shaderProgram, gl, mesh);
+    this.updateMesh(shape, shaderProgram, gl, mesh, new x3dom.fields.SFMatrix4f());
 };
 
 x3dom.glTF.glTFLoader.prototype.reset = function(shape, gl)
@@ -73,36 +73,67 @@ x3dom.glTF.glTFLoader.prototype.updateScene = function(shape, shaderProgram, gl,
     for(var i = 0; i<nodes.length;++i)
     {
         var nodeID = nodes[i];
-        this.traverseNode(shape, shaderProgram, gl, this.scene.nodes[nodeID]);
+        var worldTransform = new x3dom.fields.SFMatrix4f(); // identity
+        this.traverseNode(shape, shaderProgram, gl, this.scene.nodes[nodeID], worldTransform);
     }
 };
 
-x3dom.glTF.glTFLoader.prototype.traverseNode = function(shape, shaderProgram, gl, node)
+
+x3dom.glTF.glTFLoader.prototype.traverseNode = function(shape, shaderProgram, gl, node, transform)
 {
+    var worldTransform = transform.mult(this.getTransform(node));
     var children = node["children"];
-    if(children!=null)
+    if(children != null)
         for(var i = 0; i<children.length;++i)
         {
             var childID = children[i];
-            this.traverseNode(shape, shaderProgram, gl, this.scene.nodes[childID]);
+            this.traverseNode(shape, shaderProgram, gl, this.scene.nodes[childID], worldTransform);
         }
 
     var meshes = node["meshes"];
     if(meshes != null && meshes.length > 0)
         for (var i = 0; i < meshes.length; ++i) {
             var meshID = meshes[i];
-            if (this.loaded.meshes[meshID] == null) {
-                this.updateMesh(shape, shaderProgram, gl, this.scene.meshes[meshID]);
+            //if (this.loaded.meshes[meshID] == null)
+            {
+                this.updateMesh(shape, shaderProgram, gl, this.scene.meshes[meshID], worldTransform);
                 this.loaded.meshes[meshID] = 1;
             }
         }
 };
 
-x3dom.glTF.glTFLoader.prototype.updateMesh = function(shape, shaderProgram, gl, mesh)
+
+x3dom.glTF.glTFLoader.prototype.getTransform = function (node) {
+    var transform = new x3dom.fields.SFMatrix4f();// start with identity
+    if ( node.matrix ) {
+        transform.setFromArray(node.matrix);
+        return transform;
+    }
+    if ( node.scale && node.scale.length == 3) {
+        var s = node.scale;
+        transform.setScale(new x3dom.fields.SFVec3f(s[0], s[1], s[2]));
+    }
+    if ( node.rotation && node.rotation.length == 4) {
+        var r = node.rotation;
+        var rotationMatrix = new x3dom.fields.SFMatrix4f();
+        rotationMatrix.setRotate(
+            new x3dom.fields.Quaternion(r[0], r[1], r[2], r[3]));
+        transform = rotationMatrix.mult(transform);
+    }
+    if ( node.translation && node.translation.length == 3 ) {
+        var t = node.translation;
+        var translationMatrix = x3dom.fields.SFMatrix4f.translation(
+            new x3dom.fields.SFVec3f(t[0], t[1], t[2]));
+        transform = translationMatrix.mult(transform);
+    }
+    return transform;
+};
+
+x3dom.glTF.glTFLoader.prototype.updateMesh = function(shape, shaderProgram, gl, mesh, worldTransform)
 {
     var primitives = mesh["primitives"];
     for(var i = 0; i<primitives.length; ++i){
-        this.loadglTFMesh(shape, shaderProgram, gl, primitives[i]);
+        this.loadglTFMesh(shape, shaderProgram, gl, primitives[i], worldTransform);
     }
 };
 
@@ -200,7 +231,7 @@ x3dom.glTF.glTFLoader.prototype.loadPrimitive =  function(shape, shaderProgram, 
     x3dom.BinaryContainerLoader.checkError(gl);
 };
 
-x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, gl, primitive)
+x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, gl, primitive, worldTransform)
 {
     "use strict";
 
@@ -241,7 +272,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
                 if (indexed == false)
                 {
                     mesh.drawCount = accessor["count"];
-                    this._mesh._numFaces += indicesAccessor["count"] / 3;
+                    this._mesh._numFaces += accessor["count"] / 3;
                 }
                 this._mesh.numCoords += accessor["count"];
                 break;
@@ -276,8 +307,10 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
     shape._nameSpace.doc.needRender = true;
     x3dom.BinaryContainerLoader.checkError(gl);
 
-    if(primitive.material != null && !this.meshOnly)
+    if(primitive.material != null && !this.meshOnly) {
         mesh.material = this.loadMaterial(gl, this.scene.materials[primitive.material]);
+        mesh.material.worldTransform = worldTransform;
+    }
 
     if(shape.meshes == null)
         shape.meshes = [];
@@ -299,8 +332,7 @@ x3dom.glTF.glTFLoader.prototype.loadBufferViews = function(shape, gl)
         if(bufferView.target == null && bufferView.target != gl.ARRAY_BUFFER && bufferView.target != gl.ELEMENT_ARRAY_BUFFER)
             continue;
 
-        if(bufferView.target == gl.ELEMENT_ARRAY_BUFFER)
-            shape._webgl.externalGeometry = 1;
+        shape._webgl.externalGeometry = 1;
 
         var data = new Uint8Array(this.body.buffer,
             this.header.bodyOffset + bufferView["byteOffset"],
@@ -374,6 +406,7 @@ x3dom.glTF.glTFLoader.prototype.getNumComponentsForType = function(type)
     }
 };
 
+
 x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
 {
     if(this.loaded.images == null)
@@ -383,7 +416,7 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         return this.loaded.images[imageNodeName];
 
     var imageNode = this.scene.images[imageNodeName];
-    if(imageNode.extensions!=null && imageNode.extensions.KHR_binary_glTF != null)
+    if (imageNode.extensions != null && imageNode.extensions.KHR_binary_glTF != null)
     {
         var ext = imageNode.extensions.KHR_binary_glTF;
         var bufferView = this.scene.bufferViews[ext.bufferView];
@@ -395,7 +428,19 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
         var blobUrl = window.URL.createObjectURL(blob);
 
         var image = new Image();
+
         image.src = blobUrl;
+
+        this.loaded.images[imageNodeName] = image;
+
+        return image;
+    }
+    //untested
+    if (imageNode.uri != null)
+    {
+        var image = new Image();
+
+        image.src = imageNode.uri;
 
         this.loaded.images[imageNodeName] = image;
 
@@ -405,8 +450,16 @@ x3dom.glTF.glTFLoader.prototype.loadImage = function(imageNodeName, mimeType)
     return null;
 };
 
-x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
+x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNodeName)
 {
+    if(this.loaded.textures == null)
+        this.loaded.textures = {};
+
+    if(this.loaded.textures[textureNodeName]!=null)
+        return this.loaded.textures[textureNodeName];
+
+    var textureNode = this.scene.textures[textureNodeName];
+
     var format = textureNode.format;
     var internalFormat = textureNode.internalFormat;
     var sampler = {};
@@ -426,60 +479,71 @@ x3dom.glTF.glTFLoader.prototype.loadTexture = function(gl, textureNode)
 
     var glTFTexture = new x3dom.glTF.glTFTexture(gl, format, internalFormat, sampler, target, type, image);
 
+    this.loaded.textures[textureNodeName] = glTFTexture;
+
     return glTFTexture;
 };
 
 x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 {
-    if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
-    {
-        materialNode = materialNode.extensions.KHR_materials_common;
+    if(materialNode){
+        if(materialNode.extensions != null && materialNode.extensions.KHR_materials_common != null)
+        {
+            materialNode = materialNode.extensions.KHR_materials_common;
 
-        var material = new x3dom.glTF.glTFKHRMaterialCommons();
+            var material = new x3dom.glTF.glTFKHRMaterialCommons();
 
-        material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
-        material.doubleSided = materialNode.doubleSided;
+            material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
+            material.doubleSided = materialNode.doubleSided;
 
-        for(var key in materialNode.values)
-            if(materialNode.values.hasOwnProperty(key))
-            {
-                var value = materialNode.values[key];
-                if(typeof value === 'string')
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
                 {
-                    var textureNode = this.scene.textures[value];
-                    material[key+"Tex"] = this.loadTexture(gl, textureNode);
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        material[key+"Tex"] = this.loadTexture(gl, value);
+                    }
+                    else
+                    {
+                        material[key] = value;
+                    }
                 }
-                else
-                {
-                    material[key] = value;
-                }
-            }
 
-        return material;
-    }else
-    {
-        var technique = this.scene.techniques[materialNode.technique];
-        var program = this.loadShaderProgram(gl, technique.program);
+            return material;
+        }else
+        {
+            var technique = this.scene.techniques[materialNode.technique];
+            var program = this.loadShaderProgram(gl, technique.program);
 
-        var material = new x3dom.glTF.glTFMaterial(technique);
-        material.program = program;
+            var material = new x3dom.glTF.glTFMaterial(technique);
+            material.program = program;
 
-        for(var key in materialNode.values)
-            if(materialNode.values.hasOwnProperty(key))
-            {
-                var value = materialNode.values[key];
-                if(typeof value === 'string')
-                {
-                    var textureNode = this.scene.textures[value];
-                    material.textures[key] = this.loadTexture(gl, textureNode);
-                }
-                else
-                {
-                    material.values[key] = value;
+            for(var key in technique.parameters) {
+                if (!technique.parameters.hasOwnProperty(key)) continue;
+
+                var parameter = technique.parameters[key];
+                if(parameter.value != null){
+                    material.values[key] = parameter.value;
                 }
             }
 
-        return material;
+            for(var key in materialNode.values)
+                if(materialNode.values.hasOwnProperty(key))
+                {
+                    var value = materialNode.values[key];
+                    if(typeof value === 'string')
+                    {
+                        material.textures[key] = this.loadTexture(gl, value);
+                    }
+                    else
+                    {
+                        material.values[key] = value;
+                    }
+                }
+
+            return material;
+        }
     }
 
     return new x3dom.glTF.glTFKHRMaterialCommons();
@@ -536,9 +600,31 @@ x3dom.glTF.glTFLoader.prototype.loadShaderProgram = function(gl, shaderProgramNa
 
 x3dom.glTF.glTFLoader.prototype._loadShaderSource = function(shaderNode)
 {
-    var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
+    if(shaderNode.extensions != null && shaderNode.extensions.KHR_binary_glTF != null)
+    {
+        var bufferView = this.scene.bufferViews[shaderNode.extensions.KHR_binary_glTF.bufferView];
 
-    var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
-    var src = new TextDecoder("ascii").decode(shaderBytes);
-    return src;
+        var shaderBytes = new Uint8Array(this.body.buffer, this.header.bodyOffset+bufferView.byteOffset, bufferView.byteLength);
+        var src = new TextDecoder("ascii").decode(shaderBytes);
+        return src;
+    }
+    else
+    {
+        var dataURL = /^data\:([^]*?)(?:;([^]*?))?(;base64)?,([^]*)$/;
+        var result = dataURL .exec (shaderNode.uri);
+        if (result)
+        {
+            //var mimeType = result [1];
+            var data = result [4];
+
+            if (result [2] === "base64")
+                data = atob (data);
+            else
+                data = unescape (data);
+
+            console.log(data);
+            return data;
+        }
+        x3dom.debug.logError('no shader found');
+    }
 };

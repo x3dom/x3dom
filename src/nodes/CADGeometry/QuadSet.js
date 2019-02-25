@@ -228,7 +228,7 @@ x3dom.registerNodeType(
 
                         this._mesh._colors[0] = [];
 
-                        var indexes = this._vf.index;
+                        var i, indexes = this._vf.index;
                         for (i=0; i < indexes.length; ++i)
                         {
                             if ((i > 0) && (i % 3 === 0 )) {

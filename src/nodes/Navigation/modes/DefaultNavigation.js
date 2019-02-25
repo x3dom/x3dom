@@ -1,5 +1,3 @@
-
-
 x3dom.DefaultNavigation = function(navigationNode)
 {
     this.navi = navigationNode;
@@ -29,13 +27,13 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
     var d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
     d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-    vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
+    var vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
 
     if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
     {
         viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
     }
-    else
+    //else
     {
         if ( navi._vf.typeParams.length >= 6 ) {
 
@@ -47,13 +45,13 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
         }
 
         view._movement = view._movement.add(vec);
-        mat = view.getViewpointMatrix().mult(view._transMat);
+        var mat = view.getViewpointMatrix().mult(view._transMat);
         //TODO; move real distance along viewing ray
         view._transMat = mat.inverse().
                             mult(x3dom.fields.SFMatrix4f.translation(view._movement)).
                             mult(mat);
     }
-}
+};
 
 x3dom.DefaultNavigation.prototype.moveForward = function(view)
 {
@@ -62,11 +60,11 @@ x3dom.DefaultNavigation.prototype.moveForward = function(view)
     if (navi.getType() === "game")
     {
         var avatarRadius = 0.25;
-        var avatarHeight = 1.6;
+        //var avatarHeight = 1.6; // not used
 
         if (navi._vf.avatarSize.length > 2) {
             avatarRadius = navi._vf.avatarSize[0];
-            avatarHeight = navi._vf.avatarSize[1];
+            //avatarHeight = navi._vf.avatarSize[1]; // not used
         }
 
         var speed = 5 * view._deltaT * navi._vf.speed;
@@ -468,6 +466,9 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
             // finally attach to ground when walking
             if (navType === "walk")
             {
+                // Set the up-vector to Y during walk
+                up.x = 0.0; up.y = 1.0; up.z = 0.0;
+
                 tmpAt = view._from.addScaled(up, -1.0);
                 tmpUp = sv.cross(up.negate()).normalize();  // lv
 
@@ -480,9 +481,11 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
                 if (view._pickingInfo.pickObj)
                 {
                     dist = view._pickingInfo.pickPos.subtract(view._from).length();
+                    dist = (avatarHeight - dist) / navi._vf.walkDamping;
 
-                    view._at = view._at.add(up.multiply(avatarHeight - dist));
-                    view._from = view._from.add(up.multiply(avatarHeight - dist));
+                    view._at = view._at.add(up.multiply(dist));
+                    view._from = view._from.add(up.multiply(dist));
+
                 }
             }
             view._pickingInfo.pickObj = null;
@@ -506,33 +509,46 @@ x3dom.DefaultNavigation.prototype.navigateTo = function(view, timeStamp)
 x3dom.DefaultNavigation.prototype.animateTo = function(view, target, prev, dur)
 {
     var navi = this.navi;
+    var prevTargetMat;
+    var prevMat;
     
-    if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
+    if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode))
+    {
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
     }
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && dur != 0 && navi.getType() !== "game")
     {
-        if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
-            prev = prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()).
-                         mult(view._transMat).mult(view._rotMat);
+        if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode))
+        {
+            prevMat = prev.getViewMatrix().
+                           mult(prev.getCurrentTransform().inverse()).
+                           mult(view._transMat).mult(view._rotMat);
+
+            if(view._mixer.isActive())
+            {
+                prev.setView(view._mixer.getEndMatrix());
+                view._mixer.reset();
+            }
 
             view._mixer.beginTime = view._lastTS;
 
-            if (arguments.length >= 4 && arguments[3] != null) {
-                // for lookAt to assure travel speed of 1 m/s
+            if (arguments.length >= 4 && arguments[3] != null)
+            {
                 view._mixer.endTime = view._lastTS + dur;
             }
-            else {
+            else
+            {
                 view._mixer.endTime = view._lastTS + navi._vf.transitionTime;
             }
 
-            view._mixer.setBeginMatrix (prev);
+            view._mixer.setBeginMatrix (prevMat);
             view._mixer.setEndMatrix (target);
             
-            view._scene.getViewpoint().setView(prev);
+            view._scene.getViewpoint().setView(prevMat);
         }
-        else {
+        else
+        {
             view._scene.getViewpoint().setView(target);
         }
     }
@@ -584,7 +600,8 @@ x3dom.DefaultNavigation.prototype.resetView = function(view)
         target = target.getViewMatrix().mult(target.getCurrentTransform().inverse());
 
         view._mixer.setEndMatrix(target);
-    } else
+    }
+    else
     {
         view._scene.getViewpoint().resetView();
     }
@@ -608,6 +625,16 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
 
     var dx = x - view._lastX;
     var dy = y - view._lastY;
+	
+	
+    view._dx = dx;
+    view._dy = dy;
+
+    view._lastX = x;
+    view._lastY = y;
+    
+    if (navType !== "examine") { return; } // reinstate 1.7.1 behaviour
+	
     var d, vec, cor, mat = null;
     var alpha, beta;
 
@@ -655,7 +682,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
         {
             viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - vec.z );
         }
-        else
+        //else
         {
             if ( navi._vf.typeParams.length >= 6 ) {
 
@@ -676,13 +703,6 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     }
 
     view._isMoving = true;
-    
-    
-    view._dx = dx;
-    view._dy = dy;
-
-    view._lastX = x;
-    view._lastY = y;
 };
 
 x3dom.DefaultNavigation.prototype.onTouchStart = function(view, evt, touches)
@@ -690,7 +710,7 @@ x3dom.DefaultNavigation.prototype.onTouchStart = function(view, evt, touches)
     
 };
 
-x3dom.DefaultNavigation.prototype.onTouchDrag = function(view,evt, touches, translation, rotation)
+x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, translation, rotation)
 {
     if (view._currentInputType == x3dom.InputTypes.NAVIGATION)
     {
@@ -705,6 +725,14 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view,evt, touches, tran
                 distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 
                 translation = translation.multiply(distance);
+
+                if (x3dom.isa(viewpoint, x3dom.nodeTypes.OrthoViewpoint))
+                {
+                    viewpoint.setZoom( Math.abs( viewpoint._fieldOfView[0] ) - translation.z );
+
+                    translation.z = 0;
+                }
+                
                 view._movement = view._movement.add(translation);
 
                 view._transMat = viewpoint.getViewMatrix().inverse().

@@ -88,7 +88,7 @@ x3dom.registerNodeType(
 
                 this._vf.image.setPixels(pixels);
 
-                if( update ) {
+                if (update) {
                     this.invalidateGLObject();
                 }
             },

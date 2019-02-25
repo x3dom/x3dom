@@ -40,6 +40,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
 
             /**
+             * Enable/disable reversed mousewheel scrolling to zoom.
+             * @var {x3dom.fields.SFBool} reverseScroll
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue false
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'reverseScroll', false);
+
+            /**
              * defines the navigation type
              * @var {x3dom.fields.MFString} type
              * @range {"ANY","WALK","EXAMINE","FLY","LOOKAT","NONE","EXPLORE",...}
@@ -86,6 +96,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
+
+            /**
+             * Factor for damping the walk animation
+             * Interchange profile hint: this field may be ignored.
+             * @var {x3dom.fields.SFFloat} walkDamping
+             * @memberof x3dom.nodeTypes.NavigationInfo
+             * @initvalue 2.0
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat(ctx, 'walkDamping', 2.0);
 
             /**
              * Geometry beyond the visibilityLimit may not be rendered (far culling plane of the view frustrum).
@@ -146,7 +167,8 @@ x3dom.registerNodeType(
             
             this._typeMapping = {
               "default":x3dom.DefaultNavigation,
-              "turntable":x3dom.TurntableNavigation  
+              "turntable":x3dom.TurntableNavigation,
+              "walk":x3dom.WalkNavigation
             };
             
             this._heliUpdated = false;
@@ -163,6 +185,10 @@ x3dom.registerNodeType(
                 else if (fieldName == "type") {
                     this.setType(this.getType());
                 }
+                //AP: needs to be preserved from X3DBindableNode
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
+                }
             },
 
             setType: function(type, viewarea) {
@@ -176,7 +202,7 @@ x3dom.registerNodeType(
                         this._impl = new this._typeMapping[navType](this);                    
                     
                     switch (navType) {
-                        case 'game':
+                        case 'game': //perhaps needed for 'walk' as well ?
                             if (viewarea)
                                 viewarea.initMouseState();
                             else

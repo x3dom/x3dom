@@ -62,7 +62,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'allowViewpointInside', true)
+            this.addField_SFBool(ctx, 'allowViewpointInside', true);
 
             //Neccesary for counting the textures which are added on each style, number of textures can be variable
             this._textureID = 0;
@@ -166,9 +166,9 @@ x3dom.registerNodeType(
                 "  s1 = floor(volpos.z*nS);\n"+
                 "  s2 = s1+1.0;\n"+
                 "  dx1 = fract(s1/nX);\n"+
-                "  dy1 = floor(s1/nY)/nY;\n"+
+                "  dy1 = floor(s1/nX)/nY;\n"+
                 "  dx2 = fract(s2/nX);\n"+
-                "  dy2 = floor(s2/nY)/nY;\n"+
+                "  dy2 = floor(s2/nX)/nY;\n"+
                 "  texpos1.x = dx1+(volpos.x/nX);\n"+
                 "  texpos1.y = dy1+(volpos.y/nY);\n"+
                 "  texpos2.x = dx2+(volpos.x/nX);\n"+

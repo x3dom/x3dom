@@ -45,10 +45,10 @@ x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointer = function(gl, shaderProgr
     if(this.material != null && this.material.attributeMapping != null)
     {
         var mapping = this.material.attributeMapping;
-        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
-        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.NORMAL]], this.buffers[glTF_BUFFER_IDX.NORMAL]);
-        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.TEXCOORD]], this.buffers[glTF_BUFFER_IDX.TEXCOORD]);
-        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.COLOR]], this.buffers[glTF_BUFFER_IDX.COLOR]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.NORMAL]], this.buffers[glTF_BUFFER_IDX.NORMAL]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.TEXCOORD]], this.buffers[glTF_BUFFER_IDX.TEXCOORD]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.COLOR]], this.buffers[glTF_BUFFER_IDX.COLOR]);
     }
     else
     {
@@ -68,7 +68,7 @@ x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointerPosition = function(gl, sha
     if(useMaterial == true && this.material != null && this.material.attributeMapping != null)
     {
         var mapping = this.material.attributeMapping;
-        this._bindVertexAttribPointer(gl, shaderProgram[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
+        this._bindVertexAttribPointer(gl, this.material.program[mapping[glTF_BUFFER_IDX.POSITION]], this.buffers[glTF_BUFFER_IDX.POSITION]);
     }
     else
     {
@@ -78,13 +78,18 @@ x3dom.glTF.glTFMesh.prototype.bindVertexAttribPointerPosition = function(gl, sha
 
 x3dom.glTF.glTFMesh.prototype._bindVertexAttribPointer = function(gl, shaderPosition, buffer)
 {
-    if(shaderPosition!=null && buffer != null)
+    if(shaderPosition!=null)
     {
+        if(buffer != null){
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer.idx);
+
         gl.vertexAttribPointer(shaderPosition,
             buffer.numComponents, buffer.type, false,
             buffer.stride, buffer.offset);
         gl.enableVertexAttribArray(shaderPosition);
+        }else{
+            gl.disableVertexAttribArray(shaderPosition);
+        }
     }
 };
 
@@ -93,13 +98,14 @@ x3dom.glTF.glTFMesh.prototype.render = function(gl, polyMode)
     if(this.material != null && !this.material.created())
         return;
 
-    if(polyMode == null)
+    if(polyMode == null || polyMode > this.primitiveType)
         polyMode = this.primitiveType;
 
     if(this.buffers[glTF_BUFFER_IDX.INDEX])
         gl.drawElements(polyMode, this.drawCount, this.buffers[glTF_BUFFER_IDX.INDEX].type, this.buffers[glTF_BUFFER_IDX.INDEX].offset);
     else
         gl.drawArrays(polyMode, 0, this.drawCount);
+
 };
 
 x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, type, image)
@@ -116,10 +122,24 @@ x3dom.glTF.glTFTexture = function(gl, format, internalFormat, sampler, target, t
     this.create(gl);
 };
 
-x3dom.glTF.glTFTexture.prototype.isPowerOfTwo = function(x)
+x3dom.glTF.glTFTexture.prototype.needsPowerOfTwo = function(gl)
 {
-    var powerOfTwo = !(x == 0) && !(x & (x - 1));
-    return powerOfTwo;
+    var resize = true;
+    resize &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    resize &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+    resize &= (this.sampler.wrapS == gl.CLAMP_TO_EDGE);
+    resize &= (this.sampler.wrapT == gl.CLAMP_TO_EDGE);
+
+    return !resize;
+};
+
+x3dom.glTF.glTFTexture.prototype.needsMipMaps = function(gl)
+{
+    var need = true;
+    need &= (this.sampler.magFilter == gl.LINEAR || this.sampler.magFilter == gl.NEAREST);
+    need &= (this.sampler.minFilter == gl.LINEAR || this.sampler.minFilter == gl.NEAREST);
+
+    return !need;
 };
 
 x3dom.glTF.glTFTexture.prototype.create = function(gl)
@@ -129,25 +149,37 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
     this.glTexture = gl.createTexture();
 
+    var imgSrc = this.image;
+
+    if(this.needsPowerOfTwo(gl)){
+        var width = this.image.width;
+        var height = this.image.height;
+
+        var aspect = width / height;
+
+        imgSrc = x3dom.Utils.scaleImage(this.image);
+
+        var aspect2 = imgSrc.width / imgSrc.height;
+
+        if(Math.abs(aspect - aspect2) > 0.01){
+            console.warn("Image "+this.image.src+" was resized to power of two, but has unsupported aspect ratio and may be distorted!");
+        }
+    }
+
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
-    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, this.image);
+    gl.texImage2D(gl.TEXTURE_2D, 0, this.internalFormat, this.format, this.type, imgSrc);
 
-    if(this.sampler.magFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
 
-    if(this.sampler.minFilter != null)
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, this.sampler.magFilter);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, this.sampler.minFilter);
 
-    //if(!this.isPowerOfTwo(this.image.width)||!this.isPowerOfTwo(this.image.height)){
-        // gl.NEAREST is also allowed, instead of gl.LINEAR, as neither mipmap.
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        // Prevents s-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        // Prevents t-coordinate wrapping (repeating).
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this.sampler.wrapS);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this.sampler.wrapT);
+
     //}
 
-    //gl.generateMipmap(gl.TEXTURE_2D);
+    if(this.needsMipMaps(gl))
+        gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
 
     this.created = true;
@@ -155,10 +187,11 @@ x3dom.glTF.glTFTexture.prototype.create = function(gl)
 
 x3dom.glTF.glTFTexture.prototype.bind = function(gl, textureUnit, shaderProgram, uniformName)
 {
+    gl.activeTexture(gl.TEXTURE0+textureUnit);
+
     if(!this.created)
         this.create(gl);
 
-    gl.activeTexture(gl.TEXTURE0+textureUnit);
     gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
     gl.uniform1i(gl.getUniformLocation(shaderProgram, uniformName), textureUnit);
 };
@@ -185,7 +218,13 @@ x3dom.glTF.glTFKHRMaterialCommons = function()
 
     this.doubleSided = false;
 
-    this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.BLINN;
+    this.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE.CONSTANT;
+
+    this.attributeMapping = {};
+    this.attributeMapping[glTF_BUFFER_IDX.POSITION] = "position";
+    this.attributeMapping[glTF_BUFFER_IDX.NORMAL] = "normal";
+    this.attributeMapping[glTF_BUFFER_IDX.TEXCOORD] = "texcoord";
+    this.attributeMapping[glTF_BUFFER_IDX.COLOR] = "color";
 };
 
 x3dom.glTF.glTFKHRMaterialCommons.prototype.created = function()
@@ -234,14 +273,13 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
 {
     this.program.bind();
 
-
     // set all used Shader Parameter
     for(var key in shaderProgram){
         if(!shaderProgram.hasOwnProperty(key))
             continue;
 
         if(this.program.hasOwnProperty(key))
-            this.program[key] = shaderProgram[key];
+            this.program[key] = this.updateTransforms(key, shaderProgram[key]);
     }
 
     if(this.diffuseTex != null)
@@ -267,6 +305,54 @@ x3dom.glTF.glTFKHRMaterialCommons.prototype.bind = function(gl, shaderProgram)
     this.program.technique = this.technique;
 };
 
+x3dom.glTF.glTFKHRMaterialCommons.prototype.updateTransforms = function(uniform, value)
+{
+    var matrix4f = new x3dom.fields.SFMatrix4f();
+    
+    function glMultMatrix4 (gl, m) {
+        matrix4f.setFromArray(gl);
+        return matrix4f.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+    };
+    
+    switch(uniform){
+        case "modelViewInverseTransposeMatrix":
+            //do modelviewinverse
+            var worldInverse = this.worldTransform.inverse();
+            matrix4f.setFromArray(value);
+            //mult in, transpose and to GL
+            var mat = worldInverse.mult(matrix4f).transpose().toGL();
+            var model_view_inv_gl = [
+                mat[0], mat[1], mat[2],
+                mat[4],mat[5],mat[6],
+                mat[8],mat[9],mat[10]];
+            return model_view_inv_gl;
+            break;
+        case "modelViewInverseMatrix":
+            // work with worldTransform.inverse
+            // (VM x W)-1 = W-1 x VM-1
+            var worldInverse = this.worldTransform.inverse();
+            matrix4f.setFromArray(value);
+            return worldInverse.mult(matrix4f);
+            break;
+        case "modelViewMatrix":
+        case "modelViewProjectionMatrix":
+        case "modelMatrix":
+        case "model":
+            return glMultMatrix4(value, this.worldTransform);
+            break;
+        case "viewMatrix":
+        case "projectionMatrix":
+            return value;
+            break;
+        default:
+            return value;
+            break;
+    }
+    
+	console.warn("switch default not encountered ?");
+	return value;
+};
+
 x3dom.glTF.glTFMaterial = function(technique)
 {
     this.technique = technique;
@@ -284,25 +370,25 @@ x3dom.glTF.glTFMaterial = function(technique)
                 switch(parameter.semantic)
                 {
                     case "MODELVIEW":
-                        this.semanticMapping["modelViewMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewMatrix";
                         break;
                     case "MODELVIEWINVERSETRANSPOSE":
-                        this.semanticMapping["modelViewInverseTransposeMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewInverseTransposeMatrix";
                         break;
                     case "PROJECTION":
-                        this.semanticMapping["projectionMatrix"] = key;
+                        this.semanticMapping[key] = "projectionMatrix";
                         break;
                     case "MODEL":
-                        this.semanticMapping["modelMatrix"] = key;
+                        this.semanticMapping[key] = "modelMatrix";
                         break;
                     case "MODELVIEWPROJECTION":
-                        this.semanticMapping["modelViewProjectionMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewProjectionMatrix";
                         break;
                     case "VIEW":
-                        this.semanticMapping["viewMatrix"] = key;
+                        this.semanticMapping[key] = "viewMatrix";
                         break;
                     case "MODELVIEWINVERSE":
-                        this.semanticMapping["modelViewInverseMatrix"] = key;
+                        this.semanticMapping[key] = "modelViewInverseMatrix";
                         break;
                     default:
                         break;
@@ -353,13 +439,16 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
     this.updateTransforms(shaderParameter);
 
+    var texUnit = 0;
+
     for(var key in this.technique.uniforms)
         if(this.technique.uniforms.hasOwnProperty(key))
         {
             var uniformName = this.technique.uniforms[key];
             if(this.textures[uniformName] != null){
                 var texture = this.textures[uniformName];
-                texture.bind(gl, 0, this.program.program, key);
+                texture.bind(gl, texUnit, this.program.program, key);
+                texUnit++;
             }
             else if(this.values[uniformName] != null)
                 this.program[key] = this.values[uniformName];
@@ -368,38 +457,63 @@ x3dom.glTF.glTFMaterial.prototype.bind = function(gl, shaderParameter)
 
 x3dom.glTF.glTFMaterial.prototype.updateTransforms = function(shaderParameter)
 {
-    if(this.program != null)
+    var matrix4f = new x3dom.fields.SFMatrix4f();
+    
+    function glMultMatrix4 (gl, m) {
+        matrix4f.setFromArray(gl);
+        return matrix4f.mult(m).toGL(); //optimize by multiplying gl matrixes directly
+    }
+    
+    if(this.program !== null)
     {
         this.program.bind();
 
-        if(this.semanticMapping["modelViewMatrix"] != null)
-            this.program[this.semanticMapping["modelViewMatrix"]] = shaderParameter.modelViewMatrix;
+        for(var key in this.semanticMapping){
+            if(!this.semanticMapping.hasOwnProperty(key))continue;
 
-        if(this.semanticMapping["viewMatrix"] != null)
-            this.program[this.semanticMapping["viewMatrix"]] = shaderParameter.viewMatrix;
+            var mapping = this.semanticMapping[key];
 
-        if(this.semanticMapping["modelViewInverseTransposeMatrix"] != null) {
-            var mat = shaderParameter.normalMatrix;
+            switch(mapping){
+                case "modelViewMatrix":
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewMatrix, this.worldTransform);
+                    break;
+                case "viewMatrix":
+                    this.program[key] = shaderParameter.viewMatrix;
+                    break;
+                case "modelViewInverseTransposeMatrix":
+                    //var mat = shaderParameter.normalMatrix;
+                    //do modelviewinverse
+                    var worldInverse = this.worldTransform.inverse();
+                    matrix4f.setFromArray(shaderParameter.modelViewMatrixInverse);
+                    //mult in, transpose and to GL
+                    var mat = worldInverse.mult(matrix4f).transpose().toGL();
 
-            var model_view_inv_gl =
-                [mat[0], mat[1], mat[2],
-                mat[4],mat[5],mat[6],
-                mat[8],mat[9],mat[10]];
+                    var model_view_inv_gl =
+                        [mat[0], mat[1], mat[2],
+                            mat[4],mat[5],mat[6],
+                            mat[8],mat[9],mat[10]];
 
-            this.program[this.semanticMapping["modelViewInverseTransposeMatrix"]] = model_view_inv_gl;
+                    this.program[key] = model_view_inv_gl;
+                    break;
+                case "modelViewInverseMatrix":
+                    // work with worldTransform.inverse
+                    // (VM x W)-1 = W-1 x VM-1
+                    var worldInverse = this.worldTransform.inverse();
+                    matrix4f.setFromArray(shaderParameter.modelViewMatrixInverse);
+                    this.program[key] = worldInverse.mult(matrix4f);
+                    break;
+                case "modelViewProjectionMatrix":
+                    this.program[key] = glMultMatrix4(shaderParameter.modelViewProjectionMatrix, this.worldTransform);
+                    break;
+                case "modelMatrix":
+                    this.program[key] = glMultMatrix4(shaderParameter.model, this.worldTransform);
+                    break;
+                case "projectionMatrix":
+                    this.program[key] = shaderParameter.projectionMatrix;
+                    break;
+                default:
+                    break;
+            }
         }
-
-        if(this.semanticMapping["modelViewInverseMatrix"] != null)
-            this.program[this.semanticMapping["modelViewInverseMatrix"]] = shaderParameter.modelViewMatrixInverse;
-
-        if(this.semanticMapping["modelViewProjectionMatrix"] != null)
-            this.program[this.semanticMapping["modelViewProjectionMatrix"]] = shaderParameter.modelViewProjectionMatrix;
-
-        if(this.semanticMapping["modelMatrix"] != null)
-            this.program[this.semanticMapping["modelMatrix"]] = shaderParameter.model;
-
-        if(this.semanticMapping["projectionMatrix"] != null)
-            this.program[this.semanticMapping["projectionMatrix"]] = shaderParameter.projectionMatrix;
     }
-
 };
