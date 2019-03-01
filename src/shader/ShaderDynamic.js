@@ -736,7 +736,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 
         if(properties.SHINMAP){
-            shader += "_shininess = texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+            shader += "_shininess *= texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
         }
 
         //Specularmap
