@@ -184,7 +184,14 @@ x3dom.VRControllerManager.prototype.onUpdate = function( viewarea, vrDisplay, co
 
         if(controllers.left.buttons[1].pressed)
         {
-            this.fit(viewarea);
+            //this.fit(viewarea);
+			var pose = controllers.left.pose;
+			var controllerRotation = (pose.orientation ? x3dom.fields.Quaternion.fromArray(pose.orientation) : new x3dom.fields.Quaternion());
+			var cRotMatrix = controllerRotation.toMatrix();
+			var cntlDir = cRotMatrix.e2();
+			var scaleFactor = 1;
+			cntlDir = new x3dom.fields.SFVec3f(cntlDir.x, cntlDir.y, cntlDir.z).multiply(scaleFactor);
+			viewarea._movement = viewarea._movement.add(cntlDir);
         }
     }
     
@@ -195,7 +202,14 @@ x3dom.VRControllerManager.prototype.onUpdate = function( viewarea, vrDisplay, co
 
         if(controllers.right.buttons[1].pressed)
         {
-            this.fit(viewarea);
+            //this.fit(viewarea);
+			var pose = controllers.right.pose;
+			var controllerRotation = (pose.orientation ? x3dom.fields.Quaternion.fromArray(pose.orientation) : new x3dom.fields.Quaternion());
+			var cRotMatrix = controllerRotation.toMatrix();
+			var cntlDir = cRotMatrix.e2();
+			var scaleFactor = 1;
+			cntlDir = new x3dom.fields.SFVec3f(cntlDir.x, cntlDir.y, cntlDir.z).multiply(scaleFactor);
+			viewarea._movement = viewarea._movement.add(cntlDir);
         }
     }
 
