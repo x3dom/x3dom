@@ -288,6 +288,16 @@ x3dom.registerNodeType(
                         app.checkSortType();
                     });
                 }
+
+                if (fieldName == "alphaMode")
+                {
+                    Array.forEach(this._parentNodes, function (app) {
+                        Array.forEach(app._parentNodes, function (shape) {
+                            shape._dirty.shader = true;
+                        });
+                        app.checkSortType();
+                    });
+                }
             },
 
             hasTextures: function()
