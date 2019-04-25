@@ -38,6 +38,13 @@ x3dom.VRControllerManager = function()
             scaleFactor : new x3dom.fields.SFVec3f(40, 40, 40),
             offset : new x3dom.fields.SFVec3f(),
             axesScale : [1,1]
+        },
+        "WindowsMR DELL VISOR VR118" : {
+            left  : "https://x3dom.org/download/assets/vr/microsoft-left.glb",
+            right : "https://x3dom.org/download/assets/vr/microsoft-right.glb",
+            scaleFactor : new x3dom.fields.SFVec3f(40, 40, 40),
+            offset : new x3dom.fields.SFVec3f(),
+            axesScale : [1,1]
         }
     }
 
@@ -59,11 +66,10 @@ x3dom.VRControllerManager.prototype._onGamePadConnected = function( e )
     navigator.getVRDisplays().then( function( displays ) {
 
         var display = displays[0];
+        var controller = this.controllers[ display.displayName ];
 
-        if(display && gamepad.displayId == display.displayId)
+        if(display && gamepad.displayId == display.displayId && controller)
         {
-            var controller = this.controllers[ display.displayName ];
-
             if ( gamepad.hand == "left" )
             {
                 this.leftGamepadIdx = gamepad.index;
