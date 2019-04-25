@@ -6,6 +6,7 @@
 x3dom.glTF2Loader = function(nameSpace)
 {
     this._nameSpace = nameSpace;
+    this._definitions = {};
 }
 
 /**
@@ -422,6 +423,11 @@ x3dom.glTF2Loader.prototype._generateX3DAppearance = function(material)
 x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
 {
     var mat = document.createElement("physicalmaterial");
+
+    if( this._USEorDEF( mat, "glTF_MATERIAL_" + material.name ) )
+    {
+        return mat;
+    }
 
     var texture;
     var baseColorFactor   = [1,1,1,1];
@@ -971,6 +977,21 @@ x3dom.glTF2Loader.prototype._bufferURI = function(value)
 
     return uri;
 };
+
+x3dom.glTF2Loader.prototype._USEorDEF = function( node, value )
+{
+    if ( this._definitions[ value ] != undefined )
+    {
+        node.setAttribute( "USE", value );
+        return true;
+    }
+    else
+    {
+        node.setAttribute( "DEF", value );
+        this._definitions[ value ] = value;
+        return false;
+    }
+}
 
 x3dom.glTF2Loader.prototype._primitiveType = function(mode)
 {
