@@ -84,7 +84,7 @@ x3dom.debug = {
         x3dom.debug.logContainer.setAttribute("class", "x3dom-log");
     },
 
-    appendElement(x3dElement)
+    appendElement: function(x3dElement)
     {
         x3dElement.appendChild(x3dom.debug.logContainer);
     },

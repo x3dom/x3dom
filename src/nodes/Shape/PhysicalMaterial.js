@@ -16,9 +16,9 @@ x3dom.registerNodeType(
         /**
          * Constructor for X3DMaterialNode
          * @constructs x3dom.nodeTypes.PhysicalMaterial
-         * @x3d 3.3
+         * @x3d x.x
          * @component Shape
-         * @status full
+         * @status experimental
          * @extends x3dom.nodeTypes.X3DMaterialNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is the base node type for all Material nodes.
@@ -26,6 +26,14 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
 
+            /**
+             * The material model used. Valid values are "roughnessMetallic" and "specularGlossiness".
+             * @var {x3dom.fields.SFString} model
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
+             * @initvalue roughnessMetallic
+             * @field x3dom
+             * @instance
+             */
             this.addField_SFString(ctx, 'model', "roughnessMetallic");
 
             /**
@@ -36,7 +44,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFColor} baseColorFactor
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1,1,1,1
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFColorRGBA(ctx, 'baseColorFactor', 1, 1, 1, 1);
@@ -51,7 +59,7 @@ x3dom.registerNodeType(
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 0.0
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'metallicFactor', 0);
@@ -65,23 +73,25 @@ x3dom.registerNodeType(
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 0.2
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFFloat(ctx, 'roughnessFactor', 0.2);
 
             /**
-             * Toto
+             * The RGBA components of the reflected diffuse color of the material used in the spec.-gloss. model.
+             * Metals have a diffuse value of '0.0, 0.0, 0.0'. The fourth component (A) is the opacity of the material.
+             * The values are linear.
              * @var {x3dom.fields.SFColor} diffuseFactor
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1,1,1
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFColorRGBA(ctx, 'diffuseFactor', 1, 1, 1, 1);
 
             /**
-             * Todo
+             * The specular RGB color of the material used in the spec.-gloss. model. This value is linear.
              * @var {x3dom.fields.SFColor} specularFactor
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1,1,1
@@ -91,7 +101,9 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'specularFactor', 1, 1, 1);
 
             /**
-             * todo
+             * The glossiness or smoothness of the material used in the spec.-gloss. model.
+             * A value of 1.0 means the material has full glossiness or is perfectly smooth.
+             * A value of 0.0 means the material has no glossiness or is perfectly rough. This value is linear.
              * @var {x3dom.fields.SFFloat} glossinessFactor
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.PhysicalMaterial
@@ -113,7 +125,7 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'emissiveFactor', 0, 0, 0);
 
             /**
-             * Space in which normals of the normalTexture are defined.
+             * Space in which normals of the normalTexture are defined. Valid values are "TANGENT" and "OBJECT".
              * @var {x3dom.fields.SFString} normalSpace
              * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 'TANGENT'
@@ -136,11 +148,11 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'alphaMode', 'OPAQUE');
 
             /**
-             * Specifies the cutoff threshold when in `MASK` mode. 
+             * Specifies the cutoff threshold when in `MASK` alpha mode. 
              * If the alpha value is greater than or equal to this value then 
              * it is rendered as fully opaque, otherwise, it is rendered as fully transparent. 
              * A value greater than 1.0 will render the entire material as fully transparent. 
-             * This value is ignored for other modes."
+             * This value is ignored for other modes.
              * @var {x3dom.fields.SFFloat} alphaCutoff
              * @range [0, 1]
              * @memberof x3dom.nodeTypes.PhysicalMaterial
@@ -153,7 +165,7 @@ x3dom.registerNodeType(
             /**
              * Bias to apply to normal sampled from normalTexture
              * @var {x3dom.fields.SFVec3f} normalBias
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue -1,-1, 1
              * @field x3dom
              * @instance
@@ -161,9 +173,9 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, 1);
 
             /**
-             * Scale to apply to normal sampled from normalTexture
-             * @var {x3dom.fields.SFVec3f} normalBias
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
+             * Scale to apply to normal sampled from normalTexture. NYI
+             * @var {x3dom.fields.SFVec3f} normalScale
+             * @memberof x3dom.nodeTypes.PhysicalMaterial
              * @initvalue 1
              * @field x3dom
              * @instance
@@ -182,15 +194,14 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'unlit', false);
 
             /**
-             * The base color texture. This texture contains RGB(A) components in sRGB color space. 
+             * The base color texture in the met. rough. model. This texture contains RGB(A) components in sRGB color space. 
              * The first three components (RGB) specify the base color of the material. 
              * If the fourth component (A) is present, it represents the alpha coverage of the material. 
              * Otherwise, an alpha of 1.0 is assumed. The `alphaMode` property specifies 
              * how alpha is interpreted. The stored texels must not be premultiplied.
              * @var {x3dom.nodeTypes.X3DTextureNode} baseColorTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('baseColorTexture', x3dom.nodeTypes.X3DTextureNode);
@@ -201,44 +212,37 @@ x3dom.registerNodeType(
              * If a fourth component (A) is present, it is ignored.
              * @var {x3dom.nodeTypes.X3DTextureNode} emissiveTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * A set of parameter values that are used to define the
-             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
-             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * The metallic-roughness texture. The metalness values are sampled from the B channel.
+             * The roughness values are sampled from the G channel. These values are linear.
+             * If other channels are present (R or A), they are ignored for metallic-roughness calculations.
              * @var {x3dom.nodeTypes.X3DTextureNode} roughnessMetallicTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('roughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * A set of parameter values that are used to define the
-             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
-             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * The specular-glossiness texture is a RGBA texture, containing the specular color (RGB) in sRGB space
+             * and the glossiness value (A) in linear space.
              * @var {x3dom.nodeTypes.X3DTextureNode} specularGlossinessTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('specularGlossinessTexture', x3dom.nodeTypes.X3DTextureNode);
 
             /**
-             * A set of parameter values that are used to define the
-             * metallic-roughness material model from Physically-Based Rendering (PBR) methodology. 
-             * When not specified, all the default values of `pbrMetallicRoughness` apply.
+             * Specifies a texture with the packing Occlusion (R), Roughness (G), Metallic (B)
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionRoughnessMetallic
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('occlusionRoughnessMetallicTexture', x3dom.nodeTypes.X3DTextureNode);
@@ -251,11 +255,10 @@ x3dom.registerNodeType(
              * where +X is right and +Y is up. +Z points toward the viewer. In GLSL, 
              * this vector would be unpacked like so: 
              * `float3 normalVector = tex2D(<sampled normal map texture value>, texCoord) * 2 - 1`. 
-             * Client implementations should normalize the normal vectors before using them in lighting equations."
+             * Client implementations should normalize the normal vectors before using them in lighting equations.
              * @var {x3dom.nodeTypes.X3DTextureNode} normalTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
@@ -267,8 +270,7 @@ x3dom.registerNodeType(
              * are present (GBA), they are ignored for occlusion calculations.
              * @var {x3dom.nodeTypes.X3DTextureNode} occlusionTexture
              * @memberof x3dom.nodeTypes.PhysicalMaterial
-             * @initvalue
-             * @field x3d
+             * @field x3dom
              * @instance
              */
             this.addField_SFNode('occlusionTexture', x3dom.nodeTypes.X3DTextureNode);        
