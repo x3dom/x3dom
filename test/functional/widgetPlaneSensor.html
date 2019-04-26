@@ -6,12 +6,15 @@
     <script type="text/javascript" src="../x3dom-full_include.js"></script>
   </head>
   <body>
+    <h2>
+            -- PlaneSensor: drag handles to move along axes, drag box to move in screen plane --
+    </h2>
     <X3D id="x3d" showLog="true" width="800px" height="600px">
       <scene DEF="scene">
         <viewpoint position='0 0 20'></viewpoint>
         <Shape DEF='reference'>
           <Appearance>
-            <Material id="Box0" transparency="0.5" diffuseColor='0.1 0.7 0.3'></Material>
+            <Material transparency="0.5" diffuseColor='0.1 0.7 0.3'></Material>
           </Appearance>
           <Box size='10 0.1 15'></Box>
         </Shape>
@@ -144,8 +147,5 @@
         </Group>
       </scene>
     </X3D>
-    <h2>
-            -- drag handles to move along axes, drag box to move in screen plane --
-    </h2>
   </body>
 </html>
