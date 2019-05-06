@@ -331,6 +331,7 @@
                     {"file": "EdgeEnhancementVolumeStyle.js"},
                     {"file": "IsoSurfaceVolumeData.js"},
                     {"file": "MPRVolumeStyle.js"},
+                    {"file": "MPRPlane.js"},
                     {"file": "OpacityMapVolumeStyle.js"},
                     {"file": "ProjectionVolumeStyle.js"},
                     {"file": "SegmentedVolumeData.js"},
