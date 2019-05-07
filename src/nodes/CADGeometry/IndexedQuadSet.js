@@ -314,6 +314,28 @@ x3dom.registerNodeType(
                         node._dirty.texcoords = true;
                     });
                 }
+                else if (fieldName.startsWith("attrib"))
+                {
+                    var attrName = fieldName.slice(7);
+                    var attrNode = this._cf.attrib.nodes.find(
+                            function (a) {return a._vf.name == attrName;}
+                    );
+                    var attr_data= attrNode._vf.value;
+                    var attr_numComp= attrNode._vf.numComponents;
+
+                    this._mesh._dynamicFields[attrName].value = [];
+                    this._mesh._dynamicFields[attrName].numComponents = attr_numComp;
+                    indexes = this._vf.index;
+                    for (var i=0; i < indexes.length; ++i) {
+                        for (var j=0; j < attr_numComp;j++ ) {
+                            this._mesh._dynamicFields[attrName].value.push(
+                                attr_data[attr_numComp*indexes[i]+j]);
+                        }
+                    }
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.specialAttribs = true;
+                    });
+                }
             }
         }
     )
