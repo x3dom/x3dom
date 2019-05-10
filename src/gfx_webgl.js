@@ -2843,6 +2843,13 @@ x3dom.gfx_webgl = (function() {
 
         // get scalar scene size and adapted projection matrix
         var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
+        
+        //use zFar if set & closer to allow for smaller size
+        if( scene.getViewpoint().getFar() )
+        {
+            sceneSize = Math.min(sceneSize, scene.getViewpoint().getFar()); 
+        }
+        
         var cctowc = viewarea.getCCtoWCMatrix();
 
         // restore correct scene bbox
