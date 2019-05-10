@@ -68,7 +68,7 @@ x3dom.Mesh.prototype.getVolume = function() {
         var coords = this._positions[0];
         var n = coords.length;
 
-        if (n > 3) {
+        if (n >= 3) {
             var initVal = new x3dom.fields.SFVec3f(coords[0], coords[1], coords[2]);
             this._vol.setBounds(initVal, initVal);
 
