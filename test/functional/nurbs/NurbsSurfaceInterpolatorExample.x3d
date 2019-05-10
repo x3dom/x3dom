@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.2//EN"
+"http://www.web3d.org/specifications/x3d-3.2.dtd">
+<X3D profile='Immersive' version='3.2' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance'
+xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.2.xsd'>
+  <head>
+    <component level='1' name='NURBS' />
+    <meta name='title' content='NurbsSurfaceInterpolatorExample.x3d' />
+    <meta name='description'
+    content='This scene contains a single NurbsPatchSurface rendering one-quarter of a cylindrical segment. The &quot;solid&quot; field of the surface is set false for so that surface is visible from both sides. Surface has semi-transparent material appearance. Scene also contains unit-length line segments defining x-y-z coordinate axes. Defined Viewpoints show the inner and outer sides of the cylindrical surface' />
+    <meta name='description'
+    content='A NurbsSurfaceInterpolator moves and alings a cone along the surface.' />
+    <meta name='Image' content='NurbsPatch.jpg' />
+    <meta name='creator' content='Vincent Marchetti' />
+    <meta name='created' content='10 February 2012' />
+    <meta name='modified' content='30 January 2014' />
+    <meta name='creator' content='Andreas Plesch' />
+    <meta name='created' content='September 2018' />
+    <meta name='reference' content=' http://www.kshell.com/pages/nurbs_surface_demo' />
+    <meta name='Image' content='images/NurbsPatchH3DViewer.png' />
+    <meta name='Image' content='images/NurbsPatchInstantReality.png' />
+    <meta name='Image' content='images/NurbsPatchOctagaVS.png' />
+    <meta name='Image' content='images/NurbsPatchView3dscene.png' />
+    <meta name='Image' content='images/NurbsPatchBSContact.png' />
+    <meta name='Image' content='images/NurbsPatchXj3D.png' />
+    <meta name='identifier' content=' http://www.web3d.org/x3d/content/examples/Basic/NURBS/NurbsPatch.x3d' />
+    <meta name='generator' content='Python language scripting' />
+    <meta name='generator' content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' />
+    <meta name='license' content=' ../license.html' />
+  </head>
+  <!--
+Index for DEF node : WorldSpaceCoordinateAxes 
+Index for Viewpoint images : Viewpoint_1, Viewpoint_2, Viewpoint_3
+-->
+  <Scene>
+    <Background skyColor='0.8 0.8 0.8' />
+    <Viewpoint description='view outer surface' fieldOfView='0.16628' orientation='0.166 0.465 0.87 2.538'
+    position='10.55 12.855 11.111' />
+    <Viewpoint description='view inner surface' fieldOfView='0.16628' orientation='0.797 -0.285 -0.533 1.182'
+    position='-10.55 -12.855 11.111' />
+    <Viewpoint centerOfRotation='0.7 0.7 0' description='view from above' fieldOfView='0.16628' position='0.7 0.7 10' />
+    <TimeSensor DEF='ts' cycleInterval='4' loop='true'/> 
+    <PositionInterpolator2D DEF='uvs' key='0 0.25 0.5 0.75 1' keyValue='0 0 0.2 0.5 1 1 0.5 0.2 0 0'/>
+    <!-- ROUTE information for npi node:  [from ts.fraction_changed to set_fraction ] [from value_changed to ball.set_translation ] -->
+    <NurbsSurfaceInterpolator DEF='nsi' uDimension='5' uKnot='0.0 0.0 0.0 0.5 0.5 1.0 1.0 1.0' vDimension='2'
+        vKnot='0.0 0.0 1.0 1.0' vOrder='2' weight='1.0 0.923879181092 1.0 0.923879181092 1.0 1.0 0.923879181092 1.0 0.923879181092 1.0'>
+        <Coordinate DEF='cp' containerField='controlPoint' point='1 0 0 0.92388 0.38268 0 0.70711 0.70711 0 0.38268 0.92388 0 0 1 0 1 0 1 0.92388 0.38268 0.92388 0.70711 0.70711 1 0.38268 0.92388 0.92388 0 1 1' />     
+    </NurbsSurfaceInterpolator> 
+    <!-- ROUTE information for ball node:  [from npi.value_changed to set_translation ] -->
+    <Transform DEF='ball'>
+        <Transform DEF='tipDownZ' scale='0.05 0.05 0.05' rotation='1 0 0 0'>
+            <Shape>
+                <Appearance>
+                <Material diffuseColor='1 0 0'/>
+                </Appearance> 
+                <Sphere/>
+            </Shape>
+        </Transform> 
+    </Transform> 
+    <Shape>
+      <NurbsPatchSurface solid='false' uDimension='5' uKnot='0.0 0.0 0.0 0.5 0.5 1.0 1.0 1.0' vDimension='2'
+        vKnot='0.0 0.0 1.0 1.0' vOrder='2'
+      weight='1.0 0.923879181092 1.0 0.923879181092 1.0 1.0 0.923879181092 1.0 0.923879181092 1.0' containerField='geometry'>
+        <Coordinate containerField='controlPoint' USE='cp' />
+      </NurbsPatchSurface>
+      <Appearance>
+        <Material diffuseColor='1 1 0' transparency='0.2' />
+      </Appearance>
+    </Shape>
+    <Group DEF='WorldSpaceCoordinateAxes'>
+      <Shape>
+        <LineSet vertexCount='2' containerField='geometry'>
+          <Coordinate point='0.0 0.0 0.0 1.0 0.0 0.0' />
+        </LineSet>
+        <Appearance>
+          <Material emissiveColor='1 0 0' />
+          <LineProperties linewidthScaleFactor='2' containerField='lineProperties' />
+        </Appearance>
+      </Shape>
+      <Shape>
+        <LineSet vertexCount='2' containerField='geometry'>
+          <Coordinate point='0.0 0.0 0.0 0.0 1.0 0.0' />
+        </LineSet>
+        <Appearance>
+          <Material emissiveColor='0 1 0' />
+          <LineProperties linewidthScaleFactor='2' containerField='lineProperties' />
+        </Appearance>
+      </Shape>
+      <Shape>
+        <LineSet vertexCount='2' containerField='geometry'>
+          <Coordinate point='0.0 0.0 0.0 0.0 0.0 1.0' />
+        </LineSet>
+        <Appearance>
+          <Material emissiveColor='0 0 1' />
+          <LineProperties linewidthScaleFactor='2' containerField='lineProperties' />
+        </Appearance>
+      </Shape>
+    </Group>
+    <ROUTE fromNode='ts' fromField='fraction_changed' toNode='uvs' toField='set_fraction'/> 
+    <ROUTE fromNode='uvs' fromField='value_changed' toNode='nsi' toField='set_fraction'/> 
+    <ROUTE fromNode='nsi' fromField='position_changed' toNode='ball' toField='set_translation'/>
+    <!--ROUTE fromNode='nsi' fromField='normal_changed' toNode='ball' toField='set_rotation'/-->
+  </Scene>
+</X3D>
+<!--
+Index for DEF node : WorldSpaceCoordinateAxes 
+Index for Viewpoint images : Viewpoint_1, Viewpoint_2, Viewpoint_3
+-->
+<!-- Color key: <X3dNode DEF='idName' field='value'/> matches <XmlElement DEF='idName' attribute='value'/> 
+(Light blue background: behavior node) (Grey background: inserted documentation) (Magenta background: X3D extensibility)
+-->
+<!-- Additional help information about X3D scenes: X3D Resources, X3D Scene Authoring Hints and X3D Tooltips -->

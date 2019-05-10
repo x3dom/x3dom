@@ -1153,9 +1153,8 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
 
         if (this.doc.properties.getProperty("showProgress") !== 'false') {
             if (this.progressDiv) {
-                this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
                 if (this.doc.downloadCount > 0) {
-                    this.progressDiv.style.display = 'inline';
+                	this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);                    
                 } else {
                     this.progressDiv.style.display = 'none';
                 }
