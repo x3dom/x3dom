@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN"
+"http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance'
+xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <component level='1' name='NURBS' />
+    <meta name='title' content='NurbsPatchSurfaceExample.x3d' />
+    <meta name='description' content='Animated NURBS patch' />
+    <meta name='creator' content='Jeffrey Weekley, Charles Adams' />
+    <meta name='created' content='6 February 2003' />
+    <meta name='modified' content='26 January 2014' />
+    <meta name=' warning'
+    content='missing default values for knot and weight array fields in NurbsPatchSurface (weight default: all 1 values) ; not required by X3D specification, but some browsers may fail without them.' />
+    <meta name='reference' content=' http://edocs.nps.edu/npspubs/scholarly/theses/2003/Jun/03Jun_Adams.pdf' />
+    <meta name=' warning' content=' under development, needs to be upgraded to final version of X3D NURBS nodes' />
+    <meta name='Image' content='NurbsPatchSurfaceDiagram01.jpg' />
+    <meta name='subject' content='NURBS Surface Example' />
+    <meta name='identifier' content=' http://www.web3d.org/x3d/content/examples/Basic/NURBS/NurbsPatchSurfaceExample.x3d' />
+    <meta name='generator' content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' />
+    <meta name='license' content=' ../license.html' />
+  </head>
+  <!--
+Index for DEF nodes : CI, NS, TS 
+Index for Viewpoint image : Viewpoint_1
+-->
+  <Scene>
+    <Viewpoint description='animatedPlane' position='3 2 40' />
+    <Transform rotation='1 0 0 -1.5'>
+      <Shape>
+        <!-- ROUTE information for NS node:  [from CI.value_changed to set_controlPoint ] -->
+        <NurbsPatchSurface DEF='NS' solid='false' uDimension='5' uOrder='4' uTessellation='0' vDimension='5' vOrder='4'
+        vTessellation='0' containerField='geometry'>
+          <Coordinate DEF='CP' containerField='controlPoint'
+          point='-10 -10 0 -10 -5 0 -10 0 0 -10 5 0 -10 10 0 -5 -10 0 -5 -5 2.5 -5 0 5 -5 5 2.5 -5 10 0 0 -10 0 0 -5 2.5 0 0 5 0 5 2.5 0 10 0 5 -10 0 5 -5 2.5 5 0 15 5 5 2.5 5 10 0 10 -10 0 10 -5 0 10 0 0 10 5 0 10 10 0' />
+        </NurbsPatchSurface>
+        <Appearance>
+          <Material diffuseColor='0 1 1' />
+        </Appearance>
+      </Shape>
+    </Transform>
+    <!-- ROUTE information for CI node:  [from TS.fraction_changed to set_fraction ] [from value_changed to NS.set_controlPoint ] -->
+    <CoordinateInterpolator DEF='CI' key='0 .5 1'
+    keyValue='-10 -10 0 -10 -5 0 -10 0 0 -10 5 0 -10 10 0 -5 -10 0 -5 -5 2.5 -5 0 5 -5 5 2.5 -5 10 0 0 -10 0 0 -5 2.5 0 0 5 0 5 2.5 0 10 0 5 -10 0 5 -5 2.5 5 0 15 5 5 2.5 5 10 0 10 -10 0 10 -5 0 10 0 0 10 5 0 10 10 0 -10 -10 0 -10 -5 0 -10 0 0 -10 5 0 -10 10 0 -5 -10 0 -5 -5 0 -5 0 0 -5 5 0 -5 10 0 0 -10 0 0 -5 0 0 0 0 0 5 0 0 10 0 5 -10 0 5 -5 0 5 0 0 5 5 0 5 10 0 10 -10 0 10 -5 0 10 0 0 10 5 0 10 10 0 -10 -10 0 -10 -5 0 -10 0 0 -10 5 0 -10 10 0 -5 -10 0 -5 -5 2.5 -5 0 5 -5 5 2.5 -5 10 0 0 -10 0 0 -5 2.5 0 0 5 0 5 2.5 0 10 0 5 -10 0 5 -5 2.5 5 0 15 5 5 2.5 5 10 0 10 -10 0 10 -5 0 10 0 0 10 5 0 10 10 0' />
+    <!-- ROUTE information for TS node:  [from fraction_changed to CI.set_fraction ] -->
+    <TimeSensor DEF='TS' cycleInterval='6' loop='true' />
+    <ROUTE fromNode='TS' fromField='fraction_changed' toNode='CI' toField='set_fraction' />
+    <ROUTE fromNode='CI' fromField='value_changed' toNode='CP' toField='set_point' />
+  </Scene>
+</X3D>
+<!--
+Index for DEF nodes : CI, NS, TS 
+Index for Viewpoint image : Viewpoint_1
+-->
+<!-- Color key: <X3dNode DEF='idName' field='value'/> matches <XmlElement DEF='idName' attribute='value'/> 
+(Light blue background: behavior node) (Grey background: inserted documentation) (Magenta background: X3D extensibility)
+-->
+<!-- Additional help information about X3D scenes: X3D Resources, X3D Scene Authoring Hints and X3D Tooltips -->

@@ -171,6 +171,7 @@
                     {"file": "X3DInterpolatorNode.js"},
                     {"file": "OrientationInterpolator.js"},
                     {"file": "PositionInterpolator.js"},
+		            {"file": "PositionInterpolator2D.js"},
                     {"file": "NormalInterpolator.js"},
                     {"file": "ColorInterpolator.js"},
                     {"file": "ScalarInterpolator.js"},
@@ -342,6 +343,7 @@
                     {"file": "EdgeEnhancementVolumeStyle.js"},
                     {"file": "IsoSurfaceVolumeData.js"},
                     {"file": "MPRVolumeStyle.js"},
+                    {"file": "MPRPlane.js"},
                     {"file": "OpacityMapVolumeStyle.js"},
                     {"file": "ProjectionVolumeStyle.js"},
                     {"file": "SegmentedVolumeData.js"},
@@ -382,6 +384,21 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
+                ]},
+                {"name": "NURBS", "filePrefix": "nodes/NURBS/", "files":[
+                    {"file": "X3DParametricGeometryNode.js"},
+                    {"file": "X3DNurbsSurfaceGeometryNode.js"},
+                    {"file": "NurbsPatchSurface.js"},
+                    {"file": "NurbsCurve.js"},
+                    {"file": "NurbsPositionInterpolator.js"},
+                    {"file": "NurbsOrientationInterpolator.js"},
+		            {"file": "NurbsSurfaceInterpolator.js"},
+                    {"file": "NurbsCurve2D.js"},
+                    {"file": "NurbsTrimmedSurface.js"},
+                    {"file": "ContourPolyline2D.js"},
+                    {"file": "Contour2D.js"},
+                    {"file": "x3dom-nurbs-web-worker.js"},
+                    {"file": "x3dom-nurbs-pool.js"}
                 ]}
             ]
 		},

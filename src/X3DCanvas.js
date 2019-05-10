@@ -1213,7 +1213,7 @@ x3dom.X3DCanvas.prototype.tick = function(timestamp)
         }
 
 		// picking might require another pass
-		
+
 		this.doc.render(this.gl, this.vrFrameData, this.vrDisplay);
 
 		if (!this.doc._scene._vf.doPickPass)
@@ -1308,7 +1308,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                             this.vrDisplayPromise.then( function (displays) {
 
                                 x3dCanvas.vrDisplay = displays[0];
-    
+
                                 if(x3dCanvas.vrDisplay)
                                 {
                                     x3dCanvas.vrDisplay.requestAnimationFrame(mainloop, x3dCanvas);

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0'  xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation =' http://www.web3d.org/specifications/x3d-3.0.xsd '>
+<head>
+    <component level='1' name='NURBS'/> 
+    <meta name='title' content='NurbsPositionInterpolatorExample.x3d'/> 
+    <meta name='description' content='Example of animating a cone along a NurbsCurve.'/> 
+    <meta name='creator' content='Charles Adams'/> 
+    <meta name='created' content='26 February 2003'/> 
+    <meta name='modified' content='30 January 2014'/> 
+    <meta name='modified' content='September 2018'/> 
+    <meta name='modified' content='by A. Plesch'/> 
+    <meta name='reference' content=' http://edocs.nps.edu/npspubs/scholarly/theses/2003/Jun/03Jun_Adams.pdf '/> 
+    <meta name='warning ' content=' under development, needs to be upgraded to final version of X3D NURBS nodes '/> 
+    <meta name='subject' content='NURBS Position/Orientation Interpolator'/> 
+    <meta name='identifier' content=' http://www.web3d.org/x3d/content/examples/Basic/NURBS/NurbsPositionInterpolatorExample.x3d '/> 
+    <meta name='generator' content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit'/> 
+    <meta name='generator' content='manual'/> 
+    <meta name='license' content=' ../license.html'/>
+</head> 
+<Scene>
+    <Viewpoint description='Nurbs path' position='11 4.6 18'/> 
+    <!-- ROUTE information for ts node:  [from fraction_changed to npi.set_fraction ] -->
+    <TimeSensor DEF='ts' cycleInterval='4' loop='true'/> 
+    <!-- ROUTE information for npi node:  [from ts.fraction_changed to set_fraction ] [from value_changed to cone.set_translation ] -->
+    <NurbsPositionInterpolator DEF='npi' knot='0 0 0 .25 .5 .75 1 1 1' order='4'>
+        <Coordinate DEF='cp' containerField='controlPoint' point='4 6 0 7 12 0 11 6 0 15 2 0 20 6 0'/>
+    </NurbsPositionInterpolator> 
+    <!-- ROUTE information for noi node:  [from ts.fraction_changed to set_fraction ] [from value_changed to cone.set_rotation ] -->
+    <NurbsOrientationInterpolator DEF='noi' knot='0 0 0 .25 .5 .75 1 1 1' order='4'>
+        <Coordinate containerField='controlPoint' USE='cp'/>
+    </NurbsOrientationInterpolator> 
+    <!-- ROUTE information for cone node:  [from npi.value_changed to set_translation ] -->
+    <!-- ROUTE information for cone node:  [from noi.value_changed to set_rotation ] -->
+    <Transform DEF='cone'>
+        <Transform DEF='tipDownZ' rotation='1 0 0 1.57'>
+            <Shape>
+                <Appearance>
+                <Material diffuseColor='1 1 0'/>
+                </Appearance> 
+                <Cone/>
+            </Shape>
+        </Transform> 
+    </Transform> 
+    <Shape>
+    <NurbsCurve DEF='nc' order='4' tessellation='30' knot='0 0 0 .25 .5 .75 1 1 1' containerField='geometry'>
+        <Coordinate containerField='controlPoint' USE='cp'/>
+    </NurbsCurve> 
+    <Appearance>
+        <Material emissiveColor='1 0 0'/>
+    </Appearance>
+    </Shape> 
+    <ROUTE fromNode='ts' fromField='fraction_changed' toNode='npi' toField='set_fraction'/> 
+    <ROUTE fromNode='ts' fromField='fraction_changed' toNode='noi' toField='set_fraction'/> 
+    <ROUTE fromNode='npi' fromField='value_changed' toNode='cone' toField='set_translation'/>
+    <ROUTE fromNode='noi' fromField='value_changed' toNode='cone' toField='set_rotation'/>
+</Scene>
+</X3D>
