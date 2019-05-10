@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN"
+"http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance'
+xsd:noNamespaceSchemaLocation=' http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <component level='4' name='NURBS' />
+    <meta name='title' content='TrimmingContourExample.x3d' />
+    <meta name='description' content='Simple example demonstrating NURBS trimming contour content model.' />
+    <meta name='creator' content='Andrew Grieve, Vince Marchetti' />
+    <meta name='contributor' content='Don Brutzman' />
+    <meta name='created' content='16 October 2005' />
+    <meta name='modified' content='3 August 2013' />
+    <meta name='Image' content='TrimmingContourExample.png' />
+    <meta name='Image' content='TrimmingContourExampleSideView.png' />
+    <meta name='Image' content='images/TrimmingContourExampleInstantReality.png' />
+    <meta name='Image' content='images/TrimmingContourExampleXj3d.png' />
+    <meta name='subject' content='NURBS trimming contour' />
+    <meta name='reference'
+    content='http://www.web3d.org/x3d/specifications/ISO-IEC-19775-X3DAbstractSpecification/Part01/components/nurbs.html#NurbsTrimmedSurface' />
+    <meta name='identifier' content=' http://www.web3d.org/x3d/content/examples/Basic/NURBS/TrimmingContourExample.x3d' />
+    <meta name='generator' content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' />
+    <meta name='license' content=' ../license.html' />
+  </head>
+  <!--
+Index for Viewpoint image : Viewpoint_1
+-->
+  <Scene>
+    <NavigationInfo type='&quot;EXAMINE&quot;' />
+    <Background skyColor='1 1 1' />
+    <Transform scale='2 2 2'>
+      <Viewpoint centerOfRotation='233 0 -135' description='Overhead View' fieldOfView='0.16628' orientation='-1 -0 -0 1.57'
+      position='233 1500 -133.809998' />
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1 0 0' emissiveColor='0 1 0' />
+        </Appearance>
+        <NurbsTrimmedSurface solid='false' uDimension='6'
+        uKnot='0.00980377 0.00980377 0.00980377 0.00980377 0.5 0.5 0.990196 0.990196 0.990196 0.990196' uOrder='4' vDimension='6'
+        vKnot='0.00980377 0.00980377 0.00980377 0.00980377 0.5 0.5 0.990196 0.990196 0.990196 0.990196' vOrder='4'
+        containerField='geometry'>
+          <Coordinate containerField='controlPoint'
+          point='123.01589 0.00000 -70.25446 123.01589 0.00000 -91.89685 123.01589 30.00000 -113.53923 123.01589 40.00000 -156.82400 123.01589 20.00000 -178.46638 123.01589 0.00000 -200.10876 159.68731 0.00000 -70.25446 159.68731 0.00000 -91.89685 159.68731 0.00000 -113.53923 159.68731 0.00000 -156.82400 159.68731 0.00000 -178.46638 159.68731 16.00000 -200.10876 196.35873 0.00000 -70.25446 196.35873 0.00000 -91.89685 196.35873 21.00000 -113.53923 196.35873 0.00000 -156.82400 196.35873 24.00000 -178.46638 196.35873 28.00000 -200.10876 269.70158 16.00000 -70.25446 269.70158 0.00000 -91.89685 269.70158 0.00000 -113.53923 269.70158 0.00000 -156.82400 269.70158 0.00000 -178.46638 269.70158 0.00000 -200.10876 306.37300 0.00000 -70.25446 306.37300 0.00000 -91.89685 306.37300 0.00000 -113.53923 306.37300 34.00000 -156.82400 306.37300 0.00000 -178.46638 306.37300 0.00000 -200.10876 343.04443 0.00000 -70.25446 343.04443 0.00000 -91.89685 343.04443 -32.00000 -113.53923 343.04443 0.00000 -156.82400 343.04443 0.00000 -178.46638 343.04443 0.00000 -200.10876' />
+          <Contour2D containerField='trimmingContour'>
+            <NurbsCurve2D controlPoint='0.9901960784313720 0.0098039215686275 0.9901960784313720 0.9901960784313720 0.0098039215686275 0.9901960784313720 0.0098039215686275 0.0098039215686275 0.9901960784313720 0.0098039215686275'
+            knot='0 0 0.25 0.5 0.75 1 1' order='2' containerField='children' />
+          </Contour2D>
+          <Contour2D containerField='trimmingContour'>
+            <ContourPolyline2D controlPoint='.2 .2 .2 .6' containerField='children' />
+            <NurbsCurve2D controlPoint='.2 .6 .4 .4 .6 .6' knot='2 2 2 3 3 3' containerField='children' />
+            <ContourPolyline2D controlPoint='.6 .6 .6 .2 .2 .2' containerField='children' />
+          </Contour2D>
+          <Contour2D containerField='trimmingContour'>
+            <ContourPolyline2D controlPoint='.75 .75 .85 .85 .95 .75 .75 .75' containerField='children' />
+          </Contour2D>
+        </NurbsTrimmedSurface>
+      </Shape>
+    </Transform>
+  </Scene>
+</X3D>
+<!--
+Index for Viewpoint image : Viewpoint_1
+-->
+<!-- Color key: <X3dNode field='value'/> matches <XmlElement attribute='value'/> 
+(Light blue background: behavior node) (Grey background: inserted documentation) (Magenta background: X3D extensibility)
+-->
+<!-- Additional help information about X3D scenes: X3D Resources, X3D Scene Authoring Hints and X3D Tooltips -->

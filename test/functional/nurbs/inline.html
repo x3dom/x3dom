@@ -1,0 +1,52 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Inline nurbs test</title>
+    <script type="text/javascript" src="../../x3dom-full_include.js"></script>
+    <style>
+        label {margin: 5px;}
+        select {
+            padding: 5px;
+            border-width: thick;
+            borderr-radius: 5px;
+        }
+        option {
+            font-style: italic;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+        <Scene>
+            <Transform>
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="nurbs" mapDEFToID="true" url="FourDucks.x3d" ></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+    <label _style='margin: 5px;' for="x3d-select">Choose an example:</label>
+    <select _style='padding: 5px;
+            border-width: thick;
+            borderr-radius: 5px;'
+            id="x3d-select" onchange='handleChange(event)'>
+        <option>FourDucks</option>
+        <option>NurbsCurveExample</option>
+        <option>NurbsPatchSurfaceExample</option>
+        <option>NurbsPositionOrientationInterpolatorExample</option>
+        <option>NurbsSurfaceInterpolatorExample</option>
+        <option>TrimmingContourExample</option>
+        <option value="none" selected>--Please choose a x3d scene--</option>
+    </select>
+</body>
+<script>
+    const inline = document.querySelector('#Inline');
+    const ext = '.x3d';
+    function handleChange(event) {
+        inline.setAttribute('url', event.target.options[event.target.selectedIndex].value + ext);
+    }
+    function handleLoad(event) {
+        document.querySelector('X3D').runtime.showAll('negZ');
+    }
+</script>
+</html>
