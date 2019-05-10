@@ -28,7 +28,7 @@
   publish = "dist/"
   command = """
   python manage.py --build &&
-  echo "<body>X3DOM</body>" > dist/index.html
+  echo "<body> <h1> X3DOM </h1> </body>" > dist/index.html
   """
   # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
 
@@ -66,12 +66,12 @@
 # PER-DEPLOY.
 
 # A basic redirect rule
-[[redirects]]
+# [[redirects]]
 #  from = "/*"
 #  to = "/blog/:splat"
 
 # A redirect rule with all the supported properties
-[[redirects]]
+# [[redirects]]
 #  from = "/old-path"
 #  to = "/new-path"
 
@@ -95,12 +95,12 @@
 #  signed = "API_SIGNATURE_TOKEN"
 
   # You can also define custom headers within your redirects blocks.
-  [redirects.headers]
+#  [redirects.headers]
 #    X-From = "Netlify"
 #    X-Api-Key = "some-api-key-string"
 
 # Role-based redirects does not have a 'to' property.
-[[redirects]]
+#  [[redirects]]
 #  from = "/gated-path"
 #  status = 200
 #  conditions = {Role = ["admin"]}
@@ -108,16 +108,16 @@
 
 # The following redirect is intended for use with most SPAs that handle
 # routing internally.
-[[redirects]]
+# [[redirects]]
 #  from = "/*"
 #  to = "/index.html"
 #  status = 200
 
-[[headers]]
+# [[headers]]
   # Define which paths this specific [[headers]] block will cover.
 #  for = "/*"
 
-  [headers.values]
+#  [headers.values]
 #    X-Frame-Options = "DENY"
 #    X-XSS-Protection = "1; mode=block"
 #    Content-Security-Policy = "frame-ancestors https://www.facebook.com"
