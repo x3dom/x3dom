@@ -1086,6 +1086,7 @@ x3dom.glTF2Loader.prototype._convertBinaryImages = function(gltf, buffer, byteOf
             if( image.bufferView != undefined )
             {
                 var bufferView = gltf.bufferViews[image.bufferView];
+                bufferView.byteOffset = bufferView.byteOffset || 0;
 
                 var imageData = new Uint8Array(buffer, byteOffset + bufferView.byteOffset, bufferView.byteLength);
 
