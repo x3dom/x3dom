@@ -18,7 +18,7 @@ example/x3dom.js
 *~
 #*#
 nbproject
-src/.vscode
+.vscode
 src/.vscode
 
 # remove with new build system
