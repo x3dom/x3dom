@@ -233,10 +233,11 @@ x3dom.registerNodeType(
 							}
 						}
 						
-						if(value !== undefined)
+						if(value != undefined && value != this._lastValue)
+						{
+							this._lastValue = value;
 							this.postMessage('value_changed', value);
-						else
-							x3dom.debug.logWarning("SplinePositionInterpolator Node: value_changed is undefined!");
+						}
 					}
 				}
             }

@@ -191,8 +191,8 @@ x3dom.SSAO.render = function(stateManager, gl, scene, tex, canvas, fbo) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[0]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[1]);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
     gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(sp.position);
 
@@ -270,8 +270,8 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[0]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[1]);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
     gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(sp.position);
 

@@ -44,12 +44,39 @@ x3dom.registerNodeType(
             {
                 if(fieldName === "set_fraction")
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return (1.0-t)*a + t*b;
-                    });
+                    var value;
 
-                    this.postMessage('value_changed', value);
+                    if (this._vf.interpolation === 'CUBICSPLINE')
+                    {
+                        var scope = this;
+                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
+
+                            return h00 * start + h10 * startInTangent + h01 * end + h11 * endOutTangent;
+                        
+                        });
+                    }
+                    else
+                    {
+                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                            return (1.0-t)*a + t*b;
+                        });
+                    }
+                   
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
+            },
+
+            keyValueFromAccessor: function(array, type)
+            {
+                var normalize = this.normalizeFromType[type];
+                return array.map( function (val)
+                {
+                    return normalize(val);
+                });
             }
         }
     )

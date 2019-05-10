@@ -72,25 +72,7 @@ x3dom.debug = {
      */
     activate: function(visible) {
         x3dom.debug.isActive = true;
-
-        // var aDiv = document.createElement("div");
-        // aDiv.style.clear = "both";
-        // aDiv.appendChild(document.createTextNode("\r\n"));
-        // aDiv.style.display = (visible) ? "block" : "none";
         x3dom.debug.logContainer.style.display = (visible) ? "block" : "none";
-
-        // Need this HACK for IE/Flash integration. IE don't have a document.body at this time when starting Flash-Backend
-        if (!x3dom.debug.isAppend) {
-            if (navigator.appName == "Microsoft Internet Explorer") {
-                // document.documentElement.appendChild(aDiv);
-                x3dom.debug.logContainer.style.marginLeft = "8px";
-                document.documentElement.appendChild(x3dom.debug.logContainer);
-            } else {
-                // document.body.appendChild(aDiv);
-                document.body.appendChild(x3dom.debug.logContainer);
-            }
-            x3dom.debug.isAppend = true;
-        }
     },
 
     /**
@@ -99,10 +81,12 @@ x3dom.debug = {
      */
     setupLogContainer: function() {
         x3dom.debug.logContainer = document.createElement("div");
-        x3dom.debug.logContainer.id = "x3dom_logdiv";
-        x3dom.debug.logContainer.setAttribute("class", "x3dom-logContainer");
-        x3dom.debug.logContainer.style.clear = "both";
-        // document.body.appendChild(x3dom.debug.logContainer);
+        x3dom.debug.logContainer.setAttribute("class", "x3dom-log");
+    },
+
+    appendElement: function(x3dElement)
+    {
+        x3dElement.appendChild(x3dom.debug.logContainer);
     },
 
     /**

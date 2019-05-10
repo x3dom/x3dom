@@ -36,6 +36,9 @@ x3dom.Runtime = function(doc, canvas) {
     this.config = {};
     this.isReady = false;
     this.fps = 0;
+
+    this.VRMode = false;
+
     this.states = { measurements: [], infos: [] };
 };
 
@@ -1198,7 +1201,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
     var processDiv = this.canvas.progressDiv;
     if (processDiv) {
         if (mode === true) {
-            processDiv.style.display = 'inline';
+            processDiv.style.display = 'flex';
             return true;
         } else if (mode === false) {
             processDiv.style.display = 'none';
@@ -1312,6 +1315,34 @@ x3dom.Runtime.prototype.onAnimationFinished = function() {
     // to be overwritten by user
 };
 
+x3dom.Runtime.prototype.enterVR = function() {
+
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.requestPresent([{ source: this.canvas.canvas }]).then(function() {
+            this.canvas.doc.needRender = true;
+        }.bind(this));
+    }
+};
+
+x3dom.Runtime.prototype.exitVR = function() {
+    if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.canvas.vrDisplay.exitPresent();
+    }
+};
+
+x3dom.Runtime.prototype.toggleVR = function() {
+    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+    {
+        this.enterVR();
+    }
+    else if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    {
+        this.exitVR();
+    }
+};
+
 /**
  * APIMethod toggleProjection
  *
@@ -1346,8 +1377,9 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID ) 
 
         document.getElementById(perspViewID).setAttribute("set_bind", "true");
 
-        dist = ortho._fieldOfView[2] * factor;
-        var translation = ortho._viewMatrix.e3().normalize().multiply(dist);
+        dist = ortho._fieldOfView[2] * -factor;
+
+        var translation = ortho._viewMatrix.e2().normalize().multiply(dist);
 
         persp._viewMatrix.setTranslate(translation);
     }
@@ -1470,16 +1502,16 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  * @returns A Promise resolved to the x3d element
  */
 x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
-    this.canvas.doc.downloadCount++;
+    this.canvas.doc.incrementDownloads();
     that = this;
     return fetch(url)
         .then(function(r) { return r.text(); })
         .then(function(text) {
-            that.canvas.doc.downloadCount--;
+            that.canvas.doc.decrementDownloads();
             return that.createX3DFromString(text, optionalURL);
         })
         .catch(function(r) {
-            that.canvas.doc.downloadCount--;
+            that.canvas.doc.decrementDownloads();
             x3dom.debug.logError('fetch failed: ' + r);
             return null;
         });

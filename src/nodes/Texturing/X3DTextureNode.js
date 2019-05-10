@@ -98,6 +98,10 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
 
+            this.addField_SFBool(ctx, 'flipY', false);
+
+            this.addField_SFInt32(ctx, 'channel', 0);
+
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
             this._type = "diffuseMap";
@@ -218,6 +222,14 @@ x3dom.registerNodeType(
                             });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ComposedCubeMapTexture)) {
+                            Array.forEach(app._parentNodes, function (realApp) {
+                                realApp.nodeChanged();
+                                Array.forEach(realApp._parentNodes, function (shape) {
+                                    shape._dirty.texture = true;
+                                });
+                            });
+                        }
+                        else if (x3dom.isa(app, x3dom.nodeTypes.PhysicalMaterial)) {
                             Array.forEach(app._parentNodes, function (realApp) {
                                 realApp.nodeChanged();
                                 Array.forEach(realApp._parentNodes, function (shape) {

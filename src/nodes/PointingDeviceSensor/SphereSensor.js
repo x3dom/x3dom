@@ -96,7 +96,6 @@ x3dom.registerNodeType(
              */
             _startDragging: function(viewarea, x, y, wx, wy, wz)
             {
-				//console.log(viewarea, x, y, wx, wy, wz);
                 x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, wx, wy, wz);
 				
 				this._currentRotation = new x3dom.fields.Quaternion();

@@ -100,14 +100,18 @@ x3dom.registerNodeType(
 
                 //TODO: check SOURCE child nodes
                 shape._webgl.internalDownloadCount  = 1;
-                shape._nameSpace.doc.downloadCount  = 1;
+                shape._nameSpace.doc.incrementDownloads();
 
                 //post request
                 xhr = new XMLHttpRequest();
+                
+                var encoding = ( currentURL.indexOf(".glb") != -1 ) ? "binary" : "ascii";
 
-                xhr.open("GET", currentURL, true);
+                var xhr = new XMLHttpRequest();
 
-                xhr.responseType = "arraybuffer";
+                xhr.open("GET", this._nameSpace.getURL(this._vf['url'][this._currentURLIdx]), true);
+
+                xhr.responseType = ( encoding == "binary" ) ? "arraybuffer" : "json";
 
                 //xhr.send(null);
                 x3dom.RequestManager.addRequest(xhr);
@@ -118,57 +122,75 @@ x3dom.registerNodeType(
 
                 xhr.onload = function() {
                     shape._webgl.internalDownloadCount  = 0;
-                    shape._nameSpace.doc.downloadCount  = 0;
+                    shape._nameSpace.doc.decrementDownloads();
 
                     shape._webgl.primType    = [];
                     shape._webgl.indexOffset = [];
                     shape._webgl.drawCount   = [];
 
                     if ((xhr.status == 200 || xhr.status == 0)) {
-                        var glTF = new x3dom.glTF.glTFLoader(xhr.response, true);
+                        var glTF = new x3dom.glTF.glTFLoader(true);
 
-                        if (glTF.header.sceneLength > 0)
+                        glTF.load(xhr.response, function()
                         {
-                            glTF.loaded = {};
-                            glTF.loaded.meshes = {};
-                            glTF.loaded.meshCount = 0;
-
-                            if(currentURL.includes('#'))
+                            if (glTF.header.sceneLength > 0)
                             {
-                                var split = currentURL.split('#');
-                                var meshName = split[split.length-1];
-                                glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                glTF.loaded = {};
+                                glTF.loaded.meshes = {};
+                                glTF.loaded.meshCount = 0;
+
+                                if(currentURL.includes('#'))
+                                {
+                                    var split = currentURL.split('#');
+                                    var meshName = split[split.length-1];
+                                    glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                }
+                                else
+                                {
+                                    glTF.getScene(shape, shaderProgram, gl);
+                                }
+
+                                for(var key in glTF._mesh){
+                                    if(!glTF._mesh.hasOwnProperty(key))continue;
+                                    that._mesh[key] = glTF._mesh[key];
+                                }
+
                             }
                             else
                             {
-                                glTF.getScene(shape, shaderProgram, gl);
-                            }
+                                if ((that._currentURLIdx + 1) < that._vf['url'].length)
+                                {
+                                    x3dom.debug.logWarning("Invalid GLB data, loaded from URL \"" +
+                                                           currentURL +
+                                                           "\", trying next specified URL");
 
-                            for(var key in glTF._mesh){
-                                if(!glTF._mesh.hasOwnProperty(key))continue;
-                                that._mesh[key] = glTF._mesh[key];
+                                    //try next URL
+                                    ++that._currentURLIdx;
+                                    that.update(shape, shaderProgram, gl, viewarea, context);
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError("Invalid GLB data, loaded from URL \"" +
+                                                         currentURL + "\"," +
+                                                         " no other URLs left to try.");
+                                }
                             }
+                            
+                            var theScene = that._nameSpace.doc._scene;
 
-                        }
-                        else
-                        {
-                            if ((that._currentURLIdx + 1) < that._vf['url'].length)
-                            {
-                                x3dom.debug.logWarning("Invalid GLB data, loaded from URL \"" +
-                                                       currentURL +
-                                                       "\", trying next specified URL");
+                            if (theScene) {
+                                theScene.invalidateVolume();
+                                //theScene.invalidateCache();
 
-                                //try next URL
-                                ++that._currentURLIdx;
-                                that.update(shape, shaderProgram, gl, viewarea, context);
+                                window.setTimeout( function() {
+                                    that.invalidateVolume();
+                                    //that.invalidateCache();
+
+                                    theScene.updateVolume();
+                                    that._nameSpace.doc.needRender = true;
+                                }, 1000 );
                             }
-                            else
-                            {
-                                x3dom.debug.logError("Invalid GLB data, loaded from URL \"" +
-                                                     currentURL + "\"," +
-                                                     " no other URLs left to try.");
-                            }
-                        }
+                        });
                     }
                     else
                     {
@@ -272,7 +294,7 @@ var ExternalGeometrySRC =
 
         //TODO: check SOURCE child nodes
         shape._webgl.internalDownloadCount  = 1;
-        shape._nameSpace.doc.downloadCount  = 1;
+        shape._nameSpace.doc.incrementDownloads();
 
         //TODO: check this object - when is it called, where is it really needed?
         //shape._webgl.makeSeparateTris = {...};
@@ -294,7 +316,7 @@ var ExternalGeometrySRC =
         //TODO: currently, we assume that the referenced file is always an SRC file
         xhr.onload = function() {
             shape._webgl.internalDownloadCount  = 0;
-            shape._nameSpace.doc.downloadCount  = 0;
+            shape._nameSpace.doc.decrementDownloads();
 
             var responseBeginUint32 = new Uint32Array(xhr.response, 0, 12);
 
@@ -388,13 +410,6 @@ var ExternalGeometrySRC =
     {
         shape.meshes = [];
 
-        var INDEX_BUFFER_IDX    = 0;
-        var POSITION_BUFFER_IDX = 1;
-        var NORMAL_BUFFER_IDX   = 2;
-        var TEXCOORD_BUFFER_IDX = 3;
-        var COLOR_BUFFER_IDX    = 4;
-        var ID_BUFFER_IDX       = 5;
-
         var MAX_NUM_BUFFERS_PER_DRAW = 6;
 
         var indexViews = srcHeaderObj["accessors"]["indexViews"];
@@ -481,10 +496,10 @@ var ExternalGeometrySRC =
                 renderMesh.numFaces  = indexView["count"] / 3;
                 x3domMesh._numFaces += indexView["count"] / 3;
 
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset] = {};
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].offset = indexView["byteOffset"];
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].type   = indexView["componentType"];
-                renderMesh.buffers[INDEX_BUFFER_IDX + bufferOffset].idx    = viewIDsToGLBufferIDs[indexView["bufferView"]];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset] = {};
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].offset = indexView["byteOffset"];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].type   = indexView["componentType"];
+                renderMesh.buffers[x3dom.BUFFER_IDX.INDEX + bufferOffset].idx    = viewIDsToGLBufferIDs[indexView["bufferView"]];
             }
             else
             {
@@ -508,7 +523,7 @@ var ExternalGeometrySRC =
                     case "position":
                         x3domTypeID      = "coord";
                         x3domShortTypeID = "Pos";
-                        idx = POSITION_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.POSITION + bufferOffset;
                         //for non-indexed rendering, we assume that all attributes have the same count
                         if (mesh["indices"] == "")
                         {
@@ -523,25 +538,25 @@ var ExternalGeometrySRC =
                     case "normal":
                         x3domTypeID      = "normal";
                         x3domShortTypeID = "Norm";
-                        idx = NORMAL_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.NORMAL + bufferOffset;
                         break;
 
                     case "texcoord":
                         x3domTypeID      = "texCoord";
                         x3domShortTypeID = "Tex";
-                        idx = TEXCOORD_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.TEXCOORD + bufferOffset;
                         break;
 
                     case "color":
                         x3domTypeID      = "color";
                         x3domShortTypeID = "Col";
-                        idx = COLOR_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.COLOR+ bufferOffset;
                         break;
 
                     case "id":
                         x3domTypeID      = "id";
                         x3domShortTypeID = "Id";
-                        idx = ID_BUFFER_IDX + bufferOffset;
+                        idx = x3dom.BUFFER_IDX.ID + bufferOffset;
                         shape._cf.geometry.node._vf.idsPerVertex = true;
                         break;
                 }

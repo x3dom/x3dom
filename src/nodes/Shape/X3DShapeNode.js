@@ -79,6 +79,8 @@ x3dom.registerNodeType(
                 normals: true,
                 texcoords: true,
                 colors: true,
+                tangents: true,
+                binormals : true,
                 specialAttribs: true,   // e.g., particleSize, IDs,...
                 indexes: true,
                 texture: true,
@@ -89,11 +91,15 @@ x3dom.registerNodeType(
             };
 
             // FIXME; move somewhere else and allow generic values!!!
+            this._indexOffset =0;
             this._coordStrideOffset = [0, 0];
             this._normalStrideOffset = [0, 0];
             this._texCoordStrideOffset = [0, 0];
+            this._texCoord2StrideOffset = [0, 0];
             this._colorStrideOffset = [0, 0];
             this._idStrideOffset = [0, 0];
+            this._tangentStrideOffset = [0, 0];
+            this._binormalStrideOffset = [0, 0];
 
             this._tessellationProperties = [];
         },
@@ -215,6 +221,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
                 this._dirty.colors = false;
+                this._dirty.tangents = false;
+                this._dirty.binormals = false;
                 this._dirty.specialAttribs = false;
                 // indices/topology
                 this._dirty.indexes = false;
@@ -230,6 +238,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
                 this._dirty.colors = false;
+                this._dirty.tangents = false;
+                this._dirty.binormals = false;
                 this._dirty.specialAttribs = false;
                 this._dirty.indexes = false;
             },
@@ -240,6 +250,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.tangents = true;
+                this._dirty.binormals = true;
                 this._dirty.specialAttribs = true;
                 // indices/topology
                 this._dirty.indexes = true;
@@ -265,6 +277,8 @@ x3dom.registerNodeType(
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
                 this._dirty.colors = true;
+                this._dirty.tangents = true;
+                this._dirty.binormals = true;
                 this._dirty.specialAttribs = true;
                 this._dirty.indexes = true;
                 // finally invalidate volume
@@ -274,20 +288,19 @@ x3dom.registerNodeType(
             getShaderProperties: function(viewarea)
             {
                 if (this._shaderProperties == null ||
-                    this._dirty.shader == true     ||
+                    this._dirty.shader == true ||
+                    x3dom.Utils.checkDirtyEnvironment(viewarea, this._shaderProperties) ||
+                    x3dom.Utils.checkDirtyPhysicalEnvironmentLight (viewarea, this._shaderProperties) ||
                     (this._webgl !== undefined &&
-                     this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea) ) ||
-                    x3dom.Utils.checkDirtyEnvironment(viewarea, this._shaderProperties) == true)
+                     this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea) ))
                 {
                     this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
-
                     this._dirty.shader = false;
                     if (this._webgl !== undefined)
                     {
                         this._webgl.dirtyLighting = x3dom.Utils.checkDirtyLighting(viewarea);
                     }
                 }
-
                 return this._shaderProperties;
             },
 
@@ -310,6 +323,13 @@ x3dom.registerNodeType(
                     if(shader) {
                         if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
                             textures = textures.concat(shader.getTextures());
+                        }
+                    }
+
+                    var material = appearance._cf.material.node;
+                    if(material) {
+                        if(x3dom.isa(material, x3dom.nodeTypes.PhysicalMaterial)) {
+                            textures = textures.concat(material.getTextures());
                         }
                     }
                 }

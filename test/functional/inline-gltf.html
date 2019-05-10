@@ -1,0 +1,454 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <meta name="theme-color" content="#86c540">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>X3DOM // GLTF 2.0</title>
+    <script type="text/javascript" src="../x3dom_include.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,900" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; font-family: 'Roboto', 'sans serif'; font-size: 15px; user-select: none;}
+        x3d { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; border: none; background: rgb(44, 44, 44); }
+        .x3dom-canvas { cursor: default; }
+        
+        .topbar
+        { 
+            position: absolute;
+            z-index: 3;
+            display: flex;
+            width: 100%;
+            height: 56px;
+            background: #000000;
+            align-items: center;
+            padding: 0 8px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+        }
+
+        .topbar-icon
+        {
+            color: white;
+            cursor: pointer;
+            padding: 0 12px;
+        }
+
+        .topbar-label
+        {
+            color: white;
+            font-size: 22px;
+            font-weight: 500;
+            margin-left: 8px;
+            flex-grow: 10;
+        }
+
+        .inputbar
+        { 
+            position: absolute;
+            left: 100%;
+            z-index: 4;
+            display: flex;
+            width: 100%;
+            height: 56px;
+            background: white;
+            align-items: center;
+            padding: 0 16px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .inputbar-icon
+        {
+            color: black;
+            cursor: pointer;
+        }
+
+        .overflow-menu
+        {
+            position: absolute;
+            background: white;
+            right: 20px;
+            top: 2px;
+            box-sizing: border-box;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            transform-origin: 100% 0;
+            transform: scale(0);
+            opacity: 0;
+            white-space: nowrap;
+            outline: none;
+            animation-fill-mode: both;
+            animation-duration: .2s;
+            animation-timing-function: ease-in-out;
+            box-sizing: border-box;
+        }
+
+        .overflow-menu-header
+        {
+            font-size: 16px;
+            font-weight: bold;
+            color: black;
+            padding: 6px 16px;
+        }
+
+        .overflow-menu-entry
+        {
+            font-size: 14px;
+            font-weight: normal;
+            color: black;
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px 16px;
+        }
+
+        .overflow-menu-entry:hover { background: #ccc; }
+        .overflow-text { flex-grow: 10; color: #333; pointer-events: none;}
+        .overflow-icon-environment, .overflow-icon-tonemapping , .overflow-icon-light { font-size: 20px; color: #666;  pointer-events: none;}
+        input[type=url] { flex-grow: 10; border: none; font-size: 22px; height: 100%; margin: 0 16px 0 16px; outline: none}
+        .main-wrapper { width: 100%; height: calc(100% - 56px); position: absolute; top: 56px; left: 0; display: flex; flex-direction: row; }
+        
+        .sidebar { display: flex; flex-direction: column; width: 250px; height: 100%; background: rgba(255,255,255,0.95); overflow-x: hidden; overflow-y: scroll; box-sizing: border-box;  padding-bottom: 8px; flex-shrink: 0; transition: all 0.3s ease; position: relative; left: 0;}  
+        .sidebar-entry {width: 100%; font-size: 14px; color: #888; cursor: pointer; padding: 8px 32px; box-sizing: border-box; font-weight: 500; white-space: nowrap;}
+        .sidebar-entry:hover { background: #ddd; }
+        .sidebar-header {width: 100%; font-size: 14px; margin: 0 0 5px 0; font-weight: 500; color: #000000; padding: 16px; box-sizing: border-box; white-space: nowrap;}
+        
+        .environment-selector { position: absolute; top: 16px; right: 16px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 8px; width: 126px; box-sizing: border-box;}
+        .tonemapping-selector { position: absolute; top: 160px; right: 16px; z-index: 5; background: rgba(0, 0, 0, 0.2); padding: 8px; width: 126px; box-sizing: border-box;}
+        .tonemapping-heading, .environment-heading { margin-bottom: 5px; font-size: 18px; font-weight: bold; color: white}
+
+        label { color: white; font-size: 16px;}
+
+        @-webkit-keyframes slideIn { 0% {transform: scale(0); opacity: 1;} 100% {transform: scale(1); opacity: 1;} }
+        @keyframes slideIn { 0% {transform: scale(0); opacity: 1;} 100% {transform: scale(1); opacity: 1;} }
+
+        @-webkit-keyframes slideOut { 0% {transform: scale(1); opacity: 1;} 100% { transform: scale(0);  opacity: 0;}  }
+        @keyframes slideOut { 0% {transform: scale(1); opacity: 1;} 100% { transform: scale(0);  opacity: 0;} }
+    </style>
+
+    <script>
+        
+        var g_runtime;
+        var g_direction = "posZ";
+        var g_open = true;
+        var g_input_open = false;
+
+        function onDownloadsFinished()
+        {
+            g_runtime.showAll(g_direction, true);
+        };
+    
+        function onload()
+        {
+            x3d = document.getElementById("x3d");           
+            x3d.addEventListener( "downloadsfinished", onDownloadsFinished );
+            
+            g_runtime = x3d.runtime;
+        };
+
+        function updateInline(url)
+        {
+            document.getElementById("inline").setAttribute("url", url);
+
+            g_runtime.showAll(g_direction, true);   
+        }
+
+        function load(file, type, direction)
+        {
+            var suffix = (type == "Binary") ? ".glb" : ".gltf"; 
+
+            type = (type != undefined) ? "-" + type : "";
+
+            g_direction = direction || "posZ";
+            
+            // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            var repo = "http://localhost/glTF-Sample-Models/2.0/";
+
+            var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
+            
+            updateInline(url);
+        }
+
+        function togglemenu()
+        {
+            if(g_open)
+            {
+                document.querySelector(".sidebar").style.left = "-250px";
+                document.querySelector(".sidebar").style.width = "0px";
+                g_open = false;
+            }
+            else
+            {
+                document.querySelector(".sidebar").style.left = "0px";
+                document.querySelector(".sidebar").style.width = "250px";
+                g_open = true;
+            }
+        }
+
+        function toggleURLInput()
+        {
+            if(g_input_open)
+            {
+                document.querySelector(".inputbar").style.left = "100%";
+                document.querySelector("#externalURL").value = "";
+                g_input_open = false;
+            }
+            else
+            {
+                document.querySelector(".inputbar").style.left = "0px";
+                g_input_open = true;
+            }
+        }
+
+        function openOverflowMenu()
+        {
+            var menu = document.querySelector(".overflow-menu");
+            menu.style.animationName = "slideIn";
+            menu.focus();
+        }
+
+        function closeOverflowMenu()
+        {
+            var menu = document.querySelector(".overflow-menu");
+            menu.style.animationName = "slideOut";
+        }
+
+        function onBlur()
+        {
+            document.querySelector(".inputbar").style.left = "100%";
+            document.querySelector("#externalURL").value = "";
+            g_input_open = false;
+        }
+
+        function setTonemapping( event, operator )
+        {
+            var allRadios = document.querySelectorAll(".overflow-icon-tonemapping");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
+            document.querySelector("environment").setAttribute("tonemapping", operator);
+
+            closeOverflowMenu();
+        }
+
+        function setEnvironment( event, environment )
+        {
+            var allRadios = document.querySelectorAll(".overflow-icon-environment");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
+            var diffuse  = "https://x3dom.org/download/assets/pbr/" + environment + "Diffuse.dds";
+            var specular = "https://x3dom.org/download/assets/pbr/" + environment + "Specular.dds";
+
+            document.querySelector("background").setAttribute("backUrl", diffuse);
+            document.querySelector("physicalenvironmentlight").setAttribute("diffuse", diffuse);
+            document.querySelector("physicalenvironmentlight").setAttribute("specular", specular);
+
+            closeOverflowMenu();
+        }
+
+        function setLight( event, ibl )
+        {
+            var allRadios = document.querySelectorAll(".overflow-icon-light");
+
+            for(var i = 0; i < allRadios.length; i++)
+            {
+                allRadios[i].innerHTML = "radio_button_unchecked"
+            }
+
+            event.target.querySelector("i").innerHTML = "radio_button_checked";
+
+            document.querySelector("navigationinfo").setAttribute("headlight", !ibl);
+            document.querySelector("physicalenvironmentlight").setAttribute("on", ibl);
+
+            closeOverflowMenu();
+        }
+
+        function onKeyPress( e )
+        {
+            if( e.keyCode == 13 )
+            {
+                var url = document.querySelector("#externalURL").value;
+                toggleURLInput();
+                updateInline(url);
+            }
+        }
+    
+    </script>
+</head>
+
+     
+<body onload="onload();">
+
+    <section class="topbar">
+        <section style="position: relative; display: flex; align-items: center; width: 100%;">
+            <i class="material-icons topbar-icon" onclick="togglemenu();">menu</i>
+            <span class="topbar-label">X3DOM // GLTF 2.0</span>
+            <i class="material-icons topbar-icon" onclick="toggleURLInput();">link</i>    
+            <i class="material-icons topbar-icon" onclick="openOverflowMenu()" >more_vert</i>
+            <section class="overflow-menu" tabindex="1">
+                <div class="overflow-menu-header">Environment</div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'papermill');">
+                    <div class="overflow-text">Papermill</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'museum');">
+                    <div class="overflow-text">Museum</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'castle');">
+                    <div class="overflow-text">Castle</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setEnvironment(event, 'simple');">
+                    <div class="overflow-text">Simple</div>
+                    <i class="material-icons overflow-icon-environment">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-header">Tonemapping</div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'none')">
+                    <div class="overflow-text">None</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'reinhard')">
+                    <div class="overflow-text">Reinhard</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'uncharted')">
+                    <div class="overflow-text">Uncharted</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setTonemapping(event, 'filmic')">
+                    <div class="overflow-text">Filmic</div>
+                    <i class="material-icons overflow-icon-tonemapping">radio_button_unchecked</i>
+                </div>
+                <div class="overflow-menu-header">Lighting</div>
+                <div class="overflow-menu-entry" onclick="setLight(event, true)">
+                    <div class="overflow-text">IBL</div>
+                    <i class="material-icons overflow-icon-light">radio_button_checked</i>
+                </div>
+                <div class="overflow-menu-entry" onclick="setLight(event, false)">
+                    <div class="overflow-text">Headlight</div>
+                    <i class="material-icons overflow-icon-light">radio_button_unchecked</i>
+                </div>
+            </section>
+        </section>
+    </section>
+
+    <section class="inputbar">
+        <i class="material-icons inputbar-icon">link</i>
+        <input id="externalURL" type="url" placeholder="URL to a glTF file..." onkeypress="onKeyPress(event)" onblur="onBlur()" tabindex="0">
+        <i class="material-icons inputbar-icon" onclick="toggleURLInput();">clear</i>
+    </section>  
+
+    <section class="main-wrapper">
+
+        <section class="sidebar">
+            
+            <div class="sidebar-header">Basic Tests</div>
+    
+            <div class="sidebar-entry" onclick="load('Triangle')">Triangle</div>
+            <div class="sidebar-entry" onclick="load('TriangleWithoutIndices',undefined,'negZ')">Triangle Without Indices</div>
+            <div class="sidebar-entry" onclick="load('SimpleMeshes',undefined,'negZ')">Simple Meshes</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/cx20/gltf-test/master/tutorialModels/SimpleMaterial/glTF/SimpleMaterial.gltf')">Simple Material</div>
+            <div class="sidebar-entry" onclick="updateInline('https://raw.githubusercontent.com/bghgary/glTF-Asset-Generator/master/Output/Material_MetallicRoughness/Material_MetallicRoughness_09.gltf')">Simple Meshes</div>
+            <div class="sidebar-header">Feature Tests</div>
+    
+            <div class="sidebar-entry" onclick="load('VertexColorTest', undefined, 'negZ')">Vertex Color Test</div>
+            <div class="sidebar-entry" onclick="load('TextureCoordinateTest',undefined,'negZ')">Texture Coordinate Test</div>
+            <div class="sidebar-entry" onclick="load('TextureSettingsTest',undefined,'negZ')">Texture Settings Test</div>
+            <div class="sidebar-entry" onclick="load('TextureTransformTest',undefined,'negZ')">Texture Transform Test</div>
+            <div class="sidebar-entry" onclick="load('AlphaBlendModeTest',undefined,'negZ')">Alpha Blend Mode Test</div>
+            <div class="sidebar-entry" onclick="load('NormalTangentTest',undefined,'negZ')">Normal Tangent Test</div>
+            <div class="sidebar-entry" onclick="load('NormalTangentMirrorTest',undefined,'negZ')">Normal Tangent Mirror Test</div>
+            <div class="sidebar-entry" onclick="load('MetalRoughSpheres',undefined,'negZ')">Metal Roughness Spheres</div>
+            <div class="sidebar-entry" onclick="load('UnlitTest',undefined,'negZ')">Unlit Test</div>
+            <div class="sidebar-entry" onclick="load('InterpolationTest',undefined,'negZ')">Interpolation Test</div>
+            
+    
+            <div class="sidebar-header">Advanced Tests</div>
+    
+            <div class="sidebar-entry" onclick="load('Box')">Box</div>
+            <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Embedded')">Box Textured (embedded)</div>
+            <div class="sidebar-entry" onclick="load('BoxTextured', 'Binary')">Box Textured (binary)</div>
+            <div class="sidebar-entry" onclick="load('BoxInterleaved')">Box Interleaved</div>
+            <div class="sidebar-entry" onclick="load('BoxTexturedNonPowerOfTwo')">Box Textured NPOT</div>
+            <div class="sidebar-entry" onclick="load('Duck')">Duck</div>
+            <div class="sidebar-entry" onclick="load('2CylinderEngine')">2 Cylinder Engine</div>
+            <div class="sidebar-entry" onclick="load('ReciprocatingSaw')">Reciprocating Saw</div>
+            <div class="sidebar-entry" onclick="load('GearboxAssy')">Gearbox Assy</div>
+            <div class="sidebar-entry" onclick="load('Buggy')">Buggy</div>
+            <div class="sidebar-entry" onclick="load('CesiumMilkTruck')">Cesium Milk Truck</div>
+            <div class="sidebar-entry" onclick="load('Tokyo')">Tokyo</div>
+    
+            <div class="sidebar-header">PBR Tests</div>
+        
+            <div class="sidebar-entry" onclick="load('Avocado')">Avocado</div>
+            <div class="sidebar-entry" onclick="load('BarramundiFish')">BarramundiFish</div>
+            <div class="sidebar-entry" onclick="load('Lantern')">Lantern</div>
+            <div class="sidebar-entry" onclick="load('BoomBox')">Boom Box</div>
+            <div class="sidebar-entry" onclick="load('Corset')">Corset</div>
+            <div class="sidebar-entry" onclick="load('WaterBottle')">WaterBottle</div>
+            <div class="sidebar-entry" onclick="load('SpecGlossVsMetalRough')">SpecGloss Vs MetalRough</div>
+            <div class="sidebar-entry" onclick="load('DamagedHelmet')">Damaged Helmet</div>
+            <div class="sidebar-entry" onclick="load('Suzanne')">Suzanne</div>
+            <div class="sidebar-entry" onclick="load('TwoSidedPlane')">TwoSidedPlane</div>
+            <div class="sidebar-entry" onclick="load('Cube')">Cube</div>
+            <div class="sidebar-entry" onclick="load('SciFiHelmet')">SciFiHelmet</div>  
+            <div class="sidebar-entry" onclick="load('FlightHelmet')">Flight Helmet</div>
+            <div class="sidebar-entry" onclick="load('Cerberus')">Cerberus</div>
+            <div class="sidebar-entry" onclick="load('adamHead')">Adam Head</div>
+            <div class="sidebar-entry" onclick="load('microphone')">Microphone</div>
+            <div class="sidebar-entry" onclick="load('Sponza')">Sponza</div>
+            <div class="sidebar-entry" onclick="load('ZIS101ASport')">ZIS-101A Sport</div>
+            <div class="sidebar-entry" onclick="load('DreamBike')">Dream Bike</div>
+            <div class="sidebar-entry" onclick="load('MotorCycle')">Motor Cycle</div>
+            <div class="sidebar-entry" onclick="load('WildWestBike')">Wild West Bike</div>
+           
+
+			<div class="sidebar-header">VR Controller</div>
+			
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/vive.glb')">Vive</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-go.glb')">Oculus Go</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-left.glb')">Oculus Left</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/oculus-right.glb')">Oculus Right</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/daydream.glb')">Daydream</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/gearvr.glb')">GearVR</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-left.glb')">Microsoft Left</div>
+			<div class="sidebar-entry" onclick="updateInline('https://x3dom.org/download/assets/vr/microsoft-right.glb')">Microsoft Right</div>
+			<div class="sidebar-entry" onclick="updateInline('https://cdn.rawgit.com/KhronosGroup/glTF-Blender-Exporter/0e23c773bf27dad67d2c25f060370d6fa012d87d/polly/project_polly.gltf')">Polly</div>
+           
+		   
+        </section>
+
+        <X3D id="x3d">
+            <Scene>
+                <navigationinfo headlight="false"></navigationinfo>
+                <environment tonemapping="reinhard"></environment>
+                <physicalenvironmentlight diffuse="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"
+                                          specular="https://x3dom.org/download/assets/pbr/papermillSpecular.dds">
+                </physicalenvironmentlight>
+                <background backURL="https://x3dom.org/download/assets/pbr/papermillDiffuse.dds"></background>
+                <Transform translation="0 0 0">
+                    <Inline id="inline" url="" nameSpaceName="gltf" mapDEFToID="true"></Inline>
+                </Transform>
+            </Scene>
+        </X3D>
+
+    </section>
+    
+</body>
+</html>

@@ -664,11 +664,11 @@ x3dom.registerNodeType(
              * Bias to apply to normal sampled from normalTexture
              * @var {x3dom.fields.SFVec3f} normalBias
              * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue -1,-1,-1
+             * @initvalue -1,-1,1
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'normalBias', -1, -1, -1);
+            this.addField_SFVec3f(ctx, 'normalBias', -1, -1, 1);
 
             /**
              * The value of alphaTexture is multiplied by this value. If no texture is set, the value is used directly.

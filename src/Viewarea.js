@@ -151,7 +151,64 @@ x3dom.Viewarea = function(document, scene) {
     this._interpolator = new x3dom.FieldInterpolator();
     this._animationStateChanged = false;
 
+    this.vrFrameData = null;
+    this.gamepads = null;
+    this.vrLeftViewMatrix = new x3dom.fields.SFMatrix4f();
+    this.vrRightViewMatrix = new x3dom.fields.SFMatrix4f();
+
+    this.vrLeftProjMatrix = new x3dom.fields.SFMatrix4f();
+    this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
+
+    this.vrControllerManager = new x3dom.VRControllerManager();
+
     this.arc = null;
+};
+
+x3dom.Viewarea.prototype.setVRFrameData = function(vrFrameData)
+{
+    this.vrFrameData = vrFrameData;
+
+    if(this.vrFrameData)
+    {
+        this.vrLeftViewMatrix.setFromArray(this.vrFrameData.leftViewMatrix),
+        this.vrRightViewMatrix.setFromArray(this.vrFrameData.rightViewMatrix)
+    }
+};
+
+x3dom.Viewarea.prototype.updateGamepads = function(vrDisplay)
+{
+    this.vrControllerManager.update(this, vrDisplay);
+
+    // var allGamepads = navigator.getGamepads();
+    // var gamepads = [];
+
+    // for(var i = 0; i < allGamepads.length; i++ )
+    // {
+    //     if(allGamepads[i] && allGamepads[i].displayId != undefined && allGamepads[i].displayId == vrDisplay.displayId)
+    //     {
+    //         gamepads.push(allGamepads[i]);
+    //     }
+    // }
+
+    // if(gamepads.length)
+    // {
+    //     var axes = gamepads[0].axes;
+
+    //     var dx = axes[0];
+    //     var dy = axes[1];
+
+    //     var d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+    //     d = ((d < x3dom.fields.Eps) ? 1 : d) * 5;
+
+    //     var viewDir = this.vrLeftViewMatrix.e2();
+    //     var rightDir = this.vrLeftViewMatrix.e0();
+
+    //     viewDir = new x3dom.fields.SFVec3f(-viewDir.x, -viewDir.y, viewDir.z).multiply(d*(dy)/this._height);
+    //     rightDir = new x3dom.fields.SFVec3f(-rightDir.x, -rightDir.y, rightDir.z).multiply((d*dx/this._width));
+
+    //     this._movement = this._movement.add(rightDir).add(viewDir);
+    //     this._transMat = x3dom.fields.SFMatrix4f.translation(this._movement);
+    // }
 };
 
 /**
@@ -347,6 +404,25 @@ x3dom.Viewarea.prototype.getLightsShadow = function() {
 };
 
 /**
+ * Check if there is a PhysicalEnvironmentLight
+ *
+ * @returns {boolean}
+ */
+x3dom.Viewarea.prototype.hasPhysicalEnvironmentLight = function () {
+    var light;
+    for (var i=0; i<this._doc._nodeBag.lights.length; i++)
+    {
+        var light = this._doc._nodeBag.lights[i];
+        if (x3dom.isa(light, x3dom.nodeTypes.PhysicalEnvironmentLight) &&
+           light._vf.on)
+        {
+            return true;
+        }
+    }
+    return false;
+};
+
+/**
  * Update Special Navigation
  *
  * @param viewpoint
@@ -407,8 +483,27 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function() {
  *
  * @returns {x3dom.fields.SFMatrix4f} view areas view matrix
  */
-x3dom.Viewarea.prototype.getViewMatrix = function() {
-    return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+x3dom.Viewarea.prototype.getViewMatrix = function ()
+{
+    if(this.vrFrameData)
+    {
+        return this.vrLeftViewMatrix;
+    }
+    else
+    {
+        return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+    }
+};
+
+x3dom.Viewarea.prototype.getViewMatrices = function()
+{
+    if(this.vrFrameData) {
+        return [this.vrLeftViewMatrix,
+                this.vrRightViewMatrix];
+    } else {
+        var viewMatrix = this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
+        return [viewMatrix, viewMatrix]
+    }
 };
 
 /**
@@ -627,10 +722,34 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
  *
  * @returns {*}
  */
-x3dom.Viewarea.prototype.getProjectionMatrix = function() {
-    var viewpoint = this._scene.getViewpoint();
+x3dom.Viewarea.prototype.getProjectionMatrix = function () {
+    if(this.vrFrameData) {
+        return this.vrLeftProjMatrix.setFromArray(this.vrFrameData.leftProjectionMatrix);
+    } else {
+        var viewpoint = this._scene.getViewpoint();
 
-    return viewpoint.getProjectionMatrix(this._width / this._height);
+        return viewpoint.getProjectionMatrix(this._width/this._height);
+    }
+};
+/**
+ * Get Projection Matrices for both eyes
+ *
+ * @returns {*}
+ */
+x3dom.Viewarea.prototype.getProjectionMatrices = function()
+{
+    if(this.vrFrameData)
+    {
+        return [this.vrLeftProjMatrix.setFromArray(this.vrFrameData.leftProjectionMatrix),
+            this.vrRightProjMatrix.setFromArray(this.vrFrameData.rightProjectionMatrix)];
+    }
+    else
+    {
+        var viewpoint = this._scene.getViewpoint();
+        var projectionMatrix = viewpoint.getProjectionMatrix(this._width/this._height);
+
+        return [projectionMatrix, projectionMatrix]
+    }
 };
 
 /**
@@ -764,6 +883,8 @@ x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation) {
         viewpoint.setCenterOfRotation(center);
     }
 
+    var aspect =  Math.min(this._width/this._height, 1);
+
     var diaz2 = dia[z] / 2.0, tanfov2 = Math.tan(fov / 2.0);
 
     var dist1 = (dia[y] / 2.0) / tanfov2 + diaz2;
@@ -776,6 +897,8 @@ x3dom.Viewarea.prototype.showAll = function(axis, updateCenterOfRotation) {
     } else {
         dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.01;
     }
+
+    dia[z] /= aspect;
 
     var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
     var viewmat = quat.toMatrix();
@@ -816,8 +939,10 @@ x3dom.Viewarea.prototype.fit = function(min, max, updateCenterOfRotation) {
     var upDir = new x3dom.fields.SFVec3f(viewmat._10, viewmat._11, viewmat._12);
     var viewDir = new x3dom.fields.SFVec3f(viewmat._20, viewmat._21, viewmat._22);
 
+    var aspect =  Math.min(this._width/this._height, 1);
+
     var tanfov2 = Math.tan(fov / 2.0);
-    var dist = bsr / tanfov2;
+    var dist = bsr / tanfov2 / aspect;
 
     var eyePos = center.add(viewDir.multiply(dist));
 
@@ -1379,7 +1504,6 @@ x3dom.Viewarea.prototype.onDrag = function(x, y, buttonState) {
     if (this._currentInputType == x3dom.InputTypes.NAVIGATION) {
         this._scene.getNavigationInfo()._impl.onDrag(this, x, y, buttonState);
     }
-
 };
 
 /**

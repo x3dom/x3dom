@@ -971,7 +971,7 @@ x3dom.registerNodeType(
                                                 'Next request in ' + refreshTime + ' seconds');
                       
                             window.setTimeout(function() {
-                                that._nameSpace.doc.downloadCount -= 1;
+                                that._nameSpace.doc.decrementDownloads();
                                 that.loadInline();
                             }, refreshTime * 1000);
                             return xhr;
@@ -980,7 +980,7 @@ x3dom.registerNodeType(
                         {
                             x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' + 
                                                  'No Retries left');
-                            that._nameSpace.doc.downloadCount -= 1;
+                            that._nameSpace.doc.decrementDownloads();
                             that.count = 0;
                             return xhr;
                         }
@@ -989,7 +989,7 @@ x3dom.registerNodeType(
                         that.fireEvents("error");
                         x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires web server running!');
 
-                        that._nameSpace.doc.downloadCount -= 1;
+                        that._nameSpace.doc.decrementDownloads();
                         that.count = 0;
                         return xhr;
                     }
@@ -1083,7 +1083,7 @@ x3dom.registerNodeType(
                         that.invalidateVolume();
                         //that.invalidateCache();
 
-                        that._nameSpace.doc.downloadCount -= 1;
+                        that._nameSpace.doc.decrementDownloads();
                         that._nameSpace.doc.needRender = true;
                         x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
 
@@ -1121,7 +1121,7 @@ x3dom.registerNodeType(
 
                     xhr.open('GET', xhrURI, true);
 
-                    this._nameSpace.doc.downloadCount += 1;
+                    this._nameSpace.doc.incrementDownloads();
 
                     try {
                         //xhr.send(null);

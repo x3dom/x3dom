@@ -363,10 +363,13 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx) {
+x3dom.X3DDocument.prototype.render = function (ctx, vrFrameData, vrDisplay) {
     if (!ctx || !this._viewarea) {
         return;
     }
+
+    this._viewarea.setVRFrameData(vrFrameData);
+    this._viewarea.updateGamepads(vrDisplay);
 
     ctx.renderScene(this._viewarea);
 };
@@ -410,7 +413,7 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
         return;
     }
 
-    if (this._viewarea._scene._vf.doPickPass)
+    if (this._viewarea._scene._vf.doPickPass && !this._viewarea._isMoving)
         ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onDrag(x, y, buttonState);
 };
@@ -744,3 +747,13 @@ x3dom.X3DDocument.prototype.isAnimating = function () {
 
     return this._viewarea.isAnimating();
 };
+
+x3dom.X3DDocument.prototype.incrementDownloads = function()
+{
+    this.downloadCount++;
+}
+
+x3dom.X3DDocument.prototype.decrementDownloads = function()
+{
+    this.downloadCount--;
+}
