@@ -46,7 +46,7 @@ x3dom.registerNodeType(
         {
             nodeChanged: function()
             {
-                if (this._vf.url.length || !this._xmlNode) {
+                if ((this._vf.url.length && this._vf.url[0].length) || !this._xmlNode) {
                     return;
                 }
                 x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
