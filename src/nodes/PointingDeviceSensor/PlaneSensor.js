@@ -89,7 +89,7 @@ x3dom.registerNodeType(
             /**
              * Tracking plane orientation in local coordinate system.
              * Valid values are "XY" and "screen". "screen" uses the current orientation of the screen.
-             * @var {x3dom.fields.SFString} plaenOrientation
+             * @var {x3dom.fields.SFString} planeOrientation
              * @memberof x3dom.nodeTypes.PlaneSensor
              * @initvalue 'XY'
              * @field x3dom
