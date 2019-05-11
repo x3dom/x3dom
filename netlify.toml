@@ -28,7 +28,22 @@
   publish = "dist/"
   command = """
   python manage.py --build &&
-  echo "<body> <h1> X3DOM </h1> </body>" > dist/index.html
+  cat <<EOF < dist/index.html
+  <html>
+    <body>
+      <h1> X3DOM build </h1>
+      <ol>
+        <li> <a href='x3dom.js'>x3dom.js</a> </li>
+        <li> <a href='x3dom-full.js'>x3dom-full.js</a> </li>
+        <li> <a href='x3dom-full-physics.js'>x3dom-full-physics.js</a> </li>
+        <li> <a href='x3dom.css'>x3dom.css</a> </li>
+        <li> <a href='x3dom.debug.js'>x3dom.js</a> </li>
+        <li> <a href='x3dom-full.deub.js'>x3dom-full.js</a> </li>
+        <li> <a href='x3dom-full-physics.deub.js'>x3dom-full-physics.js</a> </li>
+      </ol>
+    </body>
+  </html>
+  EOF
   """
   # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
 
