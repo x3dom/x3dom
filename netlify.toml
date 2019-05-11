@@ -28,7 +28,7 @@
   publish = "dist/"
   command = """
   python manage.py --build &&
-  cat <<EOF < dist/index.html
+  cat <<EOF > dist/index.html
   <html>
     <body>
       <h1> X3DOM build </h1>
