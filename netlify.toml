@@ -28,10 +28,10 @@
   publish = "dist/"
   command = """
   python manage.py --build &&
-  cat <<EOF > dist/index.html
+  cat << EOF > dist/index.html
   <html>
     <body>
-      <h1> X3DOM build </h1>
+      <h1> X3DOM build $COMMIT_REF</h1>
       <ol>
         <li> <a href='x3dom.js'>x3dom.js</a> </li>
         <li> <a href='x3dom-full.js'>x3dom-full.js</a> </li>
