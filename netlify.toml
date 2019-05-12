@@ -43,10 +43,11 @@
       <li> <a href='x3dom.debug.js'>x3dom.debug.js</a> </li>
       <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
+      $(ls -s1 --hide=*html dist/ | awk '{print "<li><a href=\""$2"\">"$2"</a>", $1, "</li>"}')
     </ol>
     <pre>
     file listing:
-    $(ls -s1 dist/*js dist/*css | awk '{print NR, "<a href=\""$2"\">"$2"</a>", $1}')
+    $(ls -s1 --hide=*html dist/ | awk '{print NR, "<a href=\""$2"\">"$2"</a>", $1}')
     </pre>
     <footer style='text-align: end'> dated $(date) </footer>
   </body>
