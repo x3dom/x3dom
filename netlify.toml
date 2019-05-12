@@ -46,7 +46,7 @@
       <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
       <h2> full listing </h2>
-      $(ls -lhr --time-style=long-iso --hide=*html dist/ | tail -n +2 | awk '{print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}')
+      $(cd dist; ls -lhr --time-style=long-iso --hide=*html | tail -n +2 | awk '{print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}')
     </ol>
     <footer style='text-align: end'> dated $(date) </footer>
   </body>
