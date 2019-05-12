@@ -36,15 +36,16 @@
   <body>
     <h1> X3DOM build $COMMIT_REF</h1>
     <ol>
+      <h2> production versions </h2>
       <li> <a href='x3dom.js'>x3dom.js</a> </li>
       <li> <a href='x3dom-full.js'>x3dom-full.js</a> </li>
       <li> <a href='x3dom-full-physics.js'>x3dom-full-physics.js</a> </li>
       <li> <a href='x3dom.css'>x3dom.css</a> </li>
-      <div>debug versions</div>
+      <h2> debug versions </h2>
       <li> <a href='x3dom.debug.js'>x3dom.debug.js</a> </li>
       <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
-      <div> Full listing </div>
+      <h2> Full listing </h2>
       $(ls -s1h --hide=*html dist/ | tail -n +2 | awk '{print "<li><a href=\""$2"\">"$2"</a>", $1, "</li>"}')
     </ol>
     <footer style='text-align: end'> dated $(date) </footer>
