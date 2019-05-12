@@ -28,7 +28,7 @@
   publish = "dist/"
   command = '''
   python manage.py --build &&
-  cat << EOF > dist/index.html
+  cat <<ENDX3DOMHTML > dist/index.html
   <html>
     <head>
       <title>X3DOM build dated $(date)</title>
@@ -40,14 +40,14 @@
         <li> <a href='x3dom-full.js'>x3dom-full.js</a> </li>
         <li> <a href='x3dom-full-physics.js'>x3dom-full-physics.js</a> </li>
         <li> <a href='x3dom.css'>x3dom.css</a> </li>
-        <li> <a href='x3dom.debug.js'>x3dom.js</a> </li>
-        <li> <a href='x3dom-full.deub.js'>x3dom-full.js</a> </li>
-        <li> <a href='x3dom-full-physics.deub.js'>x3dom-full-physics.js</a> </li>
+        <li> <a href='x3dom.debug.js'>x3dom.debug.js</a> </li>
+        <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
+        <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
       </ol>
       <footer style='text-align: end'>dated $(date)</footer>
     </body>
   </html>
-  EOF
+  ENDX3DOMHTML
   '''
   
   # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
