@@ -44,9 +44,11 @@
         <li> <a href='x3dom-full.deub.js'>x3dom-full.js</a> </li>
         <li> <a href='x3dom-full-physics.deub.js'>x3dom-full-physics.js</a> </li>
       </ol>
+      <footer style='text-align: end'>dated $(date)</footer>
     </body>
   </html>
-  EOF'''
+  EOF
+  '''
   
   # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
 
