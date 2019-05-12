@@ -44,6 +44,10 @@
       <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
     </ol>
+    <code>
+    file listing:
+    $(ls -s1 *js *css | awk '{print NR, "<a href=\""$2"\">"$2"</a>", $1}'
+    </code>
     <footer style='text-align: end'> dated $(date) </footer>
   </body>
 </html>
