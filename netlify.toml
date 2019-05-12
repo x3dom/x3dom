@@ -26,10 +26,13 @@
 # deploy contexts will inherit these settings.
 [context.production]
   publish = "dist/"
-  command = """
+  command = '''
   python manage.py --build &&
   cat << EOF > dist/index.html
   <html>
+    <head>
+      <title>X3DOM build dated $(date)</title>
+    </head>
     <body>
       <h1> X3DOM build $COMMIT_REF</h1>
       <ol>
@@ -43,8 +46,8 @@
       </ol>
     </body>
   </html>
-  EOF
-  """
+  EOF'''
+  
   # environment = { ACCESS_TOKEN = "super secret", NODE_VERSION = "8.0.1" }
 
 # Deploy Preview context: all deploys resulting from a pull/merge request will 
