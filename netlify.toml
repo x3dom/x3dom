@@ -46,7 +46,7 @@
     </ol>
     <code>
     file listing:
-    $(ls -s1 *js *css | awk '{print NR, "<a href=\""$2"\">"$2"</a>", $1}'
+    $(ls -s1 *js *css | awk '{print NR, "<a href=\""$2"\">"$2"</a>", $1}')
     </code>
     <footer style='text-align: end'> dated $(date) </footer>
   </body>
