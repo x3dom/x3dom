@@ -29,8 +29,9 @@
   command = '''
   python manage.py --build &&
   cd doc &&
-  sh jsdoc-releases-3.1/jsdoc -c jsdoc.conf --destination ../dist/doc &&
-  cat <<HTMLEND > ../dist/index.html
+  sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc &&
+  cd ../ &&
+  cat <<HTMLEND > dist/index.html
 <html>
   <head>
     <title>X3DOM build dated $(date)</title>
