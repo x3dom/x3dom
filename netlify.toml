@@ -28,7 +28,9 @@
   publish = "dist/"
   command = '''
   python manage.py --build &&
-  cat <<HTMLEND > dist/index.html
+  cd doc &&
+  sh jsdoc-releases-3.1/jsdoc -c jsdoc.conf --destination ../dist/doc &&
+  cat <<HTMLEND > ../dist/index.html
 <html>
   <head>
     <title>X3DOM build dated $(date)</title>
@@ -45,8 +47,10 @@
       <li> <a href='x3dom.debug.js'>x3dom.debug.js</a> </li>
       <li> <a href='x3dom-full.debug.js'>x3dom-full.debug.js</a> </li>
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
+      <h2> documentation </h2>
+      <li> <a href='doc/index.html'>extensive documentation</a> </li>
       <h2> full listing </h2>
-      $(cd dist; ls -lhr --time-style=long-iso * */* | grep -v html | awk 'NF==8 {print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}' | head -n -9)
+      $(cd dist; ls -lhr --time-style=long-iso * components/* | grep -v html | awk 'NF==8 {print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}' | head -n -9)
     </ol>
     <footer style='text-align: end'> dated $(date) </footer>
   </body>
