@@ -168,9 +168,11 @@ x3dom.gfx_webgl = (function() {
 
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
-                        // Enabled WebGL2 breaks picking if we use the depth_texture extension for the picking fbo
-                        if (x3dom.Utils.isWebGL2Enabled()) {
+                        // Enable/disable native webgl32 related caps
+                        if (x3dom.Utils.isWebGL2Enabled())
+                        {
                             x3dom.caps.DEPTH_TEXTURE = null;
+                            x3dom.caps.INDEX_UINT = true
                         }
 
                         if (x3dom.caps.DEBUGRENDERINFO) {
