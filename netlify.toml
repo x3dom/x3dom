@@ -27,7 +27,8 @@
 [context.production]
   publish = "dist/"
   command = '''
-  python manage.py --build > build.log &&
+  echo 'build command: executing python manage.py --build' &&
+  python manage.py --build &> build.log &&
   cd doc &&
   sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc &&
   cd ../ &&
