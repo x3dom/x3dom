@@ -28,16 +28,14 @@
   publish = "dist/"
   command = '''
   echo "build command: started..." &&
-  echo "build command: python manage.py --build &> build.log ..."
+  echo "build command: python manage.py --build &> build.log ..." &&
   python manage.py --build &> build.log &&
   echo "build command: cd doc & sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc ..." &&
   cd doc &&
   sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc &&
   echo "build command: cd ../ && cat <<HTMLEND > dist/index.html && cat build.log ..." &&
   cd ../ &&
-  cat <<HTMLEND > dist/index.html && cat build.log &&
-  echo "build command: exit 0 ..." &&
-  exit 0
+  cat <<HTMLEND > dist/index.html && cat build.log && echo "build command: exit 0 ..." && exit 0
 <html>
   <head>
     <title>X3DOM build dated $(date)</title>
