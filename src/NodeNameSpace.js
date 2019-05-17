@@ -279,7 +279,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function(domNode, parent) {
                     this._x3domNode._listeners[type] = [];
                 }
                 this._x3domNode._listeners[type].push(func);
-                this["on" + type] = func;
 
                 //x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
                 this.__addEventListener(type, func, phase);
@@ -297,8 +296,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function(domNode, parent) {
                         }
                     }
                 }
-                
-                this["on" + type] = undefined;
 
                 this.__removeEventListener(type, func, phase);
             };
