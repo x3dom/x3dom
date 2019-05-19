@@ -749,6 +749,27 @@ x3dom.Runtime.prototype.showObject = function(obj, axis) {
 };
 
 /**
+ * APIMethod animateViewpointTo
+ *
+ * Animates the current viewpoint to a new location.
+ *
+ * @param target - The taget view matrix or a viewpoint node
+ * @param duration - The animation duration
+ */
+x3dom.Runtime.prototype.animateViewpointTo = function( target, duration ) {
+    
+    var viewarea  = this.canvas.doc._viewarea;
+    var viewpoint = this.canvas.doc._scene.getViewpoint();
+
+    if( target._x3domNode != undefined )
+    {
+        target = target._x3domNode
+    }
+
+    viewarea.animateTo( target, viewpoint, duration );
+};
+
+/**
  * APIMethod getCenter
  *
  * Returns the center of a X3DShapeNode or X3DGeometryNode.

@@ -452,7 +452,7 @@ x3dom.registerNodeType(
 
                 if(!node._xmlNode.getAttribute(eventType) && 
                    !node._xmlNode[eventType] && 
-                   !node._listeners[eventType])
+                   !node._listeners[event.type])
                 {
                     return event.cancelBubble;
                 }
