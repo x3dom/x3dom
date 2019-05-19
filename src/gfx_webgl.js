@@ -3919,11 +3919,10 @@ x3dom.gfx_webgl = (function() {
             var e_viewpoint = scene.getViewpoint();
             var e_eventType = "viewpointChanged";
 
-            try {
-                if (e_viewpoint._xmlNode &&
-                    (e_viewpoint._xmlNode["on" + e_eventType] ||
-                        e_viewpoint._xmlNode.hasAttribute("on" + e_eventType) ||
-                        e_viewpoint._listeners[e_eventType])) {
+            try
+            {
+                if (e_viewpoint.hasEventListener(e_eventType) || scene.hasEventListener(e_eventType))
+                {
                     var e_viewtrafo = e_viewpoint.getCurrentTransform();
                     e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
                     var e_mat = e_viewtrafo.inverse();
@@ -3943,12 +3942,23 @@ x3dom.gfx_webgl = (function() {
                         preventDefault: function() { this.cancelBubble = true; }
                     };
 
+                    if (e_viewpoint.hasEventListener(e_eventType))
+                    {
+                        e_viewpoint.callEvtHandler(("on" + e_eventType), e_event);
+                    }
+                    
+                    if (scene.hasEventListener(e_eventType))
+                    {
+                        scene.callEvtHandler(("on" + e_eventType), e_event);
+                    }
+
                     e_viewpoint.callEvtHandler(("on" + e_eventType), e_event);
 
                     this._calledViewpointChangedHandler = true;
                 }
             }
-            catch (e_e) {
+            catch (e_e)
+            {
                 x3dom.debug.logException(e_e);
             }
         }
