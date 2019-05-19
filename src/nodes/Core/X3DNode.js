@@ -484,6 +484,13 @@ x3dom.registerNodeType(
                 return event.cancelBubble;
             },
 
+            hasEventListener: function( eventType )
+            {
+                return ( this._xmlNode && (this._xmlNode["on" + eventType] ||
+                                           this._xmlNode.hasAttribute("on" + eventType) ||
+                                           this._listeners[eventType]));
+            },
+
             initSetter: function (xmlNode, name) {
                 if (!xmlNode || !name)
                     return;
