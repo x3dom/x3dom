@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
     <script type="text/javascript" src="../../../../x3dom_include.js"></script>
     <script>
         document.onload=function(){
             document.getElementById("shape").addEventListener("click", function(e){
                 console.log("click");
-                //document.getElementById("result").setAttribute("string", e.hitPnt);
-                var x = e.hitPnt[0] + e.hitPnt[1] + e.hitPnt[2];
-                console.log(x);
-                document.getElementById("test-result").innerHTML = x;
-
+                document.getElementById("result_trafo").setAttribute('translation', e.hitPnt[0]+" 2.0 "+e.hitPnt[2]);
+                document.getElementById("result").setAttribute('string', e.hitPnt.map(v => v.toFixed(2)));
+                var msg = "hit point: " + e.hitPnt;
+                msg += " | layerXY: "+e.layerX+" "+e.layerY;
+                console.log(e);
+                document.getElementById("test-result").innerHTML = msg;
+                document.getElementById("anno2d").style.left = e.layerX+'px';
+                document.getElementById("anno2d").style.top = e.layerY+'px';
+                document.getElementById("anno2d").innerHTML = e.layerX+" "+e.layerY;
             }, false);
         };
-
     </script>
     <title>Picking</title>
 </head>
@@ -29,19 +33,21 @@
                 <box></box>
             </Shape>
         </Transform>
-        <Transform translation="0 2 0">
+        <Transform id="result_trafo" translation="0 2 0">
             <shape id="the_shape">
                 <appearance>
                     <material diffuseColor='0 0 0' specularColor='0 0 0'></material>
                 </appearance>
-                <text id="result" string='' solid='false'>
-                    <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
-                    <fontstyle justify="MIDDLE" size="0.4" leftToRight="true"></fontstyle>
+                <text id="result" string='location' solid='false'>
+                    <fontstyle justify="MIDDLE" style="BOLD" size="0.3" quality="5"></fontstyle>
                 </text>
             </shape>
         </Transform>
     </scene>
 </x3d>
 <p id="test-result">10</p>
+<span id="anno2d" style="position: absolute; border: solid 2px; z-index: 10; padding: 6px; line-height: 1.5; opacity: 0.7; text-align: center;">
+        screenXY
+</span>
 </body>
 </html>
