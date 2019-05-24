@@ -3340,6 +3340,8 @@ x3dom.gfx_webgl = (function() {
                 objId -= baseID;
 
                 var hitObject;
+                var layerX = x * viewarea._inverseDevicePixelRatioInverse;		    
+                var layerY = y * viewarea._inverseDevicePixelRatioInverse;		    
 
                 if (pickMode != 4) {
                     viewarea._pickingInfo.pickPos = pickPos;
@@ -3371,7 +3373,7 @@ x3dom.gfx_webgl = (function() {
                             event = {
                                 target: multiPart._xmlNode,
                                 button: button, mouseup: ((buttonState >>> 8) > 0),
-                                layerX: x, layerY: y,
+                                layerX: layerX, layerY: layerY,
                                 pickedId: objId,
                                 worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
                                 normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
@@ -3387,7 +3389,7 @@ x3dom.gfx_webgl = (function() {
                             event = {
                                 target: multiPart._xmlNode,
                                 button: button, mouseup: ((buttonState >>> 8) > 0),
-                                layerX: x, layerY: y,
+                                layerX: layerX, layerY: layerY,
                                 pickedId: -1,
                                 cancelBubble: false,
                                 stopPropagation: function() { this.cancelBubble = true; },
@@ -3411,7 +3413,7 @@ x3dom.gfx_webgl = (function() {
                         target: scene._xmlNode,
                         type: eventType,
                         button: button, mouseup: ((buttonState >>> 8) > 0),
-                        layerX: x, layerY: y,
+                        layerX: layerX, layerY: layerY,
                         shadowObjectId: objId,
                         worldX: pickPos.x, worldY: pickPos.y, worldZ: pickPos.z,
                         normalX: pickNorm.x, normalY: pickNorm.y, normalZ: pickNorm.z,
@@ -3464,7 +3466,7 @@ x3dom.gfx_webgl = (function() {
                         event = {
                             target: multiPart._xmlNode,
                             button: button, mouseup: ((buttonState >>> 8) > 0),
-                            layerX: x, layerY: y,
+                            layerX: layerX, layerY: layerY,
                             pickedId: -1,
                             cancelBubble: false,
                             stopPropagation: function() { this.cancelBubble = true; },
@@ -3486,7 +3488,7 @@ x3dom.gfx_webgl = (function() {
                         target: scene._xmlNode,
                         type: eventType,
                         button: button, mouseup: ((buttonState >>> 8) > 0),
-                        layerX: x, layerY: y,
+                        layerX: layerX, layerY: layerY,
                         shadowObjectId: viewarea._pickingInfo.shadowObjectId,
                         cancelBubble: false,
                         stopPropagation: function() { this.cancelBubble = true; },
