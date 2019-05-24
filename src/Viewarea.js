@@ -160,6 +160,8 @@ x3dom.Viewarea = function(document, scene) {
     this.vrRightProjMatrix = new x3dom.fields.SFMatrix4f();
 
     this.vrControllerManager = new x3dom.VRControllerManager();
+    
+    this._inverseDevicePixelRatioInverse = 1.0 / window.devicePixelRatio;
 
     this.arc = null;
 };
@@ -1063,8 +1065,8 @@ x3dom.Viewarea.prototype.checkEvents = function(obj, x, y, buttonState, eventTyp
         target: target,
         type: eventType.substr(2, eventType.length - 2),
         button: buttonState,
-        layerX: x,
-        layerY: y,
+        layerX: x * this._inverseDevicePixelRatioInverse,
+        layerY: y * this._inverseDevicePixelRatioInverse,
         worldX: that._pick.x,
         worldY: that._pick.y,
         worldZ: that._pick.z,
@@ -1255,7 +1257,9 @@ x3dom.Viewarea.prototype.onMouseRelease = function(x, y, buttonState, prevButton
                         this._scene._listeners[eventType])) {
                     var event = {
                         target: this._scene._xmlNode, type: eventType,
-                        button: prevButton, layerX: x, layerY: y,
+                        button: prevButton, 
+                        layerX: x * this._inverseDevicePixelRatioInverse,
+                        layerY: y * this._inverseDevicePixelRatioInverse,
                         cancelBubble: false,
                         stopPropagation: function() { this.cancelBubble = true; },
                         preventDefault: function() { this.cancelBubble = true; }
@@ -1552,8 +1556,8 @@ x3dom.Viewarea.prototype.prepareEvents = function(x, y, buttonState, eventType) 
         target: {},     // should be hit xml element
         type: eventType.substr(2, eventType.length - 2),
         button: buttonState,
-        layerX: x,
-        layerY: y,
+        layerX: x * this._inverseDevicePixelRatioInverse,
+        layerY: y * this._inverseDevicePixelRatioInverse,
         worldX: this._pick.x,
         worldY: this._pick.y,
         worldZ: this._pick.z,
