@@ -450,6 +450,13 @@ x3dom.registerNodeType(
                     return event.cancelBubble;
                 }
 
+                if(!node._xmlNode.getAttribute(eventType) && 
+                   !node._xmlNode[eventType] && 
+                   !node._listeners[event.type])
+                {
+                    return event.cancelBubble;
+                }
+
                 try {
                     var attrib = node._xmlNode[eventType];
                     event.target = node._xmlNode;
@@ -475,6 +482,13 @@ x3dom.registerNodeType(
                 }
 
                 return event.cancelBubble;
+            },
+
+            hasEventListener: function( eventType )
+            {
+                return ( this._xmlNode && (this._xmlNode["on" + eventType] ||
+                                           this._xmlNode.hasAttribute("on" + eventType) ||
+                                           this._listeners[eventType]));
             },
 
             initSetter: function (xmlNode, name) {

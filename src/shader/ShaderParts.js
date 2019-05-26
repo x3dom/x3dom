@@ -25,6 +25,18 @@
 };
 
 /*******************************************************************************
+* Material
+********************************************************************************/
+x3dom.shader.physicalMaterial = function() {
+	var shaderPart = "uniform vec3  baseColorFacor;\n" +
+					 "uniform vec3  emissiveFactor;\n" +
+					 "uniform float metallicFactor;\n" +
+					 "uniform float roughnessFactor;\n";
+					 
+	return shaderPart;
+};
+
+/*******************************************************************************
  * TwoSidedMaterial
  ********************************************************************************/
 x3dom.shader.twoSidedMaterial = function() {
@@ -80,8 +92,14 @@ x3dom.shader.clipPlanes = function(numClipPlanes) {
     shaderPart += "vec3 calculateClipPlanes() {\n";
 
     for(c=0; c<numClipPlanes; c++) {
-        shaderPart += "    vec4 clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
-        shaderPart += "    float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
+
+		shaderPart += "vec4 clipPlane" + c + ";\n";
+		shaderPart += "if(fragEyeIdx == 1.0){\n"
+    	shaderPart += "    clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse2;\n";
+    	shaderPart += "}else{\n";
+    	shaderPart += "    clipPlane" + c + " = clipPlane" + c + "_Plane * viewMatrixInverse;\n";
+    	shaderPart += "}\n";
+        shaderPart += "float dist" + c + " = dot(fragPosition, clipPlane" + c + ");\n";
     }
 
     shaderPart += "    if( ";
@@ -145,11 +163,11 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
         shaderPart += "const vec4 gammaDecode4Vector = vec4(2.2, 2.2, 2.2, 1.0);\n";
 
         shaderPart += "vec4 gammaEncode(vec4 color){\n" +
-                      "    return pow(color, gammaEncode4Vector);\n" +
+                      "    return pow(abs(color), gammaEncode4Vector);\n" +
                       "}\n";
 
         shaderPart += "vec4 gammaDecode(vec4 color){\n" +
-                      "    return pow(color, gammaDecode4Vector);\n" +
+                      "    return pow(abs(color), gammaDecode4Vector);\n" +
                       "}\n";
 
         // RGB; minor opt: 1.0 / 2.2 = 0.4545454545454545
@@ -157,11 +175,11 @@ x3dom.shader.gammaCorrectionDecl = function(properties) {
         shaderPart += "const vec3 gammaDecode3Vector = vec3(2.2, 2.2, 2.2);\n";
 
         shaderPart += "vec3 gammaEncode(vec3 color){\n" +
-                      "    return pow(color, gammaEncode3Vector);\n" +
+                      "    return pow(abs(color), gammaEncode3Vector);\n" +
                       "}\n";
 
         shaderPart += "vec3 gammaDecode(vec3 color){\n" +
-                      "    return pow(color, gammaDecode3Vector);\n" +
+                      "    return pow(abs(color), gammaDecode3Vector);\n" +
                       "}\n";
     }
 	return shaderPart;
@@ -214,6 +232,67 @@ x3dom.shader.rgbaPacking = function() {
 					"	float depth = dot(color, vec4(1.0, 1.0/255.0, 1.0/65025.0, 1.0/160581375.0));\n" +
 					"	return (2.0*depth - 1.0);\n" + 
 					"}\n";
+	return shaderPart;
+};
+
+x3dom.shader.calcMipLevel = function() {
+	var shaderPart = "";
+
+	shaderPart +=
+				"vec2 dirToCubeUV( vec3 dir ) {\n" +
+				"    vec2 uv = vec2(0.0);\n" +
+				"    vec3 absDir = abs(dir);\n" +
+				"    if( absDir.x >= absDir.y && absDir.x >= absDir.z) {\n" +
+				"    	if(dir.x < 0.0) {\n" +
+				"   		uv.x = 1.0 - (((dir.z/absDir.x) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.x) + 1.0) * 0.5);\n" +
+				"   	} else {\n" +
+				"   		uv.x = 1.0 - (((-dir.z/absDir.x) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.x) + 1.0) * 0.5);\n" +
+				"   	}\n" +
+				"   } else if( absDir.y >= absDir.x && absDir.y >= absDir.z) {\n" +
+				"   	if(dir.y < 0.0) {\n" +
+				"  			uv.x = ((dir.x/absDir.y) + 1.0) * 0.5;\n" +
+				"   		uv.y = ((-dir.z/absDir.y) + 1.0) * 0.5;\n" +
+				"   	} else {\n" +
+				"   		uv.x = ((dir.x/absDir.y) + 1.0) * 0.5;\n" +
+				"   		uv.y = ((dir.z/absDir.y) + 1.0) * 0.5;\n" +
+				"if(uv.y == 0.0) { uv.x = 1.0; uv.y = 0.0; }\n"+
+				"   	}\n" +
+				"   } else if( absDir.z >= absDir.x && absDir.z >= absDir.y) {\n" +
+				"   	if(dir.z < 0.0) {\n" +
+				"   		uv.x = (((-dir.x/absDir.z) + 1.0) * 0.5);\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.z) + 1.0) * 0.5);\n" +
+				"   	} else {\n" +
+				"   		uv.x = ((dir.x/absDir.z) + 1.0) * 0.5;\n" +
+				"   		uv.y = 1.0 - (((-dir.y/absDir.z) + 1.0) * 0.5);\n" +
+				"   	}\n" +
+				"   }\n" +
+
+				"   float a = pow(64.0,2.0) / pow(64.0,3.0);\n" +
+				"	uv.x = a * pow(uv.x, 3.0) + uv.x;\n" +
+				"	uv.y = a * pow(uv.y, 3.0) + uv.y;\n" +
+				"   return uv;\n" +
+				"}\n";   
+
+	shaderPart +=
+				"float calcMipLevel( vec2 uv ) {\n" + 
+	            "	vec2  dx_vtc        = dFdx(uv) * 64.0;\n" + 
+				"	vec2  dy_vtc        = dFdy(uv) * 64.0;\n" + 
+				"	float delta_max_sqr = max(dot(dx_vtc, dx_vtc), dot(dy_vtc, dy_vtc));\n" + 
+				"	return 0.5 * log2(delta_max_sqr);\n" + 
+				"}\n";
+
+	shaderPart += 
+				"vec3 fixSeams(vec3 vec, float mipmapIndex) {\n" + 
+				"	float scale = 1.0 - exp2(mipmapIndex) / 64.0;\n" + 
+				"	float M = max(max(abs(vec.x), abs(vec.y)), abs(vec.z));\n" + 
+				"	if (abs(vec.x) != M) vec.x *= scale;\n" + 
+				"	if (abs(vec.y) != M) vec.y *= scale;\n" + 
+				"	if (abs(vec.z) != M) vec.z *= scale;\n" + 
+				"	return vec;\n" + 
+				"}"
+
 	return shaderPart;
 };
 
@@ -336,9 +415,10 @@ x3dom.shader.light = function(numLights) {
 						"uniform float light"+l+"_ShadowIntensity;\n";
 	}
 	
-	shaderPart += 	"vec3 lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
+	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
 					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					"in float lCutOffAngle, in vec3 N, in vec3 V, float shin, float ambIntensity)\n" +
+					"in float lCutOffAngle, in vec3 positionVS, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
 					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
@@ -369,10 +449,98 @@ x3dom.shader.light = function(numLights) {
 					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;\n" +
 					"   float specularFactor = lIntensity * pow(NdotH, shin*128.0);\n" +
-                    "   return vec3(ambientFactor, diffuseFactor, specularFactor) * attentuation * spot;\n" +
-					//"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
-					//"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
-					//"   specular += lColor * specularFactor * attentuation * spot;\n" +
+					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+					"   specular += lColor * specularFactor * attentuation * spot;\n" +
+                    "}\n";
+						
+	return shaderPart;
+};
+
+/*******************************************************************************
+* Light
+********************************************************************************/
+x3dom.shader.lightPBR = function(numLights) {
+
+	var shaderPart = "";
+
+	for(var l=0; l<numLights; l++) {
+		shaderPart += 	"uniform float light"+l+"_On;\n" +
+						"uniform float light"+l+"_Type;\n" +
+						"uniform vec3  light"+l+"_Location;\n" +
+						"uniform vec3  light"+l+"_Direction;\n" +
+						"uniform vec3  light"+l+"_Color;\n" +
+						"uniform vec3  light"+l+"_Attenuation;\n" +
+						"uniform float light"+l+"_Radius;\n" +
+						"uniform float light"+l+"_Intensity;\n" +
+						"uniform float light"+l+"_AmbientIntensity;\n" +
+						"uniform float light"+l+"_BeamWidth;\n" +
+						"uniform float light"+l+"_CutOffAngle;\n" +
+						"uniform float light"+l+"_ShadowIntensity;\n";
+	}
+	
+	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " +
+					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+					"in float lCutOffAngle, in vec3 positionVS, in vec3 N, in vec3 V, float shin, float ambIntensity, vec3 reflectivity, " +
+				    "inout vec3 ambient, inout vec3 diffuse, inout vec3 specular)\n" +
+					"{\n" +
+					// Calculate some Dot-Products		
+					
+
+					"   vec3 L;\n" +
+					"   float spot = 1.0, attentuation = 0.0;\n" +
+					"   if(lType == 0.0) {\n" +
+					"       L = -normalize(lDirection);\n" +
+					"		V = normalize(V);\n" +
+					"		attentuation = 1.0;\n" +
+					"   } else{\n" +
+					"       L = (lLocation - (-V));\n" +
+					"       float d = length(L);\n" +
+					"		L = normalize(L);\n" +
+					"		V = normalize(V);\n" +
+					"       if(lRadius == 0.0 || d <= lRadius) {\n" +
+					"       	attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+					"		}\n" +
+					"       if(lType == 2.0) {\n" +
+					"           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
+					"           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
+					"           else if(spotAngle <= lBeamWidth) spot = 1.0;\n" +
+					"           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);\n" +
+					"       }\n" +
+					"   }\n" +
+					
+					"   vec3  fresnel = vec3(1.0, 1.0, 1.0);\n" +
+					"   vec3  H = normalize( L + V );\n" +
+					"   float NoL = clamp( dot( N, L ), 0.0, 1.0 );\n" +
+					"   float NoH = clamp( dot( N, H ), 0.0, 1.0 );\n" +
+					"   float NoV = clamp( dot( N, V ), 0.0, 1.0 );\n" +
+					"   float VoH = clamp( dot( V, H ), 0.0, 1.0 );\n" +
+					
+					"   float ambientFactor  = lAmbientIntensity * ambIntensity;\n" +
+					"   float diffuseFactor  = lIntensity * NoL;\n" +
+					"   float spec  = lIntensity * NoL;\n" +
+					"   float roughness = 1.0 - shin;\n" +
+					"   float a = max( roughness * roughness, 5e-4 );\n" +
+			
+					// Distribution Function"
+					"   float a2 = a * a;\n" +
+					"   float denom = NoH * NoH * ( a2 - 1.0 ) + 1.0;\n" +
+					"   float D = a2 / ( denom * denom );\n" +
+			
+					// Geometric Shadowing Term
+					"   float k = a / 2.0;\n" +
+					"   float G_V = ( NoV * ( 1.0 - k ) + k );\n" +
+					"   float G_L = ( NoL * ( 1.0 - k ) + k );\n" +
+					"   float G = 0.25 / ( G_V * G_L );\n" +
+
+					// Fresnel
+					"   vec3 F = reflectivity + (fresnel - fresnel*reflectivity) * exp2( (-5.55473 * VoH - 6.98316) * VoH );\n" +
+					
+					"   vec3 specularFactor = (D * G) * (F * spec);\n" +
+
+					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
+					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
+					"   specular += lColor * specularFactor * attentuation * spot;\n" +
                     "}\n";
 						
 	return shaderPart;
@@ -403,15 +571,74 @@ x3dom.shader.TBNCalculation = function() {
         "    return mat3( T * invmax, B * invmax, N );\n" +
         "}\n\n";
 
-    shaderPart += "vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord )\n" +
+    shaderPart += "vec3 perturb_normal( vec3 N, vec3 V, vec2 texcoord, vec3 bias )\n" +
         "{\n" +
         "    // assume N, the interpolated vertex normal and\n" +
         "    // V, the view vector (vertex to eye)\n" +
         "    vec3 map = texture2D(normalMap, texcoord ).xyz;\n" +
 		"    map = 2.0 * map - 1.0;\n" +
+	    "    map = map * bias;\n" +
         "    mat3 TBN = cotangent_frame(N, -V, texcoord);\n" +
         "    return normalize(TBN * map);\n" +
         "}\n\n";
+
+    return shaderPart;
+};
+
+/*******************************************************************************
+ * tonemapping
+ ********************************************************************************/
+x3dom.shader.toneMapping = function() {
+    var shaderPart = "";
+
+	shaderPart += "uniform float tonemappingOperator;\n";
+
+	shaderPart += "vec3 tonemapReinhard(vec3 color) { \n" +
+	"	return color / (color + vec3(1.0));\n"+ 	
+	"}\n\n";
+
+	shaderPart += "vec3 uncharted2Tonemap(vec3 color) { \n" +
+	"	float A = 0.15;\n" +
+	"	float B = 0.50;\n" +
+	"	float C = 0.10;\n" +
+	"	float D = 0.20;\n" +
+	"	float E = 0.02;\n" +
+	"	float F = 0.30;\n" +
+
+	"	return ((color*(A*color+C*B)+D*E)/(color*(A*color+B)+D*F))-E/F;\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemapUncharted2(vec3 color) { \n" +
+	"	float W = 11.2;\n" +
+	"   float exposureBias = 2.0;\n" +
+	"	vec3 curr = uncharted2Tonemap(exposureBias * color);\n" +
+	"	vec3 whiteScale = 1.0 / uncharted2Tonemap(vec3(W));\n" +
+	"	return curr * whiteScale;\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemapeFilmic(vec3 color) { \n" +
+	"	const float a = 2.51;\n" +
+	"	const float b = 0.03;\n" +
+	"	const float c = 2.43;\n" +
+	"	const float d = 0.59;\n" +
+	"	const float e = 0.14;\n" +
+	"	return clamp((color * (a * color + b)) / (color * (c * color + d ) + e), 0.0, 1.0);\n" +
+	"}\n\n";
+
+	shaderPart += "vec3 tonemap(vec3 color) { \n" +
+	"	if(tonemappingOperator == 0.0) {\n" +
+	"   	return color;\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 1.0) {\n" +
+	"   	return tonemapReinhard(color);\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 2.0) {\n" +
+	"   	return tonemapUncharted2(color);\n" +
+	"	}\n" +
+	"	if(tonemappingOperator == 3.0) {\n" +
+	"   	return tonemapeFilmic(color);\n" +
+	"	}\n" +
+	"}\n\n";
 
     return shaderPart;
 };

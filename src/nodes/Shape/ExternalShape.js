@@ -46,12 +46,26 @@ x3dom.registerNodeType(
                 {
                     return;
                 }
+                
+                var url = this._nameSpace.getURL(this._vf['url'][this._currentURLIdx]);
+                
+                var encoding = ( url.indexOf("glb") != -1 ) ? "binary" : "ascii";
+                
+                var baseURL = this._nameSpace.baseURL;
+                
+                var index = url.lastIndexOf("/");
+                
+                if( index != -1 )
+                {
+                    baseURL += url.substr(0, index + 1);
+                }
+                
 
                 var xhr = new XMLHttpRequest();
 
                 xhr.open("GET", this._nameSpace.getURL(this._vf['url'][this._currentURLIdx]), true);
 
-                xhr.responseType = "arraybuffer";
+                xhr.responseType = ( encoding == "binary" ) ? "arraybuffer" : "json";
 
                 xhr.send(null);
 
@@ -62,53 +76,69 @@ x3dom.registerNodeType(
                 xhr.onload = function() {
 
                     if ((xhr.status == 200 || xhr.status == 0)) {
-                        var glTF = new x3dom.glTF.glTFLoader(xhr.response);
-
-                        if (glTF.header.sceneLength > 0)
+                        
+                        var glTF = new x3dom.glTF.glTFLoader(false, encoding, baseURL);
+                        
+                        glTF.load(xhr.response, function()
                         {
-                            glTF.loaded = {};
-                            glTF.loaded.meshes = {};
-                            glTF.loaded.meshCount = 0;
-
-                            that.glTF = glTF;
-
-                            var url = that._vf['url'][that._currentURLIdx];
-                            if(url.includes('#'))
+                            if (glTF.header.sceneLength > 0)
                             {
-                                var split = url.split('#');
-                                var meshName = split[split.length-1];
-                                glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                that.glTF = glTF;
+
+                                var url = that._vf['url'][that._currentURLIdx];
+                                if(url.includes('#'))
+                                {
+                                    var split = url.split('#');
+                                    var meshName = split[split.length-1];
+                                    glTF.getMesh(shape, shaderProgram, gl, meshName);
+                                }
+                                else
+                                {
+                                    glTF.getScene(shape, shaderProgram, gl);
+                                }
+
+                                for(var key in glTF._mesh){
+                                    if(!glTF._mesh.hasOwnProperty(key))continue;
+                                    that._cf.geometry.node._mesh[key] = glTF._mesh[key];
+                                }
+
                             }
                             else
                             {
-                                glTF.getScene(shape, shaderProgram, gl);
-                            }
+                                if ((that._currentURLIdx + 1) < that._vf['url'].length)
+                                {
+                                    x3dom.debug.logWarning("Invalid SRC data, loaded from URL \"" +
+                                        that._vf['url'][that._currentURLIdx] +
+                                        "\", trying next specified URL");
 
-                            for(var key in glTF._mesh){
-                                if(!glTF._mesh.hasOwnProperty(key))continue;
-                                that._cf.geometry.node._mesh[key] = glTF._mesh[key];
+                                    //try next URL
+                                    ++that._currentURLIdx;
+                                    that.update(shape, shaderProgram, gl, viewarea, context);
+                                }
+                                else
+                                {
+                                    x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
+                                        that._vf['url'][that._currentURLIdx] + "\"," +
+                                        " no other URLs left to try.");
+                                }
                             }
+                            
+                            var theScene = that._nameSpace.doc._scene;
 
-                        }
-                        else
-                        {
-                            if ((that._currentURLIdx + 1) < that._vf['url'].length)
-                            {
-                                x3dom.debug.logWarning("Invalid SRC data, loaded from URL \"" +
-                                    that._vf['url'][that._currentURLIdx] +
-                                    "\", trying next specified URL");
+                            if (theScene) {
+                                theScene.invalidateVolume();
+                                //theScene.invalidateCache();
 
-                                //try next URL
-                                ++that._currentURLIdx;
-                                that.update(shape, shaderProgram, gl, viewarea, context);
+                                window.setTimeout( function() {
+                                    that.invalidateVolume();
+                                    //that.invalidateCache();
+
+                                    theScene.updateVolume();
+                                    that._nameSpace.doc.needRender = true;
+                                });
+                                
                             }
-                            else
-                            {
-                                x3dom.debug.logError("Invalid SRC data, loaded from URL \"" +
-                                    that._vf['url'][that._currentURLIdx] + "\"," +
-                                    " no other URLs left to try.");
-                            }
-                        }
+                        });
                     }
                     else
                     {

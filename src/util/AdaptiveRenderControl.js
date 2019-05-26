@@ -51,8 +51,6 @@ x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterF
         var stateVal = this._stateValue[state] + step * this._dirFac;
         this._stateValue[state] =  0 <= stateVal ? ( 1 >= stateVal ? stateVal : 1 ) : 0;
         this._setterFunc(this._limits.getValue(this._stateValue[state]));
-
-        //console.log(this.name +" "+this._factorGetterFunc() +" *  " + step +" "+ this._stateValue[state] +" "+ state);
     };
 
     this.reset = function()

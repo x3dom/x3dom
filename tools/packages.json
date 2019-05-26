@@ -21,8 +21,12 @@
                 {"path": "util/DrawableCollection.js"},
                 {"path": "util/Moveable.js"},
                 {"path": "util/Zlib.js"},
+                {"path": "util/Promise.js"},
                 {"path": "util/glTF/glTFLoader.js"},
+                {"path": "util/glTF/glTF2Loader.js"},
                 {"path": "util/glTF/glTFContainer.js"},
+                {"path": "util/DDSLoader.js"},
+                {"path": "util/VRControllerManager.js"},
                 {"path": "X3DCanvas.js"},
                 {"path": "Runtime.js"},
                 {"path": "Main.js"},
@@ -32,7 +36,7 @@
                 {"path": "MatrixMixer.js"},
                 {"path": "Viewarea.js"},
                 {"path": "Mesh.js"},
-                {"path": "fields.js"},		
+                {"path": "fields.js"},
                 {"path": "Docs.js"},
                 {"path": "util/json/JSONParser.js"},
                 {"path": "util/json/PrototypeExpander.js"}
@@ -52,12 +56,14 @@
                 {"path": "shader/ShaderBackgroundTexture.js"},
                 {"path": "shader/ShaderBackgroundSkyTexture.js"},
                 {"path": "shader/ShaderBackgroundCubeTexture.js"},
+                {"path": "shader/ShaderBackgroundCubeTextureDDS.js"},
                 {"path": "shader/ShaderShadowRendering.js"},
                 {"path": "shader/ShaderTextureRefinement.js"},
                 {"path": "shader/ShaderBlur.js"},
                 {"path": "shader/ShaderKHRMaterialCommons.js"},
                 {"path": "shader/ShaderSSAO.js", "type": "file"},
-                {"path": "shader/ShaderSSAOBlur.js", "type": "file"}
+                {"path": "shader/ShaderSSAOBlur.js", "type": "file"},
+                {"path": "shader/ShaderConverter.js", "type": "file"}
             ]},
 
         {"group": "GFX",
@@ -132,6 +138,7 @@
                     {"file": "X3DMaterialNode.js"},
                     {"file": "Material.js"},
                     {"file": "TwoSidedMaterial.js"},
+                    {"file": "PhysicalMaterial.js"},
                     {"file": "X3DShapeNode.js"},
                     {"file": "Shape.js"},
                     {"file": "ExternalShape.js"}
@@ -140,7 +147,8 @@
                     {"file": "X3DLightNode.js"},
                     {"file": "DirectionalLight.js"},
                     {"file": "PointLight.js"},
-                    {"file": "SpotLight.js"}
+                    {"file": "SpotLight.js"},
+                    {"file": "PhysicalEnvironmentLight.js"}
                 ]},
                 {"name": "Followers", "filePrefix": "nodes/Followers/", "files":[
                     {"file": "X3DFollowerNode.js"},
@@ -163,6 +171,7 @@
                     {"file": "X3DInterpolatorNode.js"},
                     {"file": "OrientationInterpolator.js"},
                     {"file": "PositionInterpolator.js"},
+		            {"file": "PositionInterpolator2D.js"},
                     {"file": "NormalInterpolator.js"},
                     {"file": "ColorInterpolator.js"},
                     {"file": "ScalarInterpolator.js"},
@@ -260,7 +269,10 @@
                     {"file": "PopGeometryLevel.js"},
                     {"file": "PopGeometry.js"},
                     {"file": "ImageGeometry.js"},
-                    {"file": "IndexedFaceSet.js"}
+                    {"file": "IndexedFaceSet.js"},
+                    {"file": "BufferGeometry.js"},
+                    {"file": "BufferView.js"},
+                    {"file": "BufferAccessor.js"}
                 ]},
                 {"name": "Texturing3D", "filePrefix": "nodes/Texturing3D/", "files":[
                     {"file": "X3DTexture3DNode.js"},
@@ -331,6 +343,7 @@
                     {"file": "EdgeEnhancementVolumeStyle.js"},
                     {"file": "IsoSurfaceVolumeData.js"},
                     {"file": "MPRVolumeStyle.js"},
+                    {"file": "MPRPlane.js"},
                     {"file": "OpacityMapVolumeStyle.js"},
                     {"file": "ProjectionVolumeStyle.js"},
                     {"file": "SegmentedVolumeData.js"},
@@ -371,13 +384,28 @@
                     {"file": "HAnimSegment.js"},
                     {"file": "HAnimSite.js"},
                     {"file": "HAnimHumanoid.js"}
-                ]}              
+                ]},
+                {"name": "NURBS", "filePrefix": "nodes/NURBS/", "files":[
+                    {"file": "X3DParametricGeometryNode.js"},
+                    {"file": "X3DNurbsSurfaceGeometryNode.js"},
+                    {"file": "NurbsPatchSurface.js"},
+                    {"file": "NurbsCurve.js"},
+                    {"file": "NurbsPositionInterpolator.js"},
+                    {"file": "NurbsOrientationInterpolator.js"},
+		            {"file": "NurbsSurfaceInterpolator.js"},
+                    {"file": "NurbsCurve2D.js"},
+                    {"file": "NurbsTrimmedSurface.js"},
+                    {"file": "ContourPolyline2D.js"},
+                    {"file": "Contour2D.js"},
+                    {"file": "x3dom-nurbs-web-worker.js"},
+                    {"file": "x3dom-nurbs-pool.js"}
+                ]}
             ]
 		},
-        
+
 		{"group": "PHYSIC_EXTENSIONS",
             "data": [
-                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[                    
+                {"name": "RigidBodyPhysics", "filePrefix": "nodes/RigidBodyPhysics/", "files":[
                     {"file": "RigidBodyPhysics.js"},
                     {"file": "RigidBodyCollection.js"},
                     {"file": "RigidBody.js"},
@@ -395,10 +423,10 @@
                 ]}
 			]
 		},
-        
+
         {"group": "COMPRESSED_EXT_LIBS",
                 "data": [
-                    {"name": "Ammo", "filePrefix": "../lib/", "files":[                    
+                    {"name": "Ammo", "filePrefix": "../lib/", "files":[
                         {"file": "ammo.js"}
                     ]}
             ]

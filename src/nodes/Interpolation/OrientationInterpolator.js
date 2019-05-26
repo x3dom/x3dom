@@ -50,11 +50,68 @@ x3dom.registerNodeType(
             {
                 if(fieldName === "set_fraction")
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.slerp(b, t);
-                    });
-                    this.postMessage('value_changed', value);
+                    var value;
+  
+                    if (this._vf.interpolation === "CUBICSPLINE")
+                    {
+                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
+
+                            function _applyBasis(axis)//p0, m0, p1, m1, axis)
+                            {                                   
+                                return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
+                            }
+                            
+                            var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
+
+                            // do not use Quaternion methods to avoid generating objects
+
+                            result.x = _applyBasis('x');
+                            result.y = _applyBasis('y');
+                            result.z = _applyBasis('z');
+                            result.w = _applyBasis('w');
+
+                            var s = Math.sqrt(1/result.dot(result));
+
+                            result.x *= s;
+                            result.y *= s;
+                            result.z *= s;
+                            result.w *= s;
+
+                            return result;//normalize(result);
+                        
+                        });
+                    }
+                    else
+                    {
+                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                            return a.slerp(b, t);
+                        });
+                    }
+
+                    if(value != undefined && value != this._lastValue)
+                    {
+                        this._lastValue = value;
+                        this.postMessage('value_changed', value);
+                    }
                 }
+            },
+            
+            keyValueFromAccessor: function(array, type)
+            {
+                var keyValue = new x3dom.fields.MFRotation();
+                var normalize = this.normalizeFromType[type];
+                array.forEach( function (val, i)
+                {
+                    if (i%4 == 3) {
+                        keyValue.push( new x3dom.fields.Quaternion (
+                            normalize(array[i-3]),
+                            normalize(array[i-2]),
+                            normalize(array[i-1]),
+                            normalize(val)
+                        ));  
+                    }
+                })
+                return keyValue;
             }
         }
     )

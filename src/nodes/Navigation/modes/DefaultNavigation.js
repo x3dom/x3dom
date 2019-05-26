@@ -25,6 +25,7 @@ x3dom.DefaultNavigation.prototype.zoom = function(view, zoomAmount)
     var viewpoint = view._scene.getViewpoint();
 
     var d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+    d = Math.min(d, viewpoint.getFar()); // use zfar if smaller to allow for large scenes with defined zfar
     d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
     var vec = new x3dom.fields.SFVec3f(0, 0, d*(zoomAmount)/view._height);
@@ -638,7 +639,8 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     var d, vec, cor, mat = null;
     var alpha, beta;
 
-    buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
+    //buttonState = (!navRestrict || (navRestrict != 7 && buttonState == 1)) ? navRestrict : buttonState;
+    buttonState = buttonState & navRestrict;
     
     if (buttonState & 1) //left
     {
@@ -650,6 +652,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
         var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 
         var center = viewpoint.getCenterOfRotation();
+
         mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
 
         view._rotMat = view._rotMat.
@@ -660,6 +663,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     if (buttonState & 4) //middle
     {
         d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+        d = Math.min(d, viewpoint.getFar()); // use zfar if smaller to allow for large scenes with defined zfar
         d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
         vec = new x3dom.fields.SFVec3f(d*dx/view._width, d*(-dy)/view._height, 0);
@@ -674,6 +678,7 @@ x3dom.DefaultNavigation.prototype.onDrag = function(view, x, y, buttonState)
     if (buttonState & 2) //right
     {
         d = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+        d = Math.min(d, viewpoint.getFar()); // use zfar if smaller to allow for large scenes with defined zfar
         d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
         vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/view._height);
@@ -716,12 +721,15 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, tra
     {
         var navi = this.navi;
         var viewpoint = view._scene.getViewpoint();
+        
+        var navRestrict = navi.getExplorationMode();
 
-        if (navi.getType() === "examine")
+        if (navi.getType() === "examine" && navRestrict !== 0)
         {
-            if (translation)
+            if (translation && navRestrict & 4)
             {
                 var distance = (view._scene._lastMax.subtract(view._scene._lastMin)).length();
+                distance = Math.min(distance, viewpoint.getFar()); // use zfar if smaller to allow for large scenes with defined zfar
                 distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 
                 translation = translation.multiply(distance);
@@ -740,7 +748,7 @@ x3dom.DefaultNavigation.prototype.onTouchDrag = function(view, evt, touches, tra
                     mult(viewpoint.getViewMatrix());
             }
 
-            if (rotation)
+            if (rotation && navRestrict & 1)
             {
                 var center = viewpoint.getCenterOfRotation();
                 var mat = view.getViewMatrix();

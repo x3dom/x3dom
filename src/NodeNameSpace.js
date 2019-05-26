@@ -296,6 +296,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function(domNode, parent) {
                         }
                     }
                 }
+
                 this.__removeEventListener(type, func, phase);
             };
         }

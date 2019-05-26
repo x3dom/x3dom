@@ -353,8 +353,6 @@ x3dom.TurntableNavigation.prototype.updateFlyMat = function(view, nextViewpoint,
     var theta = Math.atan2(Math.sqrt(offset.x * offset.x + offset.z * offset.z), offset.y);
 
     view._flyMat = this.calcOrbit(view, theta, phi, true);
-
-    console.log("updateFlyMat");
 };
 
 x3dom.TurntableNavigation.prototype.animateTo = function(view, target, prev, dur)
@@ -422,9 +420,6 @@ x3dom.TurntableNavigation.prototype.animateTo = function(view, target, prev, dur
 
 x3dom.TurntableNavigation.prototype.onTouchStart = function(view, evt, touches)
 {
-    console.log("touchStart "+evt.touches.length);
-    console.log(evt);
-    
     view._numTouches = evt.touches.length;
     
     view._lastX = evt.touches[0].screenX;
@@ -461,8 +456,7 @@ x3dom.TurntableNavigation.prototype.onTouchDrag = function(view, evt, touches, t
 
 x3dom.TurntableNavigation.prototype.onTouchEnd = function(view, evt, touches)
 {
-    console.log("touchEnd "+evt.touches.length);
-    console.log(evt);
+
 
     if (view._numTouches == 2 && evt.touches.length == 1){
         view._lastX = evt.touches[0].screenX;

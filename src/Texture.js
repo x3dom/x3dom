@@ -404,18 +404,16 @@ x3dom.Texture.prototype.updateTexture = function() {
         // start playing the video until we can do so without stuttering
         tex._video.addEventListener("canplaythrough", startVideo, true);
 
-        // Start listening for the ended event, so we can stop the
-        // texture update when the video is finished playing
-        tex._video.addEventListener("ended", videoDone, true);
-
-    } else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) {
-        this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false,
-            tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
-
-    } else {
-        this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
-            false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps);
-    }
+		// Start listening for the ended event, so we can stop the
+		// texture update when the video is finished playing
+		tex._video.addEventListener("ended", videoDone, true);
+	} else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) {
+		this.texture = this.cache.getTextureCube(gl, doc, tex.getTexUrl(), false,
+		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps, tex._vf.flipY);
+	} else {
+		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
+		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps, tex._vf.flipY);
+	}
 };
 
 /**

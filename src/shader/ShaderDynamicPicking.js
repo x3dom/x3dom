@@ -45,6 +45,14 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function(gl, 
     shader += "uniform mat4 modelMatrix;\n";
     shader += "uniform mat4 modelViewProjectionMatrix;\n";
 
+    shader += "uniform mat4 modelMatrix2;\n";
+    shader += "uniform mat4 modelViewProjectionMatrix2;\n";
+
+    shader += "uniform float isVR;\n";
+	shader += "attribute float eyeIdx;\n";
+	shader += "varying float vrOffset;\n";
+	shader += "varying float fragEyeIdx;\n";
+
     shader += "attribute vec3 position;\n";
     shader += "uniform vec3 from;\n";
     shader += "varying vec3 worldCoord;\n";
@@ -117,6 +125,7 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function(gl, 
     //ClipPlane stuff
     if(properties.CLIPPLANES) {
         shader += "uniform mat4 modelViewMatrix;\n";
+        shader += "uniform mat4 modelViewMatrix2;\n";
         shader += "varying vec4 fragPosition;\n";
     }
 
@@ -126,6 +135,8 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function(gl, 
 	********************************************************************************/
 
 	shader += "void main(void) {\n";
+
+    shader += "fragEyeIdx = eyeIdx;\n";
 
     shader += "gl_PointSize = 2.0;\n";
     shader += "vec3 pos = position;\n";
@@ -201,12 +212,26 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function(gl, 
     }
 
     if(properties.CLIPPLANES) {
-        shader += "fragPosition = (modelViewMatrix * vec4(pos, 1.0));\n";
+        shader += "if(eyeIdx == 1.0){\n"
+        shader += "    fragPosition = (modelViewMatrix2 * vec4(pos, 1.0));\n";
+        shader += "}else{\n";
+        shader += "    fragPosition = (modelViewMatrix * vec4(pos, 1.0));\n";
+        shader += "}\n";
     }
 
     shader += "worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n";
-    shader += "gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n";
 
+    shader += "if(eyeIdx == 1.0){\n"
+    shader += "    gl_Position = modelViewProjectionMatrix2 * vec4(pos, 1.0);\n";
+    shader += "}else{\n";
+    shader += "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n";
+    shader += "}\n";
+
+    shader += "if(isVR == 1.0){\n";
+	shader += "    vrOffset = eyeIdx * 0.5;\n";
+	shader += "    gl_Position.x *= 0.5;\n";
+	shader += "    gl_Position.x += vrOffset * gl_Position.w;\n";
+	shader += "}\n";
 
 	//END OF SHADER
 	shader += "}\n";
@@ -243,6 +268,11 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
     shader += "uniform float sceneSize;\n";
     shader += "varying vec3 worldCoord;\n";
 
+    shader += "uniform float isVR;\n";
+	shader += "varying float vrOffset;\n";
+	shader += "varying float fragEyeIdx;\n";
+	shader += "uniform float screenWidth;\n";
+
     if(pickMode == 1 || pickMode == 2) {
         shader += "varying vec3 fragColor;\n";
     }
@@ -260,6 +290,7 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
     //ClipPlane stuff
     if(properties.CLIPPLANES) {
         shader += "uniform mat4 viewMatrixInverse;\n";
+        shader += "uniform mat4 viewMatrixInverse2;\n";
         shader += "varying vec4 fragPosition;\n";
     }
 
@@ -277,6 +308,11 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
+
+    shader += "if ( isVR == 1.0) {\n";
+	shader += "    if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n";
+	shader += "}\n";
+
 
     if(properties.CLIPPLANES)
     {

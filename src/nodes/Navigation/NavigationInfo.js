@@ -259,7 +259,6 @@ x3dom.registerNodeType(
                    params = params.concat( this._vf.typeParams.slice(4) );
                    
                }
-               console.log(params);
                return params;
             },
 

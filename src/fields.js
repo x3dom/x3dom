@@ -738,7 +738,7 @@ x3dom.fields.SFMatrix4f.prototype.setValue = function(v1, v2, v3, v4) {
  *
  * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
  */
-x3dom.fields.SFMatrix4f.prototype.setFromArray = function(a) {
+x3dom.fields.SFMatrix4f.prototype.setFromArray = function (a) {
     this._00 = a[0];
     this._01 = a[4];
     this._02 = a[8];
@@ -755,6 +755,120 @@ x3dom.fields.SFMatrix4f.prototype.setFromArray = function(a) {
     this._31 = a[7];
     this._32 = a[11];
     this._33 = a[15];
+
+    return this;
+};
+
+/**
+ * Fills the values of this matrix, using the given array.
+ * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ */
+x3dom.fields.SFMatrix4f.fromArray = function (a) {
+    var m = new x3dom.fields.SFMatrix4f();
+
+    m._00 = a[0]; m._01 = a[4]; m._02 = a[ 8]; m._03 = a[12];
+    m._10 = a[1]; m._11 = a[5]; m._12 = a[ 9]; m._13 = a[13];
+    m._20 = a[2]; m._21 = a[6]; m._22 = a[10]; m._23 = a[14];
+    m._30 = a[3]; m._31 = a[7]; m._32 = a[11]; m._33 = a[15];
+
+    return m;
+};
+
+/**
+ * Fills the values of this matrix, using the given array.
+ * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ */
+x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function (rotation, translation, scale) {
+
+    translation    = translation || new x3dom.fields.SFVec3f(); //[ 0.2, -0.3, -0.3 ];
+    rotation = rotation || new x3dom.fields.Quaternion();
+    scale       = scale || new x3dom.fields.SFVec3f(1,1,1);
+
+    var x = rotation.x,
+        y = rotation.y,
+        z = rotation.z,
+        w = rotation.w;
+
+    var x2 = x + x;
+    var y2 = y + y;
+    var z2 = z + z;
+    var xx = x * x2;
+    var xy = x * y2;
+    var xz = x * z2;
+    var yy = y * y2;
+    var yz = y * z2;
+    var zz = z * z2;
+    var wx = w * x2;
+    var wy = w * y2;
+    var wz = w * z2;
+
+    this._00 = (1 - (yy + zz)) * scale.x;
+    this._10 = (xy + wz) * scale.x;
+    this._20 = (xz - wy) * scale.x;
+    this._30 = 0;
+    this._01 = (xy - wz) * scale.y;
+    this._11 = (1 - (xx + zz)) * scale.y;
+    this._21 = (yz + wx) * scale.y;
+    this._31 = 0;
+    this._02 = (xz + wy) * scale.z;
+    this._12 = (yz - wx) * scale.z;
+    this._22 = (1 - (xx + yy)) * scale.z;
+    this._32 = 0;
+    this._03 = translation.x;
+    this._13 = translation.y;
+    this._23 = translation.z;
+    this._33 = 1
+
+    return this;
+};
+
+/**
+ * Fills the values of this matrix, using the given array.
+ * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ */
+x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function (rotation, translation, scale) {
+
+    translation = translation || new x3dom.fields.SFVec3f(); //[ 0.2, -0.3, -0.3 ];
+    rotation    = rotation || new x3dom.fields.Quaternion();
+    scale       = scale || new x3dom.fields.SFVec3f(1,1,1);
+    var m       = new x3dom.fields.SFMatrix4f();
+
+    var x = rotation.x,
+        y = rotation.y,
+        z = rotation.z,
+        w = rotation.w;
+
+    var x2 = x + x;
+    var y2 = y + y;
+    var z2 = z + z;
+    var xx = x * x2;
+    var xy = x * y2;
+    var xz = x * z2;
+    var yy = y * y2;
+    var yz = y * z2;
+    var zz = z * z2;
+    var wx = w * x2;
+    var wy = w * y2;
+    var wz = w * z2;
+
+    m._00 = (1 - (yy + zz)) * scale.x;
+    m._10 = (xy + wz) * scale.x;
+    m._20 = (xz - wy) * scale.x;
+    m._30 = 0;
+    m._01 = (xy - wz) * scale.y;
+    m._11 = (1 - (xx + zz)) * scale.y;
+    m._21 = (yz + wx) * scale.y;
+    m._31 = 0;
+    m._02 = (xz + wy) * scale.z;
+    m._12 = (yz - wx) * scale.z;
+    m._22 = (1 - (xx + yy)) * scale.z;
+    m._32 = 0;
+    m._03 = translation.x;
+    m._13 = translation.y;
+    m._23 = translation.z;
+    m._33 = 1
+
+    return m;
 };
 
 /**
@@ -763,6 +877,19 @@ x3dom.fields.SFMatrix4f.prototype.setFromArray = function(a) {
  * @returns {Number[]} resulting array of 16 values
  */
 x3dom.fields.SFMatrix4f.prototype.toGL = function() {
+    return [
+        this._00, this._10, this._20, this._30,
+        this._01, this._11, this._21, this._31,
+        this._02, this._12, this._22, this._32,
+        this._03, this._13, this._23, this._33
+    ];
+};
+
+/**
+ * Returns a column major version of this matrix, packed into a single array.
+ * @returns {Number[]} resulting array of 16 values
+ */
+x3dom.fields.SFMatrix4f.fromGL = function (array) {
     return [
         this._00, this._10, this._20, this._30,
         this._01, this._11, this._21, this._31,
@@ -1443,16 +1570,15 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
  *
  * @returns {String}
  */
-x3dom.fields.SFMatrix4f.prototype.toString = function() {
-    return '\n' +
-        this._00.toFixed(6) + ', ' + this._01.toFixed(6) + ', ' +
-        this._02.toFixed(6) + ', ' + this._03.toFixed(6) + ', \n' +
-        this._10.toFixed(6) + ', ' + this._11.toFixed(6) + ', ' +
-        this._12.toFixed(6) + ', ' + this._13.toFixed(6) + ', \n' +
-        this._20.toFixed(6) + ', ' + this._21.toFixed(6) + ', ' +
-        this._22.toFixed(6) + ', ' + this._23.toFixed(6) + ', \n' +
-        this._30.toFixed(6) + ', ' + this._31.toFixed(6) + ', ' +
-        this._32.toFixed(6) + ', ' + this._33.toFixed(6);
+x3dom.fields.SFMatrix4f.prototype.toString = function () {
+    return this._00.toFixed(6)+' '+this._10.toFixed(6)+' '+
+		   this._20.toFixed(6)+' '+this._30.toFixed(6)+' '+
+           this._01.toFixed(6)+' '+this._11.toFixed(6)+' '+
+		   this._21.toFixed(6)+' '+this._31.toFixed(6)+' '+
+           this._02.toFixed(6)+' '+this._12.toFixed(6)+' '+
+		   this._22.toFixed(6)+' '+this._32.toFixed(6)+' '+
+           this._03.toFixed(6)+' '+this._13.toFixed(6)+' '+
+		   this._23.toFixed(6)+' '+this._33.toFixed(6);
 };
 
 /**
@@ -1652,19 +1778,37 @@ x3dom.fields.SFVec3f.prototype.copy = function() {
     return x3dom.fields.SFVec3f.copy(this);
 };
 
-x3dom.fields.SFVec3f.prototype.setValues = function(that) {
+x3dom.fields.SFVec3f.prototype.fromArray = function(array) {
+    this.x = array[0];
+    this.y = array[1];
+    this.z = array[2];
+
+    return this;
+};
+
+x3dom.fields.SFVec3f.fromArray = function(array) {
+    return new x3dom.fields.SFVec3f(array[0],array[1],array[2]);
+};
+
+x3dom.fields.SFVec3f.prototype.setValues = function (that) {
     this.x = that.x;
     this.y = that.y;
     this.z = that.z;
 };
 
-x3dom.fields.SFVec3f.prototype.at = function(i) {
-    switch (i) {
-        case 0:  return this.x;
-        case 1:  return this.y;
-        case 2:  return this.z;
-        default: return this.x;
-    }
+x3dom.fields.SFVec3f.prototype.set = function (x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+};
+
+x3dom.fields.SFVec3f.prototype.at = function (i) {
+	switch(i) {
+	    case 0:  return this.x;
+	    case 1:  return this.y;
+	    case 2:  return this.z;
+	    default: return this.x;
+	}
 };
 
 x3dom.fields.SFVec3f.prototype.add = function(that) {
@@ -1677,6 +1821,10 @@ x3dom.fields.SFVec3f.prototype.addScaled = function(that, s) {
 
 x3dom.fields.SFVec3f.prototype.subtract = function(that) {
     return new x3dom.fields.SFVec3f(this.x - that.x, this.y - that.y, this.z - that.z);
+};
+
+x3dom.fields.SFVec3f.prototype.subtractVectors = function (a, b) {
+    return new x3dom.fields.SFVec3f(a.x - b.x, a.y - b.y, a.z - b.z);
 };
 
 x3dom.fields.SFVec3f.prototype.negate = function() {
@@ -1832,6 +1980,19 @@ x3dom.fields.Quaternion.prototype.multiply = function(that) {
         this.w * that.z + this.z * that.w + this.x * that.y - this.y * that.x,
         this.w * that.w - this.x * that.x - this.y * that.y - this.z * that.z
     );
+};
+
+x3dom.fields.Quaternion.prototype.fromArray = function(array) {
+    this.x = array[0];
+    this.y = array[1];
+    this.z = array[2];
+    this.w = array[3];
+
+    return this;
+};
+
+x3dom.fields.Quaternion.fromArray = function(array) {
+    return new x3dom.fields.Quaternion(array[0],array[1],array[2],array[3]);
 };
 
 x3dom.fields.Quaternion.parseAxisAngle = function(str) {

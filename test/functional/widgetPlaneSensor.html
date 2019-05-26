@@ -1,0 +1,151 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>PlaneSensor</title>
+    <script type="text/javascript" src="../x3dom-full_include.js"></script>
+  </head>
+  <body>
+    <h2>
+            -- PlaneSensor: drag handles to move along axes, drag box to move in screen plane --
+    </h2>
+    <X3D id="x3d" showLog="true" width="800px" height="600px">
+      <scene DEF="scene">
+        <viewpoint position='0 0 20'></viewpoint>
+        <Shape DEF='reference'>
+          <Appearance>
+            <Material transparency="0.5" diffuseColor='0.1 0.7 0.3'></Material>
+          </Appearance>
+          <Box size='10 0.1 15'></Box>
+        </Shape>
+        <Group DEF='TranslationSensor'>
+          <Transform DEF='trackpointTrafo'>
+            <Shape DEF='trackpoint'>
+              <Appearance>
+                <Material diffuseColor='0.6 0.0 0.0'></Material>
+              </Appearance>
+              <Sphere radius='0.1'></Sphere>
+            </Shape>
+          </Transform>
+          <PlaneSensor DEF='PSscreen' planeOrientation='screen' minPosition='-2 -2' maxPosition='2 2'></PlaneSensor>
+          <Transform DEF='sensorScreenTranslation' translation='0 0 0'>
+            <Transform DEF='sensorTranslationX'>
+              <Transform DEF='sensorTranslationY'>
+                <Transform rotation='1 0 0 1.57'>
+                  <Transform DEF='sensorTranslationZ'>
+                    <Shape>
+                      <Appearance>
+                        <Material id="Box1" diffuseColor='0.3 0.3 0.3'></Material>
+                      </Appearance>
+                      <Box></Box>
+                    </Shape>
+                  </Transform>
+                </Transform>
+              </Transform>
+            </Transform>
+            <!-- Handle X -->
+            <Group>
+              <PlaneSensor DEF='PlaneSensorTX' autoOffset='true' minPosition='1 0.0' maxPosition='-1 0.0'></PlaneSensor>
+              <Transform DEF='handleXTranslationX'>
+                <Transform DEF='handleXTranslationY'>
+                  <Transform rotation='1 0 0 1.57'>
+                    <Transform DEF='handleXTranslationZ'>
+                      <Transform rotation='1 0 0 -1.57'>
+                        <Transform rotation='0 0 1 -1.57'>
+                          <Transform translation='0 2 0' scale='0.2 2 0.2'>
+                            <Shape>
+                              <Appearance DEF='RED_APP'>
+                                <Material diffuseColor='1 0 0'></Material>
+                              </Appearance>
+                              <Cylinder></Cylinder>
+                            </Shape>
+                          </Transform>
+                          <Transform translation='0 4.2 0' scale='0.3 0.4 0.3'>
+                            <Shape>
+                              <Appearance USE='RED_APP'></Appearance>
+                              <Cone></Cone>
+                            </Shape>
+                          </Transform>
+                        </Transform>
+                      </Transform>
+                    </Transform>
+                  </Transform>
+                </Transform>
+              </Transform>
+            </Group>
+            <!-- Handle Y -->
+            <Group>
+              <PlaneSensor DEF='PlaneSensorTY' autoOffset='true' minPosition='0 0' maxPosition='0 -1'></PlaneSensor>
+              <Transform DEF='handleYTranslationX'>
+                <Transform DEF='handleYTranslationY'>
+                  <Transform rotation='1 0 0 1.57'>
+                    <Transform DEF='handleYTranslationZ'>
+                      <Transform rotation='1 0 0 -1.57'>
+                        <Transform translation='0 2 0' scale='0.2 2 0.2'>
+                          <Shape>
+                            <Appearance DEF='GREEN_APP'>
+                              <Material diffuseColor='0 1 0'></Material>
+                            </Appearance>
+                            <Cylinder></Cylinder>
+                          </Shape>
+                        </Transform>
+                        <Transform translation='0 4.2 0' scale='0.3 0.4 0.3'>
+                          <Shape>
+                            <Appearance USE='GREEN_APP'></Appearance>
+                            <Cone></Cone>
+                          </Shape>
+                        </Transform>
+                      </Transform>
+                    </Transform>
+                  </Transform>
+                </Transform>
+              </Transform>
+            </Group>
+            <!-- Handle Z -->
+            <Group>
+              <PlaneSensor DEF='PlaneSensorTZ' autoOffset='true' minPosition='0 0' maxPosition='0 -1' axisRotation='1 0 0 1.57'></PlaneSensor>
+              <Transform DEF='handleZTranslationX'>
+                <Transform DEF='handleZTranslationY'>
+                  <Transform rotation='1 0 0 1.57'>
+                    <Transform DEF='handleZTranslationZ'>
+                      <Transform translation='0 2 0' scale='0.2 2 0.2'>
+                        <Shape>
+                          <Appearance DEF='BLUE_APP'>
+                            <Material diffuseColor='0 0 1'></Material>
+                          </Appearance>
+                          <Cylinder></Cylinder>
+                        </Shape>
+                      </Transform>
+                      <Transform translation='0 4.2 0' scale='0.3 0.4 0.3'>
+                        <Shape>
+                          <Appearance USE='BLUE_APP'></Appearance>
+                          <Cone></Cone>
+                        </Shape>
+                      </Transform>
+                    </Transform>
+                  </Transform>
+                </Transform>
+              </Transform>
+            </Group>
+          </Transform>
+          <!-- internal routes to Transform the handles themselves -->
+          <ROUTE fromNode='PlaneSensorTX' fromField='translation_changed' toNode='handleXTranslationX' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTX' fromField='translation_changed' toNode='handleYTranslationX' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTX' fromField='translation_changed' toNode='handleZTranslationX' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTY' fromField='translation_changed' toNode='handleXTranslationY' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTY' fromField='translation_changed' toNode='handleYTranslationY' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTY' fromField='translation_changed' toNode='handleZTranslationY' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTZ' fromField='translation_changed' toNode='handleXTranslationZ' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTZ' fromField='translation_changed' toNode='handleYTranslationZ' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTZ' fromField='translation_changed' toNode='handleZTranslationZ' toField='set_translation'></ROUTE>
+          <!-- route the handles' events to the Transforms of the Shape -->
+          <ROUTE fromNode='PlaneSensorTX' fromField='translation_changed' toNode='sensorTranslationX' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTY' fromField='translation_changed' toNode='sensorTranslationY' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PlaneSensorTZ' fromField='translation_changed' toNode='sensorTranslationZ' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PSscreen' fromField='translation_changed' toNode='sensorScreenTranslation' toField='set_translation'></ROUTE>
+          <ROUTE fromNode='PSscreen' fromField='trackPoint_changed' toNode='trackpointTrafo' toField='set_translation'></ROUTE>
+        </Group>
+      </scene>
+    </X3D>
+  </body>
+</html>
