@@ -3340,8 +3340,8 @@ x3dom.gfx_webgl = (function() {
                 objId -= baseID;
 
                 var hitObject;
-                var layerX = x * viewarea._inverseDevicePixelRatioInverse;		    
-                var layerY = y * viewarea._inverseDevicePixelRatioInverse;		    
+                var layerX = x * viewarea._inverseDevicePixelRatio;		    
+                var layerY = y * viewarea._inverseDevicePixelRatio;		    
 
                 if (pickMode != 4) {
                     viewarea._pickingInfo.pickPos = pickPos;
