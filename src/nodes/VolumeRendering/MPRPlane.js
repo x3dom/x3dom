@@ -31,6 +31,16 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.MPRPlane.superClass.call(this, ctx);
 
             /**
+             * Specifies if the reconstructed plane is visible or not.
+             * @var {x3dom.fields.SFBool} enabled
+             * @memberof x3dom.nodeTypes.MPRPlane
+             * @initvalue true
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFBool(ctx, 'enabled', true);
+
+            /**
              * The normal vector of the plane.
              * @var {x3dom.fields.SFVec3f} normal
              * @memberof x3dom.nodeTypes.MPRPlane
@@ -50,6 +60,7 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat(ctx, 'position', 0.5);
 
+            this.uniformBooleanEnabled = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformVec3fNormal = new x3dom.nodeTypes.Uniform(ctx);
             this.uniformFloatPosition = new x3dom.nodeTypes.Uniform(ctx);
             this._planeID = 0; //To differentiate between plane instances
@@ -62,6 +73,10 @@ x3dom.registerNodeType(
             },
             fieldChanged: function(fieldName) {
                  switch(fieldName){
+                    case 'enabled':
+                        this.uniformBooleanEnabled._vf.value = this._vf.enabled.toString();
+                        this.uniformBooleanEnabled.fieldChanged("value");
+                        break;
                     case 'position':
                         this.uniformFloatPosition._vf.value = Math.min(Math.max(this._vf.position, 0.001), 0.999);
                         this.uniformFloatPosition.fieldChanged("value");
@@ -74,6 +89,11 @@ x3dom.registerNodeType(
             },
             uniforms: function(){
                 var unis = [];
+
+                this.uniformBooleanEnabled._vf.name = 'enabledPlane'+this._planeID;
+                this.uniformBooleanEnabled._vf.type = 'SFBool';
+                this.uniformBooleanEnabled._vf.value = this._vf.enabled;
+                unis.push(this.uniformBooleanEnabled);
 
                 this.uniformVec3fNormal._vf.name = 'normalPlane'+this._planeID;
                 this.uniformVec3fNormal._vf.type = 'SFVec3f';
@@ -88,15 +108,18 @@ x3dom.registerNodeType(
             },
             styleUniformsShaderText: function(){
               var uniformShaderText = "uniform vec3 normalPlane"+this._planeID+";\n"+
-              "uniform float positionPlane"+this._planeID+";\n";
+              "uniform float positionPlane"+this._planeID+";\n"+
+              "uniform bool enabledPlane"+this._planeID+";\n";
               return uniformShaderText;
             },
             styleShaderText: function(){
-              var shaderText = "  vec3 pointLine"+this._planeID+" = normalPlane"+this._planeID+"*positionPlane"+this._planeID+";\n"+
-              "  float d"+this._planeID+" = dot(pointLine"+this._planeID+"-ray_pos,normalPlane"+this._planeID+")/dot(dir,normalPlane"+this._planeID+");\n"+
-              "  float f"+this._planeID+" = step(0.0, d"+this._planeID+");\n"+
-              "  d"+this._planeID+" = (1.0 - f"+this._planeID+") * 1000.0 + f"+this._planeID+" * d"+this._planeID+";\n"+
-              "  d = min(d"+this._planeID+",d);\n";
+              var shaderText = "  if(enabledPlane"+this._planeID+"){\n"+
+              "   vec3 pointLine"+this._planeID+" = normalPlane"+this._planeID+"*positionPlane"+this._planeID+";\n"+
+              "   float d"+this._planeID+" = dot(pointLine"+this._planeID+"-ray_pos,normalPlane"+this._planeID+")/dot(dir,normalPlane"+this._planeID+");\n"+
+              "   float f"+this._planeID+" = step(0.0, d"+this._planeID+");\n"+
+              "   d"+this._planeID+" = (1.0 - f"+this._planeID+") * 1000.0 + f"+this._planeID+" * d"+this._planeID+";\n"+
+              "   d = min(d"+this._planeID+",d);\n"+
+              "  }\n";
               return shaderText;
             }
         }
