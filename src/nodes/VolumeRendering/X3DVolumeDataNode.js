@@ -16,7 +16,7 @@ x3dom.registerNodeType(
     "X3DVolumeDataNode",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DShapeNode,   // changed inheritance!
-        
+
         /**
          * Constructor for X3DVolumeDataNode
          * @constructs x3dom.nodeTypes.X3DVolumeDataNode
@@ -25,7 +25,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DShapeNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc (Abstract) class for volume data. 
+         * @classdesc (Abstract) class for volume data.
          */
         function (ctx) {
             x3dom.nodeTypes.X3DVolumeDataNode.superClass.call(this, ctx);
@@ -98,7 +98,7 @@ x3dom.registerNodeType(
 
             //Common vertex shader text for all volume data nodes
             vertexShaderText: function(needEyePosition){
-                var shader = 
+                var shader =
                 "attribute vec3 position;\n"+
                 "uniform vec3 dimensions;\n"+
                 "uniform mat4 modelViewProjectionMatrix;\n"+
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0 || (needEyePosition===true)){
                    shader += "  position_eye = modelViewMatrix * vec4(position, 1.0);\n";
                 }
-                shader += 
+                shader +=
                 "  pos = vec4((position/dimensions)+0.5, 1.0);\n"+
                 "  gl_Position = vertexPosition;\n"+
                 "}";
@@ -123,7 +123,7 @@ x3dom.registerNodeType(
             },
 
             defaultUniformsShaderText: function(numberOfSlices, slicesOverX, slicesOverY, needEyePosition){
-               var uniformsText = 
+               var uniformsText =
                 "uniform sampler2D uVolData;\n"+
                 "uniform vec3 dimensions;\n"+
                 "uniform vec3 offset;\n"+
@@ -150,7 +150,7 @@ x3dom.registerNodeType(
                     "uniform float light"+l+"_ShadowIntensity;\n";
                 }
                 uniformsText +=
-                "const float Steps = 60.0;\n"+
+                "const float Steps = 85.0;\n"+
                 "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
                 "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
                 "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n";
@@ -219,7 +219,7 @@ x3dom.registerNodeType(
                 "  vec4 sample = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  vec4 value  = vec4(0.0, 0.0, 0.0, 0.0);\n"+
                 "  float cont = 0.0;\n"+
-                "  vec3 step_size = dir/Steps;\n";
+                "  vec3 step_size = (dir*1.4142)/Steps;\n";
                 //Light init values
                 if(x3dom.nodeTypes.X3DLightNode.lightID>0){
                     shaderLoop +=
@@ -228,7 +228,7 @@ x3dom.registerNodeType(
                     "  vec3 specular = vec3(0.0, 0.0, 0.0);\n"+
                     "  vec4 step_eye = modelViewMatrix * vec4(step_size, 0.0);\n"+
                     "  vec4 positionE = position_eye;\n"+
-                    "  float lightFactor = 1.0;\n"; 
+                    "  float lightFactor = 1.0;\n";
                 }else{
                     shaderLoop += "  float lightFactor = 1.2;\n";
                 }
