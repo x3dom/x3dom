@@ -16,7 +16,7 @@ x3dom.registerNodeType(
     "ProjectionVolumeStyle",
     "VolumeRendering",
     defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
-        
+
         /**
          * Constructor for ProjectionVolumeStyle
          * @constructs x3dom.nodeTypes.ProjectionVolumeStyle
@@ -25,7 +25,7 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DVolumeRenderStyleNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc The ProjectionVolumeStyle node generates an output color based on the voxel data values traversed by a ray following the view direction. 
+         * @classdesc The ProjectionVolumeStyle node generates an output color based on the voxel data values traversed by a ray following the view direction.
          */
         function (ctx) {
             x3dom.nodeTypes.ProjectionVolumeStyle.superClass.call(this, ctx);
@@ -53,7 +53,7 @@ x3dom.registerNodeType(
 
             this.uniformIntensityThreshold = new x3dom.nodeTypes.Uniform(ctx);
             //this.uniformType = new x3dom.nodeTypes.Uniform(ctx);
-        
+
         },
         {
             fieldChanged: function(fieldName){
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
             },
 
             fragmentShaderText: function(numberOfSlices, slicesOverX, slicesOverY){
-                var shader = 
+                var shader =
                 this._parentNodes[0].fragmentPreamble+
                 this._parentNodes[0].defaultUniformsShaderText(numberOfSlices, slicesOverX, slicesOverY)+
                 this.styleUniformsShaderText()+
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
                 }
                 shader +=
                 "  float cont = 0.0;\n"+
-                "  vec3 step_size = dir/Steps;\n"+
+                "  vec3 step_size = (dir*1.4142)/Steps;\n"+
                 "  const float lightFactor = 1.3;\n"+
                 "  const float opacityFactor = 3.0;\n"+
                 "  for(float i = 0.0; i < Steps; i+=1.0)\n"+
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
                         break;
                     }
                 }
-                shader += 
+                shader +=
                 "    //update the previous value and keeping the accumulated alpha\n"+
                 "    previous_value.x = color.r;\n"+
                 "    previous_value.y = accum.a;\n"+
