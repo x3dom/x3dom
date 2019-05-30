@@ -24,7 +24,7 @@
 	</div>
 	<div class="group">
 	    <iframe id="meinInfoFrame" width="800" height="350" marginheight="5" marginwidth="5" 
-    	   frameborder="0" src="http://de.wikipedia.org/wiki/Sonnensystem"> 
+    	   frameborder="0" src="https://de.wikipedia.org/wiki/Sonnensystem"> 
 	    </iframe>
     </div>
     
@@ -68,23 +68,23 @@
     function createScene() {
         var N = 8, radius = 4;
         
-        var textures = ["../../example/texture/solarSystem/Mercury.jpg",
-                        "../../example/texture/solarSystem/Venus.jpg",
-                        "../../example/texture/solarSystem/Earth.jpg",
-                        "../../example/texture/solarSystem/Mars.jpg",
-                        "../../example/texture/solarSystem/Jupiter.jpg",
-                        "../../example/texture/solarSystem/Saturn.jpg",
-                        "../../example/texture/solarSystem/Uranus.jpg",
-                        "../../example/texture/solarSystem/Neptune.jpg"];
+        var textures = ["media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg",
+                        "media/texture/generic/earth.jpg"];
         
-        var planets = ["http://de.wikipedia.org/wiki/Merkur_(Planet)",
-                       "http://de.wikipedia.org/wiki/Venus_(Planet)",
-                       "http://de.wikipedia.org/wiki/Erde",
-                       "http://de.wikipedia.org/wiki/Mars_(Planet)",
-                       "http://de.wikipedia.org/wiki/Jupiter_(Planet)",
-                       "http://de.wikipedia.org/wiki/Saturn_(Planet)",
-                       "http://de.wikipedia.org/wiki/Uranus_(Planet)",
-                       "http://de.wikipedia.org/wiki/Neptun_(Planet)"];
+        var planets = ["https://de.wikipedia.org/wiki/Merkur_(Planet)",
+                       "https://de.wikipedia.org/wiki/Venus_(Planet)",
+                       "https://de.wikipedia.org/wiki/Erde",
+                       "https://de.wikipedia.org/wiki/Mars_(Planet)",
+                       "https://de.wikipedia.org/wiki/Jupiter_(Planet)",
+                       "https://de.wikipedia.org/wiki/Saturn_(Planet)",
+                       "https://de.wikipedia.org/wiki/Uranus_(Planet)",
+                       "https://de.wikipedia.org/wiki/Neptun_(Planet)"];
         
         for (var i=0; i<N; i++) {
             var phi = i * (2 * Math.PI / N);
@@ -107,6 +107,7 @@
             
             var m = document.createElement('ImageTexture');
             m.setAttribute("url", textures[i]);
+            m.setAttribute("crossOrigin", "anonymous");
             a.appendChild(m);
             
             var b = document.createElement('Sphere');
