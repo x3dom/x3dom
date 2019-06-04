@@ -651,6 +651,7 @@ x3dom.glTF2Loader.prototype._createX3DTextureTransform = function(imagetexture, 
     texturetransform.setAttribute("translation", offset.join(" "));
     texturetransform.setAttribute("scale", scale.join(" "));
     texturetransform.setAttribute("rotation", rotation * -1.0);
+    texturetransform.setAttribute("mode", "GLTF");
 
     return texturetransform;
 };
