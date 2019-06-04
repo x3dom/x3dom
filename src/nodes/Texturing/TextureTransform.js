@@ -91,15 +91,7 @@ x3dom.registerNodeType(
                 if (fieldName == 'center' || fieldName == 'rotation' ||
                     fieldName == 'scale' || fieldName == 'translation') {
 
-                    var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
-                    var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
-                    var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
-                    var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
-
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
-                        mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)).
-                        mult(x3dom.fields.SFMatrix4f.scale(scale3)).
-                        mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)));
+                    this._calcTrafo();
                 }
             },
 
