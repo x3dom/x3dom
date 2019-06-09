@@ -26,6 +26,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTextureTransformNode.superClass.call(this, ctx);
         
+        },
+        {
+            texTransformMatrix: function() {
+                return this._trafo;
+            }
         }
     )
 );
