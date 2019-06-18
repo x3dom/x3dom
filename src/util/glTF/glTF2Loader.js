@@ -209,6 +209,16 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
         }
     }
 
+    if( node.model != undefined )
+    {
+        var model = this._gltf.models[node.model];
+
+        if ( model.uri != undefined )
+        {
+            x3dNode.appendChild(this._generateX3DInline(model));
+        }
+    }
+
     if( node.camera != undefined )
     {
         x3dNode.appendChild(this._generateX3DViewpoint(node));
@@ -288,6 +298,25 @@ x3dom.glTF2Loader.prototype._generateX3DMatrixTransform = function(node)
 x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 {
     return document.createElement("group");
+};
+
+/**
+ * Generates a X3D inline node
+ * @param {Object} model - A glTF-Model
+ * @return {Group}
+ */
+x3dom.glTF2Loader.prototype._generateX3DInline = function(model)
+{
+    var inline =  document.createElement("inline");
+
+    inline.setAttribute("url", model.uri);
+
+    if ( model.mimeType != undefined )
+    {
+        inline.setAttribute("contentType", model.mimeType);
+    }
+
+    return inline;
 };
 
 /**
