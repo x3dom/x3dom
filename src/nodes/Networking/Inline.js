@@ -62,6 +62,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFString} contentType
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue ""
+             * @range ["", "X3D", "X3DJ", "GLTF", "GLB"]
              * @field x3dom
              * @instance
              */
