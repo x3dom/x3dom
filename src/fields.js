@@ -2040,23 +2040,22 @@ x3dom.fields.Quaternion.prototype.toMatrix = function() {
 x3dom.fields.Quaternion.prototype.toAxisAngle = function() {
     var x = 0, y = 0, z = 0;
     var s = 0, a = 0;
-    var that = this;
 
     if (this.w > 1) {
-        that = x3dom.fields.Quaternion.normalize(this);
+        this.normalize();
     }
 
-    a = 2 * Math.acos(that.w);
-    s = Math.sqrt(1 - that.w * that.w);
+    a = 2 * Math.acos(this.w);
+    s = Math.sqrt(1 - this.w * this.w);
 
     if (s == 0) {  //< x3dom.fields.Eps )
-        x = that.x;
-        y = that.y;
-        z = that.z;
+        x = this.x;
+        y = this.y;
+        z = this.z;
     } else {
-        x = that.x / s;
-        y = that.y / s;
-        z = that.z / s;
+        x = this.x / s;
+        y = this.y / s;
+        z = this.z / s;
     }
 
     return [new x3dom.fields.SFVec3f(x, y, z), a];
@@ -2171,13 +2170,34 @@ x3dom.fields.Quaternion.prototype.multScalar = function(s) {
     return new x3dom.fields.Quaternion(this.x * s, this.y * s, this.z * s, this.w * s);
 };
 
-x3dom.fields.Quaternion.prototype.normalize = function(that) {
-    var d2 = this.dot(that);
+x3dom.fields.Quaternion.prototype.normalize = function() {
+    var d2 = this.dot(this);
     var id = 1.0;
     if (d2) {
         id = 1.0 / Math.sqrt(d2);
     }
-    return new x3dom.fields.Quaternion(this.x * id, this.y * id, this.z * id, this.w * id);
+
+    this.x *= id;
+    this.y *= id;
+    this.z *= id;
+    this.w *= id;
+
+    return this;
+};
+
+x3dom.fields.Quaternion.normalize = function(that) {
+    var d2 = that.dot(that);
+    var id = 1.0;
+    if (d2) {
+        id = 1.0 / Math.sqrt(d2);
+    }
+
+    that.x *= id;
+    that.y *= id;
+    that.z *= id;
+    that.w *= id;
+
+    return that;
 };
 
 x3dom.fields.Quaternion.prototype.negate = function() {

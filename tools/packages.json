@@ -225,6 +225,7 @@
                 {"name": "Texturing", "filePrefix": "nodes/Texturing/", "files":[
                     {"file": "X3DTextureTransformNode.js"},
                     {"file": "TextureTransform.js"},
+                    {"file": "MatrixTextureTransform.js"},
                     {"file": "TextureProperties.js"},
                     {"file": "X3DTextureNode.js"},
                     {"file": "MultiTexture.js"},

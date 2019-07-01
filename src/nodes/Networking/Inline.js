@@ -58,6 +58,17 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'nameSpaceName', []);
 
             /**
+             * Specifies the content type of the resource.
+             * @var {x3dom.fields.SFString} contentType
+             * @memberof x3dom.nodeTypes.Inline
+             * @initvalue ""
+             * @range ["", "X3D", "X3DJ", "GLTF", "GLB"]
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFString(ctx, 'contentType', "");
+
+            /**
              * Specifies whether the DEF value is used as id when no other id is set.
              * @var {x3dom.fields.SFBool} mapDEFToID
              * @memberof x3dom.nodeTypes.Inline
@@ -70,7 +81,13 @@ x3dom.registerNodeType(
             this.initDone = false;
             this.count = 0;
             this.numRetries = x3dom.nodeTypes.Inline.MaximumRetries;
-        
+
+            this.ContentType = {
+                X3D  : "model/x3d+xml",
+                GLTF : "model/gltf+json",
+                GLB  : "model/gltf-binary",
+                X3DJ : "model/x3d+json"
+            };
         },
         {
             fieldChanged: function (fieldName)
@@ -150,15 +167,44 @@ x3dom.registerNodeType(
                 }
             },
 
-            getSuffix: function()
+            isValidContentType: function( contentType )
             {
+                for ( var type in this.ContentType )
+                {
+                    if( contentType === this.ContentType[ type ] )
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+
+            getContentType: function()
+            {
+                //Return contentType if defined & valid
+                if (this._vf.contentType != "" && this.isValidContentType( this._vf.contentType ) )
+                {
+                    return contentType;
+                }
+
+                //Try to detect the contentType from suffix
                 if (this._vf.url.length && this._vf.url[0].length)
                 {
-                    return this._vf.url[0].substr( this._vf.url[0].lastIndexOf(".") ).toLowerCase();
-                }
-                else
-                {
-                    return ".x3d";
+                    var lastPointIndex = this._vf.url[0].lastIndexOf(".");
+
+                    if ( lastPointIndex != -1 )
+                    {
+                        var suffix = this._vf.url[0].substr( lastPointIndex ).toLowerCase();
+                        
+                        switch(suffix)
+                        {
+                            case ".x3d"  :  return this.ContentType.X3D;
+                            case ".gltf" :  return this.ContentType.GLTF;
+                            case ".glb"  :  return this.ContentType.GLB;
+                            case ".json" :  return this.ContentType.X3DJ;
+                        }
+                    }
                 }
             },
 
@@ -239,7 +285,7 @@ x3dom.registerNodeType(
             {
                 var that = this;
 
-                var suffix = this.getSuffix();
+                var contentType = this.getContentType();
 
                 var isBinary = false;
 
@@ -280,13 +326,18 @@ x3dom.registerNodeType(
                         {
                             x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
 
+                            if (contentType == undefined)
+                            {
+                                contentType = xhr.getResponseHeader("Content-Type");
+                            }
+
                             that.count = 0;
 
                             var inlineScene;
 
                             var namespace = that.addNameSpace();
 
-                            if (suffix == ".gltf" || suffix == ".glb")
+                            if (contentType == that.ContentType.GLTF || contentType == that.ContentType.GLB)
                             {
                                 if(xhr.response)
                                 {
@@ -306,7 +357,7 @@ x3dom.registerNodeType(
                                     that.count = 0;
                                 }
                             }
-                            else if (suffix == ".json")
+                            else if (contentType == that.ContentType.X3DJ)
                             {
                                 if(xhr.response)
                                 {
@@ -339,7 +390,7 @@ x3dom.registerNodeType(
                                     that.count = 0;
                                 }
                             }
-                            else
+                            else if (contentType == that.ContentType.X3D)
                             {
                                 var xml;
 
@@ -384,24 +435,25 @@ x3dom.registerNodeType(
                     var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
 
                     xhr.open('GET', xhrURI, true);
+                    xhr.setRequestHeader('Accept', 'model/x3d+xml; q=1.0, model/gltf+json; q=0.5, model/gltf-binary; q=0.5'); 
 
                     if (xhr.overrideMimeType)
                     {
-                        if( suffix == ".x3d" )
+                        if( contentType == this.ContentType.X3D )
                         {
                             xhr.overrideMimeType('text/xml');
                         }
-                        if( suffix == ".json" )
+                        if( contentType == this.ContentType.X3DJ )
                         {
                             xhr.overrideMimeType('application/json');
                             xhr.responseType = "json";
                         }
-                        else if( suffix == ".gltf" )
+                        else if( contentType == this.ContentType.GLTF )
                         {
                             isBinary = false;
                             xhr.responseType = "json";
                         }
-                        else if( suffix == ".glb" )
+                        else if( contentType == this.ContentType.GLB )
                         {
                             isBinary = true;
                             xhr.responseType = "arraybuffer";

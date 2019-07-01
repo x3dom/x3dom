@@ -209,6 +209,16 @@ x3dom.glTF2Loader.prototype._generateX3DNode = function(node, index)
         }
     }
 
+    if( node.model != undefined )
+    {
+        var model = this._gltf.models[node.model];
+
+        if ( model.uri != undefined )
+        {
+            x3dNode.appendChild(this._generateX3DInline(model));
+        }
+    }
+
     if( node.camera != undefined )
     {
         x3dNode.appendChild(this._generateX3DViewpoint(node));
@@ -288,6 +298,25 @@ x3dom.glTF2Loader.prototype._generateX3DMatrixTransform = function(node)
 x3dom.glTF2Loader.prototype._generateX3DGroup = function(node)
 {
     return document.createElement("group");
+};
+
+/**
+ * Generates a X3D inline node
+ * @param {Object} model - A glTF-Model
+ * @return {Group}
+ */
+x3dom.glTF2Loader.prototype._generateX3DInline = function(model)
+{
+    var inline =  document.createElement("inline");
+
+    inline.setAttribute("url", model.uri);
+
+    if ( model.mimeType != undefined )
+    {
+        inline.setAttribute("contentType", model.mimeType);
+    }
+
+    return inline;
 };
 
 /**
@@ -637,21 +666,31 @@ x3dom.glTF2Loader.prototype._createX3DTextureProperties = function(sampler)
  */
 x3dom.glTF2Loader.prototype._createX3DTextureTransform = function(imagetexture, transform)
 {
-    var texturetransform = document.createElement("texturetransform");
+    var texturetransform = document.createElement("matrixtexturetransform");
 
     var offset   = transform.offset || [0, 0];
     var rotation = transform.rotation || 0;
     var scale    = transform.scale || [1, 1] ;
+    // var center = transform.center || [0 0] ;
 
+    var negCenter = new x3dom.fields.SFVec3f(-0, -0, 0); // in case of a future gltf pivot
+    var posCenter = new x3dom.fields.SFVec3f(0, 0, 0);
+    var trans3 = new x3dom.fields.SFVec3f(offset[0], offset[1], 0);
+    var scale3 = new x3dom.fields.SFVec3f(scale[0], scale[1], 0);
+
+    var trafo = 
+        x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)).
+        mult(x3dom.fields.SFMatrix4f.rotationZ(rotation * -1.0)).
+        mult(x3dom.fields.SFMatrix4f.scale(scale3)).
+        mult(x3dom.fields.SFMatrix4f.translation(negCenter)); // center is not used in gltf
+    
+    texturetransform.setAttribute("matrix", trafo.toString());     
+    
     if(transform.texCoord)
     {
         imagetexture.setAttribute("channel", texCoord);
     }
-
-    texturetransform.setAttribute("translation", offset.join(" "));
-    texturetransform.setAttribute("scale", scale.join(" "));
-    texturetransform.setAttribute("rotation", rotation * -1.0);
-
+    
     return texturetransform;
 };
 
