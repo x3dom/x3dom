@@ -171,7 +171,7 @@ x3dom.registerNodeType(
             {
                 for ( var type in this.ContentType )
                 {
-                    if( contentType === this.ContentType[ type ] )
+                    if( type === contentType )
                     {
                         return true;
                     }
@@ -185,7 +185,7 @@ x3dom.registerNodeType(
                 //Return contentType if defined & valid
                 if (this._vf.contentType != "" && this.isValidContentType( this._vf.contentType ) )
                 {
-                    return contentType;
+                    return this.ContentType[this._vf.contentType];
                 }
 
                 //Try to detect the contentType from suffix
