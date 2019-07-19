@@ -61,15 +61,20 @@ x3dom.VRControllerManager.prototype._addGamePadListeners = function()
 x3dom.VRControllerManager.prototype._onGamePadConnected = function( e )
 {
     var gamepad = e.gamepad;
-    var pose = gamepad.pose;
 
     navigator.getVRDisplays().then( function( displays ) {
 
         var display = displays[0];
-        var controller = this.controllers[ display.displayName ];
 
-        if(display && gamepad.displayId == display.displayId && controller)
+        if(display && gamepad.displayId == display.displayId)
         {
+            var controller = this.controllers[ display.displayName ];
+
+            if(!controller)
+            {
+                return;
+            }
+
             if ( gamepad.hand == "left" )
             {
                 this.leftGamepadIdx = gamepad.index;
