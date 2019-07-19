@@ -49,13 +49,16 @@ x3dom.registerNodeType(
 
             /**
              * Most geo primitives use geo cache and others might later on, but one should be able to disable cache per geometry node.
+             * Defaults to global useGeoCache setting parameter. 
              * @var {x3dom.fields.SFBool} useGeoCache
              * @memberof x3dom.nodeTypes.X3DGeometryNode
              * @initvalue true
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'useGeoCache', true);
+            this.addField_SFBool(ctx, 'useGeoCache', this._nameSpace ? 
+                                 this._nameSpace.doc.properties.getProperty("useGeoCache", "true").toLowerCase() == 'true'
+                                : false);
 
             /**
              * Specifies whether this geometry should be rendered with or without lighting.

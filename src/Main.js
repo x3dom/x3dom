@@ -51,7 +51,8 @@ x3dom.userAgentFeature = {
             'disableKeys',
             'showTouchpoints',
             'disableTouch',
-            'maxActiveDownloads'
+            'maxActiveDownloads',
+            'useGeoCache'
         ]);
         var components, prefix;
         var showLoggingConsole = false;
@@ -64,6 +65,7 @@ x3dom.userAgentFeature = {
             settings.setProperty("showStat", x3ds[i].getAttribute("showStat") || 'false');
             settings.setProperty("showProgress", x3ds[i].getAttribute("showProgress") || 'true');
             settings.setProperty("PrimitiveQuality", x3ds[i].getAttribute("PrimitiveQuality") || 'High');
+            settings.setProperty("useGeoCache", x3ds[i].getAttribute("useGeoCache") || 'true');
 
             // for each param element inside the X3D element
             // add settings to properties object
