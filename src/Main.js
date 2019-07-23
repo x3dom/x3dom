@@ -45,8 +45,6 @@ x3dom.userAgentFeature = {
             'disableDoubleClick',
             'backend',
             'altImg',
-            'flashrenderer',
-            'swfpath',
             'runtimeEnabled',
             'disableKeys',
             'showTouchpoints',

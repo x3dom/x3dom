@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-
-        <title>X3DOM Scene Author API Documentation: Configuration</title>
-
+    <title>X3DOM Scene Author API Documentation: Configuration</title>
     <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs-new.css">
     <script src="../static/scripts/prettify/run_prettify.js"></script>
 </head>
@@ -40,20 +38,16 @@
 </div>
 
 <div class="container">
-                
+
     <section>
         <article>
-            
+
             <h2 style="text-align: center;">Configuration</h2>
-            <p>
-                The X3D element supports attributes which allows to set configuration for the runtime.
-            </p>
+            <p>The X3D element supports attributes which allows to set configuration for the runtime.</p>
 
             <h3>Usage</h3>
 
-            <p>
-                The params behave just like any other HTML attribute. It must be added to the x3d canvas tag.
-            </p>
+            <p>The params behave just like any other HTML attribute. It must be added to the x3d canvas tag as follows:</p>
 
             <pre class="prettyprint"><code class="language-html">
     &lt;x3d showLog="true"&gt;
@@ -63,10 +57,7 @@
 
             <h3>Options</h3>
 
-            <p>
-                The following table lists the parameters currently supported.
-            </p>
-
+            <p>The following table lists the parameters currently supported:</p>
 
             <table class="table table-responsive table-striped">
                 <colgroup>
@@ -76,42 +67,110 @@
                     <col width="50%" />
                 </colgroup>
                 <thead valign="bottom">
-                <tr><th>Parameter</th>
+                  <tr>
+                    <th>Parameter</th>
                     <th class="head">Values</th>
                     <th class="head">Default</th>
                     <th class="head">Description</th>
-                </tr>
+                  </tr>
                 </thead>
                 <tbody valign="top">
-                <tr><td>showLog</td>
+                  <tr>
+                    <td>showLog</td>
                     <td>true, false</td>
                     <td>false</td>
-                    <td>Hide or display the logging console</td>
-                </tr>
-                <tr><td>showStat</td>
+                    <td>Hide or display the logging console.</td>
+                  </tr>
+                  <tr>
+                    <td>showStat</td>
                     <td>true, false</td>
                     <td>false</td>
-                    <td>Hide or display the statistics overlay</td>
-                </tr>
-                <tr><td>showProgress</td>
+                    <td>Hide or display the statistics overlay.</td>
+                  </tr>
+                  <tr>
+                    <td>showProgress</td>
                     <td>true, false</td>
                     <td>true</td>
-                    <td>Hide or show the loading indicator.
-                </tr>
-                <tr><td>PrimitiveQuality</td>
+                    <td>Hide or show the loading indicator.</td>
+                  </tr>
+                  <tr>
+                    <td>PrimitiveQuality</td>
                     <td>High, Medium, Low, float</td>
                     <td>High/1.0</td>
-                    <td>Render quality (tesselation level) for Box, Cone,
-                        Cylinder, Sphere.</td>
-                </tr>
+                    <td>Render quality (tessellation level) for Box, Cone, Cylinder, Sphere.</td>
+                  </tr>
+                  <tr>
+                    <td>useGeoCache</td>
+                    <td>true, false</td>
+                    <td>true</td>
+                    <td>Toggle use of geometry caching for rendering shapes.</td>
+                  </tr>
+                  <tr>
+                    <td>disableDoubleClick</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Disable double clicks.</td>
+                  </tr>
+                  <tr>
+                    <td>disableTouch</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Disable touch.</td>
+                  </tr>
+                  <tr>
+                    <td>disableKeys</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Disable keys.</td>
+                  </tr>
+                  <tr>
+                    <td>showTouchpoints</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Show marker so you can track the position of the finger visually.</td>
+                  </tr>
+                  <tr>
+                    <td>components</td>
+                    <td>??</td>
+                    <td>??</td>
+                    <td>??</td>
+                  </tr>
+                  <tr>
+                    <td>loadpath</td>
+                    <td>??</td>
+                    <td>??</td>
+                    <td>??</td>
+                  </tr>
+                  <tr>
+                    <td>backend</td>
+                    <td>??</td>
+                    <td>??</td>
+                    <td>??</td>
+                  </tr>
+                  <tr>
+                    <td>altImg</td>
+                    <td>URL</td>
+                    <td></td>
+                    <td>Alternate image URL, if XDOM fails to render.</td>
+                  </tr>
+                  <tr>
+                    <td>runtimeEnabled</td>
+                    <td>true, false</td>
+                    <td>false</td>
+                    <td>Show runtime.</td>
+                  </tr>
+                  <tr>
+                    <td>maxActiveDownloads</td>
+                    <td>number</td>
+                    <td>??</td>
+                    <td>Maximum active downloads.</td>
+                  </tr>
                 </tbody>
             </table>
 
-
-
         </article>
-    
-        <br>
+
+        <br />
 
     </section>
 
