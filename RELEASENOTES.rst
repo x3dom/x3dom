@@ -3,6 +3,70 @@
 Release notes
 =============
 
+Version 1.8.0
+-------------
+
+* Features
+  * webGL 2.0 support
+  * glTF 2.0 support
+  * Physically-based materials & lighting
+  * webVR integration
+  * Nurbs
+  * Allow multiple planes on a single MPR Volume style element
+  * HAnim CPU skinning
+  * scene X3D SAI methods
+  * X3D JSON encoding for inlines
+  * Content negotiation support for Inlines
+
+* Nodes
+  * Shape
+    * PhysicalMaterial
+  * Lighting
+    * PhysicalEnvironmentLight
+  * Interpolation
+    * PositionInterpolator2D
+  * Geometry3D
+    * BufferAccessor
+    * BufferGeometry
+    * BufferView
+  * Rendering
+    * CoordinateDouble
+  * EventUtilitie
+    * BooleanFilter
+    * BooleanSequencer
+    * BooleanToggle
+    * BooleanTrigger
+    * IntegerSequencer
+    * IntegerTrigger
+    * TimeTrigger
+    * X3DSequencerNode
+    * X3DTriggerNode
+  * VolumeRendering
+    * MPRPlane
+  * NURBS
+    * Contour2D
+    * ContourPolyline2D
+    * NurbsCurve
+    * NurbsCurve2D
+    * NurbsOrientationInterpolator
+    * NurbsPatchSurface
+    * NurbsPositionInterpolator
+    * NurbsSurfaceInterpolator
+    * NurbsTrimmedSurface
+    * X3DNurbsSurfaceGeometryNode
+    * X3DParametricGeometryNode
+
+* Fixes & enhancements
+   * Sphere
+      * Allow fieldChanged by always setting qfactor.
+      * Improved texture coordinates
+   * Improved caching.
+   * Bounding box fixes.
+   * Documentation Updates.
+   * New global ‘useGeoCache’ param option to toggle use of GeoCache.
+   * log div id change to x3dom-log.
+   * Many fixes and enhancements by the X3DOM core team and the X3DOM community.
+
 Version 1.7.2
 -------------
 
