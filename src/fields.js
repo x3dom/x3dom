@@ -2632,7 +2632,7 @@ x3dom.fields.SFColorRGBA.colorParse = function(color) {
         red   = rgbaMatch[1] / 255.0;
         green = rgbaMatch[2] / 255.0;
         blue  = rgbaMatch[3] / 255.0;
-        alpha = rgbaMatch[4];
+        alpha = +rgbaMatch[4];
     }
 
     // Matches CSS color name
