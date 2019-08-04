@@ -898,7 +898,7 @@ x3dom.gfx_webgl = (function() {
                 } else {
                     bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE_DDS);
                     bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
-                        true, bgnd._vf.crossOrigin, true, false);
+                        false, bgnd._vf.crossOrigin, true, false);
                 }
 
 
