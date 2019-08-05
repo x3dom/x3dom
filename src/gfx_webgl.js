@@ -4962,7 +4962,7 @@ x3dom.gfx_webgl = (function() {
 
     Context.prototype.setVertexAttribEyeIdx = function(gl, sp)
     {
-        if(x3dom.caps.WEBGL_VERSION == 2)
+        if(x3dom.caps.WEBGL_VERSION == 2 && sp.eyeIdx != undefined)
         {
             if(!this.eyeIdxBuffer)
             {
@@ -4982,7 +4982,7 @@ x3dom.gfx_webgl = (function() {
                 gl.vertexAttribDivisor(sp.eyeIdx, 1);
             }
         }
-        else if(x3dom.caps.INSTANCED_ARRAYS)
+        else if(x3dom.caps.INSTANCED_ARRAYS && sp.eyeIdx != undefined)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
 
