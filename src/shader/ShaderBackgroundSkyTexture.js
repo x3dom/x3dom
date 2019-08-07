@@ -38,11 +38,26 @@ x3dom.shader.BackgroundSkyTextureShader.prototype.generateVertexShader = functio
 	var shader = 	"attribute vec3 position;\n" +
 					"attribute vec2 texcoord;\n" +
 					"uniform mat4 modelViewProjectionMatrix;\n" +
+					"uniform mat4 modelViewProjectionMatrix2;\n" +
 					"varying vec2 fragTexCoord;\n" +
+					"uniform float isVR;\n" +
+					"attribute float eyeIdx;\n" +
+					"varying float vrOffset;\n" +
+					"varying float fragEyeIdx;\n" +
 					"\n" +
 					"void main(void) {\n" +
 					"    fragTexCoord = texcoord;\n" +
-					"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+					"	 fragEyeIdx = eyeIdx;\n" +
+					"	 if(eyeIdx == 1.0){\n" +
+					"   	gl_Position = modelViewProjectionMatrix2 * vec4(position, 1.0);\n" +
+					"	 } else {\n" +
+					"   	gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+					"	 }\n" +
+					"	 if(isVR == 1.0){\n" +
+					"    	vrOffset = eyeIdx * 0.5;\n" +
+					"    	gl_Position.x *= 0.5;\n" +
+					"    	gl_Position.x += vrOffset * gl_Position.w;\n" +
+					"	 }\n" +
 					"}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -67,12 +82,18 @@ x3dom.shader.BackgroundSkyTextureShader.prototype.generateFragmentShader = funct
   shader += " precision mediump float;\n";
   shader += "#endif\n\n";
 
-	shader += "uniform sampler2D tex;\n" +
-				"varying vec2 fragTexCoord;\n" +
-				"\n" +
-				"void main(void) {\n" +
-				"    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
-				"}\n";
+	shader += "uniform float isVR;\n" +
+	          "varying float vrOffset;\n" +
+	          "varying float fragEyeIdx;\n" +
+	          "uniform float screenWidth;\n" +"uniform sampler2D tex;\n" +
+			  "varying vec2 fragTexCoord;\n" +
+			  "\n" +
+			  "void main(void) {\n" +
+			  "    if ( isVR == 1.0 ) {\n" +
+			  "        if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
+			  "    }\n"+
+			  "    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
+			  "}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);
