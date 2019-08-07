@@ -188,6 +188,10 @@ x3d:hover,
     color: #00ff00;
     background-color: black;
     opacity: 0.8;
+    -webkit-user-select: text;
+       -moz-user-select: text;
+        -ms-user-select: text;
+            user-select: text;
 }
 
 .x3dom-nox3d {
