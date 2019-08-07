@@ -7,7 +7,8 @@
     <script type="text/javascript" src="../x3dom_include.js"></script>
     	<style>
 		ul.plain { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
-		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap}
+		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap; }
+		x3d { float:left; }
 	</style>
 </head>
 <body onLoad="init()">
@@ -20,6 +21,7 @@
            <background crossOrigin='anonymous' backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"'></background>
            <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
            <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
+           <background crossOrigin='anonymous' id="bg2" backUrl='"media/texture/generic/earth.jpg"' description="Background 2"></background>
            <viewpoint position='2 0 15' description="Camera 0"></viewpoint>
            <viewpoint position='-2 0 5' description="Camera 1"></viewpoint>
            <viewpoint position='0 2 5'  description="Camera 2"></viewpoint>
@@ -57,8 +59,9 @@
             <li><em>Active bindable</em></span>
 	           	<ul>
 		    		<li><span id="ab_info"></span></li>
-                    <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0</a></li>
-                    <li><a href="#" onClick="document.getElementById('bg1').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 1</a></li>
+                    <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0 (color)</a></li>
+                    <li><a href="#" onClick="document.getElementById('bg1').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 1 (white)</a></li>
+        	    <li><a href="#" onClick="document.getElementById('bg2').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 2 (earth)</a></li>
         		</ul>
             </li>
 
