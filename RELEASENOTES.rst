@@ -9,8 +9,11 @@ Version 1.8.1
 * Bugfixes
   * Re-enable x3dom-log text selection.
   * Fix for Debug-Log: 'v'-key does not display 'fieldOfView'.
-  * WebGL Guard against undefined eyeIdx.
-
+  * Background fixes
+  * enable Nurbs texCoord field
+  * various example fixes
+* Improvements
+  * TextureCoordinateGenerator COORD mode
 
 Version 1.8.0
 -------------
