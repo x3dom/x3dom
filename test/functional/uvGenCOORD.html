@@ -1,0 +1,73 @@
+<html>
+  <head>
+    <title>Striped Spaceship</title>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"/>
+    <meta http-equiv="Content-Type"    content="text/html;charset=utf-8"/>
+    <meta name='creator' content='E. Knittel, simplified by A. Plesch'/>
+    <meta name='copyright' content='(c) 2014, E. Knittel'/>
+    <script type="text/javascript" src="../x3dom-full_include.js"></script>
+  </head>
+  <body>
+    <h1>Striped Spaceship</h1>
+    <X3D width="960px" height="540px">
+      <Scene>
+        <Viewpoint fieldOfView='.392699'>
+        </Viewpoint>
+        <Transform scale='1.2 .15 .6' DEF="SHIP">
+          <Shape DEF='STRIPES'>
+            <Appearance DEF='texApp'>
+              <PixelTexture image='16 1 1 255 255 255 0 255 255 255 255
+                                          255 255 255 255 0 255 255 255'>
+                <TextureProperties magnificationFilter="NEAREST_PIXEL"
+                                    minificationFilter="NEAREST_PIXEL">
+                </TextureProperties>
+              </PixelTexture><Material></Material>
+              <TextureTransform scale='.25 .25'></TextureTransform>
+            </Appearance>
+            <NurbsPatchSurface solid="true" DEF="NURBS"
+              uOrder="4" uDimension="4" uKnot="0 0 0 0 1 1 1 1"
+              vOrder="4" vDimension="4" vKnot="0 0 0 0 1 1 1 1"
+              weight="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1">
+              <Coordinate containerField="controlPoint" point="
+                -2 2  2, 0 1  1, 0 1  1, 2 2  2,
+                -1 1  0, 0 1  0, 0 1  0, 1 1  0,
+                -1 1  0, 0 1  0, 0 1  0, 1 1  0,
+                -2 2 -2, 0 1 -1, 0 1 -1, 2 2 -2">
+              </Coordinate>
+              <TextureCoordinateGenerator mode="COORD">
+              </TextureCoordinateGenerator>
+            </NurbsPatchSurface>
+          </Shape>
+          <Transform rotation='0 0 1 1.57'>
+            <Shape DEF='BLANK'>
+              <Appearance><Material></Material></Appearance>
+              <NurbsPatchSurface USE="NURBS"></NurbsPatchSurface>
+            </Shape>
+          </Transform>
+          <Transform rotation='0 0 1 -1.57'><Shape USE='BLANK'></Shape>
+          </Transform>
+          <Transform rotation='1 0 0  1.57'><Shape USE='STRIPES'></Shape>
+          </Transform>
+          <Transform rotation='1 0 0 -1.57'><Shape USE='STRIPES'></Shape>
+          </Transform>
+          <Transform scale='1 -1 -1'>       <Shape USE='STRIPES'></Shape>
+          </Transform>
+        </Transform><!-- SHIP -->
+        <Transform scale='1.2 .15 .6' translation='0 -1 0' DEF="box">
+          <Shape DEF='bSTRIPES'>
+            <Appearance USE='texApp'>
+            </Appearance>
+            <IndexedFaceSet normalPerVertex="false" coordIndex="0,1,2,3,-1,
+                0,4,5,1,-1, 1,5,6,2,-1, 2,6,7,3,-1, 3,7,4,0,-1, 4,7,6,5,-1">
+              <Coordinate point="-1  1 -1, -1  1 1, 1  1 1, 1  1 -1,
+                                 -1 -1 -1, -1 -1 1, 1 -1 1, 1 -1 -1">
+              </Coordinate>
+              <TextureCoordinateGenerator mode="COORD">
+              </TextureCoordinateGenerator>
+            </IndexedFaceSet>
+          </Shape>
+        </Transform>
+      </Scene>
+    </X3D>
+  </body>
+</html>
