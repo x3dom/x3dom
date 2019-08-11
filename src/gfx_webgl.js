@@ -105,7 +105,7 @@ x3dom.gfx_webgl = (function() {
         for (var i = 0; i < validContextNames.length; i++) {
             try {
 
-                x3dom.caps.RENDERMODE = "HARDWARE";
+                x3dom.caps.RENDERMODE = "HARDWARE (" + validContextNames[i] + ")";
 
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
 
@@ -1153,6 +1153,7 @@ x3dom.gfx_webgl = (function() {
                 gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD]);
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
+                that.setVertexAttribEyeIdx(gl, sp);
 
                 that.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
@@ -1161,6 +1162,7 @@ x3dom.gfx_webgl = (function() {
 
                 gl.disableVertexAttribArray(sp.position);
                 gl.disableVertexAttribArray(sp.texcoord);
+                that.disableVertexAttribEyeIdx(gl, sp);
 
                 gl.clear(gl.DEPTH_BUFFER_BIT);
             } else if (!sp || !bgnd._webgl.texture ||
