@@ -388,6 +388,12 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode) {
             this._texCoords[0][j++] = 0.5 + this._normals[0][i] / 2.0;
             this._texCoords[0][j++] = 0.5 + this._normals[0][i + 1] / 2.0;
         }
+    } 
+    if (mode.toLowerCase() === "coord") {
+        for (var k = 0, l = 0, m = this._positions[0].length; k < m; k += 3) {
+            this._texCoords[0][l++] = this._positions[0][k];
+            this._texCoords[0][l++] = this._positions[0][k + 1];
+        }
     } else {
         // "plane" is x3d default mapping
         var min = new x3dom.fields.SFVec3f(0, 0, 0),
