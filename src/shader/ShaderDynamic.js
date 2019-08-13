@@ -486,6 +486,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		
 		if (properties.SPHEREMAPPING) {
 			shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;\n";
+			if(properties.TEXTRAFO) {
+				shader += " fragTexcoord = (texTrafoMatrix * vec4(fragTexcoord, 1.0, 1.0)).xy;\n";
+			}
 		} else if(properties.TEXTRAFO) {
 			shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
 		} else {
