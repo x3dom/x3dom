@@ -575,7 +575,7 @@ x3dom.Texture.prototype.updateText = function() {
         lengths[i] = pLength <= 0 ? pWidth : pLength * x3dToPx;
     }
 
-    var canvas_extra = 0.1 * textHeight; // single line, some fonts are higher than textHeight
+    var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
     var txtW = maxWidth;
     var txtH = textHeight * font_spacing * paragraph.length + canvas_extra;
 
