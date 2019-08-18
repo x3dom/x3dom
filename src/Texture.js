@@ -484,23 +484,26 @@ x3dom.Texture.prototype.updateText = function() {
 
         var leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
         var topToBottom = fontStyleNode._vf.topToBottom;
+    
+        var beginAlign = leftToRight == 'ltr' ? 'left' : 'right';
+        var endAlign = leftToRight == 'ltr' ? 'right' : 'left';
 
         font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g, '');
         switch (font_justify.toUpperCase()) {
             case 'BEGIN':
-                font_justify = 'left';
+                font_justify = beginAlign;
                 break;
             case 'END':
-                font_justify = 'right';
+                font_justify = endAlign;
                 break;
             case 'FIRST':
-                font_justify = 'left';
+                font_justify = beginAlign;
                 break; // relevant only in justify[1], eg. minor alignment
             case 'MIDDLE':
                 font_justify = 'center';
                 break;
             default:
-                font_justify = 'left';
+                font_justify = beginAlign;
                 break;
         }
 
@@ -591,11 +594,11 @@ x3dom.Texture.prototype.updateText = function() {
             textX = txtW / 2;
             break;
         case "left":
-            x_offset = leftToRight == 'ltr' ? 0 : -txtW;
+            x_offset = 0;
             textX = 0;
             break;
         case "right":
-            x_offset = leftToRight == 'ltr' ? -txtW : 0;
+            x_offset = -txtW;
             textX = txtW;
             break;
     }
@@ -650,6 +653,7 @@ x3dom.Texture.prototype.updateText = function() {
     // create the multiline text always top down
     for (i = 0; i < paragraph.length; i++) {
         j = topToBottom ? i : paragraph.length - 1 - i;
+        if (leftToRight == 'rtl') paragraph[j] = '\u202e' + paragraph[j]; //force rtl unicode mark
         text_ctx.fillText(paragraph[j], textX, textY, lengths[j]);
         textY += textHeight * font_spacing;
     }
@@ -676,5 +680,3 @@ x3dom.Texture.prototype.updateText = function() {
         node.setAllDirty();
     });
 };
-
-
