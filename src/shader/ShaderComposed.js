@@ -128,7 +128,7 @@ x3dom.shader.ComposedShader.prototype.injectVRPartsFS = function(shader)
 
 x3dom.shader.ComposedShader.prototype.extractShaderSections = function(shader)
 {
-	var regex = /void\s*main\s*\((?:void)?\)\s*{[\s\S]*}/;
+	var regex = /void\s*main\s*\(\s*(?:void)?\s*\)\s*{[\s\S]*}/;
 
 	var match = regex.exec( shader );
 
