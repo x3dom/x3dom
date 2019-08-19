@@ -606,7 +606,7 @@ x3dom.Texture.prototype.updateText = function() {
     // y_offset, baseline and first Y
     switch (minor_alignment) {
         case "MIDDLE":
-            y_offset = txtH / 2;
+            y_offset = txtH / 2 - canvas_extra / 2;
             break;
         case "BEGIN":
             y_offset = topToBottom ? 0 : txtH - canvas_extra;
