@@ -30,7 +30,11 @@
   echo "build command: started..." &&
   echo "build command: python manage.py --build &> build.log ..." &&
   python manage.py --build &> build.log &&
-  echo "build command: cd doc & sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc ..." &&
+  echo "generate tests: sh/test/generateTestPage.sh" &&
+  echo "generateTestPage.sh:" &&
+  cat test/generateTestPage.sh &&
+  sh test/generateTestPage.sh &&
+  echo "build doc command: cd doc & sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc ..." &&
   cd doc &&
   sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc &&
   echo "build command: cd ../ && cat <<HTMLEND > dist/index.html" &&
@@ -54,6 +58,8 @@
       <li> <a href='x3dom-full-physics.debug.js'>x3dom-full-physics.debug.js</a> </li>
       <h2> documentation </h2>
       <li> <a href='doc/index.html'>extensive documentation</a> </li>
+      <h2> examples </h2>
+      <li> <a href='examples/index.html'>repo test examples</a> </li>
       <h2> full listing </h2>
       $(cd dist; ls -lhr --time-style=long-iso * components/* | grep -v html | awk 'NF==8 {print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}' | head -n -9)
     </ol>
