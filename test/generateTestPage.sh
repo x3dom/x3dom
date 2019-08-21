@@ -16,7 +16,7 @@ cat <<HTMLEND > index.html && cd ../.. && exit
   <body>
     <h1> X3DOM examples</h1>
     <ol type='I'>
-      $(cd dist; ls -lhr --time-style=long-iso * components/* | grep -v html | awk 'NF==8 {print "<li><strong><a href=\""$8"\">"$8"</a>", $5"</strong>", $6, $7 "</li>"}' | head -n -9)
+      $(for f in $examples; do echo "      <li><a href=\"$f\"> ${f##*/} </a></li>" ; done)
     </ol>
     <footer style='text-align: end'> examples </footer>
   </body>
