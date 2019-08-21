@@ -8,17 +8,17 @@ examples=$(find ./ -name '*html')
 #patch to use build
 sed -i 's|<script.*include.js.*script>|<script type="text/javascript" src="/x3dom-full.debug.js"></script>\n    <link rel="stylesheet" type="text/css" href="/x3dom.css" />|' $examples
 #generate html
-cat <<HTMLEND > index.html && cd ../.. && exit
+cat <<HTMLEND > index.html && cd ../..
 <html>
   <head>
-    <title>X3DOM examples</title>
+    <title>X3DOM examples, $(date)</title>
   </head>
   <body>
     <h1> X3DOM examples</h1>
-    <ol type='I'>
+    <ol type='i'>
       $(for f in $examples; do echo "      <li><a href=\"$f\"> ${f##*/} </a></li>" ; done)
     </ol>
-    <footer style='text-align: end'> examples </footer>
+    <footer style='text-align: end'> $(date) </footer>
   </body>
 </html>
 HTMLEND
