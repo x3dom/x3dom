@@ -30,6 +30,15 @@
   echo "build command: started..." &&
   echo "build command: python manage.py --build &> build.log ..." &&
   python manage.py --build &> build.log &&
+  npm install uglify-es -g &&
+  cd dist &&
+  echo "build command: uglifyjs x3dom.js -o x3dom.min.js -c -m && ..." &&
+  uglifyjs x3dom.js -o x3dom.min.js -c -m &&
+  echo "build command: uglifyjs x3dom-full.js -o x3dom-full.min.js -c -m && ..." &&
+  uglifyjs x3dom-full.js -o x3dom-full.min.js -c -m &&
+  echo "build command: uglifyjs x3dom-full-physics.js -o x3dom-full-physics.min.js -c -m && ..." &&
+  uglifyjs x3dom-full-physics.js -o x3dom-full-physics.min.js -c -m &&
+  cd ../ &&
   echo "generate tests: sh/test/generateTestPage.sh" &&
   echo "generateTestPage.sh:" &&
   cat test/generateTestPage.sh &&
@@ -49,8 +58,11 @@
     <ol type='I'>
       <h2> production versions </h2>
       <li> <a href='x3dom.js'>x3dom.js</a> </li>
+      <li> <a href='x3dom.min.js'>x3dom.min.js</a> </li>
       <li> <a href='x3dom-full.js'>x3dom-full.js</a> </li>
+      <li> <a href='x3dom-full.min.js'>x3dom-full.min.js</a> </li>
       <li> <a href='x3dom-full-physics.js'>x3dom-full-physics.js</a> </li>
+      <li> <a href='x3dom-full-physics.min.js'>x3dom-full-physics.min.js</a> </li>
       <li> <a href='x3dom.css'>x3dom.css</a> </li>
       <h2> debug versions </h2>
       <li> <a href='x3dom.debug.js'>x3dom.debug.js</a> </li>
