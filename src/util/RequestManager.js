@@ -25,7 +25,7 @@ x3dom.RequestManager.requests = [];
  *
  * @type {number}
  */
-x3dom.RequestManager.maxParallelRequests = 40;
+x3dom.RequestManager.maxParallelRequests = 50;
 
 /**
  *
