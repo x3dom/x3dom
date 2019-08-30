@@ -15,7 +15,7 @@
         <Viewpoint id='view1' position='0 0 12'></Viewpoint>
         <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
                    DEF='view2' position="0 0 -20" orientation="0 1 0 3.14159265" ></Viewpoint>
-        <Background id='back' 
+        <Background id='back' crossOrigin='anonymous' 
             backUrl="media/texture/generic/ocean_3_back.jpg"
             bottomUrl="media/texture/generic/ocean_3_bottom.jpg"
             frontUrl="media/texture/generic/ocean_3_front.jpg"
@@ -28,7 +28,7 @@
         <Transform DEF='trans1' translation='-2 2 0'>
           <Shape DEF='GEO'>
             <Appearance>
-              <ImageTexture repeatS='false' repeatT='false' url='"media/texture/generic/crate.gif"'></ImageTexture>
+              <ImageTexture crossOrigin='anonymous' repeatS='false' repeatT='false' url='"media/texture/generic/crate.gif"'></ImageTexture>
             </Appearance>
             <Box ></Box>
           </Shape>
