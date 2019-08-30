@@ -165,11 +165,27 @@ x3dom.registerNodeType(
                     }
                 }
 
-                if (field === 'url')
+                if (fieldName === 'url')
                 {
+                    for (i=0; i<n; i++)
+                    {
+                        if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {
+                            this._vertex = this._cf.parts.nodes[i];
+                            this._id = this._cf.parts.nodes[i]._id;
+                        }
+                        else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
+                            this._fragment = this._cf.parts.nodes[i];
+                            this._id += " - " + this._cf.parts.nodes[i]._id;
+                        }
+                    }
+
                     Array.forEach(this._parentNodes, function (app) {
                         Array.forEach(app._parentNodes, function (shape) {
-                            shape._dirty.shader = true;
+                            if (shape._cleanupGLObjects)
+                            {
+                                shape._cleanupGLObjects();
+                            }
+                            shape.setAllDirty();
                         });
                     });
                 }
