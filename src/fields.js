@@ -2645,16 +2645,13 @@ x3dom.fields.SFImage.prototype.copy = function() {
 x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
     var mc = str.match(/(\w+)/g);
     var n = mc.length;
-    var c2 = 0;
-    var hex = "0123456789ABCDEF";
-
+    
     this.array = [];
 
     if (n > 2) {
         this.width = +mc[0];
         this.height = +mc[1];
         this.comp = +mc[2];
-        c2 = 2 * this.comp;
     } else {
         this.width = 0;
         this.height = 0;
@@ -2663,61 +2660,34 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
     }
 
     var len, i;
+    var r, g, b, a;
+    var radix = 10;
+    
     for (i = 3; i < n; i++) {
-        var r, g, b, a;
+        if (!mc[i].substr) continue;
 
-        if (!mc[i].substr) {
-            continue;
-        }
-
-        if (mc[i].substr(1, 1).toLowerCase() !== "x") {
-            // Maybe optimize by directly parsing value!
-            var inp = parseInt(mc[i], 10);
-
-            if (this.comp === 1) {
-                r = inp;
-                this.array.push(r);
-            } else if (this.comp === 2) {
-                r = inp >> 8 & 255;
-                g = inp & 255;
-                this.array.push(r, g);
-            } else if (this.comp === 3) {
-                r = inp >> 16 & 255;
-                g = inp >> 8 & 255;
-                b = inp & 255;
-                this.array.push(r, g, b);
-            } else if (this.comp === 4) {
-                r = inp >> 24 & 255;
-                g = inp >> 16 & 255;
-                b = inp >> 8 & 255;
-                a = inp & 255;
-                this.array.push(r, g, b, a);
-            }
-        } else if (mc[i].substr(1, 1).toLowerCase() === "x") {
-            mc[i] = mc[i].substr(2);
-            len = mc[i].length;
-
-            if (len === c2) {
-                if (this.comp === 1) {
-                    r = parseInt("0x" + mc[i].substr(0, 2), 16);
-                    this.array.push(r);
-                } else if (this.comp === 2) {
-                    r = parseInt("0x" + mc[i].substr(0, 2), 16);
-                    g = parseInt("0x" + mc[i].substr(2, 2), 16);
-                    this.array.push(r, g);
-                } else if (this.comp === 3) {
-                    r = parseInt("0x" + mc[i].substr(0, 2), 16);
-                    g = parseInt("0x" + mc[i].substr(2, 2), 16);
-                    b = parseInt("0x" + mc[i].substr(4, 2), 16);
-                    this.array.push(r, g, b);
-                } else if (this.comp === 4) {
-                    r = parseInt("0x" + mc[i].substr(0, 2), 16);
-                    g = parseInt("0x" + mc[i].substr(2, 2), 16);
-                    b = parseInt("0x" + mc[i].substr(4, 2), 16);
-                    a = parseInt("0x" + mc[i].substr(6, 2), 16);
-                    this.array.push(r, g, b, a);
-                }
-            }
+        if (mc[i].substr(1, 1).toLowerCase() === "x") radix = 16;
+        // Maybe optimize by directly parsing value!
+        var inp = parseInt(mc[i], radix);
+        //check for NaN ?
+        if (this.comp === 1) {
+            r = inp & 255;
+            this.array.push(r);
+        } else if (this.comp === 2) {
+            r = inp >> 8 & 255;
+            g = inp & 255;
+            this.array.push(r, g);
+        } else if (this.comp === 3) {
+            r = inp >> 16 & 255;
+            g = inp >> 8 & 255;
+            b = inp & 255;
+            this.array.push(r, g, b);
+        } else if (this.comp === 4) {
+            r = inp >> 24 & 255;
+            g = inp >> 16 & 255;
+            b = inp >> 8 & 255;
+            a = inp & 255;
+            this.array.push(r, g, b, a);
         }
     }
 };
