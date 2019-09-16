@@ -2669,7 +2669,9 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
         if (mc[i].substr(1, 1).toLowerCase() === "x") radix = 16;
         // Maybe optimize by directly parsing value!
         var inp = parseInt(mc[i], radix);
-        //check for NaN ?
+	// just coercing should also work:
+	// var inp = mc[i];
+        // check for NaN ?
         if (this.comp === 1) {
             r = inp & 255;
             this.array.push(r);
