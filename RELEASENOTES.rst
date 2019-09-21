@@ -13,7 +13,8 @@ Version 1.8.1
   * enable Nurbs texCoord field
   * various example fixes
   * more robust shader parsing
-  * allow queued ComposedShader url loading 
+  * allow queued ComposedShader url loading
+  * PixelTexture parsing
 * Improvements
   * TextureCoordinateGenerator COORD mode
 
