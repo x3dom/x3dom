@@ -364,6 +364,7 @@ x3dom.registerNodeType(
             its._nameSpace = node._nameSpace;
             its._vf.solid = false;
             its._vf.ccw = false;
+            its._cf.texCoord = node._cf.texCoord;
             var ind = [],
             i1 = 0,
             i2 = w;
@@ -384,13 +385,7 @@ x3dom.registerNodeType(
             its._vf.index = ind;
 
             its.addChild(coordNode);
-            if (0) {
-                var tc = new x3dom.nodeTypes.TextureCoordinate();
-                tc._nameSpace = node._nameSpace;
-                tc._vf.point = new x3dom.fields.MFVec2f(data[2]/*tess.texcoords*/);
-                its.addChild(tc);
-            }
-
+            
             its.nodeChanged();
             its._xmlNode = node._xmlNode;
             return its;
@@ -410,13 +405,16 @@ x3dom.registerNodeType(
                 co._vf.point.push(
                     new x3dom.fields.SFVec3f(data[1][i][0], data[1][i][1], data[1][i][2]));
             its.addChild(co);
-            var tc = new x3dom.nodeTypes.TextureCoordinate();
-            tc._nameSpace = node._nameSpace;
-            tc._vf.point = new x3dom.fields.MFVec2f();
-            for (var i = 0; i < data[2].length; i++)
-                tc._vf.point.push(
-                    new x3dom.fields.SFVec2f(data[2][i][0], data[2][i][1]));
-            its.addChild(tc);
+            if (node._cf.texCoord.node !== null) its._cf.texCoord = node._cf.texCoord; 
+            else {
+                var tc = new x3dom.nodeTypes.TextureCoordinate();
+                tc._nameSpace = node._nameSpace;
+                tc._vf.point = new x3dom.fields.MFVec2f();
+                for (var i = 0; i < data[2].length; i++)
+                    tc._vf.point.push(
+                        new x3dom.fields.SFVec2f(data[2][i][0], data[2][i][1]));
+                its.addChild(tc);
+            }
             its.nodeChanged();
             its._xmlNode = node._xmlNode;
             return its;

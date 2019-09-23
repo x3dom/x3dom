@@ -105,7 +105,7 @@ x3dom.gfx_webgl = (function() {
         for (var i = 0; i < validContextNames.length; i++) {
             try {
 
-                x3dom.caps.RENDERMODE = "HARDWARE";
+                x3dom.caps.RENDERMODE = "HARDWARE (" + validContextNames[i] + ")";
 
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
 
@@ -898,7 +898,7 @@ x3dom.gfx_webgl = (function() {
                 } else {
                     bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE_DDS);
                     bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url,
-                        true, bgnd._vf.crossOrigin, true, false);
+                        false, bgnd._vf.crossOrigin, true, false);
                 }
 
 
@@ -1153,6 +1153,7 @@ x3dom.gfx_webgl = (function() {
                 gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[x3dom.BUFFER_IDX.TEXCOORD]);
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
+                that.setVertexAttribEyeIdx(gl, sp);
 
                 that.drawElements(gl, bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
@@ -1161,6 +1162,7 @@ x3dom.gfx_webgl = (function() {
 
                 gl.disableVertexAttribArray(sp.position);
                 gl.disableVertexAttribArray(sp.texcoord);
+                that.disableVertexAttribEyeIdx(gl, sp);
 
                 gl.clear(gl.DEPTH_BUFFER_BIT);
             } else if (!sp || !bgnd._webgl.texture ||
@@ -4962,7 +4964,7 @@ x3dom.gfx_webgl = (function() {
 
     Context.prototype.setVertexAttribEyeIdx = function(gl, sp)
     {
-        if(x3dom.caps.WEBGL_VERSION == 2)
+        if(x3dom.caps.WEBGL_VERSION == 2 && sp.eyeIdx != undefined)
         {
             if(!this.eyeIdxBuffer)
             {
@@ -4982,7 +4984,7 @@ x3dom.gfx_webgl = (function() {
                 gl.vertexAttribDivisor(sp.eyeIdx, 1);
             }
         }
-        else if(x3dom.caps.INSTANCED_ARRAYS)
+        else if(x3dom.caps.INSTANCED_ARRAYS && sp.eyeIdx != undefined)
         {
             var instancedArrays = this.ctx3d.getExtension("ANGLE_instanced_arrays");
 

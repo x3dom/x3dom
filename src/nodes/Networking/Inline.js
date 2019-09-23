@@ -62,7 +62,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFString} contentType
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue ""
-             * @range ["", "X3D", "X3DJ", "GLTF", "GLB"]
+             * @range ["", "model/x3d+xml", "model/x3d+json", "model/gltf+json", "model/gltf-binary"]
              * @field x3dom
              * @instance
              */
@@ -185,7 +185,7 @@ x3dom.registerNodeType(
                 //Return contentType if defined & valid
                 if (this._vf.contentType != "" && this.isValidContentType( this._vf.contentType ) )
                 {
-                    return contentType;
+                    return this._vf.contentType;
                 }
 
                 //Try to detect the contentType from suffix

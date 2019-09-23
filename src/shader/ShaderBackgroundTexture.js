@@ -39,11 +39,21 @@ x3dom.shader.BackgroundTextureShader.prototype.generateVertexShader = function(g
 					"varying vec2 fragTexCoord;\n" +
 					"uniform vec2 scale;\n" +
 					"uniform vec2 translation;\n" +
+					"uniform float isVR;\n" +
+					"attribute float eyeIdx;\n" +
+					"varying float vrOffset;\n" +
+					"varying float fragEyeIdx;\n" +
 					"\n" +
 					"void main(void) {\n" +
-					"    vec2 texCoord = (position.xy + 1.0) * 0.5;\n" +
-					"    fragTexCoord = texCoord * scale + translation;\n" +
-					"    gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
+					"   vec2 texCoord = (position.xy + 1.0) * 0.5;\n" +
+					"   fragTexCoord = texCoord * scale + translation;\n" +
+					"	fragEyeIdx = eyeIdx;\n" +
+					"   gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
+					"	if(isVR == 1.0){\n" +
+					"    	vrOffset = eyeIdx * 0.5;\n" +
+					"    	gl_Position.x *= 0.5;\n" +
+					"    	gl_Position.x += vrOffset * gl_Position.w;\n" +
+					"	}\n" +
 					"}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -68,12 +78,19 @@ x3dom.shader.BackgroundTextureShader.prototype.generateFragmentShader = function
   shader += " precision mediump float;\n";
   shader += "#endif\n\n";
 
-	shader += "uniform sampler2D tex;\n" +
-				"varying vec2 fragTexCoord;\n" +
-				"\n" +
-				"void main(void) {\n" +
-				"    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
-				"}";
+	shader += "uniform float isVR;\n" +
+	          "varying float vrOffset;\n" +
+	          "varying float fragEyeIdx;\n" +
+	          "uniform float screenWidth;\n" +
+	          "uniform sampler2D tex;\n" +
+			  "varying vec2 fragTexCoord;\n" +
+			  "\n" +
+			  "void main(void) {\n" +
+			  "	   if ( isVR == 1.0 ) {\n" +
+			  "        if ( ( step( 0.5, gl_FragCoord.x / screenWidth ) - 0.5 ) * vrOffset < 0.0 ) discard;\n" +
+			  "	   }\n"+
+			  "    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
+			  "}";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link type="text/css" rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css"/>
     <script type="text/javascript" src="../../../../x3dom_include.js"></script>
     <title>Text</title>
 </head>
@@ -9,22 +8,40 @@
     <x3d id="x3d" width="800px" height="600px">
     <scene>
       <viewpoint position='0 0 11'></viewpoint>
-      <background skyColor='0.5 0.5 0.5'></background>
+      <background skyColor='0.1 0.1 0.1'></background>
       <shape id="the_shape">
-        <appearance>
+        <appearance DEF='shiny'>
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
-        <text string='Hello World' solid='false'>
+        <text string='"Hello World !"' solid='false'>
             <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
-            <fontstyle family="'SANS-SERIF'" style="BOLDITALIC" justify="MIDDLE" size="1" leftToRight="true"></fontstyle>
+            <fontstyle family='"SANS"' style="BOLDITALIC" justify='"BEGIN" "MIDDLE"' size="1" leftToRight="true"></fontstyle>
         </text>
       </shape>
-      <transform translation='0 0 -2'>
-        <shape>
+      <transform DEF='origin' translation='0 0 -0.1'>
+        <shape >
             <appearance> 
                 <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
             </appearance>
-            <box></box>
+            <box size='1,1,0.1'></box>
+        </shape>
+      </transform>
+      <transform translation='0 2 0'>
+        <shape USE='origin'></shape>
+        <shape DEF='rtl'>
+          <appearance USE='shiny'></appearance>
+          <text string='"Read" "some text" "today!"'>
+            <fontstyle justify='"BEGIN" "MIDDLE"' leftToRight="false"></fontstyle>
+          </text>
+        </shape>
+      </transform>
+      <transform translation='0 -2 0'>
+        <shape USE='origin'></shape>
+        <shape DEF='rtl'>
+          <appearance USE='shiny'></appearance>
+          <text string='"قراءة" "بعض النص" "اليوم!"'>
+            <fontstyle justify='"BEGIN" "FIRST"' leftToRight="false"></fontstyle>
+          </text>
         </shape>
       </transform>
     </scene>

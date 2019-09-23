@@ -69,11 +69,20 @@ x3dom.registerNodeType(
 
                     if (that._vf.url.length && that._vf.url[0].indexOf('\n') == -1)
                     {
-                        var xhr = new XMLHttpRequest();
-                        xhr.open("GET", that._nameSpace.getURL(that._vf.url[0]), false);
+                        var xhr        = new XMLHttpRequest(),
+                            url        = that._nameSpace.getURL(that._vf.url[0]);
+                            originalID = that._id;
+
+
+                        that._id = "default";
+                        that._vf.url = new x3dom.fields.MFString( [ this._getDefaultShader() ] );                      
+
+                        xhr.open("GET", url, false);
                         xhr.onload = function() {
                             that._vf.url = new x3dom.fields.MFString( [] );
                             that._vf.url.push(xhr.response);
+                            that._id = originalID;
+                            that.fieldChanged("url");
                         };
                         xhr.onerror = function() {
                             x3dom.debug.logError("Could not load file '" + that._vf.url[0] + "'.");
@@ -125,6 +134,28 @@ x3dom.registerNodeType(
                 //	shader.nodeChanged();
                 //});
                 parent.nodeChanged();
+            },
+
+            _getDefaultShader : function()
+            {
+                if( this._vf.type.toLowerCase() == 'vertex' )
+                {
+                    return  "attribute vec3 position;\n" +
+                            "uniform mat4 modelViewProjectionMatrix;\n" +
+                            "void main(void) {\n" +
+                            "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+                            "}\n";
+                }
+
+                if( this._vf.type.toLowerCase() == 'fragment' )
+                {
+                    return  "precision highp float;\n" +
+                            "void main(void) {\n" +
+                            "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n" +
+                            "}\n";
+                }
+
+                
             }
         }
     )

@@ -33,7 +33,7 @@
 					<Appearance>
 						<Material emissiveColor="1 1 1"></Material>
 					</Appearance>
-					<Sphere radius="0.001"></Sphere>
+					<Sphere radius="0.1"></Sphere>
 				</Shape>
 			</Transform>
 			
@@ -49,7 +49,8 @@
 										keyValue='-1 0 0 1 0 0' 
 										keyVelocity='0 10 0 0 10 0'>
 			</SplinePositionInterpolator>
-										
+			<TimeSensor DEF='clock' cycleInterval='5' loop='true'></TimeSensor>
+			<ROUTE fromNode='clock' fromField='fraction_changed' toNode='PositionAnimator1' toField='set_fraction'></ROUTE>
 			<ROUTE fromField='value_changed' fromNode='PositionAnimator1' toField='translation' toNode='Pointer1'></ROUTE
 		</scene>
 	</X3D>

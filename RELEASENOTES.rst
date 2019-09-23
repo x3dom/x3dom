@@ -3,6 +3,86 @@
 Release notes
 =============
 
+Version 1.8.1
+-------------
+
+* Bugfixes
+  * Re-enable x3dom-log text selection.
+  * Fix for Debug-Log: 'v'-key does not display 'fieldOfView'.
+  * Background fixes
+  * enable Nurbs texCoord field
+  * various example fixes
+  * more robust shader parsing
+  * allow queued ComposedShader url loading
+  * PixelTexture parsing
+* Improvements
+  * TextureCoordinateGenerator COORD mode
+
+Version 1.8.0
+-------------
+
+* Features
+  * webGL 2.0 support
+  * glTF 2.0 support
+  * Physically-based materials & lighting
+  * webVR integration
+  * Nurbs
+  * Allow multiple planes on a single MPR Volume style element
+  * HAnim CPU skinning
+  * scene X3D SAI methods
+  * X3D JSON encoding for inlines
+  * Content negotiation support for Inlines
+
+* Nodes
+  * Shape
+    * PhysicalMaterial
+  * Lighting
+    * PhysicalEnvironmentLight
+  * Interpolation
+    * PositionInterpolator2D
+  * Geometry3D
+    * BufferAccessor
+    * BufferGeometry
+    * BufferView
+  * Rendering
+    * CoordinateDouble
+  * EventUtilitie
+    * BooleanFilter
+    * BooleanSequencer
+    * BooleanToggle
+    * BooleanTrigger
+    * IntegerSequencer
+    * IntegerTrigger
+    * TimeTrigger
+    * X3DSequencerNode
+    * X3DTriggerNode
+  * VolumeRendering
+    * MPRPlane
+  * NURBS
+    * Contour2D
+    * ContourPolyline2D
+    * NurbsCurve
+    * NurbsCurve2D
+    * NurbsOrientationInterpolator
+    * NurbsPatchSurface
+    * NurbsPositionInterpolator
+    * NurbsSurfaceInterpolator
+    * NurbsTrimmedSurface
+    * X3DNurbsSurfaceGeometryNode
+    * X3DParametricGeometryNode
+
+* Fixes & enhancements
+   * Sphere
+      * Allow fieldChanged by always setting qfactor.
+      * Improved texture coordinates
+   * Improved caching.
+   * Bounding box fixes.
+   * Documentation Updates.
+   * New global ‘useGeoCache’ param option to toggle use of GeoCache.
+   * log div id change to x3dom-log.
+   * Many fixes and enhancements by the X3DOM core team and the X3DOM community.
+
+
 Version 1.7.2
 -------------
 
@@ -16,6 +96,7 @@ Version 1.7.2
 * New GeoLOD-Node.
 * and many small other fixes and enhancements.
 
+
 Version 1.7.1
 -------------
 
@@ -27,38 +108,27 @@ Version 1.7.1
 * Move the ammo.js from x3dom-full.js to the new x3dom-full-physics.js to reduce the download size.
 * and many small other fixes and enhancements.
 
+
 Version 1.7
 -----------
 
 * CommonSurfaceShader now also supports object-space normal maps (in addition to already available tangent-space normal maps)
-
 * If a viewpoint gets transformed, its center of rotation now gets transformed accordingly (thanks to Andreas Plesch, Harvard University).
-
 * Improvements in geospatial components (support for easting_first, thanks to Andreas Plesch, Harvard University).
-
-* ExternalGeometry node now has a multi-field for the data URL (of type MFString), multiple URLs can be specified as fallback.
-  This is fully backwards compatible with old scenes that specify only a single string.
-  
+* ExternalGeometry node now has a multi-field for the data URL (of type MFString), multiple URLs can be specified as fallback. This is fully backwards compatible with old scenes that specify only a single string.
 * alphaClipThreshold attribute to adapt the threshold for X3DOM's alpha test (for textures with transparency)
-
 * Basic TriangleSet implementation (thanks to Yvonne Jung, Fulda University of Applied Sciences)
-
 * Runtime documentation made available
-
 * New tutorial about runtime configuration
-
 * New tutorial about the experimental SSAO implementation
-
 * Some smaller documentation updates
-
 * Several fixes (thanks to Ander Arbelaiz, Andreas Plesch and Yvonne Jung)
-
 
 
 Version 1.6
 -----------
-Most important Changes:
 
+Most important Changes:
 * A completely new documentation portal, available via the link from www.x3dom.org and directly via doc.x3dom.org
   * Extensive node API documentation resources, including detailed information about all nodes and fields
   * A lot of great, new tutorials, along with a brand-new "Getting Started" guide
@@ -98,7 +168,6 @@ Most important Changes:
 
 * We have continued our efforts to support IE 11, rendering X3DOM content with WebGL.
   While there are still some issues, some of them caused by non-IE conformant HTML pages in general (also including some of our examples), X3DOM’s IE 11 support is constantly improving.
-
 
 New Components:
 ++++++++++++++++++++++
@@ -168,13 +237,13 @@ Fixes and Improvements:
 
 Version 1.5.1
 -------------
-Maintenance release, with lot of bug fixes. Recommended upgrade for 1.5
-users.
 
+Maintenance release, with lot of bug fixes. Recommended upgrade for 1.5 users.
 
 
 Version 1.5
 -----------
+
 We are proud to announce the release of X3DOM 1.5. This most recent
 installment of our popular Declarative3D polyfill shines with lots of
 new features and a wagon load full of bugfixes.
@@ -224,7 +293,6 @@ Grab the frozen 1.5.0 version here:
     `http://x3dom.org/download/1.5/ <http://x3dom.org/download/1.5/>`_
 
 
-
 Version 1.4
 -----------
 
@@ -235,8 +303,6 @@ With this latest installment of our defacto standard JavasSript library that mar
 HTML with declarative 3D content, we provide many fixes and enhancements.
 
 New in 1.4
-++++++++++
-
   * Experimental geometry nodes that externalize vertex data in binary containers:
       - ImageGeometry (which holds vertex attributes in images),
       - BinaryGeometry (which holds vertex data in binary files,
@@ -270,8 +336,6 @@ file or `GitHub Issue Tracker <https://github.com/x3dom/x3dom/issues?page=1&sort
 You can get the this X3DOM release from:
 
     `http://x3dom.org/download/1.4/ <http://x3dom.org/download/1.4/>`_
-
-
 
 
 Version 1.3
@@ -312,15 +376,16 @@ With the new component model we have added the first two optional components:
   * 2D primitive support for the use of elements like rectangles, discs, lines, etc.
   * Initial support for some GEO referencing elements from the X3D specification
 
+
 Version 1.2
 -----------
+
 After many months of work, we’re proud to announce the release today of
 X3DOM 1.2. There’s plenty of cool stuff we have worked on since the last
 release. You can also swing by the downloads page to grab a copy of the
 release package:
 
 http://x3dom.org/x3dom/release/
-
 
 Major Feature: Flash11/MoleHill Render backend
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -387,6 +452,7 @@ no longer work together with recent browser versions.
 
 Version 1.0
 -----------
+
 First stable release of the framework.
 
 http://x3dom.org/download/x3dom-v1.0.js
