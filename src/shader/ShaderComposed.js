@@ -85,10 +85,10 @@ x3dom.shader.ComposedShader.prototype.injectVRPartsVS = function(shader)
 				   "{\n" +
 				   "    vec4 webVRPos = modelViewProjectionInverseMatrix * gl_Position;\n" +
 				   "    webVRPos.xyz = webVRPos.xyz / webVRPos.w;\n" +
-				   "    if(fragEyeIdx == -1.0) {\n" +
-				   "        gl_Position = modelViewProjectionMatrix * webVRPos;\n" +
-				   "    } else if(fragEyeIdx == -1.0) {\n" +
+				   "    if(fragEyeIdx == 1.0) {\n" +
 				   "        gl_Position = modelViewProjectionMatrix2 * webVRPos;\n" +
+				   "    } else {\n" +
+				   "        gl_Position = modelViewProjectionMatrix  * webVRPos;\n" +
                    "    }\n" +
 				   "    vrOffset = fragEyeIdx * 0.5;\n" +
 				   "    gl_Position.x *= 0.5;\n" +
