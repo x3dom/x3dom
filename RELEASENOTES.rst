@@ -14,6 +14,7 @@ Version 1.8.1
   * various example fixes
   * more robust shader parsing
   * allow queued ComposedShader url loading
+  * ComposedShader fixes for VR
   * PixelTexture parsing
 * Improvements
   * TextureCoordinateGenerator COORD mode
