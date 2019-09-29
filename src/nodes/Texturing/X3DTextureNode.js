@@ -206,6 +206,9 @@ x3dom.registerNodeType(
                 {
                     var that = this;
 
+                    that._blending = (that._vf.origChannelCount == 1 || 
+                                      that._vf.origChannelCount == 2);
+
                     Array.forEach(this._parentNodes, function (app) {
                         if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
                             app.nodeChanged();
