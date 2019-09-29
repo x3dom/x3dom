@@ -3,6 +3,11 @@
 Release notes
 =============
 
+Version 1.8.2
+-------------
+* Bugfixes
+  * dynamic changes of origChannelCount-Attribute
+
 Version 1.8.1
 -------------
 
