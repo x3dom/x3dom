@@ -67,7 +67,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 *
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps, flipY)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, genMipMaps, flipY, tex)
 {
     flipY = flipY || false;
 
@@ -106,7 +106,32 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
         }
     }
 
-	image.src = src;
+    if( tex )
+    {
+        var xhr = new XMLHttpRequest();
+        xhr.responseType = "arraybuffer";
+        xhr.open("GET", src);
+    
+        xhr.onload = function()
+        {
+            var mimeType  = xhr.getResponseHeader("Content-Type"),
+                imageData = new Uint8Array(xhr.response),
+                channelcount = x3dom.Utils.detectChannelCount(imageData, mimeType);
+    
+            if( channelcount )
+            {
+                tex.setOrigChannelCount(channelcount);
+            }    
+
+            image.src = x3dom.Utils.arrayBufferToObjectURL(imageData, mimeType);
+        }
+        
+        x3dom.RequestManager.addRequest(xhr);
+    }
+    else
+    {
+        image.src = src;
+    }    
 
 	doc.incrementDownloads();
 
@@ -143,7 +168,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 
     image.onerror = function(error)
     {
-        x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY).then( function() {
+        x3dom.Utils.tryDDSLoading(texture, gl, doc, src, genMipMaps, flipY, tex).then( function() {
             doc.decrementDownloads();
             doc.needRender = true;
         }, function() {
@@ -155,7 +180,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
 	return texture;
 };
 
-x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
+x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY, tex)
 {
     return x3dom.DDSLoader.load(src).then( function( dds ) {
 
@@ -231,6 +256,11 @@ x3dom.Utils.tryDDSLoading = function(texture, gl, doc, src, genMipMaps, flipY)
 		texture.height = dds.height;
         texture.ready = true;
         texture.textureCubeReady = true;
+
+        if(tex && dds.channelCount)
+        {
+            tex.setOrigChannelCount(dds.channelCount);
+        }
     });
 };
 
@@ -365,6 +395,128 @@ x3dom.Utils.createTextureCube = function(gl, doc, src, bgnd, crossOrigin, scale,
     }
 
 	return texture;
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
+x3dom.Utils.detectChannelCount = function(data, mimeType)
+{
+    switch( mimeType )
+    {
+        case "image/jpeg": 
+            return x3dom.Utils.detectChannelCountJPG(data);
+        case "image/png":
+            return x3dom.Utils.detectChannelCountPNG(data);
+        case "image/gif":
+            return x3dom.Utils.detectChannelCountGIF(data);
+    }
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
+x3dom.Utils.detectChannelCountJPG = function(data)
+{
+	if (data[0] != 0xff) return;
+	if (data[1] != 0xd8) return;
+
+	var pos = 2;
+    var dv = new DataView(data.buffer, data.byteOffset, data.byteLength);
+    
+    while (pos + 4 < data.byteLength)
+    {
+        if (data[pos] != 0xff)
+        {
+			pos += 1;
+			continue;
+		}
+
+		var type = data[pos + 1];
+		
+        pos += 2;
+        
+        if (data[pos] == 0xff)
+        {
+            continue;
+        }
+
+        var length = dv.getUint16(pos);
+        
+        if (pos + length > data.byteLength)
+        {
+            return;
+        }
+        
+        if (length >= 7 && (type == 0xc0 || type == 0xc2))
+        {
+			return data[pos + 7];
+		}
+
+		pos += length;
+	}
+	
+	return;
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
+x3dom.Utils.detectChannelCountPNG = function(data)
+{
+    if (data.byteLength < 29) return;
+	
+	// PNG header
+	if (data[0] != 0x89) return;
+	if (data[1] != 0x50) return;
+	if (data[2] != 0x4e) return;
+	if (data[3] != 0x47) return;
+	if (data[4] != 0x0d) return;
+	if (data[5] != 0x0a) return;
+	if (data[6] != 0x1a) return;
+	if (data[7] != 0x0a) return;
+	
+	// "IHDR"
+	if (data[12] != 0x49) return;
+	if (data[13] != 0x48) return;
+	if (data[14] != 0x44) return;
+	if (data[15] != 0x52) return;
+
+    if (data[25] == 0) return 1;
+    if (data[25] == 2) return 3;
+    if (data[25] == 4) return 2;
+    if (data[25] == 6) return 4;
+};
+
+/*****************************************************************************
+*
+*****************************************************************************/
+x3dom.Utils.detectChannelCountGIF = function(data)
+{
+    if (data[0] != 0x47) return;
+    if (data[1] != 0x49) return;
+    if (data[2] != 0x46) return;
+
+    if (data[3] != 0x38) return;
+    if (data[4] != 0x37 && data[4] != 0x39) return;
+    if (data[5] != 0x61) return;
+
+    if( data[10] & 0x01 )
+    {
+        var length = data[10] & 0xE0;
+
+        for( var i = 13; i < length; i+=3 )
+        {
+            if(data[i] != data[i+1] || data[i] != data[i+2] || data[i+1] != data[i+2])
+            {
+                return 3;
+            }
+        }
+
+        return 1;
+    }
+
+    //TODO check local color table of the image block
 };
 
 /*****************************************************************************

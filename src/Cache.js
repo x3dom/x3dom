@@ -32,12 +32,12 @@ x3dom.Cache = function() {
  *
  * @returns {*}
  */
-x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY) {
+x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY, tex) {
     var textureIdentifier = url;
 
     if (this.textures[textureIdentifier] === undefined) {
         this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(
-                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY);
+                                           gl, doc, url, bgnd, crossOrigin, scale, genMipMaps, flipY, tex);
     }
 
     return this.textures[textureIdentifier];

@@ -412,7 +412,7 @@ x3dom.Texture.prototype.updateTexture = function() {
 		                                         tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps, tex._vf.flipY);
 	} else {
 		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]),
-		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps, tex._vf.flipY);
+		                                       false, tex._vf.crossOrigin, tex._vf.scale, this.genMipMaps, tex._vf.flipY, tex);
 	}
 };
 
