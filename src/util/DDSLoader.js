@@ -450,24 +450,29 @@ x3dom.DDSLoader._readFormat = function( dds )
     {
         if ( pixelFormat.dwFourCC == "DXT1" )
         {
+            dds.channelCount = 3;
             dds.blockSize = 8;
             dds.isCompressed = true;
             dds.format = { internal: 33776, format: 6407, type: 5121 };
         }
         else if ( pixelFormat.dwFourCC == "DXT3" )
         {
+            dds.channelCount = 3;
             dds.blockSize = 16;
             dds.isCompressed = true;
             dds.format = { internal: 33778, format: 6408, type: 5121 };
         }
         else if ( pixelFormat.dwFourCC == "DXT5" )
         {
+            dds.channelCount = 4;
             dds.blockSize = 16;
             dds.isCompressed = true;
             dds.format = { internal: 33779, format: 6408, type: 5121 };
         }
         else if ( pixelFormat.dwFourCC == "t" )
         {
+            dds.channelCount = 4;
+
             if(x3dom.caps.WEBGL_VERSION == 2)
             {
                 dds.format = { internal: 34836, format: 6408, type: 5126 };
@@ -479,6 +484,8 @@ x3dom.DDSLoader._readFormat = function( dds )
         }
         else if ( pixelFormat.dwFourCC == "q"  || pixelFormat.dwFourCC == "$" )
         {
+            dds.channelCount = 4;
+
             if(x3dom.caps.WEBGL_VERSION == 2)
             {
                 dds.format = { internal: 34842, format: 6408, type: 5131 };
@@ -495,6 +502,8 @@ x3dom.DDSLoader._readFormat = function( dds )
     }
     else if ( pixelFormat.dwFlags.DDPF_RGB && !pixelFormat.dwFlags.DDPF_ALPHAPIXELS )
     {
+        dds.channelCount = 3;
+
         if ( pixelFormat.dwRGBBitCount == 24  && pixelFormat.dwRBitMask == 0xff0000 &&
                 pixelFormat.dwGBitMask == 0xff00 && pixelFormat.dwBBitMask == 0xff )
         {
@@ -512,6 +521,8 @@ x3dom.DDSLoader._readFormat = function( dds )
     }
     else if ( pixelFormat.dwFlags.DDPF_RGB && pixelFormat.dwFlags.DDPF_ALPHAPIXELS )
     {
+        dds.channelCount = 4;
+
         if ( pixelFormat.dwRGBBitCount == 32  && pixelFormat.dwRBitMask == 0xff0000 &&
                 pixelFormat.dwGBitMask == 0xff00 && pixelFormat.dwBBitMask == 0xff &&
                 pixelFormat.dwABitMask == 0xff000000 )
@@ -540,6 +551,7 @@ x3dom.DDSLoader._readFormat = function( dds )
         if ( pixelFormat.dwRGBBitCount == 8 && pixelFormat.dwRBitMask == 0xff )
         {
             dds.format = { internal: 6409, format: 6409, type: 5121 };
+            dds.channelCount = 1;
         }
         else
         {
@@ -552,6 +564,7 @@ x3dom.DDSLoader._readFormat = function( dds )
                 pixelFormat.dwABitMask == 0xff00 )
         {
             dds.format = { internal: 6410, format: 6410, type: 5121 };
+            dds.channelCount = 2;
         }
         else
         {
@@ -563,6 +576,7 @@ x3dom.DDSLoader._readFormat = function( dds )
         if ( pixelFormat.dwRGBBitCount == 8 && pixelFormat.dwABitMask == 0xff )
         {
             dds.format = { internal: 6406, format: 6406, type: 5121 };
+            dds.channelCount = 1;
         }
         else
         {
