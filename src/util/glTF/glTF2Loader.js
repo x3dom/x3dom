@@ -408,7 +408,8 @@ x3dom.glTF2Loader.prototype._generateX3DShape = function(primitive)
     
     this._generateX3DMetadata(primitive, shape);
 
-    var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : {};
+    var material = (primitive.material != undefined) ? this._gltf.materials[ primitive.material ] : { name: 'DEFAULT' };
+    if (material.name == undefined) material.name = primitive.material;
 
     shape.appendChild(this._generateX3DAppearance( material ));
 
