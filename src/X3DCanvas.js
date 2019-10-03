@@ -1029,6 +1029,9 @@ x3dom.X3DCanvas.prototype._createHTMLCanvas = function(x3dElem)
         canvas.id = "x3dom-" + index + "-canvas";
     }
 
+    // fix for undefined style attribute when using deprecated .xhtml files
+    x3dElem.style = x3dElem.style || {};
+
     // Apply the width and height of the X3D element to the canvas
     var w, h;
 
