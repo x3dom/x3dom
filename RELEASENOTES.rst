@@ -7,6 +7,7 @@ Version 1.8.2
 -------------
 * Bugfixes
   * dynamic changes of origChannelCount-Attribute
+  * gltf loader material DEF/USE robustness
 
 Version 1.8.1
 -------------
