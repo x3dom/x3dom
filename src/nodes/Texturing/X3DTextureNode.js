@@ -289,6 +289,11 @@ x3dom.registerNodeType(
             {
                 this._vf.origChannelCount = channelCount;
                 this.fieldChanged("origChannelCount");
+            },
+
+            getOrigChannelCount : function()
+            {
+                return this._vf.origChannelCount;
             }
         }
     )
