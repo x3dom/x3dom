@@ -202,7 +202,8 @@ x3dom.registerNodeType(
             {
                 if (fieldName == "url" || fieldName ==  "origChannelCount" ||
                     fieldName == "repeatS" || fieldName == "repeatT" ||
-                    fieldName == "scale" || fieldName == "crossOrigin")
+                    fieldName == "scale" || fieldName == "crossOrigin" ||
+                    fieldName == "image")
                 {
                     var that = this;
 
