@@ -39,13 +39,6 @@ x3dom.registerNodeType(
         
         },
         {
-            fieldChanged: function(fieldName)
-            {
-                if (fieldName == "image") {
-                    this.invalidateGLObject();
-                }
-            },
-
             getWidth: function() {
                 return this._vf.image.width;
             },
