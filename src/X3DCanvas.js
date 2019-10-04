@@ -1322,6 +1322,9 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                                 {
                                     window.requestAnimFrame(mainloop, x3dCanvas);
                                 }
+                            }).catch(function (error)
+                            {
+                                window.requestAnimFrame(mainloop, x3dCanvas);
                             });
                         }
                     }
