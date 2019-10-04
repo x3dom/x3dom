@@ -304,6 +304,9 @@ x3dom.Texture.prototype.updateTexture = function() {
         }
     }
     else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture)) {
+        
+        if (tex._vf.origChannelCount == 0) tex.setOrigChannelCount(tex._vf.image.comp);
+        
         if (this.texture == null) {
             if (this.node._DEF) {
                 this.texture = this.cache.getTexture2DByDEF(gl, this.node._nameSpace, this.node._DEF);
