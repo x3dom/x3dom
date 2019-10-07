@@ -244,10 +244,10 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
     if(indexed == true){
         var indicesAccessor = this.scene.accessors[primitive.indices];
 
-        mesh.buffers[glTF_BUFFER_IDX.INDEX] = {};
-        mesh.buffers[glTF_BUFFER_IDX.INDEX].offset = indicesAccessor["byteOffset"];
-        mesh.buffers[glTF_BUFFER_IDX.INDEX].type =  indicesAccessor["componentType"];
-        mesh.buffers[glTF_BUFFER_IDX.INDEX].idx = this.loaded.bufferViews[indicesAccessor["bufferView"]];
+        mesh.buffers[x3dom.glTF.glTF_BUFFER_IDX.INDEX] = {};
+        mesh.buffers[x3dom.glTF.glTF_BUFFER_IDX.INDEX].offset = indicesAccessor["byteOffset"];
+        mesh.buffers[x3dom.glTF.glTF_BUFFER_IDX.INDEX].type =  indicesAccessor["componentType"];
+        mesh.buffers[x3dom.glTF.glTF_BUFFER_IDX.INDEX].idx = this.loaded.bufferViews[indicesAccessor["bufferView"]];
 
         mesh.drawCount = indicesAccessor["count"];
         this._mesh._numFaces += indicesAccessor["count"] / 3;
@@ -266,7 +266,7 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
         switch (attributeID)
         {
             case "POSITION":
-                idx = glTF_BUFFER_IDX.POSITION;
+                idx = x3dom.glTF.glTF_BUFFER_IDX.POSITION;
 
                 //for non-indexed rendering, we assume that all attributes have the same count
                 if (indexed == false)
@@ -278,15 +278,15 @@ x3dom.glTF.glTFLoader.prototype.loadglTFMesh =  function(shape, shaderProgram, g
                 break;
 
             case "NORMAL":
-                idx = glTF_BUFFER_IDX.NORMAL;
+                idx = x3dom.glTF.glTF_BUFFER_IDX.NORMAL;
                 break;
 
             case "TEXCOORD_0":
-                idx = glTF_BUFFER_IDX.TEXCOORD;
+                idx = x3dom.glTF.glTF_BUFFER_IDX.TEXCOORD;
                 break;
 
             case "COLOR":
-                idx = glTF_BUFFER_IDX.COLOR;
+                idx = x3dom.glTF.glTF_BUFFER_IDX.COLOR;
                 break;
         }
 
@@ -493,7 +493,7 @@ x3dom.glTF.glTFLoader.prototype.loadMaterial = function(gl, materialNode)
 
             var material = new x3dom.glTF.glTFKHRMaterialCommons();
 
-            material.technique = glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
+            material.technique = x3dom.glTF.glTF_KHR_MATERIAL_COMMON_TECHNIQUE[materialNode.technique];
             material.doubleSided = materialNode.doubleSided;
 
             for(var key in materialNode.values)
