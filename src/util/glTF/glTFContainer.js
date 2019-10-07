@@ -4,7 +4,7 @@
 if(x3dom.glTF == null)
     x3dom.glTF = {};
 
-glTF_BUFFER_IDX =
+x3dom.glTF.glTF_BUFFER_IDX =
 {
     INDEX : 0,
     POSITION : 1,
@@ -15,7 +15,7 @@ glTF_BUFFER_IDX =
     BITANGENT : 7
 };
 
-glTF_KHR_MATERIAL_COMMON_TECHNIQUE =
+x3dom.glTF.glTF_KHR_MATERIAL_COMMON_TECHNIQUE =
 {
     BLINN : 0,
     PHONG : 1,
@@ -23,7 +23,7 @@ glTF_KHR_MATERIAL_COMMON_TECHNIQUE =
     CONSTANT : 3
 };
 
-PBR_MATERIAL_TECHNIQUE =
+x3dom.glTF.PBR_MATERIAL_TECHNIQUE =
 {
     METALLICROUGHNESS : 0,
     SPECULARGLOSSINESS : 1
@@ -240,7 +240,7 @@ x3dom.glTF.PBRMaterial = function()
 
     this.doubleSided = false;
 
-    this.technique = PBR_MATERIAL_TECHNIQUE.METALLICROUGHNESS;
+    this.technique = x3dom.glTF.PBR_MATERIAL_TECHNIQUE.METALLICROUGHNESS;
 
     this.attributeMapping = {};
     this.attributeMapping[x3dom.BUFFER_IDX.POSITION] = "position";
