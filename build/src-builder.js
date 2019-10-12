@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------------------
 
 const fs              = require('fs-extra');
-const uglify          = require("uglify-js");
+const terser          = require("terser");
 const concat          = require('concat');
 const process         = require("child_process");
 const zip             = require("zip-lib");
@@ -86,17 +86,17 @@ async function build()
 
     const versions = await concatVersions();
 
-    console.log( "> Uglify x3dom.js ..." );
+    console.log( "> Minify x3dom.js ..." );
 
-    versions[ "BASIC_MIN" ] = uglify.minify( versions[ "BASIC" ] ).code;
+    versions[ "BASIC_MIN" ] = terser.minify( versions[ "BASIC" ] ).code;
 
-    console.log( "> Uglify x3dom-full.js ..." );
+    console.log( "> Minify x3dom-full.js ..." );
 
-    versions[ "FULL_MIN" ] = uglify.minify( versions[ "FULL" ] ).code;
+    versions[ "FULL_MIN" ] = terser.minify( versions[ "FULL" ] ).code;
 
-    console.log( "> Uglify x3dom-physics.js ..." );
+    console.log( "> Minify x3dom-physics.js ..." );
 
-    versions[ "PHYSICS_MIN" ] = uglify.minify( versions[ "PHYSICS" ] ).code
+    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ] ).code
 
     console.log( "> Write x3dom.debug.js ..." );
 

@@ -24,17 +24,15 @@
     "javascript"
   ],
   "author": "tsturm",
-  "license": "MIT OR GPL",
+  "license": "(MIT OR GPL-3.0)",
   "bugs": {
     "url": "https://github.com/x3dom/x3dom/issues"
   },
   "homepage": "https://github.com/x3dom/x3dom#readme",
-  "dependencies": {
+  "devDependencies": {
     "concat": "^1.0.3",
     "fs-extra": "^8.1.0",
-    "uglify-js": "^3.6.1"
-  },
-  "devDependencies": {
+    "terser": "^4.3.8",
     "jsdoc": "3.6.3",
     "zip-lib": "^0.2.1"
   }
