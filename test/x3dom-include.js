@@ -18,10 +18,8 @@ x3dom_include.findPackagesJSON = function ( basePath )
         }
         else
         {
-            var rootDir = xhr.responseURL.substring(0, xhr.responseURL.indexOf( "build/" ) );
-
-            x3dom_include.includeCSS( rootDir + "src/x3dom.css" );
-            x3dom_include.includeScripts( rootDir, JSON.parse( xhr.response ) );
+            x3dom_include.includeCSS( basePath + "src/x3dom.css" );
+            x3dom_include.includeScripts( basePath, JSON.parse( xhr.response ) );
         }
     } );
 
