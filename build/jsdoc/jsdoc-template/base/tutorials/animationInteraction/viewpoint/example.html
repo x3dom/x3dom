@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title></title>
+    <html>
+    <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+        <script type='text/javascript' src='https://www.x3dom.org/x3dom/release/x3dom.js'></script>
+        <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/x3dom/release/x3dom.css'/>
+</head>
+<body>
+</div>
+
+<x3d width="600" height="600">
+    <scene DEF='scene'>
+        <Viewpoint id="front" position="-0.07427 0.95329 -2.79608" orientation="-0.01451 0.99989 0.00319 3.15833" description="camera"></Viewpoint>
+        <Viewpoint id="right" position="-2.43383 1.07351 -1.28700" orientation="-0.00318 -0.99950 -0.03159 2.06609" description="camera"></Viewpoint>
+        <Viewpoint id="left" position="2.70190 1.05153 -0.57128" orientation="-0.08205 0.99612 -0.03175 1.73722" description="camera"></Viewpoint>
+        <Viewpoint id="top" position="0.05087 3.78235 -1.75890" orientation="-0.00307 0.87466 0.48473 3.12040" description="camera"></Viewpoint>
+        <Transform>
+            <Inline url="Deer.x3d" nameSpaceName="MAIN" mapDEFToID="true"></Inline>
+        </Transform>
+    </scene>
+</x3d>
+<div id="camera_buttons" style="display: block;">
+    <button  onclick="document.getElementById('right').setAttribute('set_bind','true');" style="border: none; background: transparent; display: block">Right<br><img src="camera.png"></button>
+    <button onclick="document.getElementById('left').setAttribute('set_bind','true');" style="border: none; background: transparent; display: block">Left <br><img src="camera.png"></button>
+    <button  onclick="document.getElementById('front').setAttribute('set_bind','true');" style="border: none; background: transparent; display: block">Front<br><img src="camera.png"></button>
+    <button  onclick="document.getElementById('top').setAttribute('set_bind','true');" style="border: none; background: transparent; display: block">Top<br><img src="camera.png"></button>
+</div>
+</body>
+</html>

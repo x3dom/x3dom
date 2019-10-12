@@ -1,0 +1,9 @@
+{
+    "AUTHORS"          : "./AUTHORS",
+    "LICENSE"          : "./LICENSE",
+    "README.md"        : "./README.md",
+    "RELEASENOTES.rst" : "./RELEASENOTES.rst",
+    "x3dom.css"        : "./src/x3dom.css",
+    "libs/ammo.js"     : "./lib/ammo.js",
+    "libs/dash.all.js" : "./lib/dash.all.js"
+}

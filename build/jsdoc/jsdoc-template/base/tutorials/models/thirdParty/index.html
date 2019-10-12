@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+	<div class="row">
+		<div class="col-xs-12">
+			<h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+		</div>
+	</div>
+
+	<div class="row" style="margin-top:20px;">
+		<div class="col-xs-12">
+			<ol class="breadcrumb">
+				<li><a href="https://x3dom.org">x3dom.org</a></li>
+				<li><a href="../../../index.html">documentation</a></li>
+				<li><a href="../../index.html">Tutorials</a></li>
+				<li>Using Third-Party Formats</li>
+			</ol>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+
+
+	<div>
+		<a class="btn btn-primary" href="../aopt/index.html" style="float:left;">&#8592; Previous Section</a>
+		<a class="btn btn-primary" href="../../animationInteraction/navigation/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Using Third-Party Formats and Tools</h2>
+        </div>            
+        <br>
+		
+        <p>
+		You might want to import your own 3D-Models in your X3DOM application, which you have created in some 3D modelling software. 
+		Since X3DOM only supports X3D files this tutorial will show you how to export your models properly.
+		We cover export from <a href="#maya"> Maya</a>, <a href="#blender"> Blender</a>, <a href="#3ds"> 3Ds Max</a> and even <a href="#wow"> World of Warcraft </a>.
+        </p>
+		       <h3><a id="maya">Maya Export</a></h3>
+			   <p>
+			   If you are working with <a href="http://www.autodesk.de/products/autodesk-maya/overview">Autodesk Maya</a>
+			   for modeling, shading and animating your 3d scenes, use this tutorial to create an interactive X3DOM website out of your model. 
+			   This tutorial is tested with Autodesk Maya 2011. Nevertheless, the procedure should work for all Maya versions.
+			<br>The basic idea is to export your scene to VRML and convert this to an X3DOM/HTMLsite using InstantReality’s aopt binary (<a href="../aopt/index.html" target="_blank">see previous tutorial</a> ).
+			   </p>
+			   <ul>
+					<li>Model and shade in Maya as usual. You should use PNG images for texturing.</li>
+					<li>Open ‘Window -> Settings/Preferences -> Plug-in manager’ and check the ‘loaded’ or ‘Auto load’ option vrml2Export.</li>
+					<li>Open the Export dialog under ‘File -> Export All..’, Enter a filename (.wrl suffix) and switch to filetype ‘vrml2′. Don’t forget to check the following export options:
+					<br>
+					Hierarchy: Full, Texture Options: Original, Export: Normals and Textures
+					<br>Click the “Export All” button. This will create a vrml2 file in your scenes folder.</li>
+					<li>Open a terminal or command prompt, change to the folder containing your vrml2 model and your textures and run aopt
+					by typing the following command (assuming to be spaceship.wrl the name of your model):<br>
+					<br>
+					<div style='background-color:lightgrey'>
+					| aopt -i spaceship.wrl -d Switch -f ImageTexture:repeatS:false<br>
+					|      -f ImageTexture:repeatT:false -u -N spaceship.html</div>
+					<p> <strong>Note:</strong> aopt is automatically coming with your InstantReality player installation. 
+					You will find the executable within the bin folder of the Player. If you don’t have Instant Reality installed yet, download and install from <a href="www.instantreality.org" target="_blank">www.instantreality.org</a>.</p>
+					</li>
+					<li>Maya is using absolute path names. Therefore, open your html file with a standard text editor (vi, emacs, notepad++, etc.) and remove all paths from ImageTexture. For example, replace:<br>
+					<br>
+					<div style='background-color:lightgrey'>url=’”c:\users\me\maya\project\sourceimages\spaceship_color.png”‘</div>
+					<br> with: <br><br>
+					<div style='background-color:lightgrey'> url=’”spaceship_color.png”‘</div>
+					<br>
+					</li>
+					<li>Copy HTML and textures into your web folder and open the website with your X3DOM capable browser. </li>
+			   </ul>
+			   <a href="#">Back to page top &#10548;</a>
+			   <h3><a id="blender">Blender Export</a></h3>
+			   <p>
+			   Converting Blender scenes into X3DOM webpages is pretty simple: Blender already supports direct X3D export.<br> 
+			   Blender Version 2.4 seems to export some more nodes (e.g. lights), but in general it works. 
+			   Just finish your model in Blender and export to x3d file format, as shown below.<br><br>
+			   <img src="blenderEx.png" width="250px" height="450px">
+			   </p>
+			   
+			   <a href="#">Back to page top &#10548;</a>
+			   <h3><a id="3ds">3ds Max Export</a></h3>
+			   <p>
+			   If you are using <a href="http://www.autodesk.com/products/autodesk-3ds-max/overview" target="_blank"> Autodesk 3ds Max</a> for modeling (available only for Microsoft Windows),
+			   you can install our exporter plug-in InstantExport. 
+			   <br>
+			   If you do not yet have installed 3ds Max,there is also a 30-day trial version of the modeling software available. Nightly beta builds of InstantExport are available for download 
+			   <a href="ftp://ftp.igd.fraunhofer.de/outgoing/irbuild/InstantExport/" target="_blank">here</a>.<br>
+				InstantExport is the InstantReality X3D exporter for 3ds Max and not only exports XML-based X3D as well as VRML, its classic encoding, but it can also now directly export to HTML/XHTML.
+				But please note that – as the exporter plug-in is still under development – there are still lots of features in Max, which yet cannot be properly exported. So, if you find a bug, 
+				please report it in the <a href="http://forum.instantreality.org/index.php?board=19.0" target="_blank"> InstantReality forum </a>.
+				<br><br>
+				
+				After having downloaded the exporter, unzip the zip file and choose the correct version for your system and Max version. 
+				After that, (assumed you are using the standard installation path and 3ds Max 2008) copy the file <span style="background-color:lightgrey">InstantExport.dle</span>  (the Max version of a DLL) into <span style="background-color:lightgrey">C:\Program Files\Autodesk\3ds Max 2008\plugins</span>.
+			   <br><br>
+			   Then start 3ds Max, load the 3d model you want to export, choose Export in the File menu, type in a file name, and select the file type – in this case InstantExport (.WRL,*.XHTML,*.X3D)* 
+			   After that, the exporter GUI pops up. Here, under Encoding choose XHTML, as shown in the screenshot below. Finally, press the Export button. For more information, the zip file also includes a help file for the exporter.
+			   <br><br>
+			   <img src="3dsEx.png"width="400px">
+			   </p>
+			   <a href="#">Back to page top &#10548;</a>
+			   <h3><a id="wow">World of Warcraft Export</a></h3>
+			   <p>
+			   <strong>WARNING: World of Warcraft Models are Blizzard property. You can not use them on your site without permission from Blizzard.</strong>
+			   <br><br>
+			   The <a href="https://code.google.com/p/wowmodelviewer/">WOWModelViewer</a> project is an open source application to create machinima with characters and models form the World of Warcraft MMORPG. 
+			   <br>One of its features is the ability to export models into various formats, two of them being X3D and X3DOM. 
+			   The X3DOM option directly outputs an XHTML file with the appropriate header code. In its current released version 7.0.1 r462, only static models can be exported, but an option to export animations as well is already available in the code.
+			   <br><br>
+			   To export a model you’ll need a full World of Warcraft installation (for instance a 10 day trial version) and the WOWModelViewer. Open the application, select a model on the right hand side and click on File->Export model->X3D in XHTML.
+			   <br> You can view an example <a href="http://www.youtube.com/watch?v=16P6_e7VUmw" target="_blank">here</a>.
+			   </p>
+			   
+			   
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+
+</div>
+
+
+</body>
+</html>

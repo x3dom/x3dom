@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+        <title>X3DOM Scene Author API Documentation: Runtime</title>
+
+    <link type="text/css" rel="stylesheet" href="../static/styles/x3dom-docs-new.css">
+    <script src="../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../index.html">documentation</a></li>
+                <li>Scene Author API</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="text-align: center">
+    <ul class="nav nav-pills" style="display: inline-block;">
+        <li><a href="index.html">Overview</a></li>
+        <li><a href="nodes.html">Nodes</a></li>
+        <li><a href="components.html">Components</a></li>
+        <li><a href="runtime.html" class="btn btn-primary">Runtime</a></li>
+        <li><a href="configuration.html">Configuration</a></li>
+    </ul>
+</div>
+
+<div class="container">
+
+
+                
+    <section>
+        <article>
+            
+            <h2 style="text-align: center;">Runtime</h2>
+
+            <div class="well" style="float:right; margin-left:20px;">
+                <h4>DOM Element Functions</h4>
+                <ul>
+                    <li><a href="#noBackendFound">&#10152; noBackendFound</a></li>
+                    <li><a href="#ready">&#10152; ready</a></li>
+                    <li><a href="#enterFrame">&#10152; enterFrame</a></li>
+                    <li><a href="#getActiveBindable">&#10152; getActiveBindable</a></li>
+                    <li><a href="#viewpoints">&#10152; Viewpoints</a></li>
+                    <li><a href="#viewMatrix">&#10152; viewMatrix</a></li>
+                    <li><a href="#projectionMatrix">&#10152; projectionMatrix</a></li>
+                    <li><a href="#getWorldToCameraCoordinatesMatrix">&#10152; getWorldToCameraCoordinates</a></li>
+                    <li><a href="#getCameraToWorldCoordinatesMatrix">&#10152; getCameraToWorldCoordinates</a></li>
+                    <li><a href="#getViewingRay">&#10152; getViewingRay</a></li>
+                    <li><a href="#getWidth">&#10152; getWidth</a></li>
+                    <li><a href="#getHeight">&#10152; getHeight</a></li>
+                    <li><a href="#mousePosition">&#10152; mousePosition</a></li>
+                    <li><a href="#calcCanvasPos">&#10152; calcCanvasPos</a></li>
+                    <li><a href="#calcPagePos">&#10152; calcPagePos</a></li>
+                    <li><a href="#calcClientPos">&#10152; calcClientPos</a></li>
+                    <li><a href="#getScreenshot">&#10152; getScreenshot</a></li>
+                    <li><a href="#lightMatrix">&#10152; lightMatrix</a></li>
+                    <li><a href="#resetView">&#10152; resetView</a></li>
+                    <li><a href="#lightView">&#10152; lightView</a></li>
+                    <li><a href="#uprightView">&#10152; uprightView</a></li>
+                    <li><a href="#showAll">&#10152; showAll</a></li>
+                    <li><a href="#showObject">&#10152; showObject</a></li>
+                    <li><a href="#getCenter">&#10152; getCenter</a></li>
+                    <li><a href="#getCurrentTransform">&#10152; getCurrentTransform</a></li>
+                    <li><a href="#debug">&#10152; debug</a></li>
+                    <li><a href="#navigationType">&#10152; navigationType</a></li>
+                    <li><a href="#navigationModes">&#10152; Navigation Modes</a></li>
+                    <li><a href="#resetExamin">&#10152; resetExamin</a></li>
+                    <li><a href="#togglePoints">&#10152; togglePoints</a></li>
+                    <li><a href="#pickRect">&#10152; pickRect</a></li>
+                    <li><a href="#pickMode">&#10152; pickMode</a></li>
+                    <li><a href="#changePickMode">&#10152; changePickMode</a></li>
+                    <li><a href="#speed">&#10152; speed</a></li>
+                    <li><a href="#statistics">&#10152; statistics</a></li>
+                    <li><a href="#isA">&#10152; isA</a></li>
+                    <li><a href="#processIndicator">&#10152; processIndicator</a></li>
+                    <li><a href="#backendName">&#10152; backendName</a></li>
+                    <li><a href="#properties">&#10152; properties</a></li>
+                    <li><a href="#getPixelScale">&#10152; getPixelScale</a></li>
+                </ul>
+            </div>
+
+            <p>
+                The X3DOM runtime API provides proxy object to programmatically read and modify runtime parameters. The runtime proxy is attached to each X3D element and can be used in the following manner:
+            </p>
+
+            <pre class="prettyprint"><code class="language-js">
+    var e = document.getElementById('the_x3delement');
+    e.runtime.showAll();
+    e.runtime.resetView();
+    ...
+            </code></pre>
+
+            <p>
+                Some methods, like the <code>x3dom.ready()</code> function need to be called before the proxy object can be initialized. You can still override these functions globally.
+                In order to provide you with the means to scope your actions to a specific X3D element, the methods receive the X3D element they are working on as first parameter:
+            </p>
+
+            <pre class="prettyprint"><code class="language-js">
+    x3dom.ready = function(element) {
+        if (element == target_element) {
+            // do something
+        }
+    };
+            </code></pre>
+            
+            <h3>Methods</h3>
+
+            <!--- NO BACKEND FOUND --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                noBackendFound
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        </span>
+                    <a name="noBackendFound" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        This callback is executed once the system initialized and is not ready to render the first
+                        time because there is no backend found. By default this method noop.
+                        You can however override it with your own implementation.
+                    </div>
+                    <br>
+                    <h5>Usage:</h5>
+
+                    <pre class="prettyprint"><code class="language-js">
+        x3dom.runtime.noBackendFound = function() {
+            alert(“No backend, what a bummer.”);
+        }
+                    </code></pre>
+
+                    It is important to create this override before the document onLoad event has fired.
+                    Therefore putting it directly under the inclusion of x3dom.js is the preferred way to ensure
+                    overloading of this function.
+                    <br><br>
+                    Please note that this does not account for a installed, but disabled Flash plugin.
+                </dd>
+            </dl>
+
+            <!--- READY --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    ready
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        </span>
+                    <a name="ready" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        This method is called once the system initialized and is ready to render the first time.
+                        It is therefore possible to execute custom action by overriding this method in your code:
+                    </div>
+                    <br>
+                    <h5>Usage:</h5>
+
+                    <pre class="prettyprint"><code class="language-js">
+        x3dom.runtime.ready = function() {
+            alert("About to render something the first time");
+        };
+                    </code></pre>
+
+                    It is important to create this override before the document onLoad event has fired. Therefore
+                    putting it directly under the inclusion of x3dom.js is the preferred way to ensure overloading
+                    of this function.
+                </dd>
+            </dl>
+
+            <!--- ENTER FRAME --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                enterFrame
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        </span>
+                    <a name="enterFrame" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        This method is called just before the next frame is rendered. It is therefore possible to
+                        execute custom actions by overriding this method in your code:
+                    </div>
+                    <br>
+                    <h5>Usage:</h5>
+
+                    <pre class="prettyprint"><code class="language-js">
+        var element = document.getElementById('my_element');
+        element.runtime.enterFrame = function() {
+            alert('hello custom enter frame');
+        };
+                    </code></pre>
+
+                    During initialization, just after ready() executed and before the very first frame is rendered,
+                    only the global override of this method works.
+                    <br><br>
+                    If you need to execute code before the first frame renders, it is therefore best to use the
+                    <code>ready()</code> function instead.
+                </dd>
+            </dl>
+            
+            <!--- GET ACTIVE BINDABLE --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                getActiveBindable
+                        <span class="signature">
+                        (typeName)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Active dom element
+                        </span>
+                      <a name="getActiveBindable" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                        This method returns the currently active bindable DOM element of the given type.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>typeName </code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">String</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        A valid Bindable node (e.g. Viewpoint, Background)
+                                    </td>
+                                </tr>                               
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Active dom element</div>
+                    <h5>Usage:</h5>
+
+                    <pre class="prettyprint"><code class="language-js">
+        var element, bindable;
+        element = doucment.getElementById('the_x3delement');
+        bindable = element.runtime.getActiveBindable('background');
+        bindable.setAttribute('set_bind', 'false');
+                    </code></pre>
+              </dd>
+            </dl>
+
+            
+            <!--- VIEWPOINTS --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        Viewpoints
+                        <a name="viewpoints" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                                <tr><th>Name</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>nextView()</code></td>
+                                    <td class="param-table-description">
+                                        Navigates to the next viewpoint.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="param-table-name"><code>prevView()</code></td>
+                                    <td class="param-table-description">
+                                        Navigates to the previous viewpoint.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="param-table-name"><code>viewpoint()</code></td>
+                                    <td class="param-table-description">
+                                        Returns the current viewpoint.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+              </dd>
+            </dl>
+
+            
+            <!--- VIEW MATRIX --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        viewMatrix
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Matrix object
+                        </span>
+                      <a name="viewMatrix" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current view matrix object.
+                    </div>
+              </dd>
+            </dl>
+
+            <!--- PROJECTION MATRIX --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    projectionMatrix
+                    <span class="signature">
+                    ()
+                    </span>
+                    <span class="type-signature">
+                    &#8594 Matrix object
+                    </span>
+                    <a name="projectionMatrix" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current projection matrix object.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- WORLD TO CAMERA COORDINATES MATRIX --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    getWorldToCameraCoordinatesMatrix
+                    <span class="signature">
+                    ()
+                    </span>
+                    <span class="type-signature">
+                    &#8594 Matrix object
+                    </span>
+                    <a name="getWorldToCameraCoordinatesMatrix" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current world to camera coordinates matrix.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- CAMERA TO WORLD COORDINATES MATRIX --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    getCameraToWorldCoordinatesMatrix
+                    <span class="signature">
+                    ()
+                    </span>
+                    <span class="type-signature">
+                    &#8594 Matrix object
+                    </span>
+                    <a name="getCameraToWorldCoordinatesMatrix" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current camera to world coordinates matrix.
+                    </div>
+                </dd>
+            </dl>
+
+
+            <!--- GET VIEWING RAY --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        getViewingRay
+                        <span class="signature">
+                        (x, y)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Line object
+                        </span>
+                        <a name="getViewingRay" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the viewing ray for a given (x, y) position on the canvas.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5> 
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                                <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                                <tr>
+                                    <td class="param-table-name"><code>x</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">float</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        Layer x position
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="param-table-name"><code>y</code></td>
+                                    <td class="param-table-type">              
+                                        <span class="param-type">float</span>
+                                    </td>
+                                    <td class="param-table-description">
+                                        Layer y position
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Returns the viewing ray for a given (x, y) position on the canvas</div>
+              </dd>
+            </dl>
+            
+            <!--- GET WIDTH --->
+            <dl class="method-container">
+                <dt>
+                    <h4 class="name method-container-header">
+                        getWidth
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Integer
+                        </span>
+                      <a name="getWidth" class="upwardsLink" href="#">&#10548;</a>
+                    </h4>                  
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the width of the canvas element.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Width in pixels</div>
+              </dd>
+            </dl>
+
+            <!--- GET HEIGHT --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                getHeight
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Integer
+                        </span>
+                    <a name="getHeight" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the height of the canvas element.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Height in pixels</div>
+                </dd>
+            </dl>
+
+            <!--- MOUSE POSITION --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                mousePosition
+                        <span class="signature">
+                        (event)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 [x,y]
+                        </span>
+                    <a name="mousePosition" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the 2d canvas layer position [x,y] for a given mouse event, i.e., the mouse cursor’s x
+                        and y positions relative to the canvas (x3d) element.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>event </code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">Event</span>
+                                </td>
+                                <td class="param-table-description">
+                                    The event
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>y</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">float</span>
+                                </td>
+                                <td class="param-table-description">
+                                    The event
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">[x,y] position</div>
+                </dd>
+            </dl>
+
+            <!--- CALC CANVAS POS --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                calcCanvasPos
+                        <span class="signature">
+                        (wx, wy, xz)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Array
+                        </span>
+                    <a name="calcCanvasPos" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Takes world coordinates (x,y,z) of the scene and calculates the relating 2D X/Y coordinates
+                        respective to the canvas the scene is rendered on.
+                        <br><br>
+                        This allows you to relate 3D world coordinates to a specific position on the 2D canvas. This
+                        can be usable to position a HTML element over the canvaas (like a hint window for exmaple).
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>wx</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate X axis
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>wy</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate Y axis
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>wz</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate Z axis
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Array with 2D corrdinates (x,y)</div>
+                </dd>
+            </dl>
+
+            <!--- CALC CLIENT POS --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    calcClientPos
+                        <span class="signature">
+                        (wx, wy, xz)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Array
+                        </span>
+                    <a name="calcClientPos" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Takes world coordinates (x,y,z) of the scene and calculates the relating 2D X/Y coordinates
+                        relative to the window the scene is rendered in.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>wx</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate X axis
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>wy</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate Y axis
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>wz</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    World coordinate Z axis
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Array with 2D corrdinates (x,y)</div>
+                </dd>
+            </dl>
+
+            <!--- GET SCREENSHOT --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    getScreenshot
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 DATA URI
+                        </span>
+                    <a name="getScreenshot" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns a Base64 encoded <a href="http://tools.ietf.org/html/rfc2397">data URI</a> containing
+                        png image consisting of the current rendering.
+                        The resulting URL will look similar to this:
+                        <code>
+                            data:image/png;base64,iVBORw0KGgo...
+                        </code>
+                        The browser will interpret this as a PNG image and display it. A list of browsers which
+                        support data URI can be found here.
+                        <br><br>
+                        The following example illustrates the usage:
+                        <code>
+                            var url = ...runtime.getScreenshot();
+                            var img = document.createElement("img");
+                            img.src = url;
+                            ...
+                        </code>
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">URL to image</div>
+                </dd>
+            </dl>
+
+            <!--- GET LIGHT MATRIX --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    lightMatrix
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Matrix object
+                        </span>
+                    <a name="lightMatrix" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current light matrix.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current light matrix</div>
+                </dd>
+            </dl>
+
+            <!--- RESET VIEW --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                resetView
+                        <span class="signature">
+                        ()
+                        </span>
+                    <a name="resetView" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Navigates to the initial viewpoint.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- LIGHT VIEW --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                lightView
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="lightView" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Navigates to the first light, if any.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">True if navigation was possible, false otherwise</div>
+                </dd>
+            </dl>
+
+            <!--- UPRIGHT VIEW --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    uprightView
+                        <span class="signature">
+                        ()
+                        </span>
+                    <a name="uprightView" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Navigates to upright view.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- SHOW ALL --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                showAll
+                        <span class="signature">
+                        (axis)
+                        </span>
+                    <a name="showAll" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Zooms so that all objects are visible.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>axis</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the axis as string, one of: posX, negX, posY, negY, posZ, negZ
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- SHOW OBJECT --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                showObject
+                        <span class="signature">
+                        (obj, axis)
+                        </span>
+                    <a name="showObject" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Zooms so that a given object is fully visible.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>obj </code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the scene-graph element on which to focus
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>axis</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the axis as string, one of: posX, negX, posY, negY, posZ, negZ
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- GET CENTER --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                getCenter
+                        <span class="signature">
+                        (domNode)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 SF3Vec3f
+                        </span>
+                    <a name="getCenter" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the center of a X3DShapeNode or X3DGeometryNode as SF3Vec3f object.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>domNode</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the node for which its center shall be returned
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Node center or <code>null</code> if domNode is not a Shape or Geometry</div>
+                </dd>
+            </dl>
+
+            <!--- GET CURRENT TRANSFORM --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                getCurrentTransform
+                        <span class="signature">
+                        (domNode)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Transformation Matrix
+                        </span>
+                    <a name="getCurrentTransform" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the current to world transformation of a given node. If no valid node is given
+                        null is returned.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>domNode</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    the node for which its transformation shall be returned
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Transformation matrix (or <code>null</code> no valid node is given).</div>
+                </dd>
+            </dl>
+
+            <!--- DEBUG --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                debug
+                        <span class="signature">
+                        (show)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="debug" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Displays or hides the debug window. If the parameter is omitted, the current
+                        visibility status is returned.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>show</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">Boolean</span>
+                                </td>
+                                <td class="param-table-description">
+                                    true/false to show or hide the debug window
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current visibility status of the debug window (true/false)</div>
+                </dd>
+            </dl>
+
+            <!--- NAVIGATION TYPE --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                navigationType
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 String
+                        </span>
+                    <a name="navigationType" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        A readout of the currently active navigation type.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">A string representing the active navigation type.</div>
+                </dd>
+            </dl>
+
+            <!--- NAVIGATION MODES --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    Navigation Modes
+                    <a name="navigationModes" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Change current navigation mode.
+                    </div>
+                    <br>
+                    <table class="table table-striped table-hover">
+                        <tbody>
+                        <tr><th>Name</th><th class="last">Description</th></tr>
+                        <tr>
+                            <td class="param-table-name"><code>examine()</code></td>
+                            <td class="param-table-description">
+                                Switches to examine mode.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="param-table-name"><code>lookAt()</code></td>
+                            <td class="param-table-description">
+                                Switches to lookAt mode..
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="param-table-name"><code>walk()</code></td>
+                            <td class="param-table-description">
+                                Switches to walk mode.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="param-table-name"><code>game()</code></td>
+                            <td class="param-table-description">
+                                Switches to game mode.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="param-table-name"><code>helicopter()</code></td>
+                            <td class="param-table-description">
+                                Switches to helicopter mode.
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </dd>
+            </dl>
+
+            <!--- RESET EXAMIN --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                resetExamin
+                        <span class="signature">
+                        ()
+                        </span>
+                    <a name="resetExamin" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Resets all variables required by examin mode to init state.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- TOGGLE POINTS --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                togglePoints
+                        <span class="signature">
+                        ()
+                        </span>
+                    <a name="togglePoints" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Toggles points attribute.
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- PICK RECT --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                pickRect
+                        <span class="signature">
+                        (x1, y1, x2, y2)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Array of shape elements
+                        </span>
+                    <a name="pickRect" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns an array of all shape elements that are within the picked rectangle defined by (x1, y1) and (x2, y2) in canvas coordinates
+
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>x1</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    x1 coordinate of rectangle
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>y1</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    y1 coordinate of rectangle
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>x2</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    x2 coordinate of rectangle
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>y2</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type"></span>
+                                </td>
+                                <td class="param-table-description">
+                                    y2 coordinate of rectangle
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- PICK MODE --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                pickMode
+                        <span class="signature">
+                        (options)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Type Value
+                        </span>
+                    <a name="pickMode" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Get the current pickmode intersect type. If the option ‘internals’:true is provided, the
+                        internal representation is returned.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>options</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">object</span>
+                                </td>
+                                <td class="param-table-description">
+                                    An object of properties i.e. options = {‘internals’: true}
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current intersect type value suitable to use with changePickMode.</div>
+                </dd>
+            </dl>
+
+            <!--- CHANGE PICK MODE --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                changePickMode
+                        <span class="signature">
+                        (type, options)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="changePickMode" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Alter the value of intersct type. Can be one of: idbuf, color, textcoord,
+                        box. Other values are ignored.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>type</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">String</span>
+                                </td>
+                                <td class="param-table-description">
+                                    The new intersect type: idbuf, color, textcoord, or box
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">True if the type hase been changed, false otherwise.</div>
+                </dd>
+            </dl>
+
+            <!--- SPEED --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                speed
+                        <span class="signature">
+                        (newSpeed)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 float
+                        </span>
+                    <a name="speed" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Get the current speed value. If parameter is given the new speed value is set accordingly
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>newSpeed </code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">float</span>
+                                </td>
+                                <td class="param-table-description">
+                                    The new speed value (optional)
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current speed value.</div>
+                </dd>
+            </dl>
+
+            <!--- STATISTICS --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                    statistics
+                        <span class="signature">
+                        (mode)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="statistics" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Get or set the visibility of the statistics information. If parameter is omitted, this method
+                        returns the visibility status as boolean.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>mode</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">Boolean</span>
+                                </td>
+                                <td class="param-table-description">
+                                    true/false to enable or disable the stats info
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current visibility of the stats info (true/false)</div>
+                </dd>
+            </dl>
+
+            <!--- IS A --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                isA
+                        <span class="signature">
+                        (domNode, nodeType)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="isA" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Test a DOM node object against a node type string. This method can be used to determine
+                        the “type” of a DOM node.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>domNode</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">object</span>
+                                </td>
+                                <td class="param-table-description">
+                                    the node to test for
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="param-table-name"><code>nodeType</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">String</span>
+                                </td>
+                                <td class="param-table-description">
+                                    node name to test domNode against
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">True or false</div>
+                </dd>
+            </dl>
+
+            <!--- PROCESS INDICATOR --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                processIndicator
+                        <span class="signature">
+                        (mode)
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Boolean
+                        </span>
+                    <a name="processIndicator" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Enable or disable the process indicator. If parameter is omitted, this method only returns
+                        the the visibility status of the statistics info overlay.
+                    </div>
+                    <br>
+                    <h5>Parameters:</h5>
+                    <div class="params">
+                        <table class="table table-striped table-hover">
+                            <tbody>
+                            <tr><th>Name</th><th>Type</th><th class="last">Description</th></tr>
+                            <tr>
+                                <td class="param-table-name"><code>mode</code></td>
+                                <td class="param-table-type">
+                                    <span class="param-type">Boolean</span>
+                                </td>
+                                <td class="param-table-description">
+                                    true to show indicator, false to hide
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div> <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current visibility of the process indicator info (true = visible,
+                        false = invisible)
+                    </div>
+                </dd>
+            </dl>
+
+            <!--- BACKEND NAME --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                backendName
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 String
+                        </span>
+                    <a name="backendName" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the currently used render backend name.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">The current render backend name as string</div>
+                </dd>
+            </dl>
+
+            <!--- PROPERTIES --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                properties
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 Properties object
+                        </span>
+                    <a name="properties" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the properties object of the X3D element. This holds all configuration
+                        parameters of the X3D element.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">Properties object</div>
+                </dd>
+            </dl>
+            
+            <!--- get Pixel Scale --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                getPixelScale
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        &#8594 SF3Vec3f
+                        </span>
+                    <a name="getPixelScale" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        Returns the virtual scale of one pixel for the current orthographic viewpoint.
+                        The returned vector contains scale values for the x and y direction. The z value is always null.
+                    </div>
+                    <br>
+                    <h5>Returns:</h5>
+                    <div class="param-desc">x3dom.fields.SFVec3f or null if non orthographic view</div>
+                </dd>
+            </dl>
+
+
+
+        </article>
+    
+        <br>
+      
+    </section>
+
+    <footer>
+        This part of the X3DOM documentation is based upon the
+        <a href="http://x3dom.org/docs-old/configuration.html">configuration entry</a> in the old X3DOM documentation.
+    </footer>
+</div>
+
+</div>
+
+</body>
+</html>

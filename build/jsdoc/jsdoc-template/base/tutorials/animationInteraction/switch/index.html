@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Hiding and switching visible nodes</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../onoutputchange/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../transformations/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Hiding and switching visible nodes</h2>
+        </div>            
+        <br>
+		
+        <p>
+        In this tutorial you will learn how to hide a node or switch between visible nodes. The x3d standard defines a <i>Switch</i> node that belong to the grouping nodes. While a <i>Switch</i> node may have arbitrary many children, not more than one is displayed at the same time.
+        <br><br>
+        The <i>Switch</i> node has an attribute <i>whichChoice</i> to choose the currently visible node (which may contain other nodes as well). The nodes are identified by ascending numbers starting at 0. If the special value <i>-1</i> is chosen, no child is visible.
+        <br><br>
+        Switch can be used to easily exchange the content of a scene or to hide some nodes. Values are passed via ROUTEs to the children, even when they are not visible, to keep the whole scene synchronous. 
+		</p>
+		<p>
+		We will now create a simple example containing to different balls and a slider to select which one to display. You first need a scene and two shapes. Surround each of the shapes with a transform tag to move them to different positions. If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html">at the basic tutorials</a> first.
+		These to shapes should be located inside a <i>Switch</i> node. Since the default value for <i>whichChoice</i> is <i>-1</i>, no shape should be visible now.
+		</p>
+		
+		<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+	    &lt;Switch whichChoice="0" id="switcher"&gt;
+	        &lt;transform DEF="ball" translation='-2 0 0'&gt;
+		        &lt;shape&gt;
+		            &lt;appearance&gt;
+		                &lt;material diffuseColor='1 0 0'&gt;&lt;/material&gt;
+		            &lt;/appearance&gt;
+		            &lt;sphere&gt;&lt;/sphere&gt;
+		        &lt;/shape&gt;
+	        &lt;/transform&gt;
+	        
+	        &lt;transform DEF="ball" translation='2 0 0'&gt;
+		        &lt;shape&gt;
+		            &lt;appearance&gt;
+		                &lt;material diffuseColor='0 0 1'&gt;&lt;/material&gt;
+		            &lt;/appearance&gt;
+		            &lt;sphere&gt;&lt;/sphere&gt;
+		        &lt;/shape&gt;
+	        &lt;/transform&gt;
+		&lt;/Switch&gt;
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+		
+		We also create a slider with a range from -1 to 1 to select the currently active node.
+		 <pre class="prettyprint"><code class="language-html">
+	&lt;input type="range" id="sliderShadowIntesity" min="-1" max="1" step="1" value="0" onchange="changeVisibleNode(this.value)"&gt;       
+        </code></pre>
+		<p>
+		With a simple dom operation, the value of the slider is passed to the <i>Switch</i> node.
+		</p>
+
+<pre class="prettyprint"><code class="language-javascript">
+	/**
+	 * Change the selected object of the swichting node
+	 * 
+	 * @param nodeId number: New node id to set (starting from 0, or -1 to hide all of them)
+	 */
+	function changeVisibleNode(nodeId)
+	{
+	    document.getElementById("switcher").setAttribute("whichChoice", nodeId);
+	}
+	
+</code></pre>
+        
+		<p>
+		Your switching example should now work and you can modify and extend it as you want. Of course you can also use ROUTEs to directly pass values to the <i>Switch</i> node without DOM manipulations.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot0.png' style="width:30%">
+                <img class="docuFigure" src='screenshot1.png' style="width:30%">
+                <img class="docuFigure" src='screenshot2.png' style="width:30%">
+                <div class="text-muted">Switching through different child nodes</div>
+            </div>
+        </div> 
+		
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="switch.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+            	<li><a href="../../../author/Grouping/Switch.html">Switch</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

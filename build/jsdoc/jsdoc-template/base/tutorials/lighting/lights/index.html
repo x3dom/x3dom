@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <!--<link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">-->
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Lights</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+        
+        <div>
+            <a class="btn btn-primary" href="../../animationInteraction/pickingBuffer/index.html" style="float:left;">&#8592; Previous Section</a>
+            <a class="btn btn-primary" href="../shadows/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Lights</h2>
+        </div>            
+        <br>
+		
+        <p>
+		You want your scenes to appear in a good light right? This tutorial will show you how to set up directional lights, point lights and spot lights.
+        </p>
+		 <h3>Directional Light</h3>
+		 The simplest light is a directional light, or infinite light. This is where the light rays are, to all intents and purposes, parallel.
+		 
+		 <pre class="prettyprint"><code class="language-html">
+		&lt;DirectionalLight id="directional" direction='0 0 1' on ="TRUE" intensity='1.0' shadowIntensity='0.0'&gt; &lt;/DirectionalLight&gt; 
+		</code></pre>
+		  
+		  <h3>Point Light</h3>
+		  A point light is defined to be a light source which emanates from a single point in space equally in all directions, like for example a light bulb.
+		<pre class="prettyprint"><code class="language-html">
+		&lt;PointLight id='point' on='TRUE' intensity='0.9000' color='0.0 0.6 0.0' location='0 10 0.5 ' radius='5.0000' &gt;  &lt;/PointLight&gt; 
+		</code></pre>
+		  
+		  <h3>Head Light</h3>
+		   A head light is a light source which behaves as if it is tied to your view.
+		   
+		   <pre class="prettyprint"><code class="language-html">
+		&lt;NavigationInfo id="head" headlight='true' type='"EXAMINE"'&gt;  &lt;/NavigationInfo&gt; 
+		</code></pre>
+		   
+		  
+		   <h3>Spot Light</h3>
+		   A spot light is a light source which has a cone of effect like a flashlight.
+		 <pre class="prettyprint"><code class="language-html">
+		&lt;SpotLight id='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22' &gt;  &lt;/SpotLight&gt; 
+		</code></pre>
+		<p>If you want to include lights directly in your x3d file , you need to use "DEF" instead of "id". <br>
+		A scene with all three light sources could look like the example below. You can see a white directional light, a yellowish point light and a blue spot light. </p>
+		 
+		 <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Lights in X3DOM.</div>
+            </div>
+        </div> 
+		<p>For further informations about the lights, their attributes and implementation details please read the <a href="http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/lighting.html" target="_blank">x3d specification</a>. </p>
+		
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h3>Get this X3DOM example:</h3>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="lights.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+
+            <h3>Read more about the X3DOM nodes used in this tutorial:</h3>
+            <ul>
+				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+				
+				<li><a href="../../../author/EnvironmentalEffects/Background.html">Background</a></li>
+				
+				<li><a href="../../../author/Lighting/DirectionalLight.html">DirectionalLight</a></li>
+				
+				<li><a href="../../../author/Networking/Inline.html">Inline</a></li>
+				
+				<li><a href="../../../author/Geometry3D/Plane.html">Plane</a></li>
+				
+				<li><a href="../../../author/Lighting/PointLight.html">PointLight</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+				
+				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

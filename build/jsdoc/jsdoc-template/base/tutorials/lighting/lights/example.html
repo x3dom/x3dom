@@ -1,0 +1,61 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+</head>
+<body>
+<h1>Light Tutorial</h1>
+<script>
+ function lightSwitch(id){
+     var light = document.getElementById(id);
+     if(light.getAttribute('on')!='TRUE')
+        light.setAttribute('on','TRUE');
+     else
+         light.setAttribute('on','FALSE');
+ }
+
+ function headlight()
+  {
+       var h = document.getElementById("head");
+      if(h.getAttribute('headlight')=='true')
+        h.setAttribute('headlight', 'false');
+      else
+          h.setAttribute('headlight', 'true');
+  }
+
+</script>
+<div id="content">
+<x3d width='500px' height='400px'>
+    <scene>
+        <navigationInfo id="head" headlight='true' type='"EXAMINE"'></navigationInfo>
+        <background  skyColor="0 0 0"></background>
+        <Viewpoint position="-3.25762 23.85703 48.74621" orientation="-0.99104 -0.13344 -0.00551 0.46917"></Viewpoint>
+        <directionalLight id="directional" direction='0 -1 0' on ="TRUE" intensity='2.0' shadowIntensity='0.0'>
+        </directionalLight>
+        <PointLight id='point' on='TRUE' intensity='0.9000' ambientIntensity='0.0000' color='0.0 0.6 0.0' location='2 10 0.5 '  attenuation='0 0 0' radius='5.0000'> </PointLight>
+        <SpotLight id='spot' on ="TRUE" beamWidth='0.9' color='0 0 1' cutOffAngle='0.78' location='0 0 12' radius='22'></SpotLight>
+        <Inline nameSpaceName="light" mapDEFToID="true" url="teapot.x3d"></Inline>
+            <Transform translation="0 -9.0 0" rotation="1 0 0 -1.57">
+            <Shape>
+               <Appearance><Material diffuseColor="0.7 0.7 0.7"></Material></Appearance>
+               <Plane solid="false" size="30 30"></Plane>
+           </Shape>
+       </Transform>
+    </scene>
+</x3d>
+<div id="tools" style="width: 500px;">
+<input type="checkbox" checked="true" onclick="lightSwitch('point')">
+    <label>point light</label>
+<input type="checkbox" checked="true" onclick="lightSwitch('spot')">
+    <label>spot light</label>
+<input type="checkbox" checked="true" onclick="lightSwitch('directional')">
+    <label>directional light</label>
+<input type="checkbox" checked="true" onclick="headlight()">
+    <label>headlight</label>
+</div>
+</div>
+</body>
+</html>

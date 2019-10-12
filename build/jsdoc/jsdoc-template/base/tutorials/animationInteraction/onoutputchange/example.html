@@ -1,0 +1,79 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>X3Dom Example OnOutputChange Event</title>
+    <script type='text/javascript' src='https://x3dom.org/release/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+
+	<script>
+	/**
+	 * Uses the values of a PositionInterpolator to move another ball,
+	 * but instead of just routing the values, round the y component.
+	 * Thus the second ball moves like he is snapping to an invisible raster
+	 */
+	function snapBall(eventObject)
+	{
+		//Check if type and output of the eventObject are correct
+		//There may be multiple eventObjects but only one of them contains the value we need
+		if(eventObject.type != "outputchange" || eventObject.fieldName != "value_changed")
+			return;
+		
+		//Get the value...
+		var value = eventObject.value;
+		//...and create a copy with the manipulated coordinates
+		var newPos = new x3dom.fields.SFVec3f(2, Math.round(value.y), 0);
+	
+		//Set the newly created array as new position for the second ball
+		document.getElementById("ball2").setAttribute('translation', newPos.toString());
+		
+		//Show debug information (of course the data can be used to control non x3dom-objects, too)
+		document.getElementById("posInterp").innerHTML = Math.round(value.y*100)/100;
+		document.getElementById("posSnaped").innerHTML = newPos.y;
+	}
+	</script>
+
+</head>
+<body>
+
+<h1>Animate Objects with X3DOM!</h1>
+<p>
+    Learn how to manipulate objects using values from the output of other objects.
+</p>
+
+<div>
+Y-Position of output field (routed to red ball): <span id="posInterp"></span><br>
+Calculated Y-Position (set directly to blue ball): <span id="posSnaped"></span>
+</div>
+
+<x3d width='500px' height='400px'>
+    <scene>
+        <transform DEF="ball" translation='-2 0 0'>
+        <shape>
+            <appearance>
+                <material diffuseColor='1 0 0'></material>
+            </appearance>
+            <sphere></sphere>
+        </shape>
+        </transform>
+        
+        <transform DEF="ball2" translation='2 0 0' id="ball2">
+        <shape>
+            <appearance>
+                <material diffuseColor='0 0 1'></material>
+            </appearance>
+            <sphere></sphere>
+        </shape>
+        </transform>
+
+        <timeSensor DEF="time" cycleInterval="4" loop="true"></timeSensor>
+        <PositionInterpolator DEF="move" key="0 0.5 1" keyValue="-2 -2.5 0  -2 2.5 0  -2 -2.5 0" onoutputchange="snapBall(event)"></PositionInterpolator>
+        
+        <Route fromNode="time" fromField ="fraction_changed" toNode="move" toField="set_fraction"></Route>
+        <Route fromNode="move" fromField ="value_changed" toNode="ball" toField="translation"></Route>
+    </scene>
+</x3d>
+
+
+</body>
+</html>

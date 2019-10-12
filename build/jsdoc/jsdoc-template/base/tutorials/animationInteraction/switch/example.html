@@ -1,0 +1,73 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>X3Dom Example Switch Node</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+
+	<script>
+	/**
+	 * Change the selected object of the swichting node
+	 * 
+	 * @param nodeId number: New node id to set (starting from 0, or -1 to hide all of them)
+	 */
+	function changeVisibleNode(nodeId)
+	{
+	    var dirLight = document.getElementById("switcher");
+
+	    dirLight.setAttribute("whichChoice", nodeId);
+	    
+	    if(nodeId == -1)
+	    	document.getElementById("visNode").innerHTML = "No node visible!";
+	    else
+	    	document.getElementById("visNode").innerHTML = "Showing node # "+nodeId;
+	}
+	</script>
+
+</head>
+<body>
+
+<h1>Display and hide nodes with X3DOM!</h1>
+<p>
+    Learn how to switch between the visible nodes by using the Switch node.
+    <br><br>
+    Use the slider to choose which node (starting at 0) is displayed. If -1 is chosen, no node will be visible.
+    
+</p>
+
+
+<x3d width='500px' height='400px'>
+    <scene>
+	    <Switch whichChoice="0" id="switcher">
+	        <transform DEF="ball" translation='-2 0 0'>
+	        <shape>
+	            <appearance>
+	                <material diffuseColor='1 0 0'></material>
+	            </appearance>
+	            <sphere></sphere>
+	        </shape>
+	        </transform>
+	        
+	        <transform DEF="ball2" translation='2 0 0' id="ball2">
+	        <shape>
+	            <appearance>
+	                <material diffuseColor='0 0 1'></material>
+	            </appearance>
+	            <sphere></sphere>
+	        </shape>
+	        </transform>
+		</Switch>
+	</scene>
+</x3d>
+
+
+<div style="margin-left: 550px">
+    <b>Visible node</b><br>
+    -1 <input type="range" id="sliderShadowIntesity" min="-1" max="1" step="1" value="0" onchange="changeVisibleNode(this.value)"/>1
+	<br><br>
+	<span id="visNode" style="color:#00CC00">Showing node # 0</span>
+</div>
+
+</body>
+</html>

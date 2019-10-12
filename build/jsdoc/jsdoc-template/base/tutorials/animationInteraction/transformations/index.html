@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Interactive 3D Transformations</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../switch/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../picking/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Interactive 3D Transformations</h2>
+        </div>            
+        <br>
+		
+        <p>
+		Within this tutorial, you will learn how to create powerful 3D manipulators (sometimes called <i>Gizmos</i>) in X3DOM.		
+		Such manipulators will allow you to dynamically change an object's 3D transformation, by interacting with your mouse pointer or finger on some 3D geometry.
+		Some parts of this tutorial are also covered by <a href='http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/pointingsensor.html'>X3D</a>
+		and <a href='http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-334.htm'>VRML</a> specification or tutorial resources,
+		which explain the concept of pointing device sensors.
+        </p>
+		
+		<p>
+		As the X3D concept of pointing device sensors, which will be used to realize the 3D manipulators during this tutorial, is pretty abstract and very generalized,
+		it might be helpful to start off with a concrete example.
+		In the following figure, you can see a teapot, and two different kinds of manipulators.		
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">A simple scene with several 3D manipulators.</div>
+            </div>
+        </div>
+		
+		<p>
+		The cyan handle on the bottom left of the figure is a translation manipulator.
+		It can be dragged to the left or right side, always following the edge of the ground plane.
+		The teapot will then be translated by exactly the same amount as the handle.		
+		The three colored bands around the teapot are rotation handles.
+		By dragging those, the user can rotate the teapot object around the three principal axes of the coordinate system, X, Y and Z.
+		If you like, try out the <a href='example.html'>example</a> now, to see the manipulators in action.		
+		<p>
+				
+		<h3>Interactive 3D Translation with PlaneSensor</h3>
+		<p>
+		We will now dive into the example more deeply, and first see how the translation manipulator was realized, using a <i>PlaneSensor</i> node.
+		In X3D (and thereby in X3DOM as well), there are several kinds of nodes that are especially designed for user interaction on 3D elements.
+		Those nodes are grouped together in the <i>Pointing Device Sensor</i> component.
+		All pointing device sensor nodes have in common that they produce output as soon as the user interacts with a corresponding piece of so-called <i>sensor geometry</i>.
+		A pointing device sensor node, like PlaneSensor, will consider all kinds of pointer interaction (for example, clicking a mouse, or moving the pointer)
+		that are triggered on its sensor geometry, and produce some form of output. The sensor geometry that belongs to a pointing device sensor is the geometry that is
+		a sibling node of the sensor node, or a descendant of a sibling node of the sensor node. Sounds complicated?
+		Well, it is actually not that complicated. Let's come back to our example:
+		The cyan handle is used to trigger translations on the teapot (along with colored bands around it). The 3D translation event is produced by a plane sensor,
+		and the plane sensor uses the cyan handle as its sensor geometry. This means that, as soon as the user drags the handle, a translation event will be fired by the plane sensor,
+		and some parts of the scene will be moved.
+		The X3D description of the plane sensor and its handle inside the HTML page looks like the following:
+        </p>
+        <pre class="prettyprint"><code class="language-html">
+    &lt;group&gt;
+        &lt;planeSensor autoOffset='true' axisRotation='1 0 0 -1.57' minPosition='-6 0' maxPosition='6 0' onoutputchange='processTranslationGizmoEvent(event)'&gt;
+        &lt;/planeSensor&gt;				
+        &lt;transform id='translationHandleTransform'&gt;
+            ...
+        &lt;/transform&gt;
+    &lt;/group&gt;
+        </code></pre>
+		<p>
+        Inside the group node, there are two nodes: the plane sensor node itself,
+        and the transform node that holds all the transform, shape, geometry and appearance nodes which are necessary to draw the handle.
+        (In this case, the handle consists of two cyan cones and a cyan cylinder, but any kind of sensor geometry is possible - therefore,
+        the actual geometry description has been replaced by dots in the above HTML snippet.)
+        As can be seen, both of the nodes, the plane sensor and the part that holds the sensor geometry, are <i>sibling</i> nodes, since both have the same parent (the group node).
+        Because of this, the cyan handle serves as <i>sensor geometry</i> for the plane sensor, and the sensor is triggered as soon as the cyan handle is clicked.
+        </p>
+        <p>
+        Let's take a closer look at how the output of the sensor is transformed into translations inside the 3D scene.
+        The plane sensor tracks mouse motion projected onto a plane, and outputs a translation as it appears on the plane.
+        By default, this plane is aligned with the x y plane of the local sensor coordinate system (i.e., it is affected by transform nodes above the sensor).
+        Additionally, we can specify a rotation in the <i>axisRotation</i> field, which has been done for our example.
+        By rotating the sensor plane, using the axisRotation field, we can track mouse motion projected onto the x z plane, which is the ground plane.        
+        Finally, the <i>minPosition</i> and <i>maxPosition</i> fields are used to constrain the output of the sensor in x and y direction.
+        As can be seen in the above snippet, the second value of minPosition and maxPosition are both zero,
+        which means that the sensor output is constrained to have always a zero value in the second coordinate.
+        We thereby achieve that translation is solely tracked on the x axis.
+        By setting the first values of minPosition and maxPosition to -6 and 6, we can furthermore guarantee that the translation will never move objects out of the gray ground plane.        
+        </p>
+        <p>
+        To receive and process the plane sensor's output, we install a callback function, using the <i>onoutputchange</i> event.
+        Note that we could also use the X3D ROUTE mechanism here. Please take a look at the respective tutorials for more information
+        about <a href="../animate/index.html">ROUTES</a> and the <a href="../onoutputchange/index.html">onoutputchange</a> event.
+        The following snippet shows the javascript code of the callback function that processes the plane sensor's output:
+        </p>
+        <pre class="prettyprint"><code class="language-js">
+    function processTranslationGizmoEvent(event)
+    {
+        var sensorToWorldMatrix, translationValue;
+		
+        if (event.fieldName === 'translation_changed')
+        {
+            //convert the sensor's output from sensor coordinates to world coordinates (i.e., include its 'axisRotation')
+            sensorToWorldMatrix = x3dom.fields.SFMatrix4f.parseRotation(event.target.getAttribute("axisRotation"));	
+			
+            translationValue = sensorToWorldMatrix.multMatrixVec(event.value);
+            
+            //transform the affected sensor geometry
+            document.getElementById('translationHandleTransform').setFieldValue('translation', translationValue);
+            document.getElementById('rotationHandleTransform').setFieldValue('translation', translationValue);
+            
+            //transform the affected element
+            document.getElementById('teapotTranslation').setFieldValue('translation', translationValue);			
+        }
+    }
+        </code></pre>
+        <p>
+        As can be seen, we first check the type of event we receive - out plane sensor can fire various types of events (for example, if it gets activated or deactivated).
+        Having ensured that the event is a <i>translation_changed</i> event, we can then use the axisRotation attribute to compute a matrix that transforms the sensor output to world coordinates.
+        The sensor output is given in form of the <i>event.value</i> object as a translation vector on the sensor plane.
+        Please note that we would have to include additional transformations above the sensor node, if there would be any.
+        However, for this simple example, it is enough to use the axisRotation of the sensor to compute the translation values in world coordinates.
+        Having the world space translation vector at hand, we can then use it for the translation field of the affected transform nodes.
+        This way, the teapot and the handles are translated accordingly.
+        </p>
+        <p>
+        You might have realized that the output of the plane sensor is always equal to the full translation from the beginning of the <i>first</i> drag operation.
+        This is due to the value of the <i>autoOffset</i> field, being specified as 'true'.
+        In constrast, if you set autoOffset to 'false' instead, the sensor will always output the relative translation from the beginning of the <i>current</i> drag operation instead.
+        It depends on your particular application wich behavior is desired - in this case, we wanted to always update the absolute translation values of the affected objects,
+        therefore we have set the value of autoOffset to 'true'.
+        </p>
+		
+		
+		<h3>Interactive 3D Rotation with CylinderSensor</h3>
+		<p>
+        While the plane sensor node can be used to map mouse motion to translation events, the <i>CylinderSensor</i> node maps mouse motion to rotation events.
+        The X3D description of the cylinder sensor nodes and their respective geometries inside our example HTML page looks pretty similar as for the plane sensor:
+        </p>  
+        <pre class="prettyprint"><code class="language-html">
+    &lt;group&gt;
+        &lt;cylinderSensor autoOffset='false' axisRotation='0 0 1 -1.57' onoutputchange='processRotationGizmoEvent(event);'&gt;
+        &lt;/cylinderSensor&gt;
+        &lt;transform&gt;
+            ...
+        &lt;/transform&gt;
+    &lt;/group&gt;
+        </code></pre>
+        <p>
+        Again, the sensor is grouped together with its sibling that contains the sensor geometry.
+        In this case, the sensor geometry is the red band around the teapot, and the sensor is used to rotate the teapot around the x axis.
+        Of course, the descriptions of the other two bands, used for rotation around the y and z axis, look pretty similar.
+        Although there are other possible configurations, the default behavior of a cylinder sensor is that it maps mouse motion to a cylinder of infinite height.
+        Similar to the plane used for tracking mouse motion for the plane sensor node, the cylinder has a default orientation, which can be changed via the axisRotation field.
+        By default, the infinite cylinder wraps around the cylinder sensor's local y axis.
+        In this particular case of the cylinder sensor tracking rotation around the x axis, the axisRotation field is used to rotate the infinite cylinder to wrap aroung the local x axis instead.
+        The radius of the infinite cylinder is dynamically determined for each dragging operation, as soon as the user clicks on the sensor geometry.
+        Dragging the mouse will then lead to the cylinder sensor producing output in the form of rotation values.
+        To process this output, we are again using a callback function, which is installed to catch the onoutputchange event.
+        The same callback function is used for all of the three cylinder sensors (for rotation around x, y and z), and looks like the following:
+        </p>
+        <pre class="prettyprint"><code class="language-js">
+    function processRotationGizmoEvent(event)
+    {		
+        var sensorToWorldMatrix, rotationMatrixWorld;
+   
+        if (event.fieldName === 'rotation_changed')
+        {
+            //convert the sensor's output from sensor coordinates to world coordinates (i.e., include its 'axisRotation')
+            sensorToWorldMatrix = x3dom.fields.SFMatrix4f.parseRotation(event.target.getAttribute("axisRotation"));			
+            rotationMatrixWorld = sensorToWorldMatrix.mult(event.value.toMatrix());
+			
+            //create an offset that applies the current rotation in world coordinates,
+            //but doesn't change the orientation of the coordinate system
+            currentGizmoRotationOffset = rotationMatrixWorld.mult(sensorToWorldMatrix.inverse());			
+			
+            applyRotationGizmoTransformations();
+        }
+
+        if (event.fieldName === 'isActive' && event.value === false)
+        {
+            //incorporate the current rotation offset, interpreted globally, into the stored rotation value
+            currentGizmoRotation = currentGizmoRotationOffset.mult(currentGizmoRotation);
+			
+            //reset current rotation offset to zero rotation
+            currentGizmoRotationOffset = new x3dom.fields.SFMatrix4f();
+
+            applyRotationGizmoTransformations();
+        }
+    }
+	    </code></pre>
+        <p>
+        You will probably have noticed that this function works slightly different as the one that processes output from the plane sensor.
+        What is similar is that we convert the output of the sensor that triggered the event from local to world coordinates.
+        Since the sensor's current rotation value is given as an SFRotation object (which is a quaternion),
+        we convert it to a matrix before multiplying it with the value of the axisRotation field, in order to obtain the current sensor rotation in world coordinates.
+        The big conceptual difference to the callback function used for the plane sensor is that we apply the rotation value from the sensor in the form of an <i>offset</i>,
+        instead of storing an absolute rotation value.
+        With the event.value object, we receive such offset values from the start of the current drag operation, since we have specified the autoOffset field of the cylinder
+        sensors as 'false'.
+        We do so by using two variables that are available throughout our javascript program:</p>
+        <ul>
+            <li><i>currentGizmoRotationOffset</i> holds the offset values of the currently modified rotation, relative to the start of the current drag operation, as a matrix</li>
+            <li><i>currentGizmoRotation</i> holds the current rotation value of the teapot, as a matrix</li>
+        </ul>
+
+        
+        <p>
+        You might be wondering at this point why we not just store an absolute rotation matrix for each axis, and then simply multiply the three transformations into a combined matrix,
+        or store them in nested transform nodes.
+        The reason is simply that this would not lead to the expected behavior, which has to do with a fundamental topic of computer graphics: combining transformations.
+        A very important point, that is often misunderstood, is the fact that applying a matrix transformation changes the local coordinate system of an object.
+        The following figure illustrates this by example:
+        </p>
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='transformation.png'>
+                <div class="text-muted">A 3D transformation. The local coordinate system is transformed along with the object.</div>
+            </div>
+        </div>
+        <p>
+        As can be seen, the <i>local coordinate system</i> of the shown teapot object is rotated along with it.
+        As long as we apply just one transformation (as in the case of the plane sensor, for example), this does not matter.
+        But if we combine two transformations, the second transformation is always performed relative to the <i>transformed</i> coordinate system, after the first one.
+        This is also what happens when you nest some X3D transform nodes (you can read more about this topic in teaching material for computer graphics, and in the <a href='http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/concepts.html#Transformationhierarchy'>X3D specification</a>).
+        </p>
+        <p>
+        With this background about transformations in mind, let's come back to our example:
+        As matrix multiplication leads to transformations being always applied in the local coordinate system,
+        we cannot simply multiply three rotation matrices for the x, y and z axis separately.
+        If we start with a rotation around x, for example, and afterwards apply a rotation around y,
+        the latter one would be perfomed about the local y-axis, after the first rotation around x.
+        Instead, what we want is that the currently dragged rotation is always applied <i>globally</i>.
+        To do so, we will have to multiply the matrix that holds the currently dragged rotation offset, stored in the variable <i>currentGizmoRotationOffset</i>, 
+        by the last combined rotation matrix of the teapot, which is stored in the variable <i>currentGizmoRotation</i>.
+        In the above snippet, the function <i>applyRotationGizmoTransformations</i> is used to apply the combined transform to the teapot's matrix transform node.        
+        It is called each time the rotation offset changes, and also once after the user has stopped dragging (see the check for the 'isActive' event in the above
+        code snippet).        
+        The function is pretty simple and looks like the following:      
+        </p>
+        <pre class="prettyprint"><code class="language-js">
+    function applyRotationGizmoTransformations()
+    {
+        var teapotRotationNode = document.getElementById('teapotRotation');
+        
+        //incorporate the current rotation offset, interpreted globally, into the stored rotation value
+        var transformMatrix = currentGizmoRotationOffset.mult(currentGizmoRotation);
+        
+        //set matrix value in column major format, as required by the MatrixTransform node
+        teapotRotationNode.setFieldValue("matrix", transformMatrix.transpose());
+    }
+        </code></pre>
+        <p>
+        If you have followed this (pretty long) tutorial until this point - congratulations!
+        You have now learned how to create powerful, interactive rotation and translation tools.
+        Especially, you have learned how to correctly combine three world-space rotations into a single rotation matrix, which is important for many applications.
+        </p>
+        <p>		
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="transformations.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/PointingDeviceSensor/PlaneSensor.html">PlaneSensor</a></li>
+				
+				<li><a href="../../../author/PointingDeviceSensor/CylinderSensor.html">CylinderSensor</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

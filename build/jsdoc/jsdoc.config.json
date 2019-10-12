@@ -1,0 +1,77 @@
+{
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source":
+    {    
+        "include":
+        [
+            "./src/",
+            "./src/nodes/CADGeometry/",
+            "./src/nodes/Core/",
+            "./src/nodes/CubeMapTexturing/",
+            "./src/nodes/EnvironmentalEffects/",
+            "./src/nodes/Followers/",
+            "./src/nodes/Geometry2D/",
+            "./src/nodes/Geometry3D/",
+            "./src/nodes/Geometry3DExt/",
+            "./src/nodes/Geospatial/",
+            "./src/nodes/Grouping/",
+            "./src/nodes/H-Anim/",
+            "./src/nodes/Interpolation/",
+            "./src/nodes/Lighting/",
+            "./src/nodes/Navigation/",
+            "./src/nodes/Networking/",
+            "./src/nodes/PointingDeviceSensor/",
+            "./src/nodes/Rendering/",
+            "./src/nodes/RigidBodyPhysics/",
+            "./src/nodes/Shaders/",
+            "./src/nodes/Shape/",
+            "./src/nodes/Sound/",
+            "./src/nodes/Text/",
+            "./src/nodes/Texturing/",
+            "./src/nodes/Texturing3D/",
+            "./src/nodes/Time/",
+            "./src/nodes/VolumeRendering/"
+        ],
+        "exclude":
+        [
+            "./src/flashbackend/",
+            "./src/lang",
+            "./src/lang",
+            "./src/Bindable.js",
+            "./src/Cache.js",
+            "./src/debug.js",
+            "./src/Docs.js",
+            "./src/fields.js",
+            "./src/gfx_webgl.js",
+            "./src/Internals.js",
+            "./src/Main.js",
+            "./src/MatrixMixer.js",
+            "./src/Mesh.js",
+            "./src/Runtime.js",
+            "./src/Texture.js",
+            "./src/Viewarea.js",
+            "./src/X3DCanvas.js",
+            "./src/X3DDocument.js"
+        ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [
+        "./build/jsdoc/jsdoc-plugin/x3doc.js"
+    ],
+    "templates":
+    {
+    },
+    "opts" :
+    {
+        "template": "./build/jsdoc/jsdoc-template",
+        "encoding": "utf8",
+        "destination": "./dist-new/doc",
+        "query" :
+        {
+            "xndf": false
+        }
+    }
+}

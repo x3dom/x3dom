@@ -1,0 +1,124 @@
+<?js
+var self = obj.self;
+var doc = obj.doc;
+var title = obj.title;
+?>
+
+<div class="class-summary">
+    <?js
+        var members = self.find({kind: 'member',  memberof: title === 'Global' ? {isUndefined: true} : doc.longname});
+        var fields = [];
+        if (members && members.length && members.forEach)
+        {
+            members.forEach(function(m)
+            {
+                if(m.field)
+                {
+                    fields.push(m);
+                }
+            });
+        }
+        if( fields.length ) {
+    ?>
+
+        <div class="well" style="width:300px;float:right;margin-left: 20px;">
+            <table class="table" style="margin-bottom:0">
+            <tr>
+            <?js
+                if (doc.x3d )
+                {
+                    if(doc.x3d == "x.x")
+                    {
+            ?>
+            <td>
+                X3DOM
+            </td><td></td>
+            <?js
+                    }
+                    else
+                    {
+                        var link = "http://www.web3d.org/files/specifications/19775-1/V"+ doc.x3d.toLowerCase() + "/Part01/components/" + doc.component.toLowerCase() +".html#"+doc.name;
+             ?>
+            <tr><td>
+                X3D:
+                </td>
+                <td>
+                    <?js if(self.api == "developer") { ?>
+                         <?js= doc.x3d ?>
+                    <?js }else{ ?>
+                        <a href="<?js= link ?>"><?js= doc.x3d ?></a>
+                    <?js } ?>
+                </td>
+            </tr>
+            <?js
+                    }
+                }
+            ?>
+            <?js if (doc.component) { ?>
+            <tr><td>
+                Component:
+                </td><td>
+                    <?js if(self.api == "developer"){ ?>
+                    <?js= doc.component ?>
+                    <?js }else{ ?>
+                    <a href="index.html"><?js= doc.component ?></a>
+                    <?js } ?>
+                </td>
+            </tr>
+            <?js } ?>
+            <?js
+            if (doc.status && doc.x3d != "x.x")
+            {
+                var myClass = (doc.status == "full")
+                ? "status-full"
+                : (doc.status == "experimental" ? "status-experimental" : "status-unsupported");
+            ?>
+            <tr><td>Status:</td>
+                <td><div class="<?js= myClass ?>"><?js= (doc.status === 'full' ? 'fully implemented' : doc.status ) ?></div></td>
+            </tr>
+
+
+
+            <?js
+            } ?>
+        </table>
+        </div>
+    <?js } ?>
+
+    <div class="well" style="width:300px;clear:right;float:right;margin-left: 20px;">
+
+        <h4>Quick Links</h4>
+
+        <?js if( fields.length ) { ?>
+
+            <a href="#Fields">&#10152; Fields</a>
+            <br>
+
+        <?js
+            }
+            if (self.api == "developer")
+            {
+        ?>
+
+        <a href="#Properties">&#10152; Properties</a>
+
+        <br>
+
+        <?js
+
+            var methods = self.find({kind: 'function',  memberof: title === 'Global' ? {isUndefined: true} : doc.longname});
+            if (methods && methods.length && methods.forEach) {
+        ?>
+        <a href="#Methods"><h3>&#10152; Methods:</h3></a>
+        <ul>
+            <?js methods.forEach(function(m) { ?>
+            <li>
+                <a href="#<?js= m.name ?>">&#10152; <?js= m.name ?> </a>
+            </li>
+            <?js }); ?>
+        </ul>
+        <?js }} ?>
+    </div>
+
+</div>
+

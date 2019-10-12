@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <?js  if ( this.api == 'developer'){ ?>
+
+        <title>X3DOM Developer API Documentation: <?js= title ?></title>
+
+    <?js } else if (this.api == 'author') { ?>
+
+        <title>X3DOM Scene Author API Documentation: <?js= title ?></title>
+
+    <?js } ?>
+
+    <?js
+        var depth = filename.split("/").length;
+
+        var backPath = "";
+        for( var i = 0; i < depth -1; ++i)
+            backPath+="../"
+
+         backPath = backPath.replace('//','/');
+    ?>
+
+    <script src="<?js= backPath ?>../static/scripts/prettify/prettify.js"> </script>
+    <script src="<?js= backPath ?>../static/scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="<?js= backPath ?>static/styles/x3dom-docs-new.css">
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="<?js= backPath ?>static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="<?js= backPath ?>index.html">documentation</a></li>
+                <li><?js if(this.api == "developer"){ ?>
+                        <a href="<?js= backPath ?>developer/index.html">Developer API</a>
+                        <?js }else{ ?>
+                        <a href="<?js= backPath ?>author/index.html">Scene Author API</a>
+                        <?js } ?>
+                </li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container" style="text-align:center">
+    <ul class="nav nav-pills" style="display: inline-block;">
+    <li><a href="<?js= backPath+ (this.api == 'author' ? 'author/' : 'developer/' )  ?>index.html" class="<?js= (title == 'Overview'? 'btn btn-primary' : '') ?>">
+    Overview
+    </a></li>
+
+    <?js if( this.api == "author"){ ?>
+
+    <li><a href="<?js= backPath ?>author/nodes.html" class="<?js= (title == 'Nodes'? 'btn btn-primary' : '') ?>">
+        Nodes
+    </a></li>
+
+    <li><a href="<?js= backPath ?>author/components.html" class="<?js= (title == 'Components'? 'btn btn-primary' : '') ?>">
+        Components
+    </a></li>
+
+    <li><a href="<?js= backPath ?>author/runtime.html">
+        Runtime
+    </a></li>
+
+    <li><a href="<?js= backPath ?>author/configuration.html">
+        Configuration
+    </a></li>
+
+    <?js }else{ ?>
+
+    <li><a href="<?js= backPath ?>developer/classes.html" class="<?js= (title == 'Classes'? 'btn btn-primary' : '') ?>">
+        Classes
+    </a></li>
+
+    <li><a href="<?js= backPath ?>developer/namespaces.html" class="<?js= (title == 'Namespaces'? 'btn btn-primary' : '') ?>">
+        Namespaces
+    </a></li>
+    <?js } ?>
+    </ul>
+</div>
+
+<div class="container">
+
+    <?js if (title != "Overview" && title != "Components" && title != "Classes" && title != "Namespaces" && title != "Nodes") { ?>
+        <h2 class="page-title"><?js= title ?></h2>
+    <?js } ?>
+
+    <?js= content ?>
+
+</div>
+
+
+<div class="container">
+    <footer>
+        This X3DOM documentation was generated with the help of <a href="https://github.com/jsdoc3/jsdoc">JSDoc <?js= env.version.number ?></a> on <?js= (new Date()) ?>
+    </footer>
+</div>
+
+</body>
+</html>

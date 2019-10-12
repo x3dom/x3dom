@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Animating Objects with Routes</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../viewpoint/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../onoutputchange/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Animating Objects with Routes</h2>
+        </div>            
+        <br>
+		
+        <p>
+		In this tutorial you will learn how to animate your objects with X3DOm. 
+        </p>
+		<p>
+		For animating an object you first need a scene and a shape. Surround the shape with a transform tag 
+		and define a name which you use to address it later. If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html"> here</a> first.</p>
+		<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+	&lt;transform DEF="ball"&gt; 
+	&lt;shape&gt;
+		&lt;appearance&gt;
+		&lt;material diffuseColor='1 0 0'&gt; &lt;/material&gt;
+		&lt;/appearance&gt;
+		&lt;sphere&gt;&lt;/sphere&gt;
+	&lt;/shape&gt;
+	&lt;/transform&gt; 
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+
+		 The next step is creating a timeSensor, which will start and loop the animation. The attribute "cycleInterval" specifies the duration 
+		 of the animation in seconds. The loop attributes default value is "true", but sometimes it leads to mistakes, so you should define it anyway.
+		 
+		 <pre class="prettyprint"><code class="language-html">
+	&lt;timeSensor DEF="time" cycleInterval="2" loop="true"&gt; &lt;/timeSensor&gt;
+        </code></pre>
+		<p>
+		The animations in X3DOM are based on the key frames animation. A <a href="http://en.wikipedia.org/wiki/Key_frame" target="_blank">key frame</a> 
+		defines the starting and ending points of any smooth transition, and the way in between will be interpolated.
+		Key Frames in X3DOM are defined within the positionInterpolator node. </p>
+		 <pre class="prettyprint"><code class="language-html">
+	&lt;PositionInterpolator DEF="move" key="0 0.5 1" keyValue="0 0 0  0 3 0  0 0 0"&gt; &lt;/PositionInterpolator&gt;       
+        </code></pre>
+		<p>
+		The key attribute defines the time of the keyFrames and the keyValue defines the position of the frames in coordinates (x,y,z).<br>
+		You can think about them as key-value pairs separated by spaces. In the given example our first frame would occur directly on start
+		with the coordinates (0,0,0), the second frame after half a the specified time (1sec) with the position (0,3,0) and the last frame after two second has 
+		the same coordinates as the first frame, which will create a proper animation loop. 
+		</p>
+		<p>
+		Now all the preconditions are set and you are ready to define your routes. Although routes are not x3 nodes, they are written as additional tags into the scene. Each route connects an output field of one node to the input field of another node. Every time the output changes, this event is transported over the route and the changed value gets set to the input field. The types of the field have to match exactly, but there is no imperative coding needed to assign the values.
+		All you have to do is to specify the names of start and end node as well as the names of the fields. All connected nodes must be specified before the route statement that uses them. You can use the same output field for multiple routes, but using multiple routes to change the same input field often leads to unpredictable behavior. Events get only passed in the scene if a matching route exists. This allows high frame rates.
+		<br><br>
+		In this tutorial, we need two routes. The first route binds the positionInterpolator to the timeSensor and the second route
+		binds the sphere to the positionInterpolator.
+		</p>
+		<pre class="prettyprint"><code class="language-html">
+	&lt;Route fromNode="time" fromField ="fraction_changed" toNode="move" toField="set_fraction&gt; &lt;/Route&gt; 
+	&lt;Route fromNode="move" fromField ="value_changed" toNode="ball" toField="translation&gt; &lt;/Route&gt;  
+        </code></pre>
+		<p>
+		Your animation should now work and you can modify and extend it as you want. If you want to manipulate the output data before sending it to the input field, check out the <a href="../onoutputchange/index.html">next tutorial about the OnOutputChange Event</a>.
+        </p>
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">My animated sphere</div>
+            </div>
+        </div> 
+
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="animate.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+           		<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+
+				<li><a href="../../../author/Shape/Material.html">Material</a></li>
+				
+				<li><a href="../../../author/Geometry3D/Sphere.html">Sphere</a></li>
+				
+				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

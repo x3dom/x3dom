@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Include an external X3D-File</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../basics/fields/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../aopt/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Include an external X3D-File</h2>
+        </div>            
+        <br>
+		
+        <p>
+		Sometimes we want scenes which are containing more than just some simple objects. In this tutorial you will learn how 
+		to import your own X3D models or Scenes into the X3DOM context. 
+		</p>
+		
+		<p>
+		For including X3D files X3DOM provides an Inline node. By using inline in the x3d context you are able to load external x3d files. 
+		<br>Those files could contain simple objects, complexer objects or even whole scenes, and the best part: You still can manipulate all parts of it.
+		Sounds good? Let's try it: 
+</p>
+        <pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+	&lt;inline url="myScene.x3d"&gt; &lt;/inline&gt; 
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+		
+		
+        <p>
+		Make sure that you close the <i>inline</i> tag, otherwise it can lead to strange behaviour. Do not use a self closing tag.
+		If you, for instance, include <a href="Deer.x3d">this X3D file</a>, using the <i>inline</i> node, your result could look like this: 
+        </p>
+		
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">An external X3D scene, loaded in X3DOM.</div>
+            </div>
+        </div>       
+
+<p>
+		To manipulate our model, it's necessary to make sure we don't have any name conflicts. 
+		Therefore we use a nameSpace. As shown in the previous example <a href="../../basics/htmlCSS/index.html">X3DOM, HTML, CSS and some JavaScript</a>
+		we access a node by it's ID. In order to get those ID's we set the attribute mapDEFToID on true.
+</p>
+
+        <pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+	&lt;inline nameSpaceName="Deer" mapDEFToID="true" onclick='redNose();' url="Deer.x3d" &gt;  &lt;/inline&gt;
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+Now we can access every node of our model by using the namespace prefix and a <span style="font-style:italic;">double underscore. </span>
+This allows us to change the deer's nose to a more reddish color by using a javaScript function as shown below.
+		<pre class="prettyprint"><code class="language-html">
+&lt;script&gt;
+    function redNose()
+    {
+        if(document.getElementById('Deer__MA_Nose').getAttribute('diffuseColor')!= '1 0 0')
+            document.getElementById('Deer__MA_Nose').setAttribute('diffuseColor', '1 0 0');
+        else
+            document.getElementById('Deer__MA_Nose').setAttribute('diffuseColor', '0 0 0');
+    }
+&lt;/script&gt;
+	   </code></pre>
+	   
+	   
+	   The positive side effect of using inline is that models will be load when the X3DOM context is ready, which results in an empty
+	   X3DOM context but not an empty page. The user can see and interact with the website while X3DOM loads the model and shows the loading status in the upper left corner of it's canvas.
+	   <p>
+	   However if your model is small, and by small we talking about less than a few thousand triangles, you can include it directly in your HTML page, without using inline. 
+	   </p>
+	   <pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+	&lt;Shape&gt;
+	&lt;Appearance&gt;
+	&lt;Material diffuseColor='0.6 0.6 0.6' specularColor='0.8 0.8 0.8' shininess='0.145' /&gt;
+	&lt;/Appearance&gt;
+	&lt;IndexedFaceSet solid='false' coordIndex='...'&gt; ... &lt;/IndexedFaceSet&gt;
+	&lt;/Shape&gt;
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+		
+		<p>
+		In this case, however, be aware of using closing tags, instead of self-closing tags.
+        The reason for this is that X3D files are usually using XML encoding, and you cannot directly insert XML content into HTML pages.<br>
+		Including small model data directly can have the advantage that your application doesn't need to run on a Web server,
+        but the Web page will have to be fully loaded (including all model data) before any page content is displayed.
+		</p>
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="inline.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/Networking/Inline.html">Inline</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>            
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

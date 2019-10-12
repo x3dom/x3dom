@@ -1,0 +1,66 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>X3DOM Shadow Example</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+</head>
+<body>
+<h1>Shadow Example</h1>
+<script>
+/**
+ * Change the settings of the directional light
+ *
+ * @param field string: Name of the field
+ * @param value number: New value to set
+ */
+function changeSetting(field, value)
+{
+    var dirLight = document.getElementById("directional");
+
+    dirLight.setAttribute(field, value);
+}
+
+</script>
+<div id="content">
+<x3d width='500px' height='400px'>
+    <scene>
+        <navigationInfo id="head" headlight='false' type='"EXAMINE"'></navigationInfo>
+        <background  skyColor="0 0 0"></background>
+        <directionalLight id="directional" direction='0 -1 0' on ="TRUE" intensity='1.0' shadowIntensity='0.5'  shadowCascades="1" shadowFilterSize="16" shadowMapSize="512">
+        </directionalLight>
+
+        <Shape>
+            <Appearance><Material diffuseColor="0 0 0.8"></Material></Appearance>
+            <Sphere radius="10"></Sphere>
+        </Shape>
+
+            <Transform translation="0 -12.5 0" rotation="1 0 0 -1.57">
+            <Shape>
+               <Appearance><Material diffuseColor="0.7 0.7 0.7"></Material></Appearance>
+               <Plane solid="false" size="50 50"></Plane>
+           </Shape>
+       </Transform>
+
+        <Viewpoint position="2.44723 13.11743 38.56844" orientation="-0.99727 0.07070 -0.02151 0.42839" ></Viewpoint>
+    </scene>
+</x3d>
+
+<div style="margin-left: 550px">
+    <b>shadowIntensity</b><br>
+    0 <input type="range" id="sliderShadowIntesity" min="0.0" max="1.0" step="0.05" value="0.5" onchange="changeSetting('shadowIntensity', this.value)"/>1<br>
+    <br>
+    <b>shadowMapSize</b><br>
+    32 <input type="range" id="sliderShadowMapSize" min="32" max="2048" value="512" onchange="changeSetting('shadowMapSize', this.value)" /> 2048<br>
+    <br>
+    <b>shadowFilterSize</b><br>
+    0 <input type="range" id="sliderShadowFilterSize" min="0" max="32" value="16" onchange="changeSetting('shadowFilterSize', this.value)" /> 32<br>
+    <br>
+    <b>shadowCascades</b><br>
+    0 <input type="range" id="sliderShadowCascades" min="0" max="10" value="1" onchange="changeSetting('shadowCascades', this.value)" /> 10<br>
+</div>
+
+</div>
+</body>
+</html>

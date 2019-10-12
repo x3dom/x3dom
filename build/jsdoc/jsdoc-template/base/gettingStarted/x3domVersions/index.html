@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Getting Started</title>    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
+    <script src="../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Picking an X3DOM Version</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../basicX3D/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../pythonSimpleHTTP/index.html" style="float:right;">Next Section &#8594;</a>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+            <h2>3. Picking an X3DOM Version</h2>
+            </div>            
+            <br>
+            
+            <h3>Versions and Components</h3>
+            <p>
+            There are several versions of X3DOM available, so you might be wondering which one is best for your particular purposes.
+            In general, we recommended to use the latest release version. However, if you require a new feature that is not yet available in the latest release, the dev version might also be interesting for you.
+			As soon as you have finished the main development work for your Web application, you might like to deploy it along with a downloaded snapshot of the version you used during development.
+            You might, for some reasons, also be interested in using an older release, maybe because it contained some experimental features which you used in your application, which were removed in a later X3DOM version.
+            </p>
+            All X3DOM releases, including the development version, are each available as a package of one javascript file (e.g., <code>x3dom.js</code>),
+            one css file (e.g., <code>x3dom.css</code>) and optionally one shockwave file (e.g., <code>x3dom.swf</code>, for versions with flash support) under <a href="http://x3dom.org/download/">http://x3dom.org/download/</a> for download:
+            <ul>
+                <li>Files for versions 1.0 to 1.2 are labeled with <code>x3dom-v</code>, followed by the version number (example: <a href="http://x3dom.org/download/x3dom-v1.1.js">http://x3dom.org/download/x3dom-v1.1.js</a>) and placed directly inside the folder.</li>
+                <br>
+                <li>Starting with version 1.3, the files <code>x3dom.js, x3dom.css, x3dom.swf</code> and a <code>.zip</code> archive containing the whole release are placed in a subfolder
+                    which is named after the version number (example: <a href="http://x3dom.org/download/1.3/x3dom.js">http://x3dom.org/download/1.3/x3dom.js</a>).</li>
+                <br>
+                <li>Starting with version 1.3, there are some additional components available, which are not part of the HTML profile. Those components are, however, included in a variant of the <code>x3dom.js</code>
+                    JavaScript file, which is entitled <code>x3dom-full.js</code>. If you require only one of the additional components, you might still decide to use the regular <code>x3dom.js</code> file and  additionally include only
+                    the component you are interested in via the matching file in the <code>components</code> subfolder of the corresponding release (for example: <a href="http://x3dom.org/download/1.3/components/">http://x3dom.org/download/1.3/components/</a>).</li>
+                <br>
+                <li>The latest stable release is always located under: <a href="http://x3dom.org/release/x3dom.js">http://x3dom.org/release/x3dom.js</a></li>
+                <br>
+                <li>The current development version is always located in the <code>dev</code> subfolder: <a href="http://x3dom.org/download/dev/x3dom.js">http://x3dom.org/download/dev/x3dom.js</a></li>
+                <br>
+            </ul>
+            
+            The following tags, which you can include in the head of your HTML page, use the latest stable release of X3DOM:            
+            <pre class="prettyprint"><code class="language-html">    
+    &lt;script src="http://www.x3dom.org/release/x3dom.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="http://www.x3dom.org/release/x3dom.css"&gt;
+            </code></pre>
+    
+			To use the current development version, which includes all cutting-edge features and fixes, use the following tags:
+			<pre class="prettyprint"><code class="language-html">    
+    &lt;script src="http://www.x3dom.org/download/dev/x3dom.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="http://www.x3dom.org/download/dev/x3dom.css"&gt;
+            </code></pre>
+			
+            To use the <i>X3DOM-Full</i> release of version 1.5, which includes the HTML profile plus all other components available, you would use the following lines:
+            <pre class="prettyprint"><code class="language-html">            
+    &lt;script src="http://www.x3dom.org/download/1.5/x3dom-full.js"&gt;&lt;/script&gt;                
+    &lt;link rel="stylesheet" href="http://www.x3dom.org/download/1.5/x3dom.css"&gt;            
+            </code></pre>
+            
+            Finally, to use the regular X3DOM release of version 1.3 plus the additional <i>Geospatial</i> component and with additional flash support, you could write:
+            <pre class="prettyprint"><code class="language-html">
+    &lt;script src="http://www.x3dom.org/download/1.3/x3dom.js"&gt;&lt;/script&gt;
+    &lt;script src="http://www.x3dom.org/download/1.3/components/Geospatial.js"&gt;&lt;/script&gt;                
+    &lt;script src="http://www.x3dom.org/download/1.3/x3dom.swf"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="http://www.x3dom.org/download/1.3/x3dom.css"&gt;                
+            </code></pre>
+            
+            <br>
+            
+            <h3>Debugging</h3>
+            <p>
+            If, for whatever reason, you would like to be able to look into the source code of X3DOM when debugging your application,
+            you can replace <code>x3dom.js</code> with <code>x3dom.debug.js</code>, and you can replace <code>x3dom-full.js</code> with <code>x3dom-full.debug.js</code>.
+            Please note that this feature is available from X3DOM version 1.4, and not available for older versions.
+            While the debug version, in contrast to the minified version, contains human-readable formatting and comments, it is also significantly larger
+            than the minified version. Therefore, it is not well-suited as a final version for the distribution of your Web application,
+            but only for temporary debugging purposes during application development.
+            </p>
+</div>
+
+</body>
+</html>
