@@ -43,7 +43,7 @@ x3dom.DDSLoader._read = function( source )
         return;
     }
     
-    let dds = 
+    var dds = 
     {
         isCompressed  : false,
         isVolume      : false,
@@ -52,7 +52,7 @@ x3dom.DDSLoader._read = function( source )
         data          : []
     };
 
-    let int32Buffer = new Uint32Array( source, 0, 32 );
+    var int32Buffer = new Uint32Array( source, 0, 32 );
     
     //Parse DDS Header
     dds.header = x3dom.DDSLoader._readHeader( int32Buffer );
@@ -277,7 +277,7 @@ x3dom.DDSLoader._readMiscFlags = function( miscFlag )
 
 x3dom.DDSLoader._readMiscFlags2 = function( miscFlag )
 {
-    let miscFlags2 = {};
+    var miscFlags2 = {};
     
     switch ( miscFlag )
     {
@@ -311,7 +311,7 @@ x3dom.DDSLoader._readData = function( dds, buffer, texture, options )
     dds.height = dds.header.dwHeight;
     dds.generateMipmaps = ( dds.numberOfMipmaps <= 1 && !dds.isCompressed );
     
-    for ( let i = 0; i < dds.numberOfImages; i++ )
+    for ( var i = 0; i < dds.numberOfImages; i++ )
     {
         width = dds.header.dwWidth;
         height = dds.header.dwHeight;
@@ -360,7 +360,7 @@ x3dom.DDSLoader._readData = function( dds, buffer, texture, options )
 
 x3dom.DDSLoader._readCompressedData = function( buffer, width, height, offset, blockSize )
 {
-    let length = Math.max( 1, parseInt( ( width + 3 ) / 4 ) ) * Math.max( 1, parseInt( ( height + 3 ) / 4 ) ) * blockSize;
+    var length = Math.max( 1, parseInt( ( width + 3 ) / 4 ) ) * Math.max( 1, parseInt( ( height + 3 ) / 4 ) ) * blockSize;
 
     return new Uint8Array( buffer.slice( offset, offset + length ) );
 }
@@ -444,7 +444,7 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
 
 x3dom.DDSLoader._readFormat = function( dds )
 {
-    let pixelFormat = dds.header.ddspf;
+    var pixelFormat = dds.header.ddspf;
 
     if ( pixelFormat.dwFlags.DDPF_FOURCC )
     {

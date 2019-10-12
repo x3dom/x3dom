@@ -1,1 +1,0 @@
-The folder contains GhostAPI files, which is the API provided by Lego for communication with RCX brick.
