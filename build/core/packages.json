@@ -422,7 +422,10 @@
             "Contour2D.js",
             "x3dom-nurbs-web-worker.js",
             "x3dom-nurbs-pool.js"
-        ],
+        ]
+    },
+    "PHYSICS":
+    {
         "src/nodes/RigidBodyPhysics/":
         [
             "RigidBodyPhysics.js",
@@ -439,6 +442,13 @@
             "UniversalJoint.js",
             "SingleAxisHingeJoint.js",
             "DoubleAxisHingeJoint.js"
+        ]
+    },
+    "AMMO":
+    {
+        "lib/":
+        [
+            "ammo.js"
         ]
     }
 }

@@ -12,7 +12,7 @@ const additionalFiles = require("./core/additionalFiles.json");
 //--------------------------------------------------------------------------------------------------
 
 const ROOT_FOLDER = "./";
-const DIST_FOLDER = "./dist-new/";
+const DIST_FOLDER = "./dist/";
 const VERSION     = package.version;
 const BUILD       = process.execSync('git rev-list --count HEAD').toString().trim();
 const REVISION    = process.execSync('git rev-parse HEAD').toString().trim();
@@ -81,7 +81,6 @@ async function build()
 
     fs.removeSync( DIST_FOLDER );
     fs.mkdirSync( DIST_FOLDER );
-    fs.mkdirSync( "./dist-new/libs" );
 
     console.log( "> Concat files ..." );
 
@@ -93,23 +92,35 @@ async function build()
 
     console.log( "> Uglify x3dom-full.js ..." );
 
-    versions[ "FULL_MIN" ] = uglify.minify( versions[ "FULL" ] ).code
+    versions[ "FULL_MIN" ] = uglify.minify( versions[ "FULL" ] ).code;
+
+    console.log( "> Uglify x3dom-physics.js ..." );
+
+    versions[ "PHYSICS_MIN" ] = uglify.minify( versions[ "PHYSICS" ] ).code
+
+    console.log( "> Write x3dom.debug.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom.debug.js", HEADER + versions[ "BASIC" ] );
 
     console.log( "> Write x3dom.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom.js", HEADER + versions[ "BASIC" ] );
+    fs.writeFileSync( DIST_FOLDER + "x3dom.js", HEADER + versions[ "BASIC_MIN" ] );
 
-    console.log( "> Write x3dom.min.js ..." );
+    console.log( "> Write x3dom-full.debug.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom.min.js", HEADER + versions[ "BASIC_MIN" ] );
+    fs.writeFileSync( DIST_FOLDER + "x3dom-full.debug.js", HEADER + versions[ "FULL" ] );
 
     console.log( "> Write x3dom-full.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom-full.js", HEADER + versions[ "FULL" ] );
+    fs.writeFileSync( DIST_FOLDER + "x3dom-full.js", HEADER + versions[ "FULL_MIN" ] );
 
-    console.log( "> Write x3dom-full.min.js ..." );
+    console.log( "> Write x3dom-physics.debug.js ..." );
 
-    fs.writeFileSync( DIST_FOLDER + "x3dom-full.min.js", HEADER + versions[ "FULL_MIN" ] );
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.debug.js", HEADER + versions[ "PHYSICS" ] + versions[ "AMMO" ] );
+
+    console.log( "> Write x3dom-physics.js ..." );
+
+    fs.writeFileSync( DIST_FOLDER + "x3dom-physics.js", HEADER + versions[ "PHYSICS_MIN" ] + versions[ "AMMO" ]  );
 
     console.log( "> Write VERSION ..." );
 
