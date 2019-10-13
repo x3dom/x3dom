@@ -50,6 +50,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
     this.vrDisplay = null;
     this.vrDisplayPromise = null;
     this.vrFrameData = null;
+    this.supportsPassiveEvents = false;
 
     this.devicePixelRatio = window.devicePixelRatio || 1;
 
@@ -177,9 +178,32 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	this.disableMiddleDrag = x3dElem.getAttribute("disableMiddleDrag");
 	this.disableMiddleDrag = this.disableMiddleDrag ? (this.disableMiddleDrag.toLowerCase() == "true") : false;
 
+    this.detectPassiveEvents();
+
     this.bindEventListeners();
 };
 
+x3dom.X3DCanvas.prototype.detectPassiveEvents = function()
+{
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function')
+    {
+        var passive = false;
+
+        var options = Object.defineProperty({}, 'passive',
+        {
+          get() { passive = true; },
+        });
+        // note: have to set and remove a no-op listener instead of null
+        // (which was used previously), becasue Edge v15 throws an error
+        // when providing a null callback.
+        // https://github.com/rafrex/detect-passive-events/pull/3
+        var noop = () => {};
+        window.addEventListener('testPassiveEventSupport', noop, options);
+        window.removeEventListener('testPassiveEventSupport', noop, options);
+
+        this.supportsPassiveEvents = passive;
+    }
+}
 
 x3dom.X3DCanvas.prototype.bindEventListeners = function() {
     var that = this;
@@ -431,7 +455,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
 
         this.canvas.addEventListener('DOMMouseScroll', this.onDOMMouseScroll, false);
 
-        this.canvas.addEventListener('mousewheel', this.onMouseWheel, false);
+        this.canvas.addEventListener('mousewheel', this.onMouseWheel, this.supportsPassiveEvents ? {passive: true} : false);
 
 
         // Key Events
@@ -783,8 +807,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         if (!this.disableTouch)
         {
             // w3c / apple touch events (in Chrome via chrome://flags)
-            this.canvas.addEventListener('touchstart',    touchStartHandler, true);
-            this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
+            this.canvas.addEventListener('touchstart',    touchStartHandler, this.supportsPassiveEvents ? {passive: true} : true);
+            this.canvas.addEventListener('touchmove',     touchMoveHandler,  this.supportsPassiveEvents ? {passive: true} : true);
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
