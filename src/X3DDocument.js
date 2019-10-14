@@ -21,6 +21,7 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
     this._viewarea = null;      // Viewport, handles rendering and interaction
     this.downloadCount = 0;     // Counter for objects to be loaded
     this.previousDownloadCount = 0;
+    this.mutationObserver = new MutationObserver(this.onMutation.bind(this));
 
     // bag for pro-active (or multi-core-like) elements
     this._nodeBag = {
@@ -193,131 +194,144 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         return parentNode;
     }
 
-    // Test capturing DOM mutation events on the X3D subscene
-    var domEventListener = {
-        onAttrModified: function(e) {
-            if ('_x3domNode' in e.target) {
-                var attrToString = {
-                    1: "MODIFICATION",
-                    2: "ADDITION",
-                    3: "REMOVAL"
-                };
-                //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
-                e.target._x3domNode.updateField(e.attrName, e.newValue);
-                doc.needRender = true;
-            }
-        },
+    //TODO remove if the new MutationObserver works like expected and nobody complains 
+    // // Test capturing DOM mutation events on the X3D subscene
+    // var domEventListener = {
+    //     onAttrModified: function(e) {
+    //         if ('_x3domNode' in e.target) {
 
-        onNodeRemoved: function(e) {
-            var domNode = e.target;
-            if (!domNode)
-                return;
+    //             console.log("change");
 
-            var parentNode = getParentNode(domNode);
+    //             var attrToString = {
+    //                 1: "MODIFICATION",
+    //                 2: "ADDITION",
+    //                 3: "REMOVAL"
+    //             };
+    //             //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
+    //             e.target._x3domNode.updateField(e.attrName, e.newValue);
+    //             doc.needRender = true;
+    //         }
+    //     },
 
-            if ('_x3domNode' in parentNode && '_x3domNode' in domNode) {
-                var parent = parentNode._x3domNode;
-                var child = domNode._x3domNode;
+    //     onNodeRemoved: function(e) {
+    //         var domNode = e.target;
+    //         if (!domNode)
+    //             return;
 
-                if (parent && child) {
-                    parent.removeChild(child);
-                    parent.nodeChanged();
+                
 
-                    removeX3DOMBackendGraph(domNode);
+    //         var parentNode = getParentNode(domNode);
 
-                    if (doc._viewarea && doc._viewarea._scene) {
-                        doc._viewarea._scene.nodeChanged();
-                        doc._viewarea._scene.updateVolume();
-                        doc.needRender = true;
-                    }
-                }
-            }
-            else if (domNode.localName && domNode.localName.toUpperCase() == "ROUTE" && domNode._nodeNameSpace) {
-                var fromNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('fromNode')];
-                var toNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('toNode')];
+    //         if ('_x3domNode' in parentNode && '_x3domNode' in domNode) {
 
-                if (fromNode && toNode) {
-                    fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
-                }
-            }
-            else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
-                var runtime = domNode.runtime;
+    //             console.log("remove");
+    //             var parent = parentNode._x3domNode;
+    //             var child = domNode._x3domNode;
 
-                if (runtime && runtime.canvas && runtime.canvas.doc && runtime.canvas.doc._scene) {
-                    var sceneNode = runtime.canvas.doc._scene._xmlNode;
+    //             if (parent && child) {
+    //                 parent.removeChild(child);
+    //                 parent.nodeChanged();
 
-                    removeX3DOMBackendGraph(sceneNode);
+    //                 removeX3DOMBackendGraph(domNode);
 
-                    // also clear corresponding X3DCanvas element
-                    for (var i=0; i<x3dom.canvases.length; i++) {
-                        if (x3dom.canvases[i] === runtime.canvas) {
-                            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
-                            x3dom.canvases.splice(i, 1);
-                            break;
-                        }
-                    }
+    //                 if (doc._viewarea && doc._viewarea._scene) {
+    //                     doc._viewarea._scene.nodeChanged();
+    //                     doc._viewarea._scene.updateVolume();
+    //                     doc.needRender = true;
+    //                 }
+    //             }
+    //         }
+    //         else if (domNode.localName && domNode.localName.toUpperCase() == "ROUTE" && domNode._nodeNameSpace) {
+    //             var fromNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('fromNode')];
+    //             var toNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('toNode')];
 
-                    runtime.canvas.doc._scene = null;
-                    runtime.canvas.doc._viewarea = null;
-                    runtime.canvas.doc = null;
-                    runtime.canvas = null;
-                    runtime = null;
+    //             if (fromNode && toNode) {
+    //                 fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
+    //             }
+    //         }
+    //         else if (domNode.localName && domNode.localName.toUpperCase() == "X3D") {
+    //             var runtime = domNode.runtime;
 
-                    domNode.context = null;
-                    domNode.runtime = null;
-                }
-            }
-        },
+    //             if (runtime && runtime.canvas && runtime.canvas.doc && runtime.canvas.doc._scene) {
+    //                 var sceneNode = runtime.canvas.doc._scene._xmlNode;
 
-        onNodeInserted: function(e) {
-            var child = e.target;
-            var parentNode = getParentNode(child);
+    //                 removeX3DOMBackendGraph(sceneNode);
 
-            // only act on x3dom nodes, ignore regular HTML
-            if ('_x3domNode' in parentNode) {
-				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
-                    parentNode.tagName.toLowerCase() == 'multipart') {
-                    // do nothing
-				}
-				else {
-					var parent = parentNode._x3domNode;
+    //                 // also clear corresponding X3DCanvas element
+    //                 for (var i=0; i<x3dom.canvases.length; i++) {
+    //                     if (x3dom.canvases[i] === runtime.canvas) {
+    //                         x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+    //                         x3dom.canvases.splice(i, 1);
+    //                         break;
+    //                     }
+    //                 }
 
-					if (parent && parent._nameSpace && (child instanceof Element)) {
+    //                 runtime.canvas.doc._scene = null;
+    //                 runtime.canvas.doc._viewarea = null;
+    //                 runtime.canvas.doc = null;
+    //                 runtime.canvas = null;
+    //                 runtime = null;
 
-                        if (x3dom.caps.DOMNodeInsertedEvent_perSubtree)
-                        {
-                            removeX3DOMBackendGraph(child);    // not really necessary...
-                        }
+    //                 domNode.context = null;
+    //                 domNode.runtime = null;
+    //             }
+    //         }
+    //     },
 
-                        var newNode = parent._nameSpace.setupTree(child);
+    //     onNodeInserted: function(e) {
+    //         var child = e.target;
+    //         var parentNode = getParentNode(child);
 
-                        parent.addChild(newNode, child.getAttribute("containerField"));
-                        parent.nodeChanged();
+    //         // only act on x3dom nodes, ignore regular HTML
+    //         if ('_x3domNode' in parentNode) {
 
-                        var grandParentNode = parentNode.parentNode;
-                        if (grandParentNode && grandParentNode._x3domNode)
-                            grandParentNode._x3domNode.nodeChanged();
+    //             console.log("insert");
 
-                        if (doc._viewarea && doc._viewarea._scene) {
-                            doc._viewarea._scene.nodeChanged();
-                            doc._viewarea._scene.updateVolume();
-                            doc.needRender = true;
-                        }
-					}
-					else {
-						x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
-					}
-				}
-            }
-        }
-    };
+	// 			if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
+    //                 parentNode.tagName.toLowerCase() == 'multipart') {
+    //                 // do nothing
+	// 			}
+	// 			else {
+	// 				var parent = parentNode._x3domNode;
 
-    //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);
-    sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
-    sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
-    if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
-        sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
-    }
+	// 				if (parent && parent._nameSpace && (child instanceof Element)) {
+
+    //                     if (x3dom.caps.DOMNodeInsertedEvent_perSubtree)
+    //                     {
+    //                         removeX3DOMBackendGraph(child);    // not really necessary...
+    //                     }
+
+    //                     var newNode = parent._nameSpace.setupTree(child);
+
+    //                     parent.addChild(newNode, child.getAttribute("containerField"));
+    //                     parent.nodeChanged();
+
+    //                     var grandParentNode = parentNode.parentNode;
+    //                     if (grandParentNode && grandParentNode._x3domNode)
+    //                         grandParentNode._x3domNode.nodeChanged();
+
+    //                     if (doc._viewarea && doc._viewarea._scene) {
+    //                         doc._viewarea._scene.nodeChanged();
+    //                         doc._viewarea._scene.updateVolume();
+    //                         doc.needRender = true;
+    //                     }
+	// 				}
+	// 				else {
+	// 					x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
+	// 				}
+	// 			}
+    //         }
+    //     }
+    // };
+
+    // //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);
+    // sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
+    // sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
+    // if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
+    //     sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
+    // }
+
+    this.mutationObserver.observe(sceneDoc, { attributes: true, attributeOldValue: true, childList: true, subtree: true });
 
     // sceneDoc is the X3D element here...
     var sceneElem = x3dom.findScene(sceneDoc);
@@ -759,4 +773,287 @@ x3dom.X3DDocument.prototype.incrementDownloads = function()
 x3dom.X3DDocument.prototype.decrementDownloads = function()
 {
     this.downloadCount--;
+}
+
+x3dom.X3DDocument.prototype.cleanNodeBag = function (bag, node)
+{
+    for (var i=0, n=bag.length; i<n; i++)
+    {
+        if (bag[i] === node)
+        {
+            bag.splice(i, 1);
+            break;
+        }
+    }
+}
+
+x3dom.X3DDocument.prototype.removeX3DOMBackendGraph = function (domNode)
+{
+    var children = domNode.childNodes;
+
+    for (var i=0, n=children.length; i<n; i++)
+    {
+        this.removeX3DOMBackendGraph(children[i]);
+    }
+
+    if (domNode._x3domNode)
+    {
+        var node = domNode._x3domNode;
+        var nameSpace = node._nameSpace;
+
+        if (x3dom.isa(node, x3dom.nodeTypes.X3DShapeNode))
+        {
+            if (node._cleanupGLObjects)
+            {
+                node._cleanupGLObjects(true);
+                // TODO: more cleanups, e.g. texture/shader cache?
+            }
+            if (x3dom.nodeTypes.Shape.idMap.nodeID[node._objectID])
+            {
+                delete x3dom.nodeTypes.Shape.idMap.nodeID[node._objectID];
+            }
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.TimeSensor))
+        {
+            this.cleanNodeBag(this._nodeBag.timer, node);
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.X3DLightNode))
+        {
+            this.cleanNodeBag(this._nodeBag.lights, node);
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.X3DFollowerNode))
+        {
+            this.cleanNodeBag(this._nodeBag.followers, node);
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.X3DTransformNode))
+        {
+            this.cleanNodeBag(this._nodeBag.trans, node);
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.RenderedTexture))
+        {
+            this.cleanNodeBag(this._nodeBag.renderTextures, node);
+            if (node._cleanupGLObjects)
+            {
+                node._cleanupGLObjects();
+            }
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.X3DPointingDeviceSensorNode))
+        {
+            this.cleanNodeBag(this._nodeBag.affectedPointingSensors, node);
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.Texture))
+        {
+            node.shutdown();    // general texture might have video
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.AudioClip))
+        {
+            node.shutdown();
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.X3DBindableNode))
+        {
+            var stack = node._stack;
+            if (stack)
+            {
+                node.bind(false);
+                this.cleanNodeBag(stack._bindBag, node);
+            }
+            // Background may have geometry
+            if (node._cleanupGLObjects)
+            {
+                node._cleanupGLObjects();
+            }
+        }
+        else if (x3dom.isa(node, x3dom.nodeTypes.Scene))
+        {
+            if (node._webgl)
+            {
+                node._webgl = null;
+                // TODO; explicitly delete all gl objects
+            }
+        }
+
+        //do not remove node from namespace if it was only "USE"d
+        if (nameSpace && !(domNode.getAttribute('use') || domNode.getAttribute('USE')))
+        {
+            nameSpace.removeNode(node._DEF);
+        }
+        node._xmlNode = null;
+
+        delete domNode._x3domNode;
+    }
+}
+
+x3dom.X3DDocument.prototype.getParentNode = function (parentNode)
+{
+    // move dom up if parent is metagroup
+    if ( parentNode && parentNode.localName.toLowerCase() == "x3dommetagroup" )
+    {
+        parentNode = this.getParentNode(parentNode.parentNode);
+    }
+
+    return parentNode;
+}
+
+x3dom.X3DDocument.prototype.onAttributeChanged = function( target, attributeName, attributeValue )
+{
+    target._x3domNode.updateField( attributeName, attributeValue );
+
+    this.needRender = true;
+}
+
+x3dom.X3DDocument.prototype.onNodeRemoved =  function( removedNode, target )
+{
+    var domNode = removedNode;
+
+    if (!domNode)
+    {
+        return;
+    }
+
+    var parentNode = this.getParentNode(target);
+        
+    if (parentNode && '_x3domNode' in parentNode && '_x3domNode' in domNode)
+    {
+        var parent = parentNode._x3domNode;
+        var child = domNode._x3domNode;
+
+        if (parent && child) {
+            parent.removeChild(child);
+            parent.nodeChanged();
+
+            this.removeX3DOMBackendGraph(domNode);
+
+            if (this._viewarea && this._viewarea._scene)
+            {
+                this._viewarea._scene.nodeChanged();
+                this._viewarea._scene.updateVolume();
+                this.needRender = true;
+            }
+        }
+    }
+    else if (domNode.localName &&
+             domNode.localName.toUpperCase() == "ROUTE" &&
+             domNode._nodeNameSpace)
+    {
+        var fromNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('fromNode')];
+        var toNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('toNode')];
+
+        if (fromNode && toNode)
+        {
+            fromNode.removeRoute(domNode.getAttribute('fromField'),
+                                 toNode,
+                                 domNode.getAttribute('toField'));
+        }
+    }
+    else if (domNode.localName && domNode.localName.toUpperCase() == "X3D")
+    {
+        var runtime = domNode.runtime;
+
+        if (runtime && runtime.canvas && runtime.canvas.doc && runtime.canvas.doc._scene)
+        {
+            var sceneNode = runtime.canvas.doc._scene._xmlNode;
+
+            this.removeX3DOMBackendGraph(sceneNode);
+
+            // also clear corresponding X3DCanvas element
+            for (var i=0; i<x3dom.canvases.length; i++)
+            {
+                if (x3dom.canvases[i] === runtime.canvas)
+                {
+                    x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+                    x3dom.canvases.splice(i, 1);
+                    break;
+                }
+            }
+
+            runtime.canvas.doc._scene = null;
+            runtime.canvas.doc._viewarea = null;
+            runtime.canvas.doc = null;
+            runtime.canvas = null;
+            runtime = null;
+
+            domNode.context = null;
+            domNode.runtime = null;
+        }
+    }
+}
+
+x3dom.X3DDocument.prototype.onNodeAdded = function( addedNode, target )
+{
+    var child = addedNode,
+        parentNode = this.getParentNode(target);
+
+    if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline' ||
+        parentNode.tagName.toLowerCase() == 'multipart')
+    {
+        return;
+    }
+
+    var parent = parentNode._x3domNode;
+
+    if ( !parent || !parent._nameSpace || !(child instanceof Element) )
+    {
+        x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
+        return;
+    }
+
+    if (x3dom.caps.DOMNodeInsertedEvent_perSubtree)
+    {
+        this.removeX3DOMBackendGraph(child);    // not really necessary...
+    }
+
+    var newNode = parent._nameSpace.setupTree(child);
+
+    parent.addChild(newNode, child.getAttribute("containerField"));
+    parent.nodeChanged();
+
+    var grandParentNode = parentNode.parentNode;
+
+    if (grandParentNode && grandParentNode._x3domNode)
+    {
+        grandParentNode._x3domNode.nodeChanged();
+    }
+
+    if (this._viewarea && this._viewarea._scene)
+    {
+        this._viewarea._scene.nodeChanged();
+        this._viewarea._scene.updateVolume();
+        this.needRender = true;
+    }
+}
+
+x3dom.X3DDocument.prototype.onMutation = function( records )
+{
+    for ( var i = 0, n = records.length; i < n; i++ )
+    {
+        if ( !records[i].target["_x3domNode"] )
+        {
+            continue;
+        }
+
+        if ( records[i].type === "attributes" && records[i].oldValue )
+        {
+            this.onAttributeChanged( records[ i ].target,
+                                     records[ i ].attributeName,
+                                     records[ i ].target[ records[ i ].attributeName ] );
+        }
+        else if ( records[i].type === "childList" )
+        {
+            if( records[i].removedNodes.length )
+            {
+                for( var j = 0, k = records[i].removedNodes.length; j < k; j++ )
+                {
+                    this.onNodeRemoved( records[ i ].removedNodes[ j ], records[ i ].target );
+                }
+            }
+
+            if( records[i].addedNodes.length )
+            {
+                for( var j = 0, k = records[i].addedNodes.length; j < k; j++ )
+                {
+                    this.onNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
+                }
+            }
+        }
+    }
 }
