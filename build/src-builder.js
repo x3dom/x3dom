@@ -16,6 +16,7 @@ const DIST_FOLDER = "./dist/";
 const VERSION     = package.version;
 const BUILD       = process.execSync('git rev-list --count HEAD').toString().trim();
 const REVISION    = process.execSync('git rev-parse HEAD').toString().trim();
+const DATE        = process.execSync('git log -1 --format=%cd').toString().trim();
 
 //--------------------------------------------------------------------------------------------------
 
@@ -23,7 +24,7 @@ const HEADER = `/**
  * X3DOM ${VERSION}
  * Build : ${BUILD}
  * Revision: ${REVISION}
- * Date: ${new Date()}
+ * Date: ${DATE}
  */
 `;
 
@@ -32,7 +33,7 @@ const HEADER = `/**
 const VERSION_FILE = `X3DOM ${VERSION}
 Build : ${BUILD}
 Revision: ${REVISION}
-Date: ${new Date()}
+Date: ${DATE}
 `;
 
 //--------------------------------------------------------------------------------------------------
