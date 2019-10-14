@@ -675,7 +675,7 @@ x3dom.gfx_webgl = (function() {
         } else if (x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry)) {
             x3dom.BinaryContainerLoader.setupPopGeo(shape, sp, gl, viewarea, this);
         } else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry)) {
-            x3dom.inryContainerLoader.setupImgGeo(shape, sp, gl, viewarea, this);
+            x3dom.BinaryContainerLoader.setupImgGeo(shape, sp, gl, viewarea, this);
         } else {
             // No special BinaryMesh, but IFS or similar
             for (q = 0; q < shape._webgl.positions.length; q++) {
