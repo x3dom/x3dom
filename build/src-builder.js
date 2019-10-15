@@ -13,10 +13,12 @@ const additionalFiles = require("./core/additionalFiles.json");
 
 const ROOT_FOLDER = "./";
 const DIST_FOLDER = "./dist/";
+const GIT_FOLDER  = "./.git/";
 const VERSION     = package.version;
-const BUILD       = process.execSync('git rev-list --count HEAD').toString().trim();
-const REVISION    = process.execSync('git rev-parse HEAD').toString().trim();
-const DATE        = process.execSync('git log -1 --format=%cd').toString().trim();
+const IS_GIT      = fs.existsSync( GIT_FOLDER );
+const BUILD       = IS_GIT ? process.execSync('git rev-list --count HEAD').toString().trim() : "Not available";
+const REVISION    = IS_GIT ? process.execSync('git rev-parse HEAD').toString().trim()        : "Not available";
+const DATE        = IS_GIT ? process.execSync('git log -1 --format=%cd').toString().trim()   : new Date();
 
 //--------------------------------------------------------------------------------------------------
 
