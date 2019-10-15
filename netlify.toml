@@ -28,26 +28,15 @@
   publish = "dist/"
   command = '''
   echo "build command: started..." &&
-  echo "build command: python manage.py --build &> build.log ..." &&
-  python manage.py --build &> build.log &&
-  npm install uglify-es -g &&
-  cd dist &&
-  echo "build command: uglifyjs x3dom.js -o x3dom.min.js -c -m && ..." &&
-  uglifyjs x3dom.js -o x3dom.min.js -c -m &&
-  echo "build command: uglifyjs x3dom-full.js -o x3dom-full.min.js -c -m && ..." &&
-  uglifyjs x3dom-full.js -o x3dom-full.min.js -c -m &&
-  echo "build command: uglifyjs x3dom-full-physics.js -o x3dom-full-physics.min.js -c -m && ..." &&
-  uglifyjs x3dom-full-physics.js -o x3dom-full-physics.min.js -c -m &&
-  cd ../ &&
+  echo "build command: npm install &> build.log ..." &&
+  npm install &> build.log &&
+  echo "build command: npm run build &>> build.log ..." &&
+  npm run build &>> build.log &&
   echo "generate tests: sh/test/generateTestPage.sh" &&
   echo "generateTestPage.sh:" &&
   cat test/generateTestPage.sh &&
   sh test/generateTestPage.sh &&
-  echo "build doc command: cd doc & sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc ..." &&
-  cd doc &&
-  sh jsdoc-releases-3.1/jsdoc --verbose -c jsdoc.conf --destination ../dist/doc &&
-  echo "build command: cd ../ && cat <<HTMLEND > dist/index.html" &&
-  cd ../ &&
+  echo "build command: cat <<HTMLEND > dist/index.html" &&
   cat <<HTMLEND > dist/index.html
 <html>
   <head>
