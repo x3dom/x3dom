@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Getting Started</title>    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
+    <script src="../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Running X3DOM Applications with a Simple Python Server</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../x3domVersions/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../webServer/index.html" style="float:right;">Next Section &#8594;</a>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+            <h2>4.1 Running X3DOM Applications with a Simple Python Server</h2>
+            </div>            
+            <br>
+            
+            <p>
+            A very quick and convenient method to test your Web applications with a simple server is to use python's HTTP server module.
+            This just requires that you have a python interpreter installed. You can download one from <a href="http://python.org/">python.org</a>.
+            You can do a lot of useful things with python, and it also comes with a module that offers basic HTTP server functionality.
+            To use it, open a command line window (no matter which operating system you are using) and navigate to the folder where your X3DOM application is located.
+            If you are using a Python 2.X version, you can then launch the <code>SimpleHTTP</code> server module as a standalone application from the command line:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-sh">
+    python -m SimpleHTTPServer
+            </code></pre>
+            
+            <p>
+            If you are running a Python 3.x version, the command looks slightly different:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-sh">
+    python3 -m http.server
+            </code></pre>
+            
+            <p>
+            By default, the server is using port 8000. If you want to change this behavior, you can specify another port number by simply appending it to the command.
+            For Python 2.x, using port 8023 will, for example, look like this:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-sh">
+    python -m SimpleHTTPServer 8023
+            </code></pre>
+            
+            <p>
+            You can then reach the server by opening your browser and navigating to <code>localhost</code> and by using the port you specified, for example:
+            </p>
+            
+            <pre class="prettyprint"><code class="language-sh">
+    http://localhost:8023
+            </code></pre>
+            
+            <p>If you have placed an <code>index.html</code> file inside the directory from which you started the python server,
+            this file should now be displayed inside your browser. Otherwise, you will see a listing of the files in the directory,
+            and you can browse through the files to launch your website.</p>
+</div>
+
+</body>
+</html>

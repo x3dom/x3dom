@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>simple AR</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../screenshot/index.html" style="float:left;">&#8592; Previous Section</a>
+        <!--<a class="btn btn-primary" href="" style="float:right;">Next Section &#8594;</a>-->
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>A simple augmented reality application</h2>
+        </div>            
+        <br>
+		
+        <p>
+		Augmented reality (AR) is the integration of digital information with live video or the user's environment in real time. 
+		In this tutorial you will learn how build a simple AR Application with X3DOM. The goal is to render a 3D-Model on top of a marker filmed by a web-cam. 
+		In order to keep it simple we will use the <a href="https://github.com/kig/JSARToolKit">JSARToolKit</a> and to access the webCam we use the navigator.getUserMedia() method. It is only available in HTML 5, so if you are not sure
+		if your browser is supporting it properly you can test <a href="http://html5test.com/">here</a>.
+        </p>
+		<p>
+		There are really good tutorials available about getting <a href="http://www.html5rocks.com/en/tutorials/getusermedia/intro/" target="blank">access to the webcam with the getUserMedia()</a> method and one really good tutorial about the initialisation of the <a href="http://www.html5rocks.com/en/tutorials/webgl/jsartoolkit_webrtc/">JSARToolKit</a>, which is why we will only
+		provide a theoretical overview about the techniques and a detailed manual for showing your augmenting in x3dom. The example at the bottom of the page is a fully commented one, so if you stuck completely that might be helpful. 
+		<p>
+		The navigator.getUserMedia() passes you a video stream which can be displayed with an html5 &lt;video&gt; tag, but the JSARToolKit needs single frames to detect markers. So you first draw your video frame by frame on the canvas
+		and tell the ToolKit <span style="background-color:lightgrey"> canvas.changed = true</span>. The ToolKit takes every frame and searches by using rasterization to find the marker and calculates the marker position. 
+		The resulting matrix is what we need to draw our 3D Model to the right position on the canvas.
+		</p>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='theorie.png'>
+            </div>
+        </div> 
+		<h3>Creating the X3DOM context</h3>
+		<p>
+		Add a 3DOM tag to your index.html, create a scene and add an empty &lt;viewfrustum&gt; with an id. Then add a &lt;matrixtransform id="root"&gt; node and inside the model you want to display.<br>
+		The MatrixTransform node is where you will use the matrix you get from the toolkit after modifying it a bit.
+		That should look similar to this: 
+		</p>
+		<pre class="prettyprint"><code class="language-javascript">
+&lt;X3D id="x3d" width="640px" height="480px"&gt;
+            &lt;Scene&gt;
+                &lt;Viewfrustum id="vf"&gt;&lt;/Viewfrustum&gt;
+                &lt;MatrixTransform id="root"&gt;
+                    &lt;Transform rotation="0 1 0 3.14159265359"&gt;
+                            &lt;transform translation="0 0 0.2"&gt;
+                                &lt;shape&gt;
+                                    &lt;appearance&gt;
+                                        &lt;material diffuseColor="0.5 1 0"&gt;&lt;/material&gt;
+                                    &lt;/appearance&gt;
+                                    &lt;box size="60 60 60">&lt;/box&gt;
+                                &lt;/shape&gt;
+                            &lt;/transform&gt;
+                    &lt;/Transform&gt;
+                &lt;/MatrixTransform&gt;
+            &lt;/Scene&gt;
+        &lt;/X3D&gt;
+</code></pre>
+<h3>Adapt the Viewport</h3>
+<p>
+You need to make some minor changes in your JSARToolKit initialization in order to get the viewport right.
+It is quite easy, you just take the clipping planes which are specified in the X3DOM viewfrustum and the current perspective matrix.
+The X3DOM runtime API provides proxy object to programmatically read and modify runtime parameters. The runtime proxy is attached to each X3D element and can be used 
+as shown below to get the perspective matrix.
+</p>
+<pre class="prettyprint"><code class="language-javascript">
+ var camera = document.getElementById("vf");
+
+    var zNear = camera.getNear();
+    var zFar = camera.getFar();
+    var perspectiveMatrix = runtime.projectionMatrix().toGL();
+
+    param.copyCameraMatrix(perspectiveMatrix, zNear, zFar);
+
+    var proj = new x3dom.fields.SFMatrix4f();
+    proj.setFromArray(perspectiveMatrix);
+    proj._22 *= -1;
+    proj._32 *= -1;
+
+    camera.setAttribute("projection", proj.toGL().toString());
+	</code></pre>
+
+
+<h3>Handling the matrix</h3>
+<p>You need to flip the matrix, cause the camera image is flipped. </p>
+<pre class="prettyprint"><code class="language-javascript">
+function adaptMarkerMatrix(arMat)
+{
+    var tmpMat = new x3dom.fields.SFMatrix4f(
+        arMat.m00,  arMat.m01,  arMat.m02,  arMat.m03,
+        arMat.m10,  arMat.m11,  arMat.m12,  arMat.m13,
+        arMat.m20,  arMat.m21,  arMat.m22,  arMat.m23,
+        0,          0,          0,          1);
+
+    var translation = new x3dom.fields.SFVec3f(0,0,0),
+        scale = new x3dom.fields.SFVec3f(1,1,1);
+    var rotation = new x3dom.fields.Quaternion(0,0,1,0),
+        scaleOrient = new x3dom.fields.Quaternion(0,0,1,0);
+
+    tmpMat.getTransform(translation, rotation, scale, scaleOrient);
+
+    // camera image is flipped, therefore flip orientation, too
+    rotation.y *= -1;
+    rotation.z *= -1;
+    translation.y *= -1;
+    translation.z *= -1;
+
+    tmpMat = rotation.toMatrix();
+    tmpMat.setTranslate(translation);
+
+    return tmpMat;
+}
+</code></pre>
+
+
+<h3>draw model to your scene</h3>
+		<p>
+		With your detector you should be able to get an array of results, put them to your result matrix and set it as Attribute to your matrixTransform node. 
+		</p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+ var markerCount = detector.detectMarkerLite(raster, threshold);
+
+    for (var i=0; i&lt;markerCount; i++) {
+        // Get the marker matrix into the result matrix.
+        detector.getTransformMatrix(i, resultMat);
+
+        // Copy the marker matrix to the tmp matrix.
+        var tmpMat = adaptMarkerMatrix(resultMat);
+
+        // Copy the marker matrix over to your marker root object.
+        root.setAttribute("matrix", tmpMat.toGL().toString());
+		</code></pre>
+		<p>
+		
+		Hopefully your augmented reality application is working fine (if not take a look to the example), feel free to extend and improve it as you want. 
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">SimpleAR Sample</div>
+            </div>
+        </div> 
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>  
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="simpleAR.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <!-- h2>Read more about the X3DOM nodes used in this tutorial:</h2>
+            <ul>
+				<li><a href="../../../author/Networking/Inline.html">Inline</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+            </ul-->
+        </div>
+
+</div>
+
+</body>
+</html>

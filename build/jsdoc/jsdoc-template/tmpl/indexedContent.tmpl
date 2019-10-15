@@ -1,0 +1,30 @@
+<?js
+    self = this;
+?>
+<section>
+    <h3 class="subsection-title" style="text-align:center;"><?js= title ?> Index</h3>
+    <div class="overviewContainer">
+
+    <ul>
+        <?js
+            var currentChar = '@';
+
+            for(var i in indexed)
+            {
+                var entry = indexed[i];
+
+                if (letterHeadline && entry.name[0].toUpperCase() > currentChar)
+                {
+                    currentChar = entry.name[0].toUpperCase();
+        ?>
+            <h4><?js= currentChar ?></h4>
+        <?js } ?>
+        <li>
+            <a href="<?js= entry.url  ?>">
+                <?js= entry.name ?>
+            </a>
+        </li>
+        <?js } ?>
+    </ul>
+    </div>
+</section>

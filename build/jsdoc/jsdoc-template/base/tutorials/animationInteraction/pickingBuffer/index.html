@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Picking Buffer Modes</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../picking/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../../lighting/lights/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Using different Picking Buffer Modes</h2>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial will show you how to pick detailed information like color or textures instead of shape IDs. In the <a href="../picking/index.html">previous tutorial</a> we already described how X3DOM uses a picking buffer to get information about the point you clicked. It can be set to different modes. The default mode is <i>idBuf</i>. It is used implicitly if you do not specify another mode.
+		</p>
+		
+		<pre class="prettyprint"><code class="language-html">
+	&lt;Scene pickMode="idBuf"&gt;
+        </code></pre>
+		
+		<p>
+		This picking buffer holds specific information for every point. Since it has only a limited size, you have to choose which information you need. The modes are: <i>idBuf, color, texCoord</i> and <i>box</i>. 
+		The resulting data can always be found in the attribute <i>event.hitPnt</i>. You can either use another pickMode as attribute to the <i>Scene</i> or switch between them using the hotkey "p".
+		</p>
+        
+        
+        <p>
+		This tutorial is very similar to <a href="../picking/index.html">the previous one</a>. In the last tutorial, we did not specify a picking mode, thus it was set to <i>idBuf</i> implicitly. This time we specify the mode explicitly and set it to <i>color</i>.
+        </p>
+        
+        <pre class="prettyprint"><code class="language-html">
+	&lt;Scene pickMode="color"&gt;
+        </code></pre>
+        
+        <p>
+        When this mode is chosen, only the color values for every 2D-Coordinate on the screen are stored in the buffer but not which 3D-Coordinate they come from.
+        <br><br>
+        The code to handle the click is pretty much the same as last time, but remember that the <i>event.hitPnt</i> now has a different meaning. The three values are not coordinates, but the RBG values instead.
+        </p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+    	//Handle click on the shape
+    	function handleClick(event)
+    	{
+    		
+    		var r = event.hitPnt[0];
+    		var g = event.hitPnt[1];
+    		var b = event.hitPnt[2];
+
+    		//Display color values
+    		$('#colR').html(r);
+    		$('#colG').html(g);
+    		$('#colB').html(b);
+    		
+    		//Visualize color
+    		$('#colorBox').css('background-color', 'rgb('+r+','+g+','+b+')');
+    	}
+		</code></pre>
+		
+
+		
+		<p>
+		You should now be able to get differnt information about the point you clicked on. Try the other picking modes and feel free to modify this as you want.
+		<br><br>
+		Remember that you can always open the log window with the hotkey "d" if you want to know more about what's going on in your application right now. This will also open a little preview image of the information contained in the picking buffer.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Object picking example</div>
+            </div>
+        </div> 
+		
+
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h2>Get a X3DOM example:</h2>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="pickingBuffer.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

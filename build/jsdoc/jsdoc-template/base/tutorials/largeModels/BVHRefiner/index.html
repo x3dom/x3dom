@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="https://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>BVH Refiner</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../culling/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../../applicationTutorials/virtualCatalogue/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Refining and Loading hierarchical data dynamically</h2>
+        </div>            
+        <br>
+
+        <p>
+		This tutorial describes he BVHRefiner component and how to use it to load and refine hierarchical data dynamically during runtime. Two different dataset structures can be used (WMTS, TREE) that are described later.
+		<br><br>
+		If you are just here to get the BVHRefiner Dataset Converter <a href="#download">click here</a>.
+        </p>
+		  
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.jpg'>
+                <div class="text-muted">3D-Example rendered with a WMTS conform dataset</div>
+            </div>
+        </div> 
+		
+		
+		<pre class="prettyprint"><code class="language-html">
+	&lt;BVHRefiner maxDepth='5'
+            minDepth='2'
+            interactionDepth='4'
+            subdivision='64 64'
+            size='4096 4096'
+            factor='10'
+            maxElevation='410'
+            elevationUrl="Puget Sound WMTS/elevation"
+            textureUrl="Puget Sound WMTS/satellite"
+            normalUrl="Puget Sound WMTS/normal"
+            elevationFormat='png'
+            textureFormat='png'
+            normalFormat='png'
+            mode="3d"
+            submode="wmts"&gt;
+	&lt;/BVHRefiner&gt;
+        </code></pre>  
+		
+		<h3>Parameter Descriptions</h3>
+		
+		<p>The following table lists the parameters currently supported:</p>
+<table class="table table-striped">
+<colgroup>
+<col width="9%" />
+<col width="13%" />
+<col width="6%" />
+<col width="72%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Parameter</th>
+<th class="head">Values</th>
+<th class="head">Default</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>maxDepth</td>
+<td>0, 1, ... n</td>
+<td>3</td>
+<td>maximum depth of the tree, or dataset</td>
+</tr>
+<tr><td>minDepth</td>
+<td>0, 1, ... n</td>
+<td>0</td>
+<td>minimum depth of tree that should be rendered as soon as possible</td>
+</tr>
+<tr><td>interactionDepth</td>
+<td>0, 1, ... n</td>
+<td>maxDepth</td>
+<td>maximum rendered depth during user interaction with scene</td>
+</tr>
+<tr><td>subdivision</td>
+<td>0, 1, ... 125</td>
+<td>1 1</td>
+<td>resolution of a rendered tile</td>
+</tr>
+<tr><td>size</td>
+<td>0, 1 ... n</td>
+<td>1 1</td>
+<td>size of the entire terrain</td>
+</tr>
+<tr><td>factor</td>
+<td>0, 1, ... n</td>
+<td>1.0</td>
+<td>factor affects the distance to create or render the next level (the higher the higher the performance, the lower the higher the quality)</td>
+</tr>
+<tr><td>maxElevation</td>
+<td>0.0, 0.1, ... n</td>
+<td>1.0</td>
+<td>maximum displacement in y direction</td>
+</tr>
+<tr><td>elevationUrl</td>
+<td>string</td>
+<td>&#8220;&#8221;</td>
+<td>Url to dataset of displacement data</td>
+</tr>
+<tr><td>textureUrl</td>
+<td>string</td>
+<td>&#8220;&#8221;</td>
+<td>Url to dataset of surface texture data</td>
+</tr>
+<tr><td>normalUrl</td>
+<td>string</td>
+<td>&#8220;&#8221;</td>
+<td>Url to dataset of normal data</td>
+</tr>
+<tr><td>elevationFormat</td>
+<td>png, jpg, gif ...</td>
+<td>png</td>
+<td>Data format of displacement dataset</td>
+</tr>
+<tr><td>textureFormat</td>
+<td>png, jpg, gif ...</td>
+<td>png</td>
+<td>Data format of surface texture dataset</td>
+</tr>
+<tr><td>normalFormat</td>
+<td>png, jpg, gif ...</td>
+<td>png</td>
+<td>Data format of normal dataset</td>
+</tr>
+<tr><td>mode</td>
+<td>2D, 3D, bin, bvh</td>
+<td>3D</td>
+<td>2D (planes), 3D (displaced y-coordinate of 2D-Planes), bin (binary files, WMTS), bvh (binary files, TREE)</td>
+</tr>
+<tr><td>submode</td>
+<td>WMTS, TREE</td>
+<td>WMTS</td>
+<td>utilized dataset (WMTS, TREE (currently only in 2D mode))</td>
+</tr>
+</tbody>
+</table>
+		<h3>Currently supported dataset formats</h3>
+		<p>
+		We support two different types of datasets. The first is based on WMTS specification and the second version is a folder based file arrangement. In the 3D case, only the wmts format is supported. Both, the usage of WMTS and TREE for this BVHRefiner node are specified in the following subsections.
+		</p>
+		
+		<h3>WMTS</h3>
+		<p>
+		In <a href="http://www.opengeospatial.org/standards/wmts/" target="blank">WMTS</a> a multidimensional dataset of a terrain can be integrated very easy. For every level of detail a new matrix of tiles is required. Every level has its own folder. So if you want to get five different levels of detail in your application, five folders must exist, numbered from 0 to 4. The detail from level to level grows up by a factor of four. Into the folders for the levels, subfolders that describe the columns of the matrix have to be inserted. On level 0 you only have one column, represented through the folder with the name 0. In the next level you have two columns named 0 and 1, growing up by a factor of two from level to level. In the subfolders you place the images that represent the tiles data. There must be as much images as subfolders. On level 0 you only have one image that represents the whole terrain data. On level one exist two subfolders. Every subfolder has to include two images, on the next level four per subfolder and so on. 
+		The following figure shows the addressing-scheme:
+		</p>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='structure.png' width="660px">
+                <div class="text-muted">figure 1</div>
+            </div>
+        </div> 
+		<h4>Tree</h4>
+		<p>
+		The TREE addressing-scheme is as easy as the WMTS addressing scheme. Every level in the tree defines a level of detail of the terrain. On level 0 we have an image (1.png) that represents the terrain in the worst quality. It has a folder that has its number as name (1). In this folder we find four images where all four images together represent the whole terrain. The resolution grows up every level by a factor of four. Every image has its folder that always includes four images with the next finer resolution quality. If an image has no folder, the final resolution quality has reached. The position of the images for a finer resolution is as follows:
+		<ul style="list-style-type: none">
+		<li>1.png: top left</li>
+		<li>2.png: bottom left</li>
+		<li>3.png: top right</li>
+		<li>4.png: bottom right</li>
+		</ul>
+		</p>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='tree.png' width="660px">
+                <div class="text-muted">figure 2</div>
+            </div>
+        </div> 
+		<h4>Hints for a self-made dataset construction</h4>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='tile.png' width="660px">
+                <div class="text-muted">figure 3</div>
+            </div>
+        </div> 
+		<p>
+		To reconstruct a 3D-Terrain from a WMTS conform dataset a special arrangement of the pixels in the images of the WMTS dataset is required. Neighboring tiles have to share the pixels on the boundaries. The figure on top of this subsection shows on the left the original image, in the middle the image of level 0 of the final dataset and on the right the four images of level 1. Furthermore the resolution of every image of the final dataset must be of the size 2n + 1, where n is the value of the size attribute of a tile in the BVHRefiner node. In the example of Puget Sound on top of this tutorial a value of ‘64 64’ is chosen for every tile as size attribute. So on the dataset, every image has to be of the size ‘129 129’. 
+		This is a condition for the algorithm to prevent cracks on the mesh representation.
+		</p>
+		<h4>Using the BVHRefiner Dataset Converter</h4>
+		<p>
+		The BVHRefiner Dataset Converter is a tool to produce a WMTS or TREE conform dataset from single image. This is only a test application and can not handle arbitrary picture sizes.
+		</p>
+<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='datasetConverter.jpg' width="660px">
+                <div class="text-muted">Use the Dataset Converter</div>
+            </div>
+        </div>
+		
+		<ol>
+		<li>Representation of the original image</li>
+		<li>Opens a file dialog where the source image can be chosen</li>
+		<li>Represents the path where the final dataset should be stored</li>
+		<li>Opens a folder dialog where the storing path of the final dataset can be chosen</li>
+		<li>Convertion settings: a) Convertion Type: Surface-, Displacement- or Normal-Dataset, b) Dataset-Format: Currently supported dataset formats (WMTS, TREE)</li>
+		<li>Advanced Settings (are calculated automatically, but can be changed if required): a) Mesh Resolution: Resolution of a tile in the x3dom-application, b) Depth of the Quadtree: The depth of the final dataset (levels of detail), c) Image Type: The image format of all images in the final dataset (jpg, png, gif)</li>
+		<li>Starts the convertion of the original source image into the tiled dataset</li>
+		<li>Current progress of the convertion</li>
+		</ol>
+		
+		<h4 id="download">Download .NET based BVHRefiner Dataset Converter</h4>
+        <p>
+		Get the exe: <a href="https://www.x3dom.org/x3dom/tools/util/BVHRefiner%20DataSet%20Converter/BVHRefiner_Dataset_Converter.zip">windows</a>
+		<br>
+		Get the source code:<a href="https://www.x3dom.org/x3dom/tools/util/BVHRefiner%20DataSet%20Converter/BVHRefiner_Dataset_Converter_Source.zip">source</a>
+        </p>
+        <p>
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="https://examples.x3dom.org/BVHRefiner/BVHRefiner.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+            </ul>
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+                <li><a href="../../../author/Navigation/BVHRefiner.html">BVHRefiner</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

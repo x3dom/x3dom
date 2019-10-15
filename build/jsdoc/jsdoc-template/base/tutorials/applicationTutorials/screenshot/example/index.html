@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>X3DOM Catalogue example</title>
+
+ <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.0.min.js" ></script>
+ <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+ <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+
+ <style type="text/css">
+    #demo_table {
+		border:0;
+	}
+ 	#demo_table img {
+		width:128px;
+		height:128px;
+	}
+	#demo_table td img
+	{
+		border:1px solid grey;
+		text-decoration:none;
+	}
+
+	 #screenshotPreviews > img {
+		 width:250px;
+		 margin-left:25px;
+		 margin-right:25px;
+	 }
+
+ </style>
+ 
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function(){
+		var screenshotCount = 0;
+
+		//Every time the user clicks on the 'take screenhot' button
+		$("#btnTakeScreenshot").on("click", function() {
+			//Get data url from the runtime
+			var imgUrl = document.getElementById("canvas").runtime.getScreenshot();
+
+			//Create preview image...
+			var newScreenshotImage = document.createElement('img');
+			newScreenshotImage.src = imgUrl;
+			newScreenshotImage.id = "screenshot_" + screenshotCount;
+			$('#screenshotPreviews').append(newScreenshotImage);
+
+			//...and download link
+			var newScreenshotDownloadLink = document.createElement('a');
+			newScreenshotDownloadLink.href = imgUrl;
+			newScreenshotDownloadLink.download = "screenshot_" + screenshotCount + ".png";
+			newScreenshotDownloadLink.innerHTML = "Speichern";
+			$('#screenshotPreviews').append(newScreenshotDownloadLink);
+
+			screenshotCount++;
+			$('#screenshotCount').html(screenshotCount);
+		});
+	});
+</script>
+</head>
+
+<body>
+<h1>Screenshot example</h1>
+<p>
+	Get a screenshot of the current canvas from x3dom runtime, display it and make it downloadable.
+	<br><br>
+	Scanner Data provided by the <a href='http://www.3d-coform.eu'>3D COFORM Project</a>.
+</p>
+
+<div style="position:absolute;left: 550px;border:1px solid #dddddd; width:300px;min-height:200px;padding:10px;">
+	<b>Screenshots: <span id="screenshotCount">0</span></b>
+	<div id="screenshotPreviews">
+
+	</div>
+</div>
+
+<div style="height:420px">
+	<x3d id="canvas" width='500px' height='400px'>
+	    <scene id="mainScene">
+			<Inline id="inlineBox" nameSpaceName="dcm" url="dcm2.x3d" />
+	    </scene>
+	</x3d>
+</div>
+
+
+
+<div>
+	<a href="#" id="btnTakeScreenshot">Take screenshot</a>
+</div>
+
+<table id="demo_table" class="gallery">
+  <tr>
+  </tr>
+</table>
+
+</body>
+</html>

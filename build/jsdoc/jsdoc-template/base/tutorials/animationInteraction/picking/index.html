@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Picking Objects</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../transformations/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../pickingBuffer/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Picking Objects</h2>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial will show you how to pick objects in X3DOM or trigger events by clicking on objects. 
+        </p>
+        
+        <p>
+        Each X3DOM node can have an <i>onclick</i> attribute providing a callback function. Every time you click into the scene, intersection tests are made using rays and a special buffer. If an intersection is detected, the event handler(s) of that node is/are called. 
+        </p>
+        
+        <p>
+        Given a typical X3DOM scene, you can add a function as <i>onclick</i> attribute (or as onclick property respectively) to a single shape. We already used this in a <a href="../../basics/htmlCSS/index.html" target="_blank">previous tutorial</a> about X3DOM with HTML, CSS and JavaScript. Here is a short reminder: 
+		<pre class="prettyprint"><code class="language-html">
+	&lt;shape onclick="alert("You clicked me");"&gt; &lt;/shape&gt; 
+        </code></pre>
+        
+            
+		<p>
+		Instead of just attaching this to a single shape, you can also add it to a whole group. This will cause the function call every time a member of this group is clicked. An argument named <i>event</i> will be provided, containing a lot of informations about the ray-object intersection that occurred.
+		</p>
+		 
+		<pre class="prettyprint"><code class="language-html">
+	&lt;group onclick="handleGroupClick(event)"&gt; 
+		</code></pre>
+		
+		<p>
+		In your callback function, you can for example get the exact intersection point with <i>event.hitPnt</i>.
+		</p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+   	//Handle click on any group member
+   	function handleGroupClick(event)
+   	{
+   		//Mark hitting point
+   		$('#marker').attr('translation', event.hitPnt);
+   		
+   		//Display coordinates of hitting point (rounded)
+   		var coordinates = event.hitPnt;
+   		$('#coordX').html(coordinates[0]);
+   		$('#coordY').html(coordinates[1]);
+   		$('#coordZ').html(coordinates[2]);
+   	}
+		</code></pre>
+		
+		<p>
+		There are various ways to attach the callback function to a node. Another way is to use jQuery:
+		<p>
+		
+		<pre class="prettyprint"><code class="language-javascript">
+    	//Handle click on a shape
+    	function handleSingleClick(shape) {
+    		$('#lastClickedObject').html($(shape).attr("def"));
+    	}
+        
+        $(document).ready(function(){
+        	//Add a onclick callback to every shape
+        	$("shape").each(function() {
+        		$(this).attr("onclick", "handleSingleClick(this)");
+        	});
+        });
+		</code></pre>
+		
+		<p>
+		<b>Caveat:</b> The call of the onclick function is handled by x3dom by directly calling the callback function, since the addEventListener method needed to be overwritten. No page-wide onclick events are thrown, so attaching a listener to this object is only possible <b>after</b>. In this case, do not use 
+		<code>$("#myBox").on("click", doSomething(event))</code>
+		but
+		<code>$("#myBox").attr("onclick", "doSomething(event)")</code>
+		instead. Alternatively, wait until the page is fully loaded and the <code>document.onload</code> event was fired.
+		</p>
+        
+        <p>
+        If you prefer pure JavaScript you can of course work with the standard event handler methods. However, there is still the caveat that <code>addEventListener</code> only works after the X3DOM engine has been initialized (i.e., on document.onload).
+        </p>
+        
+        <pre class="prettyprint"><code class="language-javascript">
+        document.onload = function() {
+            // Handle mouseover event on a shape
+            var myShape = document.getElementById('TestShape');
+            myShape.addEventListener('mouseover', function(event) {
+                    // Do something nice whenever mouse is over object
+                }, false);
+        };
+        </code></pre>
+        
+        <p>
+        As can be seen in this example, the other UI standard events (<i>onmouseover, onmousemove, onmouseout, onmousedown, onmouseup</i>) are possible, too.
+        </p>
+		
+		<p>
+		You should now be able to cause a function call for a click on every possible node. Feel free to modify this as you want. Remember that you can always open the log window with the hotkey "d" if you want to know more about what's going on in your application right now.
+		<br><br>
+		If you want to pick detailed information like color or textures instead, read the <a href="../pickingBuffer/index.html">next tutorial about explicitly choosing a picking buffer</a>.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Object picking example</div>
+            </div>
+        </div> 
+
+        
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h2>Get a X3DOM example:</h2>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="picking.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/Grouping/Group.html">Group</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+            </ul>
+        </div>
+
+</div>
+
+</body>
+</html>

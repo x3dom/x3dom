@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/x3dom/release/x3dom.css'></link>
+    <script type='text/javascript' src='https://www.x3dom.org/x3dom/release/x3dom.js'></script>
+    <style>.x3dom-logContainer { bottom: 0px; position: absolute; }
+    </style>
+  </head>
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+    <div id='HUDs_Div'> 
+      <div id='X3DOM_AOPT_Links' class='group' style='margin:26px 2px 2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; z-index:1000;'> 
+        <a href='http://www.x3dom.org'>X3DOM
+        </a> output created with 
+        <a href='http://www.instantreality.org'>InstantReality
+        </a> aopt tool. 
+      </div> 
+      <div id='Interaction_Toolbox' style='margin:2px; padding:4px 150px 4px 4px; background-color:rgba(199,202,204,.7); position:absolute; z-index:1000; right:0px; top:0px;'> 
+        <table> 
+          <tr> 
+            <td>Navigation Mode: 
+            </td> 
+            <td align='right'> 
+              <select style='float:right;' onchange='document.getElementById(&apos;x3dElement&apos;).runtime[value]();'> 
+                <option selected='selected' value='examine'>Examine 
+                </option> 
+                <option value='turnTable'>TurnTable 
+                </option> 
+                <option value='lookAt'>LookAt 
+                </option> 
+                <option value='lookAround'>LookAround 
+                </option> 
+                <option value='fly'>Fly 
+                </option> 
+                <option value='freeFly'>FreeFly 
+                </option> 
+                <option value='helicopter'>Helicopter 
+                </option> 
+                <option value='walk'>Walk 
+                </option>  
+                <option value='noNav'>None 
+                </option> 
+              </select> 
+            </td> 
+          </tr> 
+          <tr> 
+            <td>Debug Display: 
+            </td> 
+            <td align='right'> 
+              <input type='checkbox' onclick='document.getElementById(&apos;x3dElement&apos;).runtime.statistics(this.checked);'> 
+              </input> Stats 
+              <input type='checkbox' onclick='document.getElementById(&apos;x3dElement&apos;).runtime.debug();'> 
+              </input> Log 
+            </td> 
+          </tr> 
+          <tr> 
+            <td> 
+              <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.showAll();'> Show Everything 
+              </button> 
+            </td> 
+            <td> 
+              <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.resetView();'> Reset View 
+              </button> 
+            </td> 
+          </tr> 
+        </table> 
+      </div> 
+    </div>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+      <scene>
+        <shape DEF='_G_0'>
+          <appearance>
+            <material diffuseColor='1 1 1'></material>
+          </appearance>
+          <binaryGeometry DEF='BG_0' vertexCount='11808' primType='"TRIANGLES"' position='0.00305497646332 1.1180870533 -0.122720479965' size='2.67383003235 1.92480611801 1.62646508217' coord='binGeo/BG_0_coordBinary.bin+8' normal='binGeo/BG_0_normalBinary.bin+4' color='binGeo/BG_0_colorBinary.bin+4' coordType='Int16' normalType='Int8' colorType='Uint8'></binaryGeometry>
+        </shape>
+      </scene>
+    </x3d>
+  </body>
+</html>

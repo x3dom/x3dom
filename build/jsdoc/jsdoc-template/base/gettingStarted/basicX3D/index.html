@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Getting Started</title>    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
+    <script src="../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Basic X3D Concepts</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../background/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../x3domVersions/index.html" style="float:right;">Next Section &#8594;</a>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+            <h2>2. Basic X3D Concepts: Nodes, Components and Profiles</h2>
+            </div>            
+            <br>
+            
+            <h3>X3D Nodes</h3>            
+            The X3D standard for declarative 3D, which is in large parts implemented by X3DOM, defines each 3D scene to consist of a set of so-called <i>nodes</i>.
+            Each nodes represents a certain part or aspect of the scene: a light, an object, the material of an object's surface, and so on.
+            All nodes of the scene are arranged in a tree or graph structure, the whole structure is called the <i>scene-graph</i>.
+            The behavior of each node, like, for instance, the color of a material, can be defined by setting the node's <i>fields</i>.
+            The XML description of a material node, which defines a surface of some object to be red (in RGB encoding <code>1 0 0</code>), could, for example, look like this:
+            
+            <pre class="prettyprint"><code class="language-html">
+    &lt;Material diffuseColor='1 0 0'&gt;&lt;/Material&gt;
+            </code></pre>
+            
+            As you might have recognized, the XML description of the X3D node looks pretty much like regular HTML code, and the value of its field entitled <code>diffuseColor</code> is just defined like you would do it for an HTML attribute.
+            In fact, if you are already familiar with HTML, learning how to use nodes in X3DOM is not that hard.
+            You'll learn how to use nodes by example in the X3DOM <a href='../../tutorials/index.html'>tutorials</a>.
+            If you want to read more about the general concept of X3D nodes, take a look at the <a href="../../index.html#X3DExternalDoc">external X3D documentation resources</a>.
+            <br><br>
+            
+            <h3>X3D Components</h3>
+            The many nodes defined in the X3D standard are grouped into so-called <i>components</i>.
+            Each component contains a set of nodes that serve a common purpose.
+            Nodes that define lights, such as <code>PointLight</code> and <code>SpotLight</code>, are grouped together in the <i>Lighting</i> component, for instance.
+            The X3DOM documentation also contains an <a href="../../node/Components.html">overview of all components available in the <i>X3DOM-full</i> release</a>.
+            <br><br>
+            
+            <h3>X3D Profiles and the X3DOM HTML Profile</h3>                            
+            <p>
+            The X3D standard defines a lot of nodes, some of them for rather special use cases that are not important for most users.
+            Therefore, the inventors of X3D have employed the concept of <i>profiles</i>, which groups nodes together to high-level packages,
+            each corresponding to a specific class of applications. There is, for example, a <i>CAD</i> profile, which is meant to be used by CAD applications,
+            and an <i>Immersive</i> profile for interactive, immersive environments. This way, <i>profiles</i> act as a high-level concept that works on top of <i>components</i>.
+            </p>
+            <p>
+            <div style="float:left;margin:8px;"><img src="Profile.png"></div>
+            The X3D components that are used by X3DOM have been carefully selected in order to provide a well-suited subset X3D that matches the needs of modern HTML applications.
+            The X3DOM creators did so by defining a special profile, which is entitled the <i>HTML</i> profile.
+            This HTML profile is also containing some experimental nodes and fields that are actually not part of the X3D standard, but have been primarily designed for use with X3DOM.
+            Concretely speaking, this means for you as a developer that there might be some X3D nodes that are not implemented by X3DOM, while there are other nodes that are only available in X3DOM, but not in X3D.
+            You will, however, recognize the origin of each node if you take a look at the <a href="../../author/index.html">X3DOM Scene Author API documentation</a>.
+            If you want to learn more about the HTML profile and how it relates to existing X3D components and profiles, take a look at the corresponding <a href="http://www.x3dom.org/?page_id=158">section of the official X3DOM page</a>.                        
+            </p>
+            <p>
+            Finally, X3DOM even provides implementations of some X3D nodes that are not part of the original HTML profile.
+            Those nodes are, however, not packaged into the standard <i>X3DOM</i> release, but only into the <i>X3DOM-Full</i> release.
+            </p>
+            <div style="clear:both;"></div>
+
+</div>
+
+</body>
+</html>

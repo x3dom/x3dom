@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Configure X3DOM</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../htmlCSS/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../imagesMovies/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Configure X3DOM</h2>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial will learn how to modify important properties of the x3dom runtime using declarative code.
+        There are several parameters that change default behaviour, for example to show debug information or influence
+        how the scene is rendered.
+        </p>
+        
+        <p>
+		Lets set a param for our runtime:
+		</p>
+        
+        <pre class="prettyprint"><code class="language-html">
+    &lt;x3d showStat="true"&gt;
+        &lt;scene&gt;
+            ...
+        &lt;/scene&gt;
+    &lt;/x3d&gt;
+        </code></pre>
+
+        <p>
+        The param you just added activates the statistics window, giving you some debug information that may be relevant
+        during development. Since the user normally should not see this, the stat window is deactivated by default.
+        If you only need it sometimes, you may also toggle its visibility using the space bar on your keyboard.
+        </p>
+
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">
+                <img class="docuFigure" src='stats.png'>
+                <div class="text-muted">Sample stats.</div>
+            </div>
+        </div>
+
+        <p>
+        The values of params are not restricted to boolean values. Using the param <code>PrimitiveQuality</code>, you
+        can influence how many triangles are used to approximate primitives. The default value is <code>high</code> but
+        you may set it to <code>Medium</code>, <code>Low</code> or any float value between 0.0 and 1.0. A smaller value
+        means less triangles used. You can compare the effect in the picture below.
+        </p>
+
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='compare_quality.png'>
+                <div class="text-muted">X3DOM rendering of a sphere using high and low quality primitives.</div>
+            </div>
+        </div>        
+		
+        <p>
+        If you want your application to use less triangles (for example because of performance limits), just add the
+        following argument.
+		</p>
+        
+		<pre class="prettyprint"><code class="language-html">		
+    &lt;x3d PrimitiveQuality="low"&gt;
+		</code></pre>
+
+        <p>
+
+        </p>
+		
+        <p>
+		The resulting page should now look like this:
+		</p>
+        
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot_example.png'>
+                <div class="text-muted">Scene in low quality with stats window.</div>
+            </div>
+        </div>
+		
+        <p>
+		Visit the <a href="../../../author/configuration.html">Scene Author Configuration Documentation</a> page to
+        learn about more possible params. <br>
+        You can configure even more rendering details using the environment node. Some examples can be found in the
+        Tutorials about <a href="../../lighting/ssao/index.html">Simple Screen-Space Ambient Occlusion</a> and
+        <a href="../../largeModels/culling/index.html">Culling Technologies</a>.
+        </p>
+		       
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="runtimeConfiguration.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="runtimeConfiguration.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/configuration.html">Configuration Parameters</a></li>
+                <li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
+            </ul>
+        </div>
+
+</div>
+
+</body>
+</html>

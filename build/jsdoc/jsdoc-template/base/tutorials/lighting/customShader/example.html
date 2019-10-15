@@ -1,0 +1,180 @@
+<html style="padding:0;margin:0;border:0;">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Custom Shaders in X3DOM</title>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>    
+      
+    <style>
+        .labelOverlay
+        {
+            position:fixed;
+            width: 400px;
+            padding:8px;
+            margin:16px;
+            background:#888888;
+            background: linear-gradient(#BBBBBB, #888888); 
+            border-radius:8px;
+            border:2px solid #EEEEEE;            
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);            
+            font-weight:bold;
+            color:white;            
+            z-index:20000;
+        }        
+        .x3domContext
+        {
+            border: none;
+            background:#888888;
+            background: linear-gradient(#777777, #333333); 
+        }
+        .paramSlider
+        {
+            margin: 0 8px;
+        }
+    </style>    
+    <script>
+        $(function() {
+            $( "#sliderAlpha" ).slider({
+                min: 0.0, max: 1.0, step: 0.1, value: 0.25,
+                slide: function( event, ui ) {
+                    changeShaderParamValue('alphaParamField', ui.value);
+                }
+            });
+        });
+
+        $(function() {
+            $( "#sliderBeta" ).slider({
+                min: 0.0, max: 1.0, step: 0.1, value: 0.5,
+                slide: function( event, ui ) {
+                    changeShaderParamValue('betaParamField', ui.value);
+                }
+            });
+        });
+  
+        function changeShaderParamValue(fieldElementName, value)
+        {
+            var fieldDOMElement = document.getElementById(fieldElementName);
+            
+            if (fieldDOMElement)
+            {
+                fieldDOMElement.setAttribute("value", parseFloat(value));
+                
+                var labelElement = document.getElementById(fieldElementName + "Label");
+                
+                if (labelElement)
+                {
+                    labelElement.innerHTML = value;
+                }
+            }
+        }
+    </script>           
+    
+    <script type="text/javascript" src="https://x3dom.org/download/x3dom.js"></script>
+    
+</head>
+<body style="padding:0;margin:0;border:0;">
+
+<div class="labelOverlay">
+    <h1>Custom Shader in X3DOM</h1>
+    
+    This example illustrates the use of a custom shader in X3DOM.
+    It uses cool-warm shading as an example, effect parameters can be tuned by using the sliders below, which manipulate the ComposedShader node's custom field values.
+    <h2>Shader Effect Parameters:</h2>
+    <p>
+        alpha: <span id="alphaParamFieldLabel">0.25</span>        
+        <div class="paramSlider" id="sliderAlpha"></div>
+    </p>
+    <p>
+        beta: <span id="betaParamFieldLabel">0.5</span>
+        <div class="paramSlider" id="sliderBeta"></div>        
+    </p>
+</div>
+
+<div id="content">
+    <X3D class="x3domContext" id='myX3DWorld' style="width:100%;height:100%">
+        <Scene DEF='scene'>                
+            <Viewpoint position="-8.42290 15.73788 -10.66557" orientation="0.05836 0.97123 0.23089 3.75572"
+                        center of Rotation="-0.7744881307526139 9.43342307801316 -0.3701745772662157" zNear="0.01" zFar="10000"></Viewpoint>
+            <navigationInfo headlight='false'></navigationInfo>
+            <directionalLight direction='0.7 0.7 0'></directionalLight>
+            <MatrixTransform DEF='Head_2:123-151;0,Parts' matrix='1 2.97004e-14 -1.00427e-06 0 1.00427e-06 2.30825e-13 1 0 2.97006e-14 -1 2.30825e-13 0 1.95226 6.91883 3.52749 1'>
+                <Shape>
+                  <Appearance>
+                      <ComposedShader>
+                        <field id="alphaParamField" name='alphaParam' type='SFFloat' value='0.25'></field>
+                        <field id="betaParamField"  name='betaParam'  type='SFFloat' value='0.5'></field>
+                        <!-- The "display:none;" CSS attribute is just a trick to prevent the browser from rendering the shader code during page loading -->
+                        <ShaderPart type='VERTEX' style="display:none;">
+                            attribute vec3 position;
+                            attribute vec3 normal;
+                            
+                            uniform mat4 modelViewMatrix;
+                            uniform mat4 modelViewMatrixInverse;
+                            uniform mat4 modelViewProjectionMatrix;
+                            uniform mat4 normalMatrix;
+                            
+                            varying vec3 fragNormal;
+                            varying vec3 fragEyeVector;
+                            
+                            void main()
+                            {
+                                fragEyeVector = -(modelViewMatrix * vec4(position, 0.0)).xyz;                                 
+                                fragNormal    = (normalMatrix * vec4(normal, 0.0)).xyz;           
+                                
+                                gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                            }
+                        </ShaderPart>                
+                        <ShaderPart type='FRAGMENT' style="display:none;">
+                           #ifdef GL_FRAGMENT_PRECISION_HIGH
+                              precision highp float;
+                            #else
+                              precision mediump float;
+                            #endif
+                            
+                            uniform vec3 light0_Direction;
+                            
+                            varying vec3 fragNormal;
+                            varying vec3 fragEyeVector; 
+                            
+                            vec3 base = vec3(0.3);                  
+                            vec3 cool = vec3(0.0, 0.0, 0.5);
+                            vec3 warm = vec3(1.0, 0.85, 0.0);
+                            
+                            //application parameters                            
+                            uniform float alphaParam;
+                            uniform float betaParam;
+
+                            void main()
+                            {
+                                vec3 normal = normalize(fragNormal);
+                                vec3 eye    = normalize(fragEyeVector);                            
+                                vec3 rVec   = reflect(eye, normal);
+
+                                float spec = pow(max(0.0, dot(light0_Direction, rVec)), 27.0);     
+                                
+                                float diff = dot(-light0_Direction, normal);
+                                diff       = (1.0 + diff) * 0.5;                     
+                                vec3 col   = diff * (cool + alphaParam * base) + (1.0 - diff) *  (warm + betaParam * base);
+                                
+                                col += vec3(spec);
+                                
+                                gl_FragColor = vec4(col, 1.0);
+                            }
+                        </ShaderPart>
+                    </ComposedShader>
+
+                  </Appearance>
+                  <BinaryGeometry vertexCount='8555 96' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT153861120_indexBinary.bin' coord='binGeo/AOPT153861120_coordBinary.bin' normal='binGeo/AOPT153861120_normalBinary.bin'/>
+                </Shape>
+            </MatrixTransform>   
+        </Scene>
+    </X3D>
+</div>
+</body>
+</html>        
+    

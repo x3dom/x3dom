@@ -1,0 +1,81 @@
+<?js
+    var self = this;
+    var doc = obj.doc;
+    var fields = obj.fields;
+?>
+
+<div class="dataMemberOverviewContainer">
+    <?js
+         if (fields && fields.length )
+         {
+    ?>
+        <table class="table table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default Value</th>
+            <th>Range</th>
+            <th>Inheritance</th>
+            <th>Standard</th>
+            <th>Description</th>
+        </tr>
+
+        <?js fields.forEach(function(f){ ?>
+        <tr>
+            <td><?js= f.name ?></td>
+
+            <td>
+               <?js
+                var type = ( f.type && f.type.names && f.type.names.length )
+                            ? f.type.names[0] : null;
+
+                var typeSplit = type.split('.');
+
+                type = (type != null ? self.linkFromContextTo(type, false, typeSplit[typeSplit.length-1]) : "" );
+                ?>
+
+                <?js= type ?>
+            </td>
+
+            <td>
+                <?js if(f.initvalue)
+                {
+                    var fullInit = f.initvalue.split('.');
+                    var defVal = self.linkFromContextTo( f.initvalue, false, fullInit[fullInit.length-1]);
+                ?>
+                <?js= defVal ?></a>
+                <?js } ?>
+            </td>
+			
+            <td><?js= (f.range ? f.range : '') ?></td>
+
+            <td>
+                <?js if(f.inherits)
+                     {
+                         var inherit = f.inherits.split('#');
+                         parent = inherit[inherit.length-2].split('.');
+
+                         var link = self.linkFromContextTo(inherit[inherit.length-2], false, parent[parent.length-1]);
+
+                         if(parent.length)
+                         {
+                ?>
+                <?js= link ?></a>
+                <?js }} ?>
+            </td>
+
+            <td>
+                <?js if (f.field == "x3d") { ?>
+                    <img src="<?js= obj.backPath ?>../static/images/x3d.png">
+                <?js } else { ?>
+                    <img src="<?js= obj.backPath ?>../static/images/x3dom.png">
+                <?js } ?>
+            </td>
+
+            <td><?js= f.description ?></td>
+        </tr>
+        <?js }) ?>
+        </table>
+    <?js }   ?>
+
+</div>

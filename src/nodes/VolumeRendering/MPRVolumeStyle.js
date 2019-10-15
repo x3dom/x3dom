@@ -123,7 +123,7 @@ x3dom.registerNodeType(
                 if (this._cf.transferFunction.node) {
                     uniformShaderText += "uniform sampler2D uTransferFunction;\n";
                 }
-                for (let i=0; i<this._cf.planes.nodes.length; i++){
+                for (var i=0; i<this._cf.planes.nodes.length; i++){
                   uniformShaderText += this._cf.planes.nodes[i].styleUniformsShaderText();
                 }
                 return uniformShaderText;
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
                 "  float cam_inside = float(all(bvec2(all(lessThan(cam_pos, vec3(1.0))),all(greaterThan(cam_pos, vec3(0.0))))));\n"+
                 "  vec3 ray_pos = mix(pos.xyz, cam_pos, cam_inside);\n"+
                 "  float d = 1000.0;";
-                for (let i=0; i<this._cf.planes.nodes.length; i++){
+                for (var i=0; i<this._cf.planes.nodes.length; i++){
                   shader += this._cf.planes.nodes[i].styleShaderText();
                 }
                 shader += "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+

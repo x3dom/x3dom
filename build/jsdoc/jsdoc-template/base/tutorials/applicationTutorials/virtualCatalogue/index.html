@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Virtual catalogue</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../largeModels/BVHRefiner/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../screenshot/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>The Virtual Catalogue</h2>
+        </div>            
+        <br>
+		
+        <p>
+		In this tutorial you will learn how build a simple catalogue for 3D Models with X3DOM. It is assumed that all 3d models are inside of different x3d-files that can be loaded separately.
+        </p>
+		<p>
+		First we build a table containing preview images for all catalogue items and references to the matching x3d files.
+		</p>
+		
+		<pre class="prettyprint"><code class="language-html">
+	&lt;table id="demo_table" class="gallery"&gt;
+	  &lt;tr&gt;
+	    &lt;td file="dcm1.x3d"&gt;&lt;img src="dcm1.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
+	    &lt;td file="dcm2.x3d"&gt;&lt;img src="dcm2.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
+	    &lt;td file="dcm3.x3d"&gt;&lt;img src="dcm3.icon.jpg" width="512" height="512" /&gt;&lt;/td&gt;
+	  &lt;/tr&gt;
+	&lt;/table&gt;    
+        </code></pre>
+		
+		Next we have to add a x3d context with a scene that will contain the loaded files. 
+		If you don't know how to initialize a scene please take a look <a href="../../basics/hello/index.html">at the basic tutorials</a> first.
+		Inside of the shape we add an <i>Inline</i> node, which loads an external x3d file and displays it inside the current scene. The address of the file is specified with the <i>url</i> field.
+		
+		 <pre class="prettyprint"><code class="language-html">
+	&lt;x3d width='500px' height='400px'&gt;
+	    &lt;scene id="mainScene"&gt;
+			&lt;Inline id="inlineBox" nameSpaceName="dcm" url="dcm1.x3d" /&gt;
+	    &lt;/scene&gt;
+	&lt;/x3d&gt;
+	      </code></pre>
+		<p>
+		There is only one thing left to do now: Register a function, that handles clicks on the catalogue entry and changes the url of the Inline node:
+		</p>
+
+
+<pre class="prettyprint"><code class="language-javascript">
+	$(document).ready(function(){
+		//Every time the user clicks on a catalogue entry
+		$(".gallery td").on("click", function() {
+			var file = $(this).attr('file');
+			
+			//Replace the x3d file in the context (if not already loaded)
+			if(file != $('#inlineBox').attr('url'))
+				$('#inlineBox').attr('url', file);
+		});
+	});
+	
+</code></pre>
+        
+		<p>
+		While this implementation uses jQuery to change the url field of the node, this could also be done using plain JavaScript DOM manipulation operations.
+		</p>
+
+		<p>
+		Your simple catalogue should work now and you can modify and extend it as you want.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Catalogue App Sample</div>
+            </div>
+        </div> 
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>  
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example/index.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="virtualCatalogue.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/Networking/Inline.html">Inline</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+            </ul>
+        </div>
+
+</div>
+
+</body>
+</html>
