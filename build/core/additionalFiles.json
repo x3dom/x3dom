@@ -1,0 +1,8 @@
+{
+    "AUTHORS"          : "./AUTHORS",
+    "LICENSE"          : "./LICENSE",
+    "README.md"        : "./README.md",
+    "RELEASENOTES.rst" : "./RELEASENOTES.rst",
+    "x3dom.css"        : "./src/x3dom.css",
+    "dash.all.js"      : "./lib/dash.all.js"
+}

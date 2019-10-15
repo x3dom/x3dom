@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Culling</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../lighting/mirror/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../BVHRefiner/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Culling Techniques</h2>
+        </div>            
+        <br>
+
+        <p>
+		This tutorial explains the different parameters to adjust x3doms integrated culling techniques for your personal needs on quality and performance.
+        </p>
+		<h3>The Environment-Bindable</h3>
+		<p>All relevant parameters are included in the new Environment-Bindable. To change it’s settings it has to be added to the scene explicitly. 
+		For each culling technique there exists a boolean flag to enable/disable it and a list of more detailed settings if applicable. Each of the following sections explains the usage of a technique and it’s parameters. Their combination can lead to very different results which allows explicit performance tuning for a specific scene.
+		<pre class="prettyprint"><code class="language-html">
+	&lt;environment frustumCulling='true' smallFeatureCulling='true'&gt; &lt;/environment&gt;
+        </code></pre>  
+		</p>
+		<h2>View Frustum Culling</h2>
+		<p>
+		The most common culling technique is the viewfrustum culling controlled by the viewFrustumCulling flag. The bounding volumes of the nodes are tested to be intersecting the frustum defining the current view. The nodes of the scene are traversed recursively reusing already calculated intersection if possible. 
+		It is the only technique which is not dependent on additional parameters.
+		
+		<table class="table">
+<thead >
+<tr><th >Setting</th>
+<th>Usage</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>frustumCulling</td>
+<td>(de-)activate the culling technique</td>
+<td>[true;false]</td>
+</tr>
+</tbody>
+</table>
+		
+		</p>
+		
+		<h3>Small Feature Culling</h3>
+		<p>
+		Using the smallFeatureCulling flag this technique is activated. For each node the amount of pixels is calculated it’s bounding volume would cover in screen space. 
+		If the coverage is below the smallFeatureThreshold parameter the node (and subsequent shapes) is culled.
+		
+		<table class="table">
+<thead >
+<tr><th >Setting</th>
+<th>Usage</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>smallFeatureCulling</td>
+<td>(de-)activate the culling technique</td>
+<td>[true;false]</td>
+</tr>
+<tr><td>smallFeatureTreshold</td>
+<td>cull objects covering less pixels than treshold</td>
+<td>[0..*]</td>
+</tr>
+</tbody>
+</table>
+		</p>
+		<!--p>
+		<h2>Occlusion Culling</h2>
+		<p>
+		Being the most complex supported culling method, occlusion culling is triggered by the occlusionCulling flag. The scene is traversed using the “Coherent Hierarchical Culling++” algorithm and based on the triggere occlusion queries the screen space coverage not occluded by other nodes is tested. 
+		A node is only drawn if its coverage is higher than the occlusionVisibilityTreshold.
+		
+		<table border="1" width="550px"style="border-collapse:collapse">
+<thead >
+<tr><th >Setting</th>
+<th>Usage</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>occlusionCulling</td>
+<td>(de-)activate the culling technique</td>
+<td>[true;false]</td>
+</tr>
+<tr><td>occlusionVisibilityTreshold</td>
+<td>cull objects covering less pixels than treshold due to occlusion</td>
+<td>[0..*]</td>
+</tr>
+</tbody>
+</table>
+</p-->
+		</p>
+		<h3>Low Priority Culling</h3>
+		<p>
+		This is the only supported comparison-based culling technique. Triggered by the lowPriorityCulling the nodes which passed all previous (activated) culling techniques are sorted by their priority. 
+		Afterwards the part of this list defined by the lowPriorityTreshold is removed. At the moment the screen-space coverage is used as priority, later on there will be a more sophisticated calculation allowing the user to set priorities to mark his or her personally important nodes. 
+		Therefore by now the priority culling is very similar to the small feature method but culling a relative amount instead of comparing to an absolute threshold.
+		
+		<table class="table">
+<thead >
+<tr><th >Setting</th>
+<th>Usage</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>lowPriorityCulling</td>
+<td>(de-)activate the culling technique</td>
+<td>[true;false]</td>
+</tr>
+<tr><td>lowPriorityThreshold</td>
+<td>draw only objects within threshold fraction of priority sorted list</td>
+<td>[0..1]</td>
+</tr>
+</tbody>
+</table>
+		</p>
+		
+		<!--h2>Tesselation Detail Culling</h2>
+		<p>
+		The possibiliy of using this culling technique completely depends on the support of each drawable. 
+		Up to now only the POP-Geometry natively supports it. As long as the resulting error stays within the amount of pixels defined by tesselationErrorThreshold the tesselation of the mesh is lowered to certain degree. 
+		It can be enabled using the flag tesselationDetailCulling.
+		
+		<table border="1" width="550px"style="border-collapse:collapse">
+<thead >
+<tr><th >Setting</th>
+<th>Usage</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>tesselationDetailCulling</td>
+<td>(de-)activate the culling technique</td>
+<td>[true;false]</td>
+</tr>
+<tr><td>tesselationErrorTreshold</td>
+<td>use mesh simplification having lower error than threshold</td>
+<td>[0..*]</td>
+</tr>
+</tbody>
+</table>
+		</p-->
+        <br>
+        <br>
+        <div style="text-align: center">
+            <img class="docuFigure" src="asteroids.png" alt="Asteroids" width="400" height="300">
+            <div class="text-muted">The example shows the effect of the different culling techniques on frame rate and visuals when rendering a field of asteroids. Please keep in mind, that <i>lowPriority culling</i> is only active when the camera is moving.<br>
+            </div>
+        </div>
+
+
+
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="culling.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+                <li><a href="../../../author/EnvironmentalEffects/Environment.html">Environment</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

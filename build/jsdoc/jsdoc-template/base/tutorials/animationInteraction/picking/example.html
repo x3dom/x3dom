@@ -1,0 +1,127 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>HTML Events on 3D objects</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+    
+     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.0.min.js" ></script>
+    
+    
+    <script>
+    	//Round a float value to x.xx format
+    	function roundWithTwoDecimals(value)
+    	{
+    		return (Math.round(value * 100)) / 100;
+    	}
+    
+    	//Handle click on any group member
+    	function handleGroupClick(event)
+    	{
+    		//Mark hitting point
+    		$('#marker').attr('translation', event.hitPnt);
+    		console.log(event);
+    		
+    		//Display coordinates of hitting point (rounded)
+    		var coordinates = event.hitPnt;
+    		$('#coordX').html(roundWithTwoDecimals(coordinates[0]));
+    		$('#coordY').html(roundWithTwoDecimals(coordinates[1]));
+    		$('#coordZ').html(roundWithTwoDecimals(coordinates[2]));
+    	}
+    	
+    	//Handle click on a shape
+    	function handleSingleClick(shape)
+    	{
+    		$('#lastClickedObject').html($(shape).attr("def"));
+    		
+    	}
+        
+        $(document).ready(function(){
+        	//Add a onclick callback to every shape
+        	$("shape").each(function() {
+        		$(this).attr("onclick", "handleSingleClick(this)");
+        	});
+        });
+        </script>
+</head>
+
+<body>
+
+<h1>Object picking example</h1>
+
+<p>
+Click on any shape to get the id and the coordinates of the hitting point.
+</p>
+
+<X3D  id="boxes" showStat="false" showLog="false" x="0px" y="0px" width="500px" height="500px">
+    <Scene>
+        <Viewpoint position="-2.25680 3.36560 14.62828" orientation="-0.60104 -0.28053 0.74837 0.40903"></Viewpoint>
+        <Group onclick="handleGroupClick(event)">
+
+            <Transform DEF="coneTrafo" translation="-4.5 0 0">
+                <Shape DEF="coneShape">
+                    <Appearance DEF="coneApp">
+                        <Material diffuseColor="#FF6633"></Material>
+                    </Appearance>
+                    <Cone DEF="cone" ></Cone>
+                </Shape>
+            </Transform>
+
+            <Transform DEF="boxTrafo" translation='-1.5 0 0'>
+                <Shape DEF="boxShape">
+                    <Appearance DEF="boxApp">
+                        <Material diffuseColor="#FF3366"></Material>
+                    </Appearance>
+                    <Box DEF="box"></Box>
+                </Shape>
+            </Transform>
+
+            <Transform DEF="sphereTrafo" translation="1.5 0 0">
+                <Shape DEF="sphereShape" id="test">
+                    <Appearance DEF="sphereApp">
+                        <Material diffuseColor="#3366FF"></Material>
+                    </Appearance>
+                    <Sphere DEF="sphere"></Sphere>
+                </Shape>
+            </Transform>
+
+            <Transform DEF="cylinderTrafo" translation="4.5 0 0">
+                <Shape DEF="cylinderShape">
+                    <Appearance DEF="cylinderApp">
+                        <Material diffuseColor="#33FF66"></Material>
+                    </Appearance>
+                    <Cylinder DEF="cylinder" radius="1.0" height="2.0"></Cylinder>
+                </Shape>
+            </Transform>
+
+        </Group>
+
+        <Transform id="marker" scale=".15 .15 .15" translation="100 0 0">
+            <Shape>
+                <Appearance>
+                    <Material diffuseColor="#FFD966"></Material>
+                </Appearance>
+                <Sphere></Sphere>
+            </Shape>
+        </Transform>
+
+    </Scene>
+</X3D>
+
+<div style="position:absolute;left:600px;top:70px;width:200px">
+	<h3>Last clicked object:</h3> 
+	<span id="lastClickedObject">-</span>
+	
+	<br><br>
+	
+	<h3>Click coordinates:</h3>
+	<table style="font-size:1em;">
+		<tr><td>X: </td><td id="coordX">-</td></tr>
+		<tr><td>Y: </td><td id="coordY">-</td></tr>
+		<tr><td>Z: </td><td id="coordZ">-</td></tr>
+	</table>
+</div>
+
+</body>
+</html>

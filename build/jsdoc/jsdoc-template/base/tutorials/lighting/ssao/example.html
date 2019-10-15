@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'/>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+      <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+      <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css">
+    <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>    
+    <style>.x3dom-logContainer { bottom: 0px; position: absolute; }
+    </style>
+    <style>
+        .labelOverlay
+        {
+            position:fixed;
+            width: 400px;
+            padding:8px;
+            margin:16px;
+            background:#888888;
+            background: linear-gradient(#BBBBBB, #888888); 
+            border-radius:8px;
+            border:2px solid #EEEEEE;            
+            box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.25);            
+            font-weight:bold;
+            color:white;            
+            z-index:20000;
+        }        
+        .x3domContext
+        {
+            border: none;
+            background:#888888;
+            background: linear-gradient(#777777, #333333); 
+        }
+        .paramSlider
+        {
+            margin: 0 8px;
+        }
+    </style>   
+    </head>    
+    
+    <script>
+        $(function() {
+            $( "#sliderSSAOamount" ).slider({
+                min: 0.0, max: 0.6, step: 0.1, value: 0.3,
+                slide: function( event, ui ) {
+                    changeEnvironmentAttribute('SSAOamount', ui.value);
+                }
+            });
+        });
+
+        $(function() {
+            $( "#sliderSSAOradius" ).slider({
+                min: 0.1, max: 1.0, step: 0.1, value: 0.5,
+                slide: function( event, ui ) {
+                    changeEnvironmentAttribute('SSAOradius', ui.value);
+                }
+            });
+        });
+
+        function changeEnvironmentAttribute(attribName, value)
+        {
+            var sceneElement = document.getElementById('myEnv');
+            
+            if (sceneElement)
+            {
+                sceneElement.setAttribute(attribName, value);
+            }
+            
+            var labelElement = document.getElementById(attribName + 'Label');
+            
+            if (labelElement)
+            {
+                labelElement.innerHTML = value;
+            }
+        }
+        /*
+        function checkBoxValueChanged()
+        {
+            var cb           = document.getElementById('SSAOCheckBox');
+            var sceneElement = document.getElementById('myEnv');
+            
+            var value;
+            
+            if (cb && sceneElement)
+            {
+                sceneElement.setAttribute('SSAO', cb.checked);
+            }
+        }*/
+    </script>    
+
+    <div class="labelOverlay">
+        <h1>Simple SSAO in X3DOM</h1>
+
+        This example illustrates the use of a simple SSAO method in X3DOM.
+        Use the sliders to experiment with the parameters.
+        <h2>SSSAO Parameters:</h2>
+        <!--p>
+            <div>
+                <input id="SSAOCheckBox" type="checkbox" checked='true' onchange="checkBoxValueChanged()"/>
+                <label for="SSAOCheckBox">Enable SSAO</label>
+            </div>
+        </p-->
+        <p>
+            SSAOamount: <span id="SSAOamountLabel">0.3</span>        
+            <div class="paramSlider" id="sliderSSAOamount"></div>
+        </p>
+        <p>
+            SSAOradius: <span id="SSAOradiusLabel">0.7</span>
+            <div class="paramSlider" id="sliderSSAOradius"></div>        
+        </p>
+    </div>
+
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>   
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+      <scene>
+          <Environment id='myEnv' SSAO='true' SSAOamount='0.3' SSAOblurDepthTreshold='1.0' SSAOradius='0.7' SSAOrandomTextureSize='4'></Environment>
+          <Viewpoint position="19.11871 10.83625 29.66937" orientation="-0.47420 0.86121 0.18291 0.99032"></Viewpoint>
+          <shape>
+            <appearance DEF='Material'>
+              <material diffuseColor='0.8 0.8 0.8'></material>
+            </appearance>
+            <binaryGeometry vertexCount='93024' primType='"TRIANGLES"' position='-2.25293731689 1.62316095829 7.55851554871' size='54.371307373 3.59164595604 56.7057304382' coord='binGeo/BG_0_coordBinary.bin+8' normal='binGeo/BG_0_normalBinary.bin+4' coordType='Int16' normalType='Int8'></binaryGeometry>
+          </shape>
+      </scene>
+    </x3d>
+  </body>
+</html>

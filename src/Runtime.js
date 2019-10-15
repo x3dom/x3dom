@@ -393,7 +393,6 @@ x3dom.Runtime.prototype.mousePosition = function(event) {
  * @param wx
  * @param wy
  * @param wz
- * @returns {*[]}
  */
 x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
     var DPR = window.devicePixelRatio || 1;

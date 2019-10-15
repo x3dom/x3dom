@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Getting Started</title>    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Background</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <!--<a class="btn btn-primary" href="" style="float:left;">&#8592; Previous Section</a>-->
+        <a class="btn btn-primary" href="../basicX3D/index.html" style="float:right;">Next Section &#8594;</a>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+                <h2>1. Background: What is X3DOM, and what can it do for me?</h2>
+            </div>            
+            <br>
+            
+            <h3>Plugin-Free Declarative 3D in your browser</h3>
+            <p>X3DOM (pronounced "X-Freedom") is an open source JavaScript framework, used to create <strong>declarative 3D scenes in Web pages</strong>.
+            Since it is based on standard browser technology, your browser does not need any plugin to display X3DOM scenes.
+            In a nutshell, the <a href="http://www.w3.org/community/declarative3d/">declarative 3D</a> concept means that you can create and display
+            an interactive 3D scene, using a structured, textual representation, rather than writing code.            
+            In the case of X3DOM, this textual representation is part of an HTML document that represents a Web page.
+            This way, 3D content becomes a first class citizen inside the Web page, just as text, links, images or movies.
+            </p>
+            
+            <h3>X3DOM = X3D + DOM</h3>            
+            <p>The name X3DOM is composed of two well-known abbreviations. The first one is <a href="http://www.web3d.org/realtime-3d/x3d/what-x3d">X3D</a> ("Extensible 3D Graphics"),
+            which denotes a royalty-free ISO standard for declarative 3D graphics. The second abbreviation is <a href="http://www.w3.org/DOM/">DOM</a> ("Document Object Model"),
+            which describes the interaction concepts and hierarchical representations that are associated with the content of HTML documents. With X3DOM, a special subset of X3D
+            (the so-called <a href="http://www.x3dom.org/?page_id=158">HTML Profile</a>) serves as a decription language for the 3D content inside the Web page. The X3D(OM) elements can be manipulated via DOM operations,
+            just like other HTML elements. You might, for example, dynamically change the color of a 3D object with a JavaScript call to <code>setAttribute(...)</code> on the corresponding DOM element,
+            just in the same way as you would dynamically change, for instance, the text of a label inside a common Web page.            
+            </p>
+            
+            <h3>Reasons to Use X3DOM</h3>
+            <p>
+            Using X3DOM instead of other browser-based 3D libraries or X3D players has several advantages:
+            </p>
+            <ul>
+                <li><strong>No plugin is needed</strong> to display X3DOM scenes - X3DOM is solely based on standard browser technology, such as <a href="http://www.w3schools.com/html/html5_intro.asp">HTML5</a> and <a href="http://get.webgl.org/">WebGL</a>.</li>
+                <br>
+                <li>Based on a new HTML Profile of the ISO Standard X3D, large parts of X3DOM are <strong>standard-conformant</strong>. This greatly facilitates not only learning X3DOM, but also exchanging X3DOM content.</li>
+                <br>
+                <li>Since the development started in 2009, the X3DOM users and developers have become a <strong>large, vital community</strong>.</li>
+                <br>
+                <li>If you know how to build simple Web pages, you can <strong>exploit your existing knowledge about HTML and the DOM</strong>, instead of learning a new programming API.</li>
+                <br>
+            </ul>   
+            
+            <h3>So, how does it work?</h3>
+    <p>
+            If you want to develop your first X3DOM application, all you basically need is a browser and a text editor.
+            Of course, you might also choose any sophisticated HTML and JavaScript development environment, like, for instance, <a href="http://www.jetbrains.com/webstorm/">WebStorm</a>.
+    </p>
+            <div class="container"></div>
+
+</div>
+
+</body>
+</html>

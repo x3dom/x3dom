@@ -1,0 +1,45 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>The CommonSurfaceShader Node</title>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+    <script type="text/javascript" src="https://x3dom.org/download/x3dom.js"></script>
+    <style>
+        x3d, X3D { border: none; }
+    </style>
+</head>
+<body>
+<h1>The CommonSurfaceShader Node</h1>
+
+<div id="content">
+    <X3D id='myX3DWorld' width='800px' height='450px'>
+        <Scene DEF='scene'>
+            <NavigationInfo headlight='true'></NavigationInfo>
+            <Background skyColor='0.2 0.2 0.2'></Background>
+            <Viewpoint position="-3.42989 2.45993 -3.90578" orientation="0.07641 0.97237 0.22057 3.84126"></Viewpoint>
+            <Viewpoint position='0.00000 0.00000 3.34892' orientation='0.00000 0.00000 0.00000 0.00000'></Viewpoint>
+            <Pointlight intensity='1.0' color='0.3 0.3 1.0' location='-2 1 -3'></Pointlight>
+            <Pointlight intensity='1.0' color='0.8 0.6 0.0' location='2 1 -1'></Pointlight>
+            <Pointlight intensity='1.0' color='0.8 0.9 1.0' location='2 2 3'></Pointlight>
+            <Transform>
+                <Shape DEF='Box'>
+                    <Appearance>
+                        <CommonSurfaceShader diffuseFactor='1 1 1' specularFactor='1 1 1' shininessFactor='1'>
+                            <ImageTexture containerField='diffuseTexture' url='diffuseMap.jpg'></ImageTexture> 
+                            <ImageTexture containerField='specularTexture' url='specularMap.jpg'></ImageTexture>
+                            <ImageTexture containerField='shininessTexture' url='shininessMap.jpg'></ImageTexture>
+                            <ImageTexture containerField='normalTexture' url='normalMap.jpg'></ImageTexture>
+                        </CommonSurfaceShader>
+                    </Appearance>
+                    <Box></Box>
+                </Shape>
+            </Transform>
+        </Scene>
+    </X3D>
+    <img src='maps.jpg'>
+</div>
+</body>
+</html>

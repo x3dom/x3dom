@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Access Node Fields</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../sound/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../../models/inline/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Accessing and Manipulating Fields in X3DOM</h2>
+        </div>            
+        <br>
+		<p>
+		This tutorial is an overview of the possibilities to access and manipulate Fields in X3DOM nodes. You will learn
+		how to change field values dynamically and efficient. 
+		
+		As shown in the <a href="../htmlCSS/index.html">JavaScript tutorial</a> you can use JavaScript on every DOM element, so you are able to manipulate x3DOM nodes by using 
+		"getAttribute()" and "setAttribute()". 
+		</p>
+		<h3>getAttribute and setAttribute</h3>
+<p>
+"getAttribute(fieldname") always returns the value of the field with the given name as a string. "setAttribute(fieldname, fieldvalue)" takes a String
+and sets the field with the given name to the given value. <br>
+But what if you want, for example, change a color?
+By using the shown method you would do something like this: 
+</p>
+<pre class="prettyprint"><code class="language-html">
+&lt;script&gt; 
+     function changeColor()
+     {
+        if(document.getElementById("color").getAttribute('diffuseColor')=="1 0 0")
+           document.getElementById("color").setAttribute('diffuseColor', '0 0 1');
+        else
+           document.getElementById("color").setAttribute('diffuseColor', '1 0 0');
+     }
+&lt;/script&gt; 
+
+</code>
+</pre>
+<p>
+Let's go through the code and try to understand what is happening: 
+First you get the node with the id "color", that node contains a field called "diffuseColor" which contains an color object (SFColor).
+This color object gets converted to a string in order to compare it with another string, which represents a SFColor too. 
+<br>
+That seems a bit odd, doesn't it? Luckily X3DOM provides a more sophisticated way to manipulating values. 
+This is helpful especially when you want to change only a single value of that field, like a single channel of a color. 
+</p>
+
+
+<h3>getFieldValue and setFieldValue </h3>
+<p>
+The getFieldValue method returns the value of the requested field as an object of the corresponding field type. You can directly manipulate the object
+without cast it first. Corresponding works the setFieldValue method, which takes the fieldname as a string (because it really is one) and the fieldvalue
+as an object of the field type. 
+</p>
+
+<pre class="prettyprint"><code class="language-js">
+   var myColor = document.getElementById('color').getFieldValue('diffuseColor');
+    myColor.r = 1.0;    //the myColor object is of type 'SFColor', so we can directly set RGB values 
+    document.getElementById('color').setFieldValue('diffuseColor', myColor);
+	
+</code></pre>
+<p>
+Be aware that the returning value is only a copy of the field object. For the most use cases this is perfectly fine, but getting objects by value
+always involves copy operations which can slow down your application if field values are frequently changed. "Frequently" means something about 60 times per second.
+Or if your field value is a large array of values.
+For those cases X3DOM has a requestFieldRef() method, which returns the original object by reference. 
+</p>
+
+
+<h3>requestFieldRef and releaseFieldRef</h3>
+<p>
+ Please note that requestFieldRef is especially thought for such cases and does not work on fields that represent single, primitive javascript datatypes, such as SFFloat or SFString.
+ With requestFielRef() you get the object by reference, so you should be aware that you are manipulating the original object used by X3DOM, and that any change you make to it will potentially directly be reflected in X3DOM's output. 
+ Still, there might be cases where your changes have to be internally processed by X3DOM before they finally take place in the rendered result. 
+ X3DOM might, for example, need to update some values on the GPU after you changed a certain field in your application. In order to do so, X3DOM also needs a notification that you have finished your changes to the internal field object, so it can process the changes properly. 
+ To do so, you will have to call the releaseFieldRed method. You can think of this process as of "borrowing" the object, manipulating it and giving it back to X3DOM.
+</p>
+<pre class="prettyprint"><code class="language-js">
+   var myColorArray = document.getElementById('myColorNode').requestFieldRef('color');
+    myColorArray[23].r = 1.0;    //the myColorArray object is of type 'MFColor', and it is the same object that is internally used by X3DOM
+    document.getElementById('myColorNode').releaseFieldRed('color');
+	
+</code></pre>
+       <p>
+	   In the example file at the bottom of the page you can test all the methods for yourself. If you still have questions about the methods make sure you take a look in the X3DOM
+	  <a href="../../../author/index.html"> scene author API</a>. 
+	   </p>
+        
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="fields.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+								
+				<li><a href="../../../author/Shape/Material.html">Material</a></li>
+				          
+            </ul>
+        </div>
+
+</div>
+
+</body>
+</html>

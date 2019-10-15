@@ -1,0 +1,39 @@
+{
+  "name": "x3dom",
+  "version": "1.8.2-dev",
+  "description": "X3DOM. A framework for integrating and manipulating X3D scenes as HTML5/DOM elements.",
+  "main": "Main.js",
+  "directories": {
+    "doc": "doc",
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build/src-builder.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/x3dom/x3dom.git"
+  },
+  "keywords": [
+    "webgl",
+    "x3d",
+    "gltf",
+    "html",
+    "javascript"
+  ],
+  "author": "tsturm",
+  "license": "(MIT OR GPL-3.0)",
+  "bugs": {
+    "url": "https://github.com/x3dom/x3dom/issues"
+  },
+  "homepage": "https://github.com/x3dom/x3dom#readme",
+  "devDependencies": {
+    "concat": "^1.0.3",
+    "fs-extra": "^8.1.0",
+    "terser": "^4.3.8",
+    "jsdoc": "3.6.3",
+    "zip-lib": "^0.2.1"
+  }
+}

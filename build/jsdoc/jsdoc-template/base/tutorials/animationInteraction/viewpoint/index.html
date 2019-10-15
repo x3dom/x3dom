@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Viewpoint</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../navigation/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../animate/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Viewpoint</h2>
+        </div>            
+        <br>
+		
+        <p>
+		In this tutorial you will learn how to set different Viewpoints and some tricks about viewpoints in X3DOM. 
+		Sometimes you want to show your scene from different camera positions and angles. There are two different ways to do this, a simple and smooth one and another way.
+
+
+        <h3>Getting great view directly from X3DOM</h3>
+		<p>Did you ever got the perfect camera settings while playing around within a scene and you wanted to save it but had no idea how?
+		Just press the "D"-key to go into the debug mode and then "V" to get your viewpoint printed on to the debug console. From the you can copy and paste it directly to your X3DOM scene.
+		But be aware you will get the complete viewpoint including the current near and far plane, which you should delete before using the viewpoint in your scene. Otherwise the clipping planes will be fixed and not recalculated
+		for interactions.
+		</p>
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Debug view </div>
+            </div>
+        </div> 
+		
+		<h3>Including and activating viewpoints</h3>
+		<p>
+		A scene can contain as many viewpoint as you want, but only one can be active.  To activate a viewport you just set "set_bind" to true. The camera will be automatically animated between the views. 
+		</p>
+		<pre class="prettyprint"><code class="language-html">
+    &lt;X3D width="600" height="600"&gt;
+      &lt;Scene DEF='scene'&gt;
+        &lt;Viewpoint id="front" position="-0.07427 0.95329 -2.79608" orientation="-0.01451 0.99989 0.00319 3.15833" description="camera"&gt;&lt;/Viewpoint&gt;
+        &lt;Viewpoint id="right" position="-2.43383 1.07351 -1.28700" orientation="-0.00318 -0.99950 -0.03159 2.06609" description="camera"&gt;&lt;/Viewpoint&gt;
+        &lt;Transform&gt;
+          &lt;Inline url="deer.x3d">&lt;/Inline&gt;
+        &lt;/Transform&gt;
+      &lt;/Scene&gt;
+    &lt;/X3D&gt;
+    &lt;button onclick="document.getElementById('right').setAttribute('set_bind','true');"&gt;Right&lt;/button&gt;
+    &lt;button onclick="document.getElementById('front').setAttribute('set_bind','true');"&gt;Left &lt;/button&gt;
+        </code></pre>
+		<p>
+		Another way is to manipulate the position and orientation values of a viewpoint directly, I wouldn't recommend it, but in that case the camera will not be animated.  
+		</p>
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="viewpoint.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+           		<li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
+
+				<li><a href="../../../author/Networking/Inline.html">Inline</a></li>
+								
+				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>
+            </ul>
+        </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Taking screenshots</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../virtualCatalogue/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../simpleAR/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>Taking screenshots</h2>
+        </div>            
+        <br>
+		
+        <p>
+		In this tutorial you will learn how to use the screenshot functionality of the runtime. It allows to build
+            applications where the user can store or download a twodimensional picture of the current canvas contents.
+        </p>
+		<p>
+		First we need a x3dom canvas with an unique id (lets call it <code>canvas</code>) and an empty div that will
+            contain our screenshot preview images and the download links (i.e. <code>id="screenshotPreviews"</code>).
+            Additionally, we need some kind of trigger for taking screenshots, for example a simple link with
+            <code>id="btnTakeScreenshot"</code>.
+		</p>
+
+		<p>
+		No lets move on, we only need a few bits of javascript to glue our app together. A function is triggered every
+            time the user presses the button. This function calls the
+            <a href="../../../author/runtime.html#getScreenshot">getScreenshot()</a> function of the x3dom runtime and
+            recieves a <a href="http://tools.ietf.org/html/rfc2397">data URI</a> containing the image. Afterwards a new
+            image tag is created and the data link is set as source and as well as hyperref for the download link.
+		</p>
+
+
+<pre class="prettyprint"><code class="language-javascript">
+    $(document).ready(function(){
+        var screenshotCount = 0;
+
+        //Every time the user clicks on the 'take screenhot' button
+        $("#btnTakeScreenshot").on("click", function() {
+            //Get data url from the runtime
+            var imgUrl = document.getElementById("canvas").runtime.getScreenshot();
+
+            //Create preview image...
+            var newScreenshotImage = document.createElement('img');
+            newScreenshotImage.src = imgUrl;
+            newScreenshotImage.id = "screenshot_" + screenshotCount;
+            $('#screenshotPreviews').append(newScreenshotImage);
+
+            //...and download link
+            var newScreenshotDownloadLink = document.createElement('a');
+            newScreenshotDownloadLink.href = imgUrl;
+            newScreenshotDownloadLink.download = "screenshot_" + screenshotCount + ".png";
+            newScreenshotDownloadLink.innerHTML = "Speichern";
+            $('#screenshotPreviews').append(newScreenshotDownloadLink);
+
+            screenshotCount++;
+            $('#screenshotCount').html(screenshotCount);
+        });
+    });
+</code></pre>
+        
+		<p>
+		While this implementation uses jQuery to change the url field of the node, this could also be done using plain JavaScript DOM manipulation operations.
+		</p>
+
+		<p>
+		Your simple screenshot app should work now and you can modify and extend it as you want.
+		</p>
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Simple screenshot app</div>
+            </div>
+        </div> 
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>  
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example/index.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="javascript:window.location='view-source:' + window.location.href.replace('index.html', 'example/index.html');"><img src="../../source.png">View example page source</a></li>                
+                <li><a href="takingScreenshots.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/runtime.html">Runtime</a></li>
+            </ul>
+        </div>
+
+    </section>
+
+</div>
+
+</div>
+
+</body>
+</html>

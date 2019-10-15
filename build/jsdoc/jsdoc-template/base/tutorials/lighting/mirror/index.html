@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Creating a Mirror Effect with RenderedTexture</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../lighting/customShader/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../../largeModels/culling/index.html" style="float:right;">Next Section &#8594;</a>
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+                <h2>Creating a Mirror Effect with RenderedTexture</h2>
+            </div>
+            <br>
+
+            <p>
+                In this tutorial you will combine a set of interacting nodes to create a mirror effect with X3DOM.
+            </p>
+            <p>
+                Initially, we setup the scene containing the mirror in the X3D:<br>
+                A scaled box is used to represent the 3D mirror representation. The mirroring surface is modelled as RenderedTexture which is mapped onto an IndexedFaceSet.
+                Note how a list of fields of the RenderedTexture, namely "excludeNodes", "background" and "viewpoint" are set using the "containerField"-attribute.
+            </p>
+		
+		<pre class="prettyprint"><code class="language-html">
+            &lt;!-- The content of the scene to be mirrored --&gt;
+            &lt;group DEF='MIRROR_SCENE'&gt;
+                ..
+            &lt;/group&gt;
+            &lt;!-- The pieces of the mirror --&gt;
+            &lt;Transform DEF='mirrorTrans' translation='x y z'/&gt;
+
+                &lt;!-- The box serving as the mirror's 3D representation --&gt;
+                &lt;Transform translation='0.0 0.0 -0.3' scale='7.0 7.0 0.2'/&gt;
+                    &lt;Shape '/&gt;
+                        &lt;Appearance'/&gt;... &lt;/Appearance&gt;
+                        &lt;Box'/&gt; &lt;/Box&gt;
+                    &lt;/Shape&gt;
+                &lt;/Transform&gt;
+
+                &lt;!-- The mirror's surface --&gt;
+                &lt;Transform translation='0.0 0.0 -0.3' scale='7.0 7.0 0.2'/&gt;
+                    &lt;Shape id='myMirrorShape' DEF='myMirrorShape'&gt;
+                        &lt;Appearance&gt;
+                            &lt;RenderedTexture update='always' dimensions='512 512 4' repeatS='false' repeatT='false'&gt;
+                                &lt;Shape USE='myMirrorShape' containerField='excludeNodes'&gt;&lt;/Shape&gt;
+                                &lt;Background skyColor='1 1 1' groundColor='1 1 1' containerField='background'&gt;&lt;/Background&gt;
+                                &lt;Viewpoint id='myMirrorTextureViewPoint' containerField='viewpoint'&gt;&lt;/Viewpoint&gt;
+                                &lt;Group USE='MIRROR_SCENE'&gt;&lt;/Group&gt;
+                            &lt;RenderedTexture&gt;
+                        &lt;/Appearance&gt;
+                        &lt;IndexedFaceSet solid="false" coordIndex='0 1 2 3 -1'&gt;
+                            &lt;Coordinate point='-6 -6 0, 6 -6 0, 6 6 0, -6 6 0'&gt;&lt;/Coordinate&gt;
+                            &lt;TextureCoordinate point='1 1, 0 1, 0 0, 1 0'&gt;&lt;/TextureCoordinate&gt;
+                        &lt;/IndexedFaceSet &gt;
+                    &lt;/Shape&gt;
+                &lt;/Transform&gt;
+            &lt;/Transform&gt;
+        </code></pre>
+        <p>
+            The target of the RenderedTexture is defined by the subtree it contains. Therefore, by "USE"-ing the "MIRROR_SCENE"-group, we can target the externally defined geometry.
+            The mirror's shape itself has to be excluded to prevent recursion in the rendering passes.
+            <br>
+            <br>
+            If the viewpoint or the transformation of the mirror changes, the RenderedTexture has to be updated accordingly.<br>
+            Firstly, we need to retrieve the set of vectors defining the mirror's local coordinate system in world coordinates.
+        </p>
+
+<pre class="prettyprint"><code class="language-javascript">
+    var ms = document.getElementById('myMirrorShape');
+    var mv = document.getElementById('myMirrorTextureViewPoint');
+
+    //compute transformations related to local mirror space
+    var mirrorToWorldMat = ms._x3domNode.getCurrentTransform();
+    var mirrorPos    = mirrorToWorldMat .multMatrixPnt(new x3dom.fields.SFVec3f(0, 0, 0));
+    var mirrorNormal = mirrorToWorldMat.multMatrixVec(new x3dom.fields.SFVec3f( 0, 0, 1));
+    var mirrorUp     = mirrorToWorldMat.multMatrixVec(new x3dom.fields.SFVec3f( 0, 1, 0));
+    var mirrorRight  = mirrorToWorldMat.multMatrixVec(new x3dom.fields.SFVec3f(-1, 0, 0));
+</code></pre>
+    <p>
+        Next, we compute the vector from the mirror's local origin to the viewer and its length.
+    </p>
+<pre class="prettyprint"><code class="language-javascript">
+    //transform view vector and view point to local mirror space
+    var viewMatInv = x3domRuntime.viewMatrix().inverse();
+    var vPos = viewMatInv.multMatrixPnt(new x3dom.fields.SFVec3f(0, 0, 0));
+    var vVec = vPos.subtract(mirrorPos);
+
+    //compute distance between viewer and mirror
+    var viewDist = vVec.length();
+
+</code></pre>
+    <p>
+        To setup the view and projection matrix for the RenderedTexture correctly, we need a list of parameters.
+        First, we calculate the eye position by reflecting the viewer position on the mirror's normal.
+    </p>
+<pre class="prettyprint"><code class="language-javascript">
+    vVec         = vVec.normalize();
+
+    //reflect view vector on mirror normal
+    var reflect = mirrorNormal.multiply(2 * vVec.dot(mirrorNormal)).subtract(vVec);
+
+    //update mirror's camera settings
+    var mirrorEyeOffset = reflect.multiply(viewDist);
+    var mirrorEye = mirrorPos.subtract(mirrorEyeOffset);
+</code></pre>
+    <p>
+        We can setup the viewMatrix for the mirror.
+    </p>
+<pre class="prettyprint"><code class="language-javascript">
+    //setup view matrix
+    var vMatMirr  = makeLookAt(mirrorEye, mirrorEye.add(mirrorNormal), defaultUpVec);
+    mv._x3domNode._viewMatrix = vMatMirr;
+</code></pre>
+    <p>
+        Finally, we calculate the offsets needed for the perspective frustum.
+    </p>
+<pre class="prettyprint"><code class="language-javascript">
+    //setup perspective frustum parameters (left, right, bottom, top, near, far)
+    var sH = 0.5 * mirrorSize;
+
+    var near  =  mirrorNormal.dot(mirrorEyeOffset);
+    var left  =  mirrorRight.dot(mirrorEyeOffset) - sH;
+    var right =  mirrorRight.dot(mirrorEyeOffset) + sH;
+    var bottom =  mirrorUp.dot(mirrorEyeOffset)   - sH;
+    var top    =  mirrorUp.dot(mirrorEyeOffset)   + sH;
+
+    var pMatMirr  = x3dom.fields.SFMatrix4f.perspectiveFrustum( left, right, bottom, top, near, 10000.0);
+    mv._x3domNode._projMatrix = pMatMirr;
+</code></pre>
+    <p>
+        The underlying geometrical concepts of these calculations and the setup of the mirror's view frustum are summarized in figure 1.<br>
+        WebGL stores the rendered texture "upside-down", thus, the v-axis has to be inverted for the texture mapping.
+        When rendering the image from the mirror's viewpoint, it is projected onto the backside of the mirroring surface.
+        Therefore, we have to invert the u-axis as well. The resulting texture mapping is visualized in figure 2.
+
+    </p>
+            <div style="text-align:center;">
+                <div class="docuFigureContainer">
+                    <img class="docuFigure" width="515px" src='concept.png'>
+                    <img class="docuFigure" width="750px" src='textureCoords.png'>
+                    <div class="text-muted">Figure 1: geometrical concept -  Figure 2: texture mapping.</div>
+                </div>
+
+
+                <div class="docuFigureContainer">
+                    <img class="docuFigure" src='mirror.png'>
+                    <div class="text-muted">The sample scene's mirror effect.</div>
+                </div>
+            </div>
+            <p>
+                <a href="#">Back to page top &#10548;</a>
+            </p>
+            <div class="jumbotron">
+                <h4>Get this X3DOM example:</h4>
+                <ul>
+                    <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                    <li><a href="mirror.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+                </ul>
+                <br>
+
+                <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+                <ul>
+                    <li><a href="../../../author/Texturing/RenderedTexture.html">RenderedTexture</a></li>
+                    <li><a href="../../../author/Geometry3D/IndexedFaceSet.html">IndexedFaceSet</a></li>
+                    <li><a href="../../../author/Rendering/Coordinate.html">Coordinate</a></li>
+                    <li><a href="../../../author/Navigation/Viewpoint.html">Viewpoint</a></li>
+                    <li><a href="../../../author/Texturing/TextureCoordinate.html">TextureCoordinate</a></li>
+                </ul>
+            </div>
+
+</div>
+
+</body>
+</html>

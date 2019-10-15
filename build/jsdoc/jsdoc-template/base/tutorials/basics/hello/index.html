@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Hello, X3DOM!</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div>
+        <a class="btn btn-primary" href="../htmlCSS/index.html" style="float:right;">Next Section &#8594;</a>
+        <div style="clear:both;"></div>
+    </div>
+    <div style="text-align:center;">
+        <h2>Hello, X3DOM!</h2>
+        </div>            
+        <br>
+		
+        <p>
+		This tutorial will show you how to setup and run your first X3DOM scene. All you need is a <a class="reference external" href="http://www.x3dom.org/?page_id=9">WebGL-capable browser</a>
+		and some text editor. As the whole X3DOM application will be part of a regular Web page, and also authored in a way similar to HTML, it might help if your editor also has some syntax highlighting for HTML or XML, or if it even is a full, Web-oriented IDE, like, for instance, <a href="http://www.jetbrains.com/webstorm/">WebStorm</a>.
+		If you have your preferred text editor and your browser at hand, and if you know how to access or open the Web page inside your browser (see the <a href="../../../gettingStarted/index.html">Getting Started</a> guide for details), you are ready to start with this tutorial.
+        </p>
+        
+        <p>
+		First, create a new text file and name it something like <code>HelloX3DOM.html</code>. Then, use your preferred editor to paste the following into the empty file:
+		</p>
+        
+        <pre class="prettyprint"><code class="language-html">
+    &lt;html&gt; 
+        &lt;head&gt; 
+            &lt;title&gt;My first X3DOM page&lt;/title&gt; 			
+            &lt;script type='text/javascript' src='http://www.x3dom.org/download/x3dom.js'&gt; &lt;/script&gt; 
+            &lt;link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'&gt;&lt;/link&gt; 
+        &lt;/head&gt; 
+        &lt;body&gt; 
+            &lt;h1&gt;Hello, X3DOM!&lt;/h1&gt; 
+            &lt;p&gt; 
+                This is my first html page with some 3d objects. 
+            &lt;/p&gt; 
+        &lt;/body&gt; 
+    &lt;/html&gt;           
+        </code></pre>
+		
+		<p>
+        If you open the file inside your browser, it will display as a regular HTML page with a text message.
+		However, as you might have noticed, we are already able to add some X3DOM content to our page now, because we have already included X3DOM as a JavaScript library, along with the X3DOM CSS file, which is necessary to have the X3DOM context and some X3DOM-related overlays nicely formatted. In the above HTML code, you can see that we have included the development version of X3DOM and the CSS file via the <code>script</code> and <code>link</code> tags.
+		</p>
+        
+        <p>
+        Let's continue by adding some 3D content. First, we'll need an <code>x3d</code> element, which describes the X3DOM context in which the scene will be displayed.
+		Similar to an HTML element, like <code>p</code> or <code>div</code>, the <code>x3d</code> element defines a rectangular region inside the HTML page.
+		The whole 3D content of the X3DOM context is described as a <i>scene</i>, so we'll add a <code>scene</code> tag inside of the <code>x3d</code> tag. This is something that comes from the X3D standard, and it is not important in the context of this tutorial. A scene can contain many different <i>nodes</i>, like, for instance, lights, groups, viewpoints and objects. In this first example, we are simply defining a 3D object, which is done by using the <code>shape</code> node. Inside of the shape node, we will have to specify the geometry of the object, which we will do using a simple <code>box</code> node. You can now add the following code after the closing <code>p</code> tag, inside the body of your HTML page:
+        </p>	
+        
+		<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='600px' height='400px'&gt; 
+        &lt;scene&gt; 
+        &lt;shape&gt; 			
+    &lt;box&gt;&lt;/box&gt; 
+    &lt;/shape&gt; 
+        &lt;/scene&gt; 
+    &lt;/x3d&gt; 
+		</code></pre>
+		
+        <p>
+		If you now open the HTML page with your browser, the result should look like this:
+        </p>
+		
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot1.png'>
+                <div class="text-muted">An X3DOM context inside the Web page.</div>
+            </div>
+        </div>        
+		
+        <p>
+		As you can see, there is now a new area filled with white color, which is X3DOM's 3D context. It has a width and height that match the corresponding attributes defined in the <code>x3d</code> tag.
+        However, the box we have added is not visible (or hardy visible - you might recognize a light gray border).
+		This is due to the fact that we haven't assigned any <i>material</i> to the box, so X3DOM has picked a default white material, according to the X3D standard.
+		Since the background of the page is also white, the box is not visible. To change the material color, we will first need to add an <code>appearance</code>
+		node as a child of the shape node we have created. Inside the appearance node, we can then define a <code>material</code> node, which has some attributes
+		that let you define a simple material, using a single color for the full surface of the shape. This can be done by setting the <code>diffuseColor</code> attribute
+		of the <code>material</code> node - we will now set it to red by specifying RGB values, each between 0 and 1, as '1 0 0':
+		</p>
+        
+		<pre class="prettyprint"><code class="language-html">		
+    &lt;shape&gt; 
+        &lt;appearance&gt; 
+        &lt;material diffuseColor='1 0 0'&gt;&lt;/material&gt; 
+        &lt;/appearance&gt; 
+        &lt;box&gt;&lt;/box&gt; 
+    &lt;/shape&gt; 
+		</code></pre>
+		
+        <p>
+		The resulting page inside your browser should now look like this:
+		</p>
+        
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot2.png'>
+                <div class="text-muted">The box has a red <code>material</code> now.</div>
+            </div>
+        </div>   	
+		
+        <p>
+		Try to navigate around in the scene by pressing the mouse. You should be able to inspect the box from all sides by pressing and holding the left mouse button and moving the mouse around.
+		In a similar way, you can zoom in and out, using the right mouse button.
+		</p>
+        
+        <p>
+		We will now add two more objects to the scene, a blue sphere and a green cone. This is done in a very similar way as we already did it for the box. However, besides a <code>sphere</code> and a <code>cone</code> node, we will also need something to move the sphere and the cone to some other place in the scene. This is due to the fact that all 3D objects are, by default, placed in the 3D scene without any transformations applied, so our three objects would all show up as a big cluster in the center of X3DOM's coordinate system, which we don't want.
+		Like the coordinate system used in X3D and some other graphics-related standards (for instance, OpenGL), X3DOM's coordinate system has the y-Axis pointing upwards. The x-Axis is extending from the origin to the right (east), and the z-Axis is facing towards the viewer (south):
+		</p>
+        
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='coordSystem.png'>
+                <div class="text-muted">The default X3D coordinate system.</div>
+            </div>
+        </div>   
+		
+        <p>
+		We will now simply transform the green cone three units to the left (west) before we add it, and we will move the blue sphere three units to the right (east), so that the content of the <code>scene</code> tag now looks like this:
+		</p>
+        
+		<pre class="prettyprint"><code class="language-html">			
+    &lt;shape&gt; 
+        &lt;appearance&gt; 
+        &lt;material diffuseColor='1 0 0'&gt;&lt;/material&gt; 
+        &lt;/appearance&gt; 
+        &lt;box&gt;&lt;/box&gt; 
+    &lt;/shape&gt; 
+    &lt;transform translation='-3 0 0'&gt; 
+    &lt;shape&gt; 
+        &lt;appearance&gt; 
+        &lt;material diffuseColor='0 1 0'&gt;&lt;/material&gt; 
+        &lt;/appearance&gt; 
+        &lt;cone&gt;&lt;/cone&gt; 
+    &lt;/shape&gt; 
+    &lt;/transform&gt; 
+    &lt;transform translation='3 0 0'&gt; 
+    &lt;shape&gt; 
+        &lt;appearance&gt; 
+        &lt;material diffuseColor='0 0 1'&gt;&lt;/material&gt; 
+        &lt;/appearance&gt; 
+        &lt;sphere&gt;&lt;/sphere&gt; 
+    &lt;/shape&gt; 
+    &lt;/transform&gt; 
+		</code></pre>
+		
+        <p>
+		Inside your browser, you should now hopefully be able to see the following result:
+		</p>
+		        
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot3.png'>
+                <div class="text-muted">Additional, transformed <code>cone</code> and <code>sphere</code> nodes.</div>
+            </div>
+        </div>   
+		
+        <p>
+		If you see a similar result - congratulations! You have just created your first X3DOM scene, using already a bunch of different X3D nodes.
+        You might now be interested in continuing with the next tutorial, or you might want to browse the documentation of the X3DOM nodes that were just introduced.
+        </p>
+		       
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="HelloX3DOM.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+                <li><a href="HelloX3DOM.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+				<li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+				
+				<li><a href="../../../author/Geometry3D/Box.html">Box</a></li>
+				
+				<li><a href="../../../author/Geometry3D/Cone.html">Cone</a></li>
+				
+				<li><a href="../../../author/Shape/Material.html">Material</a></li>
+				
+				<li><a href="../../../author/Core/Scene.html">Scene</a></li>
+				
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>
+				
+				<li><a href="../../../author/Grouping/Transform.html">Transform</a></li>             
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

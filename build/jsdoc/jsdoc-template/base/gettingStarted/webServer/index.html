@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Getting Started</title>    
+    <link type="text/css" rel="stylesheet" href="../../static/styles/x3dom-docs-new.css">
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../index.html">documentation</a></li>
+                <li><a href="../index.html">Getting Started</a></li>
+                <li>Running X3DOM Applications with a full scale Web Server</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../pythonSimpleHTTP/index.html" style="float:left;">&#8592; Previous Section</a>
+        <!--<a class="btn btn-primary" href="" style="float:right;">Next Section &#8594;</a>-->
+                <div style="clear:both;"></div>
+            </div>
+            <div style="text-align:center;">
+            <h2>4.2 Running X3DOM Applications with a full scale Web Server</h2>
+            </div>
+            <br>
+            Usually, you will be serving your X3DOM applications with a full scale web server. This page gives some hints on the most common web servers, being Apache and IIS.<br>
+            For detailed guidance on their configuration please refer to the respective official resources. Both web servers use port 80 by default.
+
+            <h3>Apache / XAMPP</h3>
+            Apache ist the most used web server on the Internet. It is open-source and can be downloaded from <a href="http://httpd.apache.org">httpd.apache.org</a>. The most recent version is 2.4, but 2.2 is still supported as well.<br>
+            If your application needs a full stack of web server components we recommend <a href="https://www.apachefriends.org/index.html">XAMPP</a>, which incorporates the latest releases of Apache, MySQL, PHP and Perl with little or no configuration of the various components being required.
+
+            <h3>Microsoft IIS</h3>
+            The Internet Information Services (IIS, previously Internet Information Server) is integrated in any of the latest versions of Microsoft's Windows. However, especially for non-server operating systems, the number of simultaneous connections might be limited.<br>
+            <h4>BinaryGeometry issues</h4>
+            Some IIS setups (starting from IIS7) prevent the serving of files from (sub-)folders named or containing <i>/bin/</i> in their path. This is a result of the <i>&lt;requestFiltering&gt;</i>-section in the <i>applicationHost.config</i>-file, typically looking like this:
+            <pre class="prettyprint"><code class="language-sh">
+                &lt;hiddenSegments applyToWebDAV="true" \&gt;
+                    &lt;add segment="web.config" /&gt;
+                    <b>&lt;add segment="bin" /&gt;</b>
+                    &lt;add segment="App_code" /&gt;
+                    &lt;add segment="App_GlobalResources" /&gt;
+                    &lt;add segment="App_LocalResources" /&gt;
+                    &lt;add segment="App_WebReferences" /&gt;
+                    &lt;add segment="App_Data" /&gt;
+                    &lt;add segment="App_Browsers" /&gt;
+                &lt;hiddenSegments /&gt;
+            </code></pre>
+
+            <p>This might result in a problem when using X3DOM's BinaryGeometry as the tutorial suggests to export the binary files to a folder named <i>binGeo</i>. Furthermore, IIS does not deal well with some deprecated BinaryGeometry's file endings which contain non-alphanumeric characters (e.g., <i>.bin+8</i>).</p>
+
+
+</div>
+
+</body>
+</html>

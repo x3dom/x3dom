@@ -1,0 +1,221 @@
+<?js
+    var self = this;
+
+    var depth = filename.split("/").length;
+
+    var backPath = "";
+    for( var i = 0; i < depth -2; ++i)
+        backPath+="../"
+
+    docs.forEach(function(doc, i) {
+        self.context = doc;
+?>
+
+<?js if (doc.kind === 'mainpage' || (doc.kind === 'package')) { ?>
+<?js= self.partial('mainpage.tmpl', doc) ?>
+<?js } else if (doc.kind === 'source') { ?>
+<?js= self.partial('source.tmpl', doc) ?>
+<?js } else { ?>
+
+<?js if (doc.kind == 'class') {
+    var data =
+    {
+        self: self,
+        doc : doc,
+        title: title,
+    };
+
+
+    ?>
+<?js= self.partial('classSummary.tmpl', data) ?>
+<?js } ?>
+
+<section>
+
+    <header>
+        <h3>
+            <?js if ( self.api == "developer"){
+                   if (doc.ancestors && doc.ancestors.length) { ?>
+            <span class="ancestors"><?js= doc.ancestors.join('') ?></span>
+            <?js } ?>
+            <?js= doc.name ?>
+            <?js } ?>
+
+            <?js if (doc.variation) { ?>
+            <sup class="variation"><?js= doc.variation ?></sup>
+            <?js } ?></h2>
+
+        <?js if (doc.classdesc) { ?>
+        <div class="class-description"><?js= doc.classdesc ?></div>
+        <?js } ?>
+    </header>
+
+    <article>
+        <?js
+        var members = self.find({kind: 'member', memberof: title === 'Global' ? {isUndefined: true} : doc.longname});
+        var fields = [];
+        var properties = []
+        if (members && members.length && members.forEach)
+        {
+            members.forEach(function(m)
+            {
+                if(m.field)
+                    fields.push(m);
+                else
+                    properties.push(m);
+
+            });
+        }
+    ?>
+        <?js
+        if(fields.length)
+        {
+	?>
+        <h3 class="subsection-title">HTML Encoding and Default Values<a href="#">&#10548;</a></h3>
+        <div>
+            <code>
+                <?js= '&lt;' + doc.name ?>
+
+                <?js fields.forEach(function(f){ ?>
+                <?js= f.name + '=\'' + (f.initvalue ? f.initvalue : '') + '\'' ?>
+                <?js }); ?>
+
+                <?js= '&gt;&lt;/' + doc.name + '&gt' ?>
+            </code>
+        </div>
+        <?js } ?>
+
+
+        <div class="container-overview">
+
+            <h3 class="subsection-title">Inheritance<a href="#">&#10548;</a></h3>
+            <ul>
+            <?js
+                var parent = doc.parentNode;
+                var level = 0;
+                var list = [];
+
+                while(parent)
+                {
+                    list.unshift(parent);
+                    parent = parent.parentNode;
+                }
+
+                for(var i = 0, n = list.length; i < n; ++i)
+                {
+                    parent = list[i];
+            ?>
+                <li class="inheritance-lvl-<?js= level ?>">
+                    <?js= self.linkFromContextTo( parent.longname, false, parent.name) ?><?js= "("+parent.childNodes.length+")" ?>
+                </li>
+            <?js
+                    level++;
+                }
+            ?>
+
+            <li class="inheritance-lvl-<?js= level ?>">
+                <b><?js= doc.name ?></b>
+                <?js
+                    if(doc.childNodes && doc.childNodes.length)
+                    {
+                ?>
+                <?js= "("+doc.childNodes.length+")" ?>
+                <?js
+                    }
+                ?>
+            </li>
+
+            <?js if (doc.childNodes && doc.childNodes.length > 0) { ?>
+                <?js
+
+                level++;
+
+                for(var i = 0, n = doc.childNodes.length; i < n; ++i)
+                {
+                    var child = doc.childNodes[i];
+            ?>
+                <li class="inheritance-lvl-<?js= level ?>">
+                    <?js= self.linkFromContextTo( child.longname, false, child.name) ?>
+                </li>
+                <?js
+                }
+            ?>
+            <?js } ?>
+            </ul>
+
+            <?js if (self.api == "developer" && doc.kind === 'class') { ?>
+            <br>
+            <h3 class="subsection-title">Constructor<a href="#">&#10548;</a></h3>
+            <?js ?>
+            <?js= self.partial('method.tmpl', doc) ?>
+            <?js } else { ?>
+            <?js if ( self.api == "developer" && doc.description) { ?>
+            <div class="description"><?js= doc.description ?></div>
+            <?js } ?>
+
+            <?js= self.partial('details.tmpl', doc) ?>
+
+            <?js if (doc.examples && doc.examples.length) { ?>
+            <h3>Example<?js= doc.examples.length > 1? 's':'' ?></h3>
+            <?js= self.partial('examples.tmpl', doc.examples) ?>
+            <?js } ?>
+            <?js } ?>
+        </div>
+
+
+        <?js
+        if(fields.length)
+        {
+              var obj =
+                {
+                    fields : fields,
+                    doc : doc,
+                    backPath : backPath
+                };
+	?>
+        <br>
+        <h3 class="subsection-title">Fields<a name="Fields" href="#">&#10548;</a></h3>
+
+        <div>
+            These are the X3D / X3DOM fields of this node. Values should usually be received / set as strings via
+            DOM functions (i.e., using
+            <code>setAttribute("myFieldName", "myFieldValue")</code> and
+            <code>getAttribute("myFieldName")</code>).
+        </div>
+
+        <?js= self.partial('classFields.tmpl', obj) ?>
+        <?js }
+         if( self.api == "developer" && properties.length)
+         {
+                var obj =
+                {
+                    properties : properties,
+                    doc : doc
+                };
+     ?>
+        <br>
+        <br>
+        <h3 class="subsection-title">Properties<a name="Properties" href="#">&#10548;</a></h3>
+            <?js= self.partial('classProperties.tmpl', obj) ?>
+
+        <?js } ?>
+
+        <?js
+        var methods = self.find({kind: 'function', memberof: title === 'Global' ? {isUndefined: true} : doc.longname});
+        if (self.api == "developer" && methods && methods.length && methods.forEach) {
+    ?>
+        <br>
+        <br>
+        <h3 class="subsection-title">Methods<a name="Methods" href="#">&#10548;</a></h3>
+
+        <?js methods.forEach(function(m) { ?>
+        <?js= self.partial('method.tmpl', m) ?>
+        <?js }); ?>
+        <?js } ?>
+
+    </article>
+
+</section>
+<?js } ?>
+
+<?js }); ?>

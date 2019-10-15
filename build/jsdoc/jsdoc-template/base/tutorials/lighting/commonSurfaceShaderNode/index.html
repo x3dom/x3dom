@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>The CommonSurfaceShader node</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../gamma/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../customShader/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div style="text-align:center;">
+            <h2>The CommonSurfaceShader Node</h2>
+        </div>            
+        <br>
+		
+        <p>
+		CommonSurfaceShader is a alternative way to specify materials. It can be regarded as a replacement for the Material node with some modern features like normal mapping.
+        </p>
+        
+        <p>
+        Formally, it is a Shader node (and it goes into the shaders-slot of an appearance), but it does not contain explicit shader code and exposes only a declarative interface, similar to that of the Material node.      
+        </p>
+        
+        <p>
+        In this tutorial we'll create simple box which use the CommonSurfaceShader node to demonstrate some of the different available texture slots.<br>
+        The following code snippet setup our scene. 
+        </p>
+        
+        <pre class="prettyprint"><code class="language-html">
+            &lt;Shape&gt;
+                &lt;Appearance&gt;
+                    &lt;CommonSurfaceShader diffuseFacor='1 1 1' specularFactor='1 1 1' shininessFactor='1'&gt;
+                        &lt;ImageTexture containerField='diffuseTexture' url='diffuseMap.jpg'&gt;&lt;/ImageTexture&gt;
+                        &lt;ImageTexture containerField='specularTexture' url='specularMap.jpg'&gt;&lt;/ImageTexture&gt;
+                        &lt;ImageTexture containerField='shininessTexture' url='shininessMap.jpg'&gt;&lt;/ImageTexture&gt;
+                        &lt;ImageTexture containerField='normalTexture' url='normalMap.jpg'&gt;&lt;/ImageTexture&gt;
+                    &lt;/CommonSurfaceShader&gt;
+                &lt;/Appearance&gt;
+                &lt;Box&gt;&lt;/Box&gt;
+            &lt;/Shape&gt;
+		</code></pre>
+        
+        <p>
+        The CommonSurfaceShader node provides attributes to set the ambient (ambientFactor), diffuse (diffuseFactor) and specular (specularFactor) color, as well as the shininess (shininessFactor) and the transparency (alphaFactor) similar to the standard Material node.
+        </p>
+        
+        <p>
+        The child nodes of the CommonSurfaceShader node represents the different texture slots which be simply specified by standard ImageTexture nodes. The ContainerField attribute set the texture slot to which we want to refer. In this example we use four different texture slots.
+        The first one is a diffuse texture which modulates the diffuse color similar to a standard ImageTexture node. The next two textures affect the specular color and the shininess level. With these we can define different specular colors and intensities to certain parts of our surface.
+        The last texture is a normal texture. It provides shading normals in order to produce apparent bumps in the surface that are not modeled to give our flat box a more realistic look.
+        </p>
+		    
+        <p>
+        You may wonder how tangents and binormals are specified for the normal mapping. Currently, there are basically two ways to do this in X3DOM. The first is the simplest: just don't specify them at all (as done in the example). In this case the shader will try to derive them from the texture coordinates. However, this is not the best solution in term of quality and speed. Usually it's better to supply them explicitly via custom vertex attributes. Just augment your geometry with FloatVertexAttribute nodes and refer to these data by setting the Name attribute to 'tangent' and 'binormal'.
+        </p>
+        
+        <pre class="prettyprint"><code class="language-html">
+            &lt;FloatVertexAttribute name='tangent' numComponents='3' value='...'&gt;  &lt;/FloatVertexAttribute&gt;
+            &lt;FloatVertexAttribute name='binormal' numComponents='3' value='...'&gt;  &lt;/FloatVertexAttribute&gt;
+		</code></pre>
+        
+        <div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Figure 1: The final CommonSurfaceShader sample scene.</div>
+            </div>
+        </div>
+            
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>
+                <li><a href="commonSurfaceShaderNode.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>
+                <li><a href="../../../author/Shape/Appearance.html">Appearance</a></li>
+                <li><a href="../../../author/Geometry3D/Box.html">Box</a></li>
+                <li><a href="../../../author/Shaders/CommonSurfaceShader.html">CommonSurfaceShader</a></li>
+                <li><a href="../../../author/Shaders/FloatVertexAttribute.html">FloatVertexAttribute</a></li>
+                <li><a href="../../../author/Texturing/ImageTexture.html">ImageTexture</a></li>                
+				<li><a href="../../../author/Shape/Shape.html">Shape</a></li>				
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>

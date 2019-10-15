@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta charset="utf-8">
+    <title>X3DOM Documentation: Tutorials</title>    
+    <link type="text/css" rel="stylesheet" href="../../../static/styles/x3dom-docs-new.css">
+    <script src="../../../static/scripts/prettify/run_prettify.js"></script>
+</head>
+
+<body>
+
+<div class="container page-header">
+    <div class="row">
+        <div class="col-xs-12">
+            <h2 style="display:inline;color:#266F97">official <img src="../../../static/images/x3dom_logo_without_claim.png" style="height:1em;vertical-align:top;"> documentation</h2>
+        </div>
+    </div>
+
+    <div class="row" style="margin-top:20px;">
+        <div class="col-xs-12">
+            <ol class="breadcrumb">
+                <li><a href="http://x3dom.org">x3dom.org</a></li>
+                <li><a href="../../../index.html">documentation</a></li>
+                <li><a href="../../index.html">Tutorials</a></li>
+                <li>Navigation</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+
+    <div>
+        <a class="btn btn-primary" href="../../models/thirdParty/index.html" style="float:left;">&#8592; Previous Section</a>
+        <a class="btn btn-primary" href="../viewpoint/index.html" style="float:right;">Next Section &#8594;</a>
+            <div style="clear:both;"></div>
+        </div>
+        <div>
+             <div style="text-align:center;">
+                <h2>Navigation</h2>
+             </div>       
+                    
+        <p> X3DOM provides some generic interaction and navigation methods. Interactive objects will be handled by HTML-like events. Navigation can be user-defined or controlled by specific predefined modes.
+		<br /><br />
+		Currently X3DOM supports the following interactive navigation modes: Examine, Walk, Fly, Look-at, Look-around, Turntable,
+		Game and Helicopter.
+		<br /><br />
+		Non-Interactive movement encompasses the functionality of: Resetting a view, showing all or upright the view.
+		</p>
+		
+		
+		
+		<div style="text-align:center;">
+            <div class="docuFigureContainer">			
+                <img class="docuFigure" src='screenshot.png'>
+                <div class="text-muted">Explore navigation modes in <a href="example.html">this interactive example</a></div>
+            </div>
+        </div> 
+		
+		
+<h3>Changing navigation mode with Javascript</h3>
+
+<p>
+Of course you can switch modes not only by pressing the shortcuts/hotkeys but also with Javascript. The current mode is set as param <i>type</i> to the <i>NavigationInfo</i> node.
+</p>
+		<pre class="prettyprint"><code class="language-html">
+    &lt;x3d width='500px' height='400px'&gt; 
+    &lt;scene&gt;
+        &lt;navigationInfo type='"walk" "any"' id="navType"&gt;&lt;/navigationInfo&gt;
+    &lt;/scene&gt; 
+    &lt;/x3d&gt;           
+        </code></pre>
+
+<p>
+Type can be a single mode or also hold an array containing additional fallback modes if the favored mode is not available. You can change the value by setting a new <i>type</i> to this node.
+</p>
+
+<pre class="prettyprint"><code class="language-javascript">
+    document.getElementById('navType').setAttribute("type", currentMode);
+	
+</code></pre>		
+	
+<h3>Interactive camera</h3>
+<h4>Examine</h4>
+<p>Activate this mode by pressing the "e" key.</p>
+<table class="table table-striped">
+<tr>
+<th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+<tbody>
+<tr><td>Rotate</td>
+<td>Left / Left + Shift</td>
+</tr>
+<tr><td>Pan</td>
+<td>Mid / Left + Ctrl</td>
+</tr>
+<tr><td>Zoom</td>
+<td>Right / Wheel / Left + Alt</td>
+</tr>
+<tr><td>Set center of rotation</td>
+<td>Double-click left</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Walk</h4>
+<p>Activate this mode by pressing the "w" key.</p>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Move forward</td>
+<td>Left</td>
+</tr>
+<tr><td>Move backward</td>
+<td>Right</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Fly</h4>
+<p>Activate this mode by pressing the "f" key.</p>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Move forward</td>
+<td>Left</td>
+</tr>
+<tr><td>Move backward</td>
+<td>Right</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Helicopter</h4>
+<p>Activate this mode by pressing the "h" key.<br>
+To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).</p>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Move forward</td>
+<td>Left</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Look at</h4>
+<p>Activate this mode by pressing the "l" key.</p>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Move in</td>
+<td>Left</td>
+</tr>
+<tr><td>Move out</td>
+<td>Right</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Turntable</h4>
+<p>The allowed interactions are the same as in examine mode. With the third and fourth value of the typeParams-Parameter you can set the minimal and maximal vertical rotation angle. Accepted values are between 0 and PI, starting from +Y (0) down to -Y (PI).
+</p>
+<table class="table table-striped">
+<tr>
+<th width="40%">Function</th>
+<th>Mouse Button</th>
+</tr>
+<tbody>
+<tr><td>Rotate</td>
+<td>Left / Left + Shift</td>
+</tr>
+<tr><td>Pan</td>
+<td>Mid / Left + Ctrl</td>
+</tr>
+<tr><td>Zoom</td>
+<td>Right / Wheel / Left + Alt</td>
+</tr>
+<tr><td>Set center of rotation</td>
+<td>Double-click left</td>
+</tr>
+</tbody>
+</table>
+
+<h4>Game</h4>
+<p>Activate this mode by pressing the "g" key. To look around (rotate view) move the mouse.</p>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Move forward</td>
+<td>Cursor up</td>
+</tr>
+<tr><td>Move backwards</td>
+<td>Cursor down</td>
+</tr>
+<tr><td>Strafe left</td>
+<td>Cursor left</td>
+</tr>
+<tr><td>Strafe right</td>
+<td>Cursor right</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Non-interactive camera movement</h3>
+<table class="table table-striped">
+<thead>
+<tr><th width="40%">Function</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Reset view</td>
+<td>r</td>
+</tr>
+<tr><td>Show all</td>
+<td>a</td>
+</tr>
+<tr><td>Upright</td>
+<td>u</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Mid-Button troubleshooting</h3>
+<p>If the web page has scroll bars and autoscrolling is enabled, Mid-Button currently does not work correctly. As a workaround, 
+you can disable autoscrolling by unchecking the "Use autoscrolling" checkbox in the Firefox browser options, as is shown in the screenshot below (for the Firefox case).</p>
+<img src="scrolling.png" width="450px">
+</div>
+
+		</p>		
+        
+        <p>		
+        </p>
+		       
+        <p>               
+        <a href="#">Back to page top &#10548;</a>
+        </p>    
+        
+        <div class="jumbotron">
+            <h4>Get this X3DOM example:</h4>
+            <ul>
+                <li><a href="example.html"><img src="../../liveDemo.png">Display example HTML file</a></li>                
+
+                <li><a href="navigation.zip"><img src="../../download.png">Download full example (.zip archive)</a></li>
+            </ul>      
+            <br>
+            
+            <h4>Read more about the X3DOM nodes used in this tutorial:</h4>
+            <ul>		
+				<li><a href="../../../author/Navigation/NavigationInfo.html">NavigationInfo</a></li>
+            </ul>
+        </div>
+</div>
+
+</body>
+</html>
