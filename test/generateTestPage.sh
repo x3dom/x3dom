@@ -6,8 +6,8 @@ cp -r test/regression-suite/test/cases/ dist/examples
 cd dist/examples
 examples=$(find ./ -name '*html')
 #patch to use build
-sed -i 's|<script.*full_include.js.*script>|<script type="text/javascript" src="/x3dom-full.min.js"></script>\n    <link rel="stylesheet" type="text/css" href="/x3dom.css" />|' $examples
-sed -i 's|<script.*include.js.*script>|<script type="text/javascript" src="/x3dom.min.js"></script>\n    <link rel="stylesheet" type="text/css" href="/x3dom.css" />|' $examples
+sed -i 's|<script.*full_include.js.*script>|<script type="text/javascript" src="/x3dom-full.js"></script>\n    <link rel="stylesheet" type="text/css" href="/x3dom.css" />|' $examples
+sed -i 's|<script.*include.js.*script>|<script type="text/javascript" src="/x3dom.js"></script>\n    <link rel="stylesheet" type="text/css" href="/x3dom.css" />|' $examples
 #generate html
 cat <<HTMLEND > index.html && cd ../..
 <html>
