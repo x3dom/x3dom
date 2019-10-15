@@ -3,8 +3,15 @@
 Release notes
 =============
 
-Version 1.8.2
+Version 1.8.2-dev
 -------------
+* Features
+  * new Node-based build system
+  * automatic origChannelCount detection
+* Improvements
+  * replaced deprecated MutationEvents with a MutationObserver
+  * use passive event listeners if supported
+  * make it possible to run x3dom in strict mode
 * Bugfixes
   * dynamic changes of origChannelCount-Attribute
   * gltf loader material DEF/USE robustness
