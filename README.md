@@ -124,7 +124,14 @@ to drop, re-arrange, merge, and reword commits, e.g.:
 
 There's always the [x3dom-dev][] mailinglist.
 
+### Build instructions
+
+  1.  Install [Node.js][Node.js]
+  2.  Navigate to your cloned x3dom repository ```cd ./YOUR_PATH/x3dom``` 
+  3.  Run ```npm install```
+  4.  Run ```npm run build```
 
 [x3dom-users]:   https://lists.sourceforge.net/lists/listinfo/x3dom-users
 [x3dom-dev]:     https://lists.sourceforge.net/lists/listinfo/x3dom-developers
 [GPL 3]:         http://www.gnu.org/copyleft/gpl.html
+[Node.js]:       https://nodejs.org/en/
