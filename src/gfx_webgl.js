@@ -540,7 +540,7 @@ x3dom.gfx_webgl = (function() {
 
         // dynamically attach clean-up method for GL objects
         if (!shape._cleanupGLObjects) {
-            shape._cleanupGLObjects = function(force, delGL) {
+            shape._cleanupGLObjects = function cleanupGLObjects (force, delGL) {
                 // FIXME: what if complete tree is removed? Then _parentNodes.length may be greater 0.
                 if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0)) {
                     var sp = this._webgl.shader;
