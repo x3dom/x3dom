@@ -1079,22 +1079,6 @@ x3dom.Utils.blendEquation = function(gl, func)
 };
 
 /*****************************************************************************
- * Try to gunzip arraybuffer, otherwise return unmodified arraybuffer
- *****************************************************************************/
-x3dom.Utils.gunzip = function (arraybuffer)
-{
-    var byteArray = new Uint8Array(arraybuffer);
-
-    try {
-        arraybuffer = new Zlib.Gunzip(byteArray).decompress().buffer;
-    } catch (e) {
-        //Decompression failed, file is not compressed.
-    }
-
-    return arraybuffer;
-};
-
-/*****************************************************************************
 *
 *****************************************************************************/
 x3dom.Utils.generateProperties = function (viewarea, shape)

@@ -5,6 +5,8 @@ Release notes
 
 Version 1.8.2-dev
 -------------
+* Changes
+  * remove support for compressed BinGeo files & Zlib
 * Features
   * new Node-based build system
   * automatic origChannelCount detection

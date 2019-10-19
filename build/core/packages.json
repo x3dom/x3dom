@@ -42,7 +42,6 @@
             "BinaryContainerSetup.js",
             "DrawableCollection.js",
             "Moveable.js",
-            "Zlib.js",
             "Promise.js",
             "glTF/glTFLoader.js",
             "glTF/glTF2Loader.js",
