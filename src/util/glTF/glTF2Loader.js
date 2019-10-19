@@ -1050,7 +1050,7 @@ x3dom.glTF2Loader.prototype._primitiveType = function(mode)
 
 x3dom.glTF2Loader.prototype._isDefaultSampler = function(sampler)
 {
-    return ( sampler.wrapS     == 10497 && sampler.wrapS     == 10497 &&
+    return ( sampler.wrapS     == 10497 && sampler.wrapT     == 10497 &&
              sampler.magFilter == 9729  && sampler.minFilter == 9729 );
 };
 
