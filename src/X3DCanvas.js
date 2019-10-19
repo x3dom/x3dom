@@ -365,7 +365,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
 
-            evt.preventDefault();
+            if( !this.supportsPassiveEvents )
+            {
+                evt.preventDefault();
+            }
+            
             evt.stopPropagation();
         }
     }
@@ -552,7 +556,12 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         var touchStartHandler = function(evt, doc)
         {
             this.isMulti = true;
-            evt.preventDefault();
+
+            if( !this.supportsPassiveEvents )
+            {
+                evt.preventDefault();
+            }
+
             touches.visualizeTouches(evt);
 
             this.focus();
@@ -632,7 +641,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            evt.preventDefault();
+            if( !this.supportsPassiveEvents )
+            {
+                evt.preventDefault();
+            }
+            
             touches.visualizeTouches(evt);
 
             if (doc == null)
