@@ -67,10 +67,6 @@ x3dom.gfx_webgl = (function() {
     function setupContext(canvas, x3dElem) {
         var validContextNames = ['webgl2', 'webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
-        if (tryWebGL2) {
-            validContextNames = ['webgl2', 'experimental-webgl2'].concat(validContextNames);
-        }
-
         var isAppleDevice   = (/mac|ip(hone|od|ad)/i).test(navigator.platform);
         var isSafariBrowser = (/safari/i).test(navigator.userAgent);
         
