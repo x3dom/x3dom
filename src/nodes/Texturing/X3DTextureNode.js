@@ -213,32 +213,20 @@ x3dom.registerNodeType(
                     Array.forEach(this._parentNodes, function (app) {
                         if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
                             app.nodeChanged();
-                            Array.forEach(app._parentNodes, function (shape) {
-                                shape._dirty.texture = true;
-                            });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.MultiTexture)) {
                             Array.forEach(app._parentNodes, function (realApp) {
                                 realApp.nodeChanged();
-                                Array.forEach(realApp._parentNodes, function (shape) {
-                                    shape._dirty.texture = true;
-                                });
                             });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ComposedCubeMapTexture)) {
                             Array.forEach(app._parentNodes, function (realApp) {
                                 realApp.nodeChanged();
-                                Array.forEach(realApp._parentNodes, function (shape) {
-                                    shape._dirty.texture = true;
-                                });
                             });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.PhysicalMaterial)) {
                             Array.forEach(app._parentNodes, function (realApp) {
                                 realApp.nodeChanged();
-                                Array.forEach(realApp._parentNodes, function (shape) {
-                                    shape._dirty.texture = true;
-                                });
                             });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
@@ -288,7 +276,6 @@ x3dom.registerNodeType(
             setOrigChannelCount : function(channelCount)
             {
                 this._vf.origChannelCount = channelCount;
-                this.fieldChanged("origChannelCount");
             },
 
             getOrigChannelCount : function()
