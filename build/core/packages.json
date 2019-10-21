@@ -56,7 +56,6 @@
             "Shader.js",
             "ShaderParts.js",
             "ShaderDynamic.js",
-            "ShaderDynamicMobile.js",
             "ShaderDynamicPicking.js",
             "ShaderDynamicShadow.js",
             "ShaderComposed.js",

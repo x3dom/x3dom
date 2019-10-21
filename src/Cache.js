@@ -182,9 +182,7 @@ x3dom.Cache.prototype.getDynamicShader = function(gl, viewarea, shape) {
         if (properties.CSHADER != -1) {
             program = new x3dom.shader.ComposedShader(gl, shape);
         } else {
-            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
-                new x3dom.shader.DynamicMobileShader(gl, properties) :
-                new x3dom.shader.DynamicShader(gl, properties);
+            program = new x3dom.shader.DynamicShader(gl, properties);
         }
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
@@ -228,9 +226,7 @@ x3dom.Cache.prototype.getShaderByProperties = function(gl, shape, properties, pi
         } else if (properties.EMPTY_SHADER != null && properties.EMPTY_SHADER != 0) {
             return { "shaderID": shaderID };
         } else {
-            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
-                new x3dom.shader.DynamicMobileShader(gl, properties) :
-                new x3dom.shader.DynamicShader(gl, properties);
+            program = new x3dom.shader.DynamicShader(gl, properties);
         }
 
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
