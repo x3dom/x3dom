@@ -126,6 +126,24 @@ x3dom.registerNodeType(
                     this.loadInline();
                 }
             },
+        
+            parentRemoved: function () {
+                        
+                var global = x3dom.getGlobal();
+
+                if (this._childNodes.length > 0 && this._childNodes[0] && this._childNodes[0]._nameSpace)
+                    this._nameSpace.removeSpace(this._childNodes[0]._nameSpace);
+                
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    if (this._childNodes[i]) {
+                        this._childNodes[i].parentRemoved(this);
+                        global['_remover'] = this.removeChild(this._childNodes[i]);
+                    }
+                }
+
+                delete global['_remover'];
+        
+            },
 
             fireEvents: function(eventType)
             {

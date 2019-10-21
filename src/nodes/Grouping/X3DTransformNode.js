@@ -151,8 +151,12 @@ x3dom.registerNodeType(
             parentRemoved: function(parent)
             {
                 var i, n;
+                
+                //This check prevented removal of Transform nodes in removed Inlines.
+                //Should not be necessary and may have been an attempt to speed up removal.
+                //Make permanent if no issues.
 
-                if (this._parentNodes.length == 0) {
+                //if (this._parentNodes.length == 0) {
                     var doc = this.findX3DDoc();
 
                     for (i=0, n=doc._nodeBag.trans.length; i<n; i++) {
@@ -160,7 +164,7 @@ x3dom.registerNodeType(
                             doc._nodeBag.trans.splice(i, 1);
                         }
                     }
-                }
+                //}
 
                 for (i=0, n=this._childNodes.length; i<n; i++) {
                     if (this._childNodes[i]) {
