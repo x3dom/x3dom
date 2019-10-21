@@ -466,7 +466,7 @@ x3dom.glTF2Loader.prototype._generateX3DPhysicalMaterial = function(material)
     var roughnessFactor   = 1;
     var alphaMode         = material.alphaMode || "OPAQUE";
     var alphaCutoff       = material.alphaCutoff || 0.5;
-    var seperateOcclusion = true
+    var seperateOcclusion = true;
     var model             = undefined;
     var pbr               = undefined;
     var channel           = 0;  
@@ -733,7 +733,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
         view.id = accessor.bufferView;
         view.target = 34963;
 
-        var viewID = views.indexOf(view)
+        var viewID = views.indexOf(view);
 
         if(view.target != undefined && viewID == -1)
         {
@@ -751,7 +751,7 @@ x3dom.glTF2Loader.prototype._generateX3DBufferGeometry = function(primitive)
         view.target = 34962;
         view.id = accessor.bufferView;
 
-        var viewID = views.indexOf(view)
+        var viewID = views.indexOf(view);
 
         if(view.target != undefined && viewID == -1)
         {

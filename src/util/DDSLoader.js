@@ -680,6 +680,8 @@ x3dom.DDSLoader.UI16_To_F16 = function( interger )
             result = Math.pow(-1, sign) * fraction / Math.pow(2,10) * Math.pow(2,-14)
         }
     }
+    
+    // is there an else missing here ?
 
     result = Math.pow(-1, sign) * (1 + fraction / Math.pow(2,10)) * Math.pow(2, exponent - 15);
 
@@ -705,8 +707,6 @@ x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
         r = ( src[ i ] >> 8  ) & 0xf;
         g = ( src[ i ] >> 4  ) & 0xf;
         b = ( src[ i ]       ) & 0xf;
-
-        var test = ( r << 12 ) & ( g << 8 ) & ( b << 4 ) & ( a );
 
         dst[ i ] = ( r << 12 ) & ( g << 8 ) & ( b << 4 ) & ( a );
     }

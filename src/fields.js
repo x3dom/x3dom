@@ -817,7 +817,7 @@ x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function (rotat
     this._03 = translation.x;
     this._13 = translation.y;
     this._23 = translation.z;
-    this._33 = 1
+    this._33 = 1;
 
     return this;
 };
@@ -866,7 +866,7 @@ x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function (rotation, trans
     m._03 = translation.x;
     m._13 = translation.y;
     m._23 = translation.z;
-    m._33 = 1
+    m._33 = 1;
 
     return m;
 };
@@ -2659,7 +2659,7 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
         return;
     }
 
-    var len, i;
+    var i;
     var r, g, b, a;
     var radix = 10;
     
