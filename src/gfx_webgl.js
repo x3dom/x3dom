@@ -540,7 +540,7 @@ x3dom.gfx_webgl = (function() {
 
         // dynamically attach clean-up method for GL objects
         if (!shape._cleanupGLObjects) {
-            shape._cleanupGLObjects = function(force, delGL) {
+            shape._cleanupGLObjects = function cleanupGLObjects (force, delGL) {
                 // FIXME: what if complete tree is removed? Then _parentNodes.length may be greater 0.
                 if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0)) {
                     var sp = this._webgl.shader;
@@ -681,7 +681,7 @@ x3dom.gfx_webgl = (function() {
             for (q = 0; q < shape._webgl.positions.length; q++) {
                 q6 = 6 * q;
 
-                if (sp.position !== undefined) {
+                if (shape._webgl.positions[q]) {
                     // bind indices for drawElements() call
                     indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.INDEX] = indicesBuffer;
@@ -717,7 +717,7 @@ x3dom.gfx_webgl = (function() {
 
                     vertices = null;
                 }
-                if (sp.normal !== undefined || shape._webgl.normals[q]) {
+                if (shape._webgl.normals[q]) {
                     normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.NORMAL] = normalBuffer;
 
@@ -734,7 +734,7 @@ x3dom.gfx_webgl = (function() {
 
                     normals = null;
                 }
-                if (sp.texcoord !== undefined) {
+                if (shape._webgl.texcoords[q]) {
                     var texcBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.TEXCOORD] = texcBuffer;
 
@@ -751,7 +751,7 @@ x3dom.gfx_webgl = (function() {
 
                     texCoords = null;
                 }
-                if (sp.color !== undefined) {
+                if (shape._webgl.colors[q]) {
                     colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.COLOR] = colorBuffer;
 
@@ -779,7 +779,7 @@ x3dom.gfx_webgl = (function() {
                         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sizeArr), gl.STATIC_DRAW);
                     }
                 }
-                if (sp.tangent !== undefined) {
+                if (shape._webgl.tangents[q]) {
                     tangentBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.TANGENT] = tangentBuffer;
 
@@ -796,7 +796,7 @@ x3dom.gfx_webgl = (function() {
 
                     tangents = null;
                 }
-                if (sp.binormal !== undefined) {
+                if (shape._webgl.binormals[q]) {
                     binormalBuffer = gl.createBuffer();
                     shape._webgl.buffers[q6 + x3dom.BUFFER_IDX.BITANGENT] = binormalBuffer;
 

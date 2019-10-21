@@ -1,0 +1,85 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Release memory after node removal</title>
+    <script type="text/javascript" src="../x3dom-include.js"></script>
+</head>
+<body onload='addScene(1000)'>
+<h1>Using the Inline Node</h1>
+<script>
+    function addScene(n)
+    {
+        var scene = document.querySelector('scene');
+        scene.appendChild(document.createElement('Viewpoint'));
+        addInline(n);
+        var trafo = createBallsScene(n, 5,5,5,0.5,0.5,0.5).querySelector('.largeTrafo');
+        scene.appendChild(trafo);
+    }
+    function createBallsScene(n, rx,ry,rz,dx,dy,dz) {
+        function scaledBox(x,y,z,sx,sy,sz,color) {
+            var ele = document.createElement('container');   
+            ele.innerHTML = `
+                <Transform translation="${x},${y},${z}" scale="${sx},${sy},${sz}">
+                  <Shape>
+                    <Appearance><Material diffuseColor="${color}"></Material></Appearance>
+                    <Sphere></Sphere>
+                  </Shape>
+                </Transform>
+                `;
+            return ele.querySelector('Transform');
+        }
+        function randomBoxes(n, rx,ry,rz,dx,dy,dz) {
+            var trafo = document.createElement('Transform');   
+            for (var i=0; i<n; i++) {
+                trafo.appendChild(scaledBox(
+                  randomScaledCentered(rx),
+                  randomScaledCentered(ry),
+                  randomScaledCentered(rz),
+                  randomScaled(dx),
+                  randomScaled(dy),
+                  randomScaled(dz),
+                  [randomScaled(1),randomScaled(1),randomScaled(1)].join()
+                ));
+            }
+            trafo.className = 'largeTrafo';
+            return trafo;
+        }
+        function randomScaledCentered(s) {
+            return (Math.random()-0.5)*s;
+        }
+        function randomScaled(s) {
+            return (Math.random()+0.1)*s/1.1;
+        }
+        var boxesScene = document.createElement('Scene');
+        boxesScene.appendChild(randomBoxes(n, rx,ry,rz,dx,dy,dz));
+        return boxesScene;
+    }
+    function createInline(scene) {
+        var boxesSceneUrl = URL.createObjectURL(new Blob([scene.outerHTML], {type:'"model/x3d+xml"'}));
+        var trafo = document.createElement('Transform');   
+        trafo.innerHTML=`
+            <Inline namespacename='boxes' url="${boxesSceneUrl}" contentType="model/x3d+xml"></Inline>`;
+        return trafo.querySelector('Inline');
+    }
+    function addInline(n) {
+        var scene = document.querySelector('scene');
+        scene.appendChild(createInline(createBallsScene(n, 5,5,5,0.5,0.5,0.5)));
+    }
+    function rmInline() {
+        var inline = document.querySelector('Inline[url*="blob"]').remove();
+    }
+    function rmTransform() {
+        document.querySelector('.largeTrafo').remove();
+    }
+</script>
+<p>
+    This example includes a large model and a large external x3d scene. You can watch memory usage before and after removal.
+</p>
+<x3d width='500px' height='400px'>
+    <scene></scene>
+</x3d>
+<button onclick='addInline(1000)'>Add Inline</button>
+<button onclick='rmTransform()'>remove Transform</button>
+<button onclick='rmInline()'>remove Inline</button>
+</body>
+</html>
