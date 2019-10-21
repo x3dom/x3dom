@@ -75,7 +75,7 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 					"uniform float pixelSizeVert;\n" +
 					"uniform int filterSize;\n";
 
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
+	if (!x3dom.caps.FP_TEXTURES){
 	shader +=		x3dom.shader.rgbaPacking() +
 	
 					"void main(void) {\n" +

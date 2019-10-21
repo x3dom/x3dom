@@ -95,7 +95,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 
 		
 	}
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+	if (!x3dom.caps.FP_TEXTURES) 
 		shader += 	x3dom.shader.rgbaPacking();				
 	
 	shader += x3dom.shader.shadowRendering();
@@ -107,7 +107,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 				"	vec2 texCoordsSceneMap = (vPosition + 1.0)*0.5;\n" +
 				"	vec4 projCoords = texture2D(sceneMap, texCoordsSceneMap);\n" +
 				"	if (projCoords != vec4(1.0,1.0,1.0,0.0)){\n";
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){ 
+	if (!x3dom.caps.FP_TEXTURES){ 
 		shader += 	"	projCoords.z = unpackDepth(projCoords);\n" +
 					"	projCoords.w = 1.0;\n";
 	}
@@ -141,7 +141,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 								"light"+l+"_4_ShadowMap,light"+l+"_5_ShadowMap);\n";
 		}		
 	
-		if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE)	
+		if (!x3dom.caps.FP_TEXTURES)	
 			shader += 	"	shadowValue *= clamp(ESM(shadowMapValues.z, viewSampleDepth, light"+l+"_ShadowOffset), "+
 						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";
 		else

@@ -55,14 +55,14 @@ x3dom.shader.SSAOShader.depthReconsructionFunctionCode = function()
 {
 	var code = 	"uniform float depthReconstructionConstantA;\n"+
 				"uniform float depthReconstructionConstantB;\n";
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+	if (!x3dom.caps.FP_TEXTURES) 
 		code += 	x3dom.shader.rgbaPacking();
 		
 	code+= 	"float getDepth(vec2 depthTexCoord) {\n"+
 				"    vec4 col = texture2D(depthTexture, depthTexCoord);\n"+
 				"    float d;\n";
 	
-	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
+	if (!x3dom.caps.FP_TEXTURES){
 		code+="    d = unpackDepth(col);\n";
 	} else {
 		code+="    d = col.b;\n"

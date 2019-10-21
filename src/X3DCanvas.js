@@ -94,9 +94,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
         }
     };
 
-
-    x3dom.caps.MOBILE = (navigator.appVersion.indexOf("Mobile") > -1);
-
     this.backend = this.x3dElem.getAttribute('backend');
 	
     this.backend = ( this.backend ) ? this.backend.toLowerCase() : 'none';
@@ -107,9 +104,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx)
 	
 	this.canvas.parent = this;
 	
-	this.gl = this._initContext( this.canvas, (this.backend.search("desktop") >= 0),
-		(this.backend.search("mobile") >= 0),
-		(this.backend.search("webgl2") >= 0));
+    this.gl = this._initContext( this.canvas );
+    
 	this.backend = 'webgl';
 	
 	if (this.gl == null)
@@ -839,15 +835,11 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
  * Creates the WebGL context and returns it
  * @returns {WebGLContext} gl
  * @param {HTMLCanvas} canvas
- * @param {Boolean} forbidMobileShaders - no mobile shaders allowed
- * @param {Boolean} forceMobileShaders - force mobile shaders
- * @param {Boolean} forceFlashForIE - force flash backend for internet explorer
- * @param {Boolean} tryWebGL2 - try to retrieve a WebGL2 context
  */
-x3dom.X3DCanvas.prototype._initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2)
+x3dom.X3DCanvas.prototype._initContext = function(canvas)
 {
     x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-    var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2, this.x3dElem);
+    var gl = x3dom.gfx_webgl(canvas, this.x3dElem);
 
     if (!gl)
     {
