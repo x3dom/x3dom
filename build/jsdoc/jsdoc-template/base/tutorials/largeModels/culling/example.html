@@ -67,8 +67,7 @@
             var root = document.getElementById("root");
             var scene = document.getElementById("scene");
 
-            var scale = 50000;
-            numInstances = 8;
+            var scale = 50000, numInstances = 8;
 
             for(var i = 0; i < 5; ++i)
             {
@@ -201,7 +200,7 @@
 
         var x3dElement = document.getElementById('x3dElement');
 
-        runtime = x3dElement.runtime;
+        var runtime = x3dElement.runtime;
 
         runtime.exitFrame = function()
         {

@@ -80,27 +80,6 @@ x3dom.userAgentFeature = {
             if (settings.getProperty('showLog') === 'true') {
                 showLoggingConsole = true;
             }
-
-            if (typeof X3DOM_SECURITY_OFF != 'undefined' && X3DOM_SECURITY_OFF === true) {
-                // load components from params or default to x3d attribute
-                components = settings.getProperty('components', x3ds[i].getAttribute("components"));
-                if (components) {
-                    prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"));
-                    components = components.trim().split(',');
-                    for (j = 0; j < components.length; j++) {
-                        x3dom.loadJS(components[j] + ".js", prefix);
-                    }
-                }
-
-                // src=foo.x3d adding inline node, not a good idea, but...
-                if (x3ds[i].getAttribute("src")) {
-                    var _scene = document.createElement("scene");
-                    var _inl = document.createElement("Inline");
-                    _inl.setAttribute("url", x3ds[i].getAttribute("src"));
-                    _scene.appendChild(_inl);
-                    x3ds[i].appendChild(_scene);
-                }
-            }
         }
 
         if (showLoggingConsole == true) {
