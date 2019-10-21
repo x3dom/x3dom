@@ -365,7 +365,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
 
-            if( !this.supportsPassiveEvents )
+            if( !this.parent.supportsPassiveEvents )
             {
                 evt.preventDefault();
             }
@@ -557,7 +557,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         {
             this.isMulti = true;
 
-            if( !this.supportsPassiveEvents )
+            if( !this.parent.supportsPassiveEvents )
             {
                 evt.preventDefault();
             }
@@ -641,7 +641,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            if( !this.supportsPassiveEvents )
+            if( !this.parent.supportsPassiveEvents )
             {
                 evt.preventDefault();
             }
@@ -732,7 +732,12 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         var touchEndHandler = function(evt, doc)
         {
             this.isMulti = false;
-            evt.preventDefault();
+
+            if (evt.cancelable)
+            {
+                evt.preventDefault();
+            }
+
             touches.visualizeTouches(evt);
 
             if (doc == null)
