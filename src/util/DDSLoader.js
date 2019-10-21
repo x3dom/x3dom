@@ -669,23 +669,17 @@ x3dom.DDSLoader.UI16_To_F16 = function( interger )
     var fraction = interger & (Math.pow(2, 10) - 1);
     var result;
 
-    if (exponent === 0)
+    if (exponent !== 0)
     {
-        if( fraction === 0 )
-        {
-            result = 0.0;
-        }
-        else
-        {
-            result = Math.pow(-1, sign) * fraction / Math.pow(2,10) * Math.pow(2,-14)
-        }
+        return Math.pow(-1, sign) * (1 + fraction / Math.pow(2,10)) * Math.pow(2, exponent - 15);
     }
-    
-    // is there an else missing here ?
 
-    result = Math.pow(-1, sign) * (1 + fraction / Math.pow(2,10)) * Math.pow(2, exponent - 15);
-
-    return result;
+    if( fraction === 0 )
+    {
+        return 0.0;
+    }
+        
+    return Math.pow(-1, sign) * fraction / Math.pow(2,10) * Math.pow(2,-14);
 }
 
 x3dom.DDSLoader.UI16_To_UI8_2 = function( interger )
