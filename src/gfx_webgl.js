@@ -1959,7 +1959,7 @@ x3dom.gfx_webgl = (function() {
                     }
                 } else if (s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry) {
                     for (v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++) {
-                        gl.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                        this.drawArrays(gl, s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
                         offset += s_geo._vf.vertexCount[v];
                     }
                 } else if (indicesReady && (s_gl.bufferGeometry > 0)) {
