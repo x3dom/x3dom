@@ -7,6 +7,7 @@ Version 1.8.2-dev
 -------------
 * Changes
   * remove support for compressed BinGeo files & Zlib
+  * remove support for ExternalShape/ExternalGeo and glTF 1.0
 * Features
   * new Node-based build system
   * automatic origChannelCount detection
