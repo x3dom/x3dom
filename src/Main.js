@@ -52,7 +52,7 @@ x3dom.userAgentFeature = {
             'maxActiveDownloads',
             'useGeoCache'
         ]);
-        var components, prefix;
+
         var showLoggingConsole = false;
 
         // for each X3D element
