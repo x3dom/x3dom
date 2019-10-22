@@ -43,9 +43,7 @@
             "DrawableCollection.js",
             "Moveable.js",
             "Promise.js",
-            "glTF/glTFLoader.js",
             "glTF/glTF2Loader.js",
-            "glTF/glTFContainer.js",
             "DDSLoader.js",
             "VRControllerManager.js",
             "json/JSONParser.js",
@@ -141,8 +139,7 @@
             "TwoSidedMaterial.js",
             "PhysicalMaterial.js",
             "X3DShapeNode.js",
-            "Shape.js",
-            "ExternalShape.js"
+            "Shape.js"
         ],
         "src/nodes/Lighting/":
         [
@@ -278,7 +275,6 @@
             "Torus.js",
             "Cone.js",
             "Cylinder.js",
-            "ExternalGeometry.js",
             "X3DBinaryContainerGeometryNode.js",
             "BinaryGeometry.js",
             "PopGeometryLevel.js",
