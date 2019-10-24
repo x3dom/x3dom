@@ -187,13 +187,13 @@ x3dom.X3DCanvas.prototype.detectPassiveEvents = function()
 
         var options = Object.defineProperty({}, 'passive',
         {
-          get() { passive = true; },
+          get : function () { passive = true; }
         });
         // note: have to set and remove a no-op listener instead of null
         // (which was used previously), becasue Edge v15 throws an error
         // when providing a null callback.
         // https://github.com/rafrex/detect-passive-events/pull/3
-        var noop = () => {};
+        var noop = function () {};
         window.addEventListener('testPassiveEventSupport', noop, options);
         window.removeEventListener('testPassiveEventSupport', noop, options);
 
