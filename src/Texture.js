@@ -553,7 +553,7 @@ x3dom.Texture.prototype.updateText = function() {
     var lengths = [];
     var text_canvas = document.createElement('canvas');
     text_canvas.dir = leftToRight;
-    var x3dToPx = 42;
+    var x3dToPx = 32;
     var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
     var textAlignment = font_justify;
 
@@ -583,12 +583,12 @@ x3dom.Texture.prototype.updateText = function() {
 
     var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
     var txtW = maxWidth;
-    var txtH = textHeight * font_spacing * paragraph.length + canvas_extra;
+    var txtH = textHeight + textHeight * font_spacing * (paragraph.length-1) + canvas_extra;
 
     textX = 0;
     textY = 0;
 
-    var x_offset = 0, y_offset = 0, baseLine = 'top';
+    var x_offset = 0, y_offset = 0, baseLine = 'alphabetic';
 
     // x_offset and starting X
     switch (font_justify) {
@@ -610,6 +610,8 @@ x3dom.Texture.prototype.updateText = function() {
     switch (minor_alignment) {
         case "MIDDLE":
             y_offset = txtH / 2 - canvas_extra / 2;
+            baseLine = 'middle';
+            textY = topToBottom ? textHeight / 2 : textHeight / 2;
             break;
         case "BEGIN":
             y_offset = topToBottom ? 0 : txtH - canvas_extra;
@@ -629,7 +631,7 @@ x3dom.Texture.prototype.updateText = function() {
             break;
     }
 
-    var pxToX3d = 1 / 42.0;
+    var pxToX3d = 1 / x3dToPx;
     var w = txtW * pxToX3d;
     var h = txtH * pxToX3d;
 
