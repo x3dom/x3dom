@@ -48,16 +48,16 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'horizontal', true);
 
             /**
-             * Specifies where the text is anchored. The default of ["MIDDLE", "MIDDLE"] deviates from the ISO spec. default
-             * of ["BEGIN", "FIRST"] for backward compatibiliy reasons. 
+             * Specifies where the text is anchored. The default of ["BEGIN", "FIRST"] is the ISO spec. default. It deviates
+             * from ["MIDDLE", "MIDDLE"], the older x3dom default which may require scene tuning.
              * @var {x3dom.fields.MFString} justify
              * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
-             * @initvalue ['MIDDLE', 'MIDDLE']
+             * @initvalue ['BEGIN', 'FIRST']
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'justify', ['MIDDLE', 'MIDDLE']);
+            this.addField_MFString(ctx, 'justify', ['BEGIN', 'FIRST']);
 
             /**
              * The language field specifies the context of the language for the text string in the form of a language and a country in which that language is used.
