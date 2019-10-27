@@ -12,19 +12,20 @@
 /**
  * Generate the final shader program
  */
-x3dom.shader.TextureRefinementShader = function (gl) {
+x3dom.shader.TextureRefinementShader = function ( gl )
+{
     this.program = gl.createProgram();
 
-    var vertexShader = this.generateVertexShader(gl);
-    var fragmentShader = this.generateFragmentShader(gl);
+    var vertexShader = this.generateVertexShader( gl );
+    var fragmentShader = this.generateFragmentShader( gl );
 
-    gl.attachShader(this.program, vertexShader);
-    gl.attachShader(this.program, fragmentShader);
+    gl.attachShader( this.program, vertexShader );
+    gl.attachShader( this.program, fragmentShader );
 
     // optional, but position should be at location 0 for performance reasons
-    gl.bindAttribLocation(this.program, 0, "position");
+    gl.bindAttribLocation( this.program, 0, "position" );
 
-    gl.linkProgram(this.program);
+    gl.linkProgram( this.program );
 
     return this.program;
 };
@@ -32,7 +33,8 @@ x3dom.shader.TextureRefinementShader = function (gl) {
 /**
  * Generate the vertex shader
  */
-x3dom.shader.TextureRefinementShader.prototype.generateVertexShader = function (gl) {
+x3dom.shader.TextureRefinementShader.prototype.generateVertexShader = function ( gl )
+{
     var shader = "attribute vec2 position;\n" +
                  "varying vec2 fragTexCoord;\n" +
                  "\n" +
@@ -41,12 +43,13 @@ x3dom.shader.TextureRefinementShader.prototype.generateVertexShader = function (
                  "    gl_Position = vec4(position, -1.0, 1.0);\n" +
                  "}\n";
 
-    var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-    gl.shaderSource(vertexShader, shader);
-    gl.compileShader(vertexShader);
+    var vertexShader = gl.createShader( gl.VERTEX_SHADER );
+    gl.shaderSource( vertexShader, shader );
+    gl.compileShader( vertexShader );
 
-    if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-        x3dom.debug.logError("[TextureRefinementShader] VertexShader " + gl.getShaderInfoLog(vertexShader));
+    if ( !gl.getShaderParameter( vertexShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[TextureRefinementShader] VertexShader " + gl.getShaderInfoLog( vertexShader ) );
     }
 
     return vertexShader;
@@ -55,7 +58,8 @@ x3dom.shader.TextureRefinementShader.prototype.generateVertexShader = function (
 /**
  * Generate the fragment shader
  */
-x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function (gl) {
+x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function ( gl )
+{
     var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n" +
                  " precision highp float;\n" +
                  "#else\n" +
@@ -93,12 +97,13 @@ x3dom.shader.TextureRefinementShader.prototype.generateFragmentShader = function
               "    }\n" +
               "}\n";
 
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-    gl.shaderSource(fragmentShader, shader);
-    gl.compileShader(fragmentShader);
+    var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
+    gl.shaderSource( fragmentShader, shader );
+    gl.compileShader( fragmentShader );
 
-    if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-        x3dom.debug.logError("[TextureRefinementShader] FragmentShader " + gl.getShaderInfoLog(fragmentShader));
+    if ( !gl.getShaderParameter( fragmentShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[TextureRefinementShader] FragmentShader " + gl.getShaderInfoLog( fragmentShader ) );
     }
 
     return fragmentShader;

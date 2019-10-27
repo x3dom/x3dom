@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TwoSidedMaterial",
     "Shape",
-    defineClass(x3dom.nodeTypes.Material,
-        
+    defineClass( x3dom.nodeTypes.Material,
+
         /**
          * Constructor for TwoSidedMaterial
          * @constructs x3dom.nodeTypes.TwoSidedMaterial
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc This node defines material properties that can effect both the front and back side of a polygon individually.
          * These materials are used for both the front and back side of the geometry whenever the X3D lighting model is active.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TwoSidedMaterial.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TwoSidedMaterial.superClass.call( this, ctx );
 
             /**
              * Defines the ambient intensity for the back side.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'backAmbientIntensity', 0.2);
+            this.addField_SFFloat( ctx, "backAmbientIntensity", 0.2 );
 
             /**
              * Defines the diffuse color for the back side.
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'backDiffuseColor', 0.8, 0.8, 0.8);
+            this.addField_SFColor( ctx, "backDiffuseColor", 0.8, 0.8, 0.8 );
 
             /**
              * Defines the emissive color for the back side.
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'backEmissiveColor', 0, 0, 0);
+            this.addField_SFColor( ctx, "backEmissiveColor", 0, 0, 0 );
 
             /**
              * Defines the shininess for the back side.
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'backShininess', 0.2);
+            this.addField_SFFloat( ctx, "backShininess", 0.2 );
 
             /**
              * Defines the specular color for the back side.
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'backSpecularColor', 0, 0, 0);
+            this.addField_SFColor( ctx, "backSpecularColor", 0, 0, 0 );
 
             /**
              * Defines the transparency for the back side.
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'backTransparency', 0);
+            this.addField_SFFloat( ctx, "backTransparency", 0 );
 
             /**
              * If the separateBackColor field is set to TRUE, the rendering shall render the front and back faces of the geometry with different values.
@@ -100,25 +100,27 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'separateBackColor', false);
-        
+            this.addField_SFBool( ctx, "separateBackColor", false );
         },
         {
-            fieldChanged: function(fieldName) {
-                if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
                     fieldName == "emissiveColor" || fieldName == "shininess" ||
                     fieldName == "specularColor" || fieldName == "transparency" ||
                     fieldName == "backAmbientIntensity" || fieldName == "backDiffuseColor" ||
                     fieldName == "backEmissiveColor" || fieldName == "backShininess" ||
                     fieldName == "backSpecularColor" || fieldName == "backTransparency" ||
-                    fieldName == "separateBackColor")
+                    fieldName == "separateBackColor" )
                 {
-                    Array.forEach(this._parentNodes, function (app) {
-                        Array.forEach(app._parentNodes, function (shape) {
+                    Array.forEach( this._parentNodes, function ( app )
+                    {
+                        Array.forEach( app._parentNodes, function ( shape )
+                        {
                             shape._dirty.material = true;
-                        });
+                        } );
                         app.checkSortType();
-                    });
+                    } );
                 }
             }
         }

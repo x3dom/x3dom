@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "ImageTextureAtlas",
     "Texturing",
-    defineClass(x3dom.nodeTypes.Texture,
+    defineClass( x3dom.nodeTypes.Texture,
 
         /**
          * Constructor for ImageTextureAtlas
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is a special helper node to represent tiles for volume rendering.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ImageTextureAtlas.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ImageTextureAtlas.superClass.call( this, ctx );
 
             /**
              * Specifies the number of slices in the texture atlas.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'numberOfSlices', 0);
+            this.addField_SFInt32( ctx, "numberOfSlices", 0 );
 
             /**
              * Specifies the slices in x.
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'slicesOverX', 0);
+            this.addField_SFInt32( ctx, "slicesOverX", 0 );
 
             /**
              * Specifies the slices in y.
@@ -54,8 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'slicesOverY', 0);
-
+            this.addField_SFInt32( ctx, "slicesOverY", 0 );
         }
     )
 );

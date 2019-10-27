@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TextureCoordinate",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureCoordinateNode,
+
         /**
          * Constructor for TextureCoordinate
          * @constructs x3dom.nodeTypes.TextureCoordinate
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The TextureCoordinate node is a geometry property node that specifies a set of 2D texture coordinates used by vertex-based geometry nodes (EXAMPLE  IndexedFaceSet and ElevationGrid) to map textures to vertices.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TextureCoordinate.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TextureCoordinate.superClass.call( this, ctx );
 
             /**
              * Specifies the array of texture coordinates.
@@ -35,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'point', []);
-        
+            this.addField_MFVec2f( ctx, "point", [] );
         }
     )
 );

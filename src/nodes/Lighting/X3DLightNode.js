@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DLightNode",
     "Lighting",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DChildNode,
+
         /**
          * Constructor for X3DLightNode
          * @constructs x3dom.nodeTypes.X3DLightNode
@@ -23,17 +23,17 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The X3DLightNode abstract node type is the base type from which all node types that serve as light sources are derived.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DLightNode.superClass.call( this, ctx );
 
-            if (ctx)
-                ctx.doc._nodeBag.lights.push(this);
+            if ( ctx )
+            {ctx.doc._nodeBag.lights.push( this );}
             else
-                x3dom.debug.logWarning("X3DLightNode: No runtime context found!");
+            {x3dom.debug.logWarning( "X3DLightNode: No runtime context found!" );}
 
             this._lightID = 0;
             this._dirty = true;
-
 
             /**
              * The ambientIntensity specifies the intensity of the ambient emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ambientIntensity', 0);
+            this.addField_SFFloat( ctx, "ambientIntensity", 0 );
 
             /**
              * The color field specifies the spectral colour properties of both the direct and ambient light emission as an RGB value.
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFColor( ctx, "color", 1, 1, 1 );
 
             /**
              * The intensity field specifies the brightness of the direct emission from the light. Light intensity may range from 0.0 (no light emission) to 1.0 (full intensity).
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'intensity', 1);
+            this.addField_SFFloat( ctx, "intensity", 1 );
 
             /**
              * Specifies whether the light is global or scoped.
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'global', false);
+            this.addField_SFBool( ctx, "global", false );
 
             /**
              * The on field specifies whether the light is enabled or disabled.
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'on', true);
+            this.addField_SFBool( ctx, "on", true );
 
             /**
              * Defines the attenuation of the shadows
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowIntensity', 0);
+            this.addField_SFFloat( ctx, "shadowIntensity", 0 );
 
             /**
              * Specifies the resolution of the used shadow map.
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shadowMapSize', 1024);
+            this.addField_SFInt32( ctx, "shadowMapSize", 1024 );
 
             /**
              * Sets the smoothness of the shadow umbra.
@@ -120,7 +120,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shadowFilterSize', 0);
+            this.addField_SFInt32( ctx, "shadowFilterSize", 0 );
 
             /**
              * Defines the shadow offset for the back projection of the shadow map.
@@ -130,7 +130,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowOffset', 0);
+            this.addField_SFFloat( ctx, "shadowOffset", 0 );
 
             /**
              * Specifies the placement of the near plane of the light projection.
@@ -143,7 +143,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zNear', -1);
+            this.addField_SFFloat( ctx, "zNear", -1 );
 
             /**
              * Specifies the placement of the far plane of the light projection.
@@ -156,40 +156,46 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zFar', -1);
-        
+            this.addField_SFFloat( ctx, "zFar", -1 );
         },
         {
-            getViewMatrix: function(vec) {
+            getViewMatrix : function ( vec )
+            {
                 return x3dom.fields.SFMatrix4f.identity;
             },
 
-            nodeChanged: function () {
-                if(!this._lightID) {
+            nodeChanged : function ()
+            {
+                if ( !this._lightID )
+                {
                     this._lightID = ++x3dom.nodeTypes.X3DLightNode.lightID;
                 }
             },
 
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (this._vf.hasOwnProperty(fieldName)) {
+                if ( this._vf.hasOwnProperty( fieldName ) )
+                {
                     this._dirty = true;
                 }
             },
 
-            parentRemoved: function(parent)
+            parentRemoved : function ( parent )
             {
-                if (this._parentNodes.length === 1 && this._parentNodes[0] == parent) {
+                if ( this._parentNodes.length === 1 && this._parentNodes[ 0 ] == parent )
+                {
                     var doc = this.findX3DDoc();
 
-                    for (var i=0, n=doc._nodeBag.lights.length; i<n; i++) {
-                        if (doc._nodeBag.lights[i] === this) {
-                            doc._nodeBag.lights.splice(i, 1);
+                    for ( var i = 0, n = doc._nodeBag.lights.length; i < n; i++ )
+                    {
+                        if ( doc._nodeBag.lights[ i ] === this )
+                        {
+                            doc._nodeBag.lights.splice( i, 1 );
                         }
                     }
                 }
             },
-            onRemove: function()
+            onRemove : function ()
             {
                 //console.log("remove");
             }

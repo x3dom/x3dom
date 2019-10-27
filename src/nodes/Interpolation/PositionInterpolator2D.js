@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "PositionInterpolator2D",
     "Interpolation",
-    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInterpolatorNode,
+
         /**
          * Constructor for PositionInterpolator2D
          * @constructs x3dom.nodeTypes.PositionInterpolator2D
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The PositionInterpolator2D node linearly interpolates among a list of 2D vectors to produce an SFVec2f value_changed event. The keyValue field shall contain exactly as many values as in the key field.
          */
-        function (ctx) {
-            x3dom.nodeTypes.PositionInterpolator2D.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.PositionInterpolator2D.superClass.call( this, ctx );
 
             /**
              * Defines the set of data points, that are used for interpolation.
@@ -35,19 +35,19 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'keyValue', []);
-        
+            this.addField_MFVec2f( ctx, "keyValue", [] );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if(fieldName === "set_fraction")
+                if ( fieldName === "set_fraction" )
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.multiply(1.0-t).add(b.multiply(t));
-                    });
+                    var value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                    {
+                        return a.multiply( 1.0 - t ).add( b.multiply( t ) );
+                    } );
 
-                    this.postMessage('value_changed', value);
+                    this.postMessage( "value_changed", value );
                 }
             }
         }

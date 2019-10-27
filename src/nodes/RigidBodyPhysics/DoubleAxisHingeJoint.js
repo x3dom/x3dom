@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### DoubleAxisHingeJoint ###
+//    ### DoubleAxisHingeJoint ###
 x3dom.registerNodeType(
     "DoubleAxisHingeJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for DoubleAxisHingeJoint
@@ -26,8 +26,9 @@ x3dom.registerNodeType(
          *  and axis 2 is specified relative to the second body (specified by the body2 field). Axis 1 can have limits
          *  and a motor, axis 2 can only have a motor.
          */
-        function(ctx){
-            x3dom.nodeTypes.DoubleAxisHingeJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.DoubleAxisHingeJoint.superClass.call( this, ctx );
 
             /**
              * Anchor point of the joint
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'anchorPoint', 0,0,0);
+            this.addField_SFVec3f( ctx, "anchorPoint", 0, 0, 0 );
 
             /**
              * Axis 1 is specified relative to the first body (specified by the body1 field).
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis1', 0,0,0);
+            this.addField_SFVec3f( ctx, "axis1", 0, 0, 0 );
 
             /**
              * Axis 2 is specified relative to the second body (specified by the body2 field).
@@ -57,7 +58,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis2', 0,0,0);
+            this.addField_SFVec3f( ctx, "axis2", 0, 0, 0 );
 
             /**
              * Desired angular velocity for the first axis.
@@ -68,7 +69,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'desiredAngularVelocity1', 0);
+            this.addField_SFFloat( ctx, "desiredAngularVelocity1", 0 );
 
             /**
              * Desired angular velocity for the second axis.
@@ -79,7 +80,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'desiredAngularVelocity2', 0);
+            this.addField_SFFloat( ctx, "desiredAngularVelocity2", 0 );
 
             /**
              * The minAngle1 and maxAngle1 fields are used to control the maximum angles through which the hinge is
@@ -91,7 +92,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxAngle1', 90);
+            this.addField_SFFloat( ctx, "maxAngle1", 90 );
 
             /**
              * The minAngle1 and maxAngle1 fields are used to control the maximum angles through which the hinge is
@@ -104,7 +105,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'minAngle1', -90);
+            this.addField_SFFloat( ctx, "minAngle1", -90 );
 
             /**
              * The maxTorque1 field defines the maximum amount of torque that the motor can apply on axis 1 in order to
@@ -116,7 +117,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxTorque1', 0);
+            this.addField_SFFloat( ctx, "maxTorque1", 0 );
 
             /**
              * The maxTorque2 field defines the maximum amount of torque that the motor can apply on axis 1 in order to
@@ -128,7 +129,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxTorque2', 0);
+            this.addField_SFFloat( ctx, "maxTorque2", 0 );
 
             /**
              * The stopBounce1 field is used to set how bouncy the minimum and maximum angle stops are for axis 1. A
@@ -141,7 +142,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopBounce1', 0);
+            this.addField_SFFloat( ctx, "stopBounce1", 0 );
 
             /**
              * The stopConstantForceMix1 and suspensionForce fields can be used to apply damping to the calculations by
@@ -153,7 +154,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopConstantForceMix1', 0.001);
+            this.addField_SFFloat( ctx, "stopConstantForceMix1", 0.001 );
 
             /**
              * The stopErrorCorrection1 and suspensionErrorCorrection fields describe how quickly the system should
@@ -165,7 +166,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopErrorCorrection1', 0.8);
+            this.addField_SFFloat( ctx, "stopErrorCorrection1", 0.8 );
 
             /**
              * The stopErrorCorrection1 and suspensionErrorCorrection fields describe how quickly the system should
@@ -177,7 +178,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'suspensionErrorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "suspensionErrorCorrection", 0.8 );
 
             /**
              * The stopConstantForceMix1 and suspensionForce fields can be used to apply damping to the calculations by
@@ -189,10 +190,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'suspensionForce', 0);
+            this.addField_SFFloat( ctx, "suspensionForce", 0 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('DoubleAxisHingeJoint: ');
             }
         }

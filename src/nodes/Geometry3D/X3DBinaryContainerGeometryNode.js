@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DBinaryContainerGeometryNode",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DSpatialGeometryNode,
+
         /**
          * Constructor for X3DBinaryContainerGeometryNode
          * @constructs x3dom.nodeTypes.X3DBinaryContainerGeometryNode
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DSpatialGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call( this, ctx );
 
             /**
              *
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "position", 0, 0, 0 );
 
             /**
              *
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
+            this.addField_SFVec3f( ctx, "size", 1, 1, 1 );
 
             /**
              *
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFInt32(ctx, 'vertexCount', [0]);
+            this.addField_MFInt32( ctx, "vertexCount", [ 0 ] );
 
             /**
              *
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+            this.addField_MFString( ctx, "primType", [ "TRIANGLES" ] );
 
             // correct min/max of bounding volume set in BinaryContainerGeometry
             this._mesh._invalidate = false;
@@ -72,54 +72,63 @@ x3dom.registerNodeType(
             this._mesh._numFaces = 0;
 
             this._diameter = this._vf.size.length();
-        
         },
         {
-            getMin: function() {
+            getMin : function ()
+            {
                 var vol = this._mesh._vol;
 
-                if (!vol.isValid()) {
-                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                if ( !vol.isValid() )
+                {
+                    vol.setBoundsByCenterSize( this._vf.position, this._vf.size );
                 }
 
                 return vol.min;
             },
 
-            getMax: function() {
+            getMax : function ()
+            {
                 var vol = this._mesh._vol;
 
-                if (!vol.isValid()) {
-                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                if ( !vol.isValid() )
+                {
+                    vol.setBoundsByCenterSize( this._vf.position, this._vf.size );
                 }
 
                 return vol.max;
             },
 
-            getVolume: function() {
+            getVolume : function ()
+            {
                 var vol = this._mesh._vol;
 
-                if (!vol.isValid()) {
-                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                if ( !vol.isValid() )
+                {
+                    vol.setBoundsByCenterSize( this._vf.position, this._vf.size );
                 }
 
                 return vol;
             },
 
-            invalidateVolume: function() {
+            invalidateVolume : function ()
+            {
                 // at the moment, do nothing here since field updates are not impl.
             },
 
-            getCenter: function() {
+            getCenter : function ()
+            {
                 return this._vf.position;
             },
 
-            getDiameter: function() {
+            getDiameter : function ()
+            {
                 return this._diameter;
             },
 
-            needLighting: function() {
-                var hasTris = (this._vf.primType.length && this._vf.primType[0].indexOf("TRIANGLE") >= 0);
-                return (this._vf.lit && hasTris);
+            needLighting : function ()
+            {
+                var hasTris = ( this._vf.primType.length && this._vf.primType[ 0 ].indexOf( "TRIANGLE" ) >= 0 );
+                return ( this._vf.lit && hasTris );
             }
         }
     )

@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "BufferAccessor",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass( x3dom.nodeTypes.X3DNode,
 
         /**
          * Constructor for BufferAccessor
@@ -22,8 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The BufferAccessor node is experimental.
          */
-        function (ctx) {
-            x3dom.nodeTypes.BufferAccessor.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BufferAccessor.superClass.call( this, ctx );
 
             /**
              * The target vertex attribute or vertex index
@@ -33,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'bufferType', "");
+            this.addField_SFString( ctx, "bufferType", "" );
 
             /**
              * The related buffer view
@@ -43,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'view', 0);
+            this.addField_SFInt32( ctx, "view", 0 );
 
             /**
              * The buffer byteOffset
@@ -53,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'byteOffset', 0);
+            this.addField_SFInt32( ctx, "byteOffset", 0 );
 
             /**
              * The buffer byteStride
@@ -63,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'byteStride', 0);
+            this.addField_SFInt32( ctx, "byteStride", 0 );
 
             /**
              * The buffer components
@@ -73,7 +74,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'components', 0);
+            this.addField_SFInt32( ctx, "components", 0 );
 
             /**
              * The buffer componentType
@@ -83,7 +84,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'componentType', 5126);
+            this.addField_SFInt32( ctx, "componentType", 5126 );
 
             /**
              * The buffer element count
@@ -93,7 +94,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'count', 0);
+            this.addField_SFInt32( ctx, "count", 0 );
 
             /**
              * Attribute normalization
@@ -103,12 +104,12 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'normalized', false);
+            this.addField_SFBool( ctx, "normalized", false );
         },
         {
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
-                switch(this._vf.bufferType)
+                switch ( this._vf.bufferType )
                 {
                     case "COLOR_0":
                     case "COLOR" : parent._hasColor = true; break;

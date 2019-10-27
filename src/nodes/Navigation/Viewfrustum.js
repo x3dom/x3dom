@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Viewfrustum",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DViewpointNode,
-        
+    defineClass( x3dom.nodeTypes.X3DViewpointNode,
+
         /**
          * Constructor for Viewfrustum
          * @constructs x3dom.nodeTypes.Viewfrustum
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The Viewfrustum node allows to define a camera position and projection utilizing a standard OpenGL projection/modelview pair.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Viewfrustum.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Viewfrustum.superClass.call( this, ctx );
 
             /**
              * Camera modelview matrix
@@ -34,11 +34,11 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFMatrix4f(ctx, 'modelview',
+            this.addField_SFMatrix4f( ctx, "modelview",
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 1);
+                0, 0, 0, 1 );
 
             /**
              * Camera projection matrix
@@ -48,58 +48,68 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFMatrix4f(ctx, 'projection',
+            this.addField_SFMatrix4f( ctx, "projection",
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 1);
+                0, 0, 0, 1 );
 
             this._viewMatrix = this._vf.modelview.transpose().inverse();
             this._projMatrix = this._vf.projection.transpose();
 
-            this._centerOfRotation = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._centerOfRotation = new x3dom.fields.SFVec3f( 0, 0, 0 );
             // FIXME; derive near/far from current matrix, if requested!
-        
         },
         {
-            fieldChanged: function (fieldName) {
-                if (fieldName == "modelview") {
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "modelview" )
+                {
                     this.resetView();
                 }
-                else if (fieldName == "projection") {
+                else if ( fieldName == "projection" )
+                {
                     this._projMatrix = this._vf.projection.transpose();
                 }
-                else if (fieldName.indexOf("bind") >= 0) {
-                    this.bind(this._vf.bind);
+                else if ( fieldName.indexOf( "bind" ) >= 0 )
+                {
+                    this.bind( this._vf.bind );
                 }
             },
 
-            getCenterOfRotation: function() {
-                return this.getCurrentTransform().multMatrixPnt(this._centerOfRotation);  // this field is only a little helper for examine mode
+            getCenterOfRotation : function ()
+            {
+                return this.getCurrentTransform().multMatrixPnt( this._centerOfRotation );  // this field is only a little helper for examine mode
             },
 
-            setCenterOfRotation: function(cor) {
-                this._centerOfRotation.setValues(cor);   // update internal helper field
+            setCenterOfRotation : function ( cor )
+            {
+                this._centerOfRotation.setValues( cor );   // update internal helper field
             },
 
-            getViewMatrix: function() {
+            getViewMatrix : function ()
+            {
                 return this._viewMatrix;
             },
 
-            getFieldOfView: function() {
-                return (2.0 * Math.atan(1.0 / this._projMatrix._11));
+            getFieldOfView : function ()
+            {
+                return ( 2.0 * Math.atan( 1.0 / this._projMatrix._11 ) );
             },
 
-            getImgPlaneHeightAtDistOne: function() {
+            getImgPlaneHeightAtDistOne : function ()
+            {
                 return 2.0 / this._projMatrix._11;
             },
 
-            resetView: function() {
+            resetView : function ()
+            {
                 this._viewMatrix = this._vf.modelview.transpose().inverse();
-                this._centerOfRotation = new x3dom.fields.SFVec3f(0, 0, 0);       // reset helper, too
+                this._centerOfRotation = new x3dom.fields.SFVec3f( 0, 0, 0 );       // reset helper, too
             },
 
-            getProjectionMatrix: function(aspect) {
+            getProjectionMatrix : function ( aspect )
+            {
                 return this._projMatrix;
             }
         }

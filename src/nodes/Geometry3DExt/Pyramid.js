@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Pyramid",
     "Geometry3DExt",
-    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DSpatialGeometryNode,
+
         /**
          * Constructor for Pyramid
          * @constructs x3dom.nodeTypes.Pyramid
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Describes a pyramid shape.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Pyramid.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Pyramid.superClass.call( this, ctx );
 
             /**
              * Defines the bottom length in x direction.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xbottom', 1);
+            this.addField_SFFloat( ctx, "xbottom", 1 );
 
             /**
              * Defines the bottom length in y direction.
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ybottom', 1);
+            this.addField_SFFloat( ctx, "ybottom", 1 );
 
             /**
              * Defines the top length in x direction.
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xtop', 0.5);
+            this.addField_SFFloat( ctx, "xtop", 0.5 );
 
             /**
              * Defines the top length in y direction.
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ytop', 0.5);
+            this.addField_SFFloat( ctx, "ytop", 0.5 );
 
             /**
              * Defines the Distance between the bottom and the top faces.
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'height', 1);
+            this.addField_SFFloat( ctx, "height", 1 );
 
             /**
              * Defines the displacement along the x axis.
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'xoff', 0.25);
+            this.addField_SFFloat( ctx, "xoff", 0.25 );
 
             /**
              * Defines the displacement along the y axis.
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'yoff', 0.25);
+            this.addField_SFFloat( ctx, "yoff", 0.25 );
 
             var xTop = this._vf.xtop / 2;
             var yTop = this._vf.ytop / 2;
@@ -109,15 +109,15 @@ x3dom.registerNodeType(
             var yOff = this._vf.yoff;
             var sy = this._vf.height / 2;
 
-            this._mesh._positions[0] = [
+            this._mesh._positions[ 0 ] = [
                 -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
                 -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
                 -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
                 xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
-                    -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
                 -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
             ];
-            this._mesh._texCoords[0] = [
+            this._mesh._texCoords[ 0 ] = [
                 1, 0, 1, 1, 0, 1, 0, 0,
                 0, 0, 0, 1, 1, 1, 1, 0,
                 0, 0, 1, 0, 1, 1, 0, 1,
@@ -125,7 +125,7 @@ x3dom.registerNodeType(
                 0, 1, 0, 0, 1, 0, 1, 1,
                 0, 0, 0, 1, 1, 1, 1, 0
             ];
-            this._mesh._indices[0] = [
+            this._mesh._indices[ 0 ] = [
                 0, 1, 2, 2, 3, 0,
                 6, 5, 4, 4, 7, 6,
                 8, 9, 10, 10, 11, 8,
@@ -135,19 +135,18 @@ x3dom.registerNodeType(
             ];
 
             // attention, we share per side, therefore creaseAngle > 0
-            this._mesh.calcNormals(Math.PI, this._vf.ccw);
+            this._mesh.calcNormals( Math.PI, this._vf.ccw );
 
             this._mesh._invalidate = true;
             this._mesh._numFaces = 12;
             this._mesh._numCoords = 24;
-        
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "xbottom" || fieldName == "ybottom" ||
+                if ( fieldName == "xbottom" || fieldName == "ybottom" ||
                     fieldName == "xtop" || fieldName == "ytop" ||
-                    fieldName == "xoff" || fieldName == "yoff" || fieldName == "height")
+                    fieldName == "xoff" || fieldName == "yoff" || fieldName == "height" )
                 {
                     var xTop = this._vf.xtop / 2;
                     var yTop = this._vf.ytop / 2;
@@ -157,24 +156,25 @@ x3dom.registerNodeType(
                     var yOff = this._vf.yoff;
                     var sy = this._vf.height / 2;
 
-                    this._mesh._positions[0] = [
+                    this._mesh._positions[ 0 ] = [
                         -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
                         -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
                         -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
                         xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
-                            -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                        -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
                         -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
                     ];
 
-                    this._mesh._normals[0] = [];
-                    this._mesh.calcNormals(Math.PI, this._vf.ccw);
+                    this._mesh._normals[ 0 ] = [];
+                    this._mesh.calcNormals( Math.PI, this._vf.ccw );
 
                     this.invalidateVolume();
 
-                    Array.forEach(this._parentNodes, function (node) {
+                    Array.forEach( this._parentNodes, function ( node )
+                    {
                         node.setAllDirty();
                         node.invalidateVolume();
-                    });
+                    } );
                 }
             }
         }

@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### UniversalJoint ###
+//    ### UniversalJoint ###
 x3dom.registerNodeType(
     "UniversalJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for UniversalJoint
@@ -27,8 +27,9 @@ x3dom.registerNodeType(
          *  perpendicular to each other. Thus, rotation of the two bodies about the direction perpendicular to the two
          *  axes will be equal.
          */
-        function(ctx){
-            x3dom.nodeTypes.UniversalJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.UniversalJoint.superClass.call( this, ctx );
 
             /**
              * Anchor of the joint.
@@ -38,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'anchorPoint', 0,0,0);
+            this.addField_SFVec3f( ctx, "anchorPoint", 0, 0, 0 );
 
             /**
              * The vectors specified by the axis1 and axis2 fields shall be perpendicular. If not, the interactions are
@@ -49,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis1', 0,0,0);
+            this.addField_SFVec3f( ctx, "axis1", 0, 0, 0 );
 
             /**
              * The vectors specified by the axis1 and axis2 fields shall be perpendicular. If not, the interactions are
@@ -60,7 +61,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis2', 0,0,0);
+            this.addField_SFVec3f( ctx, "axis2", 0, 0, 0 );
 
             /**
              * The stop bounce fields describe how much the joint should bounce the body back on the corresponding axis
@@ -74,7 +75,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop1Bounce', 0);
+            this.addField_SFFloat( ctx, "stop1Bounce", 0 );
 
             /**
              * The stop error correction fields describe the amount of error correction to be performed in a time step
@@ -87,7 +88,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop1ErrorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "stop1ErrorCorrection", 0.8 );
 
             /**
              * The stop bounce fields describe how much the joint should bounce the body back on the corresponding axis
@@ -101,7 +102,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop2Bounce', 0);
+            this.addField_SFFloat( ctx, "stop2Bounce", 0 );
 
             /**
              * The stop error correction fields describe the amount of error correction to be performed in a time step
@@ -114,11 +115,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop2ErrorCorrection', 0.8);
-
+            this.addField_SFFloat( ctx, "stop2ErrorCorrection", 0.8 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('UniversalJoint: ');
             }
         }

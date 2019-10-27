@@ -14,49 +14,49 @@
 x3dom.arc = {};
 x3dom.arc.instance = null;
 
-x3dom.arc.Limits = function(min, max, initial)
+x3dom.arc.Limits = function ( min, max, initial )
 {
     this._min = min;
     this._max = max;
 
-    this.getValue = function(value)
+    this.getValue = function ( value )
     {
-        value = this._min + (this._max - this._min) * value;
-        return this._max >= value ? (this._min <= value ? value : this._min ) : this._max;
+        value = this._min + ( this._max - this._min ) * value;
+        return this._max >= value ? ( this._min <= value ? value : this._min ) : this._max;
     };
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterFunc, getterFunc, setterFunc)
+x3dom.arc.ARF = function ( name, min, max, dirFac, factorGetterFunc, factorSetterFunc, getterFunc, setterFunc )
 {
     this._name = name;
     //start with average
     this._stateValue = [ 0.5, 0.5 ];
 
-    this._limits = new x3dom.arc.Limits(min, max);
+    this._limits = new x3dom.arc.Limits( min, max );
     this._factorGetterFunc = factorGetterFunc;
     this._factorSetterFunc = factorSetterFunc;
     this._setterFunc = setterFunc;
     this._getterFunc = getterFunc;
     this._dirFac = dirFac;
 
-    this.getFactor = function()
+    this.getFactor = function ()
     {
         return this._factorGetterFunc();
     };
 
-    this.update = function(state, step)
+    this.update = function ( state, step )
     {
-        var stateVal = this._stateValue[state] + step * this._dirFac;
-        this._stateValue[state] =  0 <= stateVal ? ( 1 >= stateVal ? stateVal : 1 ) : 0;
-        this._setterFunc(this._limits.getValue(this._stateValue[state]));
+        var stateVal = this._stateValue[ state ] + step * this._dirFac;
+        this._stateValue[ state ] =  0 <= stateVal ? ( 1 >= stateVal ? stateVal : 1 ) : 0;
+        this._setterFunc( this._limits.getValue( this._stateValue[ state ] ) );
     };
 
-    this.reset = function()
+    this.reset = function ()
     {
-        this._stateValue[0] = 0.5;
-        this._stateValue[1] = 0.5;
+        this._stateValue[ 0 ] = 0.5;
+        this._stateValue[ 1 ] = 0.5;
     };
 };
 
@@ -64,14 +64,14 @@ x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterF
 
 x3dom.arc.AdaptiveRenderControl = defineClass(
     null,
-    function(scene)
+    function ( scene )
     {
         x3dom.arc.instance = this;
 
         this._scene = scene;
         this._targetFrameRate = [];
-        this._targetFrameRate[0] = this._scene._vf.minFrameRate;
-        this._targetFrameRate[1] = this._scene._vf.maxFrameRate;
+        this._targetFrameRate[ 0 ] = this._scene._vf.minFrameRate;
+        this._targetFrameRate[ 1 ] = this._scene._vf.maxFrameRate;
 
         this._currentState = 0;
 
@@ -81,21 +81,21 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
         this._arfs = [];
 
         this._arfs.push(
-            new x3dom.arc.ARF("smallFeatureCulling",
+            new x3dom.arc.ARF( "smallFeatureCulling",
                 0, 10, -1,
-                function()
+                function ()
                 {
                     return environment._vf.smallFeatureFactor;
                 },
-                function(value)
+                function ( value )
                 {
                     environment._vf.smallFeatureFactor = value;
                 },
-                function()
+                function ()
                 {
                     return  environment._vf.smallFeatureThreshold;
                 },
-                function(value)
+                function ( value )
                 {
                     environment._vf.smallFeatureThreshold = value;
                 }
@@ -103,21 +103,21 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
         );
 
         this._arfs.push(
-            new x3dom.arc.ARF("lowPriorityCulling",
-                0,100,1,
-                function()
+            new x3dom.arc.ARF( "lowPriorityCulling",
+                0, 100, 1,
+                function ()
                 {
                     return environment._vf.lowPriorityFactor;
                 },
-                function(value)
+                function ( value )
                 {
                     environment._vf.lowPriorityFactor = value;
                 },
-                function()
+                function ()
                 {
                     return environment._vf.lowPriorityThreshold * 100;
                 },
-                function(value)
+                function ( value )
                 {
                     environment._vf.lowPriorityThreshold = value / 100;
                 }
@@ -125,22 +125,22 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
         );
 
         this._arfs.push(
-            new x3dom.arc.ARF("tessellationDetailCulling",
-                1,12,-1,
-                function()
+            new x3dom.arc.ARF( "tessellationDetailCulling",
+                1, 12, -1,
+                function ()
                 {
                     return environment._vf.tessellationErrorFactor;
                 },
-                function(value)
+                function ( value )
                 {
                     environment._vf.tessellationErrorFactor = value;
                 },
                 //@todo: this factor is a static member of PopGeo... should it belong to scene instead?
-                function()
+                function ()
                 {
                     return environment.tessellationErrorThreshold;
                 },
-                function(value)
+                function ( value )
                 {
                     environment.tessellationErrorThreshold = value;
                 }
@@ -150,13 +150,13 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
         this._stepWidth = 0.1;
     },
     {
-        update : function(state, fps) // state: 0 = static, 1 : moving
+        update : function ( state, fps ) // state: 0 = static, 1 : moving
         {
             this._currentState = state;
-            var delta =  fps - this._targetFrameRate[state];
+            var delta =  fps - this._targetFrameRate[ state ];
 
             //to prevent flickering
-            this._stepWidth = Math.abs(delta) > 10 ? 0.1 : 0.01;
+            this._stepWidth = Math.abs( delta ) > 10 ? 0.1 : 0.01;
 
             /*if( (delta > 0 && state == 1) || (delta < 0 && state == 0))
                 return;
@@ -166,31 +166,32 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
             var normFactors = [];
 
             //normalize factors
-            var i, n = this._arfs.length;
+            var i,
+                n = this._arfs.length;
 
-            for(i = 0; i < n; ++i)
+            for ( i = 0; i < n; ++i )
             {
-                normFactors[i] = this._arfs[i].getFactor();
-                if(normFactors[i] > 0)
-                    factorSum += normFactors[i];
+                normFactors[ i ] = this._arfs[ i ].getFactor();
+                if ( normFactors[ i ] > 0 )
+                {factorSum += normFactors[ i ];}
             }
 
             var dirFac = delta < 0 ? -1 : 1;
-            for(i = 0; i < n; ++i)
+            for ( i = 0; i < n; ++i )
             {
-                if(normFactors[i] > 0)
+                if ( normFactors[ i ] > 0 )
                 {
-                    normFactors[i] /= factorSum;
-                    this._arfs[i].update(state, this._stepWidth * normFactors[i] * dirFac);
+                    normFactors[ i ] /= factorSum;
+                    this._arfs[ i ].update( state, this._stepWidth * normFactors[ i ] * dirFac );
                 }
             }
         },
 
-        reset: function()
+        reset : function ()
         {
-            for( var i = 0, n = this._arfs.length; i < n; ++i)
+            for ( var i = 0, n = this._arfs.length; i < n; ++i )
             {
-                this._arfs[i].reset();
+                this._arfs[ i ].reset();
             }
         }
     }

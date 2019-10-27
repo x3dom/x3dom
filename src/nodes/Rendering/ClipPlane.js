@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "ClipPlane",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass( x3dom.nodeTypes.X3DChildNode,
 
         /**
          * Constructor for ClipPlane
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * half-space that is defined as being outside the plane is removed from the rendered image as a result of a
          * clipping operation.
          */
-            function (ctx) {
-            x3dom.nodeTypes.ClipPlane.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ClipPlane.superClass.call( this, ctx );
 
             /**
              * Defines activation state of the clip plane.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * The ClipPlane node specifies a single plane equation that will be used to clip the geometry.
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec4f(ctx, 'plane', 0, 1, 0, 0);
+            this.addField_SFVec4f( ctx, "plane", 0, 1, 0, 0 );
 
             /**
              * Defines the strength of the capping.
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'cappingStrength', 0.0);
+            this.addField_SFFloat( ctx, "cappingStrength", 0.0 );
 
             /**
              * Defines the color of the capping.
@@ -70,8 +70,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFColor(ctx, 'cappingColor', 1.0, 1.0, 1.0);
-
+            this.addField_SFColor( ctx, "cappingColor", 1.0, 1.0, 1.0 );
 
             /**
              * Enables/disables this effector (e.g. light)
@@ -81,27 +80,33 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'on', true);
+            this.addField_SFBool( ctx, "on", true );
         },
         {
-            fieldChanged: function (fieldName) {
-                if (fieldName == "enabled" || fieldName == "on") {
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "enabled" || fieldName == "on" )
+                {
                     //TODO
                 }
             },
 
-            nodeChanged: function () {
+            nodeChanged : function ()
+            {
                 x3dom.nodeTypes.ClipPlane.count++;
             },
 
-            onRemove: function() {
+            onRemove : function ()
+            {
                 x3dom.nodeTypes.ClipPlane.count--;
             },
 
-            parentAdded: function(parent) {
+            parentAdded : function ( parent )
+            {
             },
 
-            parentRemoved: function(parent) {
+            parentRemoved : function ( parent )
+            {
                 //TODO
             }
         }

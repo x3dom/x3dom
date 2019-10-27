@@ -12,30 +12,30 @@
 /**
  * Generate the final Shader program
  */
-x3dom.shader.NormalShader = function(gl)
+x3dom.shader.NormalShader = function ( gl )
 {
-	this.program = gl.createProgram();
-	
-	var vertexShader   = this.generateVertexShader(gl);
-	var fragmentShader = this.generateFragmentShader(gl);
-	
-	gl.attachShader(this.program, vertexShader);
-    gl.attachShader(this.program, fragmentShader);
-    
+    this.program = gl.createProgram();
+
+    var vertexShader   = this.generateVertexShader( gl );
+    var fragmentShader = this.generateFragmentShader( gl );
+
+    gl.attachShader( this.program, vertexShader );
+    gl.attachShader( this.program, fragmentShader );
+
     // optional, but position should be at location 0 for performance reasons
-    gl.bindAttribLocation(this.program, 0, "position");
-    
-	gl.linkProgram(this.program);
-	
-	return this.program;
+    gl.bindAttribLocation( this.program, 0, "position" );
+
+    gl.linkProgram( this.program );
+
+    return this.program;
 };
 
 /**
  * Generate the vertex shader
  */
-x3dom.shader.NormalShader.prototype.generateVertexShader = function(gl)
+x3dom.shader.NormalShader.prototype.generateVertexShader = function ( gl )
 {
-	var shader =    "attribute vec3 position;\n" +
+    var shader =    "attribute vec3 position;\n" +
                     "attribute vec3 normal;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
@@ -44,7 +44,7 @@ x3dom.shader.NormalShader.prototype.generateVertexShader = function(gl)
                     "uniform mat4 normalMatrix;\n" +
                     "uniform mat4 modelViewProjectionMatrix;\n" +
                     "varying vec3 fragNormal;\n" +
-                    
+
                     "void main(void) {\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
                     "    fragNormal = (normalMatrix * vec4(normal / bgPrecisionNorMax, 0.0)).xyz;\n" +
@@ -52,41 +52,43 @@ x3dom.shader.NormalShader.prototype.generateVertexShader = function(gl)
                     "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
                     "}\n";
 
-	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, shader);
-    gl.compileShader(vertexShader);
-		
-	if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("[NormalShader] VertexShader " + gl.getShaderInfoLog(vertexShader));		
-	}
-	
-	return vertexShader;
+    var vertexShader = gl.createShader( gl.VERTEX_SHADER );
+    gl.shaderSource( vertexShader, shader );
+    gl.compileShader( vertexShader );
+
+    if ( !gl.getShaderParameter( vertexShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[NormalShader] VertexShader " + gl.getShaderInfoLog( vertexShader ) );
+    }
+
+    return vertexShader;
 };
 
 /**
  * Generate the fragment shader
  */
-x3dom.shader.NormalShader.prototype.generateFragmentShader = function(gl)
+x3dom.shader.NormalShader.prototype.generateFragmentShader = function ( gl )
 {
-  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
-  shader += "precision highp float;\n";
-  shader += "#else\n";
-  shader += " precision mediump float;\n";
-  shader += "#endif\n\n";
+    var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+    shader += "precision highp float;\n";
+    shader += "#else\n";
+    shader += " precision mediump float;\n";
+    shader += "#endif\n\n";
 
-	shader += "varying vec3 fragNormal;\n" +
-					
-					"void main(void) {\n" +
-					"    gl_FragColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);\n" +
-					"}\n";
+    shader += "varying vec3 fragNormal;\n" +
 
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, shader);
-    gl.compileShader(fragmentShader);
-		
-	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("[NormalShader] FragmentShader " + gl.getShaderInfoLog(fragmentShader));		
-	}
-	
-	return fragmentShader;
+                    "void main(void) {\n" +
+                    "    gl_FragColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);\n" +
+                    "}\n";
+
+    var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
+    gl.shaderSource( fragmentShader, shader );
+    gl.compileShader( fragmentShader );
+
+    if ( !gl.getShaderParameter( fragmentShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[NormalShader] FragmentShader " + gl.getShaderInfoLog( fragmentShader ) );
+    }
+
+    return fragmentShader;
 };

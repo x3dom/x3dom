@@ -18,27 +18,27 @@
 //     var tess = new Tessellator(e.data);
 //     tess.adjustThresholds(e.data[8], e.data[9]);
 //     if(e.data[10] && e.data[10].length){
-// 	tess.initTrims();
+//     tess.initTrims();
 //     } else {
-// 	tess.tloops = null;
+//     tess.tloops = null;
 //     }
 //     tess.tessellate();
 
 //     if(tess.have_transferables){
-// 	var indices = new Uint32Array(tess.indices.length);
-// 	for(var i = 0; i < tess.indices.length; i++)
-// 	    indices[i] = tess.indices[i];
-// 	postMessage(indices.buffer, [indices.buffer]);
-// 	var coords = new Float64Array(tess.coordinates.length);
-// 	for(var i = 0; i < tess.coordinates.length; i++)
-// 	    coords[i] = tess.coordinates[i];
-// 	postMessage(coords.buffer, [coords.buffer]);
-// 	var tcoords = new Float64Array(tess.texcoords.length);
-// 	for(var i = 0; i < tess.texcoords.length; i++)
-// 	    tcoords[i] = tess.texcoords[i];
-// 	postMessage(tcoords.buffer, [tcoords.buffer]);
+//     var indices = new Uint32Array(tess.indices.length);
+//     for(var i = 0; i < tess.indices.length; i++)
+//         indices[i] = tess.indices[i];
+//     postMessage(indices.buffer, [indices.buffer]);
+//     var coords = new Float64Array(tess.coordinates.length);
+//     for(var i = 0; i < tess.coordinates.length; i++)
+//         coords[i] = tess.coordinates[i];
+//     postMessage(coords.buffer, [coords.buffer]);
+//     var tcoords = new Float64Array(tess.texcoords.length);
+//     for(var i = 0; i < tess.texcoords.length; i++)
+//         tcoords[i] = tess.texcoords[i];
+//     postMessage(tcoords.buffer, [tcoords.buffer]);
 //     } else {
-// 	postMessage([tess.indices, tess.coordinates, tess.texcoords]);
+//     postMessage([tess.indices, tess.coordinates, tess.texcoords]);
 //     }
 
 // }

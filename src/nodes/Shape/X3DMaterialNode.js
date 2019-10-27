@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DMaterialNode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for X3DMaterialNode
          * @constructs x3dom.nodeTypes.X3DMaterialNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is the base node type for all Material nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DMaterialNode.superClass.call( this, ctx );
         }
     )
 );

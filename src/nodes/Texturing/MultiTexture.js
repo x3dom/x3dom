@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MultiTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureNode,
+
         /**
          * Constructor for MultiTexture
          * @constructs x3dom.nodeTypes.MultiTexture
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The MultiTexture node specifies the application of several individual textures to a 3D object to achieve a more complex visual effect.
          * MultiTexture can be used as a value for the texture field in an Appearance node.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MultiTexture.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MultiTexture.superClass.call( this, ctx );
 
             /**
              * The texture field contains a list of texture nodes (e.g., ImageTexture, PixelTexture, and MovieTexture). The texture field may not contain another MultiTexture node.
@@ -36,22 +36,25 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('texture', x3dom.nodeTypes.X3DTextureNode);
-        
+            this.addField_MFNode( "texture", x3dom.nodeTypes.X3DTextureNode );
         },
         {
-            getTexture: function(pos) {
-                if (pos >= 0 && pos < this._cf.texture.nodes.length) {
-                    return this._cf.texture.nodes[pos];
+            getTexture : function ( pos )
+            {
+                if ( pos >= 0 && pos < this._cf.texture.nodes.length )
+                {
+                    return this._cf.texture.nodes[ pos ];
                 }
                 return null;
             },
 
-            getTextures: function() {
+            getTextures : function ()
+            {
                 return this._cf.texture.nodes;
             },
 
-            size: function() {
+            size : function ()
+            {
                 return this._cf.texture.nodes.length;
             }
         }

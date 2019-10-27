@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DSensorNode",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DChildNode,
+
         /**
          * Constructor for X3DSensorNode
          * @constructs x3dom.nodeTypes.X3DSensorNode
@@ -23,10 +23,10 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type is the base type for all sensors.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
-        
-		
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DSensorNode.superClass.call( this, ctx );
+
             /**
              * Specifies whether this sensor is enabled. A disabled sensor does not produce any output.
              * @var {x3dom.fields.SFBool} enabled
@@ -35,9 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
-			
-			
+            this.addField_SFBool( ctx, "enabled", true );
         }
     )
 );

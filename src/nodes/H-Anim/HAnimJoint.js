@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "HAnimJoint",
     "H-Anim",
-    defineClass(x3dom.nodeTypes.Transform,
-        
+    defineClass( x3dom.nodeTypes.Transform,
+
         /**
          * Constructor for HAnimJoint
          * @constructs x3dom.nodeTypes.HAnimJoint
@@ -27,8 +27,9 @@ x3dom.registerNodeType(
          * The HAnimJoint node may contain hints for inverse-kinematics systems that wish to control the H-Anim figure.
          * These hints include the upper and lower joint limits, the orientation of the joint limits, and a stiffness/resistance value.
          */
-        function (ctx) {
-            x3dom.nodeTypes.HAnimJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.HAnimJoint.superClass.call( this, ctx );
 
             /**
              * Each Joint object shall have a name field, which shall not have the empty string value, that is used for identifying
@@ -41,19 +42,18 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              * The displacers field contains a list of Displacer objects that are used to morph the deformable mesh using
-             * the morph targets defined in the Displacer objects. 
+             * the morph targets defined in the Displacer objects.
              * @var {x3dom.fields.MFNode} displacers
              * @memberof x3dom.nodeTypes.HAnimJoint
              * @initvalue x3dom.nodeTypes.HAnimDisplacer
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('displacers', x3dom.nodeTypes.HAnimDisplacer);
-
+            this.addField_MFNode( "displacers", x3dom.nodeTypes.HAnimDisplacer );
 
             /**
              * The limitOrientation field gives the orientation of the coordinate frame in which the ulimit and llimit values
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'limitOrientation', '0 0 1 0');
+            this.addField_SFRotation( ctx, "limitOrientation", "0 0 1 0" );
 
             /**
              * The llimit field specifies lower joint rotation limits. Its components storee the lower (i.e., minimum) values
@@ -78,7 +78,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'llimit', []);
+            this.addField_MFFloat( ctx, "llimit", [] );
 
             /**
              * The ulimit field specifies the upper joint rotation limits. Its components store the upper (i.e. maximum) values for rotation
@@ -91,7 +91,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'ulimit', []);
+            this.addField_MFFloat( ctx, "ulimit", [] );
 
             /**
              *
@@ -101,7 +101,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFInt32(ctx, 'skinCoordIndex', []);
+            this.addField_MFInt32( ctx, "skinCoordIndex", [] );
 
             /**
              * The skinCoordWeight field contains a list of floating point values between 0.0 and 1.0 that describe an amount
@@ -114,8 +114,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'skinCoordWeight', []);
-        
+            this.addField_MFFloat( ctx, "skinCoordWeight", [] );
+
             /**
              * The stiffness field, if present, contains values that specify to an inverse kinematics (IK) system how much each degree
              * of freedom should scale the calculated joint rotation at each step of the IK solver. A scale factor of (1 - stiffness)
@@ -128,142 +128,167 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'stiffness', [0, 0, 0]);
-        
+            this.addField_MFFloat( ctx, "stiffness", [ 0, 0, 0 ] );
         },
         {
-            nodeChanged: function()
+            nodeChanged : function ()
             {
-                this._humanoid = _findRoot(this._xmlNode);
-                
-                function _findRoot(domNode) {
+                this._humanoid = _findRoot( this._xmlNode );
+
+                function _findRoot ( domNode )
+                {
                     var parent = domNode.parentNode._x3domNode; //_parentNodes not yet available
-                    if (x3dom.isa(parent, x3dom.nodeTypes.Scene)) return false
-                    if (x3dom.isa(parent, x3dom.nodeTypes.HAnimHumanoid)) return parent
-                    return _findRoot(parent._xmlNode);
+                    if ( x3dom.isa( parent, x3dom.nodeTypes.Scene ) ) {return false;}
+                    if ( x3dom.isa( parent, x3dom.nodeTypes.HAnimHumanoid ) ) {return parent;}
+                    return _findRoot( parent._xmlNode );
                 }
             },
-        
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
                 // check if multi parent sub-graph, don't cache in that case
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
                 // an invalid world matrix or volume needs to be invalidated down the hierarchy
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
                 // check if sub-graph can be culled away or render flag was set to false
-                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
                 // do skinning in any case
                 var skinCoord = this._humanoid._cf.skinCoord.node;
-                if (planeMask < 0 && !skinCoord) {
+                if ( planeMask < 0 && !skinCoord )
+                {
                     return;
                 }
 
-                var cnode, childTransform;
+                var cnode,
+                    childTransform;
 
-                if (singlePath) {
+                if ( singlePath )
+                {
                     // rebuild cache on change and reuse world transform
-                    if (!this._graph.globalMatrix) {
-                        this._graph.globalMatrix = this.transformMatrix(transform);
+                    if ( !this._graph.globalMatrix )
+                    {
+                        this._graph.globalMatrix = this.transformMatrix( transform );
                     }
                     childTransform = this._graph.globalMatrix;
                 }
-                else {
-                    childTransform = this.transformMatrix(transform);
+                else
+                {
+                    childTransform = this.transformMatrix( transform );
                 }
 
                 var n = this._childNodes.length;
 
-                if (x3dom.nodeTypes.ClipPlane.count > 0) {
+                if ( x3dom.nodeTypes.ClipPlane.count > 0 )
+                {
                     var localClipPlanes = [];
 
-                    for (var j = 0; j < n; j++) {
-                        if ( (cnode = this._childNodes[j]) ) {
-                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
-                                localClipPlanes.push({plane: cnode, trafo: childTransform});
+                    for ( var j = 0; j < n; j++ )
+                    {
+                        if ( ( cnode = this._childNodes[ j ] ) )
+                        {
+                            if ( x3dom.isa( cnode, x3dom.nodeTypes.ClipPlane ) && cnode._vf.on && cnode._vf.enabled )
+                            {
+                                localClipPlanes.push( {plane: cnode, trafo: childTransform} );
                             }
                         }
                     }
 
-                    clipPlanes = localClipPlanes.concat(clipPlanes);
+                    clipPlanes = localClipPlanes.concat( clipPlanes );
                 }
-                
+
                 //skin
-                
-                var skinCoordIndex, skinCoordWeight, humanoid, trafo, displacers;
-                
-                if ( skinCoord ) {               
+
+                var skinCoordIndex,
+                    skinCoordWeight,
+                    humanoid,
+                    trafo,
+                    displacers;
+
+                if ( skinCoord )
+                {
                     humanoid = this._humanoid;
-                    trafo = humanoid.getCurrentTransform().inverse().mult(childTransform);//factor in root trafo
-                    
+                    trafo = humanoid.getCurrentTransform().inverse().mult( childTransform );//factor in root trafo
+
                     // first add displacers
                     displacers = this._cf.displacers.nodes;
-                    if ( displacers.length !== 0) {
-                        displacers.forEach( function(displacer) {
+                    if ( displacers.length !== 0 )
+                    {
+                        displacers.forEach( function ( displacer )
+                        {
                             var weight = displacer._vf.weight;
                             var MFdisplacements = displacer._vf.displacements;
                             var offsets = MFdisplacements.length;
-                            if (offsets !== 0) {
-                                displacer._vf.coordIndex.forEach( function(coordIndex, i) {
-                                    skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
-                                        .addScaled( trafo.multMatrixVec( MFdisplacements[i % offsets] ), weight );
-                                });
+                            if ( offsets !== 0 )
+                            {
+                                displacer._vf.coordIndex.forEach( function ( coordIndex, i )
+                                {
+                                    skinCoord._vf.point[ coordIndex ] = skinCoord._vf.point[ coordIndex ]
+                                        .addScaled( trafo.multMatrixVec( MFdisplacements[ i % offsets ] ), weight );
+                                } );
                             }
-                        });
+                        } );
                     }
-                    
+
                     // then add weighted skinCoordIndex
                     skinCoordIndex = this._vf.skinCoordIndex;
-                    if ( skinCoordIndex.length !== 0 ) {
+                    if ( skinCoordIndex.length !== 0 )
+                    {
                         skinCoordWeight = this._vf.skinCoordWeight;
                         //blend in contribution rel. to undeformed resting
-                        skinCoordIndex.forEach(function(coordIndex, i) {
+                        skinCoordIndex.forEach( function ( coordIndex, i )
+                        {
                             //update coord
-                            var restCoord = humanoid._restCoords[coordIndex];
-                            skinCoord._vf.point[coordIndex] = skinCoord._vf.point[coordIndex]
+                            var restCoord = humanoid._restCoords[ coordIndex ];
+                            skinCoord._vf.point[ coordIndex ] = skinCoord._vf.point[ coordIndex ]
                                 .add( trafo.multMatrixPnt( restCoord )
                                     .subtract( restCoord )
-                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-                                 ); //in case of not enough weights
-                        });
+                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length - 1 ) ] )
+                                ); //in case of not enough weights
+                        } );
                     }
                 }
-                
+
                 var skinNormal = this._humanoid._cf.skinNormal.node;
-                if (skinNormal) {
+                if ( skinNormal )
+                {
                     skinCoordIndex = this._vf.skinCoordIndex;
-                    if (skinCoordIndex.length !== 0) {
+                    if ( skinCoordIndex.length !== 0 )
+                    {
                         skinCoordWeight = this._vf.skinCoordWeight;
                         humanoid = this._humanoid;
                         // use inverse transpose for normal
-                        trafo = humanoid.getCurrentTransform().inverse().mult(childTransform).inverse().transpose();
+                        trafo = humanoid.getCurrentTransform().inverse().mult( childTransform ).inverse().transpose();
                         //blend in contribution rel. to undeformed resting
-                        skinCoordIndex.forEach(function(coordIndex, i) {
+                        skinCoordIndex.forEach( function ( coordIndex, i )
+                        {
                             //update coord
-                            var restNormal = humanoid._restNormals[coordIndex];
-                            skinNormal._vf.vector[coordIndex] = skinNormal._vf.vector[coordIndex]
-                                .add(trafo.multMatrixVec( restNormal )
+                            var restNormal = humanoid._restNormals[ coordIndex ];
+                            skinNormal._vf.vector[ coordIndex ] = skinNormal._vf.vector[ coordIndex ]
+                                .add( trafo.multMatrixVec( restNormal )
                                     .subtract( restNormal )
-                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length-1 ) ])
-                                 ); //in case of not enough weights
-                        });
+                                    .multiply( skinCoordWeight[ Math.min( i, skinCoordWeight.length - 1 ) ] )
+                                ); //in case of not enough weights
+                        } );
                     }
                 }
-                
-                for (var i=0; i<n; i++) {
-                    if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+
+                for ( var i = 0; i < n; i++ )
+                {
+                    if ( ( cnode = this._childNodes[ i ] ) )
+                    {
+                        cnode.collectDrawableObjects( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
                     }
                 }
             }
-        }    
-               
-                //TODO: for skinned animation
-                //custom collectDrawableObjects which receives skinCoord and skinNormal fields
-                //or use fieldChanged and search for skinCoord
-                //or search for Humanoid, skinCoord at nodeChanged
+        }
+
+        //TODO: for skinned animation
+        //custom collectDrawableObjects which receives skinCoord and skinNormal fields
+        //or use fieldChanged and search for skinCoord
+        //or search for Humanoid, skinCoord at nodeChanged
     )
 );

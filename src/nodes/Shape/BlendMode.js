@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "BlendMode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for BlendMode
          * @constructs x3dom.nodeTypes.BlendMode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @classdesc The BlendMode controls blending and alpha test.
          * Pixels can be drawn using a function that blends the incoming (source) RGBA values with the RGBA values that are already in the frame buffer (the destination values).
          */
-        function (ctx) {
-            x3dom.nodeTypes.BlendMode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BlendMode.superClass.call( this, ctx );
 
             /**
              * The incoming pixel is scaled according to the method defined by the source factor.
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'srcFactor', "src_alpha");
+            this.addField_SFString( ctx, "srcFactor", "src_alpha" );
 
             /**
              * The frame buffer pixel is scaled according to the method defined by the destination factor.
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'destFactor', "one_minus_src_alpha");
+            this.addField_SFString( ctx, "destFactor", "one_minus_src_alpha" );
 
             /**
              * This is the constant color used by blend modes constant.
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFColor( ctx, "color", 1, 1, 1 );
 
             /**
              * This is the constant alpha used by blend modes constant.
@@ -67,7 +67,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'colorTransparency', 0);
+            this.addField_SFFloat( ctx, "colorTransparency", 0 );
 
             /**
              *
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'alphaFunc', "none");
+            this.addField_SFString( ctx, "alphaFunc", "none" );
 
             /**
              * The alphaFunc defines how fragments which do not fulfill a certain condition are handled.
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'alphaFuncValue', 0);
+            this.addField_SFFloat( ctx, "alphaFuncValue", 0 );
 
             /**
              * An additional equation used to combine source, destination and the constant value.
@@ -99,8 +99,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'equation', "none");
-        
+            this.addField_SFString( ctx, "equation", "none" );
         }
     )
 );

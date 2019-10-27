@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Field",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for Field
          * @constructs x3dom.nodeTypes.Field
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Class represents a field of a node containing name, type and value
          */
-        function (ctx) {
-            x3dom.nodeTypes.Field.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Field.superClass.call( this, ctx );
 
             /**
              *
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              *
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'type', "");
+            this.addField_SFString( ctx, "type", "" );
 
             /**
              *
@@ -55,16 +55,18 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'value', "");
-        
+            this.addField_SFString( ctx, "value", "" );
         },
         {
-            fieldChanged: function(fieldName) {
+            fieldChanged : function ( fieldName )
+            {
                 var that = this;
-                if (fieldName === 'value') {
-                    Array.forEach(this._parentNodes, function (node) {
-                        node.fieldChanged(that._vf.name);
-                    });
+                if ( fieldName === "value" )
+                {
+                    Array.forEach( this._parentNodes, function ( node )
+                    {
+                        node.fieldChanged( that._vf.name );
+                    } );
                 }
             }
         }

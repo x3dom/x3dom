@@ -23,15 +23,15 @@
 //     co._nameSpace = node._nameSpace;
 //     co._vf.point = new x3dom.fields.MFVec3f();
 //     for(var i = 0; i < data[1].length; i++)
-// 	co._vf.point.push(
+//     co._vf.point.push(
 //           new x3dom.fields.SFVec3f(data[1][i][0],data[1][i][1],data[1][i][2]));
 //     its.addChild(co);
 //     var tc = new x3dom.nodeTypes.TextureCoordinate();
 //     tc._nameSpace = node._nameSpace;
 //     tc._vf.point = new x3dom.fields.MFVec2f();
 //     for(var i = 0; i < data[2].length; i++)
-// 	tc._vf.point.push(
-// 	    new x3dom.fields.SFVec2f(data[2][i][0],data[2][i][1]));
+//     tc._vf.point.push(
+//         new x3dom.fields.SFVec2f(data[2][i][0],data[2][i][1]));
 //     its.addChild(tc);
 //     its.nodeChanged();
 //     its._xmlNode = node._xmlNode;
@@ -49,27 +49,27 @@
 //     its._vf.ccw = false;
 //     var ind = [], i1 = 0, i2 = w;
 //     for(var i = 0; i < h-1; i++){
-// 	for(var j = 0; j < w-1; j++){
-// 	    ind.push(i1);
-// 	    ind.push(i1+1);
-// 	    ind.push(i2);
-// 	    ind.push(i2);
-// 	    ind.push(i1+1);
-// 	    ind.push(i2+1);
-// 	    i1++;
-// 	    i2++;
-// 	}
-// 	i1++;
-// 	i2++;
+//     for(var j = 0; j < w-1; j++){
+//         ind.push(i1);
+//         ind.push(i1+1);
+//         ind.push(i2);
+//         ind.push(i2);
+//         ind.push(i1+1);
+//         ind.push(i2+1);
+//         i1++;
+//         i2++;
+//     }
+//     i1++;
+//     i2++;
 //     }
 //     its._vf.index = ind;
 
 //     its.addChild(coordNode)
 //     if(0){
-// 	var tc = new x3dom.nodeTypes.TextureCoordinate();
-// 	tc._nameSpace = node._nameSpace;
-// 	tc._vf.point = new x3dom.fields.MFVec2f(data[2]/*tess.texcoords*/);
-// 	its.addChild(tc)
+//     var tc = new x3dom.nodeTypes.TextureCoordinate();
+//     tc._nameSpace = node._nameSpace;
+//     tc._vf.point = new x3dom.fields.MFVec2f(data[2]/*tess.texcoords*/);
+//     its.addChild(tc)
 //     }
 
 //     its.nodeChanged();
@@ -77,28 +77,26 @@
 //     return its;
 // } /* createCoarseITS */
 
-
 // function tessProgress(x3de, onoff) {
 //     if(!x3de.tessProgressDiv) {
-// 	var progressDiv = document.createElement('div');
-// 	progressDiv.setAttribute('class', 'x3dom-progress');
-// 	var _text = document.createElement('strong');
-// 	_text.appendChild(document.createTextNode('Tessellating...'));
-// 	progressDiv.appendChild(_text);
-// 	var _inner = document.createElement('span');
-// 	_inner.setAttribute('style', 'width: 25%;');
-// 	_inner.appendChild(document.createTextNode(' '));
-// 	progressDiv.appendChild(_inner);
-// 	x3de.tessProgressDiv = progressDiv;
-// 	x3de.appendChild(progressDiv);
+//     var progressDiv = document.createElement('div');
+//     progressDiv.setAttribute('class', 'x3dom-progress');
+//     var _text = document.createElement('strong');
+//     _text.appendChild(document.createTextNode('Tessellating...'));
+//     progressDiv.appendChild(_text);
+//     var _inner = document.createElement('span');
+//     _inner.setAttribute('style', 'width: 25%;');
+//     _inner.appendChild(document.createTextNode(' '));
+//     progressDiv.appendChild(_inner);
+//     x3de.tessProgressDiv = progressDiv;
+//     x3de.appendChild(progressDiv);
 //     }
 //     var pd = x3de.tessProgressDiv;
 //     if(onoff)
-// 	pd.style.display = 'inline';
+//     pd.style.display = 'inline';
 //     else
-// 	pd.style.display = 'none';
+//     pd.style.display = 'none';
 //} /* tessProgress */
-
 
 // x3dom.registerNodeType(
 //     "NurbsPatchSurface",
@@ -118,17 +116,17 @@
 //             this.addField_MFFloat(ctx, 'weight', []);
 //             this.addField_SFBool(ctx, 'normalPerVertex', true);
 //             this.addField_SFNode('controlPoint',
-// 				 x3dom.nodeTypes.X3DCoordinateNode);
+//                  x3dom.nodeTypes.X3DCoordinateNode);
 //             this._needReRender = true;
-// 	    this._myctx = ctx;
+//         this._myctx = ctx;
 //         },
 //         {
 //             nodeChanged: function() {
-// 	x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
-// 		return;
+//     x3dom.nodeTypes.NurbsTrimmedSurface.prototype.nodeChanged.call(this);
+//         return;
 //             },
 //             fieldChanged: function(fieldName) {
-// 		this.nodeChanged();
+//         this.nodeChanged();
 //             }
 //         }
 //     )
@@ -145,7 +143,7 @@
 //             this.addField_MFFloat(ctx, 'knot', []);
 //             this.addField_MFFloat(ctx, 'controlPoint', []);
 //             this.addField_MFFloat(ctx, 'weight', []);
-// 	}, { }
+//     }, { }
 //     )
 // );
 
@@ -156,7 +154,7 @@
 //         function (ctx) {
 //             x3dom.nodeTypes.ContourPolyline2D.superClass.call(this, ctx);
 //             this.addField_MFFloat(ctx, 'controlPoint', []);
-// 	}, { }
+//     }, { }
 //     )
 // );
 
@@ -167,7 +165,7 @@
 //         function (ctx) {
 //             x3dom.nodeTypes.Contour2D.superClass.call(this, ctx);
 //             this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
-// 	}, { }
+//     }, { }
 //     )
 // );
 
@@ -180,97 +178,97 @@
 
 //             this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
 //             this._needReRender = true;
-// 	    this._myctx = ctx;
+//         this._myctx = ctx;
 //         },
 //         {
 //             nodeChanged: function() {
 //                 this._needReRender = true;
-// 		this._vf.ccw = false;
-// 		this._vf.solid = false;
-// 		this._vf.useGeoCache = false;
-// 		if(!this._hasCoarseMesh){
-// 		    var its = createCoarseITS(this);
-// 		    this._mesh = its._mesh;
-// 		    this._hasCoarseMesh = true;
-// 		}
+//         this._vf.ccw = false;
+//         this._vf.solid = false;
+//         this._vf.useGeoCache = false;
+//         if(!this._hasCoarseMesh){
+//             var its = createCoarseITS(this);
+//             this._mesh = its._mesh;
+//             this._hasCoarseMesh = true;
+//         }
 
-// 		var x3de = this._myctx.doc._x3dElem;
-// 		tessProgress(x3de, true);
+//         var x3de = this._myctx.doc._x3dElem;
+//         tessProgress(x3de, true);
 
-// 		var T = [];
-// 		if(this._cf.trimmingContour &&
-// 		   this._cf.trimmingContour.nodes.length) {
-// 		    var len = this._cf.trimmingContour.nodes.length;
-// 		    for(var i = 0; i < len; i++) {
-// 			var c2dnode = this._cf.trimmingContour.nodes[i];
-// 			if(c2dnode._cf.children) {
-// 			    T[i] = [];
-// 			    var trim = c2dnode._cf.children.nodes;
-// 			    for(var j = 0; j < trim.length; j++) {
-// 				var tc = trim[j];
-// 				// convert polyline to NURBS
-// 				if(!tc._vf.order) {
-// 				    tc._vf.order = 2;
-// 				}
-// 				if(!tc._vf.knot) {
-// 				    var knots = [];
-// 				    knots.push(0);
-// 				    knots.push(0);
-// 				    for(var k = 2;
-// 					k < tc._vf.controlPoint.length; k++) //controlPoint.length when MFVec2f, was /2
-// 					knots.push(k-1);
-// 				    knots.push(knots[knots.length-1]+1);
-// 				    knots.push(knots[knots.length-1]);
-// 				    tc._vf.knot = knots;
-// 				}
-// 				T[i].push([tc._vf.controlPoint.length-1, //T[0] needs attention when MFVec2f
-// 					   tc._vf.order-1, tc._vf.knot,
-// 					   tc._vf.controlPoint, tc._vf.weight]); //T[3] needs attention when MFVec2f
-// 			    }
-// 			}
-// 		    }
-// 		}
+//         var T = [];
+//         if(this._cf.trimmingContour &&
+//            this._cf.trimmingContour.nodes.length) {
+//             var len = this._cf.trimmingContour.nodes.length;
+//             for(var i = 0; i < len; i++) {
+//             var c2dnode = this._cf.trimmingContour.nodes[i];
+//             if(c2dnode._cf.children) {
+//                 T[i] = [];
+//                 var trim = c2dnode._cf.children.nodes;
+//                 for(var j = 0; j < trim.length; j++) {
+//                 var tc = trim[j];
+//                 // convert polyline to NURBS
+//                 if(!tc._vf.order) {
+//                     tc._vf.order = 2;
+//                 }
+//                 if(!tc._vf.knot) {
+//                     var knots = [];
+//                     knots.push(0);
+//                     knots.push(0);
+//                     for(var k = 2;
+//                     k < tc._vf.controlPoint.length; k++) //controlPoint.length when MFVec2f, was /2
+//                     knots.push(k-1);
+//                     knots.push(knots[knots.length-1]+1);
+//                     knots.push(knots[knots.length-1]);
+//                     tc._vf.knot = knots;
+//                 }
+//                 T[i].push([tc._vf.controlPoint.length-1, //T[0] needs attention when MFVec2f
+//                        tc._vf.order-1, tc._vf.knot,
+//                        tc._vf.controlPoint, tc._vf.weight]); //T[3] needs attention when MFVec2f
+//                 }
+//             }
+//             }
+//         }
 
-// 		var onmessage = function(e) {
-// 		    if(e.data.length >= 3){
-// 			var its = createITS(e.data, this.caller);
-// 			this.caller.workerTask = null;
-// 			this.caller._mesh = its._mesh;
-// 			if(this.caller._cleanupGLObjects)
-// 			    this.caller._cleanupGLObjects(true);
-// 			Array.forEach(this.caller._parentNodes,
-// 				      function (node) {
-// 					  node.setAllDirty();
-// 				      });
-// 			if(tessWorkerPool.taskQueue.length == 0) {
-// 			    var x3de = this.caller._myctx.doc._x3dElem;
-// 			    tessProgress(x3de, false);
-// 			}
-// 			this.caller._nameSpace.doc.needRender = true;
-// 		    }
-// 		}
-// 		var coordNode = this._cf.controlPoint.node;
-// 		x3dom.debug.assert(coordNode);
-// 		var startmessage = [this._vf.uDimension-1,
-// 				    this._vf.vDimension-1,
-// 				    this._vf.uOrder-1, this._vf.vOrder-1,
-// 				    this._vf.uKnot, this._vf.vKnot,
-// 				    coordNode.getPoints(),
-// 				    this._vf.weight,
-// 				    this._vf.uTessellation,
-// 				    this._vf.vTessellation,
-// 				    T];
+//         var onmessage = function(e) {
+//             if(e.data.length >= 3){
+//             var its = createITS(e.data, this.caller);
+//             this.caller.workerTask = null;
+//             this.caller._mesh = its._mesh;
+//             if(this.caller._cleanupGLObjects)
+//                 this.caller._cleanupGLObjects(true);
+//             Array.forEach(this.caller._parentNodes,
+//                       function (node) {
+//                       node.setAllDirty();
+//                       });
+//             if(tessWorkerPool.taskQueue.length == 0) {
+//                 var x3de = this.caller._myctx.doc._x3dElem;
+//                 tessProgress(x3de, false);
+//             }
+//             this.caller._nameSpace.doc.needRender = true;
+//             }
+//         }
+//         var coordNode = this._cf.controlPoint.node;
+//         x3dom.debug.assert(coordNode);
+//         var startmessage = [this._vf.uDimension-1,
+//                     this._vf.vDimension-1,
+//                     this._vf.uOrder-1, this._vf.vOrder-1,
+//                     this._vf.uKnot, this._vf.vKnot,
+//                     coordNode.getPoints(),
+//                     this._vf.weight,
+//                     this._vf.uTessellation,
+//                     this._vf.vTessellation,
+//                     T];
 
-// 		if(this.workerTask)
-// 		    this.workerTask.discard = true;
+//         if(this.workerTask)
+//             this.workerTask.discard = true;
 
-// 		this.workerTask = new WorkerTask('https://rawgit.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
-// 						 this, onmessage, startmessage);
+//         this.workerTask = new WorkerTask('https://rawgit.com/andreasplesch/x3dom/Nurbs/src/nodes/NURBS/x3dom-nurbs-worker.js',
+//                          this, onmessage, startmessage);
 
-// 		tessWorkerPool.addWorkerTask(this.workerTask);
+//         tessWorkerPool.addWorkerTask(this.workerTask);
 //             },
 //             fieldChanged: function(fieldName) {
-// 		this.nodeChanged();
+//         this.nodeChanged();
 //             }
 
 //         }

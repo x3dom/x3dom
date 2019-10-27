@@ -10,7 +10,7 @@
 x3dom.registerNodeType(
     "TouchSensor",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DTouchSensorNode,
+    defineClass( x3dom.nodeTypes.X3DTouchSensorNode,
 
         /**
          * Constructor for TouchSensor
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * simply use HTML events (like onclick) on your nodes. However, this node is implemented to complete the
          * pointing device sensor component, and it may be useful to ensure compatibility with older X3D scene content.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.TouchSensor.superClass.call(this, ctx);
+            x3dom.nodeTypes.TouchSensor.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -38,7 +38,6 @@ x3dom.registerNodeType(
             //this.addField_SFVec3f(ctx, 'hitPoint_changed',    0 0 0);
             //this.addField_SFVec2f(ctx, 'hitTexCoord_changed', 0 0);
 
-
             //---------------------------------------
             // PROPERTIES
             //---------------------------------------
@@ -47,7 +46,6 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
             // PUBLIC FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
-
 
         }
     )

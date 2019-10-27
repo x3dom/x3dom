@@ -12,8 +12,8 @@
 x3dom.registerNodeType(
     "X3DPlanarGeometryNode",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometryNode,
+
         /**
          * Constructor for X3DPlanarGeometryNode
          * @constructs x3dom.nodeTypes.X3DPlanarGeometryNode
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DGeometryNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DPlanarGeometryNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DPlanarGeometryNode.superClass.call( this, ctx );
         }
     )
 );

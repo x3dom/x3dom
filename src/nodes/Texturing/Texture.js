@@ -12,8 +12,8 @@
 x3dom.registerNodeType(
     "Texture",      // X3DTexture2DNode
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureNode,
+
         /**
          * Constructor for Texture
          * @constructs x3dom.nodeTypes.Texture
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc (Abstract) class for 2D Textures.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Texture.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Texture.superClass.call( this, ctx );
 
             /**
              * Specifies whether the children are shown or hidden outside the texture.
@@ -36,69 +36,80 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'hideChildren', true);
+            this.addField_SFBool( ctx, "hideChildren", true );
 
             this._video = null;
             this._intervalID = 0;
             this._canvas = null;
-        
         },
         {
-            nodeChanged: function()
+            nodeChanged : function ()
             {
-                if ((this._vf.url.length && this._vf.url[0].length) || !this._xmlNode) {
+                if ( ( this._vf.url.length && this._vf.url[ 0 ].length ) || !this._xmlNode )
+                {
                     return;
                 }
-                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
+                x3dom.debug.logInfo( "No Texture URL given, searching for &lt;img&gt; elements..." );
                 var that = this;
-                try {
-                    Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 1) {
-                            var url = childDomNode.getAttribute("src");
+                try
+                {
+                    Array.forEach( this._xmlNode.childNodes, function ( childDomNode )
+                    {
+                        if ( childDomNode.nodeType === 1 )
+                        {
+                            var url = childDomNode.getAttribute( "src" );
                             // For testing: look for <img> element if url empty
-                            if (url) {
-                                that._vf.url.push(url);
-                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                            if ( url )
+                            {
+                                that._vf.url.push( url );
+                                x3dom.debug.logInfo( that._vf.url[ that._vf.url.length - 1 ] );
 
-                                if (childDomNode.localName.toLowerCase() === "video") {
+                                if ( childDomNode.localName.toLowerCase() === "video" )
+                                {
                                     that._needPerFrameUpdate = true;
                                     //that._video = childDomNode;
 
-                                    that._video = document.createElement('video');
-                                    that._video.setAttribute('preload', 'auto');
-                                    that._video.setAttribute('muted', 'muted');
-                                    var p = document.getElementsByTagName('body')[0];
-                                    p.appendChild(that._video);
+                                    that._video = document.createElement( "video" );
+                                    that._video.setAttribute( "preload", "auto" );
+                                    that._video.setAttribute( "muted", "muted" );
+                                    var p = document.getElementsByTagName( "body" )[ 0 ];
+                                    p.appendChild( that._video );
                                     that._video.style.display = "none";
                                     that._video.style.visibility = "hidden";
                                 }
                             }
-                            else if (childDomNode.localName.toLowerCase() === "canvas") {
+                            else if ( childDomNode.localName.toLowerCase() === "canvas" )
+                            {
                                 that._needPerFrameUpdate = true;
                                 that._isCanvas = true;
                                 that._canvas = childDomNode;
                             }
 
-                            if (childDomNode.style && that._vf.hideChildren) {
+                            if ( childDomNode.style && that._vf.hideChildren )
+                            {
                                 childDomNode.style.display = "none";
                                 childDomNode.style.visibility = "hidden";
                             }
-                            x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
+                            x3dom.debug.logInfo( "### Found &lt;" + childDomNode.nodeName + "&gt; tag." );
                         }
                     } );
                 }
-                catch(e) {
-                    x3dom.debug.logException(e);
+                catch ( e )
+                {
+                    x3dom.debug.logException( e );
                 }
             },
 
-            shutdown: function() {
-                if (this._video) {
+            shutdown : function ()
+            {
+                if ( this._video )
+                {
                     this._video.pause();
-                    while (this._video.hasChildNodes()) {
-                        this._video.removeChild(this._video.firstChild);
+                    while ( this._video.hasChildNodes() )
+                    {
+                        this._video.removeChild( this._video.firstChild );
                     }
-                    document.body.removeChild(this._video);
+                    document.body.removeChild( this._video );
                     this._video = null;
                 }
             }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DDamperNode",
     "Followers",
-    defineClass(x3dom.nodeTypes.X3DFollowerNode,
-        
+    defineClass( x3dom.nodeTypes.X3DFollowerNode,
+
         /**
          * Constructor for X3DDamperNode
          * @constructs x3dom.nodeTypes.X3DDamperNode
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          *  is parameterized by the tau, order and tolerance fields. Internally, it consists of a set of linear
          *  first-order filters each of which processes the output of the previous filter.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DDamperNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DDamperNode.superClass.call( this, ctx );
 
             /**
              * The field tau specifies the time-constant of the internal filters and thus the speed that the output of
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'tau', 0.3);
+            this.addField_SFTime( ctx, "tau", 0.3 );
 
             /**
              * If tolerance is set to its default value -1, the browser implementation is allowed to find a good way for
@@ -61,7 +61,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'tolerance', -1);
+            this.addField_SFFloat( ctx, "tolerance", -1 );
 
             /**
              * The order field specifies the smoothness of the transition.
@@ -72,11 +72,10 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'order', 3);
+            this.addField_SFInt32( ctx, "order", 3 );
 
             this._eps = this._vf.tolerance < 0 ? this._eps : this._vf.tolerance;
             this._lastTick = 0;
-        
         }
     )
 );

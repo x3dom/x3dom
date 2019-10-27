@@ -15,8 +15,8 @@
 x3dom.registerNodeType(
     "StippleVolumeStyle",
     "VolumeRendering",
-    defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
-        
+    defineClass( x3dom.nodeTypes.X3DVolumeRenderStyleNode,
+
         /**
          * Constructor for StippleVolumeStyle
          * @constructs x3dom.nodeTypes.StippleVolumeStyle
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc NYI!!
          */
-        function (ctx) {
-            x3dom.nodeTypes.StippleVolumeStyle.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.StippleVolumeStyle.superClass.call( this, ctx );
 
             /**
              *
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'distanceFactor', 1);
+            this.addField_SFFloat( ctx, "distanceFactor", 1 );
 
             /**
              *
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'interiorFactor', 1);
+            this.addField_SFFloat( ctx, "interiorFactor", 1 );
 
             /**
              *
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'lightingFactor', 1);
+            this.addField_SFFloat( ctx, "lightingFactor", 1 );
 
             /**
              *
@@ -69,7 +69,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'gradientThreshold', 0.4);
+            this.addField_SFFloat( ctx, "gradientThreshold", 0.4 );
 
             /**
              *
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'gradientRetainedOpacity', 1);
+            this.addField_SFFloat( ctx, "gradientRetainedOpacity", 1 );
 
             /**
              *
@@ -89,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'gradientBoundaryOpacity', 0);
+            this.addField_SFFloat( ctx, "gradientBoundaryOpacity", 0 );
 
             /**
              *
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'gradientOpacityFactor', 1);
+            this.addField_SFFloat( ctx, "gradientOpacityFactor", 1 );
 
             /**
              *
@@ -109,7 +109,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'silhouetteRetainedOpacity', 1);
+            this.addField_SFFloat( ctx, "silhouetteRetainedOpacity", 1 );
 
             /**
              *
@@ -119,7 +119,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
+            this.addField_SFFloat( ctx, "silhouetteBoundaryOpacity", 0 );
 
             /**
              *
@@ -129,7 +129,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'silhouetteOpacityFactor', 1);
+            this.addField_SFFloat( ctx, "silhouetteOpacityFactor", 1 );
 
             /**
              *
@@ -139,8 +139,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'resolutionFactor', 1);
-        
+            this.addField_SFFloat( ctx, "resolutionFactor", 1 );
         }
     )
 );

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Background",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DBackgroundNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBackgroundNode,
+
         /**
          * Constructor for Background
          * @constructs x3dom.nodeTypes.Background
@@ -25,8 +25,9 @@ x3dom.registerNodeType(
          * bottomUrl, frontUrl, leftUrl, rightUrl, topUrl fields, browsers shall support the JPEG and PNG
          * (see ISO/IEC 15948) image file formats.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Background.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Background.superClass.call( this, ctx );
 
             /**
              *
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'backUrl', []);
+            this.addField_MFString( ctx, "backUrl", [] );
 
             /**
              *
@@ -48,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'bottomUrl', []);
+            this.addField_MFString( ctx, "bottomUrl", [] );
 
             /**
              *
@@ -59,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'frontUrl', []);
+            this.addField_MFString( ctx, "frontUrl", [] );
 
             /**
              *
@@ -70,7 +71,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'leftUrl', []);
+            this.addField_MFString( ctx, "leftUrl", [] );
 
             /**
              *
@@ -81,7 +82,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'rightUrl', []);
+            this.addField_MFString( ctx, "rightUrl", [] );
 
             /**
              *
@@ -92,9 +93,9 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'topUrl', []);
-			
-			/**
+            this.addField_MFString( ctx, "topUrl", [] );
+
+            /**
              *
              * @var {x3dom.fields.MFString} scaling
              * @memberof x3dom.nodeTypes.Background
@@ -102,41 +103,46 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'scaling', false);
-        
+            this.addField_SFBool( ctx, "scaling", false );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName.indexOf("Url") > 0 || fieldName == "transparency" ||
-                    fieldName.search("sky") >= 0 || fieldName.search("ground") >= 0) {
+                if ( fieldName.indexOf( "Url" ) > 0 || fieldName == "transparency" ||
+                    fieldName.search( "sky" ) >= 0 || fieldName.search( "ground" ) >= 0 )
+                {
                     this._dirty = true;
                 }
-                else if (fieldName.indexOf("bind") >= 0) {
-                    this.bind(this._vf.bind);
+                else if ( fieldName.indexOf( "bind" ) >= 0 )
+                {
+                    this.bind( this._vf.bind );
                 }
             },
 
-            getSkyColor: function() {
+            getSkyColor : function ()
+            {
                 return this._vf.skyColor;
             },
 
-            getGroundColor: function() {
+            getGroundColor : function ()
+            {
                 return this._vf.groundColor;
             },
 
-            getTransparency: function() {
+            getTransparency : function ()
+            {
                 return this._vf.transparency;
             },
 
-            getTexUrl: function() {
+            getTexUrl : function ()
+            {
                 return [
-                    this._nameSpace.getURL(this._vf.backUrl[0]),
-                    this._nameSpace.getURL(this._vf.frontUrl[0]),
-                    this._nameSpace.getURL(this._vf.bottomUrl[0]),
-                    this._nameSpace.getURL(this._vf.topUrl[0]),
-                    this._nameSpace.getURL(this._vf.leftUrl[0]),
-                    this._nameSpace.getURL(this._vf.rightUrl[0])
+                    this._nameSpace.getURL( this._vf.backUrl[ 0 ] ),
+                    this._nameSpace.getURL( this._vf.frontUrl[ 0 ] ),
+                    this._nameSpace.getURL( this._vf.bottomUrl[ 0 ] ),
+                    this._nameSpace.getURL( this._vf.topUrl[ 0 ] ),
+                    this._nameSpace.getURL( this._vf.leftUrl[ 0 ] ),
+                    this._nameSpace.getURL( this._vf.rightUrl[ 0 ] )
                 ];
             }
         }

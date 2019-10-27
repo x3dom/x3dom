@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "CoordinateDamper",
     "Followers",
-    defineClass(x3dom.nodeTypes.X3DDamperNode,
-        
+    defineClass( x3dom.nodeTypes.X3DDamperNode,
+
         /**
          * Constructor for CoordinateDamper
          * @constructs x3dom.nodeTypes.CoordinateDamper
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          *  current value to the newly set number. It creates a smooth transition that ends duration seconds after the
          *  last number has been received.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CoordinateDamper.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CoordinateDamper.superClass.call( this, ctx );
 
             /**
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'initialDestination', []);
+            this.addField_MFVec3f( ctx, "initialDestination", [] );
 
             /**
              * The field initialValue can be used to set the initial value.
@@ -50,8 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'initialValue', []);
-
+            this.addField_MFVec3f( ctx, "initialValue", [] );
 
             /**
              * The current coordinate value
@@ -61,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'value', []);
+            this.addField_MFVec3f( ctx, "value", [] );
 
             /**
              * The target coordinate value
@@ -71,10 +70,9 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'destination', []);
+            this.addField_MFVec3f( ctx, "destination", [] );
 
-            x3dom.debug.logWarning("CoordinateDamper NYI");
-        
+            x3dom.debug.logWarning( "CoordinateDamper NYI" );
         }
     )
 );

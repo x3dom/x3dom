@@ -12,39 +12,39 @@
 /**
  * Generate the final Shader program
  */
-x3dom.shader.PBRMaterialShader = function(gl, properties)
+x3dom.shader.PBRMaterialShader = function ( gl, properties )
 {
-	this.program = gl.createProgram();
-	
-	var vertexShader   = this.generateVertexShader(gl, properties);
-	var fragmentShader = this.generateFragmentShader(gl, properties);
-	
-	gl.attachShader(this.program, vertexShader);
-    gl.attachShader(this.program, fragmentShader);
-    
+    this.program = gl.createProgram();
+
+    var vertexShader   = this.generateVertexShader( gl, properties );
+    var fragmentShader = this.generateFragmentShader( gl, properties );
+
+    gl.attachShader( this.program, vertexShader );
+    gl.attachShader( this.program, fragmentShader );
+
     // optional, but position should be at location 0 for performance reasons
     //gl.bindAttribLocation(this.program, 0, "position");
-    
-	gl.linkProgram(this.program);
-	
-	return this.program;
+
+    gl.linkProgram( this.program );
+
+    return this.program;
 };
 
 /**
  * Generate the vertex shader
  */
-x3dom.shader.PBRMaterialShader.prototype.generateVertexShader = function(gl, properties)
+x3dom.shader.PBRMaterialShader.prototype.generateVertexShader = function ( gl, properties )
 {
-	var shader =    "attribute vec3 position;"+
-                    "attribute vec3 normal;"+
-                    "attribute vec2 texcoord;"+
-                    "attribute vec4 tangent;"+
-                    "uniform mat4 normalMatrix;\n"+
-                    "uniform mat4 modelViewProjectionMatrix;\n"+
-                    "varying vec2 fragTexcoord;\n"+
-                    "varying vec3 fragNormal;\n"+
-                    "varying vec3 fragTangent;\n"+
-                    "varying vec3 fragBitangent;\n"+
+    var shader =    "attribute vec3 position;" +
+                    "attribute vec3 normal;" +
+                    "attribute vec2 texcoord;" +
+                    "attribute vec4 tangent;" +
+                    "uniform mat4 normalMatrix;\n" +
+                    "uniform mat4 modelViewProjectionMatrix;\n" +
+                    "varying vec2 fragTexcoord;\n" +
+                    "varying vec3 fragNormal;\n" +
+                    "varying vec3 fragTangent;\n" +
+                    "varying vec3 fragBitangent;\n" +
 
                     "void main(void) {\n" +
                     "   fragTexcoord = texcoord;\n" +
@@ -55,21 +55,22 @@ x3dom.shader.PBRMaterialShader.prototype.generateVertexShader = function(gl, pro
                     "   gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
                     "}\n";
 
-	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, shader);
-    gl.compileShader(vertexShader);
-		
-	if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("[PBRMaterialShader] VertexShader " + gl.getShaderInfoLog(vertexShader));
-	}
-	
-	return vertexShader;
+    var vertexShader = gl.createShader( gl.VERTEX_SHADER );
+    gl.shaderSource( vertexShader, shader );
+    gl.compileShader( vertexShader );
+
+    if ( !gl.getShaderParameter( vertexShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[PBRMaterialShader] VertexShader " + gl.getShaderInfoLog( vertexShader ) );
+    }
+
+    return vertexShader;
 };
 
 /**
  * Generate the fragment shader
  */
-x3dom.shader.PBRMaterialShader.prototype.generateFragmentShader = function(gl, properties)
+x3dom.shader.PBRMaterialShader.prototype.generateFragmentShader = function ( gl, properties )
 {
     var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
     shader += "precision highp float;\n";
@@ -77,27 +78,27 @@ x3dom.shader.PBRMaterialShader.prototype.generateFragmentShader = function(gl, p
     shader += " precision mediump float;\n";
     shader += "#endif\n\n";
 
-    if(properties.USE_BASECOLOR_TEX)
+    if ( properties.USE_BASECOLOR_TEX )
     {
         shader += "uniform sampler2D baseColorTex;\n";
     }
 
-    if(properties.USE_METALLIC_TEX)
+    if ( properties.USE_METALLIC_TEX )
     {
         shader += "uniform sampler2D metallicTex;\n";
     }
 
-    if(properties.USE_ROUGHNESS_TEX)
+    if ( properties.USE_ROUGHNESS_TEX )
     {
         shader += "uniform sampler2D roughnessTex;\n";
     }
 
-    if(properties.USE_NORMAL_TEX)
+    if ( properties.USE_NORMAL_TEX )
     {
         shader += "uniform sampler2D normalTex;\n";
     }
 
-    if(properties.USE_OCCLUSION_TEX)
+    if ( properties.USE_OCCLUSION_TEX )
     {
         shader += "uniform sampler2d occlusionTex;\n";
     }
@@ -110,7 +111,6 @@ x3dom.shader.PBRMaterialShader.prototype.generateFragmentShader = function(gl, p
     shader += "varying vec3 fragTangent;\n";
     shader += "varying vec3 fragBitangent;\n";
     shader += "varying vec3 fragNormal;\n";
-
 
     shader += "void main(void) {\n";
     shader += "    vec3 T = normalize(fragTangent);\n";
@@ -133,13 +133,14 @@ x3dom.shader.PBRMaterialShader.prototype.generateFragmentShader = function(gl, p
     shader += "    gl_FragColor = vec4(diffuse, 1.0);\n";
     shader += "}\n";
 
-    var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, shader);
-    gl.compileShader(fragmentShader);
-		
-	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
-		x3dom.debug.logError("[PBRMaterialShader] FragmentShader " + gl.getShaderInfoLog(fragmentShader));
-	}
-	
-	return fragmentShader;
+    var fragmentShader = gl.createShader( gl.FRAGMENT_SHADER );
+    gl.shaderSource( fragmentShader, shader );
+    gl.compileShader( fragmentShader );
+
+    if ( !gl.getShaderParameter( fragmentShader, gl.COMPILE_STATUS ) )
+    {
+        x3dom.debug.logError( "[PBRMaterialShader] FragmentShader " + gl.getShaderInfoLog( fragmentShader ) );
+    }
+
+    return fragmentShader;
 };

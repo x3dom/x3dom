@@ -6,7 +6,7 @@
  * (C)2018 A. Plesch, Waltham, MA USA
  * Dual licensed under the MIT and GPL
  */
- /*
+/*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
  * Ayam is copyrighted 1998-2016 by Randolf Schultz
@@ -22,8 +22,8 @@
 x3dom.registerNodeType(
     "X3DParametricGeometryNode",
     "NURBS",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometryNode,
+
         /**
          * Constructor for X3DParametricGeometryNode
          * @constructs x3dom.nodeTypes.X3DParametricGeometryNode
@@ -37,9 +37,10 @@ x3dom.registerNodeType(
          * control points are described and interpreted shall be a property of the individual node type.
          *
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.X3DParametricGeometryNode.superClass.call(this, ctx);
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DParametricGeometryNode.superClass.call( this, ctx );
         }, { }
     )
 );

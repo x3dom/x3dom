@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Group",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for Group
          * @constructs x3dom.nodeTypes.Group
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc A Group node contains children nodes without introducing a new transformation.
          * It is equivalent to a Transform node containing an identity transform.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Group.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Group.superClass.call( this, ctx );
         }
     )
 );

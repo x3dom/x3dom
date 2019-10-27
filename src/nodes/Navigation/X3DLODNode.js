@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DLODNode",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for X3DLODNode
          * @constructs x3dom.nodeTypes.X3DLODNode
@@ -21,9 +21,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DLODNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DLODNode.superClass.call( this, ctx );
 
             /**
              * The forceTransitions field specifies whether browsers are allowed to disregard level distances in order to provide better performance.
@@ -33,7 +33,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool (ctx, "forceTransitions", false);
+            this.addField_SFBool( ctx, "forceTransitions", false );
 
             /**
              * The center field is a translation offset in the local coordinate system that specifies the centre of the LOD node for distance calculations.
@@ -43,34 +43,35 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, "center", 0, 0, 0);
+            this.addField_SFVec3f( ctx, "center", 0, 0, 0 );
 
-            this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
-        
+            this._eye = new x3dom.fields.SFVec3f( 0, 0, 0 );
         },
         {
-            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
-                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask < 0) {
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
+                if ( planeMask < 0 )
+                {
                     return;
                 }
 
                 // at the moment, no caching here as children may change every frame
                 singlePath = false;
 
-                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                this.visitChildren( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
 
                 //out.LODs.push( [transform, this] );
             },
 
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes) {
+            visitChildren : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
+            {
                 // overwritten
             }
         }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "AudioClip",
     "Sound",
-    defineClass(x3dom.nodeTypes.X3DSoundSourceNode,
-        
+    defineClass( x3dom.nodeTypes.X3DSoundSourceNode,
+
         /**
          * Constructor for AudioClip
          * @constructs x3dom.nodeTypes.AudioClip
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc An AudioClip node specifies audio data that can be referenced by Sound nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.AudioClip.superClass.call( this, ctx );
 
             /**
              * The url field specifies the URL from which the sound is loaded.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString( ctx, "url", [] );
 
             /**
              * Specifies whether the clip is enabled.
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', false);
+            this.addField_SFBool( ctx, "enabled", false );
 
             /**
              * Specifies whether the clip loops when finished.
@@ -55,77 +55,77 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'loop', false);
+            this.addField_SFBool( ctx, "loop", false );
 
-            this._audio = document.createElement('audio');
+            this._audio = document.createElement( "audio" );
             //this._audio.setAttribute('preload', 'none');
             //this._audio.setAttribute('autoplay', 'true');
-            if(navigator.appName != "Microsoft Internet Explorer") {
-                document.body.appendChild(this._audio);
+            if ( navigator.appName != "Microsoft Internet Explorer" )
+            {
+                document.body.appendChild( this._audio );
             }
 
             this._sources = [];
-
         },
         {
-            nodeChanged: function()
+            nodeChanged : function ()
             {
-                this._createSources = function()
+                this._createSources = function ()
                 {
                     this._sources = [];
-                    for (var i=0; i<this._vf.url.length; i++)
+                    for ( var i = 0; i < this._vf.url.length; i++ )
                     {
-                        var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
-                        x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
-                        var src = document.createElement('source');
-                        src.setAttribute('src', audioUrl);
-                        this._sources.push(src);
-                        this._audio.appendChild(src);
+                        var audioUrl = this._nameSpace.getURL( this._vf.url[ i ] );
+                        x3dom.debug.logInfo( "Adding sound file: " + audioUrl );
+                        var src = document.createElement( "source" );
+                        src.setAttribute( "src", audioUrl );
+                        this._sources.push( src );
+                        this._audio.appendChild( src );
                     }
                 };
 
                 var that = this;
 
-                this._startAudio = function()
+                this._startAudio = function ()
                 {
                     that._audio.loop = that._vf.loop ? "loop" : "";
-                    if(that._vf.enabled === true)
+                    if ( that._vf.enabled === true )
                     {
                         that._audio.play();
                     }
                 };
 
-                this._stopAudio = function()
+                this._stopAudio = function ()
                 {
                     that._audio.pause();
                 };
 
-                this._audioEnded = function()
+                this._audioEnded = function ()
                 {
-                    if (that._vf.enabled === true && that._vf.loop === true)
+                    if ( that._vf.enabled === true && that._vf.loop === true )
                     {
                         that._startAudio();
                     }
                 };
 
-                var log = function(e)
+                var log = function ( e )
                 {
-                    x3dom.debug.logWarning("MediaEvent error:"+e);
+                    x3dom.debug.logWarning( "MediaEvent error:" + e );
                 };
 
-                this._audio.addEventListener("canplaythrough", this._startAudio, true);
-                this._audio.addEventListener("ended", this._audioEnded, true);
-                this._audio.addEventListener("error", log, true);
-                this._audio.addEventListener("pause", this._audioEnded, true);
+                this._audio.addEventListener( "canplaythrough", this._startAudio, true );
+                this._audio.addEventListener( "ended", this._audioEnded, true );
+                this._audio.addEventListener( "error", log, true );
+                this._audio.addEventListener( "pause", this._audioEnded, true );
 
                 this._createSources();
             },
 
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName === "enabled")
+                if ( fieldName === "enabled" )
                 {
-                    if (this._vf.enabled === true)
+                    if ( this._vf.enabled === true )
                     {
                         this._startAudio();
                     }
@@ -134,36 +134,39 @@ x3dom.registerNodeType(
                         this._stopAudio();
                     }
                 }
-                else if (fieldName === "loop")
+                else if ( fieldName === "loop" )
                 {
                     //this._audio.loop = this._vf.loop;
                 }
-                else if (fieldName === "url")
+                else if ( fieldName === "url" )
                 {
                     this._stopAudio();
-                    while (this._audio.hasChildNodes())
+                    while ( this._audio.hasChildNodes() )
                     {
-                        this._audio.removeChild(this._audio.firstChild);
+                        this._audio.removeChild( this._audio.firstChild );
                     }
 
-                    for (var i=0; i<this._vf.url.length; i++)
+                    for ( var i = 0; i < this._vf.url.length; i++ )
                     {
-                        var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
-                        x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
-                        var src = document.createElement('source');
-                        src.setAttribute('src', audioUrl);
-                        this._audio.appendChild(src);
+                        var audioUrl = this._nameSpace.getURL( this._vf.url[ i ] );
+                        x3dom.debug.logInfo( "Adding sound file: " + audioUrl );
+                        var src = document.createElement( "source" );
+                        src.setAttribute( "src", audioUrl );
+                        this._audio.appendChild( src );
                     }
                 }
             },
 
-            shutdown: function() {
-                if (this._audio) {
+            shutdown : function ()
+            {
+                if ( this._audio )
+                {
                     this._audio.pause();
-                    while (this._audio.hasChildNodes()) {
-                        this._audio.removeChild(this._audio.firstChild);
+                    while ( this._audio.hasChildNodes() )
+                    {
+                        this._audio.removeChild( this._audio.firstChild );
                     }
-                    document.body.removeChild(this._audio);
+                    document.body.removeChild( this._audio );
                     this._audio = null;
                 }
             }

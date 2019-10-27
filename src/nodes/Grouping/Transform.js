@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Transform",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTransformNode,
+
         /**
          * Constructor for Transform
          * @constructs x3dom.nodeTypes.Transform
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The Transform node is a grouping node that defines a coordinate system for its children that is relative to the coordinate systems of its ancestors.
          * The translation, rotation, scale, scaleOrientation and center fields define a geometric 3D transformation.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Transform.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Transform.superClass.call( this, ctx );
 
             /**
              * The center field specifies a translation offset from the origin of the local coordinate system (0,0,0).
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "center", 0, 0, 0 );
 
             /**
 
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "translation", 0, 0, 0 );
 
             /**
              * The rotation field specifies a rotation of the coordinate system.
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
+            this.addField_SFRotation( ctx, "rotation", 0, 0, 1, 0 );
 
             /**
              * The scale field specifies a non-uniform scale of the coordinate system.
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
+            this.addField_SFVec3f( ctx, "scale", 1, 1, 1 );
 
             /**
              * The scaleOrientation specifies a rotation of the coordinate system before the scale (to specify scales in arbitrary orientations).
@@ -79,38 +79,38 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
+            this.addField_SFRotation( ctx, "scaleOrientation", 0, 0, 1, 0 );
 
             // P' = T * C * R * SR * S * -SR * -C * P
             this._trafo = x3dom.fields.SFMatrix4f.translation(
-                this._vf.translation.add(this._vf.center)).
-                mult(this._vf.rotation.toMatrix()).
-                mult(this._vf.scaleOrientation.toMatrix()).
-                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-        
+                this._vf.translation.add( this._vf.center ) ).
+                mult( this._vf.rotation.toMatrix() ).
+                mult( this._vf.scaleOrientation.toMatrix() ).
+                mult( x3dom.fields.SFMatrix4f.scale( this._vf.scale ) ).
+                mult( this._vf.scaleOrientation.toMatrix().inverse() ).
+                mult( x3dom.fields.SFMatrix4f.translation( this._vf.center.negate() ) );
         },
         {
-            fieldChanged: function (fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "center" || fieldName == "translation" ||
+                if ( fieldName == "center" || fieldName == "translation" ||
                     fieldName == "rotation" || fieldName == "scale" ||
-                    fieldName == "scaleOrientation")
+                    fieldName == "scaleOrientation" )
                 {
                     // P' = T * C * R * SR * S * -SR * -C * P
                     this._trafo = x3dom.fields.SFMatrix4f.translation(
-                        this._vf.translation.add(this._vf.center)).
-                        mult(this._vf.rotation.toMatrix()).
-                        mult(this._vf.scaleOrientation.toMatrix()).
-                        mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                        mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
+                        this._vf.translation.add( this._vf.center ) ).
+                        mult( this._vf.rotation.toMatrix() ).
+                        mult( this._vf.scaleOrientation.toMatrix() ).
+                        mult( x3dom.fields.SFMatrix4f.scale( this._vf.scale ) ).
+                        mult( this._vf.scaleOrientation.toMatrix().inverse() ).
+                        mult( x3dom.fields.SFMatrix4f.translation( this._vf.center.negate() ) );
 
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }
-                else if (fieldName == "render") {
+                else if ( fieldName == "render" )
+                {
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }

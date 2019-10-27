@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "CoordinateDouble",
     "Nurbs",
-    defineClass(x3dom.nodeTypes.X3DCoordinateNode,
-        
+    defineClass( x3dom.nodeTypes.X3DCoordinateNode,
+
         /**
          * Constructor for CoordinateDouble
          * @constructs x3dom.nodeTypes.CoordinateDouble
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc Coordinate builds geometry using a set of double precision 3D coordinates.
          * X3DCoordinateNode is used by IndexedFaceSet, IndexedLineSet, LineSet and PointSet.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CoordinateDouble.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CoordinateDouble.superClass.call( this, ctx );
 
             /**
              * Contains the 3D coordinates
@@ -35,11 +36,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3d(ctx, 'point', []);
-        
+            this.addField_MFVec3d( ctx, "point", [] );
         },
         {
-            getPoints: function() {
+            getPoints : function ()
+            {
                 return this._vf.point;
             }
         }

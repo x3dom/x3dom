@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TextureTransformMatrix3D",
     "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureTransformNode,
+
         /**
          * Constructor for TextureTransformMatrix3D
          * @constructs x3dom.nodeTypes.TextureTransformMatrix3D
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * This node affects the way texture coordinates are applied to the geometric surface.
          * The transformation consists of a transformation matrix.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TextureTransformMatrix3D.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TextureTransformMatrix3D.superClass.call( this, ctx );
 
             /**
              * The matrix field specifies a generalized, unfiltered 4×4 transformation matrix that can be used to modify the texture. Any set of values is permitted.
@@ -37,12 +37,11 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFMatrix4f(ctx, 'matrix',
+            this.addField_SFMatrix4f( ctx, "matrix",
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 1);
-        
+                0, 0, 0, 1 );
         }
     )
 );

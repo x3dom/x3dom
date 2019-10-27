@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DTextureNode",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for X3DTextureNode
          * @constructs x3dom.nodeTypes.X3DTextureNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type is the base type for all node types which specify sources for texture images.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DTextureNode.superClass.call( this, ctx );
 
             /**
              * Specifies the channel count of the texture. 0 means the system should figure out the count automatically.
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'origChannelCount', 0);
+            this.addField_SFInt32( ctx, "origChannelCount", 0 );
 
             /**
              * Sets the url to a resource.
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString( ctx, "url", [] );
 
             /**
              * Specifies whether the texture is repeated in s direction.
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'repeatS', true);
+            this.addField_SFBool( ctx, "repeatS", true );
 
             /**
              * Specifies whether the texture is repeated in t direction.
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'repeatT', true);
+            this.addField_SFBool( ctx, "repeatT", true );
 
             /**
              * Specifies whether the texture is scaled to the next highest power of two. (Needed, when texture repeat is enabled and texture size is non power of two)
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'scale', true);
+            this.addField_SFBool( ctx, "scale", true );
 
             /**
              * Cross Origin Mode
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'crossOrigin', '');
+            this.addField_SFString( ctx, "crossOrigin", "" );
 
             /**
              * Sets a TextureProperty node.
@@ -96,191 +96,242 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
+            this.addField_SFNode( "textureProperties", x3dom.nodeTypes.TextureProperties );
 
-            this.addField_SFBool(ctx, 'flipY', false);
+            this.addField_SFBool( ctx, "flipY", false );
 
-            this.addField_SFInt32(ctx, 'channel', 0);
+            this.addField_SFInt32( ctx, "channel", 0 );
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
             this._type = "diffuseMap";
 
-            this._blending = (this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2);
-        
+            this._blending = ( this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2 );
         },
         {
-            invalidateGLObject: function ()
+            invalidateGLObject : function ()
             {
-                Array.forEach(this._parentNodes, function (app) {
-                    Array.forEach(app._parentNodes, function (shape) {
+                Array.forEach( this._parentNodes, function ( app )
+                {
+                    Array.forEach( app._parentNodes, function ( shape )
+                    {
                         // THINKABOUTME: this is a bit ugly, cleanup more generically
-                        if (x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
+                        if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
+                        {
                             shape._dirty.texture = true;
                         }
-                        else {
+                        else
+                        {
                             // Texture maybe in MultiTexture or CommonSurfaceShader
-                            Array.forEach(shape._parentNodes, function (realShape) {
-                                if (x3dom.isa(realShape, x3dom.nodeTypes.X3DShapeNode)) {
+                            Array.forEach( shape._parentNodes, function ( realShape )
+                            {
+                                if ( x3dom.isa( realShape, x3dom.nodeTypes.X3DShapeNode ) )
+                                {
                                     realShape._dirty.texture = true;
-                                } else {
-                                    Array.forEach(realShape._parentNodes, function (realShape2) {
-                                        if (x3dom.isa(realShape2, x3dom.nodeTypes.X3DShapeNode)) {
+                                }
+                                else
+                                {
+                                    Array.forEach( realShape._parentNodes, function ( realShape2 )
+                                    {
+                                        if ( x3dom.isa( realShape2, x3dom.nodeTypes.X3DShapeNode ) )
+                                        {
                                             realShape2._dirty.texture = true;
                                         }
-                                    });
+                                    } );
                                 }
-                            });
+                            } );
                         }
-                    });
-                });
+                    } );
+                } );
 
                 this._nameSpace.doc.needRender = true;
             },
 
-            validateGLObject: function ()
+            validateGLObject : function ()
             {
-                Array.forEach(this._parentNodes, function (app) {
-                    Array.forEach(app._parentNodes, function (shape) {
+                Array.forEach( this._parentNodes, function ( app )
+                {
+                    Array.forEach( app._parentNodes, function ( shape )
+                    {
                         // THINKABOUTME: this is a bit ugly, cleanup more generically
-                        if (x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
+                        if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
+                        {
                             shape._dirty.texture = false;
                         }
-                        else {
+                        else
+                        {
                             // Texture maybe in MultiTexture or CommonSurfaceShader
-                            Array.forEach(shape._parentNodes, function (realShape) {
-                                if (x3dom.isa(realShape, x3dom.nodeTypes.X3DShapeNode)) {
+                            Array.forEach( shape._parentNodes, function ( realShape )
+                            {
+                                if ( x3dom.isa( realShape, x3dom.nodeTypes.X3DShapeNode ) )
+                                {
                                     realShape._dirty.texture = false;
-                                } else {
-                                    Array.forEach(realShape._parentNodes, function (realShape2) {
-                                        if (x3dom.isa(realShape2, x3dom.nodeTypes.X3DShapeNode)) {
+                                }
+                                else
+                                {
+                                    Array.forEach( realShape._parentNodes, function ( realShape2 )
+                                    {
+                                        if ( x3dom.isa( realShape2, x3dom.nodeTypes.X3DShapeNode ) )
+                                        {
                                             realShape2._dirty.texture = false;
                                         }
-                                    });
+                                    } );
                                 }
-                            });
+                            } );
                         }
-                    });
-                });
+                    } );
+                } );
 
                 this._nameSpace.doc.needRender = true;
             },
 
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
-                Array.forEach(parent._parentNodes, function (shape) {
+                Array.forEach( parent._parentNodes, function ( shape )
+                {
                     // THINKABOUTME: this is a bit ugly, cleanup more generically
-                    if (x3dom.isa(shape, x3dom.nodeTypes.Shape)) {
+                    if ( x3dom.isa( shape, x3dom.nodeTypes.Shape ) )
+                    {
                         shape._dirty.texture = true;
                     }
-                    else {
+                    else
+                    {
                         // Texture maybe in MultiTexture or CommonSurfaceShader
-                        Array.forEach(shape._parentNodes, function (realShape) {
+                        Array.forEach( shape._parentNodes, function ( realShape )
+                        {
                             realShape._dirty.texture = true;
-                        });
+                        } );
                     }
-                });
+                } );
             },
 
-            parentRemoved: function(parent)
+            parentRemoved : function ( parent )
             {
-                Array.forEach(parent._parentNodes, function (shape) {
+                Array.forEach( parent._parentNodes, function ( shape )
+                {
                     // THINKABOUTME: cleanup more generically, X3DShapeNode allows VolumeData
-                    if (x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
+                    if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
+                    {
                         shape._dirty.texture = true;
                     }
-                    else {
+                    else
+                    {
                         // Texture maybe in MultiTexture or CommonSurfaceShader
-                        Array.forEach(shape._parentNodes, function (realShape) {
+                        Array.forEach( shape._parentNodes, function ( realShape )
+                        {
                             realShape._dirty.texture = true;
-                        });
+                        } );
                     }
-                });
+                } );
             },
 
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "url" || fieldName ==  "origChannelCount" ||
+                if ( fieldName == "url" || fieldName ==  "origChannelCount" ||
                     fieldName == "repeatS" || fieldName == "repeatT" ||
                     fieldName == "scale" || fieldName == "crossOrigin" ||
-                    fieldName == "image")
+                    fieldName == "image" )
                 {
                     var that = this;
 
-                    that._blending = (that._vf.origChannelCount == 1 || 
-                                      that._vf.origChannelCount == 2);
+                    that._blending = ( that._vf.origChannelCount == 1 ||
+                                      that._vf.origChannelCount == 2 );
 
-                    Array.forEach(this._parentNodes, function (app) {
-                        if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
+                    Array.forEach( this._parentNodes, function ( app )
+                    {
+                        if ( x3dom.isa( app, x3dom.nodeTypes.X3DAppearanceNode ) )
+                        {
                             app.nodeChanged();
                         }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.MultiTexture)) {
-                            Array.forEach(app._parentNodes, function (realApp) {
+                        else if ( x3dom.isa( app, x3dom.nodeTypes.MultiTexture ) )
+                        {
+                            Array.forEach( app._parentNodes, function ( realApp )
+                            {
                                 realApp.nodeChanged();
-                            });
+                            } );
                         }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.ComposedCubeMapTexture)) {
-                            Array.forEach(app._parentNodes, function (realApp) {
+                        else if ( x3dom.isa( app, x3dom.nodeTypes.ComposedCubeMapTexture ) )
+                        {
+                            Array.forEach( app._parentNodes, function ( realApp )
+                            {
                                 realApp.nodeChanged();
-                            });
+                            } );
                         }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.PhysicalMaterial)) {
-                            Array.forEach(app._parentNodes, function (realApp) {
+                        else if ( x3dom.isa( app, x3dom.nodeTypes.PhysicalMaterial ) )
+                        {
+                            Array.forEach( app._parentNodes, function ( realApp )
+                            {
                                 realApp.nodeChanged();
-                            });
+                            } );
                         }
-                        else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
+                        else if ( x3dom.isa( app, x3dom.nodeTypes.ImageGeometry ) )
+                        {
                             var cf = null;
-                            if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
-                                cf = that._xmlNode.getAttribute('containerField');
-                                app._dirty[cf] = true;
+                            if ( that._xmlNode && that._xmlNode.hasAttribute( "containerField" ) )
+                            {
+                                cf = that._xmlNode.getAttribute( "containerField" );
+                                app._dirty[ cf ] = true;
                             }
                         }
-                        else if (x3dom.nodeTypes.X3DVolumeDataNode !== undefined) {
-                            if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeRenderStyleNode)) {
-                                if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
-                                    if(app._volumeDataParent){
+                        else if ( x3dom.nodeTypes.X3DVolumeDataNode !== undefined )
+                        {
+                            if ( x3dom.isa( app, x3dom.nodeTypes.X3DVolumeRenderStyleNode ) )
+                            {
+                                if ( that._xmlNode && that._xmlNode.hasAttribute( "containerField" ) )
+                                {
+                                    if ( app._volumeDataParent )
+                                    {
                                         app._volumeDataParent._dirty.texture = true;
-                                    }else{
+                                    }
+                                    else
+                                    {
                                         //Texture maybe under a ComposedVolumeStyle
-                                        var volumeDataParent = app._parentNodes[0];
-                                        while(!x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode) && x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
-                                            volumeDataParent = volumeDataParent._parentNodes[0];
+                                        var volumeDataParent = app._parentNodes[ 0 ];
+                                        while ( !x3dom.isa( volumeDataParent, x3dom.nodeTypes.X3DVolumeDataNode ) && x3dom.isa( volumeDataParent, x3dom.nodeTypes.X3DNode ) )
+                                        {
+                                            volumeDataParent = volumeDataParent._parentNodes[ 0 ];
                                         }
-                                        if(x3dom.isa(volumeDataParent, x3dom.nodeTypes.X3DNode)){
+                                        if ( x3dom.isa( volumeDataParent, x3dom.nodeTypes.X3DNode ) )
+                                        {
                                             volumeDataParent._dirty.texture = true;
                                         }
                                     }
                                 }
-                            } else if (x3dom.isa(app, x3dom.nodeTypes.X3DVolumeDataNode)) {
-                                if (that._xmlNode && that._xmlNode.hasAttribute('containerField')) {
+                            }
+                            else if ( x3dom.isa( app, x3dom.nodeTypes.X3DVolumeDataNode ) )
+                            {
+                                if ( that._xmlNode && that._xmlNode.hasAttribute( "containerField" ) )
+                                {
                                     app._dirty.texture = true;
                                 }
                             }
                         }
-                    });
+                    } );
                 }
             },
 
-            getTexture: function(pos) {
-                if (pos === 0) {
+            getTexture : function ( pos )
+            {
+                if ( pos === 0 )
+                {
                     return this;
                 }
                 return null;
             },
 
-            size: function() {
+            size : function ()
+            {
                 return 1;
             },
 
-            setOrigChannelCount : function(channelCount)
+            setOrigChannelCount : function ( channelCount )
             {
                 this._vf.origChannelCount = channelCount;
 
-                this.fieldChanged("origChannelCount");
+                this.fieldChanged( "origChannelCount" );
             },
 
-            getOrigChannelCount : function()
+            getOrigChannelCount : function ()
             {
                 return this._vf.origChannelCount;
             }
