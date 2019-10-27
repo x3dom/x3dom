@@ -431,8 +431,9 @@ x3dom.Texture.prototype.updateText = function() {
     this.type = gl.TEXTURE_2D;
     this.format = gl.RGBA;
     this.magFilter = gl.LINEAR;
-    this.minFilter = gl.LINEAR;
-
+    this.minFilter = gl.LINEAR_MIPMAP_LINEAR;
+    this.genMipMaps = true;
+    
     var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
     var font_family = 'serif'; // should be dealt with by default fontStyleNode?
@@ -669,6 +670,7 @@ x3dom.Texture.prototype.updateText = function() {
 
     gl.bindTexture(this.type, this.texture);
     gl.texImage2D(this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, text_canvas);
+    gl.generateMipmap(this.type);
     gl.bindTexture(this.type, null);
 
     //remove canvas after Texture creation
