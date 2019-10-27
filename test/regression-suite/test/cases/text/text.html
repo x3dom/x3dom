@@ -14,7 +14,6 @@
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
         <text string='"Hello World !"' solid='false'>
-            <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
             <fontstyle family='"SANS"' style="BOLDITALIC" justify='"BEGIN" "MIDDLE"' size="1" leftToRight="true"></fontstyle>
         </text>
       </shape>
@@ -27,7 +26,7 @@
         </shape>
       </transform>
       <transform translation='0 2 0'>
-        <shape USE='origin'></shape>
+        <transform USE='origin'></transform>
         <shape DEF='rtl'>
           <appearance USE='shiny'></appearance>
           <text string='"Read" "some text" "today!"'>
@@ -36,7 +35,7 @@
         </shape>
       </transform>
       <transform translation='0 -2 0'>
-        <shape USE='origin'></shape>
+        <transform USE='origin'></transform>
         <shape DEF='rtl'>
           <appearance USE='shiny'></appearance>
           <text string='"قراءة" "بعض النص" "اليوم!"'>
