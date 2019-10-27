@@ -458,7 +458,7 @@ x3dom.Texture.prototype.updateText = function() {
                 return 'sans-serif';
             }
             else if (s == 'SERIF') {
-                return 'serif';
+                return 'Georgia, serif';
             }
             else if (s == 'TYPEWRITER') {
                 return 'monospace';
