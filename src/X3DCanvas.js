@@ -1329,7 +1329,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                     x3dCanvas._watchForResize();
                     x3dCanvas.tick(timestamp);
 
-                    if(navigator.getVRDisplays)
+                    if(navigator.getVRDisplays && x3dCanvas.vrDisplay === null)
                     {
                         if(x3dCanvas.vrDisplay)
                         {
@@ -1354,6 +1354,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
                                 }
                                 else
                                 {
+                                    x3dCanvas.vrDisplay = undefined;
                                     window.requestAnimFrame(mainloop, x3dCanvas);
                                 }
                             }).catch(function (error)
