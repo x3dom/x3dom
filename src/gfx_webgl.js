@@ -67,8 +67,9 @@ x3dom.gfx_webgl = (function() {
     function setupContext(canvas, x3dElem) {
         var validContextNames = ['webgl2', 'webgl', 'experimental-webgl', 'moz-webgl', 'webkit-3d'];
 
-        var isAppleDevice   = (/mac|ip(hone|od|ad)/i).test(navigator.platform);
-        var isSafariBrowser = (/safari/i).test(navigator.userAgent);
+        var isAppleDevice   = (/mac|ip(hone|od|ad)/i).test(navigator.platform),
+            isSafariBrowser = (/safari/i).test(navigator.userAgent),
+            isIE11          = (/trident\//i).test(navigator.userAgent);
         
         //Remove WebGL2 Support for Apple devices
         if(isAppleDevice)
@@ -197,6 +198,12 @@ x3dom.gfx_webgl = (function() {
                         if(isSafariBrowser)
                         {
                             x3dom.caps.TEXTURE_LOD = false;
+                        }
+
+                        //Disable instance arrays on safari browsers
+                        if(isIE11)
+                        {
+                            x3dom.caps.INSTANCED_ARRAYS = false;
                         }
                     } catch (ex) {
                         x3dom.debug.logWarning("Your browser probably supports an older WebGL version.");

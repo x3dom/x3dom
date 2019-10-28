@@ -109,8 +109,13 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, crossOrigin, scale, g
     if( tex && tex.getOrigChannelCount() === 0 )
     {
         var xhr = new XMLHttpRequest();
-        xhr.responseType = "arraybuffer";
+        
         xhr.open("GET", src);
+
+        xhr.onloadstart = function ()
+        {
+            xhr.responseType = "arraybuffer";
+        };
     
         xhr.onload = function()
         {
