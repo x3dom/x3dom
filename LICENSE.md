@@ -1,6 +1,9 @@
-Dual licensed under the MIT and GPL licenses.
+# X3DOM License
 
-==[MIT]====================================================================
+X3DOM is dual licensed under the MIT and GPL licenses:
+
+## MIT
+
 Copyright (c) 2009-2018 X3DOM
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,8 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
-==[GPL]====================================================================
+## GPL
 
 X3DOM - Declarative 3D for HTML
 
