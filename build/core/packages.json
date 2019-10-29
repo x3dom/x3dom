@@ -28,7 +28,6 @@
         "/src/util/":
         [
             "AdaptiveRenderControl.js",
-            "DownloadManager.js",
             "RequestManager.js",
             "MultiMaterial.js",
             "Parts.js",
