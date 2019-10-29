@@ -1290,32 +1290,26 @@ x3dom.BinaryContainerLoader.setupPopGeo = function ( shape, sp, gl, viewarea, cu
     //post XHRs
     var dataURLs = popGeo.getDataURLs();
 
-    var downloadCallbacks = [];
-    var priorities        = [];
-
     shape._webgl.downloadStartTimer = new Date().getTime();
-
-    //CODE WITH DL MANAGER
-    //use the DownloadManager to prioritize loading
 
     for ( var i = 0; i < dataURLs.length; ++i )
     {
         shape._nameSpace.doc.incrementDownloads();
 
-        ( function ( idx )
+        var xhr = new XMLHttpRequest();
+
+        xhr.responseType = "arraybuffer";
+
+        xhr.open( "GET", dataURLs[ i ] );
+
+        xhr.onload = function ( request, index )
         {
-            downloadCallbacks.push( function ( data )
-            {
-                shape._nameSpace.doc.decrementDownloads();
-                return uploadDataToGPU( data, idx );
-            } );
-        } )( i );
+            shape._nameSpace.doc.decrementDownloads();
+            uploadDataToGPU( request.response, index );
+        }.bind( this, xhr, i );
 
-        priorities.push( i );
+        x3dom.RequestManager.addRequest( xhr );
     }
-
-    x3dom.DownloadManager.get( dataURLs, downloadCallbacks, priorities );
-    //END CODE WITH DL MANAGER
 };
 
 /** setup/download image geometry */
