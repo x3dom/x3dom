@@ -536,7 +536,7 @@ x3dom.Texture.prototype.updateText = function ()
         {
             if ( s == "SANS" )
             {
-                return "sans-serif";
+                return "Verdana, sans-serif";
             }
             else if ( s == "SERIF" )
             {
@@ -740,11 +740,11 @@ x3dom.Texture.prototype.updateText = function ()
     x_offset *= pxToX3d;
     y_offset *= pxToX3d;
 
-    text_canvas.width = txtW * oversample;
-    text_canvas.height = txtH * oversample;
+    text_canvas.width = x3dom.Utils.nextBestPowerOfTwo( txtW * oversample );
+    text_canvas.height = x3dom.Utils.nextBestPowerOfTwo( txtH * oversample );
     text_canvas.dir = leftToRight;
 
-    text_ctx.scale( oversample, oversample );
+    text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
 
     // transparent background
     text_ctx.fillStyle = "rgba(0,0,0,0)";
