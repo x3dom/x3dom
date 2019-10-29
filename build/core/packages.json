@@ -62,7 +62,6 @@
             "ShaderShadowRendering.js",
             "ShaderTextureRefinement.js",
             "ShaderBlur.js",
-            "ShaderKHRMaterialCommons.js",
             "ShaderSSAO.js",
             "ShaderSSAOBlur.js",
             "ShaderConverter.js"
