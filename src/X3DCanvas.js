@@ -361,11 +361,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
             this.parent.doc.onWheel(that.gl, this.mouse_drag_x, this.mouse_drag_y, originalY);
             this.parent.doc.needRender = true;
 
-            if( !this.parent.supportsPassiveEvents )
-            {
-                evt.preventDefault();
-            }
-            
+            evt.preventDefault();
             evt.stopPropagation();
         }
     }
@@ -455,7 +451,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
 
         this.canvas.addEventListener('DOMMouseScroll', this.onDOMMouseScroll, false);
 
-        this.canvas.addEventListener('mousewheel', this.onMouseWheel, this.supportsPassiveEvents ? {passive: true} : false);
+        this.canvas.addEventListener('mousewheel', this.onMouseWheel, this.supportsPassiveEvents ? {passive: false} : false);
 
 
         // Key Events
@@ -553,10 +549,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         {
             this.isMulti = true;
 
-            if( !this.parent.supportsPassiveEvents )
-            {
-                evt.preventDefault();
-            }
+            evt.preventDefault();
 
             touches.visualizeTouches(evt);
 
@@ -637,10 +630,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            if( !this.parent.supportsPassiveEvents )
-            {
-                evt.preventDefault();
-            }
+            evt.preventDefault();
             
             touches.visualizeTouches(evt);
 
@@ -821,8 +811,8 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function() {
         if (!this.disableTouch)
         {
             // w3c / apple touch events (in Chrome via chrome://flags)
-            this.canvas.addEventListener('touchstart',    touchStartHandler, this.supportsPassiveEvents ? {passive: true} : true);
-            this.canvas.addEventListener('touchmove',     touchMoveHandler,  this.supportsPassiveEvents ? {passive: true} : true);
+            this.canvas.addEventListener('touchstart',    touchStartHandler, this.supportsPassiveEvents ? {passive: false} : true);
+            this.canvas.addEventListener('touchmove',     touchMoveHandler,  this.supportsPassiveEvents ? {passive: false} : true);
             this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         }
     }
