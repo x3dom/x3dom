@@ -184,7 +184,7 @@ x3dom.registerNodeType(
                     this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
                     this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.setAllDirty();
                     } );

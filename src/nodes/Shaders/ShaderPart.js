@@ -104,7 +104,7 @@ x3dom.registerNodeType(
                         }
                         catch ( e )
                         {
-                            Array.forEach( ctx.xmlNode.childNodes, function ( childDomNode )
+                            ctx.xmlNode.childNodes.forEach( function ( childDomNode )
                             {
                                 if ( childDomNode.nodeType === 3 )
                                 {
@@ -121,7 +121,7 @@ x3dom.registerNodeType(
                 }
                 // else hope that url field was already set somehow
 
-                Array.forEach( this._parentNodes, function ( shader )
+                this._parentNodes.forEach( function ( shader )
                 {
                     shader.nodeChanged();
                 } );
@@ -131,7 +131,7 @@ x3dom.registerNodeType(
             {
                 if ( fieldName === "url" )
                 {
-                    Array.forEach( this._parentNodes, function ( shader )
+                    this._parentNodes.forEach( function ( shader )
                     {
                         shader.fieldChanged( "url" );
                     } );
@@ -140,9 +140,6 @@ x3dom.registerNodeType(
 
             parentAdded : function ( parent )
             {
-                //Array.forEach(this._parentNodes, function (shader) {
-                //    shader.nodeChanged();
-                //});
                 parent.nodeChanged();
             },
 

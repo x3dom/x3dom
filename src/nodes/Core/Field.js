@@ -63,7 +63,7 @@ x3dom.registerNodeType(
                 var that = this;
                 if ( fieldName === "value" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.fieldChanged( that._vf.name );
                     } );

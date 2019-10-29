@@ -168,14 +168,14 @@ x3dom.registerNodeType(
                 {
                     this._mesh._indices[ 0 ] = this._vf.index.toGL();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.indexes = true;
                     } );
                 }
                 else if ( fieldName == "size" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.specialAttribs = true;
                     } );
@@ -207,7 +207,7 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         node._dirty.indexes = true;
@@ -220,7 +220,7 @@ x3dom.registerNodeType(
 
                     this._mesh._colors[ 0 ] = pnts.toGL();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.colors = true;
                     } );

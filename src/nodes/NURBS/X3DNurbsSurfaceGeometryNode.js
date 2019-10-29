@@ -314,7 +314,7 @@ x3dom.registerNodeType(
                         }
                         if ( this.caller._cleanupGLObjects )
                         {this.caller._cleanupGLObjects( true );}
-                        Array.forEach( this.caller._parentNodes,
+                        this.caller._parentNodes.forEach(
                             function ( node )
                             {
                                 node.setAllDirty();

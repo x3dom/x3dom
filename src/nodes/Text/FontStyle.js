@@ -140,9 +140,9 @@ x3dom.registerNodeType(
                     fieldName == "language" || fieldName == "leftToRight" || fieldName == "size" ||
                     fieldName == "spacing" || fieldName == "style" || fieldName == "topToBottom" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
-                        Array.forEach( node._parentNodes, function ( textnode )
+                        node._parentNodes.forEach( function ( textnode )
                         {
                             textnode.setAllDirty();
                         } );

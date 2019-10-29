@@ -273,7 +273,7 @@ x3dom.registerNodeType(
                 {
                     this.rebuildGeometry();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.setAllDirty();
                         node.invalidateVolume();

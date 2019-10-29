@@ -33,7 +33,7 @@ x3dom.registerNodeType(
             {
                 if ( fieldName === "coord" || fieldName === "point" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.fieldChanged( "coord" );
                     } );

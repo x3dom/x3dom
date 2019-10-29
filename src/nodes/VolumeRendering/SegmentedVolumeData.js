@@ -107,10 +107,10 @@ x3dom.registerNodeType(
                     {
                         //Not repeat common uniforms, TODO: Allow multiple surface normals
                         var that = this;
-                        Array.forEach( this._cf.renderStyle.nodes[ i ].uniforms(), function ( uniform )
+                        this._cf.renderStyle.nodes[ i ].uniforms().forEach( function ( uniform )
                         {
                             var contains_uniform = false;
-                            Array.forEach( unis, function ( accum )
+                            unis.forEach( function ( accum )
                             {
                                 if ( accum._vf.name == uniform._vf.name )
                                 {
@@ -144,10 +144,10 @@ x3dom.registerNodeType(
                 for ( i = 0; i < n; i++ )
                 {
                     //Not repeat same textures, TODO: Allow multiply surface normals textures
-                    Array.forEach( this._cf.renderStyle.nodes[ i ].textures(), function ( texture )
+                    this._cf.renderStyle.nodes[ i ].textures().forEach( function ( texture )
                     {
                         var contains_texture = false;
-                        Array.forEach( texs, function ( accum )
+                        texs.forEach( function ( accum )
                         {
                             if ( accum._vf.url[ 0 ] == texture._vf.url[ 0 ] )
                             {

@@ -1156,7 +1156,7 @@ x3dom.registerNodeType(
 
                         if ( that._vf.nameSpaceName.length != 0 )
                         {
-                            Array.forEach( inlScene.childNodes, function ( childDomNode )
+                            inlScene.childNodes.forEach( function ( childDomNode )
                             {
                                 if ( childDomNode instanceof Element )
                                 {

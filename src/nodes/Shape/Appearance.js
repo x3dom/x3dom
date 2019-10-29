@@ -150,7 +150,7 @@ x3dom.registerNodeType(
             {
                 if ( fieldName == "alphaClipThreshold" )
                 {
-                    Array.forEach( this._parentNodes, function ( shape )
+                    this._parentNodes.forEach( function ( shape )
                     {
                         shape.setAppDirty();
                     } );
@@ -173,7 +173,7 @@ x3dom.registerNodeType(
                 else if ( this._shader )
                 {this._shader = null;}
 
-                Array.forEach( this._parentNodes, function ( shape )
+                this._parentNodes.forEach( function ( shape )
                 {
                     shape.setAppDirty();
                 } );

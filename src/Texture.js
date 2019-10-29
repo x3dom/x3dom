@@ -532,7 +532,7 @@ x3dom.Texture.prototype.updateText = function ()
         fonts = fonts.trim().replace( /\'/g, "" ).replace( /\,/, " " );
         fonts = fonts.split( " " );
 
-        font_family = Array.map( fonts, function ( s )
+        font_family = fonts.map( function ( s )
         {
             if ( s == "SANS" )
             {
@@ -786,7 +786,7 @@ x3dom.Texture.prototype.updateText = function ()
         0 + x_offset, 0 + y_offset, 0 ];
 
     this.node.invalidateVolume();
-    Array.forEach( this.node._parentNodes, function ( node )
+    this.node._parentNodes.forEach( function ( node )
     {
         node.setAllDirty();
     } );

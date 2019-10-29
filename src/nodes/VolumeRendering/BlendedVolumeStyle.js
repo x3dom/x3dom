@@ -180,7 +180,7 @@ x3dom.registerNodeType(
                 if ( this._cf.renderStyle.node )
                 {
                     var renderStyleUniforms = this._cf.renderStyle.node.uniforms();
-                    Array.forEach( renderStyleUniforms, function ( uni )
+                    renderStyleUniforms.forEach( function ( uni )
                     {
                         uni._vf.name = uni._vf.name.replace( /uSurfaceNormals/, "uBlendSurfaceNormals" );
                     } );

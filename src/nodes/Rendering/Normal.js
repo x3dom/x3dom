@@ -44,7 +44,7 @@ x3dom.registerNodeType(
             {
                 if ( fieldName === "normal" || fieldName === "vector" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.fieldChanged( "normal" );
                     } );

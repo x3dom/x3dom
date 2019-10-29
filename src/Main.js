@@ -101,7 +101,7 @@ x3dom.userAgentFeature = {
         }
 
         // Convert the collection into a simple array (is this necessary?)
-        x3ds = Array.map( x3ds, function ( n )
+        x3ds = x3ds.map( function ( n )
         {
             n.hasRuntime = true;
             return n;

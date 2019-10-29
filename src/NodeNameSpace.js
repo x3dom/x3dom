@@ -492,7 +492,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
 
                 // call children
                 var that = this;
-                Array.forEach( domNode.childNodes, function ( childDomNode )
+                domNode.childNodes.forEach( function ( childDomNode )
                 {
                     var c = that.setupTree( childDomNode, n );
                     if ( c )
@@ -510,7 +510,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
     {
         if ( parent && domNode.localName.toLowerCase() == "x3dommetagroup" )
         {
-            Array.forEach( domNode.childNodes, function ( childDomNode )
+            domNode.childNodes.forEach( function ( childDomNode )
             {
                 var c = this.setupTree( childDomNode, parent );
                 if ( c )

@@ -701,7 +701,7 @@ x3dom.registerNodeType(
                             this._mesh._numCoords += this._mesh._positions[ i ].length / 3;
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node.setAllDirty();
                             node.invalidateVolume();
@@ -777,7 +777,7 @@ x3dom.registerNodeType(
                             }
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.colors = true;
                         } );
@@ -833,7 +833,7 @@ x3dom.registerNodeType(
                             this._mesh._normals[ 0 ].push( nor[ n3 ].z );
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.normals = true;
                         } );
@@ -902,7 +902,7 @@ x3dom.registerNodeType(
                             }
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.texcoords = true;
                         } );
@@ -917,7 +917,7 @@ x3dom.registerNodeType(
                         // tells the mesh that its bbox requires update
                         this.invalidateVolume();
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.positions = true;
                             node.invalidateVolume();
@@ -962,7 +962,7 @@ x3dom.registerNodeType(
                             }
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.colors = true;
                         } );
@@ -995,7 +995,7 @@ x3dom.registerNodeType(
                             }
                         }
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.normals = true;
                         } );
@@ -1012,7 +1012,7 @@ x3dom.registerNodeType(
 
                         this._mesh._texCoords[ 0 ] = pnts.toGL();
 
-                        Array.forEach( this._parentNodes, function ( node )
+                        this._parentNodes.forEach( function ( node )
                         {
                             node._dirty.texcoords = true;
                         } );

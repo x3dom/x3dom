@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         node.invalidateVolume();
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
 
                     this._mesh._colors[ 0 ] = pnts.toGL();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.colors = true;
                     } );

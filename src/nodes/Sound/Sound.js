@@ -55,7 +55,7 @@ x3dom.registerNodeType(
                  */
                 try
                 {
-                    Array.forEach( this._xmlNode.childNodes, function ( childDomNode )
+                    this._xmlNode.childNodes.forEach( function ( childDomNode )
                     {
                         if ( childDomNode.nodeType === 1 )
                         {

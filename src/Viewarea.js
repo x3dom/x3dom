@@ -1206,7 +1206,7 @@ x3dom.Viewarea.prototype.checkEvents = function ( obj, x, y, buttonState, eventT
 
     var recurse = function ( obj )
     {
-        Array.forEach( obj._parentNodes, function ( node )
+        obj._parentNodes.forEach( function ( node )
         {
             if ( node._xmlNode && ( node._xmlNode[ eventType ] ||
                 node._xmlNode.hasAttribute( eventType ) ||

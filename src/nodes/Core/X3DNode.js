@@ -273,7 +273,7 @@ x3dom.registerNodeType(
                 var that = this;
                 if ( listeners )
                 {
-                    Array.forEach( listeners, function ( l ) { l.call( that, msg ); } );
+                    listeners.forEach( function ( l ) { l.call( that, msg ); } );
                 }
 
                 //for Web-style access to the output data of ROUTES, provide a callback function

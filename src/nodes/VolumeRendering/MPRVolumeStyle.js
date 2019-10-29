@@ -99,10 +99,10 @@ x3dom.registerNodeType(
                 {
                     //Not repeat common uniforms, TODO: Allow multiple surface normals
                     var that = this;
-                    Array.forEach( this._cf.planes.nodes[ i ].uniforms(), function ( uniform )
+                    this._cf.planes.nodes[ i ].uniforms().forEach( function ( uniform )
                     {
                         var contains_uniform = false;
-                        Array.forEach( unis, function ( accum )
+                        unis.forEach( function ( accum )
                         {
                             if ( accum._vf.name == uniform._vf.name )
                             {

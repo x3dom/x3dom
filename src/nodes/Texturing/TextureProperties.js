@@ -148,11 +148,11 @@ x3dom.registerNodeType(
             {
                 if ( this._vf.hasOwnProperty( fieldName ) )
                 {
-                    Array.forEach( this._parentNodes, function ( texture )
+                    this._parentNodes.forEach( function ( texture )
                     {
-                        Array.forEach( texture._parentNodes, function ( app )
+                        texture._parentNodes.forEach( function ( app )
                         {
-                            Array.forEach( app._parentNodes, function ( shape )
+                            app._parentNodes.forEach( function ( shape )
                             {
                                 shape._dirty.texture = true;
                             } );

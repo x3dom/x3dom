@@ -556,7 +556,7 @@ function setNamespace ( prefix, childDomNode, mapDEFToID )
 
     if ( childDomNode.hasChildNodes() )
     {
-        Array.forEach( childDomNode.childNodes, function ( children )
+        childDomNode.childNodes.forEach( function ( children )
         {
             setNamespace( prefix, children, mapDEFToID );
         } );

@@ -243,7 +243,7 @@ x3dom.registerNodeType(
                     //         getCurrentTransform()
                     var that = this;
 
-                    Array.forEach( this._cf.excludeNodes.nodes, function ( node )
+                    this._cf.excludeNodes.nodes.forEach( function ( node )
                     {
                         for ( var i = 0, n = node._parentNodes.length; i < n; i++ )
                         {

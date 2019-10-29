@@ -197,7 +197,7 @@ x3dom.registerNodeType(
                 {
                     this._buildGeometry();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         node.invalidateVolume();
@@ -207,7 +207,7 @@ x3dom.registerNodeType(
                 {
                     this._buildGeometry();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.colors = true;
                     } );
@@ -216,7 +216,7 @@ x3dom.registerNodeType(
                 {
                     this._buildGeometry();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.normals = true;
                     } );
@@ -225,7 +225,7 @@ x3dom.registerNodeType(
                 {
                     this._buildGeometry();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.texcoords = true;
                     } );

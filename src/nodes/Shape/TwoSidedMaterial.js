@@ -113,9 +113,9 @@ x3dom.registerNodeType(
                     fieldName == "backSpecularColor" || fieldName == "backTransparency" ||
                     fieldName == "separateBackColor" )
                 {
-                    Array.forEach( this._parentNodes, function ( app )
+                    this._parentNodes.forEach( function ( app )
                     {
-                        Array.forEach( app._parentNodes, function ( shape )
+                        app._parentNodes.forEach( function ( shape )
                         {
                             shape._dirty.material = true;
                         } );

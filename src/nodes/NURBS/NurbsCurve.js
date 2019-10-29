@@ -134,7 +134,7 @@ x3dom.registerNodeType(
             fieldChanged : function ( fieldName )
             {
                 //this.invalidateVolume();
-                Array.forEach( this._parentNodes, function ( node )
+                this._parentNodes.forEach( function ( node )
                 {
                     node._dirty.positions = true;
                     node.invalidateVolume();

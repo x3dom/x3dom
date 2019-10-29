@@ -174,7 +174,7 @@ x3dom.registerNodeType(
 
             nodeChanged : function ()
             {
-                Array.forEach( this._parentNodes, function ( node )
+                this._parentNodes.forEach( function ( node )
                 {
                     node._dirty.positions = true;
                     node._dirty.normals = true;

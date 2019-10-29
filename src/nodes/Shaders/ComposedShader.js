@@ -122,9 +122,9 @@ x3dom.registerNodeType(
                     }
                 }
 
-                Array.forEach( this._parentNodes, function ( app )
+                this._parentNodes.forEach( function ( app )
                 {
-                    Array.forEach( app._parentNodes, function ( shape )
+                    app._parentNodes.forEach( function ( shape )
                     {
                         //shape.setAppDirty();
                         if ( shape._cleanupGLObjects )
@@ -194,9 +194,9 @@ x3dom.registerNodeType(
                         }
                     }
 
-                    Array.forEach( this._parentNodes, function ( app )
+                    this._parentNodes.forEach( function ( app )
                     {
-                        Array.forEach( app._parentNodes, function ( shape )
+                        app._parentNodes.forEach( function ( shape )
                         {
                             if ( shape._cleanupGLObjects )
                             {
@@ -210,9 +210,6 @@ x3dom.registerNodeType(
 
             parentAdded : function ( parent )
             {
-                //Array.forEach(this._parentNodes, function (app) {
-                //    app.nodeChanged();
-                //});
                 parent.nodeChanged();
             }
         }

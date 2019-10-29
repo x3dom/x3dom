@@ -276,7 +276,7 @@ x3dom.BindableBag.prototype.addType = function ( typeName, defaultTypeName, gett
  */
 x3dom.BindableBag.prototype.setRefNode = function ( node )
 {
-    Array.forEach( this._stacks, function ( stack )
+    this._stacks.forEach( function ( stack )
     {
         // set reference to Scene
         stack._defaultRoot = node;

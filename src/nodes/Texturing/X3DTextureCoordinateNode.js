@@ -33,7 +33,7 @@ x3dom.registerNodeType(
                 if ( fieldName === "texCoord" || fieldName === "point" ||
                     fieldName === "parameter" || fieldName === "mode" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.fieldChanged( "texCoord" );
                     } );

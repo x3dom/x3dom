@@ -97,7 +97,7 @@ x3dom.registerNodeType(
                 if ( fieldName == "string" || fieldName == "length" || fieldName == "maxExtent" )
                 {
                     this.invalidateVolume();
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.setAllDirty();
                     } );
@@ -106,7 +106,7 @@ x3dom.registerNodeType(
 
             validateGLObject : function ()
             {
-                Array.forEach( this._parentNodes, function ( node )
+                this._parentNodes.forEach( function ( node )
                 {
                     node._dirty.texture = false;
                 } );

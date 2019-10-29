@@ -111,9 +111,9 @@ x3dom.registerNodeType(
         {
             invalidateGLObject : function ()
             {
-                Array.forEach( this._parentNodes, function ( app )
+                this._parentNodes.forEach( function ( app )
                 {
-                    Array.forEach( app._parentNodes, function ( shape )
+                    app._parentNodes.forEach( function ( shape )
                     {
                         // THINKABOUTME: this is a bit ugly, cleanup more generically
                         if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
@@ -123,7 +123,7 @@ x3dom.registerNodeType(
                         else
                         {
                             // Texture maybe in MultiTexture or CommonSurfaceShader
-                            Array.forEach( shape._parentNodes, function ( realShape )
+                            shape._parentNodes.forEach( function ( realShape )
                             {
                                 if ( x3dom.isa( realShape, x3dom.nodeTypes.X3DShapeNode ) )
                                 {
@@ -131,7 +131,7 @@ x3dom.registerNodeType(
                                 }
                                 else
                                 {
-                                    Array.forEach( realShape._parentNodes, function ( realShape2 )
+                                    realShape._parentNodes.forEach( function ( realShape2 )
                                     {
                                         if ( x3dom.isa( realShape2, x3dom.nodeTypes.X3DShapeNode ) )
                                         {
@@ -149,9 +149,9 @@ x3dom.registerNodeType(
 
             validateGLObject : function ()
             {
-                Array.forEach( this._parentNodes, function ( app )
+                this._parentNodes.forEach( function ( app )
                 {
-                    Array.forEach( app._parentNodes, function ( shape )
+                    app._parentNodes.forEach( function ( shape )
                     {
                         // THINKABOUTME: this is a bit ugly, cleanup more generically
                         if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
@@ -161,7 +161,7 @@ x3dom.registerNodeType(
                         else
                         {
                             // Texture maybe in MultiTexture or CommonSurfaceShader
-                            Array.forEach( shape._parentNodes, function ( realShape )
+                            shape._parentNodes.forEach( function ( realShape )
                             {
                                 if ( x3dom.isa( realShape, x3dom.nodeTypes.X3DShapeNode ) )
                                 {
@@ -169,7 +169,7 @@ x3dom.registerNodeType(
                                 }
                                 else
                                 {
-                                    Array.forEach( realShape._parentNodes, function ( realShape2 )
+                                    realShape._parentNodes.forEach( function ( realShape2 )
                                     {
                                         if ( x3dom.isa( realShape2, x3dom.nodeTypes.X3DShapeNode ) )
                                         {
@@ -187,7 +187,7 @@ x3dom.registerNodeType(
 
             parentAdded : function ( parent )
             {
-                Array.forEach( parent._parentNodes, function ( shape )
+                parent._parentNodes.forEach( function ( shape )
                 {
                     // THINKABOUTME: this is a bit ugly, cleanup more generically
                     if ( x3dom.isa( shape, x3dom.nodeTypes.Shape ) )
@@ -197,7 +197,7 @@ x3dom.registerNodeType(
                     else
                     {
                         // Texture maybe in MultiTexture or CommonSurfaceShader
-                        Array.forEach( shape._parentNodes, function ( realShape )
+                        shape._parentNodes.forEach( function ( realShape )
                         {
                             realShape._dirty.texture = true;
                         } );
@@ -207,7 +207,7 @@ x3dom.registerNodeType(
 
             parentRemoved : function ( parent )
             {
-                Array.forEach( parent._parentNodes, function ( shape )
+                parent._parentNodes.forEach( function ( shape )
                 {
                     // THINKABOUTME: cleanup more generically, X3DShapeNode allows VolumeData
                     if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
@@ -217,7 +217,7 @@ x3dom.registerNodeType(
                     else
                     {
                         // Texture maybe in MultiTexture or CommonSurfaceShader
-                        Array.forEach( shape._parentNodes, function ( realShape )
+                        shape._parentNodes.forEach( function ( realShape )
                         {
                             realShape._dirty.texture = true;
                         } );
@@ -237,7 +237,7 @@ x3dom.registerNodeType(
                     that._blending = ( that._vf.origChannelCount == 1 ||
                                       that._vf.origChannelCount == 2 );
 
-                    Array.forEach( this._parentNodes, function ( app )
+                    this._parentNodes.forEach( function ( app )
                     {
                         if ( x3dom.isa( app, x3dom.nodeTypes.X3DAppearanceNode ) )
                         {
@@ -245,21 +245,21 @@ x3dom.registerNodeType(
                         }
                         else if ( x3dom.isa( app, x3dom.nodeTypes.MultiTexture ) )
                         {
-                            Array.forEach( app._parentNodes, function ( realApp )
+                            app._parentNodes.forEach( function ( realApp )
                             {
                                 realApp.nodeChanged();
                             } );
                         }
                         else if ( x3dom.isa( app, x3dom.nodeTypes.ComposedCubeMapTexture ) )
                         {
-                            Array.forEach( app._parentNodes, function ( realApp )
+                            app._parentNodes.forEach( function ( realApp )
                             {
                                 realApp.nodeChanged();
                             } );
                         }
                         else if ( x3dom.isa( app, x3dom.nodeTypes.PhysicalMaterial ) )
                         {
-                            Array.forEach( app._parentNodes, function ( realApp )
+                            app._parentNodes.forEach( function ( realApp )
                             {
                                 realApp.nodeChanged();
                             } );

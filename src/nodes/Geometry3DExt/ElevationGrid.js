@@ -346,7 +346,7 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         if ( !normals )
@@ -374,7 +374,7 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         if ( !normals )
@@ -386,7 +386,7 @@ x3dom.registerNodeType(
                 {
                     this.nodeChanged();     // re-init whole geo, changed too much
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.setGeoDirty();
                         node.invalidateVolume();
@@ -405,7 +405,7 @@ x3dom.registerNodeType(
                         this._mesh._colors[ 0 ][ i * 3 + 2 ] = c[ i ].b;
                     }
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.colors = true;
                     } );

@@ -9,47 +9,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-/* If used as standalone lib, define some basics first. */
-if ( typeof x3dom === "undefined" )
-{
-    /**
-     * @namespace x3dom
-     */
-    x3dom = {
-        extend : function ( f )
-        {
-            function G () {}
-
-            G.prototype = f.prototype || f;
-            return new G();
-        },
-        debug : {
-            logInfo    : function ( msg ) { console.log( msg ); },
-            logWarning : function ( msg ) { console.warn( msg ); },
-            logError   : function ( msg ) { console.error( msg ); }
-        }
-    };
-
-    if ( !Array.map )
-    {
-        Array.map = function ( array, fun, thisp )
-        {
-            var len = array.length;
-            var res = [];
-            for ( var i = 0; i < len; i++ )
-            {
-                if ( i in array )
-                {
-                    res[ i ] = fun.call( thisp, array[ i ], i, array );
-                }
-            }
-            return res;
-        };
-    }
-
-    console.log( "Using x3dom fields.js as standalone math and/or base types library." );
-}
-
 /**
  * The x3dom.fields namespace.
  * @namespace x3dom.fields
@@ -514,7 +473,7 @@ x3dom.fields.SFMatrix4f.parse = function ( str )
         str = RegExp.$1;
         needTranspose = true;
     }
-    var arr = Array.map( str.split( /[,\s]+/ ), function ( n ) { return +n; } );
+    var arr = str.split( /[,\s]+/ ).map( function ( n ) { return +n; } );
     if ( arr.length >= 16 )
     {
         if ( !needTranspose )
@@ -3230,7 +3189,7 @@ x3dom.fields.SFImage.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this.array, function ( c )
+    this.array.map( function ( c )
     {
         a.push( c );
     } );
@@ -3295,7 +3254,7 @@ x3dom.fields.MFColor.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( c )
+    this.map( function ( c )
     {
         a.push( c.r );
         a.push( c.g );
@@ -3359,7 +3318,7 @@ x3dom.fields.MFColorRGBA.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( c )
+    this.map( function ( c )
     {
         a.push( c.r );
         a.push( c.g );
@@ -3425,7 +3384,7 @@ x3dom.fields.MFRotation.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( c )
+    this.map( function ( c )
     {
         var val = c.toAxisAngle();
         a.push( val[ 0 ].x );
@@ -3502,7 +3461,7 @@ x3dom.fields.MFVec3f.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( c )
+    this.map( function ( c )
     {
         a.push( c.x );
         a.push( c.y );
@@ -3577,7 +3536,7 @@ x3dom.fields.MFVec2f.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( v )
+    this.map( function ( v )
     {
         a.push( v.x );
         a.push( v.y );
@@ -3640,7 +3599,7 @@ x3dom.fields.MFInt32.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( v )
+    this.map( function ( v )
     {
         a.push( v );
     } );
@@ -3702,7 +3661,7 @@ x3dom.fields.MFFloat.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( v )
+    this.map( function ( v )
     {
         a.push( v );
     } );
@@ -3764,7 +3723,7 @@ x3dom.fields.MFBoolean.prototype.toGL = function ()
 {
     var a = [];
 
-    Array.map( this, function ( v )
+    this.map( function ( v )
     {
         a.push( v ? 1 : 0 );
     } );

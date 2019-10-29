@@ -32,7 +32,7 @@ x3dom.registerNodeType(
             {
                 if ( fieldName === "color" )
                 {
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.fieldChanged( "color" );
                     } );

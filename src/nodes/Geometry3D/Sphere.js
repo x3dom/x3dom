@@ -224,7 +224,7 @@ x3dom.registerNodeType(
                     this.invalidateVolume();
                     this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node._dirty.positions = true;
                         node.invalidateVolume();
@@ -243,7 +243,7 @@ x3dom.registerNodeType(
                     var geoCacheID = "Sphere_" + r + "-" + subx + "-" + suby;
                     x3dom.geoCache[ geoCacheID ] = this._mesh;
 
-                    Array.forEach( this._parentNodes, function ( node )
+                    this._parentNodes.forEach( function ( node )
                     {
                         node.setAllDirty();
                         node.invalidateVolume();
