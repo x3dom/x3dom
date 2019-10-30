@@ -5,14 +5,17 @@
 * Changes
   * remove support for compressed BinGeo files & Zlib
   * remove support for ExternalShape/ExternalGeo and glTF 1.0
+  * remove support for loading single components
 * Features
   * new Node-based build system
   * automatic origChannelCount detection
 * Improvements
+  * linted source code
   * replaced deprecated MutationEvents with a MutationObserver
   * use passive event listeners if supported
   * make it possible to run x3dom in strict mode
 * Bugfixes
+  * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
   * gltf loader material DEF/USE robustness
 
