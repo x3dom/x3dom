@@ -319,11 +319,11 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
         shader += "calculateClipPlanes();\n";
     }
 
-    if(pickMode == 1 || pickMode == 2) { //Picking Color || Picking TexCoord
+    if(pickMode == 1) { //Picking Color, Picking TexCoord done later
         shader += "vec4 color = vec4(fragColor, lowBit);\n";
     } else if(pickMode == 4) { //Picking with 32bit precision
         shader += "vec4 color = vec4(highBit, lowBit, 0.0, 0.0);\n";
-    } else {
+    } else if (pickMode != 2) { //TexCoord still done later
         shader += "vec4 color = vec4(0.0, 0.0, highBit, lowBit);\n";
     }
 
@@ -354,6 +354,42 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function(gl
     } else if(pickMode == 3) { //Picking with 24bit precision
         shader += "color.r = d;\n";
     }
+	
+/*
+ * Support 12-bit u/v picking by using "B" channel to store 4-bits of each U/V coordinates
+ * This method stores the additional low-order bits of precision in the B channel. If the need
+ * Is to store the high-order bits use the following two lines instead of the 3 lines for computation
+ * of x, y, z.
+ *
+ *	To get the proper results, a compatible change must be made in 'gfx_webgl.js\\renderPickingPass'
+ *	so that the additional 4 bits is incorporated into the result. The change is after the call to
+ *	'readPixels' around line 3046.
+ *
+ *		shader += "z = floor(x/256.)/levels/levels;\n";
+ *		shader += "z = z + floor(levels*fragColor[1])/levels*(1.+1./256.);\n";
+ *
+ *	levels is the # of additional quanta for each U & V (4 bits = 16 levels)
+ *	range is the total number of values (256 (8-bit) * 16 (levels) = 4096 different coordinates)
+ *	levelI
+ *	byteI is 1/256 (save computation)
+ *	nibbleI is 1/16 (save computation)
+ *
+ */
+ 	if (pickMode == 2 && !properties.REQUIREBBOXTEX) {
+		shader += "float levels = 16.;\n";
+		shader += "float range = 4096.;\n";
+		shader += "float x = floor(fragColor[0] * range);\n";
+		shader += "float y = floor(fragColor[1] * range);\n";
+		shader += "float z = 0.0;\n";
+		shader += "float byteI = .00390625;\n";
+		shader += "float nibbleI = .0625;\n";
+
+		shader += "	z = fract(x*nibbleI)*levels * byteI + fract(y*nibbleI)*levels * nibbleI;\n";
+		shader += "	x = floor(x*nibbleI);\n";
+		shader += "	y = floor(y*nibbleI);\n";
+
+		shader += "	vec4 color = vec4(fract(x*byteI), fract(y*byteI), z, lowBit);\n";
+	}
 
     shader += "gl_FragColor = color;\n";
 
