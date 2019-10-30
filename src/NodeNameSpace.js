@@ -455,6 +455,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                 // create x3domNode
                 var ctx = {
                     doc       : this.doc,
+                    runtime   : this.doc._x3dElem.runtime,
                     xmlNode   : domNode,
                     nameSpace : this
                 };
