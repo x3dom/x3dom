@@ -14,7 +14,7 @@
 x3dom.registerNodeType(
     "X3DDragSensorNode",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DPointingDeviceSensorNode,
+    defineClass( x3dom.nodeTypes.X3DPointingDeviceSensorNode,
 
         /**
          * Constructor for X3DDragSensorNode
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc An abstract base class for all sensors that are processing drag gestures of the pointer.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.X3DDragSensorNode.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DDragSensorNode.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -42,11 +42,10 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoOffset', true);
+            this.addField_SFBool( ctx, "autoOffset", true );
 
             //route-able output fields
             //this.addField_SFVec3f(ctx, 'trackPoint_changed', 0, 0, 0);
-
 
             //---------------------------------------
             // PROPERTIES
@@ -77,14 +76,14 @@ x3dom.registerNodeType(
              * @param {DOMEvent} event - the pointer event
              * @private
              */
-            pointerPressedOverSibling: function(event)
+            pointerPressedOverSibling : function ( event )
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerPressedOverSibling.call(this, event);
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerPressedOverSibling.call( this, event );
 
                 this._lastX = event.layerX;
                 this._lastY = event.layerY;
 
-                this._startDragging(event.viewarea, event.layerX, event.layerX, event.worldX, event.worldY, event.worldZ);
+                this._startDragging( event.viewarea, event.layerX, event.layerX, event.worldX, event.worldY, event.worldZ );
             },
 
             //----------------------------------------------------------------------------------------------------------
@@ -94,16 +93,16 @@ x3dom.registerNodeType(
              * @param {DOMEvent] event - the pointer event
              * @private
              */
-            pointerMoved: function(event)
+            pointerMoved : function ( event )
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerMoved.call(this, event);
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerMoved.call( this, event );
 
-                if (this._vf.isActive && this._vf.enabled)
+                if ( this._vf.isActive && this._vf.enabled )
                 {
-                    this._process2DDrag(event.layerX,
-                                        event.layerY,
-                                        event.layerX-this._lastX,
-                                        event.layerY-this._lastY);
+                    this._process2DDrag( event.layerX,
+                        event.layerY,
+                        event.layerX - this._lastX,
+                        event.layerY - this._lastY );
                 }
             },
 
@@ -113,9 +112,9 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode._pointerReleased
              * @private
              */
-            pointerReleased: function()
+            pointerReleased : function ()
             {
-                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerReleased.call(this);
+                x3dom.nodeTypes.X3DPointingDeviceSensorNode.prototype.pointerReleased.call( this );
 
                 this._stopDragging();
             },
@@ -136,7 +135,7 @@ x3dom.registerNodeType(
              * @param {Double} wz - 3D world z pick coordinate on the sensor geometry at the time of the dragging initiation
              * @private
              */
-            _startDragging: function(viewarea, x, y, wx, wy, wz)
+            _startDragging : function ( viewarea, x, y, wx, wy, wz )
             {
 
             },
@@ -151,7 +150,7 @@ x3dom.registerNodeType(
              * @param {Double} dy - delta of Y, with respect to the last time the function was invoked
              * @private
              */
-            _process2DDrag: function(x, y, dx, dy)
+            _process2DDrag : function ( x, y, dx, dy )
             {
 
             },
@@ -162,7 +161,7 @@ x3dom.registerNodeType(
              * Function that is called as soon as a drag action is initiated.
              * @private
              */
-            _stopDragging: function()
+            _stopDragging : function ()
             {
 
             }

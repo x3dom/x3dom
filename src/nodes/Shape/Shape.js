@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Shape",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DShapeNode,
-        
+    defineClass( x3dom.nodeTypes.X3DShapeNode,
+
         /**
          * Constructor for Shape
          * @constructs x3dom.nodeTypes.Shape
@@ -25,24 +25,28 @@ x3dom.registerNodeType(
          * The appearance field contains an Appearance node that specifies the visual attributes (e.g., material and texture) to be applied to the geometry.
          * The geometry field contains a geometry node. The specified geometry node is rendered with the specified appearance nodes applied.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Shape.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Shape.superClass.call( this, ctx );
         },
         {
-            nodeChanged: function () {
+            nodeChanged : function ()
+            {
                 //TODO delete this if all works fine
-                if (!this._cf.appearance.node) {
+                if ( !this._cf.appearance.node )
+                {
                     //Unlit
                     //this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                 }
-                if (!this._cf.geometry.node) {
-                    if (this._DEF)
-                        x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
+                if ( !this._cf.geometry.node )
+                {
+                    if ( this._DEF )
+                    {x3dom.debug.logError( "No geometry given in Shape/" + this._DEF );}
                 }
-                else if (!this._objectID) {
+                else if ( !this._objectID )
+                {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
-                    x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
+                    x3dom.nodeTypes.Shape.idMap.nodeID[ this._objectID ] = this;
                 }
                 this.setAllDirty();
             }
@@ -58,16 +62,19 @@ x3dom.nodeTypes.Shape.objectID = 0;
 
 /** Map for Shape node IDs (needed for picking) */
 x3dom.nodeTypes.Shape.idMap = {
-    nodeID: {},
-    remove: function(obj) {
-        for (var prop in this.nodeID) {
-            if (this.nodeID.hasOwnProperty(prop)) {
-                var val = this.nodeID[prop];
-                if (val._objectID  && obj._objectID &&
-                    val._objectID === obj._objectID)
+    nodeID : {},
+    remove : function ( obj )
+    {
+        for ( var prop in this.nodeID )
+        {
+            if ( this.nodeID.hasOwnProperty( prop ) )
+            {
+                var val = this.nodeID[ prop ];
+                if ( val._objectID  && obj._objectID &&
+                    val._objectID === obj._objectID )
                 {
-                    delete this.nodeID[prop];
-                    x3dom.debug.logInfo("Unreg " + val._objectID);
+                    delete this.nodeID[ prop ];
+                    x3dom.debug.logInfo( "Unreg " + val._objectID );
                     // FIXME; handle node removal to unreg from map,
                     // and put free'd ID back to ID pool for reuse
                 }

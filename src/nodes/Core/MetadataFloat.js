@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MetadataFloat",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DMetadataObject,
-        
+    defineClass( x3dom.nodeTypes.X3DMetadataObject,
+
         /**
          * Constructor for MetadataFloat
          * @constructs x3dom.nodeTypes.MetadataFloat
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The metadata provided by this node is contained in the single-precision floating point numbers of
          * the value field.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MetadataFloat.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MetadataFloat.superClass.call( this, ctx );
 
             /**
              *
@@ -36,8 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'value', []);
-        
+            this.addField_MFFloat( ctx, "value", [] );
         }
     )
 );

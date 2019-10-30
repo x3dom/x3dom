@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TextureTransform3D",
     "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureTransformNode,
+
         /**
          * Constructor for TextureTransform3D
          * @constructs x3dom.nodeTypes.TextureTransform3D
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * This node affects the way texture coordinates are applied to the geometric surface. The transformation consists of (in order):
          * a translation; a rotation about the centre point; and a non-uniform scale about the centre point.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TextureTransform3D.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TextureTransform3D.superClass.call( this, ctx );
 
             /**
              * The center field specifies a translation offset in texture coordinate space about which the rotation and scale fields are applied.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "center", 0, 0, 0 );
 
             /**
              * The rotation field specifies a rotation in angle base units of the texture coordinates about the center point after the scale has been applied.
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
+            this.addField_SFRotation( ctx, "rotation", 0, 0, 1, 0 );
 
             /**
              * The scale field specifies a scaling factor in S and T of the texture coordinates about the center point.
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
+            this.addField_SFVec3f( ctx, "scale", 1, 1, 1 );
 
             /**
              * The translation field specifies a translation of the texture coordinates.
@@ -68,7 +68,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "translation", 0, 0, 0 );
 
             /**
              *
@@ -78,8 +78,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
-        
+            this.addField_SFRotation( ctx, "scaleOrientation", 0, 0, 1, 0 );
         }
     )
 );

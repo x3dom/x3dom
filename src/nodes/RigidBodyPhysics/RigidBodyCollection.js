@@ -7,12 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-
-//	### RigidBodyCollection ###
+//    ### RigidBodyCollection ###
 x3dom.registerNodeType(
     "RigidBodyCollection",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DChildNode ,
+    defineClass( x3dom.nodeTypes.X3DChildNode,
 
         /**
          * Constructor for RigidBodyCollection
@@ -27,8 +26,9 @@ x3dom.registerNodeType(
          *  model may need to represent the geometry for physics separately, and in less detail, than those needed for
          *  visuals.
          */
-        function(ctx){
-            x3dom.nodeTypes.RigidBodyCollection.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.RigidBodyCollection.superClass.call( this, ctx );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoDisable', false);
+            this.addField_SFBool( ctx, "autoDisable", false );
 
             /**
              * The constantForceMix field can be used to apply damping to the calculations by violating the normal
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'constantForceMix', 0.0001);
+            this.addField_SFFloat( ctx, "constantForceMix", 0.0001 );
 
             /**
              * The contactSurfaceThickness field represents how far bodies may interpenetrate after a collision. This
@@ -67,7 +67,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'contactSurfaceThickness', 0);
+            this.addField_SFFloat( ctx, "contactSurfaceThickness", 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -79,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableAngularSpeed', 0);
+            this.addField_SFFloat( ctx, "disableAngularSpeed", 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -91,7 +91,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableLinearSpeed', 0);
+            this.addField_SFFloat( ctx, "disableLinearSpeed", 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableTime', 0);
+            this.addField_SFFloat( ctx, "disableTime", 0 );
 
             /**
              * The enabled field is used to control whether the physics model for this collection should be run this
@@ -114,7 +114,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * The errorCorrection field describes how quickly the system should resolve intersection errors due to
@@ -127,7 +127,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'errorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "errorCorrection", 0.8 );
 
             /**
              * The gravity field indicates direction and strength (in acceleration base units) of the local gravity
@@ -139,7 +139,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'gravity', 0,-9.8,0);
+            this.addField_SFVec3f( ctx, "gravity", 0, -9.8, 0 );
 
             /**
              * The iterations field is used to control how many iterations over the collections of joints and bodies are
@@ -155,7 +155,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'iterations', 1);
+            this.addField_SFInt32( ctx, "iterations", 1 );
 
             /**
              * Maximal correction speed.
@@ -166,7 +166,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxCorrectionSpeed', -1);
+            this.addField_SFFloat( ctx, "maxCorrectionSpeed", -1 );
 
             /**
              * The preferAccuracy field is used to provide a performance hint to the underlying evaluation about whether
@@ -179,7 +179,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'preferAccuracy', false);
+            this.addField_SFBool( ctx, "preferAccuracy", false );
 
             /**
              * The bodies field contains a collection of the top-level nodes that comprise a set of bodies that should
@@ -190,7 +190,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('bodies', x3dom.nodeTypes.RigidBody);
+            this.addField_MFNode( "bodies", x3dom.nodeTypes.RigidBody );
 
             /**
              * The joints field is used to register all the joints between the bodies contained in this collection. If a
@@ -203,22 +203,28 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('joints', x3dom.nodeTypes.X3DRigidJointNode);
-
+            this.addField_MFNode( "joints", x3dom.nodeTypes.X3DRigidJointNode );
         },
         {
-            nodeChanged: function(){
-                if(!this._cf.joints.nodes){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.X3DRigidJointNode)){
-                            this._cf.joints = this._xmlNode.children[x];
+            nodeChanged : function ()
+            {
+                if ( !this._cf.joints.nodes )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.X3DRigidJointNode ) )
+                        {
+                            this._cf.joints = this._xmlNode.children[ x ];
                         }
                     }
                 }
-                if(!this._cf.bodies.nodes){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.RigidBody)){
-                            this._cf.bodies = this._xmlNode.children[x];
+                if ( !this._cf.bodies.nodes )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.RigidBody ) )
+                        {
+                            this._cf.bodies = this._xmlNode.children[ x ];
                         }
                     }
                 }

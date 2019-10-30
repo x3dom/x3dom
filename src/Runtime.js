@@ -30,7 +30,8 @@ x3dom.runtime = {};
  * @param canvas
  * @constructor
  */
-x3dom.Runtime = function(doc, canvas) {
+x3dom.Runtime = function ( doc, canvas )
+{
     this.doc = doc;
     this.canvas = canvas;
     this.config = {};
@@ -48,8 +49,9 @@ x3dom.Runtime = function(doc, canvas) {
  * @param title
  * @param value
  */
-x3dom.Runtime.prototype.addMeasurement = function (title, value) {
-    this.states.measurements[title] = value;
+x3dom.Runtime.prototype.addMeasurement = function ( title, value )
+{
+    this.states.measurements[ title ] = value;
 };
 
 /**
@@ -57,9 +59,11 @@ x3dom.Runtime.prototype.addMeasurement = function (title, value) {
  *
  * @param title
  */
-x3dom.Runtime.prototype.removeMeasurement = function (title) {
-    if (this.states.measurements[title]) {
-        delete this.states.measurements[title];
+x3dom.Runtime.prototype.removeMeasurement = function ( title )
+{
+    if ( this.states.measurements[ title ] )
+    {
+        delete this.states.measurements[ title ];
     }
 };
 
@@ -69,8 +73,9 @@ x3dom.Runtime.prototype.removeMeasurement = function (title) {
  * @param title
  * @param value
  */
-x3dom.Runtime.prototype.addInfo = function (title, value) {
-    this.states.infos[title] = value;
+x3dom.Runtime.prototype.addInfo = function ( title, value )
+{
+    this.states.infos[ title ] = value;
 };
 
 /**
@@ -78,8 +83,9 @@ x3dom.Runtime.prototype.addInfo = function (title, value) {
  *
  * @param title
  */
-x3dom.Runtime.prototype.removeInfo = function (title) {
-    delete this.states.infos[title];
+x3dom.Runtime.prototype.removeInfo = function ( title )
+{
+    delete this.states.infos[ title ];
 };
 
 /**
@@ -88,7 +94,8 @@ x3dom.Runtime.prototype.removeInfo = function (title) {
  * @param doc
  * @param canvas
  */
-x3dom.Runtime.prototype.initialize = function(doc, canvas) {
+x3dom.Runtime.prototype.initialize = function ( doc, canvas )
+{
     this.doc = doc;
     this.canvas = canvas;
 
@@ -115,8 +122,9 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
  * fired. Therefore putting it directly under the inclusion of x3dom.js is the
  * preferred way to ensure overloading of this function.
  */
-x3dom.Runtime.prototype.noBackendFound = function() {
-    x3dom.debug.logInfo('No backend found. Unable to render.');
+x3dom.Runtime.prototype.noBackendFound = function ()
+{
+    x3dom.debug.logInfo( "No backend found. Unable to render." );
 };
 
 /**
@@ -135,10 +143,11 @@ x3dom.Runtime.prototype.noBackendFound = function() {
  * way to ensure overloading of this function.
  *
  * Parameters:
- * 		element - The x3d element this handler is acting upon
+ *         element - The x3d element this handler is acting upon
  */
-x3dom.Runtime.prototype.ready = function() {
-    x3dom.debug.logInfo('System ready.');
+x3dom.Runtime.prototype.ready = function ()
+{
+    x3dom.debug.logInfo( "System ready." );
 };
 
 /**
@@ -160,9 +169,10 @@ x3dom.Runtime.prototype.ready = function() {
  * function instead.
  *
  * Parameters:
- * 		element - The x3d element this handler is acting upon
+ *         element - The x3d element this handler is acting upon
  */
-x3dom.Runtime.prototype.enterFrame = function() {
+x3dom.Runtime.prototype.enterFrame = function ()
+{
     //x3dom.debug.logInfo('Render frame imminent');
     // to be overwritten by user
 };
@@ -180,9 +190,10 @@ x3dom.Runtime.prototype.enterFrame = function() {
  * };
  *
  * Parameters:
- * 		element - The x3d element this handler is acting upon
+ *         element - The x3d element this handler is acting upon
  */
-x3dom.Runtime.prototype.exitFrame = function() {
+x3dom.Runtime.prototype.exitFrame = function ()
+{
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
 };
@@ -192,7 +203,8 @@ x3dom.Runtime.prototype.exitFrame = function() {
  *
  * Triggers a redraw of the scene.
  */
-x3dom.Runtime.prototype.triggerRedraw = function() {
+x3dom.Runtime.prototype.triggerRedraw = function ()
+{
     this.canvas.doc.needRender = true;
 };
 
@@ -213,28 +225,34 @@ x3dom.Runtime.prototype.triggerRedraw = function() {
  *
  * @returns The active DOM element
  */
-x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
-    var stacks;
-    var i, current, result;
-    var type;
+x3dom.Runtime.prototype.getActiveBindable = function ( typeName )
+{
+    var stacks,
+        i,
+        current,
+        result,
+        type;
 
     stacks = this.canvas.doc._bindableBag._stacks;
     result = [];
 
-    type = x3dom.nodeTypesLC[typeName.toLowerCase()];
+    type = x3dom.nodeTypesLC[ typeName.toLowerCase() ];
 
-    if (!type) {
-        x3dom.debug.logError('No node of type "' + typeName + '" found.');
+    if ( !type )
+    {
+        x3dom.debug.logError( "No node of type \"" + typeName + "\" found." );
         return null;
     }
 
-    for (i = 0; i < stacks.length; i++) {
-        current = stacks[i].getActive();
-        if (current._xmlNode !== undefined && x3dom.isa(current, type)) {
-            result.push(current);
+    for ( i = 0; i < stacks.length; i++ )
+    {
+        current = stacks[ i ].getActive();
+        if ( current._xmlNode !== undefined && x3dom.isa( current, type ) )
+        {
+            result.push( current );
         }
     }
-    return result[0] ? result[0]._xmlNode : null;
+    return result[ 0 ] ? result[ 0 ]._xmlNode : null;
 };
 
 /**
@@ -242,12 +260,16 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
  *
  * Navigates to the next viewpoint.
  */
-x3dom.Runtime.prototype.nextView = function() {
+x3dom.Runtime.prototype.nextView = function ()
+{
     var stack = this.canvas.doc._scene.getViewpoint()._stack;
-    if (stack) {
-        stack.switchTo('next');
-    } else {
-        x3dom.debug.logError('No valid ViewBindable stack.');
+    if ( stack )
+    {
+        stack.switchTo( "next" );
+    }
+    else
+    {
+        x3dom.debug.logError( "No valid ViewBindable stack." );
     }
 };
 
@@ -256,12 +278,16 @@ x3dom.Runtime.prototype.nextView = function() {
  *
  * Navigates tho the previous viewpoint.
  */
-x3dom.Runtime.prototype.prevView = function() {
+x3dom.Runtime.prototype.prevView = function ()
+{
     var stack = this.canvas.doc._scene.getViewpoint()._stack;
-    if (stack) {
-        stack.switchTo('prev');
-    } else {
-        x3dom.debug.logError('No valid ViewBindable stack.');
+    if ( stack )
+    {
+        stack.switchTo( "prev" );
+    }
+    else
+    {
+        x3dom.debug.logError( "No valid ViewBindable stack." );
     }
 };
 
@@ -272,7 +298,8 @@ x3dom.Runtime.prototype.prevView = function() {
  *
  * @returns The viewpoint
  */
-x3dom.Runtime.prototype.viewpoint = function() {
+x3dom.Runtime.prototype.viewpoint = function ()
+{
     return this.canvas.doc._scene.getViewpoint();
 };
 
@@ -283,7 +310,8 @@ x3dom.Runtime.prototype.viewpoint = function() {
  *
  * @returns Matrix object
  */
-x3dom.Runtime.prototype.viewMatrix = function() {
+x3dom.Runtime.prototype.viewMatrix = function ()
+{
     return this.canvas.doc._viewarea.getViewMatrix();
 };
 
@@ -293,9 +321,10 @@ x3dom.Runtime.prototype.viewMatrix = function() {
  * Returns the current projection matrix.
  *
  * Returns:
- * 		Matrix object
+ *         Matrix object
  */
-x3dom.Runtime.prototype.projectionMatrix = function() {
+x3dom.Runtime.prototype.projectionMatrix = function ()
+{
     return this.canvas.doc._viewarea.getProjectionMatrix();
 };
 
@@ -306,7 +335,8 @@ x3dom.Runtime.prototype.projectionMatrix = function() {
  *
  * @returns Matrix object
  */
-x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function() {
+x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function ()
+{
     return this.canvas.doc._viewarea.getWCtoCCMatrix();
 };
 
@@ -317,7 +347,8 @@ x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function() {
  *
  * @returns Matrix object
  */
-x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
+x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function ()
+{
     return this.canvas.doc._viewarea.getCCtoWCMatrix();
 };
 
@@ -328,8 +359,9 @@ x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
  *
  * @returns Ray object
  */
-x3dom.Runtime.prototype.getViewingRay = function(x, y) {
-    return this.canvas.doc._viewarea.calcViewRay(x, y);
+x3dom.Runtime.prototype.getViewingRay = function ( x, y )
+{
+    return this.canvas.doc._viewarea.calcViewRay( x, y );
 };
 
 /**
@@ -342,16 +374,17 @@ x3dom.Runtime.prototype.getViewingRay = function(x, y) {
  *
  * @returns {{pickPosition: *, pickNormal: *, pickObject: null}}
  */
-x3dom.Runtime.prototype.shootRay = function(x, y) {
+x3dom.Runtime.prototype.shootRay = function ( x, y )
+{
     var doc = this.canvas.doc;
     var info = doc._viewarea._pickingInfo;
 
-    doc.onPick(this.canvas.gl, x, y);
+    doc.onPick( this.canvas.gl, x, y );
 
     return {
-        pickPosition: info.pickObj ? info.pickPos : null,
-        pickNormal: info.pickObj ? info.pickNorm : null,
-        pickObject: info.pickObj ? info.pickObj._xmlNode : null
+        pickPosition : info.pickObj ? info.pickPos : null,
+        pickNormal   : info.pickObj ? info.pickNorm : null,
+        pickObject   : info.pickObj ? info.pickObj._xmlNode : null
     };
 };
 
@@ -360,7 +393,8 @@ x3dom.Runtime.prototype.shootRay = function(x, y) {
  *
  * @returns the width of the canvas element.
  */
-x3dom.Runtime.prototype.getWidth = function() {
+x3dom.Runtime.prototype.getWidth = function ()
+{
     return this.canvas.doc._viewarea._width;
 };
 
@@ -369,7 +403,8 @@ x3dom.Runtime.prototype.getWidth = function() {
  *
  * Returns the width of the canvas element.
  */
-x3dom.Runtime.prototype.getHeight = function() {
+x3dom.Runtime.prototype.getHeight = function ()
+{
     return this.canvas.doc._viewarea._height;
 };
 
@@ -379,10 +414,11 @@ x3dom.Runtime.prototype.getHeight = function() {
  * Returns the 2d canvas layer position [x, y] for a given mouse event, i.e.,
  * the mouse cursor's x and y positions relative to the canvas (x3d) element.
  */
-x3dom.Runtime.prototype.mousePosition = function(event) {
-    var pos = this.canvas.mousePosition(event);
+x3dom.Runtime.prototype.mousePosition = function ( event )
+{
+    var pos = this.canvas.mousePosition( event );
 
-    return [pos.x, pos.y];
+    return [ pos.x, pos.y ];
 };
 
 /**
@@ -394,21 +430,22 @@ x3dom.Runtime.prototype.mousePosition = function(event) {
  * @param wy
  * @param wz
  */
-x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
+x3dom.Runtime.prototype.calcCanvasPos = function ( wx, wy, wz )
+{
     var DPR = window.devicePixelRatio || 1;
 
-    var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
+    var pnt = new x3dom.fields.SFVec3f( wx, wy, wz );
 
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
-    var pos = mat.multFullMatrixPnt(pnt);
+    var pos = mat.multFullMatrixPnt( pnt );
 
     var w = this.canvas.doc._viewarea._width / DPR;
     var h = this.canvas.doc._viewarea._height / DPR;
 
-    var x = Math.round((pos.x + 1) * (w - 1) / 2);
-    var y = Math.round((h - 1) * (1 - pos.y) / 2);
+    var x = Math.round( ( pos.x + 1 ) * ( w - 1 ) / 2 );
+    var y = Math.round( ( h - 1 ) * ( 1 - pos.y ) / 2 );
 
-    return [x, y];
+    return [ x, y ];
 };
 
 /**
@@ -416,7 +453,8 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
  *
  * @returns The eight point of the scene bounding box
  */
-x3dom.Runtime.prototype.getBBoxPoints = function() {
+x3dom.Runtime.prototype.getBBoxPoints = function ()
+{
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
@@ -428,9 +466,8 @@ x3dom.Runtime.prototype.getBBoxPoints = function() {
         { x: scene._lastMin.x, y: scene._lastMin.y, z: scene._lastMax.z },
         { x: scene._lastMax.x, y: scene._lastMin.y, z: scene._lastMax.z },
         { x: scene._lastMin.x, y: scene._lastMax.y, z: scene._lastMax.z },
-        { x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMax.z },
+        { x: scene._lastMax.x, y: scene._lastMax.y, z: scene._lastMax.z }
     ];
-
 };
 
 /**
@@ -438,27 +475,29 @@ x3dom.Runtime.prototype.getBBoxPoints = function() {
  *
  * @returns The 2d rect of the scene volume
  */
-x3dom.Runtime.prototype.getSceneBRect = function() {
+x3dom.Runtime.prototype.getSceneBRect = function ()
+{
     var min = { x: Number.MAX_VALUE, y: Number.MAX_VALUE };
     var max = { x: Number.MIN_VALUE, y: Number.MIN_VALUE };
 
     var points = this.getBBoxPoints();
 
-    for (var i = 0; i < points.length; i++) {
-        var pos2D = this.calcCanvasPos(points[i].x, points[i].y, points[i].z);
+    for ( var i = 0; i < points.length; i++ )
+    {
+        var pos2D = this.calcCanvasPos( points[ i ].x, points[ i ].y, points[ i ].z );
 
-        min.x = (pos2D[0] < min.x) ? pos2D[0] : min.x;
-        min.y = (pos2D[1] < min.y) ? pos2D[1] : min.y;
+        min.x = ( pos2D[ 0 ] < min.x ) ? pos2D[ 0 ] : min.x;
+        min.y = ( pos2D[ 1 ] < min.y ) ? pos2D[ 1 ] : min.y;
 
-        max.x = (pos2D[0] > max.x) ? pos2D[0] : max.x;
-        max.y = (pos2D[1] > max.y) ? pos2D[1] : max.y;
+        max.x = ( pos2D[ 0 ] > max.x ) ? pos2D[ 0 ] : max.x;
+        max.y = ( pos2D[ 1 ] > max.y ) ? pos2D[ 1 ] : max.y;
     }
 
     var rect = {
-        x: min.x,
-        y: min.y,
-        width: max.x - min.x,
-        height: max.y - min.y
+        x      : min.x,
+        y      : min.y,
+        width  : max.x - min.x,
+        height : max.y - min.y
     };
 
     return rect;
@@ -475,29 +514,31 @@ x3dom.Runtime.prototype.getSceneBRect = function() {
  * @param wz
  * @returns {*}
  */
-x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
+x3dom.Runtime.prototype.calcClientPos = function ( wx, wy, wz )
+{
     var elem = this.canvas.canvas.offsetParent;
 
-    if (!elem) {
-        x3dom.debug.logError("Can't calc client pos without offsetParent.");
-        return [0, 0];
+    if ( !elem )
+    {
+        x3dom.debug.logError( "Can't calc client pos without offsetParent." );
+        return [ 0, 0 ];
     }
 
     var canvasPos = elem.getBoundingClientRect();
-    var mousePos = this.calcCanvasPos(wx, wy, wz);
+    var mousePos = this.calcCanvasPos( wx, wy, wz );
 
-    var compStyle = document.defaultView.getComputedStyle(elem, null);
+    var compStyle = document.defaultView.getComputedStyle( elem, null );
 
-    var paddingLeft = parseFloat(compStyle.getPropertyValue('padding-left'));
-    var borderLeftWidth = parseFloat(compStyle.getPropertyValue('border-left-width'));
+    var paddingLeft = parseFloat( compStyle.getPropertyValue( "padding-left" ) );
+    var borderLeftWidth = parseFloat( compStyle.getPropertyValue( "border-left-width" ) );
 
-    var paddingTop = parseFloat(compStyle.getPropertyValue('padding-top'));
-    var borderTopWidth = parseFloat(compStyle.getPropertyValue('border-top-width'));
+    var paddingTop = parseFloat( compStyle.getPropertyValue( "padding-top" ) );
+    var borderTopWidth = parseFloat( compStyle.getPropertyValue( "border-top-width" ) );
 
-    var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
-    var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
+    var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[ 0 ];
+    var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[ 1 ];
 
-    return [x, y];
+    return [ x, y ];
 };
 
 /**
@@ -507,24 +548,29 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
  *
  * @eturns The Base64 encoded PNG image string
  */
-x3dom.Runtime.prototype.getScreenshot = function() {
+x3dom.Runtime.prototype.getScreenshot = function ()
+{
     var url = "";
     var backend = this.canvas.backend;
     var canvas = this.canvas.canvas;
 
-    if (canvas) {
-        if (backend == "flash") {
+    if ( canvas )
+    {
+        if ( backend == "flash" )
+        {
             url = canvas.getScreenshot();
-        } else {
+        }
+        else
+        {
             // first flip along y axis
-            var canvas2d = document.createElement("canvas");
+            var canvas2d = document.createElement( "canvas" );
             canvas2d.width = canvas.width;
             canvas2d.height = canvas.height;
 
-            var ctx = canvas2d.getContext("2d");
-            ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-            ctx.scale(1, -1);
-            ctx.translate(0, -canvas.height);
+            var ctx = canvas2d.getContext( "2d" );
+            ctx.drawImage( canvas, 0, 0, canvas.width, canvas.height );
+            ctx.scale( 1, -1 );
+            ctx.translate( 0, -canvas.height );
 
             url = canvas2d.toDataURL();
         }
@@ -540,7 +586,8 @@ x3dom.Runtime.prototype.getScreenshot = function() {
  *
  * @returns The internal canvas element
  */
-x3dom.Runtime.prototype.getCanvas = function() {
+x3dom.Runtime.prototype.getCanvas = function ()
+{
     return this.canvas.canvas;
 };
 
@@ -551,7 +598,8 @@ x3dom.Runtime.prototype.getCanvas = function() {
  *
  * @returns The light matrix
  */
-x3dom.Runtime.prototype.lightMatrix = function() {
+x3dom.Runtime.prototype.lightMatrix = function ()
+{
     this.canvas.doc._viewarea.getLightMatrix();
 };
 
@@ -560,7 +608,8 @@ x3dom.Runtime.prototype.lightMatrix = function() {
  *
  * Resets the view to initial.
  */
-x3dom.Runtime.prototype.resetView = function() {
+x3dom.Runtime.prototype.resetView = function ()
+{
     this.canvas.doc._viewarea.resetView();
 };
 
@@ -571,13 +620,17 @@ x3dom.Runtime.prototype.resetView = function() {
  *
  * @returns True if navigation was possible, false otherwise.
  */
-x3dom.Runtime.prototype.lightView = function() {
-    if (this.canvas.doc._nodeBag.lights.length > 0) {
-        this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0],
-            this.canvas.doc._scene.getViewpoint());
+x3dom.Runtime.prototype.lightView = function ()
+{
+    if ( this.canvas.doc._nodeBag.lights.length > 0 )
+    {
+        this.canvas.doc._viewarea.animateTo( this.canvas.doc._viewarea.getLightMatrix()[ 0 ],
+            this.canvas.doc._scene.getViewpoint() );
         return true;
-    } else {
-        x3dom.debug.logInfo("No lights to navigate to.");
+    }
+    else
+    {
+        x3dom.debug.logInfo( "No lights to navigate to." );
         return false;
     }
 };
@@ -587,7 +640,8 @@ x3dom.Runtime.prototype.lightView = function() {
  *
  * Navigates to upright view
  */
-x3dom.Runtime.prototype.uprightView = function() {
+x3dom.Runtime.prototype.uprightView = function ()
+{
     this.canvas.doc._viewarea.uprightView();
 };
 
@@ -598,15 +652,17 @@ x3dom.Runtime.prototype.uprightView = function() {
  *
  * @param updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set.
  */
-x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation) {
-    if (updateCenterOfRotation === undefined) {
+x3dom.Runtime.prototype.fitAll = function ( updateCenterOfRotation )
+{
+    if ( updateCenterOfRotation === undefined )
+    {
         updateCenterOfRotation = true;
     }
 
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
-    this.canvas.doc._viewarea.fit(scene._lastMin, scene._lastMax, updateCenterOfRotation);
+    this.canvas.doc._viewarea.fit( scene._lastMin, scene._lastMax, updateCenterOfRotation );
 };
 
 /**
@@ -617,9 +673,12 @@ x3dom.Runtime.prototype.fitAll = function(updateCenterOfRotation) {
  * @param obj
  * @param updateCenterOfRotation - a boolean value that specifies if the new center of rotation is set
  */
-x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation) {
-    if (obj && obj._x3domNode) {
-        if (updateCenterOfRotation === undefined) {
+x3dom.Runtime.prototype.fitObject = function ( obj, updateCenterOfRotation )
+{
+    if ( obj && obj._x3domNode )
+    {
+        if ( updateCenterOfRotation === undefined )
+        {
             updateCenterOfRotation = true;
         }
 
@@ -627,24 +686,25 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation) {
         var max = x3dom.fields.SFVec3f.MIN();
 
         var vol = obj._x3domNode.getVolume();
-        vol.getBounds(min, max);
+        vol.getBounds( min, max );
 
         var mat = obj._x3domNode.getCurrentTransform();
 
-        min = mat.multMatrixPnt(min);
-        max = mat.multMatrixPnt(max);
+        min = mat.multMatrixPnt( min );
+        max = mat.multMatrixPnt( max );
 
         // TODO: revise separation of "getVolume" and "getCurrentTransform"
         //      for the transform nodes - currently, both "overlap" because
         //      both include the transform's own matrix
         //      but which is what you usually expect from both methods...
-        if (x3dom.isa(obj._x3domNode, x3dom.nodeTypes.X3DTransformNode)) {
+        if ( x3dom.isa( obj._x3domNode, x3dom.nodeTypes.X3DTransformNode ) )
+        {
             var invMat = obj._x3domNode._trafo.inverse();
-            min = invMat.multMatrixPnt(min);
-            max = invMat.multMatrixPnt(max);
+            min = invMat.multMatrixPnt( min );
+            max = invMat.multMatrixPnt( max );
         }
 
-        this.canvas.doc._viewarea.fit(min, max, updateCenterOfRotation);
+        this.canvas.doc._viewarea.fit( min, max, updateCenterOfRotation );
     }
 };
 
@@ -656,8 +716,9 @@ x3dom.Runtime.prototype.fitObject = function(obj, updateCenterOfRotation) {
  * @param axis - the axis as string: posX, negX, posY, negY, posZ, negZ
  * @param updateCenterOfRotation - sets the center of rotation to the center of the scene volume
  */
-x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
-    this.canvas.doc._viewarea.showAll(axis, updateCenterOfRotation);
+x3dom.Runtime.prototype.showAll = function ( axis, updateCenterOfRotation )
+{
+    this.canvas.doc._viewarea.showAll( axis, updateCenterOfRotation );
 };
 
 /**
@@ -668,42 +729,46 @@ x3dom.Runtime.prototype.showAll = function(axis, updateCenterOfRotation) {
  * @param obj  - the scene-graph element on which to focus
  * @param axis - the axis as string: posX, negX, posY, negY, posZ, negZ
  */
-x3dom.Runtime.prototype.showObject = function(obj, axis) {
-    if (obj && obj._x3domNode) {
-        if (axis === undefined) axis = "negZ";
+x3dom.Runtime.prototype.showObject = function ( obj, axis )
+{
+    if ( obj && obj._x3domNode )
+    {
+        if ( axis === undefined ) {axis = "negZ";}
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
 
         var vol = obj._x3domNode.getVolume();
-        vol.getBounds(min, max);
+        vol.getBounds( min, max );
 
         var mat = obj._x3domNode.getCurrentTransform();
 
-        min = mat.multMatrixPnt(min);
-        max = mat.multMatrixPnt(max);
+        min = mat.multMatrixPnt( min );
+        max = mat.multMatrixPnt( max );
 
         var viewarea = this.canvas.doc._viewarea;
 
         // assume FOV_smaller as camera's fovMode
-        var focalLen = (viewarea._width < viewarea._height) ?
+        var focalLen = ( viewarea._width < viewarea._height ) ?
             viewarea._width : viewarea._height;
 
         var n0;    // facingDir
 
-        switch(axis) {
-            case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0); break;
-            case "negX": n0 = new x3dom.fields.SFVec3f(-1,  0,  0); break;
-            case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0); break;
-            case "negY": n0 = new x3dom.fields.SFVec3f( 1, -1,  0); break;
-            case "posZ": n0 = new x3dom.fields.SFVec3f( 0,  0,  1); break;
-            case "negZ": n0 = new x3dom.fields.SFVec3f( 0,  0, -1); break;
+        switch ( axis )
+        {
+            case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0 ); break;
+            case "negX": n0 = new x3dom.fields.SFVec3f( -1,  0,  0 ); break;
+            case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0 ); break;
+            case "negY": n0 = new x3dom.fields.SFVec3f( 1, -1,  0 ); break;
+            case "posZ": n0 = new x3dom.fields.SFVec3f( 0,  0,  1 ); break;
+            case "negZ": n0 = new x3dom.fields.SFVec3f( 0,  0, -1 ); break;
         }
 
         var viewpoint = this.canvas.doc._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView() / 2.0;
-        var ta = Math.tan(fov);
+        var ta = Math.tan( fov );
 
-        if (Math.abs(ta) > x3dom.fields.Eps) {
+        if ( Math.abs( ta ) > x3dom.fields.Eps )
+        {
             focalLen /= ta;
         }
 
@@ -711,39 +776,40 @@ x3dom.Runtime.prototype.showObject = function(obj, axis) {
         var h = viewarea._height - 1;
 
         var frame = 0.25;
-        var minScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+        var minScreenPos = new x3dom.fields.SFVec2f( frame * w, frame * h );
 
         frame = 0.75;
-        var maxScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+        var maxScreenPos = new x3dom.fields.SFVec2f( frame * w, frame * h );
 
-        var dia2 = max.subtract(min).multiply(0.5);     // half diameter
+        var dia2 = max.subtract( min ).multiply( 0.5 );     // half diameter
         var rw = dia2.length();                         // approx radius
 
-        var pc = min.add(dia2);                         // center in wc
-        var vc = maxScreenPos.subtract(minScreenPos).multiply(0.5);
+        var pc = min.add( dia2 );                         // center in wc
+        var vc = maxScreenPos.subtract( minScreenPos ).multiply( 0.5 );
 
         var rs = 1.5 * vc.length();
-        vc = vc.add(minScreenPos);
+        vc = vc.add( minScreenPos );
 
         var dist = 1.0;
-        if (rs > x3dom.fields.Eps) {
-            dist = (rw / rs) * Math.sqrt(vc.x*vc.x + vc.y*vc.y + focalLen*focalLen);
+        if ( rs > x3dom.fields.Eps )
+        {
+            dist = ( rw / rs ) * Math.sqrt( vc.x * vc.x + vc.y * vc.y + focalLen * focalLen );
         }
 
-        n0 = mat.multMatrixVec(n0).normalize();
-        n0 = n0.multiply(dist);
-        var p0 = pc.add(n0);
+        n0 = mat.multMatrixVec( n0 ).normalize();
+        n0 = n0.multiply( dist );
+        var p0 = pc.add( n0 );
 
-        var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 0, 1), n0);
+        var qDir = x3dom.fields.Quaternion.rotateFromTo( new x3dom.fields.SFVec3f( 0, 0, 1 ), n0 );
         var R = qDir.toMatrix();
 
-        var T = x3dom.fields.SFMatrix4f.translation(p0.negate());
-        var M = x3dom.fields.SFMatrix4f.translation(p0);
+        var T = x3dom.fields.SFMatrix4f.translation( p0.negate() );
+        var M = x3dom.fields.SFMatrix4f.translation( p0 );
 
-        M = M.mult(R).mult(T).mult(M);
+        M = M.mult( R ).mult( T ).mult( M );
         var viewmat = M.inverse();
 
-        viewarea.animateTo(viewmat, viewpoint);
+        viewarea.animateTo( viewmat, viewpoint );
     }
 };
 
@@ -755,14 +821,14 @@ x3dom.Runtime.prototype.showObject = function(obj, axis) {
  * @param target - The taget view matrix or a viewpoint node
  * @param duration - The animation duration
  */
-x3dom.Runtime.prototype.animateViewpointTo = function( target, duration ) {
-    
+x3dom.Runtime.prototype.animateViewpointTo = function ( target, duration )
+{
     var viewarea  = this.canvas.doc._viewarea;
     var viewpoint = this.canvas.doc._scene.getViewpoint();
 
-    if( target._x3domNode != undefined )
+    if ( target._x3domNode != undefined )
     {
-        target = target._x3domNode
+        target = target._x3domNode;
     }
 
     viewarea.animateTo( target, viewpoint, duration );
@@ -777,9 +843,11 @@ x3dom.Runtime.prototype.animateViewpointTo = function( target, duration ) {
  *
  * @returns Node center (or null if no Shape or Geometry)
  */
-x3dom.Runtime.prototype.getCenter = function(domNode) {
-    if (domNode && domNode._x3domNode &&
-        (this.isA(domNode, "X3DShapeNode") || this.isA(domNode, "X3DGeometryNode"))) {
+x3dom.Runtime.prototype.getCenter = function ( domNode )
+{
+    if ( domNode && domNode._x3domNode &&
+        ( this.isA( domNode, "X3DShapeNode" ) || this.isA( domNode, "X3DGeometryNode" ) ) )
+    {
         return domNode._x3domNode.getCenter();
     }
 
@@ -795,8 +863,10 @@ x3dom.Runtime.prototype.getCenter = function(domNode) {
  *
  * @returns Transformation matrix (or null no valid node is given)
  */
-x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
-    if (domNode && domNode._x3domNode) {
+x3dom.Runtime.prototype.getCurrentTransform = function ( domNode )
+{
+    if ( domNode && domNode._x3domNode )
+    {
         return domNode._x3domNode.getCurrentTransform();
     }
 
@@ -812,14 +882,16 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *
  * @returns The min and max positions of the node's bounding box.
  */
-x3dom.Runtime.prototype.getBBox = function(domNode) {
-    if (domNode && domNode._x3domNode && this.isA(domNode, "X3DBoundedObject")) {
+x3dom.Runtime.prototype.getBBox = function ( domNode )
+{
+    if ( domNode && domNode._x3domNode && this.isA( domNode, "X3DBoundedObject" ) )
+    {
         var vol = domNode._x3domNode.getVolume();
 
         return {
-            min: x3dom.fields.SFVec3f.copy(vol.min),
-            max: x3dom.fields.SFVec3f.copy(vol.max)
-        }
+            min : x3dom.fields.SFVec3f.copy( vol.min ),
+            max : x3dom.fields.SFVec3f.copy( vol.max )
+        };
     }
 
     return null;
@@ -832,14 +904,15 @@ x3dom.Runtime.prototype.getBBox = function(domNode) {
  *
  * @returns The min and max positions of the scene's bounding box.
  */
-x3dom.Runtime.prototype.getSceneBBox = function() {
+x3dom.Runtime.prototype.getSceneBBox = function ()
+{
     var scene = this.canvas.doc._scene;
     scene.updateVolume();
 
     return {
-        min: x3dom.fields.SFVec3f.copy(scene._lastMin),
-        max: x3dom.fields.SFVec3f.copy(scene._lastMax)
-    }
+        min : x3dom.fields.SFVec3f.copy( scene._lastMin ),
+        max : x3dom.fields.SFVec3f.copy( scene._lastMax )
+    };
 };
 
 /**
@@ -852,23 +925,31 @@ x3dom.Runtime.prototype.getSceneBBox = function() {
  *
  * @returns Current visibility status of debug window (true=visible, false=hidden)
  */
-x3dom.Runtime.prototype.debug = function(show) {
+x3dom.Runtime.prototype.debug = function ( show )
+{
     var doc = this.canvas.doc;
-    if (doc._viewarea._visDbgBuf === undefined) {
-        doc._viewarea._visDbgBuf = (doc._x3dElem.getAttribute("showLog") === 'true');
+    if ( doc._viewarea._visDbgBuf === undefined )
+    {
+        doc._viewarea._visDbgBuf = ( doc._x3dElem.getAttribute( "showLog" ) === "true" );
     }
 
-    if (arguments.length > 0) {
-        if (show === true) {
+    if ( arguments.length > 0 )
+    {
+        if ( show === true )
+        {
             doc._viewarea._visDbgBuf = true;
             x3dom.debug.logContainer.style.display = "block";
-        } else {
+        }
+        else
+        {
             doc._viewarea._visDbgBuf = false;
             x3dom.debug.logContainer.style.display = "none";
         }
-    } else {
+    }
+    else
+    {
         doc._viewarea._visDbgBuf = !doc._viewarea._visDbgBuf;
-        x3dom.debug.logContainer.style.display = (doc._viewarea._visDbgBuf == true) ? "block" : "none";
+        x3dom.debug.logContainer.style.display = ( doc._viewarea._visDbgBuf == true ) ? "block" : "none";
     }
     doc.needRender = true;
 
@@ -882,7 +963,8 @@ x3dom.Runtime.prototype.debug = function(show) {
  *
  * @returns A string representing the active navigation type
  */
-x3dom.Runtime.prototype.navigationType = function() {
+x3dom.Runtime.prototype.navigationType = function ()
+{
     return this.canvas.doc._scene.getNavigationInfo().getType();
 };
 
@@ -891,8 +973,9 @@ x3dom.Runtime.prototype.navigationType = function() {
  *
  * Switches to noNav mode
  */
-x3dom.Runtime.prototype.noNav = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("none");
+x3dom.Runtime.prototype.noNav = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "none" );
 };
 
 /**
@@ -900,8 +983,9 @@ x3dom.Runtime.prototype.noNav = function() {
  *
  * Switches to examine mode
  */
-x3dom.Runtime.prototype.examine = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("examine");
+x3dom.Runtime.prototype.examine = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "examine" );
 };
 
 /**
@@ -909,8 +993,9 @@ x3dom.Runtime.prototype.examine = function() {
  *
  * Switches to turnTable mode
  */
-x3dom.Runtime.prototype.turnTable = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("turntable");
+x3dom.Runtime.prototype.turnTable = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "turntable" );
 };
 
 /**
@@ -918,8 +1003,9 @@ x3dom.Runtime.prototype.turnTable = function() {
  *
  * Switches to fly mode
  */
-x3dom.Runtime.prototype.fly = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("fly");
+x3dom.Runtime.prototype.fly = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "fly" );
 };
 
 /**
@@ -927,8 +1013,9 @@ x3dom.Runtime.prototype.fly = function() {
  *
  * Switches to freeFly mode
  */
-x3dom.Runtime.prototype.freeFly = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("freefly");
+x3dom.Runtime.prototype.freeFly = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "freefly" );
 };
 
 /**
@@ -936,16 +1023,18 @@ x3dom.Runtime.prototype.freeFly = function() {
  *
  * Switches to lookAt mode
  */
-x3dom.Runtime.prototype.lookAt = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("lookat");
+x3dom.Runtime.prototype.lookAt = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "lookat" );
 };
 /**
  * APIFunction: lookAround
  *
  * Switches to lookAround mode
  */
-x3dom.Runtime.prototype.lookAround = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("lookaround");
+x3dom.Runtime.prototype.lookAround = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "lookaround" );
 };
 
 /**
@@ -953,8 +1042,9 @@ x3dom.Runtime.prototype.lookAround = function() {
  *
  * Switches to walk mode
  */
-x3dom.Runtime.prototype.walk = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("walk");
+x3dom.Runtime.prototype.walk = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "walk" );
 };
 
 /**
@@ -962,8 +1052,9 @@ x3dom.Runtime.prototype.walk = function() {
  *
  * Switches to game mode
  */
-x3dom.Runtime.prototype.game = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("game");
+x3dom.Runtime.prototype.game = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "game" );
 };
 
 /**
@@ -971,8 +1062,9 @@ x3dom.Runtime.prototype.game = function() {
  *
  * Switches to helicopter mode
  */
-x3dom.Runtime.prototype.helicopter = function() {
-    this.canvas.doc._scene.getNavigationInfo().setType("helicopter");
+x3dom.Runtime.prototype.helicopter = function ()
+{
+    this.canvas.doc._scene.getNavigationInfo().setType( "helicopter" );
 };
 
 /**
@@ -980,11 +1072,12 @@ x3dom.Runtime.prototype.helicopter = function() {
  *
  * Resets all variables required by examine mode to init state
  */
-x3dom.Runtime.prototype.resetExamin = function() {
+x3dom.Runtime.prototype.resetExamin = function ()
+{
     var viewarea = this.canvas.doc._viewarea;
     viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
     viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
-    viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    viewarea._movement = new x3dom.fields.SFVec3f( 0, 0, 0 );
     viewarea._needNavigationMatrixUpdate = true;
     this.canvas.doc.needRender = true;
 };
@@ -994,7 +1087,8 @@ x3dom.Runtime.prototype.resetExamin = function() {
  *
  * Disable keys
  */
-x3dom.Runtime.prototype.disableKeys = function() {
+x3dom.Runtime.prototype.disableKeys = function ()
+{
     this.canvas.disableKeys = true;
 };
 
@@ -1003,7 +1097,8 @@ x3dom.Runtime.prototype.disableKeys = function() {
  *
  * Enable keys
  */
-x3dom.Runtime.prototype.enableKeys = function() {
+x3dom.Runtime.prototype.enableKeys = function ()
+{
     this.canvas.disableKeys = false;
 };
 
@@ -1012,7 +1107,8 @@ x3dom.Runtime.prototype.enableKeys = function() {
  *
  * Disable left drag
  */
-x3dom.Runtime.prototype.disableLeftDrag = function() {
+x3dom.Runtime.prototype.disableLeftDrag = function ()
+{
     this.canvas.disableLeftDrag = true;
 };
 
@@ -1021,7 +1117,8 @@ x3dom.Runtime.prototype.disableLeftDrag = function() {
  *
  * Enable left drag
  */
-x3dom.Runtime.prototype.enableLeftDrag = function() {
+x3dom.Runtime.prototype.enableLeftDrag = function ()
+{
     this.canvas.disableLeftDrag = false;
 };
 
@@ -1030,7 +1127,8 @@ x3dom.Runtime.prototype.enableLeftDrag = function() {
  *
  * Disable right drag
  */
-x3dom.Runtime.prototype.disableRightDrag = function() {
+x3dom.Runtime.prototype.disableRightDrag = function ()
+{
     this.canvas.disableRightDrag = true;
 };
 
@@ -1039,7 +1137,8 @@ x3dom.Runtime.prototype.disableRightDrag = function() {
  *
  * Enable right drag
  */
-x3dom.Runtime.prototype.enableRightDrag = function() {
+x3dom.Runtime.prototype.enableRightDrag = function ()
+{
     this.canvas.disableRightDrag = false;
 };
 
@@ -1048,7 +1147,8 @@ x3dom.Runtime.prototype.enableRightDrag = function() {
  *
  * Disable middle drag
  */
-x3dom.Runtime.prototype.disableMiddleDrag = function() {
+x3dom.Runtime.prototype.disableMiddleDrag = function ()
+{
     this.canvas.disableMiddleDrag = true;
 };
 
@@ -1057,7 +1157,8 @@ x3dom.Runtime.prototype.disableMiddleDrag = function() {
  *
  * Enable right drag
  */
-x3dom.Runtime.prototype.enableMiddleDrag = function() {
+x3dom.Runtime.prototype.enableMiddleDrag = function ()
+{
     this.canvas.disableMiddleDrag = false;
 };
 
@@ -1069,9 +1170,10 @@ x3dom.Runtime.prototype.enableMiddleDrag = function() {
  * @param lines
  * @returns {*}
  */
-x3dom.Runtime.prototype.togglePoints = function(lines) {
+x3dom.Runtime.prototype.togglePoints = function ( lines )
+{
     var doc = this.canvas.doc;
-    var mod = (lines === true) ? 3 : 2;
+    var mod = ( lines === true ) ? 3 : 2;
 
     doc._viewarea._points = ++doc._viewarea._points % mod;
     doc.needRender = true;
@@ -1091,8 +1193,9 @@ x3dom.Runtime.prototype.togglePoints = function(lines) {
  * @param y2
  * @returns {*}
  */
-x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
-    return this.canvas.doc.onPickRect(this.canvas.gl, x1, y1, x2, y2);
+x3dom.Runtime.prototype.pickRect = function ( x1, y1, x2, y2 )
+{
+    return this.canvas.doc.onPickRect( this.canvas.gl, x1, y1, x2, y2 );
 };
 
 /**
@@ -1106,8 +1209,10 @@ x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
  * @returns The current intersect type value suitable to use with changePickMode
  *      If parameter is, given, provide with internal representation.
  */
-x3dom.Runtime.prototype.pickMode = function(options) {
-    if (options && options.internal === true) {
+x3dom.Runtime.prototype.pickMode = function ( options )
+{
+    if ( options && options.internal === true )
+    {
         return this.canvas.doc._scene._vf.pickMode;
     }
     return this.canvas.doc._scene._vf.pickMode.toLowerCase();
@@ -1123,25 +1228,28 @@ x3dom.Runtime.prototype.pickMode = function(options) {
  *
  * @returns true if the type has been changed, false otherwise
  */
-x3dom.Runtime.prototype.changePickMode = function(type) {
+x3dom.Runtime.prototype.changePickMode = function ( type )
+{
     // pick type one of : box, idBuf, idBuf24, idBufId, color, texCoord
     type = type.toLowerCase();
 
-    switch(type) {
-        case 'idbuf':    type = 'idBuf';    break;
-        case 'idbuf24':  type = 'idBuf24';  break;
-        case 'idbufid':  type = 'idBufId';  break;
-        case 'texcoord': type = 'texCoord'; break;
-        case 'color':    type = 'color';    break;
-        case 'box':      type = 'box';      break;
+    switch ( type )
+    {
+        case "idbuf":    type = "idBuf";    break;
+        case "idbuf24":  type = "idBuf24";  break;
+        case "idbufid":  type = "idBufId";  break;
+        case "texcoord": type = "texCoord"; break;
+        case "color":    type = "color";    break;
+        case "box":      type = "box";      break;
         default:
-            x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
+            x3dom.debug.logWarning( "Switch pickMode to " + type + " unknown intersect type" );
             type = undefined;
     }
 
-    if (type !== undefined) {
+    if ( type !== undefined )
+    {
         this.canvas.doc._scene._vf.pickMode = type;
-        x3dom.debug.logInfo("Switched pickMode to '" + type + "'.");
+        x3dom.debug.logInfo( "Switched pickMode to '" + type + "'." );
         return true;
     }
 
@@ -1157,11 +1265,13 @@ x3dom.Runtime.prototype.changePickMode = function(type) {
  *
  * @returns The current speed value
  */
-x3dom.Runtime.prototype.speed = function(newSpeed) {
+x3dom.Runtime.prototype.speed = function ( newSpeed )
+{
     var navi = this.canvas.doc._scene.getNavigationInfo();
-    if (newSpeed) {
+    if ( newSpeed )
+    {
         navi._vf.speed = newSpeed;
-        x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed);
+        x3dom.debug.logInfo( "Changed navigation speed to " + navi._vf.speed );
     }
     return navi._vf.speed;
 };
@@ -1173,7 +1283,8 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
  *
  * @param zoomAmount - The zoom amount
  */
-x3dom.Runtime.prototype.zoom = function(zoomAmount) {
+x3dom.Runtime.prototype.zoom = function ( zoomAmount )
+{
     this.canvas.doc._viewarea.zoom( zoomAmount );
     this.canvas.doc.needRender = true;
 };
@@ -1188,18 +1299,25 @@ x3dom.Runtime.prototype.zoom = function(zoomAmount) {
  *
  * @returns The current visibility of the statistics info (true = visible, false = invisible)
  */
-x3dom.Runtime.prototype.statistics = function(mode) {
+x3dom.Runtime.prototype.statistics = function ( mode )
+{
     var states = this.canvas.stateViewer;
-    if (states) {
+    if ( states )
+    {
         this.canvas.doc.needRender = true;
-        if (mode === true) {
-            states.display(mode);
+        if ( mode === true )
+        {
+            states.display( mode );
             return true;
-        } else if (mode === false) {
-            states.display(mode);
+        }
+        else if ( mode === false )
+        {
+            states.display( mode );
             return false;
-        } else {
-            states.display(!states.active);
+        }
+        else
+        {
+            states.display( !states.active );
             // if no parameter is given return current status (false = not visible, true = visible)
             return states.active;
         }
@@ -1217,19 +1335,24 @@ x3dom.Runtime.prototype.statistics = function(mode) {
  *
  * @returns The current visibility of the progress indicator info (true = visible, false = invisible)
  */
-x3dom.Runtime.prototype.processIndicator = function(mode) {
+x3dom.Runtime.prototype.processIndicator = function ( mode )
+{
     var processDiv = this.canvas.progressDiv;
-    if (processDiv) {
-        if (mode === true) {
-            processDiv.style.display = 'flex';
+    if ( processDiv )
+    {
+        if ( mode === true )
+        {
+            processDiv.style.display = "flex";
             return true;
-        } else if (mode === false) {
-            processDiv.style.display = 'none';
+        }
+        else if ( mode === false )
+        {
+            processDiv.style.display = "none";
             return false;
         }
 
         // if no parameter is given return current status (false = not visible, true = visible)
-        return processDiv.style.display != 'none'
+        return processDiv.style.display != "none";
     }
     return false;
 };
@@ -1239,7 +1362,8 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
  *
  * @returns {*}
  */
-x3dom.Runtime.prototype.properties = function() {
+x3dom.Runtime.prototype.properties = function ()
+{
     return this.canvas.doc.properties;
 };
 
@@ -1248,7 +1372,8 @@ x3dom.Runtime.prototype.properties = function() {
  *
  * @returns {*}
  */
-x3dom.Runtime.prototype.backendName = function() {
+x3dom.Runtime.prototype.backendName = function ()
+{
     return this.canvas.backend;
 };
 
@@ -1257,7 +1382,8 @@ x3dom.Runtime.prototype.backendName = function() {
  *
  * @returns {number}
  */
-x3dom.Runtime.prototype.getFPS = function() {
+x3dom.Runtime.prototype.getFPS = function ()
+{
     return this.fps;
 };
 
@@ -1272,15 +1398,18 @@ x3dom.Runtime.prototype.getFPS = function() {
  *
  * @returns True or false
  */
-x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
+x3dom.Runtime.prototype.isA = function ( domNode, nodeType )
+{
     var inherits = false;
 
-    if (nodeType && domNode && domNode._x3domNode) {
-        if (nodeType === "") {
+    if ( nodeType && domNode && domNode._x3domNode )
+    {
+        if ( nodeType === "" )
+        {
             nodeType = "X3DNode";
         }
-        inherits = x3dom.isa(domNode._x3domNode,
-            x3dom.nodeTypesLC[nodeType.toLowerCase()]);
+        inherits = x3dom.isa( domNode._x3domNode,
+            x3dom.nodeTypesLC[ nodeType.toLowerCase() ] );
     }
 
     return inherits;
@@ -1294,19 +1423,21 @@ x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
  *
  * @returns x3dom.fields.SFVec3f or null if non orthographic view
  */
-x3dom.Runtime.prototype.getPixelScale = function() {
+x3dom.Runtime.prototype.getPixelScale = function ()
+{
     var vp = this.viewpoint();
-    if (!x3dom.isa(vp, x3dom.nodeTypes.OrthoViewpoint)) {
-        x3dom.debug.logError("getPixelScale is only implemented for orthographic Viewpoints");
+    if ( !x3dom.isa( vp, x3dom.nodeTypes.OrthoViewpoint ) )
+    {
+        x3dom.debug.logError( "getPixelScale is only implemented for orthographic Viewpoints" );
         return null;
     }
 
     var zoomLevel = vp.getZoom();
 
-    var left = zoomLevel[0];
-    var bottom = zoomLevel[1];
-    var right = zoomLevel[2];
-    var top = zoomLevel[3];
+    var left = zoomLevel[ 0 ];
+    var bottom = zoomLevel[ 1 ];
+    var right = zoomLevel[ 2 ];
+    var top = zoomLevel[ 3 ];
 
     var x = right - left;
     var y = top - bottom;
@@ -1314,14 +1445,15 @@ x3dom.Runtime.prototype.getPixelScale = function() {
     var pixelScaleX = x / this.getWidth();
     var pixelScaleY = y / this.getHeight();
 
-    return new x3dom.fields.SFVec3f(pixelScaleX, pixelScaleY, 0.0);
+    return new x3dom.fields.SFVec3f( pixelScaleX, pixelScaleY, 0.0 );
 };
 
 /**
  * APIMethod onAnimationStarted
  *
  */
-x3dom.Runtime.prototype.onAnimationStarted = function() {
+x3dom.Runtime.prototype.onAnimationStarted = function ()
+{
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
 };
@@ -1330,34 +1462,38 @@ x3dom.Runtime.prototype.onAnimationStarted = function() {
  * APIMethod onAnimationFinished
  *
  */
-x3dom.Runtime.prototype.onAnimationFinished = function() {
+x3dom.Runtime.prototype.onAnimationFinished = function ()
+{
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
 };
 
-x3dom.Runtime.prototype.enterVR = function() {
-
-    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+x3dom.Runtime.prototype.enterVR = function ()
+{
+    if ( this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting )
     {
-        this.canvas.vrDisplay.requestPresent([{ source: this.canvas.canvas }]).then(function() {
+        this.canvas.vrDisplay.requestPresent( [ { source: this.canvas.canvas } ] ).then( function ()
+        {
             this.canvas.doc.needRender = true;
-        }.bind(this));
+        }.bind( this ) );
     }
 };
 
-x3dom.Runtime.prototype.exitVR = function() {
-    if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+x3dom.Runtime.prototype.exitVR = function ()
+{
+    if ( this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting )
     {
         this.canvas.vrDisplay.exitPresent();
     }
 };
 
-x3dom.Runtime.prototype.toggleVR = function() {
-    if(this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting)
+x3dom.Runtime.prototype.toggleVR = function ()
+{
+    if ( this.canvas.vrDisplay && !this.canvas.vrDisplay.isPresenting )
     {
         this.enterVR();
     }
-    else if(this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting)
+    else if ( this.canvas.vrDisplay && this.canvas.vrDisplay.isPresenting )
     {
         this.exitVR();
     }
@@ -1370,38 +1506,42 @@ x3dom.Runtime.prototype.toggleVR = function() {
  * @param orthoViewID
  * @returns {number}
  */
-x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID ) {
+x3dom.Runtime.prototype.toggleProjection = function ( perspViewID, orthoViewID )
+{
     var dist;
     var factor = 2.2;
-    var runtime = document.getElementById("x3d").runtime;
+    var runtime = document.getElementById( "x3d" ).runtime;
     var navInfo = runtime.canvas.doc._scene.getNavigationInfo();
     var speed = navInfo._vf.transitionTime;
-    var persp = document.getElementById(perspViewID)._x3domNode;
-    var ortho = document.getElementById(orthoViewID)._x3domNode;
+    var persp = document.getElementById( perspViewID )._x3domNode;
+    var ortho = document.getElementById( orthoViewID )._x3domNode;
 
     navInfo._vf.transitionTime = 0;
 
     ortho._bindAnimation = false;
     persp._bindAnimation = false;
 
-    if (persp._vf.isActive) {
+    if ( persp._vf.isActive )
+    {
         ortho._viewMatrix = persp._viewMatrix;
 
-        document.getElementById(orthoViewID).setAttribute("set_bind", "true");
+        document.getElementById( orthoViewID ).setAttribute( "set_bind", "true" );
 
         dist = persp._viewMatrix.e3().length() / factor;
 
-        ortho.setZoom(dist);
-    } else if (ortho._vf.isActive) {
+        ortho.setZoom( dist );
+    }
+    else if ( ortho._vf.isActive )
+    {
         persp._viewMatrix = ortho._viewMatrix;
 
-        document.getElementById(perspViewID).setAttribute("set_bind", "true");
+        document.getElementById( perspViewID ).setAttribute( "set_bind", "true" );
 
-        dist = ortho._fieldOfView[2] * -factor;
+        dist = ortho._fieldOfView[ 2 ] * -factor;
 
-        var translation = ortho._viewMatrix.e2().normalize().multiply(dist);
+        var translation = ortho._viewMatrix.e2().normalize().multiply( dist );
 
-        persp._viewMatrix.setTranslate(translation);
+        persp._viewMatrix.setTranslate( translation );
     }
 
     navInfo._vf.transitionTime = speed;
@@ -1409,7 +1549,7 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID ) 
     ortho._bindAnimation = true;
     persp._bindAnimation = true;
 
-    return (persp._vf.isActive) ? 0 : 1;
+    return ( persp._vf.isActive ) ? 0 : 1;
 };
 
 /**
@@ -1429,17 +1569,21 @@ x3dom.Runtime.prototype.toggleProjection = function( perspViewID, orthoViewID ) 
  *       therefore necessary to get the replaced x3d element
  *       each time to access the new runtime.
  */
-x3dom.Runtime.prototype.replaceWorld = function(scene) {
-    var x3dElement = this.doc.cloneNode(false);
-    var child, name;
-    while (child = scene.firstChild) {
+x3dom.Runtime.prototype.replaceWorld = function ( scene )
+{
+    var x3dElement = this.doc.cloneNode( false );
+    var child,
+        name;
+    while ( child = scene.firstChild )
+    {
         name = child.nodeType === 1 ? child.localName.toUpperCase() : null;
-        if (name == 'HEAD' || name == 'SCENE') x3dElement.appendChild(child);
-        else {
+        if ( name == "HEAD" || name == "SCENE" ) {x3dElement.appendChild( child );}
+        else
+        {
             child.remove();
         }
     }
-    this.doc.parentNode.replaceChild(x3dElement, this.doc);
+    this.doc.parentNode.replaceChild( x3dElement, this.doc );
     this.doc = x3dElement;
     x3dom.reload();
     return;
@@ -1462,12 +1606,14 @@ x3dom.Runtime.prototype.replaceWorld = function(scene) {
  *
  * @returns The x3d element
  */
-x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
-    if (optionalURL) {
-        jsobject = x3dom.protoExpander.prototypeExpander(optionalURL, jsobject);
+x3dom.Runtime.prototype.createX3DFromJS = function ( jsobject, optionalURL )
+{
+    if ( optionalURL )
+    {
+        jsobject = x3dom.protoExpander.prototypeExpander( optionalURL, jsobject );
     }
     var jsonParser = new x3dom.JSONParser();
-    return jsonParser.parseJavaScript(jsobject);
+    return jsonParser.parseJavaScript( jsobject );
 };
 
 /**
@@ -1484,21 +1630,26 @@ x3dom.Runtime.prototype.createX3DFromJS = function(jsobject, optionalURL) {
  *
  * @param jsonOrXML - JSON or XML of X3D object
  * @param optionalURL - if specified, does a PROTO expansion on json.
- * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *                         JSON ExternProtoDeclare's are loaded relative to this URL.
  *
  * @returns The x3d element
  */
-x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
-    try {
-        var jsobject = JSON.parse(jsonOrXML);
-        return this.createX3DFromJS(jsobject, optionalURL);
-    } catch (e) {
+x3dom.Runtime.prototype.createX3DFromString = function ( jsonOrXML, optionalURL )
+{
+    try
+    {
+        var jsobject = JSON.parse( jsonOrXML );
+        return this.createX3DFromJS( jsobject, optionalURL );
+    }
+    catch ( e )
+    {
         var parser = new DOMParser();
-        var doc = parser.parseFromString(jsonOrXML, 'application/xml');
-        var scene = doc.querySelector('X3D');
-        if (scene == null) {
-            doc = parser.parseFromString(jsonOrXML, 'text/html');
-            scene = doc.querySelector('X3D');
+        var doc = parser.parseFromString( jsonOrXML, "application/xml" );
+        var scene = doc.querySelector( "X3D" );
+        if ( scene == null )
+        {
+            doc = parser.parseFromString( jsonOrXML, "text/html" );
+            scene = doc.querySelector( "X3D" );
         }
         return scene;
     }
@@ -1517,24 +1668,27 @@ x3dom.Runtime.prototype.createX3DFromString = function(jsonOrXML, optionalURL) {
  *
  * @param url - url of XML or JSON of X3D object
  * @param optionalURL - if specified, does a PROTO expansion on json, only.
- * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *                         JSON ExternProtoDeclare's are loaded relative to this URL.
  *
  * @returns A Promise resolved to the x3d element
  */
-x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
+x3dom.Runtime.prototype.createX3DFromURLPromise = function ( url, optionalURL )
+{
     this.canvas.doc.incrementDownloads();
     that = this;
-    return fetch(url)
-        .then(function(r) { return r.text(); })
-        .then(function(text) {
+    return fetch( url )
+        .then( function ( r ) { return r.text(); } )
+        .then( function ( text )
+        {
             that.canvas.doc.decrementDownloads();
-            return that.createX3DFromString(text, optionalURL);
-        })
-        .catch(function(r) {
+            return that.createX3DFromString( text, optionalURL );
+        } )
+        .catch( function ( r )
+        {
             that.canvas.doc.decrementDownloads();
-            x3dom.debug.logError('fetch failed: ' + r);
+            x3dom.debug.logError( "fetch failed: " + r );
             return null;
-        });
+        } );
 };
 
 /**
@@ -1551,7 +1705,7 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
  *
  * @param url - url of XML or JSON of X3D object
  * @param optionalURL - if specified, does a PROTO expansion on json, only.
- * 			            JSON ExternProtoDeclare's are loaded relative to this URL.
+ *                         JSON ExternProtoDeclare's are loaded relative to this URL.
  *
  * @returns undefined
  *
@@ -1559,11 +1713,13 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function(url, optionalURL) {
  *       therefore necessary to get the replaced x3d element
  *       each time to access the new runtime.
  */
-x3dom.Runtime.prototype.loadURL = function(url, optionalURL) {
+x3dom.Runtime.prototype.loadURL = function ( url, optionalURL )
+{
     that = this;
-    this.createX3DFromURLPromise(url, optionalURL)
-        .then(function(x3d) {
-            if (x3d != null) that.replaceWorld(x3d);
-            else x3dom.debug.logError("loadURL: could not fetch or parse " + url);
-        });
+    this.createX3DFromURLPromise( url, optionalURL )
+        .then( function ( x3d )
+        {
+            if ( x3d != null ) {that.replaceWorld( x3d );}
+            else {x3dom.debug.logError( "loadURL: could not fetch or parse " + url );}
+        } );
 };

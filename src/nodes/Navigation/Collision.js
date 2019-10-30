@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Collision",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for Collision
          * @constructs x3dom.nodeTypes.Collision
@@ -30,9 +30,9 @@ x3dom.registerNodeType(
          * Hint: NavigationInfo types ''WALK' 'FLY'' support camera-to-object collision detection.
          * Hint: insert a Shape node before adding geometry or Appearance.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Collision.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Collision.superClass.call( this, ctx );
 
             /**
              * Enables/disables collision detection for children and all descendants. Hint: former name quotecollidequote in VRML 97 specification.
@@ -42,7 +42,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool (ctx, "enabled", true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * alternate object to be checked for collision, in place of the children of this node.
@@ -52,8 +52,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
-
+            this.addField_SFNode( "proxy", x3dom.nodeTypes.X3DGroupingNode );
 
             // TODO; add Slots: collideTime, isActive
             /**
@@ -64,7 +63,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime (ctx, "collideTime", 0);
+            this.addField_SFTime( ctx, "collideTime", 0 );
 
             /**
              * NOT YET IMPLEMENTED. The value of the isActive field indicates the current state of the Collision node.
@@ -75,38 +74,44 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool (ctx, "isActive", true);
+            this.addField_SFBool( ctx, "isActive", true );
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
-                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask < 0) {
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
+                if ( planeMask < 0 )
+                {
                     return;
                 }
 
-                var cnode, childTransform;
+                var cnode,
+                    childTransform;
 
-                if (singlePath) {
-                    if (!this._graph.globalMatrix) {
-                        this._graph.globalMatrix = this.transformMatrix(transform);
+                if ( singlePath )
+                {
+                    if ( !this._graph.globalMatrix )
+                    {
+                        this._graph.globalMatrix = this.transformMatrix( transform );
                     }
                     childTransform = this._graph.globalMatrix;
                 }
-                else {
-                    childTransform = this.transformMatrix(transform);
+                else
+                {
+                    childTransform = this.transformMatrix( transform );
                 }
 
-                for (var i=0, n=this._childNodes.length; i<n; i++)
+                for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                 {
-                    if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                    if ( ( cnode = this._childNodes[ i ] ) && ( cnode !== this._cf.proxy.node ) )
+                    {
+                        cnode.collectDrawableObjects( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
                     }
                 }
             }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DTextureTransformNode",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for X3DTextureTransformNode
          * @constructs x3dom.nodeTypes.X3DTextureTransformNode
@@ -23,12 +23,13 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type is the base type for all node types which specify a transformation of texture coordinates.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DTextureTransformNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DTextureTransformNode.superClass.call( this, ctx );
         },
         {
-            texTransformMatrix: function() {
+            texTransformMatrix : function ()
+            {
                 return this._trafo;
             }
         }

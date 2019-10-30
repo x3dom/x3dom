@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DNavigationInfoNode",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBindableNode,
+
         /**
          * Constructor for X3DNavigationInfoNode
          * @constructs x3dom.nodeTypes.X3DNavigationInfoNode
@@ -21,9 +21,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DBindableNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call( this, ctx );
         }
     )
 );

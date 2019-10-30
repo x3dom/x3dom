@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DAppearanceChildNode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for X3DAppearanceChildNode
          * @constructs x3dom.nodeTypes.X3DAppearanceChildNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is the base node type for the child nodes of the X3DAppearanceNode type.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DAppearanceChildNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DAppearanceChildNode.superClass.call( this, ctx );
         }
     )
 );

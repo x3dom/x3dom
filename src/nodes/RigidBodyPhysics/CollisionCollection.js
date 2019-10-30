@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### CollisionCollection ###
+//    ### CollisionCollection ###
 x3dom.registerNodeType(
     "CollisionCollection",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass( x3dom.nodeTypes.X3DChildNode,
 
         /**
          * Constructor for CollisionCollection
@@ -29,8 +29,9 @@ x3dom.registerNodeType(
          *  inserting a script between the output of the sensor and the input to the RigidBodyCollection node if it is
          *  desired to process the contact stream.
          */
-        function(ctx){
-            x3dom.nodeTypes.CollisionCollection.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CollisionCollection.superClass.call( this, ctx );
 
             /**
              * The bounce field indicates how bouncy the surface contact is. A value of 0 indicates no bounce at all
@@ -42,7 +43,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'bounce', 0);
+            this.addField_SFFloat( ctx, "bounce", 0 );
 
             /**
              * The enabled field is used to control whether the collision detection system for this collection should be
@@ -55,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * Friction Coefficients
@@ -66,7 +67,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'frictionCoefficients', 0,0);
+            this.addField_SFVec2f( ctx, "frictionCoefficients", 0, 0 );
 
             /**
              * The minBounceSpeed field indicates the minimum speed, in speed base units, that an object shall have
@@ -79,7 +80,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'minBounceSpeed', 0.1);
+            this.addField_SFFloat( ctx, "minBounceSpeed", 0.1 );
 
             /**
              * Slip factors
@@ -90,7 +91,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'slipFactors', 0,0);
+            this.addField_SFVec2f( ctx, "slipFactors", 0, 0 );
 
             /**
              * The softnessConstantForceMix value applies a constant force value to make the colliding surfaces appear
@@ -102,7 +103,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'softnessConstantForceMix', 0.0001);
+            this.addField_SFFloat( ctx, "softnessConstantForceMix", 0.0001 );
 
             /**
              * The softnessErrorCorrection determines how much of the collision error should be fixed in a set of
@@ -115,7 +116,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'softnessErrorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "softnessErrorCorrection", 0.8 );
 
             /**
              * The surfaceSpeed field defines the speed in the two friction directions in speed base units. This is used
@@ -127,7 +128,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'surfaceSpeed', 0,0);
+            this.addField_SFVec2f( ctx, "surfaceSpeed", 0, 0 );
 
             /**
              * The collidables field can be managed as a single entity for resolution of inter-object collisions with
@@ -138,15 +139,18 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('collidables', x3dom.nodeTypes.X3DNBodyCollidableNode);
-
+            this.addField_MFNode( "collidables", x3dom.nodeTypes.X3DNBodyCollidableNode );
         },
         {
-            nodeChanged: function(){
-                if(!this._cf.collidables.nodes){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.X3DNBodyCollidableNode)){
-                            this._cf.collidables = this._xmlNode.children[x];
+            nodeChanged : function ()
+            {
+                if ( !this._cf.collidables.nodes )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.X3DNBodyCollidableNode ) )
+                        {
+                            this._cf.collidables = this._xmlNode.children[ x ];
                         }
                     }
                 }

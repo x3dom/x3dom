@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MetadataSet",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DMetadataObject,
-        
+    defineClass( x3dom.nodeTypes.X3DMetadataObject,
+
         /**
          * Constructor for MetadataSet
          * @constructs x3dom.nodeTypes.MetadataSet
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The metadata provided by this node is contained in the metadata nodes of the value field.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MetadataSet.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MetadataSet.superClass.call( this, ctx );
 
             /**
              *
@@ -35,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('value', x3dom.nodeTypes.X3DMetadataObject);
-        
+            this.addField_MFNode( "value", x3dom.nodeTypes.X3DMetadataObject );
         }
     )
 );

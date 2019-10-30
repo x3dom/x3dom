@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "DepthMode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for DepthMode
          * @constructs x3dom.nodeTypes.DepthMode
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The depth mode contains the parameters that are specific for depth control, like the value used for depth buffer comparisons.
          */
-        function (ctx) {
-            x3dom.nodeTypes.DepthMode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.DepthMode.superClass.call( this, ctx );
 
             /**
              * Whether the depth test should be enabled or not.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'enableDepthTest', true);
+            this.addField_SFBool( ctx, "enableDepthTest", true );
 
             /**
              * The depth function to use. If "none", it's not changed, the default is "lequal".
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'depthFunc', "none");
+            this.addField_SFString( ctx, "depthFunc", "none" );
 
             /**
              * Whether the depth buffer is enabled for writing or not.
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'readOnly', false);
+            this.addField_SFBool( ctx, "readOnly", false );
 
             /**
              * The near value for the depth range. Ignored if less than 0, defaults to -1.
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zNearRange', -1);
+            this.addField_SFFloat( ctx, "zNearRange", -1 );
 
             /**
              * The far value for the depth range. Ignored if less than 0, defaults to -1.
@@ -77,8 +77,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'zFarRange', -1);
-        
+            this.addField_SFFloat( ctx, "zFarRange", -1 );
         }
     )
 );

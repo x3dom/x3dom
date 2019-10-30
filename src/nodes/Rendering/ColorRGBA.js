@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ColorRGBA",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DColorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DColorNode,
+
         /**
          * Constructor for ColorRGBA
          * @constructs x3dom.nodeTypes.ColorRGBA
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * If both a Material node and a ColorRGBA node are specified for a geometric shape, the colours shall replace the diffuse and transparency components of the material.
          * RGB or RGBA textures take precedence over colours; specifying both an RGB or RGBA texture and a ColorRGBA node for geometric shape will result in the ColorRGBA node being ignored.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ColorRGBA.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ColorRGBA.superClass.call( this, ctx );
 
             /**
              * The set of RGBA colors
@@ -40,8 +40,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFColorRGBA(ctx, 'color', []);
-        
+            this.addField_MFColorRGBA( ctx, "color", [] );
         }
     )
 );

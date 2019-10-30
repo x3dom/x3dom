@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### RigidBody ###
+//    ### RigidBody ###
 x3dom.registerNodeType(
     "RigidBody",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass( x3dom.nodeTypes.X3DNode,
 
         /**
          * Constructor for RigidBody
@@ -25,8 +25,9 @@ x3dom.registerNodeType(
          *  A body is modelled as a collection of shapes that describe mass distribution rather than renderable
          *  geometry. Bodies are connected together using Joints and are represented by geometry.
          */
-        function(ctx){
-            x3dom.nodeTypes.RigidBody.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.RigidBody.superClass.call( this, ctx );
 
             /**
              * Angular damping factor.
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'angularDampingFactor', 0.001);
+            this.addField_SFFloat( ctx, "angularDampingFactor", 0.001 );
 
             /**
              * The velocity fields are used to provide a constant velocity value to the object every frame. If both
@@ -49,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-                this.addField_SFVec3f(ctx, 'angularVelocity', 0,0,0);
+            this.addField_SFVec3f( ctx, "angularVelocity", 0, 0, 0 );
 
             /**
              * The application of damping is controlled through the use of the autoDamp field. When the value is FALSE,
@@ -61,7 +62,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoDamp', false);
+            this.addField_SFBool( ctx, "autoDamp", false );
 
             /**
              * By default, this automatic disabling is turned off. It may be enabled by setting the autoDisable field
@@ -72,7 +73,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoDisable', false);
+            this.addField_SFBool( ctx, "autoDisable", false );
 
             /**
              * Center of mass for calculations
@@ -83,7 +84,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'centerOfMass', 0,0,0);
+            this.addField_SFVec3f( ctx, "centerOfMass", 0, 0, 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -95,7 +96,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableAngularSpeed', 0);
+            this.addField_SFFloat( ctx, "disableAngularSpeed", 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -107,7 +108,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableLinearSpeed', 0);
+            this.addField_SFFloat( ctx, "disableLinearSpeed", 0 );
 
             /**
              * The disable fields define conditions for when the body ceases to considered as part of the rigid body
@@ -119,7 +120,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'disableTime', 0);
+            this.addField_SFFloat( ctx, "disableTime", 0 );
 
             /**
              * The enabled field controls whether the information in this node is submitted to the physics engine for
@@ -131,7 +132,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * The finiteRotationAxis field specifies a vector around which the object rotates.
@@ -141,7 +142,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'finiteRotationAxis', 0,0,0);
+            this.addField_SFVec3f( ctx, "finiteRotationAxis", 0, 0, 0 );
 
             /**
              * The fixed field is used to indicate that this body does not move. Any calculations involving collisions
@@ -154,7 +155,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'fixed', false);
+            this.addField_SFBool( ctx, "fixed", false );
 
             /**
              * The torques and forces fields define zero or more sets of torque and force values that are applied to the
@@ -165,7 +166,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'forces', []);
+            this.addField_MFVec3f( ctx, "forces", [] );
 
             /**
              * The inertia field represents a 3x2 inertia tensor matrix. If the set values are less than six items, the
@@ -177,7 +178,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'inertia', [1, 0, 0, 0, 1, 0, 0, 0, 1]);
+            this.addField_MFFloat( ctx, "inertia", [ 1, 0, 0, 0, 1, 0, 0, 0, 1 ] );
 
             /**
              * Linear damping factor.
@@ -188,7 +189,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'linearDampingFactor', 0.001);
+            this.addField_SFFloat( ctx, "linearDampingFactor", 0.001 );
 
             /**
              * Linear velocity.
@@ -199,7 +200,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'linearVelocity', 0,0,0);
+            this.addField_SFVec3f( ctx, "linearVelocity", 0, 0, 0 );
 
             /**
              * The mass field indicates the mass of the body in mass base units. All bodies shall have a non-zero mass,
@@ -211,7 +212,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'mass', 1);
+            this.addField_SFFloat( ctx, "mass", 1 );
 
             /**
              * The position and orientation fields are used to set the initial conditions of this body's location in
@@ -224,7 +225,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'orientation', 0,0,1,0);
+            this.addField_SFRotation( ctx, "orientation", 0, 0, 1, 0 );
 
             /**
              * The position and orientation fields are used to set the initial conditions of this body's location in
@@ -237,7 +238,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'position', 0,0,0);
+            this.addField_SFVec3f( ctx, "position", 0, 0, 0 );
 
             /**
              * The torques and forces fields define zero or more sets of torque and force values that are applied to the
@@ -248,7 +249,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'torques', []);
+            this.addField_MFVec3f( ctx, "torques", [] );
 
             /**
              * The useFiniteRotation field is used to influence the way the body's rotation is calculated. In very fast
@@ -260,7 +261,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'useFiniteRotation', false);
+            this.addField_SFBool( ctx, "useFiniteRotation", false );
 
             /**
              * The useGlobalGravity field is used to indicate whether this particular body should be influenced by the
@@ -273,7 +274,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'useGlobalGravity', true);
+            this.addField_SFBool( ctx, "useGlobalGravity", true );
 
             /**
              * The massDensityModel field is used to describe the geometry type and dimensions used to calculate the
@@ -285,8 +286,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('massDensityModel', x3dom.nodeTypes.Shape);
-
+            this.addField_MFNode( "massDensityModel", x3dom.nodeTypes.Shape );
 
             /**
              * The geometry field is used to connect the body modelled by the physics engine implementation to the real
@@ -300,22 +300,28 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFNode('geometry', x3dom.nodeTypes.X3DNBodyCollidableNode);
-
+            this.addField_MFNode( "geometry", x3dom.nodeTypes.X3DNBodyCollidableNode );
         },
         {
-            nodeChanged: function(){
-                if(!this._cf.geometry.nodes){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.X3DNBodyCollidableNode)){
-                            this._cf.geometry = this._xmlNode.children[x];
+            nodeChanged : function ()
+            {
+                if ( !this._cf.geometry.nodes )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.X3DNBodyCollidableNode ) )
+                        {
+                            this._cf.geometry = this._xmlNode.children[ x ];
                         }
                     }
                 }
-                if(!this._cf.massDensityModel.nodes){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.Shape)){
-                            this._cf.massDensityModel = this._xmlNode.children[x];
+                if ( !this._cf.massDensityModel.nodes )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.Shape ) )
+                        {
+                            this._cf.massDensityModel = this._xmlNode.children[ x ];
                         }
                     }
                 }

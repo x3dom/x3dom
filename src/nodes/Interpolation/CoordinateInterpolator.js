@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "CoordinateInterpolator",
     "Interpolation",
-    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInterpolatorNode,
+
         /**
          * Constructor for CoordinateInterpolator
          * @constructs x3dom.nodeTypes.CoordinateInterpolator
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * The number of coordinates in the keyValue field shall be an integer multiple of the number of key frames in the key field.
          * That integer multiple defines how many coordinates will be contained in the value_changed events.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CoordinateInterpolator.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CoordinateInterpolator.superClass.call( this, ctx );
 
             /**
              * Defines the set of data points, that are used for interpolation.
@@ -37,41 +37,44 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'keyValue', []);
+            this.addField_MFVec3f( ctx, "keyValue", [] );
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
+            if ( ctx && ctx.xmlNode.hasAttribute( "keyValue" ) )
+            {
                 this._vf.keyValue = [];     // FIXME!!!
 
-                var arr = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
+                var arr = x3dom.fields.MFVec3f.parse( ctx.xmlNode.getAttribute( "keyValue" ) );
                 var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
                 var len = arr.length / key;
-                for (var i=0; i<key; i++) {
+                for ( var i = 0; i < key; i++ )
+                {
                     var val = new x3dom.fields.MFVec3f();
-                    for (var j=0; j<len; j++) {
-                        val.push( arr[i*len+j] );
+                    for ( var j = 0; j < len; j++ )
+                    {
+                        val.push( arr[ i * len + j ] );
                     }
-                    this._vf.keyValue.push(val);
+                    this._vf.keyValue.push( val );
                 }
             }
-        
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if(fieldName === "set_fraction")
+                if ( fieldName === "set_fraction" )
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                    var value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                    {
                         var val = new x3dom.fields.MFVec3f();
-                        for (var i=0; i<a.length; i++)
-                            val.push(a[i].multiply(1.0-t).add(b[i].multiply(t)));
+                        for ( var i = 0; i < a.length; i++ )
+                        {val.push( a[ i ].multiply( 1.0 - t ).add( b[ i ].multiply( t ) ) );}
 
                         return val;
-                    });
+                    } );
 
-                    if(value != undefined && value != this._lastValue)
+                    if ( value != undefined && value != this._lastValue )
                     {
                         this._lastValue = value;
-                        this.postMessage('value_changed', value);
+                        this.postMessage( "value_changed", value );
                     }
                 }
             }

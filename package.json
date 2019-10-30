@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./build/src-builder.js"
+    "build": "node ./build/src-builder.js",
+    "lint": "eslint --fix ./src/**/*.js"
   },
   "repository": {
     "type": "git",

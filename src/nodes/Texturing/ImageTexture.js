@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ImageTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.Texture,
-        
+    defineClass( x3dom.nodeTypes.Texture,
+
         /**
          * Constructor for ImageTexture
          * @constructs x3dom.nodeTypes.ImageTexture
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc ImageTexture maps a 2D-image file onto a geometric shape.
          * Texture maps have a 2D coordinate system (s, t) horizontal and vertical, with (s, t) values in range [0.0, 1.0] for opposite corners of the image.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ImageTexture.superClass.call( this, ctx );
         }
     )
 );

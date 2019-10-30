@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TextureTransform",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureTransformNode,
+
         /**
          * Constructor for TextureTransform
          * @constructs x3dom.nodeTypes.TextureTransform
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The TextureTransform node defines a 2D transformation that is applied to texture coordinates. This node affects the way textures coordinates are applied to the geometric surface. The transformation consists of (in order):
          * a translation; a rotation about the centre point; a non-uniform scale about the centre point.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TextureTransform.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TextureTransform.superClass.call( this, ctx );
 
             /**
              * The center field specifies a translation offset in texture coordinate space about which the rotation and scale fields are applied.
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'center', 0, 0);
+            this.addField_SFVec2f( ctx, "center", 0, 0 );
 
             /**
              * The rotation field specifies a rotation in angle base units of the texture coordinates about the center point after the scale has been applied.
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'rotation', 0);
+            this.addField_SFFloat( ctx, "rotation", 0 );
 
             /**
              * The scale field specifies a scaling factor in S and T of the texture coordinates about the center point.
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'scale', 1, 1);
+            this.addField_SFVec2f( ctx, "scale", 1, 1 );
 
             /**
              * The translation field specifies a translation of the texture coordinates.
@@ -67,32 +67,34 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'translation', 0, 0);
-        
+            this.addField_SFVec2f( ctx, "translation", 0, 0 );
+
             this._calcTrafo();
         },
         {
-            fieldChanged: function (fieldName) {
+            fieldChanged : function ( fieldName )
+            {
                 //Tc' = -C * S * R * C * T * Tc
-                if (fieldName == 'center' || fieldName == 'rotation' ||
-                    fieldName == 'scale' || fieldName == 'translation') {
-
+                if ( fieldName == "center" || fieldName == "rotation" ||
+                    fieldName == "scale" || fieldName == "translation" )
+                {
                     this._calcTrafo();
                 }
             },
 
-            _calcTrafo: function () {
-                var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 0);
-                var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
-                var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
-                var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
-                
+            _calcTrafo : function ()
+            {
+                var negCenter = new x3dom.fields.SFVec3f( -this._vf.center.x, -this._vf.center.y, 0 );
+                var posCenter = new x3dom.fields.SFVec3f( this._vf.center.x, this._vf.center.y, 0 );
+                var trans3 = new x3dom.fields.SFVec3f( this._vf.translation.x, this._vf.translation.y, 0 );
+                var scale3 = new x3dom.fields.SFVec3f( this._vf.scale.x, this._vf.scale.y, 0 );
+
                 //Tc' = -C * S * R * C * T * Tc
-                this._trafo = 
-                    x3dom.fields.SFMatrix4f.translation(negCenter).
-                    mult(x3dom.fields.SFMatrix4f.scale(scale3)).
-                    mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
-                    mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)));
+                this._trafo =
+                    x3dom.fields.SFMatrix4f.translation( negCenter ).
+                        mult( x3dom.fields.SFMatrix4f.scale( scale3 ) ).
+                        mult( x3dom.fields.SFMatrix4f.rotationZ( this._vf.rotation ) ).
+                        mult( x3dom.fields.SFMatrix4f.translation( posCenter.add( trans3 ) ) );
             }
         }
     )

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Inline",
     "Networking",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for Inline
          * @constructs x3dom.nodeTypes.Inline
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Inline is a Grouping node that can load nodes from another X3D scene via url.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Inline.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Inline.superClass.call( this, ctx );
 
             /**
              * Each specified URL shall refer to a valid X3D file that contains a list of children nodes, prototypes and routes at the top level. Hint: Strings can have multiple values, so separate each string by quote marks. Warning: strictly match directory and filename capitalization for http links!
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString( ctx, "url", [] );
 
             /**
              * Specifies whether the X3D file specified by the url field is loaded. Hint: use LoadSensor to detect when loading is complete. TRUE: load immediately (it's also possible to load the URL at a later time by sending a TRUE event to the load field); FALSE: no action is taken (by sending a FALSE event to the load field of a previously loaded Inline, the contents of the Inline will be unloaded from the scene graph)
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'load', true);
+            this.addField_SFBool( ctx, "load", true );
 
             /**
              * Specifies the namespace of the Inline node.
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'nameSpaceName', []);
+            this.addField_MFString( ctx, "nameSpaceName", [] );
 
             /**
              * Specifies the content type of the resource.
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'contentType', "");
+            this.addField_SFString( ctx, "contentType", "" );
 
             /**
              * Specifies whether the DEF value is used as id when no other id is set.
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'mapDEFToID', false);
+            this.addField_SFBool( ctx, "mapDEFToID", false );
 
             this.initDone = false;
             this.count = 0;
@@ -90,20 +90,21 @@ x3dom.registerNodeType(
             };
         },
         {
-            fieldChanged: function (fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "url" || fieldName == "load") {
-
+                if ( fieldName == "url" || fieldName == "load" )
+                {
                     //Remove the childs of the x3domNode
-                    for (var i=0; i<this._childNodes.length; i++)
+                    for ( var i = 0; i < this._childNodes.length; i++ )
                     {
-                        this.removeChild(this._childNodes[i]);
+                        this.removeChild( this._childNodes[ i ] );
                     }
 
                     //if reflected to DOM remove the childs of the domNode
-                    if (this._vf.nameSpaceName.length != 0) {
+                    if ( this._vf.nameSpaceName.length != 0 )
+                    {
                         var node = this._xmlNode;
-                        if (node && node.hasChildNodes())
+                        if ( node && node.hasChildNodes() )
                         {
                             while ( node.childNodes.length >= 1 )
                             {
@@ -113,83 +114,92 @@ x3dom.registerNodeType(
                     }
                     this.loadInline();
                 }
-                else if (fieldName == "render") {
+                else if ( fieldName == "render" )
+                {
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }
             },
 
-            nodeChanged: function ()
+            nodeChanged : function ()
             {
-                if (!this.initDone) {
+                if ( !this.initDone )
+                {
                     this.initDone = true;
                     this.loadInline();
                 }
             },
-        
-            parentRemoved: function () {
-                        
+
+            parentRemoved : function ()
+            {
                 var global = x3dom.getGlobal();
 
-                if (this._childNodes.length > 0 && this._childNodes[0] && this._childNodes[0]._nameSpace)
-                    this._nameSpace.removeSpace(this._childNodes[0]._nameSpace);
-                
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
-                    if (this._childNodes[i]) {
-                        this._childNodes[i].parentRemoved(this);
-                        global['_remover'] = this.removeChild(this._childNodes[i]);
+                if ( this._childNodes.length > 0 && this._childNodes[ 0 ] && this._childNodes[ 0 ]._nameSpace )
+                {this._nameSpace.removeSpace( this._childNodes[ 0 ]._nameSpace );}
+
+                for ( var i = 0, n = this._childNodes.length; i < n; i++ )
+                {
+                    if ( this._childNodes[ i ] )
+                    {
+                        this._childNodes[ i ].parentRemoved( this );
+                        global[ "_remover" ] = this.removeChild( this._childNodes[ i ] );
                     }
                 }
 
-                delete global['_remover'];
-        
+                delete global[ "_remover" ];
             },
 
-            fireEvents: function(eventType)
+            fireEvents : function ( eventType )
             {
                 if ( this._xmlNode &&
-                    (this._xmlNode['on'+eventType] ||
-                        this._xmlNode.hasAttribute('on'+eventType) ||
-                        this._listeners[eventType]) )
+                    ( this._xmlNode[ "on" + eventType ] ||
+                        this._xmlNode.hasAttribute( "on" + eventType ) ||
+                        this._listeners[ eventType ] ) )
                 {
                     var event = {
-                        target: this._xmlNode,
-                        type: eventType,
-                        error: (eventType == "error") ? "XMLHttpRequest Error" : "",
-                        cancelBubble: false,
-                        stopPropagation: function() { this.cancelBubble = true; }
+                        target          : this._xmlNode,
+                        type            : eventType,
+                        error           : ( eventType == "error" ) ? "XMLHttpRequest Error" : "",
+                        cancelBubble    : false,
+                        stopPropagation : function () { this.cancelBubble = true; }
                     };
 
-                    try {
-                        var attrib = this._xmlNode["on" + eventType];
+                    try
+                    {
+                        var attrib = this._xmlNode[ "on" + eventType ];
 
-                        if (typeof(attrib) === "function") {
-                            attrib.call(this._xmlNode, event);
+                        if ( typeof( attrib ) === "function" )
+                        {
+                            attrib.call( this._xmlNode, event );
                         }
-                        else {
-                            var funcStr = this._xmlNode.getAttribute("on" + eventType);
-                            var func = new Function('event', funcStr);
-                            func.call(this._xmlNode, event);
+                        else
+                        {
+                            var funcStr = this._xmlNode.getAttribute( "on" + eventType );
+                            var func = new Function( "event", funcStr );
+                            func.call( this._xmlNode, event );
                         }
 
-                        var list = this._listeners[eventType];
-                        if (list) {
-                            for (var i = 0; i < list.length; i++) {
-                                list[i].call(this._xmlNode, event);
+                        var list = this._listeners[ eventType ];
+                        if ( list )
+                        {
+                            for ( var i = 0; i < list.length; i++ )
+                            {
+                                list[ i ].call( this._xmlNode, event );
                             }
                         }
                     }
-                    catch(ex) {
-                        x3dom.debug.logException(ex);
+                    catch ( ex )
+                    {
+                        x3dom.debug.logException( ex );
                     }
                 }
             },
 
-            isValidContentType: function( contentType )
+            isValidContentType : function ( contentType )
             {
                 for ( var type in this.ContentType )
                 {
-                    if( contentType === this.ContentType[ type ] )
+                    if ( contentType === this.ContentType[ type ] )
                     {
                         return true;
                     }
@@ -198,24 +208,24 @@ x3dom.registerNodeType(
                 return false;
             },
 
-            getContentType: function()
+            getContentType : function ()
             {
                 //Return contentType if defined & valid
-                if (this._vf.contentType != "" && this.isValidContentType( this._vf.contentType ) )
+                if ( this._vf.contentType != "" && this.isValidContentType( this._vf.contentType ) )
                 {
                     return this._vf.contentType;
                 }
 
                 //Try to detect the contentType from suffix
-                if (this._vf.url.length && this._vf.url[0].length)
+                if ( this._vf.url.length && this._vf.url[ 0 ].length )
                 {
-                    var lastPointIndex = this._vf.url[0].lastIndexOf(".");
+                    var lastPointIndex = this._vf.url[ 0 ].lastIndexOf( "." );
 
                     if ( lastPointIndex != -1 )
                     {
-                        var suffix = this._vf.url[0].substr( lastPointIndex ).toLowerCase();
-                        
-                        switch(suffix)
+                        var suffix = this._vf.url[ 0 ].substr( lastPointIndex ).toLowerCase();
+
+                        switch ( suffix )
                         {
                             case ".x3d"  :  return this.ContentType.X3D;
                             case ".gltf" :  return this.ContentType.GLTF;
@@ -226,59 +236,64 @@ x3dom.registerNodeType(
                 }
             },
 
-            loadX3D: function(inlScene, nameSpace)
+            loadX3D : function ( inlScene, nameSpace )
             {
-                if (!this._vf.load) {
-                    x3dom.debug.logInfo('Inline: load field prevented loading of ' + this._vf.url[0]);
+                if ( !this._vf.load )
+                {
+                    x3dom.debug.logInfo( "Inline: load field prevented loading of " + this._vf.url[ 0 ] );
                     return;
                 }
-              
+
                 var that = this;
 
                 var newScene = null;
 
-                if (inlScene)
+                if ( inlScene )
                 {
-                    newScene = nameSpace.setupTree(inlScene);
+                    newScene = nameSpace.setupTree( inlScene );
 
-                    if(that._vf.nameSpaceName.length != 0)
+                    if ( that._vf.nameSpaceName.length != 0 )
                     {
-                        while (inlScene.children.length) {
-                            var childDomNode = inlScene.children[0];
-                            setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
-                            that._xmlNode.appendChild(childDomNode);    
+                        while ( inlScene.children.length )
+                        {
+                            var childDomNode = inlScene.children[ 0 ];
+                            setNamespace( that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID );
+                            that._xmlNode.appendChild( childDomNode );
                         }
                     }
                 }
-                else {
-                    x3dom.debug.logError('No Scene in resource');
+                else
+                {
+                    x3dom.debug.logError( "No Scene in resource" );
                 }
 
                 // trick to free memory, assigning a property to global object, then deleting it
                 var global = x3dom.getGlobal();
 
-                if (that._childNodes.length > 0 && that._childNodes[0] && that._childNodes[0]._nameSpace)
-                    that._nameSpace.removeSpace(that._childNodes[0]._nameSpace);
+                if ( that._childNodes.length > 0 && that._childNodes[ 0 ] && that._childNodes[ 0 ]._nameSpace )
+                {that._nameSpace.removeSpace( that._childNodes[ 0 ]._nameSpace );}
 
-                while (that._childNodes.length !== 0)
-                    global['_remover'] = that.removeChild(that._childNodes[0]);
+                while ( that._childNodes.length !== 0 )
+                {global[ "_remover" ] = that.removeChild( that._childNodes[ 0 ] );}
 
-                delete global['_remover'];
+                delete global[ "_remover" ];
 
-                if (newScene)
+                if ( newScene )
                 {
-                    that.addChild(newScene);
+                    that.addChild( newScene );
 
                     that.invalidateVolume();
 
                     // recalc changed scene bounding box twice
                     var theScene = that._nameSpace.doc._scene;
 
-                    if (theScene) {
+                    if ( theScene )
+                    {
                         theScene.invalidateVolume();
                         //theScene.invalidateCache();
 
-                        window.setTimeout( function() {
+                        window.setTimeout( function ()
+                        {
                             that.invalidateVolume();
                             //that.invalidateCache();
 
@@ -286,11 +301,11 @@ x3dom.registerNodeType(
                             that._nameSpace.doc.needRender = true;
                             that._nameSpace.doc.decrementDownloads();
                             that._nameSpace.doc.needRender = true;
-                            x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
+                            x3dom.debug.logInfo( "Inline: added " + that._vf.url[ 0 ] + " to scene." );
                         }, 1000 );
                     }
 
-                    that.fireEvents("load");
+                    that.fireEvents( "load" );
                 }
 
                 newScene = null;
@@ -299,7 +314,7 @@ x3dom.registerNodeType(
                 xml = null;
             },
 
-            loadInline: function ()
+            loadInline : function ()
             {
                 var that = this;
 
@@ -314,39 +329,40 @@ x3dom.registerNodeType(
                     if ( xhr.readyState == 4 )
                     {
                         //202 Still Transcoding
-                        if(xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding)
+                        if ( xhr.status === x3dom.nodeTypes.Inline.AwaitTranscoding )
                         {
                             if ( that.count < that.numRetries )
                             {
                                 that.count++;
 
-                                var refreshTime = +xhr.getResponseHeader("Refresh") || 5;
+                                var refreshTime = +xhr.getResponseHeader( "Refresh" ) || 5;
 
-                                x3dom.debug.logInfo('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' +
-                                                    'Next request in ' + refreshTime + ' seconds');
+                                x3dom.debug.logInfo( "XHR status: " + xhr.status + " - Await Transcoding (" + that.count + "/" + that.numRetries + "): " +
+                                                    "Next request in " + refreshTime + " seconds" );
 
-                                window.setTimeout(function() {
+                                window.setTimeout( function ()
+                                {
                                     that._nameSpace.doc.decrementDownloads();;
                                     that.loadInline();
-                                }, refreshTime * 1000);
+                                }, refreshTime * 1000 );
                             }
                             else
                             {
-                                x3dom.debug.logError('XHR status: ' + xhr.status + ' - Await Transcoding (' + that.count + '/' + that.numRetries + '): ' +
-                                                     'No Retries left');
+                                x3dom.debug.logError( "XHR status: " + xhr.status + " - Await Transcoding (" + that.count + "/" + that.numRetries + "): " +
+                                                     "No Retries left" );
 
                                 that._nameSpace.doc.decrementDownloads();;
 
                                 that.count = 0;
                             }
                         }
-                        else if( xhr.status == 200 || xhr.status == 0 )
+                        else if ( xhr.status == 200 || xhr.status == 0 )
                         {
-                            x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
+                            x3dom.debug.logInfo( "Inline: downloading " + that._vf.url[ 0 ] + " done." );
 
-                            if (contentType == undefined)
+                            if ( contentType == undefined )
                             {
-                                contentType = xhr.getResponseHeader("Content-Type");
+                                contentType = xhr.getResponseHeader( "Content-Type" );
                             }
 
                             that.count = 0;
@@ -355,82 +371,82 @@ x3dom.registerNodeType(
 
                             var namespace = that.addNameSpace();
 
-                            if (contentType == that.ContentType.GLTF || contentType == that.ContentType.GLB)
+                            if ( contentType == that.ContentType.GLTF || contentType == that.ContentType.GLB )
                             {
-                                if(xhr.response)
+                                if ( xhr.response )
                                 {
-                                    var loader = new x3dom.glTF2Loader(namespace);
+                                    var loader = new x3dom.glTF2Loader( namespace );
 
-                                    inlineScene = loader.load(xhr.response, isBinary);
+                                    inlineScene = loader.load( xhr.response, isBinary );
 
                                     that.loadX3D( inlineScene, namespace );
                                 }
                                 else
                                 {
-                                    x3dom.debug.logError('Invalide XHR Response');
+                                    x3dom.debug.logError( "Invalide XHR Response" );
 
-                                    that.fireEvents("error");
+                                    that.fireEvents( "error" );
 
                                     that._nameSpace.doc.decrementDownloads();;
                                     that.count = 0;
                                 }
                             }
-                            else if (contentType == that.ContentType.X3DJ)
+                            else if ( contentType == that.ContentType.X3DJ )
                             {
-                                if(xhr.response)
+                                if ( xhr.response )
                                 {
-                                    var json = x3dom.protoExpander.prototypeExpander(xhr.responseURL, xhr.response);
+                                    var json = x3dom.protoExpander.prototypeExpander( xhr.responseURL, xhr.response );
                                     var parser = new x3dom.JSONParser();
 
-                                    var xml = parser.parseJavaScript(json);
+                                    var xml = parser.parseJavaScript( json );
 
-                                    if (xml !== undefined && xml !== null)
+                                    if ( xml !== undefined && xml !== null )
                                     {
-                                        inlineScene = xml.getElementsByTagName('Scene')[0] ||
-                                                      xml.getElementsByTagName('scene')[0];
+                                        inlineScene = xml.getElementsByTagName( "Scene" )[ 0 ] ||
+                                                      xml.getElementsByTagName( "scene" )[ 0 ];
 
                                         that.loadX3D( inlineScene, namespace );
                                     }
                                     else
                                     {
-                                        that.fireEvents("error");
+                                        that.fireEvents( "error" );
                                         that._nameSpace.doc.decrementDownloads();
                                         that.count = 0;
                                     }
                                 }
                                 else
                                 {
-                                    x3dom.debug.logError('Invalide XHR Response');
+                                    x3dom.debug.logError( "Invalide XHR Response" );
 
-                                    that.fireEvents("error");
+                                    that.fireEvents( "error" );
 
                                     that._nameSpace.doc.decrementDownloads();
                                     that.count = 0;
                                 }
                             }
-                            else if (contentType == that.ContentType.X3D)
+                            else if ( contentType == that.ContentType.X3D )
                             {
                                 var xml;
 
-                                if (navigator.appName == "Microsoft Internet Explorer")
+                                if ( navigator.appName == "Microsoft Internet Explorer" )
                                 {
-                                    xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+                                    xml = new DOMParser().parseFromString( xhr.responseText, "text/xml" );
                                 }
                                 else
                                 {
                                     xml = xhr.responseXML;
                                 }
 
-                                if (xml !== undefined && xml !== null)
+                                if ( xml !== undefined && xml !== null )
                                 {
-                                    inlineScene = xml.getElementsByTagName('Scene')[0] ||
-                                                  xml.getElementsByTagName('scene')[0];
+                                    inlineScene = xml.getElementsByTagName( "Scene" )[ 0 ] ||
+                                                  xml.getElementsByTagName( "scene" )[ 0 ];
 
                                     that.loadX3D( inlineScene, namespace );
                                 }
                                 else
                                 {
-                                    that.fireEvents("error");
+                                    that.fireEvents( "error" );
                                     that._nameSpace.doc.decrementDownloads();
                                     that.count = 0;
                                 }
@@ -438,9 +454,9 @@ x3dom.registerNodeType(
                         }
                         else
                         {
-                            x3dom.debug.logError('XHR status: ' + xhr.status + ' - XMLHttpRequest requires web server running!');
+                            x3dom.debug.logError( "XHR status: " + xhr.status + " - XMLHttpRequest requires web server running!" );
 
-                            that.fireEvents("error");
+                            that.fireEvents( "error" );
 
                             that._nameSpace.doc.decrementDownloads();
                             that.count = 0;
@@ -448,30 +464,30 @@ x3dom.registerNodeType(
                     }
                 };
 
-                if (this._vf.url.length && this._vf.url[0].length)
+                if ( this._vf.url.length && this._vf.url[ 0 ].length )
                 {
-                    var xhrURI = this._nameSpace.getURL(this._vf.url[0]);
+                    var xhrURI = this._nameSpace.getURL( this._vf.url[ 0 ] );
 
-                    xhr.open('GET', xhrURI, true);
-                    xhr.setRequestHeader('Accept', 'model/x3d+xml; q=1.0, model/gltf+json; q=0.5, model/gltf-binary; q=0.5'); 
+                    xhr.open( "GET", xhrURI, true );
+                    xhr.setRequestHeader( "Accept", "model/x3d+xml; q=1.0, model/gltf+json; q=0.5, model/gltf-binary; q=0.5" );
 
-                    if (xhr.overrideMimeType)
+                    if ( xhr.overrideMimeType )
                     {
-                        if( contentType == this.ContentType.X3D )
+                        if ( contentType == this.ContentType.X3D )
                         {
-                            xhr.overrideMimeType('text/xml');
+                            xhr.overrideMimeType( "text/xml" );
                         }
-                        if( contentType == this.ContentType.X3DJ )
+                        if ( contentType == this.ContentType.X3DJ )
                         {
-                            xhr.overrideMimeType('application/json');
+                            xhr.overrideMimeType( "application/json" );
                             xhr.responseType = "json";
                         }
-                        else if( contentType == this.ContentType.GLTF )
+                        else if ( contentType == this.ContentType.GLTF )
                         {
                             isBinary = false;
                             xhr.responseType = "json";
                         }
-                        else if( contentType == this.ContentType.GLB )
+                        else if ( contentType == this.ContentType.GLB )
                         {
                             isBinary = true;
                             xhr.responseType = "arraybuffer";
@@ -481,35 +497,36 @@ x3dom.registerNodeType(
                     try
                     {
                         this._nameSpace.doc.incrementDownloads();
-                        x3dom.RequestManager.addRequest(xhr);
+                        x3dom.RequestManager.addRequest( xhr );
                     }
-                    catch(ex) {
-                        this.fireEvents("error");
-                        x3dom.debug.logError(this._vf.url[0] + ": " + ex);
+                    catch ( ex )
+                    {
+                        this.fireEvents( "error" );
+                        x3dom.debug.logError( this._vf.url[ 0 ] + ": " + ex );
                         this._nameSpace.doc.decrementDownloads();
                     }
                 }
             },
 
-            addNameSpace: function()
+            addNameSpace : function ()
             {
-                var nsName = (this._vf.nameSpaceName.length != 0) ?
-                this._vf.nameSpaceName.toString().replace(' ','') : "";
+                var nsName = ( this._vf.nameSpaceName.length != 0 ) ?
+                    this._vf.nameSpaceName.toString().replace( " ", "" ) : "";
 
-                var nameSpace = new x3dom.NodeNameSpace(nsName, this._nameSpace.doc);
+                var nameSpace = new x3dom.NodeNameSpace( nsName, this._nameSpace.doc );
 
-                var url = this._vf.url.length ? this._vf.url[0] : "";
+                var url = this._vf.url.length ? this._vf.url[ 0 ] : "";
 
-                if ((url[0] === '/') || (url.indexOf(":") >= 0))
+                if ( ( url[ 0 ] === "/" ) || ( url.indexOf( ":" ) >= 0 ) )
                 {
-                    nameSpace.setBaseURL(url);
+                    nameSpace.setBaseURL( url );
                 }
                 else
                 {
-                    nameSpace.setBaseURL(this._nameSpace.baseURL + url);
+                    nameSpace.setBaseURL( this._nameSpace.baseURL + url );
                 }
 
-                this._nameSpace.addSpace(nameSpace);
+                this._nameSpace.addSpace( nameSpace );
 
                 return nameSpace;
             }
@@ -520,23 +537,28 @@ x3dom.registerNodeType(
 x3dom.nodeTypes.Inline.AwaitTranscoding = 202;      // Parameterizable retry state for Transcoder
 x3dom.nodeTypes.Inline.MaximumRetries = 15;         // Parameterizable maximum number of retries
 
-function setNamespace(prefix, childDomNode, mapDEFToID)
+function setNamespace ( prefix, childDomNode, mapDEFToID )
 {
-    if(childDomNode instanceof Element && childDomNode.__setAttribute !== undefined) {
-
-        if(childDomNode.hasAttribute('id') )	{
-            childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));
-        } else if (childDomNode.hasAttribute('DEF') && mapDEFToID){
-            childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('DEF'));
+    if ( childDomNode instanceof Element && childDomNode.__setAttribute !== undefined )
+    {
+        if ( childDomNode.hasAttribute( "id" ) )
+        {
+            childDomNode.__setAttribute( "id", prefix.toString().replace( " ", "" ) + "__" + childDomNode.getAttribute( "id" ) );
+        }
+        else if ( childDomNode.hasAttribute( "DEF" ) && mapDEFToID )
+        {
+            childDomNode.__setAttribute( "id", prefix.toString().replace( " ", "" ) + "__" + childDomNode.getAttribute( "DEF" ) );
             // workaround for Safari
-            if (!childDomNode.id)
-                childDomNode.id = childDomNode.__getAttribute('id');
+            if ( !childDomNode.id )
+            {childDomNode.id = childDomNode.__getAttribute( "id" );}
         }
     }
 
-    if(childDomNode.hasChildNodes()){
-        Array.forEach ( childDomNode.childNodes, function (children) {
-            setNamespace(prefix, children, mapDEFToID);
+    if ( childDomNode.hasChildNodes() )
+    {
+        childDomNode.childNodes.forEach( function ( children )
+        {
+            setNamespace( prefix, children, mapDEFToID );
         } );
     }
 }

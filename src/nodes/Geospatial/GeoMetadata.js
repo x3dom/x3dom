@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "GeoMetadata",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DInfoNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInfoNode,
+
         /**
          * Constructor for GeoMetadata
          * @constructs x3dom.nodeTypes.GeoMetadata
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The GeoMetadata node supports the specification of metadata describing any number of geospatial nodes.
          * This is similar to a WorldInfo node, but specifically for describing geospatial information.
          */
-        function (ctx) {
-            x3dom.nodeTypes.GeoMetadata.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.GeoMetadata.superClass.call( this, ctx );
 
             /**
              * The url field is used to specify a hypertext link to an external, complete metadata description.
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString( ctx, "url", [] );
 
             /**
              * The data field is used to list all of the other nodes in a scene by DEF name that reference the data described in the GeoMetadata node.
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('data', x3dom.nodeTypes.X3DInfoNode);
+            this.addField_MFNode( "data", x3dom.nodeTypes.X3DInfoNode );
 
             /**
              * The summary string array contains a set of keyword/value pairs, with each keyword and its subsequent value contained in a separate string; i.e., there should always be an even (or zero) number of strings.
@@ -59,8 +59,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'summary', []);
-        
+            this.addField_MFString( ctx, "summary", [] );
         }
     )
 );

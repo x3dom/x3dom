@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "PositionChaser",
     "Followers",
-    defineClass(x3dom.nodeTypes.X3DChaserNode,
-        
+    defineClass( x3dom.nodeTypes.X3DChaserNode,
+
         /**
          * Constructor for PositionChaser
          * @constructs x3dom.nodeTypes.PositionChaser
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          *  position. It creates a smooth transition that ends duration seconds after the last position has been
          *  received.
          */
-        function (ctx) {
-            x3dom.nodeTypes.PositionChaser.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.PositionChaser.superClass.call( this, ctx );
 
             /**
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'initialDestination', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "initialDestination", 0, 0, 0 );
 
             /**
              * The field initialValue can be used to set the initial position of the object.
@@ -51,8 +51,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
-
+            this.addField_SFVec3f( ctx, "initialValue", 0, 0, 0 );
 
             /**
              * The current orientation value.
@@ -62,7 +61,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'value', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "value", 0, 0, 0 );
 
             /**
              * The target orientation value.
@@ -72,40 +71,42 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'destination', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "destination", 0, 0, 0 );
 
             this._buffer = new x3dom.fields.MFVec3f();
-            this._previousValue = new x3dom.fields.SFVec3f(0, 0, 0);
-            this._value = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._previousValue = new x3dom.fields.SFVec3f( 0, 0, 0 );
+            this._value = new x3dom.fields.SFVec3f( 0, 0, 0 );
 
             this.initialize();
-        
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName.indexOf("destination") >= 0)
+                if ( fieldName.indexOf( "destination" ) >= 0 )
                 {
                     this.initialize();
-                    this.updateBuffer(this._currTime);
+                    this.updateBuffer( this._currTime );
 
-                    if (!this._vf.isActive) {
-                        this.postMessage('isActive', true);
+                    if ( !this._vf.isActive )
+                    {
+                        this.postMessage( "isActive", true );
                     }
                 }
-                else if (fieldName.indexOf("value") >= 0)
+                else if ( fieldName.indexOf( "value" ) >= 0 )
                 {
                     this.initialize();
 
-                    this._previousValue.setValues(this._vf.value);
-                    for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C].setValues(this._vf.value);
+                    this._previousValue.setValues( this._vf.value );
+                    for ( var C = 1; C < this._buffer.length; C++ )
+                    {
+                        this._buffer[ C ].setValues( this._vf.value );
                     }
 
-                    this.postMessage('value', this._vf.value);
+                    this.postMessage( "value", this._vf.value );
 
-                    if (!this._vf.isActive) {
-                        this.postMessage('isActive', true);
+                    if ( !this._vf.isActive )
+                    {
+                        this.postMessage( "isActive", true );
                     }
                 }
             },
@@ -113,33 +114,35 @@ x3dom.registerNodeType(
             /** The following handler code was basically taken from
              *  http://www.hersto.com/X3D/Followers
              */
-            initialize: function()
+            initialize : function ()
             {
-                if (!this._initDone)
+                if ( !this._initDone )
                 {
                     this._initDone = true;
 
-                    this._vf.destination = x3dom.fields.SFVec3f.copy(this._vf.initialDestination);
+                    this._vf.destination = x3dom.fields.SFVec3f.copy( this._vf.initialDestination );
 
                     this._buffer.length = this._numSupports;
 
-                    this._buffer[0] = x3dom.fields.SFVec3f.copy(this._vf.initialDestination);
-                    for (var C=1; C<this._buffer.length; C++) {
-                        this._buffer[C] = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
+                    this._buffer[ 0 ] = x3dom.fields.SFVec3f.copy( this._vf.initialDestination );
+                    for ( var C = 1; C < this._buffer.length; C++ )
+                    {
+                        this._buffer[ C ] = x3dom.fields.SFVec3f.copy( this._vf.initialValue );
                     }
 
-                    this._previousValue = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
+                    this._previousValue = x3dom.fields.SFVec3f.copy( this._vf.initialValue );
 
                     this._stepTime = this._vf.duration / this._numSupports;
 
-                    var active = !this._buffer[0].equals(this._buffer[1], this._eps);
-                    if (this._vf.isActive !== active) {
-                        this.postMessage('isActive', active);
+                    var active = !this._buffer[ 0 ].equals( this._buffer[ 1 ], this._eps );
+                    if ( this._vf.isActive !== active )
+                    {
+                        this.postMessage( "isActive", active );
                     }
                 }
             },
 
-            tick: function(now)
+            tick : function ( now )
             {
                 this.initialize();
                 this._currTime = now;
@@ -147,18 +150,18 @@ x3dom.registerNodeType(
                 //if (!this._vf.isActive)
                 //    return false;
 
-                if (!this._bufferEndTime)
+                if ( !this._bufferEndTime )
                 {
                     this._bufferEndTime = now; // first event we received, so we are in the initialization phase.
 
-                    this._value = x3dom.fields.SFVec3f.copy(this._vf.initialValue);
+                    this._value = x3dom.fields.SFVec3f.copy( this._vf.initialValue );
 
-                    this.postMessage('value', this._value);
+                    this.postMessage( "value", this._value );
 
                     return true;
                 }
 
-                var Frac = this.updateBuffer(now);
+                var Frac = this.updateBuffer( now );
                 // Frac is a value in   0 <= Frac < 1.
 
                 // now we can calculate the output.
@@ -172,67 +175,70 @@ x3dom.registerNodeType(
                 // for adding the step responses.
                 // Actually updateBuffer(.) maintains this value in
 
-                var Output = x3dom.fields.SFVec3f.copy(this._previousValue);
+                var Output = x3dom.fields.SFVec3f.copy( this._previousValue );
 
-                var DeltaIn = this._buffer[this._buffer.length - 1].subtract(this._previousValue);
+                var DeltaIn = this._buffer[ this._buffer.length - 1 ].subtract( this._previousValue );
 
-                var DeltaOut = DeltaIn.multiply(this.stepResponse((this._buffer.length - 1 + Frac) * this._stepTime));
+                var DeltaOut = DeltaIn.multiply( this.stepResponse( ( this._buffer.length - 1 + Frac ) * this._stepTime ) );
 
-                Output = Output.add(DeltaOut);
+                Output = Output.add( DeltaOut );
 
-                for (var C=this._buffer.length - 2; C>=0; C--)
+                for ( var C = this._buffer.length - 2; C >= 0; C-- )
                 {
-                    DeltaIn = this._buffer[C].subtract(this._buffer[C + 1]);
+                    DeltaIn = this._buffer[ C ].subtract( this._buffer[ C + 1 ] );
 
-                    DeltaOut = DeltaIn.multiply(this.stepResponse((C + Frac) * this._stepTime));
+                    DeltaOut = DeltaIn.multiply( this.stepResponse( ( C + Frac ) * this._stepTime ) );
 
-                    Output = Output.add(DeltaOut);
+                    Output = Output.add( DeltaOut );
                 }
 
-                if ( !Output.equals(this._value, this._eps) ) {
-                    this._value.setValues(Output);
+                if ( !Output.equals( this._value, this._eps ) )
+                {
+                    this._value.setValues( Output );
 
-                    this.postMessage('value', this._value);
+                    this.postMessage( "value", this._value );
                 }
-                else {
-                    this.postMessage('isActive', false);
+                else
+                {
+                    this.postMessage( "isActive", false );
                 }
 
                 return this._vf.isActive;
             },
 
-            updateBuffer: function(now)
+            updateBuffer : function ( now )
             {
-                var Frac = (now - this._bufferEndTime) / this._stepTime;
-                var C;
-                var NumToShift;
-                var Alpha;
+                var Frac = ( now - this._bufferEndTime ) / this._stepTime;
+                var C,
+                    NumToShift,
+                    Alpha;
                 // is normally < 1. When it has grown to be larger than 1, we have to shift the array because the step response
                 // of the oldest entry has already reached its destination, and it's time for a newer entry.
                 // In the case of a very low frame rate, or a very short _stepTime we may need to shift by more than one entry.
 
-                if (Frac >= 1)
+                if ( Frac >= 1 )
                 {
-                    NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor( Frac );
                     Frac -= NumToShift;
 
-                    if( NumToShift < this._buffer.length)
+                    if ( NumToShift < this._buffer.length )
                     {
                         // normal case
-                        this._previousValue = x3dom.fields.SFVec3f.copy(this._buffer[this._buffer.length - NumToShift]);
+                        this._previousValue = x3dom.fields.SFVec3f.copy( this._buffer[ this._buffer.length - NumToShift ] );
 
-                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
-                            this._buffer[C] = x3dom.fields.SFVec3f.copy(this._buffer[C - NumToShift]);
+                        for ( C = this._buffer.length - 1; C >= NumToShift; C-- )
+                        {
+                            this._buffer[ C ] = x3dom.fields.SFVec3f.copy( this._buffer[ C - NumToShift ] );
                         }
 
-                        for (C=0; C<NumToShift; C++)
+                        for ( C = 0; C < NumToShift; C++ )
                         {
                             // Hmm, we have a destination value, but don't know how it has
                             // reached the current state.
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
                             Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
+                            this._buffer[ C ] = this._buffer[ NumToShift ].multiply( Alpha ).add( this._vf.destination.multiply( ( 1 - Alpha ) ) );
                         }
                     }
                     else
@@ -247,11 +253,12 @@ x3dom.registerNodeType(
                         // but if we reach here we are in a very degenerate case...
                         // Thus we just write destination to the buffer.
 
-                        this._previousValue = x3dom.fields.SFVec3f.copy((NumToShift == this._buffer.length) ?
-                            this._buffer[0] : this._vf.destination);
+                        this._previousValue = x3dom.fields.SFVec3f.copy( ( NumToShift == this._buffer.length ) ?
+                            this._buffer[ 0 ] : this._vf.destination );
 
-                        for (C= 0; C<this._buffer.length; C++) {
-                            this._buffer[C] = x3dom.fields.SFVec3f.copy(this._vf.destination);
+                        for ( C = 0; C < this._buffer.length; C++ )
+                        {
+                            this._buffer[ C ] = x3dom.fields.SFVec3f.copy( this._vf.destination );
                         }
                     }
 

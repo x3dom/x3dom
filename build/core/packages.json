@@ -1,10 +1,6 @@
 {
     "BASIC":
     {
-        "src/lang/":
-        [
-            "Array.js"
-        ],
         "src/" : 
         [
             "Internals.js",

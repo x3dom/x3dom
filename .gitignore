@@ -4,6 +4,7 @@ _site
 .DS_Store
 ./src/x3dom.js
 ./src/version.js
+test/my-tests
 *.tmproj
 *.bak
 *.pyc

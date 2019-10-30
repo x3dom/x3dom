@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DShapeNode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DBoundedObject,
-        
+    defineClass( x3dom.nodeTypes.X3DBoundedObject,
+
         /**
          * Constructor for X3DShapeNode
          * @constructs x3dom.nodeTypes.X3DShapeNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is the base node type for all Shape nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DShapeNode.superClass.call( this, ctx );
 
             /**
              * Defines whether the shape is pickable.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'isPickable', true);
+            this.addField_SFBool( ctx, "isPickable", true );
 
             /**
              * Holds the id offset for MultiPart picking.
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'idOffset', 0);
+            this.addField_SFInt32( ctx, "idOffset", 0 );
 
             /**
              * Holds the appearance node.
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
+            this.addField_SFNode( "appearance", x3dom.nodeTypes.X3DAppearanceNode );
 
             /**
              * Holds the geometry node.
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
+            this.addField_SFNode( "geometry", x3dom.nodeTypes.X3DGeometryNode );
 
             this._objectID = 0;
             this._shaderProperties = null;
@@ -75,147 +75,159 @@ x3dom.registerNodeType(
             this._cleanupGLObjects = null;
 
             this._dirty = {
-                positions: true,
-                normals: true,
-                texcoords: true,
-                colors: true,
-                tangents: true,
-                binormals : true,
-                specialAttribs: true,   // e.g., particleSize, IDs,...
-                indexes: true,
-                texture: true,
-                material: true,
-                text: true,
-                shader: true,
-                ids: true
+                positions      : true,
+                normals        : true,
+                texcoords      : true,
+                colors         : true,
+                tangents       : true,
+                binormals      : true,
+                specialAttribs : true,   // e.g., particleSize, IDs,...
+                indexes        : true,
+                texture        : true,
+                material       : true,
+                text           : true,
+                shader         : true,
+                ids            : true
             };
 
             // FIXME; move somewhere else and allow generic values!!!
-            this._indexOffset =0;
-            this._coordStrideOffset = [0, 0];
-            this._normalStrideOffset = [0, 0];
-            this._texCoordStrideOffset = [0, 0];
-            this._texCoord2StrideOffset = [0, 0];
-            this._colorStrideOffset = [0, 0];
-            this._idStrideOffset = [0, 0];
-            this._tangentStrideOffset = [0, 0];
-            this._binormalStrideOffset = [0, 0];
+            this._indexOffset = 0;
+            this._coordStrideOffset = [ 0, 0 ];
+            this._normalStrideOffset = [ 0, 0 ];
+            this._texCoordStrideOffset = [ 0, 0 ];
+            this._texCoord2StrideOffset = [ 0, 0 ];
+            this._colorStrideOffset = [ 0, 0 ];
+            this._idStrideOffset = [ 0, 0 ];
+            this._tangentStrideOffset = [ 0, 0 ];
+            this._binormalStrideOffset = [ 0, 0 ];
 
             this._tessellationProperties = [];
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
                 // attention, in contrast to other collectDrawableObjects()
                 // this one has boolean return type to better work with RSG
                 var graphState = this.graphState();
 
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
-                if (!this._cf.geometry.node ||
-                    drawableCollection.cull(transform, graphState, singlePath, planeMask) <= 0) {
+                if ( !this._cf.geometry.node ||
+                    drawableCollection.cull( transform, graphState, singlePath, planeMask ) <= 0 )
+                {
                     return false;
                 }
 
-                if (singlePath && !this._graph.globalMatrix)
-                    this._graph.globalMatrix = transform;
+                if ( singlePath && !this._graph.globalMatrix )
+                {this._graph.globalMatrix = transform;}
 
-                if (this._clipPlanes.length != clipPlanes.length)
+                if ( this._clipPlanes.length != clipPlanes.length )
                 {
                     this._dirty.shader = true;
                 }
 
                 this._clipPlanes = clipPlanes;
 
-                drawableCollection.addShape(this, transform, graphState);
+                drawableCollection.addShape( this, transform, graphState );
 
                 return true;
             },
 
-            getVolume: function()
+            getVolume : function ()
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid() && this._vf.render)
+                if ( !this.volumeValid() && this._vf.render )
                 {
                     var geo = this._cf.geometry.node;
                     var childVol = geo ? geo.getVolume() : null;
 
-                    if (childVol && childVol.isValid())
-                        vol.extendBounds(childVol.min, childVol.max);
+                    if ( childVol && childVol.isValid() )
+                    {vol.extendBounds( childVol.min, childVol.max );}
                 }
 
                 return vol;
             },
 
-            getCenter: function() {
-                var geo = this._cf.geometry.node;
-                return (geo ? geo.getCenter() : new x3dom.fields.SFVec3f(0,0,0));
-            },
-
-            getDiameter: function() {
-                var geo = this._cf.geometry.node;
-                return (geo ? geo.getDiameter() : 0);
-            },
-
-            doIntersect: function(line) {
-                return this._cf.geometry.node.doIntersect(line);
-            },
-
-            forceUpdateCoverage: function()
+            getCenter : function ()
             {
                 var geo = this._cf.geometry.node;
-                return (geo ? geo.forceUpdateCoverage() : false);
+                return ( geo ? geo.getCenter() : new x3dom.fields.SFVec3f( 0, 0, 0 ) );
             },
 
-            tessellationProperties: function()
+            getDiameter : function ()
+            {
+                var geo = this._cf.geometry.node;
+                return ( geo ? geo.getDiameter() : 0 );
+            },
+
+            doIntersect : function ( line )
+            {
+                return this._cf.geometry.node.doIntersect( line );
+            },
+
+            forceUpdateCoverage : function ()
+            {
+                var geo = this._cf.geometry.node;
+                return ( geo ? geo.forceUpdateCoverage() : false );
+            },
+
+            tessellationProperties : function ()
             {
                 // some geometries require offset and count into index array
                 var geo = this._cf.geometry.node;
-                if (geo && geo._indexOffset)
-                    return geo._indexOffset;      // IndexedTriangleStripSet
+                if ( geo && geo._indexOffset )
+                {return geo._indexOffset;}      // IndexedTriangleStripSet
                 else
-                    return this._tessellationProperties; // BVHRefiner-Patch
+                {return this._tessellationProperties;} // BVHRefiner-Patch
             },
 
-            isLit: function() {
+            isLit : function ()
+            {
                 return this._cf.geometry.node._vf.lit;
             },
 
-            isSolid: function() {
-                var twoSidedMat = (this._cf.appearance.node && this._cf.appearance.node._cf.material.node &&
-                                   x3dom.isa(this._cf.appearance.node._cf.material.node, x3dom.nodeTypes.TwoSidedMaterial));
+            isSolid : function ()
+            {
+                var twoSidedMat = ( this._cf.appearance.node && this._cf.appearance.node._cf.material.node &&
+                                   x3dom.isa( this._cf.appearance.node._cf.material.node, x3dom.nodeTypes.TwoSidedMaterial ) );
                 return this._cf.geometry.node._vf.solid && !twoSidedMat;
             },
 
-            isCCW: function() {
+            isCCW : function ()
+            {
                 return this._cf.geometry.node._vf.ccw;
             },
 
-            parentRemoved: function(parent) {
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
-                    var child = this._childNodes[i];
-                    if (child) {
-                        child.parentRemoved(this);
+            parentRemoved : function ( parent )
+            {
+                for ( var i = 0, n = this._childNodes.length; i < n; i++ )
+                {
+                    var child = this._childNodes[ i ];
+                    if ( child )
+                    {
+                        child.parentRemoved( this );
                     }
                 }
 
-                if (parent)
-                    parent.invalidateVolume();
-                if (this._parentNodes.length > 0)
-                    this.invalidateVolume();
+                if ( parent )
+                {parent.invalidateVolume();}
+                if ( this._parentNodes.length > 0 )
+                {this.invalidateVolume();}
 
                 // Cleans all GL objects for WebGL-based renderer
-                if (this._cleanupGLObjects) {
+                if ( this._cleanupGLObjects )
+                {
                     this._cleanupGLObjects();
                 }
             },
 
-            unsetDirty: function () {
+            unsetDirty : function ()
+            {
                 // vertex attributes
                 this._dirty.positions = false;
                 this._dirty.normals = false;
@@ -233,7 +245,8 @@ x3dom.registerNodeType(
                 this._dirty.shader = false;
             },
 
-            unsetGeoDirty: function () {
+            unsetGeoDirty : function ()
+            {
                 this._dirty.positions = false;
                 this._dirty.normals = false;
                 this._dirty.texcoords = false;
@@ -244,7 +257,8 @@ x3dom.registerNodeType(
                 this._dirty.indexes = false;
             },
 
-            setAllDirty: function () {
+            setAllDirty : function ()
+            {
                 // vertex attributes
                 this._dirty.positions = true;
                 this._dirty.normals = true;
@@ -264,7 +278,8 @@ x3dom.registerNodeType(
                 this.invalidateVolume();
             },
 
-            setAppDirty: function () {
+            setAppDirty : function ()
+            {
                 // appearance properties
                 this._dirty.texture = true;
                 this._dirty.material = true;
@@ -272,7 +287,8 @@ x3dom.registerNodeType(
                 this._dirty.shader = true;
             },
 
-            setGeoDirty: function () {
+            setGeoDirty : function ()
+            {
                 this._dirty.positions = true;
                 this._dirty.normals = true;
                 this._dirty.texcoords = true;
@@ -285,62 +301,74 @@ x3dom.registerNodeType(
                 this.invalidateVolume();
             },
 
-            getShaderProperties: function(viewarea)
+            getShaderProperties : function ( viewarea )
             {
-                if (this._shaderProperties == null ||
+                if ( this._shaderProperties == null ||
                     this._dirty.shader == true ||
-                    x3dom.Utils.checkDirtyEnvironment(viewarea, this._shaderProperties) ||
-                    x3dom.Utils.checkDirtyPhysicalEnvironmentLight (viewarea, this._shaderProperties) ||
-                    (this._webgl !== undefined &&
-                     this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea) ))
+                    x3dom.Utils.checkDirtyEnvironment( viewarea, this._shaderProperties ) ||
+                    x3dom.Utils.checkDirtyPhysicalEnvironmentLight( viewarea, this._shaderProperties ) ||
+                    ( this._webgl !== undefined &&
+                     this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting( viewarea ) ) )
                 {
-                    this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
+                    this._shaderProperties = x3dom.Utils.generateProperties( viewarea, this );
                     this._dirty.shader = false;
-                    if (this._webgl !== undefined)
+                    if ( this._webgl !== undefined )
                     {
-                        this._webgl.dirtyLighting = x3dom.Utils.checkDirtyLighting(viewarea);
+                        this._webgl.dirtyLighting = x3dom.Utils.checkDirtyLighting( viewarea );
                     }
                 }
                 return this._shaderProperties;
             },
 
-            getTextures: function() {
+            getTextures : function ()
+            {
                 var textures = [];
 
                 var appearance = this._cf.appearance.node;
-                if (appearance) {
+                if ( appearance )
+                {
                     var tex = appearance._cf.texture.node;
-                    if(tex) {
-                        if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
-                            textures = textures.concat(tex.getTextures());
+                    if ( tex )
+                    {
+                        if ( x3dom.isa( tex, x3dom.nodeTypes.MultiTexture ) )
+                        {
+                            textures = textures.concat( tex.getTextures() );
                         }
-                        else {
-                            textures.push(tex);
+                        else
+                        {
+                            textures.push( tex );
                         }
                     }
 
-                    var shader = appearance._cf.shaders.nodes[0];
-                    if(shader) {
-                        if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
-                            textures = textures.concat(shader.getTextures());
+                    var shader = appearance._cf.shaders.nodes[ 0 ];
+                    if ( shader )
+                    {
+                        if ( x3dom.isa( shader, x3dom.nodeTypes.CommonSurfaceShader ) )
+                        {
+                            textures = textures.concat( shader.getTextures() );
                         }
                     }
 
                     var material = appearance._cf.material.node;
-                    if(material) {
-                        if(x3dom.isa(material, x3dom.nodeTypes.PhysicalMaterial)) {
-                            textures = textures.concat(material.getTextures());
+                    if ( material )
+                    {
+                        if ( x3dom.isa( material, x3dom.nodeTypes.PhysicalMaterial ) )
+                        {
+                            textures = textures.concat( material.getTextures() );
                         }
                     }
                 }
 
                 var geometry = this._cf.geometry.node;
-                if (geometry) {
-                    if(x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry)) {
-                        textures = textures.concat(geometry.getTextures());
+                if ( geometry )
+                {
+                    if ( x3dom.isa( geometry, x3dom.nodeTypes.ImageGeometry ) )
+                    {
+                        textures = textures.concat( geometry.getTextures() );
                     }
-                    else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
-                        textures = textures.concat(geometry);
+                    else if ( x3dom.isa( geometry, x3dom.nodeTypes.Text ) )
+                    {
+                        textures = textures.concat( geometry );
                     }
                 }
 

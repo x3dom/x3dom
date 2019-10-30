@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "RefinementTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.RenderedTexture,
-        
+    defineClass( x3dom.nodeTypes.RenderedTexture,
+
         /**
          * Constructor for RefinementTexture
          * @constructs x3dom.nodeTypes.RefinementTexture
@@ -21,8 +21,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.RenderedTexture
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.RefinementTexture.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.RefinementTexture.superClass.call( this, ctx );
 
             /**
              * Specifies the first stamp texture.
@@ -32,7 +33,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'stamp0', "gpuii/stamps/0.gif");
+            this.addField_SFString( ctx, "stamp0", "gpuii/stamps/0.gif" );
 
             /**
              * Specifies the second stamp texture.
@@ -42,7 +43,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'stamp1', "gpuii/stamps/1.gif");
+            this.addField_SFString( ctx, "stamp1", "gpuii/stamps/1.gif" );
 
             /**
              * Defines whether texture refinement should be managed by another component.
@@ -52,7 +53,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'autoRefinement', true);
+            this.addField_SFBool( ctx, "autoRefinement", true );
 
             /**
              * Specifies the image format of the dataset.
@@ -62,7 +63,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'format', 'jpg');
+            this.addField_SFString( ctx, "format", "jpg" );
 
             /**
              * Maximum level that should be loaded (if GSM is smaller than on DSL6000)
@@ -72,7 +73,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'iterations', 7);
+            this.addField_SFInt32( ctx, "iterations", 7 );
 
             /**
              * Maximum level that should be loaded (if GSM is smaller than on DSL6000)
@@ -82,19 +83,20 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'maxLevel', this._vf.iterations);
+            this.addField_SFInt32( ctx, "maxLevel", this._vf.iterations );
 
-            if (this._vf.iterations % 2 === 0) {
+            if ( this._vf.iterations % 2 === 0 )
+            {
                 var temp = this._vf.stamp0;
                 this._vf.stamp0 = this._vf.stamp1;
                 this._vf.stamp1 = temp;
             }
 
-            this._vf.iterations = (this._vf.iterations > 11) ? 11 : this._vf.iterations;
-            this._vf.iterations = (this._vf.iterations < 3) ? 3 : this._vf.iterations;
-            this._vf.maxLevel = (this._vf.maxLevel > 11) ? 11 : this._vf.maxLevel;
-            this._vf.maxLevel = (this._vf.maxLevel < 3) ? 3 : this._vf.maxLevel;
-            this._vf.maxLevel = (this._vf.maxLevel > this._vf.iterations) ? this._vf.iterations : this._vf.maxLevel;
+            this._vf.iterations = ( this._vf.iterations > 11 ) ? 11 : this._vf.iterations;
+            this._vf.iterations = ( this._vf.iterations < 3 ) ? 3 : this._vf.iterations;
+            this._vf.maxLevel = ( this._vf.maxLevel > 11 ) ? 11 : this._vf.maxLevel;
+            this._vf.maxLevel = ( this._vf.maxLevel < 3 ) ? 3 : this._vf.maxLevel;
+            this._vf.maxLevel = ( this._vf.maxLevel > this._vf.iterations ) ? this._vf.iterations : this._vf.maxLevel;
 
             // Additional parameters to control the refinement mechanism on shader
             // TODO: optimize
@@ -106,25 +108,27 @@ x3dom.registerNodeType(
 
             // TODO: optimize
             this._repeat = new x3dom.fields.SFVec2f(
-                    this._vf.dimensions[0] / repeatConfig[this._vf.iterations - 3].x,
-                    this._vf.dimensions[1] / repeatConfig[this._vf.iterations - 3].y
+                this._vf.dimensions[ 0 ] / repeatConfig[ this._vf.iterations - 3 ].x,
+                this._vf.dimensions[ 1 ] / repeatConfig[ this._vf.iterations - 3 ].y
             );
             this._renderedImage = 0;
             this._currLoadLevel = 0;
             this._loadLevel = 1;
-        
         },
         {
-            nextLevel: function() {
-                if (this._loadLevel < this._vf.maxLevel) {
+            nextLevel : function ()
+            {
+                if ( this._loadLevel < this._vf.maxLevel )
+                {
                     this._loadLevel++;
                     this._nameSpace.doc.needRender = true;
                 }
             },
 
-            requirePingPong: function() {
-                return (this._currLoadLevel <= this._vf.maxLevel &&
-                    this._renderedImage < this._loadLevel);
+            requirePingPong : function ()
+            {
+                return ( this._currLoadLevel <= this._vf.maxLevel &&
+                    this._renderedImage < this._loadLevel );
             }
         }
     )

@@ -1,17 +1,17 @@
 
 x3dom.DDSLoader = {};
 
-x3dom.DDSLoader.load = function( src )
+x3dom.DDSLoader.load = function ( src )
 {
-    return new Promise( function( resolve, reject ) {
-
+    return new Promise( function ( resolve, reject )
+    {
         var xhr = new XMLHttpRequest();
 
-        xhr.open('GET', src, true);
+        xhr.open( "GET", src, true );
 
         xhr.responseType = "arraybuffer";
 
-        xhr.onload = function()
+        xhr.onload = function ()
         {
             var dds = x3dom.DDSLoader._read( xhr.response );
 
@@ -24,72 +24,71 @@ x3dom.DDSLoader.load = function( src )
                 reject( dds );
             }
         };
-  
-        xhr.onerror = function()
+
+        xhr.onerror = function ()
         {
             reject();
         };
-    
+
         //ddsXhr.send(null);
-        x3dom.RequestManager.addRequest(xhr);
+        x3dom.RequestManager.addRequest( xhr );
+    } );
+};
 
-    });
-}
-
-x3dom.DDSLoader._read = function( source )
+x3dom.DDSLoader._read = function ( source )
 {
     if ( source === undefined || source.byteLength < 128 )
     {
         return;
     }
-    
-    var dds = 
+
+    var dds =
     {
-        isCompressed  : false,
-        isVolume      : false,
-        isCubeMap     : false,
-        targets       : [],
-        data          : []
+        isCompressed : false,
+        isVolume     : false,
+        isCubeMap    : false,
+        targets      : [],
+        data         : []
     };
 
     var int32Buffer = new Uint32Array( source, 0, 32 );
-    
+
     //Parse DDS Header
     dds.header = x3dom.DDSLoader._readHeader( int32Buffer );
-    
+
     int32Buffer = new Uint32Array( source, 128, 5 );
-    
+
     //Parse DDS Header
     dds.header10 = x3dom.DDSLoader._readHeader10( dds, int32Buffer );
-    
+
     //Check if the magic number is present
     if ( dds.header.dwMagic != 0x20534444 )
     {
         return;
     }
-    
+
     //Check if the header size is correct
     if ( dds.header.dwSize != 0x7C )
     {
         return;
-    }   
-    
+    }
+
     //Parse resource format
     if ( !x3dom.DDSLoader._readFormat( dds ) )
     {
         return;
-    }    
-    
+    }
+
     x3dom.DDSLoader._readMipmapCount( dds );
-    
+
     x3dom.DDSLoader._readType( dds );
 
     this._readData( dds, source );
 
     return dds;
-}
+};
 
-x3dom.DDSLoader._readHeader = function( buffer )
+x3dom.DDSLoader._readHeader = function ( buffer )
 {
     return {
         dwMagic             : buffer[ 0 ],
@@ -102,24 +101,24 @@ x3dom.DDSLoader._readHeader = function( buffer )
         dwMipMapCount       : buffer[ 7 ],
         dwReserved1         : "UNUSED",
         ddspf               : {
-            dwSize              : buffer[ 19 ],
-            dwFlags             : x3dom.DDSLoader._readPFFlags( buffer[ 20 ] ),
-            dwFourCC            : x3dom.DDSLoader.int32ToFourCC( buffer[ 21 ] ),
-            dwRGBBitCount       : buffer[ 22 ],
-            dwRBitMask          : buffer[ 23 ],
-            dwGBitMask          : buffer[ 24 ],
-            dwBBitMask          : buffer[ 25 ],
-            dwABitMask          : buffer[ 26 ]
+            dwSize        : buffer[ 19 ],
+            dwFlags       : x3dom.DDSLoader._readPFFlags( buffer[ 20 ] ),
+            dwFourCC      : x3dom.DDSLoader.int32ToFourCC( buffer[ 21 ] ),
+            dwRGBBitCount : buffer[ 22 ],
+            dwRBitMask    : buffer[ 23 ],
+            dwGBitMask    : buffer[ 24 ],
+            dwBBitMask    : buffer[ 25 ],
+            dwABitMask    : buffer[ 26 ]
         },
-        dwCaps              : x3dom.DDSLoader._readCapsFlags( buffer[ 27 ] ),
-        dwCaps2             : x3dom.DDSLoader._readCaps2Flags( buffer[ 28 ] ),
-        dwCaps3             : "UNUSED",
-        dwCaps4             : "UNUSED",
-        dwReserved2         : "UNUSED"   
-    }
+        dwCaps      : x3dom.DDSLoader._readCapsFlags( buffer[ 27 ] ),
+        dwCaps2     : x3dom.DDSLoader._readCaps2Flags( buffer[ 28 ] ),
+        dwCaps3     : "UNUSED",
+        dwCaps4     : "UNUSED",
+        dwReserved2 : "UNUSED"
+    };
 };
 
-x3dom.DDSLoader._readHeader10 = function( dds, buffer )
+x3dom.DDSLoader._readHeader10 = function ( dds, buffer )
 {
     if ( dds.header.ddspf.dwFourCC != "DX10" )
     {
@@ -127,45 +126,45 @@ x3dom.DDSLoader._readHeader10 = function( dds, buffer )
     }
 
     return {
-        dxgiFormat          : buffer[ 0 ],
-        resourceDimension   : x3dom.DDSLoader._readResourceDimension( buffer[ 1 ] ),
-        miscFlags           : x3dom.DDSLoader._readMiscFlags( buffer[ 2 ] ),
-        arraySize           : buffer[ 3 ],
-        miscFlags2          : x3dom.DDSLoader._readMiscFlags2( buffer[ 4 ] ),       
-    }
+        dxgiFormat        : buffer[ 0 ],
+        resourceDimension : x3dom.DDSLoader._readResourceDimension( buffer[ 1 ] ),
+        miscFlags         : x3dom.DDSLoader._readMiscFlags( buffer[ 2 ] ),
+        arraySize         : buffer[ 3 ],
+        miscFlags2        : x3dom.DDSLoader._readMiscFlags2( buffer[ 4 ] )
+    };
 };
 
-x3dom.DDSLoader._readMipmapCount = function( dds )
+x3dom.DDSLoader._readMipmapCount = function ( dds )
 {
     dds.numberOfMipmaps = ( dds.header.dwFlags.DDSD_MIPMAPCOUNT ) ? dds.header.dwMipMapCount : 1;
-}
+};
 
-x3dom.DDSLoader._readType = function( dds )
+x3dom.DDSLoader._readType = function ( dds )
 {
     if ( dds.header.dwFlags.DDSD_DEPTH && dds.header.dwCaps2.DDSCAPS2_VOLUME )
     {
         dds.type = 32879;
-        
+
         dds.numberOfImages = dds.header.dwCaps.DDSD_DEPTH;
     }
     else if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP )
     {
         dds.type = 34067;
-        
+
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_POSITIVEX )
-        { 
+        {
             dds.targets.push( 34069 );
         }
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_NEGATIVEX )
-        {    
+        {
             dds.targets.push( 34070 );
-        }    
+        }
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_POSITIVEY )
-        { 
+        {
             dds.targets.push( 34071 );
         }
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_NEGATIVEY )
-        {     
+        {
             dds.targets.push( 34072 );
         }
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_POSITIVEZ )
@@ -173,74 +172,72 @@ x3dom.DDSLoader._readType = function( dds )
             dds.targets.push( 34073 );
         }
         if ( dds.header.dwCaps2.DDSCAPS2_CUBEMAP_NEGATIVEZ )
-        { 
+        {
             dds.targets.push( 34074 );
         }
 
         dds.numberOfImages = dds.targets.length;
-
     }
     else
-    {   
+    {
         dds.type = 3553;
-        
+
         dds.targets.push( 3553 );
-        
-        dds.numberOfImages = dds.targets.length;           
+
+        dds.numberOfImages = dds.targets.length;
     }
-    
 };
 
-x3dom.DDSLoader._readDDSFlags = function( dwFlags ) 
-{
-    return  { 
-        DDSD_CAPS           : ( dwFlags & 0x1      ) ? true : false,
-        DDSD_HEIGHT         : ( dwFlags & 0x2      ) ? true : false,
-        DDSD_WIDTH          : ( dwFlags & 0x4      ) ? true : false,
-        DDSD_PITCH          : ( dwFlags & 0x8      ) ? true : false,
-        DDSD_PIXELFORMAT    : ( dwFlags & 0x1000   ) ? true : false,
-        DDSD_MIPMAPCOUNT    : ( dwFlags & 0x20000  ) ? true : false,
-        DDSD_LINEARSIZE     : ( dwFlags & 0x80000  ) ? true : false,
-        DDSD_DEPTH          : ( dwFlags & 0x800000 )  ? true : false
-    }
-}
-
-x3dom.DDSLoader._readPFFlags = function( dwFlags )
+x3dom.DDSLoader._readDDSFlags = function ( dwFlags )
 {
     return  {
-        DDPF_ALPHAPIXELS    : ( dwFlags & 0x1     ) ? true : false,
-        DDPF_ALPHA          : ( dwFlags & 0x2     ) ? true : false,
-        DDPF_FOURCC         : ( dwFlags & 0x4     ) ? true : false,
-        DDPF_RGB            : ( dwFlags & 0x40    ) ? true : false,
-        DDPF_YUV            : ( dwFlags & 0x200   ) ? true : false,
-        DDPF_LUMINANCE      : ( dwFlags & 0x20000 ) ? true : false
-    }  
-}
+        DDSD_CAPS        : ( dwFlags & 0x1      ) ? true : false,
+        DDSD_HEIGHT      : ( dwFlags & 0x2      ) ? true : false,
+        DDSD_WIDTH       : ( dwFlags & 0x4      ) ? true : false,
+        DDSD_PITCH       : ( dwFlags & 0x8      ) ? true : false,
+        DDSD_PIXELFORMAT : ( dwFlags & 0x1000   ) ? true : false,
+        DDSD_MIPMAPCOUNT : ( dwFlags & 0x20000  ) ? true : false,
+        DDSD_LINEARSIZE  : ( dwFlags & 0x80000  ) ? true : false,
+        DDSD_DEPTH       : ( dwFlags & 0x800000 )  ? true : false
+    };
+};
 
-x3dom.DDSLoader._readCapsFlags = function( dwFlags )
+x3dom.DDSLoader._readPFFlags = function ( dwFlags )
 {
-    return  { 
+    return  {
+        DDPF_ALPHAPIXELS : ( dwFlags & 0x1     ) ? true : false,
+        DDPF_ALPHA       : ( dwFlags & 0x2     ) ? true : false,
+        DDPF_FOURCC      : ( dwFlags & 0x4     ) ? true : false,
+        DDPF_RGB         : ( dwFlags & 0x40    ) ? true : false,
+        DDPF_YUV         : ( dwFlags & 0x200   ) ? true : false,
+        DDPF_LUMINANCE   : ( dwFlags & 0x20000 ) ? true : false
+    };
+};
+
+x3dom.DDSLoader._readCapsFlags = function ( dwFlags )
+{
+    return  {
         DDSCAPS_COMPLEX : ( dwFlags & 0x8      ) ? true : false,
         DDSCAPS_MIPMAP  : ( dwFlags & 0x400000 ) ? true : false,
         DDSCAPS_TEXTURE : ( dwFlags & 0x1000   ) ? true : false
-    }  
-}
+    };
+};
 
-x3dom.DDSLoader._readCaps2Flags = function( dwFlags )
+x3dom.DDSLoader._readCaps2Flags = function ( dwFlags )
 {
-    return  {   
-        DDSCAPS2_CUBEMAP            : ( dwFlags & 0x200   ) ? true : false,
-        DDSCAPS2_CUBEMAP_POSITIVEX  : ( dwFlags & 0x400   ) ? true : false,
-        DDSCAPS2_CUBEMAP_NEGATIVEX  : ( dwFlags & 0x800   ) ? true : false,
-        DDSCAPS2_CUBEMAP_POSITIVEY  : ( dwFlags & 0x1000  ) ? true : false,
-        DDSCAPS2_CUBEMAP_NEGATIVEY  : ( dwFlags & 0x2000  ) ? true : false,
-        DDSCAPS2_CUBEMAP_POSITIVEZ  : ( dwFlags & 0x4000  ) ? true : false,
-        DDSCAPS2_CUBEMAP_NEGATIVEZ  : ( dwFlags & 0x8000  ) ? true : false,
-        DDSCAPS2_VOLUME             : ( dwFlags & 0x20000 ) ? true : false
-    }
-}
+    return  {
+        DDSCAPS2_CUBEMAP           : ( dwFlags & 0x200   ) ? true : false,
+        DDSCAPS2_CUBEMAP_POSITIVEX : ( dwFlags & 0x400   ) ? true : false,
+        DDSCAPS2_CUBEMAP_NEGATIVEX : ( dwFlags & 0x800   ) ? true : false,
+        DDSCAPS2_CUBEMAP_POSITIVEY : ( dwFlags & 0x1000  ) ? true : false,
+        DDSCAPS2_CUBEMAP_NEGATIVEY : ( dwFlags & 0x2000  ) ? true : false,
+        DDSCAPS2_CUBEMAP_POSITIVEZ : ( dwFlags & 0x4000  ) ? true : false,
+        DDSCAPS2_CUBEMAP_NEGATIVEZ : ( dwFlags & 0x8000  ) ? true : false,
+        DDSCAPS2_VOLUME            : ( dwFlags & 0x20000 ) ? true : false
+    };
+};
 
-x3dom.DDSLoader._readResourceDimension = function( resourceDimension )
+x3dom.DDSLoader._readResourceDimension = function ( resourceDimension )
 {
     switch ( resourceDimension )
     {
@@ -250,9 +247,9 @@ x3dom.DDSLoader._readResourceDimension = function( resourceDimension )
         case 0x3: return "D3D10_RESOURCE_DIMENSION_TEXTURE2D";
         case 0x4: return "D3D10_RESOURCE_DIMENSION_TEXTURE3D";
     }
-}
+};
 
-x3dom.DDSLoader._readMiscFlags = function( miscFlag )
+x3dom.DDSLoader._readMiscFlags = function ( miscFlag )
 {
     return {
         D3D11_RESOURCE_MISC_GENERATE_MIPS                   : ( miscFlag & 0x1     ) ? true : false,
@@ -271,101 +268,101 @@ x3dom.DDSLoader._readMiscFlags = function( miscFlag )
         D3D11_RESOURCE_MISC_GUARDED                         : ( miscFlag & 0x8000  ) ? true : false,
         D3D11_RESOURCE_MISC_TILE_POOL                       : ( miscFlag & 0x20000 ) ? true : false,
         D3D11_RESOURCE_MISC_TILED                           : ( miscFlag & 0x40000 ) ? true : false,
-        D3D11_RESOURCE_MISC_HW_PROTECTED                    : ( miscFlag & 0x80000 ) ? true : false,
-    }    
-}
+        D3D11_RESOURCE_MISC_HW_PROTECTED                    : ( miscFlag & 0x80000 ) ? true : false
+    };
+};
 
-x3dom.DDSLoader._readMiscFlags2 = function( miscFlag )
+x3dom.DDSLoader._readMiscFlags2 = function ( miscFlag )
 {
     var miscFlags2 = {};
-    
+
     switch ( miscFlag )
     {
-        case 0x0: 
+        case 0x0:
             miscFlags2.alphaMode = "DDS_ALPHA_MODE_UNKNOWN";
             break;
-        case 0x1: 
+        case 0x1:
             miscFlags2.alphaMode = "DDS_ALPHA_MODE_UNKNOWN";
             break;
-        case 0x2: 
+        case 0x2:
             miscFlags2.alphaMode = "DDS_ALPHA_MODE_UNKNOWN";
             break;
-        case 0x3: 
+        case 0x3:
             miscFlags2.alphaMode = "DDS_ALPHA_MODE_UNKNOWN";
             break;
-        case 0x4: 
+        case 0x4:
             miscFlags2.alphaMode = "DDS_ALPHA_MODE_UNKNOWN";
             break;
     }
-    
-    return miscFlags2;      
-}
 
-x3dom.DDSLoader._readData = function( dds, buffer, texture, options )
+    return miscFlags2;
+};
+
+x3dom.DDSLoader._readData = function ( dds, buffer, texture, options )
 {
-    var offset = (dds.header10) ? 148 : 128;
-    
-    var byteArray, width, height;
-    
+    var offset = ( dds.header10 ) ? 148 : 128;
+
+    var byteArray,
+        width,
+        height;
+
     dds.width = dds.header.dwWidth;
     dds.height = dds.header.dwHeight;
     dds.generateMipmaps = ( dds.numberOfMipmaps <= 1 && !dds.isCompressed );
-    
+
     for ( var i = 0; i < dds.numberOfImages; i++ )
     {
         width = dds.header.dwWidth;
         height = dds.header.dwHeight;
-        
+
         dds.data[ dds.targets[ i ] ] = [];
-        
+
         for ( var m = 0; m < dds.numberOfMipmaps; m++ )
-        {      
+        {
             if ( m != 0 )
             {
                 width  = Math.max( width  * 0.5, 1 );
                 height = Math.max( height * 0.5, 1 );
             }
-    
+
             if ( dds.isCompressed )
             {
                 byteArray = this._readCompressedData( buffer, width, height, offset, dds.blockSize );
-                
+
                 dds.data[ dds.targets[ i ] ][ m ] = byteArray;
             }
             else
             {
                 byteArray = this._readUncompressedData( buffer, width, height, offset, dds.format );
-                
+
                 dds.data[ dds.targets[ i ] ][ m ] = byteArray;
             }
-    
-            offset += byteArray.length * byteArray.BYTES_PER_ELEMENT * dds.format.bytesPerElementFactor;
 
+            offset += byteArray.length * byteArray.BYTES_PER_ELEMENT * dds.format.bytesPerElementFactor;
         }
     }
 
-    if(dds.format.overwriteType)
+    if ( dds.format.overwriteType )
     {
         dds.format.type = dds.format.overwriteType;
     }
 
-    if(dds.format.overwriteInternalType)
+    if ( dds.format.overwriteInternalType )
     {
         dds.format.internal = dds.format.overwriteInternalType;
     }
-    
-    return dds;
 
+    return dds;
 };
 
-x3dom.DDSLoader._readCompressedData = function( buffer, width, height, offset, blockSize )
+x3dom.DDSLoader._readCompressedData = function ( buffer, width, height, offset, blockSize )
 {
     var length = Math.max( 1, parseInt( ( width + 3 ) / 4 ) ) * Math.max( 1, parseInt( ( height + 3 ) / 4 ) ) * blockSize;
 
     return new Uint8Array( buffer.slice( offset, offset + length ) );
-}
+};
 
-x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset, format, type )
+x3dom.DDSLoader._readUncompressedData = function ( buffer, width, height, offset, format, type )
 {
     format.bytesPerElementFactor = 1;
 
@@ -393,7 +390,7 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
     {
         return x3dom.DDSLoader.A8R8G8B8_To_A8B8G8R8( new Uint8Array( buffer.slice( offset, offset + width * height * 4 ) ) );
     }
-    else if ( format.internal == 32854)
+    else if ( format.internal == 32854 )
     {
         return x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4( new Uint16Array( buffer.slice( offset, offset + width * height * 2 ) ) );
     }
@@ -403,17 +400,17 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
     }
     else if ( format.internal == 34842 || format.type == 36193 )
     {
-        if( x3dom.caps.HFP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2)
+        if ( x3dom.caps.HFP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2 )
         {
             return new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) );
         }
-        else if( x3dom.caps.FP_TEXTURES )
+        else if ( x3dom.caps.FP_TEXTURES )
         {
             format.overwriteType = 5126;
-            format.overwriteInternalType = (x3dom.caps.WEBGL_VERSION == 2) ? 34836 : 6408;
+            format.overwriteInternalType = ( x3dom.caps.WEBGL_VERSION == 2 ) ? 34836 : 6408;
             format.bytesPerElementFactor = 0.5;
 
-            return x3dom.DDSLoader.UI16_To_F32( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
+            return x3dom.DDSLoader.UI16_To_F32( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ) );
         }
         else
         {
@@ -421,12 +418,12 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
             format.overwriteInternalType = 6408;
             format.bytesPerElementFactor = 2;
 
-            return x3dom.DDSLoader.UI16_To_UI8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ));
+            return x3dom.DDSLoader.UI16_To_UI8( new Uint16Array( buffer.slice( offset, offset + width * height * 4 * 2 ) ) );
         }
     }
-    else if ( format.internal == 34836 || format.type == 5126)
+    else if ( format.internal == 34836 || format.type == 5126 )
     {
-        if( x3dom.caps.FP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2)
+        if ( x3dom.caps.FP_TEXTURES || x3dom.caps.WEBGL_VERSION == 2 )
         {
             return new Float32Array( buffer.slice( offset, offset + width * height * 4 * 4 ) );
         }
@@ -434,7 +431,6 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
         {
 
         }
-        
     }
     else if ( format.internal == 35898 )
     {
@@ -442,7 +438,7 @@ x3dom.DDSLoader._readUncompressedData = function( buffer, width, height, offset,
     }
 };
 
-x3dom.DDSLoader._readFormat = function( dds )
+x3dom.DDSLoader._readFormat = function ( dds )
 {
     var pixelFormat = dds.header.ddspf;
 
@@ -473,7 +469,7 @@ x3dom.DDSLoader._readFormat = function( dds )
         {
             dds.channelCount = 4;
 
-            if(x3dom.caps.WEBGL_VERSION == 2)
+            if ( x3dom.caps.WEBGL_VERSION == 2 )
             {
                 dds.format = { internal: 34836, format: 6408, type: 5126 };
             }
@@ -486,7 +482,7 @@ x3dom.DDSLoader._readFormat = function( dds )
         {
             dds.channelCount = 4;
 
-            if(x3dom.caps.WEBGL_VERSION == 2)
+            if ( x3dom.caps.WEBGL_VERSION == 2 )
             {
                 dds.format = { internal: 34842, format: 6408, type: 5131 };
             }
@@ -588,12 +584,12 @@ x3dom.DDSLoader._readFormat = function( dds )
         return false;
     }
 
-    return true; 
+    return true;
 };
 
-x3dom.DDSLoader.int32ToFourCC = function ( value ) 
+x3dom.DDSLoader.int32ToFourCC = function ( value )
 {
-    return String.fromCharCode (
+    return String.fromCharCode(
 
         ( value       ) & 0xff,
         ( value >> 8  ) & 0xff,
@@ -638,10 +634,10 @@ x3dom.DDSLoader.UI16_To_UI8 = function ( src )
 
     for ( var i = 0; i < src.length; i += 4 )
     {
-        dst[ i     ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i     ]) * 255;
-        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 1 ]) * 255;
-        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 2 ]) * 255;
-        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_UI8_2(src[ i + 3 ]) * 255;
+        dst[ i     ] = x3dom.DDSLoader.UI16_To_UI8_2( src[ i     ] ) * 255;
+        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_UI8_2( src[ i + 1 ] ) * 255;
+        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_UI8_2( src[ i + 2 ] ) * 255;
+        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_UI8_2( src[ i + 3 ] ) * 255;
     }
 
     return dst;
@@ -653,45 +649,48 @@ x3dom.DDSLoader.UI16_To_F32 = function ( src )
 
     for ( var i = 0; i < src.length; i += 4 )
     {
-        dst[ i     ] = x3dom.DDSLoader.UI16_To_F16(src[ i     ]);
-        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 1 ]);
-        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 2 ]);
-        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_F16(src[ i + 3 ]);
+        dst[ i     ] = x3dom.DDSLoader.UI16_To_F16( src[ i     ] );
+        dst[ i + 1 ] = x3dom.DDSLoader.UI16_To_F16( src[ i + 1 ] );
+        dst[ i + 2 ] = x3dom.DDSLoader.UI16_To_F16( src[ i + 2 ] );
+        dst[ i + 3 ] = x3dom.DDSLoader.UI16_To_F16( src[ i + 3 ] );
     }
 
     return dst;
 };
 
-x3dom.DDSLoader.UI16_To_F16 = function( interger )
+x3dom.DDSLoader.UI16_To_F16 = function ( interger )
 {
-    var sign     = (interger >> 15) & 0x1;
-    var exponent = (interger >> 10) & 0x3ff;
-    var fraction = interger & (Math.pow(2, 10) - 1);
+    var sign     = ( interger >> 15 ) & 0x1;
+    var exponent = ( interger >> 10 ) & 0x3ff;
+    var fraction = interger & ( Math.pow( 2, 10 ) - 1 );
     var result;
 
-    if (exponent !== 0)
+    if ( exponent !== 0 )
     {
-        return Math.pow(-1, sign) * (1 + fraction / Math.pow(2,10)) * Math.pow(2, exponent - 15);
+        return Math.pow( -1, sign ) * ( 1 + fraction / Math.pow( 2, 10 ) ) * Math.pow( 2, exponent - 15 );
     }
 
-    if( fraction === 0 )
+    if ( fraction === 0 )
     {
         return 0.0;
     }
-        
-    return Math.pow(-1, sign) * fraction / Math.pow(2,10) * Math.pow(2,-14);
-}
 
-x3dom.DDSLoader.UI16_To_UI8_2 = function( interger )
+    return Math.pow( -1, sign ) * fraction / Math.pow( 2, 10 ) * Math.pow( 2, -14 );
+};
+
+x3dom.DDSLoader.UI16_To_UI8_2 = function ( interger )
 {
-    var float = x3dom.DDSLoader.UI16_To_F16(interger)
+    var float = x3dom.DDSLoader.UI16_To_F16( interger );
 
-    return float / (float + 1);
-}
+    return float / ( float + 1 );
+};
 
-x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
-
-    var a, r, g, b;
+x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src )
+{
+    var a,
+        r,
+        g,
+        b;
 
     var dst = new Uint16Array( src.length );
 
@@ -706,12 +705,14 @@ x3dom.DDSLoader.A4R4G4B4_To_A4B4G4R4 = function ( src ) {
     }
 
     return dst;
-
 };
 
 x3dom.DDSLoader.A1R5G5B5_To_A1B5G5R5 = function ( src )
 {
-    var a, r, g, b;
+    var a,
+        r,
+        g,
+        b;
 
     var dst = new Uint16Array( src.length );
 

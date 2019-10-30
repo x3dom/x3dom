@@ -7,13 +7,12 @@
  * Dual licensed under the MIT and GPL
  */
 
-
 // ### CADAssembly ###
 x3dom.registerNodeType(
     "CADAssembly",
     "CADGeometry",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for CADAssembly
          * @constructs x3dom.nodeTypes.CADAssembly
@@ -24,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The CADAssembly node holds a set of assemblies or parts grouped together.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CADAssembly.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CADAssembly.superClass.call( this, ctx );
 
             /**
              * The name field documents the name of this CAD structure.
@@ -36,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
-        
+            this.addField_SFString( ctx, "name", "" );
         }
     )
 );

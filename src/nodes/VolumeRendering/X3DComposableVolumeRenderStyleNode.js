@@ -15,8 +15,8 @@
 x3dom.registerNodeType(
     "X3DComposableVolumeRenderStyleNode",
     "VolumeRendering",
-    defineClass(x3dom.nodeTypes.X3DVolumeRenderStyleNode,
-        
+    defineClass( x3dom.nodeTypes.X3DVolumeRenderStyleNode,
+
         /**
          * Constructor for X3DComposableVolumeRenderStyleNode
          * @constructs x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc (Abstract) class for composable volume rendering styles.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode.superClass.call( this, ctx );
 
             /**
              * The surfaceNormals field allows to provide the normals of the volume data. It takes an ImageTextureAtlas of the same dimensions of the volume data. If it is not provided, it is computed on the fly.
@@ -39,8 +39,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('surfaceNormals', x3dom.nodeTypes.Texture);
-        
+            this.addField_SFNode( "surfaceNormals", x3dom.nodeTypes.Texture );
         },
         {
         }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Coordinate",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DCoordinateNode,
-        
+    defineClass( x3dom.nodeTypes.X3DCoordinateNode,
+
         /**
          * Constructor for Coordinate
          * @constructs x3dom.nodeTypes.Coordinate
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc Coordinate builds geometry using a set of 3D coordinates.
          * Coordinate is used by IndexedFaceSet, IndexedLineSet, LineSet and PointSet.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Coordinate.superClass.call( this, ctx );
 
             /**
              * Contains the 3D coordinates
@@ -36,11 +36,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'point', []);
-        
+            this.addField_MFVec3f( ctx, "point", [] );
         },
         {
-            getPoints: function() {
+            getPoints : function ()
+            {
                 return this._vf.point;
             }
         }

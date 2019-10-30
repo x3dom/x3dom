@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "SpotLight",
     "Lighting",
-    defineClass(x3dom.nodeTypes.X3DLightNode,
-        
+    defineClass( x3dom.nodeTypes.X3DLightNode,
+
         /**
          * Constructor for SpotLight
          * @constructs x3dom.nodeTypes.SpotLight
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * Spotlights may illuminate geometry nodes that respond to light sources and intersect the solid angle defined by the SpotLight.
          * Spotlight nodes are specified in the local coordinate system and are affected by ancestors' transformations.
          */
-        function (ctx) {
-            x3dom.nodeTypes.SpotLight.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.SpotLight.superClass.call( this, ctx );
 
             /**
              * The direction field specifies the direction vector of the light's central axis defined in the local coordinate system.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this.addField_SFVec3f( ctx, "direction", 0, 0, -1 );
 
             /**
              * SpotLight node's illumination falls off with distance as specified by three attenuation coefficients. The attenuation factor is:
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'attenuation', 1, 0, 0);
+            this.addField_SFVec3f( ctx, "attenuation", 1, 0, 0 );
 
             /**
              * The location field specifies a translation offset of the centre point of the light source from the light's local coordinate system origin.
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'location', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "location", 0, 0, 0 );
 
             /**
              * The radius field specifies the radial extent of the solid angle and the maximum distance from location that may be illuminated by the light source.
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'radius', 100);
+            this.addField_SFFloat( ctx, "radius", 100 );
 
             /**
              *  The beamWidth field specifies an inner solid angle in which the light source emits light at uniform full intensity.
@@ -90,7 +90,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'beamWidth', 1.5707963);
+            this.addField_SFFloat( ctx, "beamWidth", 1.5707963 );
 
             /**
              * The cutOffAngle field specifies the outer bound of the solid angle. The light source does not emit light outside of this solid angle.
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'cutOffAngle', 1.5707963);
+            this.addField_SFFloat( ctx, "cutOffAngle", 1.5707963 );
 
             /**
              *
@@ -113,7 +113,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shadowCascades', 1);
+            this.addField_SFInt32( ctx, "shadowCascades", 1 );
 
             /**
              *
@@ -123,7 +123,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitFactor', 1);
+            this.addField_SFFloat( ctx, "shadowSplitFactor", 1 );
 
             /**
              *
@@ -133,19 +133,19 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitOffset', 0.1);
+            this.addField_SFFloat( ctx, "shadowSplitOffset", 0.1 );
 
             this._vf.global = true;
-        
         },
         {
-            getViewMatrix: function(vec) {
-                var pos = this.getCurrentTransform().multMatrixPnt(this._vf.location);
-                var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
+            getViewMatrix : function ( vec )
+            {
+                var pos = this.getCurrentTransform().multMatrixPnt( this._vf.location );
+                var dir = this.getCurrentTransform().multMatrixVec( this._vf.direction ).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
-                    new x3dom.fields.SFVec3f(0, 0, -1), dir);
+                    new x3dom.fields.SFVec3f( 0, 0, -1 ), dir );
                 return orientation.toMatrix().transpose().
-                    mult(x3dom.fields.SFMatrix4f.translation(pos.negate()));
+                    mult( x3dom.fields.SFMatrix4f.translation( pos.negate() ) );
             }
         }
     )

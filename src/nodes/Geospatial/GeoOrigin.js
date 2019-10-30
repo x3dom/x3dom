@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "GeoOrigin",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for GeoOrigin
          * @constructs x3dom.nodeTypes.GeoOrigin
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The GeoOrigin node defines an absolute geospatial location and an implicit local coordinate frame against which geometry is referenced.
          * This node is used to translate from geographical coordinates into a local Cartesian coordinate system which can be managed by the X3D browser. This node is deprecated as of X3D 3.3
          */
-        function (ctx) {
-            x3dom.nodeTypes.GeoOrigin.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.GeoOrigin.superClass.call( this, ctx );
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+            this.addField_MFString( ctx, "geoSystem", [ "GD", "WE" ] );
 
             /**
              * The geoCoords field is used to specify a local coordinate frame for extended precision.
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
+            this.addField_SFVec3d( ctx, "geoCoords", 0, 0, 0 );
 
             /**
              * The rotateYUp field is used to specify whether coordinates of nodes that use this GeoOrigin are to be rotated such that their up direction is aligned with the X3D Y axis.
@@ -58,8 +58,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'rotateYUp', false);
-        
+            this.addField_SFBool( ctx, "rotateYUp", false );
         }
     )
 );

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "IntegerSequencer",
     "EventUtilities",
-    defineClass(x3dom.nodeTypes.X3DSequencerNode,
-        
+    defineClass( x3dom.nodeTypes.X3DSequencerNode,
+
         /**
          * Constructor for IntegerSequencer
          * @constructs x3dom.nodeTypes.IntegerSequencer
@@ -23,10 +23,11 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The IntegerSequencer node generates sequential discrete value_changed events selected from the keyValue field in response to each set_fraction, next, or previous event.
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.IntegerSequencer.superClass.call(this, ctx);
-            
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.IntegerSequencer.superClass.call( this, ctx );
+
             /**
              * Defines the set of integers, that are used for sequencing.
              * @var {x3dom.fields.MFInt32} keyValue
@@ -35,8 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFInt32(ctx, 'keyValue', []);
-        
+            this.addField_MFInt32( ctx, "keyValue", [] );
         },
         {
         // all in base class

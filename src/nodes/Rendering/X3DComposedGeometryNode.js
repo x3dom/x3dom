@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DComposedGeometryNode",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometryNode,
+
         /**
          * Constructor for X3DComposedGeometryNode
          * @constructs x3dom.nodeTypes.X3DComposedGeometryNode
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          * Composed geometry may have color, coordinates, normal and texture coordinates supplied.
          * The rendered output of the combination of these is dependent on the concrete node definition.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call( this, ctx );
 
             /**
              * If colorPerVertex is FALSE, colours are applied to each face. If colorPerVertex is true, colours are applied to each vertex.
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'colorPerVertex', true);
+            this.addField_SFBool( ctx, "colorPerVertex", true );
 
             /**
              * If normalPerVertex is FALSE, normals are applied to each face. If normalPerVertex is true, normals are applied to each vertex.
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
+            this.addField_SFBool( ctx, "normalPerVertex", true );
 
             /**
              *
@@ -58,8 +58,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalUpdateMode', 'fast');  // none; fast; nice
-
+            this.addField_SFString( ctx, "normalUpdateMode", "fast" );  // none; fast; nice
 
             /**
              * If the attrib field is not empty it shall contain a list of per-vertex attribute information for programmable shaders.
@@ -69,8 +68,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
-
+            this.addField_MFNode( "attrib", x3dom.nodeTypes.X3DVertexAttributeNode );
 
             /**
              * Contains a Coordinate node.
@@ -80,7 +78,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode( "coord", x3dom.nodeTypes.X3DCoordinateNode );
 
             /**
              * If the normal field is not NULL, it shall contain a Normal node whose normals are applied to the vertices or faces of the X3DComposedGeometryNode in a manner exactly equivalent to that described above for applying colours to vertices/faces (where normalPerVertex corresponds to colorPerVertex and normalIndex corresponds to colorIndex).
@@ -91,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+            this.addField_SFNode( "normal", x3dom.nodeTypes.Normal );
 
             /**
              * If the color field is NULL, the geometry shall be rendered normally using the Material and texture defined in the Appearance node.
@@ -101,7 +99,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
+            this.addField_SFNode( "color", x3dom.nodeTypes.X3DColorNode );
 
             /**
              * If the texCoord field is not NULL, it shall contain a TextureCoordinate node.
@@ -111,41 +109,41 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
-        
+            this.addField_SFNode( "texCoord", x3dom.nodeTypes.X3DTextureCoordinateNode );
         },
         {
-            handleAttribs: function()
+            handleAttribs : function ()
             {
                 //var time0 = new Date().getTime();
 
                 // TODO; handle case that more than 2^16-1 attributes are to be referenced
-                var i, n = this._cf.attrib.nodes.length;
+                var i,
+                    n = this._cf.attrib.nodes.length;
 
-                for (i=0; i<n; i++)
+                for ( i = 0; i < n; i++ )
                 {
-                    var name = this._cf.attrib.nodes[i]._vf.name;
+                    var name = this._cf.attrib.nodes[ i ]._vf.name;
 
-                    switch (name.toLowerCase())
+                    switch ( name.toLowerCase() )
                     {
                         case "position":
-                            this._mesh._positions[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._positions[ 0 ] = this._cf.attrib.nodes[ i ]._vf.value.toGL();
                             break;
                         case "normal":
-                            this._mesh._normals[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._normals[ 0 ] = this._cf.attrib.nodes[ i ]._vf.value.toGL();
                             break;
                         case "texcoord":
-                            this._mesh._texCoords[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._texCoords[ 0 ] = this._cf.attrib.nodes[ i ]._vf.value.toGL();
                             break;
                         case "color":
-                            this._mesh._colors[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._colors[ 0 ] = this._cf.attrib.nodes[ i ]._vf.value.toGL();
                             break;
                         default:
-                            this._mesh._dynamicFields[name] = {};
-                            this._mesh._dynamicFields[name].numComponents =
-                                this._cf.attrib.nodes[i]._vf.numComponents;
-                            this._mesh._dynamicFields[name].value =
-                                this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._dynamicFields[ name ] = {};
+                            this._mesh._dynamicFields[ name ].numComponents =
+                                this._cf.attrib.nodes[ i ]._vf.numComponents;
+                            this._mesh._dynamicFields[ name ].value =
+                                this._cf.attrib.nodes[ i ]._vf.value.toGL();
                             break;
                     }
                 }

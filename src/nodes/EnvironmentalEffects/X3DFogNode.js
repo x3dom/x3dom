@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DFogNode",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBindableNode,
+
         /**
          * Constructor for X3DFogNode
          * @constructs x3dom.nodeTypes.X3DFogNode
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc X3DFogObject is the abstract type that describes a node that influences the lighting equation
          * through the use of fog semantics.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DFogNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DFogNode.superClass.call( this, ctx );
 
             /**
              * Objects located outside the visibilityRange from the viewer are drawn with a constant colour of color.
@@ -37,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFColor( ctx, "color", 1, 1, 1 );
 
             /**
              * The fogType field controls how much of the fog colour is blended with the object as a function of
@@ -51,7 +52,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'fogType', "LINEAR");
+            this.addField_SFString( ctx, "fogType", "LINEAR" );
 
             /**
              * The visibilityRange specifies the distance in length base units (in the local coordinate system) at
@@ -65,8 +66,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'visibilityRange', 0);
-        
+            this.addField_SFFloat( ctx, "visibilityRange", 0 );
         },
         {
         }

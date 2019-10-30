@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "PopGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+
         /**
          * Constructor for PopGeometry
          * @constructs x3dom.nodeTypes.PopGeometry
@@ -23,8 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The PopGeometry node provides a first, experimental implementation of the POP Buffer algorithm for progressive streaming of triangular mesh data.
          */
-        function (ctx) {
-            x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.PopGeometry.superClass.call( this, ctx );
 
             /**
              * The size of the bounding box of this geometry, as it is used for culling.
@@ -34,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'tightSize',  1, 1, 1);
+            this.addField_SFVec3f( ctx, "tightSize",  1, 1, 1 );
             //@todo: add this on export
 
             /**
@@ -46,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'maxBBSize',  1, 1, 1);
+            this.addField_SFVec3f( ctx, "maxBBSize",  1, 1, 1 );
 
             /**
              * The minimum coordinates of the bounding box, in a normalized range between [0,1],
@@ -57,7 +58,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
+            this.addField_SFVec3f( ctx, "bbMinModF",  0, 0, 0 );
 
             /**
              * The maximum coordinates of the bounding box, in a normalized range between [0,1],
@@ -68,7 +69,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
+            this.addField_SFVec3f( ctx, "bbMaxModF",  1, 1, 1 );
 
             /**
              * Minimum coordinates of the bounding box, in object coordinates.
@@ -78,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "bbMin", 0, 0, 0 );
 
             /**
              * Field for internal use.
@@ -88,15 +89,14 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f (ctx, 'bbShiftVec', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "bbShiftVec", 0, 0, 0 );
 
-            if (this._vf.bbMinModF.x > this._vf.bbMaxModF.x)
-                this._vf.bbShiftVec.x = 1.0;
-            if (this._vf.bbMinModF.y > this._vf.bbMaxModF.y)
-                this._vf.bbShiftVec.y = 1.0;
-            if (this._vf.bbMinModF.z > this._vf.bbMaxModF.z)
-                this._vf.bbShiftVec.z = 1.0;
-
+            if ( this._vf.bbMinModF.x > this._vf.bbMaxModF.x )
+            {this._vf.bbShiftVec.x = 1.0;}
+            if ( this._vf.bbMinModF.y > this._vf.bbMaxModF.y )
+            {this._vf.bbShiftVec.y = 1.0;}
+            if ( this._vf.bbMinModF.z > this._vf.bbMaxModF.z )
+            {this._vf.bbShiftVec.z = 1.0;}
 
             /**
              * Number of levels of this pop geometry.
@@ -106,8 +106,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
-
+            this.addField_MFNode( "levels", x3dom.nodeTypes.PopGeometryLevel );
 
             /**
              * Stride of all (interleaved) attributes, given in bytes.
@@ -117,7 +116,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'attributeStride',   0);
+            this.addField_SFInt32( ctx, "attributeStride",   0 );
 
             /**
              * Offset, given in bytes, for the position attribute inside the interleaved attribute array.
@@ -127,7 +126,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'positionOffset',    0);
+            this.addField_SFInt32( ctx, "positionOffset",    0 );
 
             /**
              * Offset, given in bytes, for the normal attribute inside the interleaved attribute array.
@@ -137,7 +136,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'normalOffset',      0);
+            this.addField_SFInt32( ctx, "normalOffset",      0 );
 
             /**
              * Offset, given in bytes, for the texture coordinate attribute inside the interleaved attribute array.
@@ -147,7 +146,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'texcoordOffset',    0);
+            this.addField_SFInt32( ctx, "texcoordOffset",    0 );
 
             /**
              * Offset, given in bytes, for the color attribute inside the interleaved attribute array.
@@ -157,7 +156,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'colorOffset',       0);
+            this.addField_SFInt32( ctx, "colorOffset",       0 );
 
             /**
              * Number of anchor vertices (can be 0).
@@ -168,8 +167,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'numAnchorVertices', 0);
-
+            this.addField_SFInt32( ctx, "numAnchorVertices", 0 );
 
             /**
              * Precision, given in bytes, for the components of the position attribute.
@@ -179,7 +177,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'positionPrecision', 2);
+            this.addField_SFInt32( ctx, "positionPrecision", 2 );
 
             /**
              * Precision, given in bytes, for the components of the normal attribute.
@@ -189,7 +187,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'normalPrecision',   1);
+            this.addField_SFInt32( ctx, "normalPrecision",   1 );
 
             /**
              * Precision, given in bytes, for the components of the texture coordinate attribute.
@@ -199,7 +197,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
+            this.addField_SFInt32( ctx, "texcoordPrecision", 2 );
 
             /**
              * Precision, given in bytes, for the components of the color attribute.
@@ -209,8 +207,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'colorPrecision',    1);
-
+            this.addField_SFInt32( ctx, "colorPrecision",    1 );
 
             /**
              * Minimum precision level of this PopGeometry node.
@@ -221,7 +218,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'minPrecisionLevel', -1);
+            this.addField_SFInt32( ctx, "minPrecisionLevel", -1 );
 
             /**
              * Maximum precision level of this PopGeometry node.
@@ -232,7 +229,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'maxPrecisionLevel', -1);
+            this.addField_SFInt32( ctx, "maxPrecisionLevel", -1 );
 
             /**
              * Additional precision multiplication factor, for tuning the displayed precision.
@@ -242,7 +239,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'precisionFactor',  1.0);
+            this.addField_SFFloat( ctx, "precisionFactor",  1.0 );
 
             //those four fields are read by the x3dom renderer
 
@@ -254,7 +251,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'coordType',    "Uint16");
+            this.addField_SFString( ctx, "coordType",    "Uint16" );
 
             /**
              * Field for internal use by the X3DOM renderer.
@@ -264,7 +261,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalType',   "Uint8");
+            this.addField_SFString( ctx, "normalType",   "Uint8" );
 
             /**
              * Field for internal use by the X3DOM renderer.
@@ -274,7 +271,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString( ctx, "texCoordType", "Uint16" );
 
             /**
              * Field for internal use by the X3DOM renderer.
@@ -284,8 +281,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'colorType',    "Uint8");
-
+            this.addField_SFString( ctx, "colorType",    "Uint8" );
 
             /**
              * Size of the vertex buffer, used to pre-allocate the buffer before downloading data.
@@ -295,8 +291,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
-
+            this.addField_SFInt32( ctx, "vertexBufferSize", 0 );
 
             /**
              * Specifies whether this PopGeometry was encoded for indexed rendering.
@@ -306,7 +301,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'indexedRendering', true);
+            this.addField_SFBool( ctx, "indexedRendering", true );
             //ATTENTION: Although it might be supported by aopt,
             //           X3DOM does not accept 16 bit spherical normals yet,
             //           spherical normals are assumed to be 8 bit and get
@@ -320,7 +315,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'sphericalNormals', false);
+            this.addField_SFBool( ctx, "sphericalNormals", false );
 
             //needed as we manipulate vertexCount during loading
 
@@ -332,20 +327,21 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFInt32(ctx, 'originalVertexCount', [0]);
+            this.addField_MFInt32( ctx, "originalVertexCount", [ 0 ] );
 
-            for (var i = 0; i < this._vf.vertexCount.length; ++i) {
-                this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
+            for ( var i = 0; i < this._vf.vertexCount.length; ++i )
+            {
+                this._vf.originalVertexCount[ i ] = this._vf.vertexCount[ i ];
             }
 
             //@todo: remove this three lines after cleanup
-            this._vf.maxBBSize = x3dom.fields.SFVec3f.copy(this._vf.size);
+            this._vf.maxBBSize = x3dom.fields.SFVec3f.copy( this._vf.size );
             this._vf.size  = this._vf.tightSize;
             this._diameter = this._vf.size.length();
 
-            this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.maxBBSize.x),
-                Math.floor(this._vf.bbMin.y / this._vf.maxBBSize.y),
-                Math.floor(this._vf.bbMin.z / this._vf.maxBBSize.z) ];
+            this._bbMinBySize = [ Math.floor( this._vf.bbMin.x / this._vf.maxBBSize.x ),
+                Math.floor( this._vf.bbMin.y / this._vf.maxBBSize.y ),
+                Math.floor( this._vf.bbMin.z / this._vf.maxBBSize.z ) ];
             this._volRadius        = this._vf.size.length() / 2;
             this._volLargestRadius = this._vf.maxBBSize.length() / 2;
 
@@ -356,114 +352,140 @@ x3dom.registerNodeType(
             this._mesh._numColComponents  = 3;
 
             x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
-            x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ?
-                this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
-        
+            x3dom.nodeTypes.PopGeometry.numTotalTris  += ( this.hasIndex() ?
+                this.getTotalNumberOfIndices() : this.getVertexCount() ) / 3;
         },
         {
-            forceUpdateCoverage: function() {
+            forceUpdateCoverage : function ()
+            {
                 return true;
             },
 
-            getBBoxShiftVec: function() {
+            getBBoxShiftVec : function ()
+            {
                 return this._vf.bbShiftVec;
             },
 
-            getBBoxSize: function() {
+            getBBoxSize : function ()
+            {
                 return this._vf.size;
             },
 
-            hasIndex: function() {
+            hasIndex : function ()
+            {
                 return this._vf.indexedRendering;
             },
 
-            getTotalNumberOfIndices: function() {
-                if (this._vf.indexedRendering) {
+            getTotalNumberOfIndices : function ()
+            {
+                if ( this._vf.indexedRendering )
+                {
                     var sum = 0;
-                    for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
-                        sum += this._vf.originalVertexCount[i];
+                    for ( var i = 0; i < this._vf.originalVertexCount.length; ++i )
+                    {
+                        sum += this._vf.originalVertexCount[ i ];
                     }
                     return sum;
                 }
-                else  {
+                else
+                {
                     return 0;
                 }
             },
 
-            getVertexCount: function() {
+            getVertexCount : function ()
+            {
                 var sum = 0;
-                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
-                    sum += this._vf.originalVertexCount[i];
+                for ( var i = 0; i < this._vf.originalVertexCount.length; ++i )
+                {
+                    sum += this._vf.originalVertexCount[ i ];
                 }
                 return sum;
             },
 
             //adapts the vertex count according to the given total number of indices / vertices
             //which is used by the renderer
-            adaptVertexCount: function(numVerts) {
+            adaptVertexCount : function ( numVerts )
+            {
                 var verts = 0;
-                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
-                    if ((this._vf.originalVertexCount[i] + verts) <= numVerts) {
-                        this._vf.vertexCount[i] = this._vf.originalVertexCount[i];
-                        verts += this._vf.originalVertexCount[i];
+                for ( var i = 0; i < this._vf.originalVertexCount.length; ++i )
+                {
+                    if ( ( this._vf.originalVertexCount[ i ] + verts ) <= numVerts )
+                    {
+                        this._vf.vertexCount[ i ] = this._vf.originalVertexCount[ i ];
+                        verts += this._vf.originalVertexCount[ i ];
                     }
-                    else {
-                        this._vf.vertexCount[i] = numVerts - verts;
+                    else
+                    {
+                        this._vf.vertexCount[ i ] = numVerts - verts;
                         break;
                     }
                 }
             },
 
-            hasNormal: function() {
-                return (this._vf.normalOffset != 0) && !this._vf.sphericalNormals;
+            hasNormal : function ()
+            {
+                return ( this._vf.normalOffset != 0 ) && !this._vf.sphericalNormals;
             },
 
-            hasTexCoord: function() {
-                return (this._vf.texcoordOffset != 0);
+            hasTexCoord : function ()
+            {
+                return ( this._vf.texcoordOffset != 0 );
             },
 
-            hasColor: function() {
-                return (this._vf.colorOffset != 0);
+            hasColor : function ()
+            {
+                return ( this._vf.colorOffset != 0 );
             },
 
-            getPositionPrecision : function() {
+            getPositionPrecision : function ()
+            {
                 return this._vf.positionPrecision;
             },
 
-            getNormalPrecision : function() {
+            getNormalPrecision : function ()
+            {
                 return this._vf.normalPrecision;
             },
 
-            getTexCoordPrecision : function() {
+            getTexCoordPrecision : function ()
+            {
                 return this._vf.texcoordPrecision;
             },
 
-            getColorPrecision : function() {
+            getColorPrecision : function ()
+            {
                 return this._vf.colorPrecision;
             },
 
-            getAttributeStride : function() {
+            getAttributeStride : function ()
+            {
                 return this._vf.attributeStride;
             },
 
-            getPositionOffset : function() {
+            getPositionOffset : function ()
+            {
                 return this._vf.positionOffset;
             },
 
-            getNormalOffset : function() {
+            getNormalOffset : function ()
+            {
                 return this._vf.normalOffset;
             },
 
-            getTexCoordOffset : function() {
+            getTexCoordOffset : function ()
+            {
                 return this._vf.texcoordOffset;
             },
 
-            getColorOffset : function() {
+            getColorOffset : function ()
+            {
                 return this._vf.colorOffset;
             },
 
-            getBufferTypeStringFromByteCount: function(bytes) {
-                switch(bytes)
+            getBufferTypeStringFromByteCount : function ( bytes )
+            {
+                switch ( bytes )
                 {
                     case 1:
                         return "Uint8";
@@ -476,30 +498,36 @@ x3dom.registerNodeType(
                 }
             },
 
-            getDataURLs : function() {
+            getDataURLs : function ()
+            {
                 var urls = [];
 
-                for (var i = 0; i < this._cf.levels.nodes.length; ++i) {
-                    urls.push(this._cf.levels.nodes[i].getSrc());
+                for ( var i = 0; i < this._cf.levels.nodes.length; ++i )
+                {
+                    urls.push( this._cf.levels.nodes[ i ].getSrc() );
                 }
 
                 return urls;
             },
 
-            getNumIndicesByLevel : function(lvl) {
-                return this._cf.levels.nodes[lvl].getNumIndices();
+            getNumIndicesByLevel : function ( lvl )
+            {
+                return this._cf.levels.nodes[ lvl ].getNumIndices();
             },
 
-            getNumLevels : function(lvl) {
+            getNumLevels : function ( lvl )
+            {
                 return this._cf.levels.nodes.length;
             },
 
-            getVertexDataBufferOffset : function(lvl) {
-                return this._cf.levels.nodes[lvl].getVertexDataBufferOffset();
+            getVertexDataBufferOffset : function ( lvl )
+            {
+                return this._cf.levels.nodes[ lvl ].getVertexDataBufferOffset();
             },
 
-            getPrecisionMax: function(type) {
-                switch(this._vf[type])
+            getPrecisionMax : function ( type )
+            {
+                switch ( this._vf[ type ] )
                 {
                     //currently, only Uint8 and Uint16 are supported
                     //case "Int8":
@@ -524,7 +552,6 @@ x3dom.registerNodeType(
     )
 );
 
-
 /** Static class members (needed for stats) */
 x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor  = 1;
 x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 1;
@@ -534,5 +561,5 @@ x3dom.nodeTypes.PopGeometry.numTotalVerts         = 0;
 x3dom.nodeTypes.PopGeometry.numTotalTris          = 0;
 
 /** Static LUT for LOD computation */
-x3dom.nodeTypes.PopGeometry.powLUT = [32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
-    128,    64,   32,   16,   8,    4,    2,   1];
+x3dom.nodeTypes.PopGeometry.powLUT = [ 32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
+    128,    64,   32,   16,   8,    4,    2,   1 ];

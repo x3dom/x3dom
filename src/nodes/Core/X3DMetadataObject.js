@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DMetadataObject",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for X3DMetadataObject
          * @constructs x3dom.nodeTypes.X3DMetadataObject
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc This abstract interface is the basis for all metadata nodes. The interface is inherited by
          * all metadata nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DMetadataObject.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DMetadataObject.superClass.call( this, ctx );
 
             /**
              * The specification of a non-empty value for the name field is required.
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              * The specification of the reference field is optional. If provided, it identifies the metadata standard
@@ -48,8 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'reference', "");
-        
+            this.addField_SFString( ctx, "reference", "" );
         }
     )
 );

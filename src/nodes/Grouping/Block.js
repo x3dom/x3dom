@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Block",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for Block
          * @constructs x3dom.nodeTypes.Block
@@ -21,9 +21,9 @@ x3dom.registerNodeType(
          * @extends x3dom.nodeTypes.X3DGroupingNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          */
-        function (ctx) {
-            x3dom.nodeTypes.Block.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Block.superClass.call( this, ctx );
 
             /**
              *
@@ -33,8 +33,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'nameSpaceName', []);
-        
+            this.addField_MFString( ctx, "nameSpaceName", [] );
         }
     )
 );

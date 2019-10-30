@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### SingleAxisHingeJoint ###
+//    ### SingleAxisHingeJoint ###
 x3dom.registerNodeType(
     "SingleAxisHingeJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for SingleAxisHingeJoint
@@ -26,8 +26,9 @@ x3dom.registerNodeType(
          *  vector described in the axis field and centered on the anchorPoint described in world coordinates. The
          *  objects on each side of the hinge are specified by the body1 and body2 fields.
          */
-        function(ctx){
-            x3dom.nodeTypes.SingleAxisHingeJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.SingleAxisHingeJoint.superClass.call( this, ctx );
 
             /**
              * The axis of the hinge is defined to be along the unit vector described in the axis field and centered on
@@ -38,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'anchorPoint', 0,0,0);
+            this.addField_SFVec3f( ctx, "anchorPoint", 0, 0, 0 );
 
             /**
              * The axis of the hinge is defined to be along the unit vector described in the axis field and centered on
@@ -49,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis', 0,0,0);
+            this.addField_SFVec3f( ctx, "axis", 0, 0, 0 );
 
             /**
              * The minAngle and maxAngle fields are used to control the maximum angles through which the hinge is
@@ -62,7 +63,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxAngle', 90);
+            this.addField_SFFloat( ctx, "maxAngle", 90 );
 
             /**
              * The minAngle and maxAngle fields are used to control the maximum angles through which the hinge is
@@ -75,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'minAngle', -90);
+            this.addField_SFFloat( ctx, "minAngle", -90 );
 
             /**
              * The stopBounce field describes how much the joint should bounce the body back if the joint limit has been
@@ -88,7 +89,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopBounce', 0);
+            this.addField_SFFloat( ctx, "stopBounce", 0 );
 
             /**
              * The stopErrorCorrection field describes the amount of error correction to be performed in a time step
@@ -101,11 +102,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopErrorCorrection', 0.8);
-
+            this.addField_SFFloat( ctx, "stopErrorCorrection", 0.8 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('SingleAxisHingeJoint: ');
             }
         }

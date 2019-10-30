@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "WorldInfo",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DInfoNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInfoNode,
+
         /**
          * Constructor for WorldInfo
          * @constructs x3dom.nodeTypes.WorldInfo
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The WorldInfo node contains information about the world. This node is strictly for documentation
          * purposes and has no effect on the visual appearance or behaviour of the world.
          */
-        function (ctx) {
-            x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.WorldInfo.superClass.call( this, ctx );
 
             /**
              * The title field is intended to store the name or title of the world so that browsers can present this to
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'info', []);
+            this.addField_MFString( ctx, "info", [] );
 
             /**
              * Information about the world can be stored in the info field, such as author information, copyright, and
@@ -48,11 +48,10 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'title', "");
+            this.addField_SFString( ctx, "title", "" );
 
-            x3dom.debug.logInfo(this._vf.info);
-            x3dom.debug.logInfo(this._vf.title);
-        
+            x3dom.debug.logInfo( this._vf.info );
+            x3dom.debug.logInfo( this._vf.title );
         }
     )
 );

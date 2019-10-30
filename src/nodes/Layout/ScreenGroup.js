@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "ScreenGroup",
     "Layout",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
 
         /**
          * Constructor for ScreenGroup
@@ -25,37 +25,38 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Add a class description here.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ScreenGroup.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ScreenGroup.superClass.call( this, ctx );
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
-
                 // This is taken "as is" from Billboard
 
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
-                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask < 0) {
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
+                if ( planeMask < 0 )
+                {
                     return;
                 }
 
                 // no caching later on as transform changes almost every frame anyway
                 singlePath = false;
 
-  // End of code borrowed from Billboard, Screengroup's scale computing starts
-  // here.
+                // End of code borrowed from Billboard, Screengroup's scale computing starts
+                // here.
 
-  // Computes the scaling ratio applied to an object depending on its distance
-  // to the camera. A dot　product is performed between said distance and the
-  // camera direction, since it is the relevant value to compute the perspective
-  // scale.
-  // All positions and directions are converted to the camera's coordinates.
+                // Computes the scaling ratio applied to an object depending on its distance
+                // to the camera. A dot　product is performed between said distance and the
+                // camera direction, since it is the relevant value to compute the perspective
+                // scale.
+                // All positions and directions are converted to the camera's coordinates.
 
                 var doc,        // The current X3D document.
                     vp,         // The current viewpoint.
@@ -72,15 +73,14 @@ x3dom.registerNodeType(
                     ratio,      // The scaling ratio to make the screen group size in pixels.
                     scale_matrix; // The matrix for the scaling.
 
-
                 doc = this._nameSpace.doc;
                 vp = doc._scene.getViewpoint();
 
                 viewport_height = doc._x3dElem.clientHeight;
                 one_to_one_pixel_depth = viewport_height / vp.getImgPlaneHeightAtDistOne();
 
-                minus_one = new x3dom.fields.SFVec3f(0, 0, -1.0);
-                zero = new x3dom.fields.SFVec3f(0, 0, 0);
+                minus_one = new x3dom.fields.SFVec3f( 0, 0, -1.0 );
+                zero = new x3dom.fields.SFVec3f( 0, 0, 0 );
 
                 view_transform = drawableCollection.viewMatrix;
                 model_transform = transform;
@@ -90,23 +90,22 @@ x3dom.registerNodeType(
                 camera_position = zero; // In camera's coordinates
 
                 screengroup_position = view_transform.multMatrixPnt(
-                  model_transform.multMatrixPnt(zero)
+                    model_transform.multMatrixPnt( zero )
                 ); // In camera's coordinates
 
+                viewpoint_to_screengroup = screengroup_position.subtract( camera_position );
 
-                viewpoint_to_screengroup = screengroup_position.subtract(camera_position);
+                ratio = view_direction.dot( viewpoint_to_screengroup ) / one_to_one_pixel_depth;
 
-                ratio = view_direction.dot(viewpoint_to_screengroup) / one_to_one_pixel_depth;
+                scale_matrix = x3dom.fields.SFMatrix4f.scale( new x3dom.fields.SFVec3f( ratio, ratio, ratio ) );
+                var childTransform = this.transformMatrix( model_transform.mult( scale_matrix ) );
 
-                scale_matrix = x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(ratio, ratio, ratio));
-                var childTransform = this.transformMatrix(model_transform.mult(scale_matrix));
-
-
-                for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
+                for ( var i = 0, i_n = this._childNodes.length; i < i_n; i++ )
                 {
-                    var cnode = this._childNodes[i];
-                    if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                    var cnode = this._childNodes[ i ];
+                    if ( cnode )
+                    {
+                        cnode.collectDrawableObjects( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
                     }
                 }
             }

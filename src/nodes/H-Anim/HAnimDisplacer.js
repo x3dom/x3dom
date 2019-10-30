@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "HAnimDisplacer",
     "H-Anim",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometricPropertyNode,
+
         /**
          * Constructor for HAnimDisplacer
          * @constructs x3dom.nodeTypes.HAnimDisplacer
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * It may also require "hints" as to the direction in which each vertex should move. That information is stored in a node called an HAnimDisplacer.
          * The HAnimDisplacers for a particular HAnimSegment are stored in the displacers field of that HAnimSegment.
          */
-        function (ctx) {
-            x3dom.nodeTypes.HAnimDisplacer.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.HAnimDisplacer.superClass.call( this, ctx );
 
             /**
              *
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx,'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              *
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'weight', 0);
+            this.addField_SFFloat( ctx, "weight", 0 );
 
             /**
              *
@@ -57,7 +57,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFInt32(ctx, 'coordIndex', []);
+            this.addField_MFInt32( ctx, "coordIndex", [] );
 
             /**
              *
@@ -67,11 +67,10 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'displacements', []);
+            this.addField_MFVec3f( ctx, "displacements", [] );
 
             // TODO displacement (add functionality e.g. via matrix palette skinning in shader)
-            x3dom.debug.logWarning("HAnimDisplacer in Segments NYI.");
-        
+            x3dom.debug.logWarning( "HAnimDisplacer in Segments NYI." );
         }
     )
 );

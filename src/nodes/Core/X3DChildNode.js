@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DChildNode",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for X3DChildNode
          * @constructs x3dom.nodeTypes.X3DChildNode
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc This abstract node type indicates that the concrete nodes that are instantiated based on it may
          * be used in children, addChildren, and removeChildren fields.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DChildNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DChildNode.superClass.call( this, ctx );
         }
     )
 );

@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### MotorJoint ###
+//    ### MotorJoint ###
 x3dom.registerNodeType(
     "MotorJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for MotorJoint
@@ -25,8 +25,9 @@ x3dom.registerNodeType(
          *  (specified by the body1 and body2 fields) associated with a joint. This can be especially useful with a
          *  BallJoint where there is no restriction on the angular degrees of freedom.
          */
-        function(ctx){
-            x3dom.nodeTypes.MotorJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MotorJoint.superClass.call( this, ctx );
 
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
@@ -38,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis1Angle', 0);
+            this.addField_SFFloat( ctx, "axis1Angle", 0 );
 
             /**
              * Torque on axis 1.
@@ -49,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis1Torque', 0);
+            this.addField_SFFloat( ctx, "axis1Torque", 0 );
 
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
@@ -61,7 +62,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis2Angle', 0);
+            this.addField_SFFloat( ctx, "axis2Angle", 0 );
 
             /**
              * Torque on axis 2.
@@ -72,7 +73,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis2Torque', 0);
+            this.addField_SFFloat( ctx, "axis2Torque", 0 );
 
             /**
              * The three axis angle fields provide angles (in angle base units) for this frame for the corresponding
@@ -84,7 +85,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis3Angle', 0);
+            this.addField_SFFloat( ctx, "axis3Angle", 0 );
 
             /**
              * Torque on axis 3.
@@ -95,7 +96,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'axis3Torque', 0);
+            this.addField_SFFloat( ctx, "axis3Torque", 0 );
 
             /**
              * The currently enabled axis.
@@ -106,7 +107,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'enabledAxes', 1);
+            this.addField_SFInt32( ctx, "enabledAxes", 1 );
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
@@ -116,7 +117,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'motor1Axis', 0,0,0);
+            this.addField_SFVec3f( ctx, "motor1Axis", 0, 0, 0 );
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
@@ -126,7 +127,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'motor2Axis', 0,0,0);
+            this.addField_SFVec3f( ctx, "motor2Axis", 0, 0, 0 );
 
             /**
              * The motorAxis fields define the axis vector of the corresponding axis.
@@ -136,7 +137,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'motor3Axis', 0,0,0);
+            this.addField_SFVec3f( ctx, "motor3Axis", 0, 0, 0 );
 
             /**
              * The stop bounce fields describe how much the joint should bounce the body back on the corresponding axis
@@ -150,7 +151,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop1Bounce', 0);
+            this.addField_SFFloat( ctx, "stop1Bounce", 0 );
 
             /**
              * The stop error correction fields describe the amount of error correction to be performed in a time step
@@ -163,7 +164,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop1ErrorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "stop1ErrorCorrection", 0.8 );
 
             /**
              * The stop bounce fields describe how much the joint should bounce the body back on the corresponding axis
@@ -177,7 +178,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop2Bounce', 0);
+            this.addField_SFFloat( ctx, "stop2Bounce", 0 );
 
             /**
              * The stop error correction fields describe the amount of error correction to be performed in a time step
@@ -190,7 +191,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop2ErrorCorrection', 0.8);
+            this.addField_SFFloat( ctx, "stop2ErrorCorrection", 0.8 );
 
             /**
              * The stop bounce fields describe how much the joint should bounce the body back on the corresponding axis
@@ -204,7 +205,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop3Bounce', 0);
+            this.addField_SFFloat( ctx, "stop3Bounce", 0 );
 
             /**
              * The stop error correction fields describe the amount of error correction to be performed in a time step
@@ -217,11 +218,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stop3ErrorCorrection', 0.8);
-
+            this.addField_SFFloat( ctx, "stop3ErrorCorrection", 0.8 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('MotorJoint: ');
             }
         }

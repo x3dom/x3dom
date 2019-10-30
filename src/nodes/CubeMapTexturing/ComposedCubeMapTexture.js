@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ComposedCubeMapTexture",
     "CubeMapTexturing",
-    defineClass(x3dom.nodeTypes.X3DEnvironmentTextureNode,
-        
+    defineClass( x3dom.nodeTypes.X3DEnvironmentTextureNode,
+
         /**
          * Constructor for ComposedCubeMapTexture
          * @constructs x3dom.nodeTypes.ComposedCubeMapTexture
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The ComposedCubeMapTexture node defines a cubic environment map source as an explicit set of
          * images drawn from individual 2D texture nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ComposedCubeMapTexture.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ComposedCubeMapTexture.superClass.call( this, ctx );
 
             /**
              * Texture for the back of the cubemap
@@ -36,7 +36,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('back',  x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "back",  x3dom.nodeTypes.Texture );
 
             /**
              * Texture for the front of the cubemap
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('front',  x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "front",  x3dom.nodeTypes.Texture );
 
             /**
              * Texture for the bottom of the cubemap
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('bottom', x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "bottom", x3dom.nodeTypes.Texture );
 
             /**
              * Texture for the top of the cubemap
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('top',    x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "top",    x3dom.nodeTypes.Texture );
 
             /**
              * Texture for the left side of the cubemap
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('left',   x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "left",   x3dom.nodeTypes.Texture );
 
             /**
              * Texture for the right side of the cubemap
@@ -86,19 +86,19 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('right',  x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "right",  x3dom.nodeTypes.Texture );
             this._type = "environmentMap";
-        
         },
         {
-            getTexUrl: function() {
+            getTexUrl : function ()
+            {
                 return [
-                    this._nameSpace.getURL(this._cf.back.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.right.node._vf.url[0])
+                    this._nameSpace.getURL( this._cf.back.node._vf.url[ 0 ] ),
+                    this._nameSpace.getURL( this._cf.front.node._vf.url[ 0 ] ),
+                    this._nameSpace.getURL( this._cf.bottom.node._vf.url[ 0 ] ),
+                    this._nameSpace.getURL( this._cf.top.node._vf.url[ 0 ] ),
+                    this._nameSpace.getURL( this._cf.left.node._vf.url[ 0 ] ),
+                    this._nameSpace.getURL( this._cf.right.node._vf.url[ 0 ] )
                 ];
             }
         }

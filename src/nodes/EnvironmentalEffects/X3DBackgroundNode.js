@@ -10,8 +10,8 @@
 x3dom.registerNodeType(
     "X3DBackgroundNode",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBindableNode,
+
         /**
          * Constructor for X3DBackgroundNode
          * @constructs x3dom.nodeTypes.X3DBackgroundNode
@@ -23,10 +23,11 @@ x3dom.registerNodeType(
          * @classdesc X3DBackgroundNode is the abstract type from which all backgrounds inherit. X3DBackgroundNode is a
          * bindable node that, when bound, defines the panoramic background for the scene.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DBackgroundNode.superClass.call( this, ctx );
 
-            var trans = (ctx && ctx.autoGen) ? 1 : 0;
+            var trans = ( ctx && ctx.autoGen ) ? 1 : 0;
 
             /**
              * Cross Origin Mode
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'crossOrigin', '');
+            this.addField_SFString( ctx, "crossOrigin", "" );
 
             /**
              * Color of the ground
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFColor(ctx, 'groundColor', []);
+            this.addField_MFColor( ctx, "groundColor", [] );
 
             /**
              * Angle of the ground
@@ -58,7 +59,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'groundAngle', []);
+            this.addField_MFFloat( ctx, "groundAngle", [] );
 
             /**
              * Color of the sky
@@ -69,7 +70,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
+            this.addField_MFColor( ctx, "skyColor", [ new x3dom.fields.SFColor( 0, 0, 0 ) ] );
 
             /**
              * Angle of the sky
@@ -80,7 +81,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'skyAngle', []);
+            this.addField_MFFloat( ctx, "skyAngle", [] );
 
             /**
              * Transparency of the background
@@ -91,19 +92,21 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'transparency', trans);
+            this.addField_SFFloat( ctx, "transparency", trans );
 
             this._dirty = true;
-        
         },
         {
-            getSkyColor: function() {
-                return new x3dom.fields.SFColor(0,0,0);
+            getSkyColor : function ()
+            {
+                return new x3dom.fields.SFColor( 0, 0, 0 );
             },
-            getTransparency: function() {
+            getTransparency : function ()
+            {
                 return 0;
             },
-            getTexUrl: function() {
+            getTexUrl : function ()
+            {
                 return [];
             }
         }

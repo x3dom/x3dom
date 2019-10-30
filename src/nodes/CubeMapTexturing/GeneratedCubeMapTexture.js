@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "GeneratedCubeMapTexture",
     "CubeMapTexturing",
-    defineClass(x3dom.nodeTypes.X3DEnvironmentTextureNode,
-        
+    defineClass( x3dom.nodeTypes.X3DEnvironmentTextureNode,
+
         /**
          * Constructor for GeneratedCubeMapTexture
          * @constructs x3dom.nodeTypes.GeneratedCubeMapTexture
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The GeneratedCubeMapTexture node defines a cubic environment map that sources its data from
          * internally generated images, rendered from a virtual situated perspective in the scene.
          */
-        function (ctx) {
-            x3dom.nodeTypes.GeneratedCubeMapTexture.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.GeneratedCubeMapTexture.superClass.call( this, ctx );
 
             /**
              * The size field indicates the resolution of the generated images in number of pixels per side.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'size', 128);
+            this.addField_SFInt32( ctx, "size", 128 );
 
             /**
              * NOT YET IMPLEMENTED:
@@ -53,14 +53,14 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            this.addField_SFString( ctx, "update", "NONE" );  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
             this._type = "cubeMap";
-            x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx when fbo type ready
-        
+            x3dom.debug.logWarning( "GeneratedCubeMapTexture NYI" );   // TODO; impl. in gfx when fbo type ready
         },
         {
-            getTexSize: function() {
+            getTexSize : function ()
+            {
                 return this._vf.size;
             }
         }

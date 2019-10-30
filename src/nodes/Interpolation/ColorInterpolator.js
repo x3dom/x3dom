@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ColorInterpolator",
     "Interpolation",
-    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInterpolatorNode,
+
         /**
          * Constructor for ColorInterpolator
          * @constructs x3dom.nodeTypes.ColorInterpolator
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          * A linear interpolation using the value of set_fraction as input is performed in HSV space.
          * The results are undefined when interpolating between two consecutive keys with complementary hues.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ColorInterpolator.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ColorInterpolator.superClass.call( this, ctx );
 
             /**
              * Defines the set of data points, that are used for interpolation.
@@ -38,23 +38,23 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFColor(ctx, 'keyValue', []);
-        
+            this.addField_MFColor( ctx, "keyValue", [] );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if(fieldName === "set_fraction")
+                if ( fieldName === "set_fraction" )
                 {
                     // FIXME; perform color interpolation in HSV space
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.multiply(1.0-t).add(b.multiply(t));
-                    });
+                    var value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                    {
+                        return a.multiply( 1.0 - t ).add( b.multiply( t ) );
+                    } );
 
-                    if(value != undefined && value != this._lastValue)
+                    if ( value != undefined && value != this._lastValue )
                     {
                         this._lastValue = value;
-                        this.postMessage('value_changed', value);
+                        this.postMessage( "value_changed", value );
                     }
                 }
             }

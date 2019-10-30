@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DFollowerNode",
     "Followers",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DChildNode,
+
         /**
          * Constructor for X3DFollowerNode
          * @constructs x3dom.nodeTypes.X3DFollowerNode
@@ -30,14 +30,14 @@ x3dom.registerNodeType(
          *  value but, if a transition triggered by a prevous destination value is still in progress, it may take a
          *  short while until the movement becomes a movement towards the new destination value.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DFollowerNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DFollowerNode.superClass.call( this, ctx );
 
-            if (ctx)
-                ctx.doc._nodeBag.followers.push(this);
+            if ( ctx )
+            {ctx.doc._nodeBag.followers.push( this );}
             else
-                x3dom.debug.logWarning("X3DFollowerNode: No runtime context found!");
-
+            {x3dom.debug.logWarning( "X3DFollowerNode: No runtime context found!" );}
 
             /**
              * isActive shows if the sensor is active
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'isActive', false);
+            this.addField_SFBool( ctx, "isActive", false );
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/followers.html
             // [S|M]F<type> [in]     set_destination
@@ -58,39 +58,44 @@ x3dom.registerNodeType(
             // [S|M]F<type> []       initialValue
 
             this._eps = x3dom.fields.Eps; //0.001;
-        
         },
         {
-            parentRemoved: function(parent)
+            parentRemoved : function ( parent )
             {
-                if (this._parentNodes.length === 0) {
+                if ( this._parentNodes.length === 0 )
+                {
                     var doc = this.findX3DDoc();
 
-                    for (var i=0, n=doc._nodeBag.followers.length; i<n; i++) {
-                        if (doc._nodeBag.followers[i] === this) {
-                            doc._nodeBag.followers.splice(i, 1);
+                    for ( var i = 0, n = doc._nodeBag.followers.length; i < n; i++ )
+                    {
+                        if ( doc._nodeBag.followers[ i ] === this )
+                        {
+                            doc._nodeBag.followers.splice( i, 1 );
                         }
                     }
                 }
             },
 
-            tick: function(t) {
+            tick : function ( t )
+            {
                 return false;
             },
 
-            stepResponse: function(t)
+            stepResponse : function ( t )
             {
-                if (t <= 0) {
+                if ( t <= 0 )
+                {
                     return 0;
                 }
 
-                if (t >= this._vf.duration) {
+                if ( t >= this._vf.duration )
+                {
                     return 1;
                 }
 
                 // When optimizing for speed, the above two if(.) cases can be omitted,
                 // as this function will not be called for values outside of 0..duration.
-                return this.stepResponseCore(t / this._vf.duration);
+                return this.stepResponseCore( t / this._vf.duration );
             },
 
             // This function defines the shape of how the output responds to the initialDestination.
@@ -100,9 +105,9 @@ x3dom.registerNodeType(
             //
             // It should be optimized for speed, in this._vf.order for high performance. It's
             // executed _buffer.length + 1 times each simulation tick.
-            stepResponseCore: function(T)
+            stepResponseCore : function ( T )
             {
-                return 0.5 - 0.5 * Math.cos(T * Math.PI);
+                return 0.5 - 0.5 * Math.cos( T * Math.PI );
             }
         }
     )

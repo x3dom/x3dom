@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### X3DRigidJointNode ###
+//    ### X3DRigidJointNode ###
 x3dom.registerNodeType(
     "X3DRigidJointNode",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass( x3dom.nodeTypes.X3DNode,
 
         /**
          * Constructor for X3DRigidJointNode
@@ -23,8 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The X3DRigidJointNode abstract node type is the base type for all joint types.
          */
-        function(ctx){
-            x3dom.nodeTypes.X3DRigidJointNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DRigidJointNode.superClass.call( this, ctx );
 
             /**
              * The forceOutput field is used to control which output fields are to be generated for the next frame. In
@@ -40,7 +41,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'forceOutput', "");
+            this.addField_SFString( ctx, "forceOutput", "" );
 
             /**
              * The first body to be joint by the node
@@ -50,7 +51,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('body1', x3dom.nodeTypes.RigidBody);
+            this.addField_SFNode( "body1", x3dom.nodeTypes.RigidBody );
 
             /**
              * The second rigid body to be joint by the node
@@ -60,22 +61,28 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('body2', x3dom.nodeTypes.RigidBody);
-
+            this.addField_SFNode( "body2", x3dom.nodeTypes.RigidBody );
         },
         {
-            nodeChanged: function(){
-                if(!this._cf.body1.node){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.RigidBody)){
-                            this._cf.body1 = this._xmlNode.children[x];
+            nodeChanged : function ()
+            {
+                if ( !this._cf.body1.node )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.RigidBody ) )
+                        {
+                            this._cf.body1 = this._xmlNode.children[ x ];
                         }
                     }
                 }
-                if(!this._cf.body2.node){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.RigidBody)){
-                            this._cf.body2 = this._xmlNode.children[x];
+                if ( !this._cf.body2.node )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.RigidBody ) )
+                        {
+                            this._cf.body2 = this._xmlNode.children[ x ];
                         }
                     }
                 }

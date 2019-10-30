@@ -15,7 +15,7 @@
 x3dom.registerNodeType(
     "X3DPointingDeviceSensorNode",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DSensorNode,
+    defineClass( x3dom.nodeTypes.X3DSensorNode,
 
         /**
          * Constructor for X3DPointingDeviceSensorNode
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc An abstract base class for all pointing device sensor nodes.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.X3DPointingDeviceSensorNode.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DPointingDeviceSensorNode.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -38,11 +38,10 @@ x3dom.registerNodeType(
             //route-able output fields
             //this.addField_SFBool(ctx, 'isOver', false);
 
-
             //---------------------------------------
             // PROPERTIES
             //---------------------------------------
-            this._isOver = false; // track for touchTime 
+            this._isOver = false; // track for touchTime
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -54,12 +53,12 @@ x3dom.registerNodeType(
              * @param {DOMEvent} event - the pointer event
              * @private
              */
-            pointerPressedOverSibling: function(event)
+            pointerPressedOverSibling : function ( event )
             {
-                if (this._vf.enabled)
+                if ( this._vf.enabled )
                 {
                     this._vf.isActive = true;
-                    this.postMessage('isActive', true);
+                    this.postMessage( "isActive", true );
                     this._isOver = true;
                 }
             },
@@ -72,7 +71,7 @@ x3dom.registerNodeType(
              * @param {DOMEvent} event - the pointer event
              * @private
              */
-            pointerMoved: function(event)
+            pointerMoved : function ( event )
             {
 
             },
@@ -83,11 +82,11 @@ x3dom.registerNodeType(
              * Function that gets called if the pointing device has entered a sibling of this node.
              * @param {DOMEvent} event - the pointer event
              */
-            pointerMovedOver: function(event)
+            pointerMovedOver : function ( event )
             {
-                if (this._vf.enabled)
+                if ( this._vf.enabled )
                 {
-                    this.postMessage('isOver', true);
+                    this.postMessage( "isOver", true );
                 }
             },
 
@@ -97,11 +96,11 @@ x3dom.registerNodeType(
              * Function that gets called if the pointing device has left a sibling of this node.
              * @param {DOMEvent} event - the pointer event
              */
-            pointerMovedOut: function(event)
+            pointerMovedOut : function ( event )
             {
-                if (this._vf.enabled)
+                if ( this._vf.enabled )
                 {
-                    this.postMessage('isOver', false);
+                    this.postMessage( "isOver", false );
                     this._isOver = false;
                 }
             },
@@ -113,14 +112,14 @@ x3dom.registerNodeType(
              * after it has been pressed over a sibling of this node
              * @private
              */
-            pointerReleased: function()
+            pointerReleased : function ()
             {
-                if (this._vf.enabled)
+                if ( this._vf.enabled )
                 {
                     this._vf.isActive = false;
-                    this.postMessage('isActive', false);
-                    if (this._isOver) // button released and still over
-                      this.postMessage('touchTime', Date.now()/1000);
+                    this.postMessage( "isActive", false );
+                    if ( this._isOver ) // button released and still over
+                    {this.postMessage( "touchTime", Date.now() / 1000 );}
                 }
             }
 

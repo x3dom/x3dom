@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DShaderNode",
     "Shaders",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for X3DShaderNode
          * @constructs x3dom.nodeTypes.X3DShaderNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type is the base type for all node types that specify a programmable shader.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DShaderNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DShaderNode.superClass.call( this, ctx );
 
             /**
              * The language field is used to indicate to the browser which shading language is used for the source
@@ -41,8 +41,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'language', "");
-        
+            this.addField_SFString( ctx, "language", "" );
         }
     )
 );

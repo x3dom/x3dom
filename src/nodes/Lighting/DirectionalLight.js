@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "DirectionalLight",
     "Lighting",
-    defineClass(x3dom.nodeTypes.X3DLightNode,
-        
+    defineClass( x3dom.nodeTypes.X3DLightNode,
+
         /**
          * Constructor for DirectionalLight
          * @constructs x3dom.nodeTypes.DirectionalLight
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * The accumulated transformations of the parent nodes affect the light.
          * DirectionalLight nodes do not attenuate with distance.
          */
-        function (ctx) {
-            x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.DirectionalLight.superClass.call( this, ctx );
 
             /**
              * The direction field specifies the direction vector of the illumination emanating from the light source in the local coordinate system.
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this.addField_SFVec3f( ctx, "direction", 0, 0, -1 );
 
             /**
              *
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shadowCascades', 1);
+            this.addField_SFInt32( ctx, "shadowCascades", 1 );
 
             /**
              *
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitFactor', 1);
+            this.addField_SFFloat( ctx, "shadowSplitFactor", 1 );
 
             /**
              *
@@ -69,16 +69,16 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitOffset', 0.1);
-        
+            this.addField_SFFloat( ctx, "shadowSplitOffset", 0.1 );
         },
         {
-            getViewMatrix: function(vec) {
-                var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
+            getViewMatrix : function ( vec )
+            {
+                var dir = this.getCurrentTransform().multMatrixVec( this._vf.direction ).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
-                    new x3dom.fields.SFVec3f(0, 0, -1), dir);
+                    new x3dom.fields.SFVec3f( 0, 0, -1 ), dir );
                 return orientation.toMatrix().transpose().
-                    mult(x3dom.fields.SFMatrix4f.translation(vec.negate()));
+                    mult( x3dom.fields.SFMatrix4f.translation( vec.negate() ) );
             }
         }
     )

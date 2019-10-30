@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "OrientationInterpolator",
     "Interpolation",
-    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInterpolatorNode,
+
         /**
          * Constructor for OrientationInterpolator
          * @constructs x3dom.nodeTypes.OrientationInterpolator
@@ -28,9 +28,9 @@ x3dom.registerNodeType(
          * An OrientationInterpolator interpolates between two orientations by computing the shortest path on the unit sphere between the two orientations.
          * The interpolation is linear in arc length along this path. The results are undefined if the two orientations are diagonally opposite.
          */
-        function (ctx) {
-            x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.OrientationInterpolator.superClass.call( this, ctx );
 
             /**
              * Defines the set of data points, that are used for interpolation.
@@ -42,35 +42,34 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFRotation(ctx, 'keyValue', []);
-        
+            this.addField_MFRotation( ctx, "keyValue", [] );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if(fieldName === "set_fraction")
+                if ( fieldName === "set_fraction" )
                 {
                     var value;
-  
-                    if (this._vf.interpolation === "CUBICSPLINE")
-                    {
-                        value = this.cubicSplineInterp(this._vf.set_fraction, function (startInTangent, start, endOutTangent, end, h00, h10, h01, h11) {
 
-                            function _applyBasis(axis)//p0, m0, p1, m1, axis)
-                            {                                   
-                                return h00 * start[axis] + h10 * startInTangent[axis] + h01 * end[axis] + h11 * endOutTangent[axis];
+                    if ( this._vf.interpolation === "CUBICSPLINE" )
+                    {
+                        value = this.cubicSplineInterp( this._vf.set_fraction, function ( startInTangent, start, endOutTangent, end, h00, h10, h01, h11 )
+                        {
+                            function _applyBasis ( axis )//p0, m0, p1, m1, axis)
+                            {
+                                return h00 * start[ axis ] + h10 * startInTangent[ axis ] + h01 * end[ axis ] + h11 * endOutTangent[ axis ];
                             }
-                            
-                            var result = new x3dom.fields.Quaternion(0, 0, 0, 0);
+
+                            var result = new x3dom.fields.Quaternion( 0, 0, 0, 0 );
 
                             // do not use Quaternion methods to avoid generating objects
 
-                            result.x = _applyBasis('x');
-                            result.y = _applyBasis('y');
-                            result.z = _applyBasis('z');
-                            result.w = _applyBasis('w');
+                            result.x = _applyBasis( "x" );
+                            result.y = _applyBasis( "y" );
+                            result.z = _applyBasis( "z" );
+                            result.w = _applyBasis( "w" );
 
-                            var s = Math.sqrt(1/result.dot(result));
+                            var s = Math.sqrt( 1 / result.dot( result ) );
 
                             result.x *= s;
                             result.y *= s;
@@ -78,39 +77,40 @@ x3dom.registerNodeType(
                             result.w *= s;
 
                             return result;//normalize(result);
-                        
-                        });
+                        } );
                     }
                     else
                     {
-                        value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                            return a.slerp(b, t);
-                        });
+                        value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                        {
+                            return a.slerp( b, t );
+                        } );
                     }
 
-                    if(value != undefined && value != this._lastValue)
+                    if ( value != undefined && value != this._lastValue )
                     {
                         this._lastValue = value;
-                        this.postMessage('value_changed', value);
+                        this.postMessage( "value_changed", value );
                     }
                 }
             },
-            
-            keyValueFromAccessor: function(array, type)
+
+            keyValueFromAccessor : function ( array, type )
             {
                 var keyValue = new x3dom.fields.MFRotation();
-                var normalize = this.normalizeFromType[type];
-                array.forEach( function (val, i)
+                var normalize = this.normalizeFromType[ type ];
+                array.forEach( function ( val, i )
                 {
-                    if (i%4 == 3) {
-                        keyValue.push( new x3dom.fields.Quaternion (
-                            normalize(array[i-3]),
-                            normalize(array[i-2]),
-                            normalize(array[i-1]),
-                            normalize(val)
-                        ));  
+                    if ( i % 4 == 3 )
+                    {
+                        keyValue.push( new x3dom.fields.Quaternion(
+                            normalize( array[ i - 3 ] ),
+                            normalize( array[ i - 2 ] ),
+                            normalize( array[ i - 1 ] ),
+                            normalize( val )
+                        ) );
                     }
-                })
+                } );
                 return keyValue;
             }
         }

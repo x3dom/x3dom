@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MovieTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.Texture,
-        
+    defineClass( x3dom.nodeTypes.Texture,
+
         /**
          * Constructor for MovieTexture
          * @constructs x3dom.nodeTypes.MovieTexture
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The MovieTexture node defines a time dependent texture map (contained in a movie file) and parameters for controlling the movie and the texture mapping.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MovieTexture.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MovieTexture.superClass.call( this, ctx );
 
             /**
              * Specifies whether the playback restarts after finished.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'loop', false);
+            this.addField_SFBool( ctx, "loop", false );
 
             /**
              * Specifies the plaback speed.
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'speed', 1.0);
+            this.addField_SFFloat( ctx, "speed", 1.0 );
             // TODO; implement the following fields...
 
             /**
@@ -56,7 +56,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'pauseTime', 0);
+            this.addField_SFTime( ctx, "pauseTime", 0 );
 
             /**
              *
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'pitch', 1.0);
+            this.addField_SFFloat( ctx, "pitch", 1.0 );
 
             /**
              * Sets a time to resume from pause.
@@ -76,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'resumeTime', 0);
+            this.addField_SFTime( ctx, "resumeTime", 0 );
 
             /**
              * Sets a start time for the video.
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'startTime', 0);
+            this.addField_SFTime( ctx, "startTime", 0 );
 
             /**
              * Sets a stop time for the video.
@@ -96,8 +96,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'stopTime', 0);
-        
+            this.addField_SFTime( ctx, "stopTime", 0 );
         }
     )
 );

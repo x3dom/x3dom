@@ -4,7 +4,7 @@
 /**
  *  Parts Object is return
  */
-x3dom.MultiMaterial = function( params )
+x3dom.MultiMaterial = function ( params )
 {
     this._origAmbientIntensity      = params.ambientIntensity;
     this._origDiffuseColor          = params.diffuseColor;
@@ -36,7 +36,8 @@ x3dom.MultiMaterial = function( params )
 
     this._highlighted               = false;
 
-    this.reset = function () {
+    this.reset = function ()
+    {
         this._ambientIntensity      = this._origAmbientIntensity;
         this._diffuseColor          = this._origDiffuseColor;
         this._emissiveColor         = this._origEmissiveColor;
@@ -50,5 +51,4 @@ x3dom.MultiMaterial = function( params )
         this._backSpecularColor     = this._origBackSpecularColor;
         this._backTransparency      = this._origBackTransparency;
     };
-
 };

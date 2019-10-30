@@ -15,8 +15,8 @@
 x3dom.registerNodeType(
     "OpacityMapVolumeStyle",
     "VolumeRendering",
-    defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
-        
+    defineClass( x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+
         /**
          * Constructor for OpacityMapVolumeStyle
          * @constructs x3dom.nodeTypes.OpacityMapVolumeStyle
@@ -28,9 +28,9 @@ x3dom.registerNodeType(
          * The OpacityMapVolumeStyle node specifies that the associated volume data is going to be rendered using a transfer function.
          * The original opacity is mapped to a color with a function stored as a texture (transfer function).
          */
-        function (ctx) {
-            x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.OpacityMapVolumeStyle.superClass.call( this, ctx );
 
             /**
              * The transferFunction field is a texture that is going to be used to map each voxel value to a specific color output.
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('transferFunction', x3dom.nodeTypes.Texture);
+            this.addField_SFNode( "transferFunction", x3dom.nodeTypes.Texture );
 
             /**
              * NYI!!
@@ -50,7 +50,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'type', "simple");
+            this.addField_SFString( ctx, "type", "simple" );
 
             /**
              * The opacityFactor field is a factor to specify the amount of opacity to be considered on each sampled point along the ray traversal.
@@ -60,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'opacityFactor', 6.0);
+            this.addField_SFFloat( ctx, "opacityFactor", 6.0 );
 
             /**
              * The lightFactor field is a factor to specify the amount of global light to be considered on each sampled point along the ray traversal.
@@ -70,83 +70,92 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'lightFactor', 1.2);
+            this.addField_SFFloat( ctx, "lightFactor", 1.2 );
 
-            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform(ctx);
-            this.uniformBoolEnableOpacityMap = new x3dom.nodeTypes.Uniform(ctx);
-        
+            this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Uniform( ctx );
+            this.uniformFloatLightFactor = new x3dom.nodeTypes.Uniform( ctx );
+            this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Uniform( ctx );
+            this.uniformBoolEnableOpacityMap = new x3dom.nodeTypes.Uniform( ctx );
         },
         {
-            fieldChanged: function(fieldName){
-                switch(fieldName){
-                    case 'opacityFactor':
+            fieldChanged : function ( fieldName )
+            {
+                switch ( fieldName )
+                {
+                    case "opacityFactor":
                         this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
-                        this.uniformFloatOpacityFactor.fieldChanged("value");
+                        this.uniformFloatOpacityFactor.fieldChanged( "value" );
                         break;
-                    case 'lightFactor':
+                    case "lightFactor":
                         this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
-                        this.uniformFloatLightFactor.fieldChanged("value");
+                        this.uniformFloatLightFactor.fieldChanged( "value" );
                         break;
                 }
             },
 
-            uniforms: function() {
+            uniforms : function ()
+            {
                 var unis = [];
-                
-                if (this._cf.transferFunction.node) {
-                    this.uniformSampler2DTransferFunction._vf.name = 'uTransferFunction'+this._styleID;
-                    this.uniformSampler2DTransferFunction._vf.type = 'SFInt32';
+
+                if ( this._cf.transferFunction.node )
+                {
+                    this.uniformSampler2DTransferFunction._vf.name = "uTransferFunction" + this._styleID;
+                    this.uniformSampler2DTransferFunction._vf.type = "SFInt32";
                     this.uniformSampler2DTransferFunction._vf.value = this._volumeDataParent._textureID++;
-                    unis.push(this.uniformSampler2DTransferFunction);
+                    unis.push( this.uniformSampler2DTransferFunction );
                 }
 
-                this.uniformFloatOpacityFactor._vf.name = 'uOpacityFactor'+this._styleID;
-                this.uniformFloatOpacityFactor._vf.type = 'SFFloat';
+                this.uniformFloatOpacityFactor._vf.name = "uOpacityFactor" + this._styleID;
+                this.uniformFloatOpacityFactor._vf.type = "SFFloat";
                 this.uniformFloatOpacityFactor._vf.value = this._vf.opacityFactor;
-                unis.push(this.uniformFloatOpacityFactor);
+                unis.push( this.uniformFloatOpacityFactor );
 
-                this.uniformFloatLightFactor._vf.name = 'uLightFactor'+this._styleID;
-                this.uniformFloatLightFactor._vf.type = 'SFFloat';
+                this.uniformFloatLightFactor._vf.name = "uLightFactor" + this._styleID;
+                this.uniformFloatLightFactor._vf.type = "SFFloat";
                 this.uniformFloatLightFactor._vf.value = this._vf.lightFactor;
-                unis.push(this.uniformFloatLightFactor);
+                unis.push( this.uniformFloatLightFactor );
 
-                this.uniformBoolEnableOpacityMap._vf.name = 'uEnableOpacityMap'+this._styleID;
-                this.uniformBoolEnableOpacityMap._vf.type = 'SFBool';
+                this.uniformBoolEnableOpacityMap._vf.name = "uEnableOpacityMap" + this._styleID;
+                this.uniformBoolEnableOpacityMap._vf.type = "SFBool";
                 this.uniformBoolEnableOpacityMap._vf.value = this._vf.enabled;
-                unis.push(this.uniformBoolEnableOpacityMap);
+                unis.push( this.uniformBoolEnableOpacityMap );
 
                 return unis;
             },
 
-            textures: function() {
+            textures : function ()
+            {
                 var texs = [];
                 var tex = this._cf.transferFunction.node;
-                if (tex) {
+                if ( tex )
+                {
                     tex._vf.repeatS = false;
                     tex._vf.repeatT = false;
-                    texs.push(tex);
+                    texs.push( tex );
                 }
                 return texs;
             },
 
-            styleUniformsShaderText: function() {
-                var uniformsText = "uniform float uOpacityFactor"+this._styleID+";\n"+
-                "uniform float uLightFactor"+this._styleID+";\n"+
-                "uniform bool uEnableOpacityMap"+this._styleID+";\n";
-                if (this._cf.transferFunction.node) {
-                        uniformsText += "uniform sampler2D uTransferFunction"+this._styleID+";\n";
+            styleUniformsShaderText : function ()
+            {
+                var uniformsText = "uniform float uOpacityFactor" + this._styleID + ";\n" +
+                "uniform float uLightFactor" + this._styleID + ";\n" +
+                "uniform bool uEnableOpacityMap" + this._styleID + ";\n";
+                if ( this._cf.transferFunction.node )
+                {
+                    uniformsText += "uniform sampler2D uTransferFunction" + this._styleID + ";\n";
                 }
                 return uniformsText;
             },
 
-            inlineStyleShaderText: function(){
-                var shaderText = "    if(uEnableOpacityMap"+this._styleID+"){\n"+
-                "       opacityFactor = uOpacityFactor"+this._styleID+";\n"+
-                "       lightFactor = uLightFactor"+this._styleID+";\n";
-                if (this._cf.transferFunction.node){
-                        shaderText += "       value = texture2D(uTransferFunction"+this._styleID+",vec2(value.r,0.5));\n";
+            inlineStyleShaderText : function ()
+            {
+                var shaderText = "    if(uEnableOpacityMap" + this._styleID + "){\n" +
+                "       opacityFactor = uOpacityFactor" + this._styleID + ";\n" +
+                "       lightFactor = uLightFactor" + this._styleID + ";\n";
+                if ( this._cf.transferFunction.node )
+                {
+                    shaderText += "       value = texture2D(uTransferFunction" + this._styleID + ",vec2(value.r,0.5));\n";
                 }
                 shaderText += "    }\n";
                 return shaderText;

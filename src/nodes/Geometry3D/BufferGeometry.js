@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "BufferGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+    defineClass( x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
 
         /**
          * Constructor for BufferGeometry
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The BufferGeometry node can load binary data like glTF buffer.
          */
-        function (ctx) {
-            x3dom.nodeTypes.BufferGeometry.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BufferGeometry.superClass.call( this, ctx );
 
             /**
              * The url to the binary file, that contains the buffer data.
@@ -34,54 +34,58 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'buffer', "");
+            this.addField_SFString( ctx, "buffer", "" );
 
-            this.addField_MFNode('views', x3dom.nodeTypes.BufferView);
-            this.addField_MFNode('accessors', x3dom.nodeTypes.BufferAccessor);
+            this.addField_MFNode( "views", x3dom.nodeTypes.BufferView );
+            this.addField_MFNode( "accessors", x3dom.nodeTypes.BufferAccessor );
 
             this._hasColor = false;
             this._hasMultiTexCoord = false;
             this._indexed = false;
         },
         {
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
 
             },
 
-            nodeChanged: function()
+            nodeChanged : function ()
             {
 
             },
 
-            doIntersect: function(line)
+            doIntersect : function ( line )
             {
                 var min = this.getMin();
                 var max = this.getMax();
-                var isect = line.intersect(min, max);
+                var isect = line.intersect( min, max );
 
-                if (isect && line.enter < line.dist) {
+                if ( isect && line.enter < line.dist )
+                {
                     line.dist = line.enter;
                     line.hitObject = this;
-                    line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
+                    line.hitPoint = line.pos.add( line.dir.multiply( line.enter ) );
                     return true;
                 }
-                else {
+                else
+                {
                     return false;
                 }
             },
 
-            hasColor: function() {
+            hasColor : function ()
+            {
                 return this._hasColor;
             },
 
-            hasMultiTexCoord: function() {
+            hasMultiTexCoord : function ()
+            {
                 return this._hasMultiTexCoord;
             },
 
-            getPrecisionMax: function(type)
+            getPrecisionMax : function ( type )
             {
-                switch(this._vf[type])
+                switch ( this._vf[ type ] )
                 {
                     case "Int8":
                         return 127.0;

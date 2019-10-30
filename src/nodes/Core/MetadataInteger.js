@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MetadataInteger",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DMetadataObject,
-        
+    defineClass( x3dom.nodeTypes.X3DMetadataObject,
+
         /**
          * Constructor for MetadataInteger
          * @constructs x3dom.nodeTypes.MetadataInteger
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The metadata provided by this node is contained in the integers of the value field.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MetadataInteger.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MetadataInteger.superClass.call( this, ctx );
 
             /**
              *
@@ -35,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFInt32(ctx, 'value', []);
-        
+            this.addField_MFInt32( ctx, "value", [] );
         }
     )
 );
