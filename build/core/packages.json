@@ -374,6 +374,11 @@
             "CADPart.js",
             "CADFace.js"
         ],
+        "src/nodes/BVHRefiner/":
+        [
+            "Patch.js",
+            "BVHRefiner.js"
+        ],
         "src/nodes/Geometry3DExt/":
         [
             "Snout.js",
