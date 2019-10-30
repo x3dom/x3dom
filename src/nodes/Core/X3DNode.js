@@ -26,6 +26,9 @@ x3dom.registerNodeType(
             // reference to DOM element
             this._xmlNode = null;
 
+            // reference to the Runtime
+            this._runtime = ( ctx && ctx.runtime ) ? ctx.runtime : null;
+
             // holds a link to the node name
             this._DEF = null;
 
