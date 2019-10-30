@@ -14,10 +14,12 @@
   * replaced deprecated MutationEvents with a MutationObserver
   * use passive event listeners if supported
   * make it possible to run x3dom in strict mode
+  * text node improvements
 * Bugfixes
   * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
   * gltf loader material DEF/USE robustness
+  * allow better gc after Inline removal
 
 ## Version 1.8.1
 
