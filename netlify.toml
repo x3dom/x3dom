@@ -32,6 +32,8 @@
   npm install &> build.log &&
   echo "build command: npm run build &>> build.log ..." &&
   npm run build &>> build.log &&
+  echo "build command: npm run lint &>> build.log ..." &&
+  npm run lint &>> build.log &&
   echo "generate tests: sh/test/generateTestPage.sh" &&
   echo "generateTestPage.sh:" &&
   cat test/generateTestPage.sh &&
