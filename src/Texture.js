@@ -511,7 +511,7 @@ x3dom.Texture.prototype.updateText = function ()
     this.magFilter = gl.LINEAR;
     this.minFilter = gl.LINEAR_MIPMAP_LINEAR;
     this.genMipMaps = true;
-    if ( x3dom.caps.MAX_ANISOTROPY ) 
+    if ( x3dom.caps.MAX_ANISOTROPY )
     {
         this.anisotropicDegree = x3dom.caps.MAX_ANISOTROPY;
     }
