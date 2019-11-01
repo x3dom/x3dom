@@ -511,7 +511,10 @@ x3dom.Texture.prototype.updateText = function ()
     this.magFilter = gl.LINEAR;
     this.minFilter = gl.LINEAR_MIPMAP_LINEAR;
     this.genMipMaps = true;
-    if ( x3dom.caps.MAX_ANISOTROPY ) this.anisotropicDegree = x3dom.caps.MAX_ANISOTROPY;
+    if ( x3dom.caps.MAX_ANISOTROPY ) 
+    {
+        this.anisotropicDegree = x3dom.caps.MAX_ANISOTROPY;
+    }
 
     var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
@@ -755,7 +758,7 @@ x3dom.Texture.prototype.updateText = function ()
     text_ctx.fillStyle = "white";
     text_ctx.strokeStyle = "rgba(255,255,255,0.5)";
     text_ctx.lineWidth = "2";
-    
+
     text_ctx.textBaseline = baseLine;
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
