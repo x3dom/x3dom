@@ -511,6 +511,10 @@ x3dom.Texture.prototype.updateText = function ()
     this.magFilter = gl.LINEAR;
     this.minFilter = gl.LINEAR_MIPMAP_LINEAR;
     this.genMipMaps = true;
+    if ( x3dom.caps.MAX_ANISOTROPY )
+    {
+        this.anisotropicDegree = x3dom.caps.MAX_ANISOTROPY;
+    }
 
     var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
 
@@ -680,7 +684,7 @@ x3dom.Texture.prototype.updateText = function ()
     }
 
     var canvas_extra = 0.25 * textHeight; // single line, some fonts are higher than textHeight
-    var txtW = maxWidth;
+    var txtW = maxWidth + canvas_extra; // needed for italic since textMetrics.width ignores that
     var txtH = textHeight + textHeight * font_spacing * ( paragraph.length - 1 ) + canvas_extra;
 
     textX = 0;
@@ -752,6 +756,9 @@ x3dom.Texture.prototype.updateText = function ()
 
     // write white text with black border
     text_ctx.fillStyle = "white";
+    text_ctx.strokeStyle = "rgba(255,255,255,0.5)";
+    text_ctx.lineWidth = "2";
+
     text_ctx.textBaseline = baseLine;
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
@@ -762,6 +769,7 @@ x3dom.Texture.prototype.updateText = function ()
     {
         j = topToBottom ? i : paragraph.length - 1 - i;
         if ( leftToRight == "rtl" ) {paragraph[ j ] = "\u202e" + paragraph[ j ];} //force rtl unicode mark
+        text_ctx.strokeText( paragraph[ j ], textX, textY, lengths[ j ] );
         text_ctx.fillText( paragraph[ j ], textX, textY, lengths[ j ] );
         textY += textHeight * font_spacing;
     }
