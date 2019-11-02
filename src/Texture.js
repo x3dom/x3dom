@@ -516,17 +516,16 @@ x3dom.Texture.prototype.updateText = function ()
         this.anisotropicDegree = x3dom.caps.MAX_ANISOTROPY;
     }
 
-    var fontStyleNode = this.node._cf.fontStyle.node; // should always exist?
-
-    var font_family = "serif"; // should be dealt with by default fontStyleNode?
-    var font_style = "normal";
-    var font_justify = "left";
-    var font_size = 1.0;
-    var font_spacing = 1.0;
-    var font_horizontal = true;
-    var font_language = "";
-    var oversample = 2.0;
-    var minor_alignment = "FIRST";
+    var fontStyleNode = this.node._cf.fontStyle.node, // should always exist?
+        font_family = "serif", // should be dealt with by default fontStyleNode?
+        font_style = "normal",
+        font_justify = "left",
+        font_size = 1.0,
+        font_spacing = 1.0,
+        font_horizontal = true,
+        font_language = "",
+        oversample = 2.0,
+        minor_alignment = "FIRST";
 
     if ( fontStyleNode !== null )
     {
@@ -644,18 +643,19 @@ x3dom.Texture.prototype.updateText = function ()
     }
 
     var textX,
-        textY;
-    var paragraph = this.node._vf.string;
-    var maxExtent = this.node._vf.maxExtent;
-    var lengths = [];
+        textY,
+        paragraph = this.node._vf.string,
+        maxExtent = this.node._vf.maxExtent,
+        lengths = [],
+        x3dToPx = 32,
+        textAlignment = font_justify;
     var text_canvas = document.createElement( "canvas" );
     text_canvas.dir = leftToRight;
-    var x3dToPx = 32;
     var textHeight = font_size * x3dToPx; // pixel size relative to local coordinate system
-    var textAlignment = font_justify;
 
     // needed to make webfonts work
     document.body.appendChild( text_canvas );
+
     var text_ctx = text_canvas.getContext( "2d" );
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
@@ -756,23 +756,26 @@ x3dom.Texture.prototype.updateText = function ()
 
     // write white text with black border
     text_ctx.fillStyle = "white";
-    text_ctx.strokeStyle = "rgba(255,255,255,0.5)";
-    text_ctx.lineWidth = "2";
 
     text_ctx.textBaseline = baseLine;
 
     text_ctx.font = font_style + " " + textHeight + "px " + font_family;
     text_ctx.textAlign = textAlignment;
 
-    // create the multiline text always top down
-    for ( i = 0; i < paragraph.length; i++ )
-    {
-        j = topToBottom ? i : paragraph.length - 1 - i;
-        if ( leftToRight == "rtl" ) {paragraph[ j ] = "\u202e" + paragraph[ j ];} //force rtl unicode mark
-        text_ctx.strokeText( paragraph[ j ], textX, textY, lengths[ j ] );
-        text_ctx.fillText( paragraph[ j ], textX, textY, lengths[ j ] );
-        textY += textHeight * font_spacing;
-    }
+    var renderConfig = {
+        font_style   : font_style,
+        font_family  : font_family,
+        font_spacing : font_spacing,
+        paragraph    : paragraph,
+        topToBottom  : topToBottom,
+        leftToRight  : leftToRight,
+        textX        : textX,
+        textY        : textY,
+        textHeight   : textHeight,
+        lengths      : lengths
+    };
+
+    this.renderScaledText( text_ctx, 1, renderConfig );
 
     if ( this.texture === null )
     {
@@ -780,12 +783,11 @@ x3dom.Texture.prototype.updateText = function ()
     }
 
     gl.bindTexture( this.type, this.texture );
-    gl.texImage2D( this.type, 0, this.format, this.format, gl.UNSIGNED_BYTE, text_canvas );
-    gl.generateMipmap( this.type );
+    this.uploadTextMipmap( text_canvas, renderConfig );
     gl.bindTexture( this.type, null );
 
     //remove canvas after Texture creation
-    document.body.removeChild( text_canvas );
+    document.body.removeChild( text_canvas, renderConfig );
 
     this.node._mesh._positions[ 0 ] = [
         0 + x_offset, -h + y_offset, 0,
@@ -798,4 +800,43 @@ x3dom.Texture.prototype.updateText = function ()
     {
         node.setAllDirty();
     } );
+};
+
+x3dom.Texture.prototype.renderScaledText = function ( ctx2d, pot, txt )
+{
+    ctx2d.font = txt.font_style + " " + txt.textHeight / pot + "px " + txt.font_family;
+    var textYpos = txt.textY;
+
+    // create the multiline text always top down
+    for ( var i = 0; i < txt.paragraph.length; i++ )
+    {
+        var j = txt.topToBottom ? i : txt.paragraph.length - 1 - i;
+        var paragraphj = txt.paragraph[ j ];
+        if ( txt.leftToRight == "rtl" ) {paragraphj = "\u202e" + paragraphj;} //force rtl unicode mark
+        ctx2d.fillText( paragraphj, txt.textX / pot, textYpos / pot, txt.lengths[ j ] / pot );
+        textYpos += txt.textHeight * txt.font_spacing;
+    }
+};
+
+x3dom.Texture.prototype.uploadTextMipmap = function ( canvas, txt )
+{
+    var gl = this.gl,
+        w = canvas.width,
+        h = canvas.height,
+        level = 0,
+        pot = 1;
+    w2 = w,
+    h2 = h ;
+    ctx2d = canvas.getContext( "2d" );
+    while ( true )
+    {
+        gl.texImage2D( this.type, level++, this.format, this.format, gl.UNSIGNED_BYTE, ctx2d.getImageData( 0, 0, w2, h2 ) );
+        if ( w2 == 1 && h2 == 1 ) {break;}
+        w2 = Math.max( 1, w2 >> 1 );
+        h2 = Math.max( 1, h2 >> 1 );
+        ctx2d.clearRect( 0, 0, w, h );
+        pot *= 2;
+        this.renderScaledText( ctx2d, pot, txt );
+    }
+//    this.gl.generateMipmap( this.type );
 };
