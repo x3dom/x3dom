@@ -67,8 +67,6 @@ x3dom.registerNodeType(
 
             this._shadowIdMap = null;
             this.loadMapping();
-
-            this._multiPartMap = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */

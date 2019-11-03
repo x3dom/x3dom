@@ -612,12 +612,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
         }
     }
 
-    //Vertex ID's
-    if ( properties.MULTIDIFFALPMAP )
-    {
-        shader += "fragID = id;\n";
-    }
-
     //Displacement
     if ( properties.DISPLACEMENTMAP )
     {
@@ -757,31 +751,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
     if ( properties.VERTEXID )
     {
         shader += "varying float fragID;\n";
-
-        if ( properties.MULTIDIFFALPMAP )
-        {
-            shader += "uniform sampler2D multiDiffuseAlphaMap;\n";
-            shader += "uniform float multiDiffuseAlphaWidth;\n";
-            shader += "uniform float multiDiffuseAlphaHeight;\n";
-        }
-        if ( properties.MULTIEMIAMBMAP )
-        {
-            shader += "uniform sampler2D multiEmissiveAmbientMap;\n";
-            shader += "uniform float multiEmissiveAmbientWidth;\n";
-            shader += "uniform float multiEmissiveAmbientHeight;\n";
-        }
-        if ( properties.MULTISPECSHINMAP )
-        {
-            shader += "uniform sampler2D multiSpecularShininessMap;\n";
-            shader += "uniform float multiSpecularShininessWidth;\n";
-            shader += "uniform float multiSpecularShininessHeight;\n";
-        }
-        if ( properties.MULTIVISMAP )
-        {
-            shader += "uniform sampler2D multiVisibilityMap;\n";
-            shader += "uniform float multiVisibilityWidth;\n";
-            shader += "uniform float multiVisibilityHeight;\n";
-        }
     }
 
     //Textures
@@ -996,43 +965,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         shader += "    _specularColor = backSpecularColor;\n";
         shader += "    _ambientIntensity = backAmbientIntensity;\n";
         shader += "  }\n";
-    }
-
-    if ( properties.MULTIVISMAP || properties.MULTIDIFFALPMAP || properties.MULTISPECSHINMAP || properties.MULTIEMIAMBMAP )
-    {
-        shader += "vec2 idCoord;\n";
-        shader += "float roundedIDVisibility = floor(fragID+0.5);\n";
-        shader += "float roundedIDMaterial = floor(fragID+0.5);\n";
-        shader += "if(!gl_FrontFacing) {\n";
-        shader += "    roundedIDMaterial = floor(fragID + (multiDiffuseAlphaWidth*multiDiffuseAlphaWidth) + 0.5);\n";
-        shader += "}\n";
-    }
-
-    if ( properties.MULTIVISMAP )
-    {
-        shader += "idCoord.x = mod(roundedIDVisibility, multiVisibilityWidth) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
-        shader += "idCoord.y = floor(roundedIDVisibility / multiVisibilityWidth) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
-        shader += "vec4 visibility = texture2D( multiVisibilityMap, idCoord );\n";
-        shader += "if (visibility.r < 1.0) discard; \n";
-    }
-
-    if ( properties.MULTIDIFFALPMAP )
-    {
-        shader += "idCoord.x = mod(roundedIDMaterial, multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
-        shader += "idCoord.y = floor(roundedIDMaterial / multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
-        shader += "vec4 diffAlpha = texture2D( multiDiffuseAlphaMap, idCoord );\n";
-        shader += "color.rgb = " + x3dom.shader.decodeGamma( properties, "diffAlpha.rgb" ) + ";\n";
-        shader += "_transparency = 1.0 - diffAlpha.a;\n";
-        shader += "color.a = diffAlpha.a;\n";
-    }
-
-    if ( properties.MULTIEMIAMBMAP )
-    {
-        shader += "idCoord.x = mod(roundedIDMaterial, multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaWidth) + (0.5 / multiDiffuseAlphaWidth);\n";
-        shader += "idCoord.y = floor(roundedIDMaterial / multiDiffuseAlphaWidth) * (1.0 / multiDiffuseAlphaHeight) + (0.5 / multiDiffuseAlphaHeight);\n";
-        shader += "vec4 emiAmb = texture2D( multiEmissiveAmbientMap, idCoord );\n";
-        shader += "_emissiveColor = emiAmb.rgb;\n";
-        shader += "_ambientIntensity = emiAmb.a;\n";
     }
 
     if ( properties.VERTEXCOLOR )
@@ -1287,15 +1219,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 {
                     shader += "_occlusion = texture2D(occlusionMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r;\n";
                 }
-            }
-
-            if ( properties.MULTISPECSHINMAP )
-            {
-                shader += "idCoord.x = mod(roundedIDMaterial, multiSpecularShininessWidth) * (1.0 / multiSpecularShininessWidth) + (0.5 / multiSpecularShininessWidth);\n";
-                shader += "idCoord.y = floor(roundedIDMaterial / multiSpecularShininessWidth) * (1.0 / multiSpecularShininessHeight) + (0.5 / multiSpecularShininessHeight);\n";
-                shader += "vec4 specShin = texture2D( multiSpecularShininessMap, idCoord );\n";
-                shader += "_specularColor = specShin.rgb;\n";
-                shader += "_shininess = specShin.a;\n";
             }
         }
 

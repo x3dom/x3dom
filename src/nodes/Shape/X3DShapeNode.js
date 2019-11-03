@@ -38,7 +38,7 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "isPickable", true );
 
             /**
-             * Holds the id offset for MultiPart picking.
+             * Holds the id offset for VertexID picking.
              * @var {x3dom.fields.SFInt32} isPickable
              * @memberof x3dom.nodeTypes.X3DShapeNode
              * @initvalue 0

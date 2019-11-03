@@ -301,11 +301,7 @@ x3dom.Texture.prototype.updateTexture = function ()
             this.wrapT = gl.REPEAT;
         }
 
-        if ( this.samplerName == "displacementMap" ||
-            this.samplerName == "multiDiffuseAlphaMap" ||
-            this.samplerName == "multiVisibilityMap" ||
-            this.samplerName == "multiEmissiveAmbientMap" ||
-            this.samplerName == "multiSpecularShininessMap" )
+        if ( this.samplerName == "displacementMap" )
         {
             this.wrapS = gl.CLAMP_TO_EDGE;
             this.wrapT = gl.CLAMP_TO_EDGE;

@@ -1673,26 +1673,6 @@ x3dom.gfx_webgl = ( function ()
                     }
                 }
             }
-            else if ( s_gl.binaryGeometry != 0 && s_geo._vf[ "idsPerVertex" ] == true )
-            { // MultiPart
-                var shader = s_app._shader;
-                if ( shader && x3dom.isa( s_app._shader, x3dom.nodeTypes.CommonSurfaceShader ) )
-                {
-                    if ( shader.getMultiVisibilityMap() )
-                    {
-                        sp.multiVisibilityMap = 0;
-                        var visTex = x3dom.Utils.findTextureByName( s_gl.texture, "multiVisibilityMap" );
-                        sp.multiVisibilityWidth = visTex.texture.width;
-                        sp.multiVisibilityHeight = visTex.texture.height;
-                        gl.activeTexture( gl.TEXTURE0 );
-                        gl.bindTexture( gl.TEXTURE_2D, visTex.texture );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
-                    }
-                }
-            }
 
             if ( shape.isSolid() )
             {
@@ -2099,26 +2079,6 @@ x3dom.gfx_webgl = ( function ()
                     }
                 }
             }
-            else if ( s_gl.binaryGeometry != 0 && s_geo._vf[ "idsPerVertex" ] == true )
-            { // MultiPart
-                var shader = s_app._shader;
-                if ( shader && x3dom.isa( s_app._shader, x3dom.nodeTypes.CommonSurfaceShader ) )
-                {
-                    if ( shader.getMultiVisibilityMap() )
-                    {
-                        sp.multiVisibilityMap = 0;
-                        var visTex = x3dom.Utils.findTextureByName( s_gl.texture, "multiVisibilityMap" );
-                        sp.multiVisibilityWidth = visTex.texture.width;
-                        sp.multiVisibilityHeight = visTex.texture.height;
-                        gl.activeTexture( gl.TEXTURE0 );
-                        gl.bindTexture( gl.TEXTURE_2D, visTex.texture );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-                        gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
-                    }
-                }
-            }
 
             if ( shape.isSolid() )
             {
@@ -2522,30 +2482,6 @@ x3dom.gfx_webgl = ( function ()
                 sp.displacementFactor = shader._vf.displacementFactor;
                 sp.displacementAxis = ( shader._vf.displacementAxis == "x" ) ? 0.0 :
                     ( shader._vf.displacementAxis == "y" ) ? 1.0 : 2.0;
-            }
-            if ( shader.getMultiDiffuseAlphaMap() )
-            {
-                tex = x3dom.Utils.findTextureByName( s_gl.texture, "multiDiffuseAlphaMap" );
-                sp.multiDiffuseAlphaWidth = tex.texture.width;
-                sp.multiDiffuseAlphaHeight = tex.texture.height;
-            }
-            if ( shader.getMultiEmissiveAmbientMap() )
-            {
-                tex = x3dom.Utils.findTextureByName( s_gl.texture, "multiEmissiveAmbientMap" );
-                sp.multiEmissiveAmbientWidth = tex.texture.width;
-                sp.multiEmissiveAmbientHeight = tex.texture.height;
-            }
-            if ( shader.getMultiSpecularShininessMap() )
-            {
-                tex = x3dom.Utils.findTextureByName( s_gl.texture, "multiSpecularShininessMap" );
-                sp.multiSpecularShininessWidth = tex.texture.width;
-                sp.multiSpecularShininessHeight = tex.texture.height;
-            }
-            if ( shader.getMultiVisibilityMap() )
-            {
-                tex = x3dom.Utils.findTextureByName( s_gl.texture, "multiVisibilityMap" );
-                sp.multiVisibilityWidth = tex.texture.width;
-                sp.multiVisibilityHeight = tex.texture.height;
             }
         }
         else if ( mat && x3dom.isa( mat, x3dom.nodeTypes.PhysicalMaterial ) )
@@ -3741,53 +3677,6 @@ x3dom.gfx_webgl = ( function ()
                     hitObject = viewarea._pickingInfo.pickObj._xmlNode;
                 }
 
-                // Check if there are MultiParts
-                if ( scene._multiPartMap )
-                {
-                    var mp,
-                        multiPart;
-
-                    // Find related MultiPart
-                    for ( mp = 0; mp < scene._multiPartMap.multiParts.length; mp++ )
-                    {
-                        multiPart = scene._multiPartMap.multiParts[ mp ];
-                        if ( objId >= multiPart._minId && objId <= multiPart._maxId )
-                        {
-                            hitObject = multiPart._xmlNode;
-
-                            event = {
-                                target          : multiPart._xmlNode,
-                                button          : button, mouseup         : ( ( buttonState >>> 8 ) > 0 ),
-                                layerX          : layerX, layerY          : layerY,
-                                pickedId        : objId,
-                                worldX          : pickPos.x, worldY          : pickPos.y, worldZ          : pickPos.z,
-                                normalX         : pickNorm.x, normalY         : pickNorm.y, normalZ         : pickNorm.z,
-                                hitPnt          : pickPos.toGL(),
-                                hitObject       : hitObject,
-                                cancelBubble    : false,
-                                stopPropagation : function () { this.cancelBubble = true; },
-                                preventDefault  : function () { this.cancelBubble = true; }
-                            };
-
-                            multiPart.handleEvents( event );
-                        }
-                        else
-                        {
-                            event = {
-                                target          : multiPart._xmlNode,
-                                button          : button, mouseup         : ( ( buttonState >>> 8 ) > 0 ),
-                                layerX          : layerX, layerY          : layerY,
-                                pickedId        : -1,
-                                cancelBubble    : false,
-                                stopPropagation : function () { this.cancelBubble = true; },
-                                preventDefault  : function () { this.cancelBubble = true; }
-                            };
-
-                            multiPart.handleEvents( event );
-                        }
-                    }
-                }
-
                 shadowObjectIdChanged = ( viewarea._pickingInfo.shadowObjectId != objId );
                 viewarea._pickingInfo.lastShadowObjectId = viewarea._pickingInfo.shadowObjectId;
                 viewarea._pickingInfo.shadowObjectId = objId;
@@ -3837,7 +3726,7 @@ x3dom.gfx_webgl = ( function ()
                             break;
                         }
                     }
-                    // Check for other namespaces e.g. Inline/Multipart (FIXME; check recursively)
+                    // Check for other namespaces e.g. Inline (FIXME; check recursively)
                     for ( n = 0; n < scene._nameSpace.childSpaces.length; n++ )
                     {
                         for ( c = 0; c < shIds.length; c++ )
@@ -3855,28 +3744,6 @@ x3dom.gfx_webgl = ( function ()
             }
             else
             {
-                // Check if there are MultiParts
-                if ( scene._multiPartMap )
-                {
-                    // Find related MultiPart
-                    for ( mp = 0; mp < scene._multiPartMap.multiParts.length; mp++ )
-                    {
-                        multiPart = scene._multiPartMap.multiParts[ mp ];
-
-                        event = {
-                            target          : multiPart._xmlNode,
-                            button          : button, mouseup         : ( ( buttonState >>> 8 ) > 0 ),
-                            layerX          : layerX, layerY          : layerY,
-                            pickedId        : -1,
-                            cancelBubble    : false,
-                            stopPropagation : function () { this.cancelBubble = true; },
-                            preventDefault  : function () { this.cancelBubble = true; }
-                        };
-
-                        multiPart.handleEvents( event );
-                    }
-                }
-
                 shadowObjectIdChanged = ( viewarea._pickingInfo.shadowObjectId != -1 );
                 viewarea._pickingInfo.shadowObjectId = -1;     // nothing hit
 
@@ -3927,15 +3794,12 @@ x3dom.gfx_webgl = ( function ()
      * @param y1
      * @param x2
      * @param y2
-     * @param fromMultipartAPI
      * @returns {*}
      */
-    Context.prototype.pickRect = function ( viewarea, x1, y1, x2, y2, fromMultipartAPI )
+    Context.prototype.pickRect = function ( viewarea, x1, y1, x2, y2 )
     {
         var gl = this.ctx3d;
         var scene = viewarea ? viewarea._scene : null;
-
-        fromMultipartAPI = ( fromMultipartAPI != undefined ) ? fromMultipartAPI : false;
 
         // method requires that scene has already been rendered at least once
         if ( !gl || !scene || !scene._webgl || !scene.drawableCollection )
@@ -4004,39 +3868,6 @@ x3dom.gfx_webgl = ( function ()
             if ( objId >= baseID )
             {
                 objId -= baseID;
-
-                // Check if there are MultiParts
-                if ( scene._multiPartMap )
-                {
-                    var mp,
-                        multiPart,
-                        colorMap,
-                        emissiveMap,
-                        specularMap,
-                        visibilityMap,
-                        partID;
-
-                    // Find related MultiPart
-                    for ( mp = 0; mp < scene._multiPartMap.multiParts.length; mp++ )
-                    {
-                        multiPart = scene._multiPartMap.multiParts[ mp ];
-                        colorMap = multiPart._inlineNamespace.defMap[ "MultiMaterial_ColorMap" ];
-                        emissiveMap = multiPart._inlineNamespace.defMap[ "MultiMaterial_EmissiveMap" ];
-                        specularMap = multiPart._inlineNamespace.defMap[ "MultiMaterial_SpecularMap" ];
-                        visibilityMap = multiPart._inlineNamespace.defMap[ "MultiMaterial_VisibilityMap" ];
-                        if ( objId >= multiPart._minId && objId <= multiPart._maxId )
-                        {
-                            partIDs.push( objId );
-
-                            partID = multiPart._idMap.mapping[ objId - multiPart._minId ].name;
-                            hitObject = new x3dom.Parts( multiPart, [ objId ], colorMap, emissiveMap, specularMap, visibilityMap );
-
-                            pickedNode = { "partID": partID, "part": hitObject };
-
-                            pickedNodes.push( pickedNode );
-                        }
-                    }
-                }
             }
             else
             {
@@ -4046,11 +3877,6 @@ x3dom.gfx_webgl = ( function ()
                 if ( hitObject )
                 {pickedNodes.push( hitObject );}
             }
-        }
-
-        if ( fromMultipartAPI && partIDs.length )
-        {
-            pickedNodes = new x3dom.Parts( multiPart, partIDs, colorMap, emissiveMap, specularMap, visibilityMap );
         }
 
         return pickedNodes;

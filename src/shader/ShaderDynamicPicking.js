@@ -336,13 +336,6 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function ( 
         shader += "varying vec4 fragPosition;\n";
     }
 
-    if ( properties.MULTIVISMAP )
-    {
-        shader += "uniform sampler2D multiVisibilityMap;\n";
-        shader += "uniform float multiVisibilityWidth;\n";
-        shader += "uniform float multiVisibilityHeight;\n";
-    }
-
     if ( properties.CLIPPLANES )
     {
         shader += x3dom.shader.clipPlanes( properties.CLIPPLANES );
@@ -384,16 +377,6 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function ( 
         else if ( pickMode == 3 )
         { //Picking with 24bit precision
             shader += "color.gba = idCoord;\n";
-        }
-
-        if ( properties.MULTIVISMAP )
-        {
-            shader += "vec2 idTexCoord;\n";
-            shader += "float roundedID = floor(fragID+0.5);\n";
-            shader += "idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
-            shader += "idTexCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
-            shader += "vec4 visibility = texture2D( multiVisibilityMap, idTexCoord );\n";
-            shader += "if (visibility.r < 1.0) discard; \n";
         }
     }
 

@@ -1190,10 +1190,6 @@ x3dom.Utils.generateProperties = function ( viewarea, shape )
         property.OCCLUSIONMAP     = ( property.PBR_MATERIAL && material._cf.occlusionTexture.node ) ? 1 : 0;
         property.DISPLACEMENTMAP  = ( property.CSSHADER && appearance._shader.getDisplacementMap() ) ? 1 : 0;
         property.DIFFPLACEMENTMAP = ( property.CSSHADER && appearance._shader.getDiffuseDisplacementMap() ) ? 1 : 0;
-        property.MULTIDIFFALPMAP  = ( property.VERTEXID && property.CSSHADER && appearance._shader.getMultiDiffuseAlphaMap() ) ? 1 : 0;
-        property.MULTIEMIAMBMAP   = ( property.VERTEXID && property.CSSHADER && appearance._shader.getMultiEmissiveAmbientMap() ) ? 1 : 0;
-        property.MULTISPECSHINMAP = ( property.VERTEXID && property.CSSHADER && appearance._shader.getMultiSpecularShininessMap() ) ? 1 : 0;
-        property.MULTIVISMAP      = ( property.VERTEXID && property.CSSHADER && appearance._shader.getMultiVisibilityMap() ) ? 1 : 0;
 
         property.ALPHAMODE            = ( property.PBR_MATERIAL ) ? material._vf.alphaMode : "BLEND";
         property.ISROUGHNESSMETALLIC  = ( property.PBR_MATERIAL && material._vf.model == "roughnessMetallic" ) ? 1 : 0;
