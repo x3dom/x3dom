@@ -607,46 +607,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode( "diffuseDisplacementTexture", x3dom.nodeTypes.X3DTextureNode );
 
-            /**
-             * Multi diffuse alpha texture.
-             * @var {x3dom.fields.SFNode} multiDiffuseAlphaTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode( "multiDiffuseAlphaTexture", x3dom.nodeTypes.X3DTextureNode );
-
-            /**
-             * Multi specular shininess texture.
-             * @var {x3dom.fields.SFNode} multiSpecularShininessTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode( "multiSpecularShininessTexture", x3dom.nodeTypes.X3DTextureNode );
-
-            /**
-             * Multi emissive ambientIntensity texture.
-             * @var {x3dom.fields.SFNode} multiEmmisiveAmbientIntensityTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode( "multiEmissiveAmbientTexture", x3dom.nodeTypes.X3DTextureNode );
-
-            /**
-             * Multi visibility texture.
-             * @var {x3dom.fields.SFNode} multiVisibilityTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode( "multiVisibilityTexture", x3dom.nodeTypes.X3DTextureNode );
-
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
 
             /**
@@ -924,90 +884,6 @@ x3dom.registerNodeType(
                 }
             },
 
-            getMultiDiffuseAlphaMap : function ()
-            {
-                if ( this._cf.multiDiffuseAlphaTexture.node )
-                {
-                    if ( x3dom.isa( this._cf.multiDiffuseAlphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
-                    {
-                        this._cf.multiDiffuseAlphaTexture.node._cf.texture.node._type = "multiDiffuseAlphaMap";
-                        return this._cf.multiDiffuseAlphaTexture.node._cf.texture.node;
-                    }
-                    else
-                    {
-                        this._cf.multiDiffuseAlphaTexture.node._type = "multiDiffuseAlphaMap";
-                        return this._cf.multiDiffuseAlphaTexture.node;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            },
-
-            getMultiEmissiveAmbientMap : function ()
-            {
-                if ( this._cf.multiEmissiveAmbientTexture.node )
-                {
-                    if ( x3dom.isa( this._cf.multiEmissiveAmbientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
-                    {
-                        this._cf.multiEmissiveAmbientTexture.node._cf.texture.node._type = "multiEmissiveAmbientMap";
-                        return this._cf.multiEmissiveAmbientTexture.node._cf.texture.node;
-                    }
-                    else
-                    {
-                        this._cf.multiEmissiveAmbientTexture.node._type = "multiEmissiveAmbientMap";
-                        return this._cf.multiEmissiveAmbientTexture.node;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            },
-
-            getMultiSpecularShininessMap : function ()
-            {
-                if ( this._cf.multiSpecularShininessTexture.node )
-                {
-                    if ( x3dom.isa( this._cf.multiSpecularShininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
-                    {
-                        this._cf.multiSpecularShininessTexture.node._cf.texture.node._type = "multiSpecularShininessMap";
-                        return this._cf.multiSpecularShininessTexture.node._cf.texture.node;
-                    }
-                    else
-                    {
-                        this._cf.multiSpecularShininessTexture.node._type = "multiSpecularShininessMap";
-                        return this._cf.multiSpecularShininessTexture.node;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            },
-
-            getMultiVisibilityMap : function ()
-            {
-                if ( this._cf.multiVisibilityTexture.node )
-                {
-                    if ( x3dom.isa( this._cf.multiVisibilityTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
-                    {
-                        this._cf.multiVisibilityTexture.node._cf.texture.node._type = "multiVisibilityMap";
-                        return this._cf.multiVisibilityTexture.node._cf.texture.node;
-                    }
-                    else
-                    {
-                        this._cf.multiVisibilityTexture.node._type = "multiVisibilityMap";
-                        return this._cf.multiVisibilityTexture.node;
-                    }
-                }
-                else
-                {
-                    return null;
-                }
-            },
-
             getTextures : function ()
             {
                 var textures = [];
@@ -1032,18 +908,6 @@ x3dom.registerNodeType(
 
                 var diffuseDisplacement = this.getDiffuseDisplacementMap();
                 if ( diffuseDisplacement ) {textures.push( diffuseDisplacement );}
-
-                var multiDiffuseAlpha = this.getMultiDiffuseAlphaMap();
-                if ( multiDiffuseAlpha ) {textures.push( multiDiffuseAlpha );}
-
-                var multiEmissiveAmbient = this.getMultiEmissiveAmbientMap();
-                if ( multiEmissiveAmbient ) {textures.push( multiEmissiveAmbient );}
-
-                var multiSpecularShininess = this.getMultiSpecularShininessMap();
-                if ( multiSpecularShininess ) {textures.push( multiSpecularShininess );}
-
-                var multiVisibility = this.getMultiVisibilityMap();
-                if ( multiVisibility ) {textures.push( multiVisibility );}
 
                 return textures;
             },

@@ -823,8 +823,7 @@ x3dom.X3DDocument.prototype.onNodeAdded = function ( addedNode, target )
     var child = addedNode,
         parentNode = this.getParentNode( target );
 
-    if ( parentNode.tagName && parentNode.tagName.toLowerCase() == "inline" ||
-        parentNode.tagName.toLowerCase() == "multipart" )
+    if ( parentNode.tagName && parentNode.tagName.toLowerCase() == "inline" )
     {
         return;
     }

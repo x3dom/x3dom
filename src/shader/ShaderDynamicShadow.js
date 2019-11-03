@@ -198,13 +198,6 @@ x3dom.shader.DynamicShadowShader.prototype.generateFragmentShader = function ( g
         shader += "varying float fragID;\n";
     }
 
-    if ( properties.MULTIVISMAP )
-    {
-        shader += "uniform sampler2D multiVisibilityMap;\n";
-        shader += "uniform float multiVisibilityWidth;\n";
-        shader += "uniform float multiVisibilityHeight;\n";
-    }
-
     //ClipPlane stuff
     if ( properties.CLIPPLANES )
     {
@@ -228,16 +221,6 @@ x3dom.shader.DynamicShadowShader.prototype.generateFragmentShader = function ( g
     if ( properties.CLIPPLANES )
     {
         shader += "calculateClipPlanes();\n";
-    }
-
-    if ( properties.MULTIVISMAP )
-    {
-        shader += "    vec2 idTexCoord;\n";
-        shader += "    float roundedID = floor(fragID+0.5);\n";
-        shader += "    idTexCoord.x = (mod(roundedID, multiVisibilityWidth)) * (1.0 / multiVisibilityWidth) + (0.5 / multiVisibilityWidth);\n";
-        shader += "    idTexCoord.y = (floor(roundedID / multiVisibilityHeight)) * (1.0 / multiVisibilityHeight) + (0.5 / multiVisibilityHeight);\n";
-        shader += "    vec4 visibility = texture2D( multiVisibilityMap, idTexCoord );\n";
-        shader += "    if (visibility.r < 1.0) discard; \n";
     }
 
     shader += "    vec3 proj = (projCoords.xyz / projCoords.w);\n";
