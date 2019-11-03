@@ -362,11 +362,7 @@ x3dom.registerNodeType(
                 var geometry = this._cf.geometry.node;
                 if ( geometry )
                 {
-                    if ( x3dom.isa( geometry, x3dom.nodeTypes.ImageGeometry ) )
-                    {
-                        textures = textures.concat( geometry.getTextures() );
-                    }
-                    else if ( x3dom.isa( geometry, x3dom.nodeTypes.Text ) )
+                    if ( x3dom.isa( geometry, x3dom.nodeTypes.Text ) )
                     {
                         textures = textures.concat( geometry );
                     }

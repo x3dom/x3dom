@@ -64,28 +64,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
         shader += "attribute vec4 position;\n";
     }
 
-    //IG stuff
-    if ( properties.IMAGEGEOMETRY )
-    {
-        shader += "uniform vec3 IG_bboxMin;\n";
-        shader += "uniform vec3 IG_bboxMax;\n";
-        shader += "uniform float IG_coordTextureWidth;\n";
-        shader += "uniform float IG_coordTextureHeight;\n";
-        shader += "uniform vec2 IG_implicitMeshSize;\n";
-
-        for ( var i = 0; i < properties.IG_PRECISION; i++ )
-        {
-            shader += "uniform sampler2D IG_coords" + i + "\n;";
-        }
-
-        if ( properties.IG_INDEXED )
-        {
-            shader += "uniform sampler2D IG_index;\n";
-            shader += "uniform float IG_indexTextureWidth;\n";
-            shader += "uniform float IG_indexTextureHeight;\n";
-        }
-    }
-
     //PG stuff
     if ( properties.POPGEOMETRY )
     {
@@ -112,23 +90,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
             shader += "uniform mat4 normalMatrix;\n";
             shader += "uniform mat4 normalMatrix2;\n";
 
-            if ( properties.IMAGEGEOMETRY )
+            if ( properties.NORCOMPONENTS == 2 )
             {
-                shader += "uniform sampler2D IG_normals;\n";
+                if ( properties.POSCOMPONENTS != 4 )
+                {
+                    shader += "attribute vec2 normal;\n";
+                }
             }
-            else
+            else if ( properties.NORCOMPONENTS == 3 )
             {
-                if ( properties.NORCOMPONENTS == 2 )
-                {
-                    if ( properties.POSCOMPONENTS != 4 )
-                    {
-                        shader += "attribute vec2 normal;\n";
-                    }
-                }
-                else if ( properties.NORCOMPONENTS == 3 )
-                {
-                    shader += "attribute vec3 normal;\n";
-                }
+                shader += "attribute vec3 normal;\n";
             }
         }
     }
@@ -137,30 +108,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
     //is is safe to ignore gamma here.
     if ( properties.VERTEXCOLOR )
     {
-        if ( properties.IMAGEGEOMETRY )
+        if ( properties.COLCOMPONENTS == 3 )
         {
-            shader += "uniform sampler2D IG_colors;\n";
-            if ( properties.COLCOMPONENTS == 3 )
-            {
-                shader += "varying vec3 fragColor;\n";
-            }
-            else if ( properties.COLCOMPONENTS == 4 )
-            {
-                shader += "varying vec4 fragColor;\n";
-            }
+            shader += "attribute vec3 color;\n";
+            shader += "varying vec3 fragColor;\n";
         }
-        else
+        else if ( properties.COLCOMPONENTS == 4 )
         {
-            if ( properties.COLCOMPONENTS == 3 )
-            {
-                shader += "attribute vec3 color;\n";
-                shader += "varying vec3 fragColor;\n";
-            }
-            else if ( properties.COLCOMPONENTS == 4 )
-            {
-                shader += "attribute vec4 color;\n";
-                shader += "varying vec4 fragColor;\n";
-            }
+            shader += "attribute vec4 color;\n";
+            shader += "varying vec4 fragColor;\n";
         }
     }
 
@@ -176,11 +132,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
 
         if ( !properties.SPHEREMAPPING )
         {
-            if ( properties.IMAGEGEOMETRY )
-            {
-                shader += "uniform sampler2D IG_texCoords;\n";
-            }
-            else if ( !properties.IS_PARTICLE )
+            if ( !properties.IS_PARTICLE )
             {
                 shader += "attribute vec2 texcoord;\n";
 
@@ -327,173 +279,107 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
 
     shader += "}\n";
 
-    /*******************************************************************************
-    * Start of special Geometry switch
-    ********************************************************************************/
-    if ( properties.IMAGEGEOMETRY )
+    //Positions
+    shader += "vec3 vertPosition = position.xyz;\n";
+
+    if ( properties.POPGEOMETRY )
     {
-        //Indices
-        if ( properties.IG_INDEXED )
+        //compute offset using bounding box and test if vertPosition <= PG_bbMaxModF
+        shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n";
+
+        //coordinate truncation, computation of current maximum possible value
+        //PG_vertexID currently mimics use of gl_VertexID
+        shader += "if ((PG_precisionLevel <= 2.0) || PG_vertexID >= PG_numAnchorVertices) {\n";
+        shader += "   vertPosition = floor(vertPosition / PG_powPrecision) * PG_powPrecision;\n";
+        shader += "   vertPosition /= (65536.0 - PG_powPrecision);\n";
+        shader += "}\n";
+        shader += "else {\n";
+        shader += "   vertPosition /= bgPrecisionMax;\n";
+        shader += "}\n";
+
+        //translate coordinates, where PG_bbMin := floor(bbMin / size)
+        shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * PG_maxBBSize;\n";
+    }
+    else if ( properties.REQUIREBBOX )
+    {
+        shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+    }
+
+    //Normals
+    if ( properties.LIGHTS )
+    {
+        if ( properties.NORCOMPONENTS == 2 )
         {
-            shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
-            shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_indexTextureWidth), position.y*(IG_implicitMeshSize.y/IG_indexTextureHeight)) + halfPixel;\n";
-            shader += "vec2 IG_indices = texture2D( IG_index, IG_texCoord ).rg;\n";
-            shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
-            shader += "IG_texCoord = (IG_indices * 0.996108948) + halfPixel;\n";
+            if ( properties.POSCOMPONENTS == 4 )
+            {
+                // (theta, phi) encoded in low/high byte of position.w
+                shader += "vec3 vertNormal = vec3(position.w / 256.0); \n";
+                shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
+                shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
+            }
+            else if ( properties.REQUIREBBOXNOR )
+            {
+                shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
+            }
+
+            shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
+            shader += "vec4 sinCosThetaPhi = sin( vec4(thetaPhi, thetaPhi + 1.5707963267949) ); \n";
+
+            shader += "vertNormal.x = sinCosThetaPhi.x * sinCosThetaPhi.w; \n";
+            shader += "vertNormal.y = sinCosThetaPhi.x * sinCosThetaPhi.y; \n";
+            shader += "vertNormal.z = sinCosThetaPhi.z; \n";
         }
         else
         {
-            shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
-            shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_coordTextureWidth), position.y*(IG_implicitMeshSize.y/IG_coordTextureHeight)) + halfPixel;\n";
-        }
-
-        //Positions
-        shader += "vec3 temp = vec3(0.0, 0.0, 0.0);\n";
-        shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);\n";
-
-        for ( var i = 0; i < properties.IG_PRECISION; i++ )
-        {
-            shader += "temp = 255.0 * texture2D( IG_coords" + i + ", IG_texCoord ).rgb;\n";
-            shader += "vertPosition *= 256.0;\n";
-            shader += "vertPosition += temp;\n";
-        }
-
-        shader += "vertPosition /= (pow(2.0, 8.0 * " + properties.IG_PRECISION + ".0) - 1.0);\n";
-        shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n";
-
-        //Normals
-        if ( properties.LIGHTS )
-        {
-            shader += "vec3 vertNormal = texture2D( IG_normals, IG_texCoord ).rgb;\n";
-            shader += "vertNormal = vertNormal * 2.0 - 1.0;\n";
-        }
-
-        //Colors
-        if ( properties.VERTEXCOLOR )
-        {
-            if ( properties.COLCOMPONENTS == 3 )
+            if ( properties.NORMALMAP && properties.NORMALSPACE == "OBJECT" )
             {
-                shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgb;\n";
+                //Nothing to do
             }
-            else if ( properties.COLCOMPONENTS == 4 )
+            else
             {
-                shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgba;\n";
+                shader += "vec3 vertNormal = normal;\n";
+                if ( properties.REQUIREBBOXNOR )
+                {
+                    shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
+                }
+                if ( properties.POPGEOMETRY )
+                {
+                    shader += "vertNormal = 2.0*vertNormal - 1.0;\n";
+                }
             }
-        }
-
-        //TexCoords
-        if ( properties.TEXTURED )
-        {
-            shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoords, IG_texCoord );\n";
-            shader += "vec2 vertTexCoord;";
-            shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);\n";
-            shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);\n";
         }
     }
-    else
+
+    //Colors
+    if ( properties.VERTEXCOLOR )
     {
-        //Positions
-        shader += "vec3 vertPosition = position.xyz;\n";
+        shader += "fragColor = color;\n";
 
-        if ( properties.POPGEOMETRY )
+        if ( properties.REQUIREBBOXCOL )
         {
-            //compute offset using bounding box and test if vertPosition <= PG_bbMaxModF
-            shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n";
-
-            //coordinate truncation, computation of current maximum possible value
-            //PG_vertexID currently mimics use of gl_VertexID
-            shader += "if ((PG_precisionLevel <= 2.0) || PG_vertexID >= PG_numAnchorVertices) {\n";
-            shader += "   vertPosition = floor(vertPosition / PG_powPrecision) * PG_powPrecision;\n";
-            shader += "   vertPosition /= (65536.0 - PG_powPrecision);\n";
-            shader += "}\n";
-            shader += "else {\n";
-            shader += "   vertPosition /= bgPrecisionMax;\n";
-            shader += "}\n";
-
-            //translate coordinates, where PG_bbMin := floor(bbMin / size)
-            shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * PG_maxBBSize;\n";
+            shader += "fragColor = fragColor / bgPrecisionColMax;\n";
         }
-        else if ( properties.REQUIREBBOX )
+    }
+
+    //TexCoords
+    if ( ( properties.TEXTURED ) && !properties.SPHEREMAPPING )
+    {
+        if ( properties.IS_PARTICLE )
         {
-            shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+            shader += "vec2 vertTexCoord = vec2(0.0);\n";
         }
-
-        //Normals
-        if ( properties.LIGHTS )
+        else
         {
-            if ( properties.NORCOMPONENTS == 2 )
+            shader += "vec2 vertTexCoord = texcoord;\n";
+
+            if ( properties.MULTITEXCOORD )
             {
-                if ( properties.POSCOMPONENTS == 4 )
-                {
-                    // (theta, phi) encoded in low/high byte of position.w
-                    shader += "vec3 vertNormal = vec3(position.w / 256.0); \n";
-                    shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
-                    shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
-                }
-                else if ( properties.REQUIREBBOXNOR )
-                {
-                    shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
-                }
-
-                shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
-                shader += "vec4 sinCosThetaPhi = sin( vec4(thetaPhi, thetaPhi + 1.5707963267949) ); \n";
-
-                shader += "vertNormal.x = sinCosThetaPhi.x * sinCosThetaPhi.w; \n";
-                shader += "vertNormal.y = sinCosThetaPhi.x * sinCosThetaPhi.y; \n";
-                shader += "vertNormal.z = sinCosThetaPhi.z; \n";
+                shader += "vec2 vertTexCoord2 = texcoord2;\n";
             }
-            else
+
+            if ( properties.REQUIREBBOXTEX )
             {
-                if ( properties.NORMALMAP && properties.NORMALSPACE == "OBJECT" )
-                {
-                    //Nothing to do
-                }
-                else
-                {
-                    shader += "vec3 vertNormal = normal;\n";
-                    if ( properties.REQUIREBBOXNOR )
-                    {
-                        shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
-                    }
-                    if ( properties.POPGEOMETRY )
-                    {
-                        shader += "vertNormal = 2.0*vertNormal - 1.0;\n";
-                    }
-                }
-            }
-        }
-
-        //Colors
-        if ( properties.VERTEXCOLOR )
-        {
-            shader += "fragColor = color;\n";
-
-            if ( properties.REQUIREBBOXCOL )
-            {
-                shader += "fragColor = fragColor / bgPrecisionColMax;\n";
-            }
-        }
-
-        //TexCoords
-        if ( ( properties.TEXTURED ) && !properties.SPHEREMAPPING )
-        {
-            if ( properties.IS_PARTICLE )
-            {
-                shader += "vec2 vertTexCoord = vec2(0.0);\n";
-            }
-            else
-            {
-                shader += "vec2 vertTexCoord = texcoord;\n";
-
-                if ( properties.MULTITEXCOORD )
-                {
-                    shader += "vec2 vertTexCoord2 = texcoord2;\n";
-                }
-
-                if ( properties.REQUIREBBOXTEX )
-                {
-                    shader += "vertTexCoord = vertTexCoord / bgPrecisionTexMax;\n";
-                }
+                shader += "vertTexCoord = vertTexCoord / bgPrecisionTexMax;\n";
             }
         }
     }

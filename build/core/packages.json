@@ -270,7 +270,6 @@
             "BinaryGeometry.js",
             "PopGeometryLevel.js",
             "PopGeometry.js",
-            "ImageGeometry.js",
             "IndexedFaceSet.js",
             "BufferGeometry.js",
             "BufferView.js",

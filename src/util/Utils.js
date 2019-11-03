@@ -1154,10 +1154,7 @@ x3dom.Utils.generateProperties = function ( viewarea, shape )
         property.TEXT             = ( x3dom.isa( geometry, x3dom.nodeTypes.Text ) ) ? 1 : 0;
         property.POPGEOMETRY      = ( x3dom.isa( geometry, x3dom.nodeTypes.PopGeometry ) ) ? 1 : 0;
         property.BUFFERGEOMETRY      = ( x3dom.isa( geometry, x3dom.nodeTypes.BufferGeometry ) ) ? 1 : 0;
-        property.IMAGEGEOMETRY    = ( x3dom.isa( geometry, x3dom.nodeTypes.ImageGeometry ) )  ? 1 : 0;
         property.BINARYGEOMETRY   = ( x3dom.isa( geometry, x3dom.nodeTypes.BinaryGeometry ) )  ? 1 : 0;
-        property.IG_PRECISION     = ( property.IMAGEGEOMETRY ) ? geometry.numCoordinateTextures() : 0;
-        property.IG_INDEXED       = ( property.IMAGEGEOMETRY && geometry.getIndexTexture() != null ) ? 1 : 0;
         property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
         property.VERTEXID         = ( ( property.BINARYGEOMETRY ) && geometry._vf.idsPerVertex ) ? 1 : 0;
         property.IS_PARTICLE      = ( x3dom.isa( geometry, x3dom.nodeTypes.ParticleSet ) ) ? 1 : 0;
@@ -1213,7 +1210,6 @@ x3dom.Utils.generateProperties = function ( viewarea, shape )
                                      geometry._cf.texCoord.node._vf.mode &&
                                      geometry._cf.texCoord.node._vf.mode.toLowerCase() == "sphere" ) ? 1 : 0;
         property.VERTEXCOLOR      = ( geometry._mesh._colors[ 0 ].length > 0 ||
-                                     ( property.IMAGEGEOMETRY  && geometry.getColorTexture() ) ||
                                      ( property.POPGEOMETRY    && geometry.hasColor() ) ||
                                      ( property.BUFFERGEOMETRY && geometry.hasColor() ) ||
                                      ( geometry._vf.color !== undefined && geometry._vf.color.length > 0 ) ) ? 1 : 0;

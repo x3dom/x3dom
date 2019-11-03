@@ -264,15 +264,6 @@ x3dom.registerNodeType(
                                 realApp.nodeChanged();
                             } );
                         }
-                        else if ( x3dom.isa( app, x3dom.nodeTypes.ImageGeometry ) )
-                        {
-                            var cf = null;
-                            if ( that._xmlNode && that._xmlNode.hasAttribute( "containerField" ) )
-                            {
-                                cf = that._xmlNode.getAttribute( "containerField" );
-                                app._dirty[ cf ] = true;
-                            }
-                        }
                         else if ( x3dom.nodeTypes.X3DVolumeDataNode !== undefined )
                         {
                             if ( x3dom.isa( app, x3dom.nodeTypes.X3DVolumeRenderStyleNode ) )

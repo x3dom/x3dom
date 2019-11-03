@@ -1312,50 +1312,6 @@ x3dom.BinaryContainerLoader.setupPopGeo = function ( shape, sp, gl, viewarea, cu
     }
 };
 
-/** setup/download image geometry */
-x3dom.BinaryContainerLoader.setupImgGeo = function ( shape, sp, gl, viewarea, currContext )
-{
-    if ( this.outOfMemory )
-    {
-        return;
-    }
-
-    var imageGeometry = shape._cf.geometry.node;
-
-    if ( imageGeometry.getIndexTexture() )
-    {
-        shape._webgl.imageGeometry = 1;
-    }
-    else
-    {
-        shape._webgl.imageGeometry = -1;
-    }
-
-    imageGeometry.unsetGeoDirty();
-
-    if ( currContext.IG_PositionBuffer == null )
-    {
-        currContext.IG_PositionBuffer = gl.createBuffer();
-    }
-
-    shape._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] = currContext.IG_PositionBuffer;
-    gl.bindBuffer( gl.ARRAY_BUFFER, currContext.IG_PositionBuffer );
-
-    var vertices = new Float32Array( shape._webgl.positions[ 0 ] );
-
-    gl.bufferData( gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW );
-    gl.bindBuffer( gl.ARRAY_BUFFER, currContext.IG_PositionBuffer );
-
-    gl.vertexAttribPointer( sp.position, imageGeometry._mesh._numPosComponents,
-        shape._webgl.coordType, false,
-        shape._coordStrideOffset[ 0 ], shape._coordStrideOffset[ 1 ] );
-    gl.enableVertexAttribArray( sp.position );
-
-    vertices = null;
-
-    this.checkError( gl );
-};
-
 x3dom.BinaryContainerLoader.bufferGeoCache = {};
 
 /** setup/download buffer geometry */
