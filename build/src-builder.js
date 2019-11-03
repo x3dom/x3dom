@@ -68,6 +68,11 @@ async function concatVersions()
         else
         {
             version[ packageName ] = await concat( scripts );
+
+            version[ packageName ] = version[ packageName ].replace( "__X3DOM_VERSION__", VERSION );
+            version[ packageName ] = version[ packageName ].replace( "__X3DOM_BUILD__", BUILD );
+            version[ packageName ] = version[ packageName ].replace( "__X3DOM_REVISION__", REVISION );
+            version[ packageName ] = version[ packageName ].replace( "__X3DOM_DATE__", DATE );
         }
 
         lastPackageName = packageName;

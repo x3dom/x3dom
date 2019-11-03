@@ -107,12 +107,13 @@ x3dom.userAgentFeature = {
             return n;
         } );
 
-        if ( x3dom.versionInfo !== undefined )
+        if ( x3dom.about !== undefined )
         {
-            x3dom.debug.logInfo( "X3DOM version " + x3dom.versionInfo.version + ", " +
-                "Revison <a href='https://github.com/x3dom/x3dom/tree/" + x3dom.versionInfo.revision + "'>"
-                + x3dom.versionInfo.revision + "</a>, " +
-                "Date " + x3dom.versionInfo.date );
+            x3dom.debug.logInfo( "X3DOM " + x3dom.about.version + ", " +
+                "Build: " + x3dom.about.build + ", " +
+                "Revison: <a href='https://github.com/x3dom/x3dom/tree/" + x3dom.about.revision + "'>"
+                + x3dom.about.revision + "</a>, " +
+                "Date: " + x3dom.about.date );
         }
 
         x3dom.debug.logInfo( "Found " + x3ds.length + " X3D and nodes..." );

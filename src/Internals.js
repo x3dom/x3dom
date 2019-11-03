@@ -21,6 +21,13 @@ var x3dom = {
     xhtmlNS  : "http://www.w3.org/1999/xhtml"
 };
 
+x3dom.about = {
+    version  : "__X3DOM_VERSION__",
+    build    : "__X3DOM_BUILD__",
+    revision : "__X3DOM_REVISION__",
+    date     : "__X3DOM_DATE__"
+};
+
 /**
  * The x3dom.nodeTypes namespace.
  * @namespace x3dom.nodeTypes
