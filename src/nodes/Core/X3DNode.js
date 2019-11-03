@@ -249,6 +249,11 @@ x3dom.registerNodeType(
                 }
             },
 
+            getRuntime : function ()
+            {
+                return this._runtime;
+            },
+
             findX3DDoc : function ()
             {
                 return this._nameSpace.doc;
