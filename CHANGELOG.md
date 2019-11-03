@@ -4,6 +4,8 @@
 
 * Changes
   * remove support for compressed BinGeo files & Zlib
+  * remove support for ImageGeometry
+  * remove support for MultiPart
   * remove support for ExternalShape/ExternalGeo and glTF 1.0
   * remove support for loading single components
 * Features

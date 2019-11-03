@@ -57,28 +57,6 @@ x3dom.shader.DynamicShadowShader.prototype.generateVertexShader = function ( gl,
         shader += "uniform float bgPrecisionMax;\n";
     }
 
-    //ImageGeometry stuff
-    if ( properties.IMAGEGEOMETRY )
-    {
-        shader += "uniform vec3 IG_bboxMin;\n";
-        shader += "uniform vec3 IG_bboxMax;\n";
-        shader += "uniform float IG_coordTextureWidth;\n";
-        shader += "uniform float IG_coordTextureHeight;\n";
-        shader += "uniform vec2 IG_implicitMeshSize;\n";
-
-        for ( var i = 0; i < properties.IG_PRECISION; i++ )
-        {
-            shader += "uniform sampler2D IG_coords" + i + "\n;";
-        }
-
-        if ( properties.IG_INDEXED )
-        {
-            shader += "uniform sampler2D IG_index;\n";
-            shader += "uniform float IG_indexTextureWidth;\n";
-            shader += "uniform float IG_indexTextureHeight;\n";
-        }
-    }
-
     //PopGeometry stuff
     if ( properties.POPGEOMETRY )
     {
@@ -108,26 +86,7 @@ x3dom.shader.DynamicShadowShader.prototype.generateVertexShader = function ( gl,
     /*******************************************************************************
      * Start of special Geometry switch
      ********************************************************************************/
-    if ( properties.IMAGEGEOMETRY )
-    { //ImageGeometry
-        if ( properties.IG_INDEXED )
-        {
-            shader += "    vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
-            shader += "    vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_indexTextureWidth), position.y*(IG_implicitMeshSize.y/IG_indexTextureHeight)) + halfPixel;\n";
-            shader += "    vec2 IG_indices = texture2D( IG_index, IG_texCoord ).rg;\n";
-            shader += "    halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
-            shader += "    IG_texCoord = (IG_indices * 0.996108948) + halfPixel;\n";
-        }
-        else
-        {
-            shader += "    vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
-            shader += "    vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_coordTextureWidth), position.y*(IG_implicitMeshSize.y/IG_coordTextureHeight)) + halfPixel;\n";
-        }
-
-        shader += "    pos = texture2D( IG_coordinateTexture, IG_texCoord ).rgb;\n";
-        shader += "    pos = pos * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n";
-    }
-    else if ( properties.POPGEOMETRY )
+    if ( properties.POPGEOMETRY )
     { //PopGeometry
         shader += "    vec3 offsetVec = step(pos / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n";
         shader += "    if (PG_precisionLevel <= 2.0) {\n";

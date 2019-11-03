@@ -524,17 +524,6 @@ x3dom.gfx_webgl = ( function ()
                 */
             }
 
-            if ( shape._webgl.imageGeometry != 0 )
-            {
-                for ( t = 0; t < shape._webgl.texture.length; ++t )
-                {
-                    shape._webgl.texture[ t ].updateTexture();
-                }
-
-                geoNode.unsetGeoDirty();
-                shape.unsetGeoDirty();
-            }
-
             if ( !needFullReInit )
             {
                 // we're done
@@ -547,17 +536,7 @@ x3dom.gfx_webgl = ( function ()
                    x3dom.isa( geoNode, x3dom.nodeTypes.BufferGeometry ) ) &&
                   ( !geoNode || geoNode._mesh._positions[ 0 ].length < 1 ) )
         {
-            if ( x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2 &&
-                x3dom.isa( geoNode, x3dom.nodeTypes.ImageGeometry ) )
-            {
-                x3dom.debug.logError( "Can't render ImageGeometry nodes with only " +
-                    x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS +
-                    " vertex texture units. Please upgrade your GPU!" );
-            }
-            else
-            {
-                x3dom.debug.logError( "NO VALID MESH OR NO VERTEX POSITIONS SET!" );
-            }
+            x3dom.debug.logError( "NO VALID MESH OR NO VERTEX POSITIONS SET!" );
             return;
         }
 
@@ -666,7 +645,6 @@ x3dom.gfx_webgl = ( function ()
             binormalNormalized  : false,
             texture             : [],
             dirtyLighting       : x3dom.Utils.checkDirtyLighting( viewarea ),
-            imageGeometry       : 0,   // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
             binaryGeometry      : 0,  // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
             popGeometry         : 0,     // 0 : no PG,  1 : indexed PG, -1  : non-indexed PG
             bufferGeometry      : 0 // 0 : no EG,  1 : indexed EG, -1 : non-indexed EG
@@ -718,10 +696,6 @@ x3dom.gfx_webgl = ( function ()
         else if ( x3dom.isa( geoNode, x3dom.nodeTypes.PopGeometry ) )
         {
             x3dom.BinaryContainerLoader.setupPopGeo( shape, sp, gl, viewarea, this );
-        }
-        else if ( x3dom.isa( geoNode, x3dom.nodeTypes.ImageGeometry ) )
-        {
-            x3dom.BinaryContainerLoader.setupImgGeo( shape, sp, gl, viewarea, this );
         }
         else
         {
@@ -1617,63 +1591,6 @@ x3dom.gfx_webgl = ( function ()
                 }
             }
 
-            // ImageGeometry stuff
-            if ( s_gl.imageGeometry != 0 )
-            {
-                sp.IG_bboxMin = s_geo.getMin().toGL();
-                sp.IG_bboxMax = s_geo.getMax().toGL();
-                sp.IG_implicitMeshSize = s_geo._vf.implicitMeshSize.toGL();  // FIXME
-
-                var coordTex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_coords0" );
-                if ( coordTex )
-                {
-                    sp.IG_coordTextureWidth = coordTex.texture.width;
-                    sp.IG_coordTextureHeight = coordTex.texture.height;
-                }
-
-                if ( s_gl.imageGeometry == 1 )
-                {
-                    var indexTex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_index" );
-                    if ( indexTex )
-                    {
-                        sp.IG_indexTextureWidth = indexTex.texture.width;
-                        sp.IG_indexTextureHeight = indexTex.texture.height;
-                    }
-
-                    gl.activeTexture( gl.TEXTURE0 );
-                    gl.bindTexture( gl.TEXTURE_2D, indexTex.texture );
-
-                    gl.activeTexture( gl.TEXTURE1 );
-                    gl.bindTexture( gl.TEXTURE_2D, coordTex.texture );
-                }
-                else
-                {
-                    gl.activeTexture( gl.TEXTURE0 );
-                    gl.bindTexture( gl.TEXTURE_2D, coordTex.texture );
-                }
-
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
-
-                var texUnit = 0;
-                if ( s_geo.getIndexTexture() )
-                {
-                    if ( !sp.IG_indexTexture )
-                    {
-                        sp.IG_indexTexture = texUnit++;
-                    }
-                }
-                if ( s_geo.getCoordinateTexture( 0 ) )
-                {
-                    if ( !sp.IG_coordinateTexture )
-                    {
-                        sp.IG_coordinateTexture = texUnit++;
-                    }
-                }
-            }
-
             if ( shape.isSolid() )
             {
                 this.stateManager.enable( gl.CULL_FACE );
@@ -1782,7 +1699,7 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
-                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry )
+                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 )
                 {
                     for ( v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++ )
                     {
@@ -1821,18 +1738,6 @@ x3dom.gfx_webgl = ( function ()
                 if ( sp.id !== undefined && s_gl.buffers[ q6 + x3dom.BUFFER_IDX.ID ] )
                 {
                     gl.disableVertexAttribArray( sp.id );
-                }
-            }
-
-            // Clean Texture units for IG
-            if ( s_gl.imageGeometry != 0 )
-            {
-                gl.activeTexture( gl.TEXTURE0 );
-                gl.bindTexture( gl.TEXTURE_2D, null );
-                if ( s_gl.imageGeometry == 1 )
-                {
-                    gl.activeTexture( gl.TEXTURE1 );
-                    gl.bindTexture( gl.TEXTURE_2D, null );
                 }
             }
         }
@@ -2023,63 +1928,6 @@ x3dom.gfx_webgl = ( function ()
                 }
             }
 
-            // ImageGeometry stuff
-            if ( s_gl.imageGeometry != 0 )
-            {
-                sp.IG_bboxMin = s_geo.getMin().toGL();
-                sp.IG_bboxMax = s_geo.getMax().toGL();
-                sp.IG_implicitMeshSize = s_geo._vf.implicitMeshSize.toGL();  // FIXME
-
-                var coordTex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_coords0" );
-                if ( coordTex )
-                {
-                    sp.IG_coordTextureWidth = coordTex.texture.width;
-                    sp.IG_coordTextureHeight = coordTex.texture.height;
-                }
-
-                if ( s_gl.imageGeometry == 1 )
-                {
-                    var indexTex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_index" );
-                    if ( indexTex )
-                    {
-                        sp.IG_indexTextureWidth = indexTex.texture.width;
-                        sp.IG_indexTextureHeight = indexTex.texture.height;
-                    }
-
-                    gl.activeTexture( gl.TEXTURE0 );
-                    gl.bindTexture( gl.TEXTURE_2D, indexTex.texture );
-
-                    gl.activeTexture( gl.TEXTURE1 );
-                    gl.bindTexture( gl.TEXTURE_2D, coordTex.texture );
-                }
-                else
-                {
-                    gl.activeTexture( gl.TEXTURE0 );
-                    gl.bindTexture( gl.TEXTURE_2D, coordTex.texture );
-                }
-
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-                gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
-
-                var texUnit = 0;
-                if ( s_geo.getIndexTexture() )
-                {
-                    if ( !sp.IG_indexTexture )
-                    {
-                        sp.IG_indexTexture = texUnit++;
-                    }
-                }
-                if ( s_geo.getCoordinateTexture( 0 ) )
-                {
-                    if ( !sp.IG_coordinateTexture )
-                    {
-                        sp.IG_coordinateTexture = texUnit++;
-                    }
-                }
-            }
-
             if ( shape.isSolid() )
             {
                 this.stateManager.enable( gl.CULL_FACE );
@@ -2196,7 +2044,7 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
-                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry )
+                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 )
                 {
                     for ( v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++ )
                     {
@@ -2246,18 +2094,6 @@ x3dom.gfx_webgl = ( function ()
                 }
 
                 this.disableVertexAttribEyeIdx( gl, sp );
-            }
-
-            // Clean Texture units for IG
-            if ( s_gl.imageGeometry != 0 )
-            {
-                gl.activeTexture( gl.TEXTURE0 );
-                gl.bindTexture( gl.TEXTURE_2D, null );
-                if ( s_gl.imageGeometry == 1 )
-                {
-                    gl.activeTexture( gl.TEXTURE1 );
-                    gl.bindTexture( gl.TEXTURE_2D, null );
-                }
             }
         }
 
@@ -2406,31 +2242,6 @@ x3dom.gfx_webgl = ( function ()
         else
         {
             sp.bgPrecisionBinormalMax = 1;
-        }
-
-        if ( s_gl.imageGeometry != 0 )
-        {
-            sp.IG_bboxMin = s_geo.getMin().toGL();
-            sp.IG_bboxMax = s_geo.getMax().toGL();
-            sp.IG_implicitMeshSize = s_geo._vf.implicitMeshSize.toGL();  // FIXME
-
-            tex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_coords0" );
-            if ( tex )
-            {
-                sp.IG_coordTextureWidth = tex.texture.width;
-                sp.IG_coordTextureHeight = tex.texture.height;
-            }
-
-            if ( s_gl.imageGeometry == 1 )
-            {
-                tex = x3dom.Utils.findTextureByName( s_gl.texture, "IG_index" );
-                if ( tex )
-                {
-                    sp.IG_indexTextureWidth = tex.texture.width;
-                    sp.IG_indexTextureHeight = tex.texture.height;
-                }
-            }
-            tex = null;
         }
 
         // Set fog
@@ -3100,7 +2911,7 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
-                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry )
+                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 )
                 {
                     for ( v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++ )
                     {
@@ -3147,7 +2958,7 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
-                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry )
+                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 )
                 {
                     for ( v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++ )
                     {
@@ -3242,42 +3053,20 @@ x3dom.gfx_webgl = ( function ()
         }
 
         // update stats
-        if ( s_gl.imageGeometry )
+        this.numCoords += s_msh._numCoords;
+        this.numFaces += s_msh._numFaces;
+
+        if ( s_gl.binaryGeometry || s_gl.popGeometry || s_gl.bufferGeometry )
         {
-            v_n = s_geo._vf.vertexCount.length;
-            this.numDrawCalls += v_n;
-
-            for ( v = 0; v < v_n; v++ )
-            {
-                if ( s_gl.primType[ v ] == gl.TRIANGLE_STRIP )
-                {
-                    this.numFaces += ( s_geo._vf.vertexCount[ v ] - 2 );
-                }
-                else
-                {
-                    this.numFaces += ( s_geo._vf.vertexCount[ v ] / 3 );
-                }
-
-                this.numCoords += s_geo._vf.vertexCount[ v ];
-            }
+            this.numDrawCalls += s_geo._vf.vertexCount.length;
+        }
+        else if ( s_geo.hasIndexOffset() )
+        {
+            this.numDrawCalls += shape.tessellationProperties().length;
         }
         else
         {
-            this.numCoords += s_msh._numCoords;
-            this.numFaces += s_msh._numFaces;
-
-            if ( s_gl.binaryGeometry || s_gl.popGeometry || s_gl.bufferGeometry )
-            {
-                this.numDrawCalls += s_geo._vf.vertexCount.length;
-            }
-            else if ( s_geo.hasIndexOffset() )
-            {
-                this.numDrawCalls += shape.tessellationProperties().length;
-            }
-            else
-            {
-                this.numDrawCalls += q_n;
-            }
+            this.numDrawCalls += q_n;
         }
 
         // reset to default values for possibly user defined render states
@@ -4872,9 +4661,6 @@ x3dom.gfx_webgl = ( function ()
             sp.normalMatrix = model_view_inv.transpose().toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult( trafo ).toGL();
 
-            // Set ImageGeometry switch (TODO: also impl. in Shader!)
-            sp.imageGeometry = s_gl.imageGeometry;
-
             if ( s_gl.coordType != gl.FLOAT )
             {
                 if ( s_gl.popGeometry != 0 ||
@@ -4952,7 +4738,7 @@ x3dom.gfx_webgl = ( function ()
                         offset += s_geo._vf.vertexCount[ v ];
                     }
                 }
-                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.imageGeometry )
+                else if ( s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 )
                 {
                     for ( v = 0, offset = 0, v_n = s_geo._vf.vertexCount.length; v < v_n; v++ )
                     {
