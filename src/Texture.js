@@ -787,7 +787,7 @@ x3dom.Texture.prototype.updateText = function ()
     gl.bindTexture( this.type, null );
 
     //remove canvas after Texture creation
-    document.body.removeChild( text_canvas, renderConfig );
+    document.body.removeChild( text_canvas );
 
     this.node._mesh._positions[ 0 ] = [
         0 + x_offset, -h + y_offset, 0,
