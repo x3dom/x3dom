@@ -820,10 +820,10 @@ x3dom.Texture.prototype.uploadTextMipmap = function ( canvas, txt )
         w = canvas.width,
         h = canvas.height,
         level = 0,
-        pot = 1;
-    w2 = w,
-    h2 = h ;
-    ctx2d = canvas.getContext( "2d" );
+        pot = 1,
+        w2 = w,
+        h2 = h,
+        ctx2d = canvas.getContext( "2d" );
     while ( true )
     {
         gl.texImage2D( this.type, level++, this.format, this.format, gl.UNSIGNED_BYTE, ctx2d.getImageData( 0, 0, w2, h2 ) );
