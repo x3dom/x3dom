@@ -740,10 +740,10 @@ x3dom.Texture.prototype.updateText = function ()
     x_offset *= pxToX3d;
     y_offset *= pxToX3d;
 
-    text_canvas.width = Math.min (
+    text_canvas.width = Math.min(
         x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
         x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
-    text_canvas.height = Math.min (
+    text_canvas.height = Math.min(
         x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
         x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
     text_canvas.dir = leftToRight;
