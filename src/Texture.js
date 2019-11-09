@@ -740,8 +740,12 @@ x3dom.Texture.prototype.updateText = function ()
     x_offset *= pxToX3d;
     y_offset *= pxToX3d;
 
-    text_canvas.width = x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample );
-    text_canvas.height = x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample );
+    text_canvas.width = Math.min(
+        x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
+        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
+    text_canvas.height = Math.min(
+        x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
+        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
     text_canvas.dir = leftToRight;
 
     text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
@@ -820,10 +824,10 @@ x3dom.Texture.prototype.uploadTextMipmap = function ( canvas, txt )
         w = canvas.width,
         h = canvas.height,
         level = 0,
-        pot = 1;
-    w2 = w,
-    h2 = h ;
-    ctx2d = canvas.getContext( "2d" );
+        pot = 1,
+        w2 = w,
+        h2 = h,
+        ctx2d = canvas.getContext( "2d" );
     while ( true )
     {
         gl.texImage2D( this.type, level++, this.format, this.format, gl.UNSIGNED_BYTE, ctx2d.getImageData( 0, 0, w2, h2 ) );

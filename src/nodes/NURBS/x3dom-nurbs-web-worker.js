@@ -28,11 +28,11 @@
         {
             if ( e.data[ 11 ] )
             { // always the case
-                basisFunsCache = e.data[ 11 ];
+                var basisFunsCache = e.data[ 11 ];
             }
             else
             {
-                basisFunsCache = new Map();
+                var basisFunsCache = new Map();
             }
             var tess = new Tessellator( e.data );
             if ( e.data[ 12 ] && e.data[ 12 ].length )

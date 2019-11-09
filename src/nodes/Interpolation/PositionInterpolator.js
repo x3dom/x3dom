@@ -85,7 +85,7 @@ x3dom.registerNodeType(
 
             keyValueFromAccessor : function ( array )
             {
-                keyValue = new x3dom.fields.MFVec3f();
+                var keyValue = new x3dom.fields.MFVec3f();
                 array.forEach( function ( val, i )
                 {
                     if ( i % 3 == 2 )

@@ -140,6 +140,7 @@ x3dom.registerNodeType(
 
                 var i,
                     i3,
+                    n,
                     interval,
                     basis,
                     t,
