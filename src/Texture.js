@@ -740,8 +740,12 @@ x3dom.Texture.prototype.updateText = function ()
     x_offset *= pxToX3d;
     y_offset *= pxToX3d;
 
-    text_canvas.width = x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample );
-    text_canvas.height = x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample );
+    text_canvas.width = Math.min (
+        x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
+        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
+    text_canvas.height = Math.min (
+        x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
+        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
     text_canvas.dir = leftToRight;
 
     text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
