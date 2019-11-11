@@ -736,16 +736,17 @@ x3dom.Texture.prototype.updateText = function ()
     var pxToX3d = 1 / x3dToPx;
     var w = txtW * pxToX3d;
     var h = txtH * pxToX3d;
+    var max_texture_size = x3dom.caps.MAX_TEXTURE_SIZE >> 2;
 
     x_offset *= pxToX3d;
     y_offset *= pxToX3d;
 
     text_canvas.width = Math.min(
         x3dom.Utils.nextHighestPowerOfTwo( txtW * oversample ),
-        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
+        max_texture_size );
     text_canvas.height = Math.min(
         x3dom.Utils.nextHighestPowerOfTwo( txtH * oversample ),
-        x3dom.caps.MAX_TEXTURE_SIZE >> 1 );
+        max_texture_size );
     text_canvas.dir = leftToRight;
 
     text_ctx.scale( text_canvas.width / txtW, text_canvas.height / txtH );
