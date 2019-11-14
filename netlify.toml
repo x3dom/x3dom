@@ -17,7 +17,7 @@
   publish = "dist/"
 
   # Default build command.
-  command = "echo 'default context'"
+  # command = "echo 'default context'"
 
   # Directory with the serverless Lambda functions to deploy to AWS.
   # functions = "project/functions/"
