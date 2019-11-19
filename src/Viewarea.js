@@ -1713,8 +1713,8 @@ x3dom.Viewarea.prototype.prepareEvents = function ( x, y, buttonState, eventType
         target          : {},     // should be hit xml element
         type            : eventType.substr( 2, eventType.length - 2 ),
         button          : buttonState,
-        layerX          : x * this._inverseDevicePixelRatio,
-        layerY          : y * this._inverseDevicePixelRatio,
+        layerX          : x,
+        layerY          : y,
         worldX          : this._pick.x,
         worldY          : this._pick.y,
         worldZ          : this._pick.z,
