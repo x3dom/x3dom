@@ -72,6 +72,16 @@ x3dom.registerNodeType(
             this.addField_SFNode( "lineProperties", x3dom.nodeTypes.LineProperties );
 
             /**
+             * The pointProperties field, if specified, shall contain a PointProperties node. If pointProperties is NULL or unspecified, the pointProperties field has no effect.
+             * @var {x3dom.fields.SFNode} pointProperties
+             * @memberof x3dom.nodeTypes.Appearance
+             * @initvalue x3dom.nodeTypes.PointProperties
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode( "pointProperties", x3dom.nodeTypes.PointProperties );
+
+            /**
              * Holds a ColorMaskMode node.
              * @var {x3dom.fields.SFNode} colorMaskMode
              * @memberof x3dom.nodeTypes.Appearance
