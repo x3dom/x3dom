@@ -90,7 +90,7 @@ x3dom.registerNodeType(
              *
              * @var {["POINT_COLOR", "TEXTURE_COLOR", "TEXTURE_AND_POINT_COLOR"]} colorMode
              * @memberof x3dom.nodeTypes.PointProperties
-             * @initvalue true
+             * @initvalue "POINT_COLOR"
              * @field x3d
              * @instance
              */
