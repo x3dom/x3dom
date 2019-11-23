@@ -16,7 +16,7 @@ x3dom.registerNodeType(
         /**
          * Constructor for PointProperties
          * @constructs x3dom.nodeTypes.PointProperties
-         * @x3d 3.3
+         * @x3d 4.0
          * @component Shape
          * @status experimental
          * @extends x3dom.nodeTypes.X3DAppearanceChildNode
