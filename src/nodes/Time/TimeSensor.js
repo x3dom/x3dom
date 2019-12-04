@@ -320,7 +320,7 @@ x3dom.registerNodeType(
                 {
                     this._updateCycleStopTime();
                 }
-                else if ( fieldName == "resumeTime" ) 
+                else if ( fieldName == "resumeTime" )
                 {
                     // Spec: Should be ignored when ..
                     // add condition, return;
@@ -328,7 +328,7 @@ x3dom.registerNodeType(
                         this._vf.resumeTime < this._vf.pauseTime ||
                         this._vf.resumeTime < this._vf.startTime ||
                         !this._vf.enabled
-                        )
+                    )
                     {
                         return;
                     }
