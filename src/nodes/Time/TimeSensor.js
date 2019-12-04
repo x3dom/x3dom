@@ -256,6 +256,8 @@ x3dom.registerNodeType(
                             this.postMessage( "cycleTime", time );
                         }
 
+                        this._fraction = fraction; // save fraction for pausing
+
                         this.postMessage( "fraction_changed", fraction );
 
                         this.postMessage( "time", time );
@@ -317,6 +319,18 @@ x3dom.registerNodeType(
                 else if ( fieldName == "loop" )
                 {
                     this._updateCycleStopTime();
+                }
+                else if (fieldName == "resumeTime") {
+                    // Spec: Should be ignored when ..
+                    // add condition, return;
+                    if ( 
+                        this._vf.resumeTime < this._vf.pauseTime || 
+                        this._vf.resumeTime < this._vf.startTime || 
+                        !this._vf.enabled 
+                        ) return
+                    this._vf.startTime = this._vf.resumeTime - this._fraction * this._vf.cycleInterval;
+                    this._backupStartTime = this._vf.startTime;
+                    this._updateCycleStopTime(); // not sure if needed
                 }
             },
 
