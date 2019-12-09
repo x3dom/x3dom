@@ -1181,7 +1181,7 @@
 
                         var ui = lp[ j ][ 1 ];//p
                         var u = U[ ui ];//U[p]
-                        ue = U[( U.length - ui - 1 )];//U[Ulen-p-1]
+                        ue = U[ ( U.length - ui - 1 ) ];//U[Ulen-p-1]
                         while ( u < ue )
                         {
                             this.ttloops[ ilp ].push( this.computeCurve( ilp, j, u ) );
