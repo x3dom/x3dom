@@ -17,6 +17,7 @@
   * use passive event listeners if supported
   * make it possible to run x3dom in strict mode
   * text node improvements
+  * resume time at paused fraction
 * Bugfixes
   * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
