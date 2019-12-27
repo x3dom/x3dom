@@ -336,6 +336,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                         if ( list[ it ] == func )
                         {
                             list.splice( it, 1 );
+                            it--;
                             //x3dom.debug.logInfo('removeEventListener for ' +
                             //                    this.tagName + ".on" + type);
                         }
