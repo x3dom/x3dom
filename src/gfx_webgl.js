@@ -858,7 +858,7 @@ x3dom.gfx_webgl = ( function ()
                 var attrib = geoNode._mesh._dynamicFields[ df ];
 
                 shape._webgl.dynamicFields[ currAttribs ] = {
-                    buf: {}, name: df, numComponents: attrib.numComponents
+                    buf : {}, name : df, numComponents : attrib.numComponents
                 };
 
                 if ( sp[ df ] !== undefined )
