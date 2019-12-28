@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 
             /**
              * allows restricting examine and turntable navigation, overrides mouse buttons (useful for special viewers)
-             * @range [all, pan, zoom, rotate, none]
+             * @range [all, pan, zoom, rotate, -pan, -zoom, -rotate, none]
              * @var {x3dom.fields.SFString} explorationMode
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 'all'
@@ -91,7 +91,7 @@ x3dom.registerNodeType(
              * Interchange profile hint: this field may be ignored.
              * @var {x3dom.fields.MFFloat} avatarSize
              * @memberof x3dom.nodeTypes.NavigationInfo
-             * @initvalue [0.25,1.6,0.75]
+             * @initvalue [ 0.25, 1.6, 0.75 ]
              * @field x3d
              * @instance
              */
@@ -297,12 +297,15 @@ x3dom.registerNodeType(
             {
                 switch ( this._vf.explorationMode.toLowerCase() )
                 {
-                    case "all":    return 7;
-                    case "rotate": return 1; //left btn
-                    case "zoom":   return 2; //right btn
-                    case "pan":    return 4; //middle btn
-                    case "none":   return 0; //type 'none'
-                    default:       return 7;
+                    case "all":     return 7;
+                    case "rotate":  return 1; //left btn
+                    case "zoom":    return 2; //right btn
+                    case "pan":     return 4; //middle btn
+                    case "-rotate": return 6; //disable left btn
+                    case "-zoom":   return 5; //disable right btn
+                    case "-pan":    return 3; //disable middle btn
+                    case "none":    return 0; //type 'none'
+                    default:        return 7;
                 }
             }
         }
