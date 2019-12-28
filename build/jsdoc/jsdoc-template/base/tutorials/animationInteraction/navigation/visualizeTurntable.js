@@ -13,7 +13,7 @@ var updateArc = function(min, max)
     var radius = canvas.width/2-10;
     
     min = min - Math.PI/2;
-    max = max - Math.PI/2
+    max = max - Math.PI/2;
 
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.beginPath();
