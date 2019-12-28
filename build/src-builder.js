@@ -104,7 +104,7 @@ async function build()
 
     console.log( "> Minify x3dom-physics.js ..." );
 
-    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ] ).code
+    versions[ "PHYSICS_MIN" ] = terser.minify( versions[ "PHYSICS" ] ).code;
 
     console.log( "> Write x3dom.debug.js ..." );
 
