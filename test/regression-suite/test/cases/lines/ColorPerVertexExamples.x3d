@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Interchange' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='ColorPerVertexExamples.x3d' name='title'/>
+    <meta content='Geometry Polygons Nodes: Color, Coordinate, ElevationGrid, Extrusion, IndexedFaceSet, IndexedLineSet, PointSet' name='description'/>
+    <meta content='Don Brutzman' name='creator'/>
+    <meta content='5 September 2005' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='ColorPerVertexExamples.png' name='Image'/>
+    <meta content='Copyright (c) 2005, Daly Realism and Don Brutzman' name='rights'/>
+    <meta content='http://X3dGraphics.com/examples/X3dForWebAuthors/Chapter06GeometryPointsLinesPolygons/ColorPerVertexExamples.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='ColorPerVertexExamples.x3d'/>
+    <Viewpoint description='ColorPerVertex Examples' position='0 0 6'/>
+    <Background groundColor='0.1 0.1 0.1' skyColor='0.1 0.1 0.1'/>
+    <Transform translation='-0.5 0 0'>
+      <Transform translation='-3 0 0'>
+        <Shape>
+          <!-- Default settings: colorPerVertex='true' -->
+          <IndexedFaceSet colorIndex='0 1 2 3 0 -1' coordIndex='0 1 2 3 0 -1'>
+            <Coordinate DEF='FourPoints' point='0 0 0 1 0 0 1 1 0 0 1 0'/>
+            <Color DEF='FourColors' color='1 0 0 0 1 0 0 0 1 0.8 0.8 0.8'/>
+          </IndexedFaceSet>
+        </Shape>
+      </Transform>
+      <Transform translation='-1 0 0'>
+        <Shape>
+          <!-- Note that only 4 points are needed to create a 4-vertex polygon. -->
+          <IndexedFaceSet colorIndex='2' colorPerVertex='false' coordIndex='0 1 2 3 0 -1'>
+            <Coordinate USE='FourPoints'/>
+            <ColorRGBA DEF='FourColorsRGBA' color='1 0 0 1 0 1 0 1 0 0 1 0.5 0.8 0.8 0.8 0'/>
+          </IndexedFaceSet>
+        </Shape>
+      </Transform>
+      <Transform translation='1 0 0'>
+        <Shape>
+          <!-- Student TODO: try different color indices. -->
+          <IndexedLineSet colorIndex='0 1 2 3 0 -1' coordIndex='0 1 2 3 0 -1'>
+            <Coordinate USE='FourPoints'/>
+            <Color USE='FourColors'/>
+          </IndexedLineSet>
+        </Shape>
+      </Transform>
+      <Transform translation='3 0 0'>
+        <Shape>
+          <!-- Note that 5 points are needed to create 4 complete line segments. -->
+          <IndexedLineSet colorIndex='0' colorPerVertex='false' coordIndex='0 1 2 3 0 -1'>
+            <Coordinate USE='FourPoints'/>
+            <Color USE='FourColors'/>
+          </IndexedLineSet>
+        </Shape>
+      </Transform>
+    </Transform>
+  </Scene>
+</X3D>
