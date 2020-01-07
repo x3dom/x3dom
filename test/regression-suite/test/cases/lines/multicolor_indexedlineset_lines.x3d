@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Interchange' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='multicolor_indexedlineset_lines.x3d' name='title'/>
+    <meta content='multicolor_indexedlineset_lines-front.jpg' name='Image'/>
+    <meta content='http://www.nist.gov/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/members.html' name='creator'/>
+    <meta content='This file was provided by the National Institute of Standards and Technology, and is part of the X3D Conformance Test Suite, available at http://www.nist.gov/vrml.html The information contained within this file is provided for use in establishing conformance to the ISO VRML97 Specification. Conformance to this test does not imply recommendation or endorsement by the National Institute of Standards and Technology. This software can be redistributed and/or modified freely provided that any derivative works bear some notice that they are derived from it, and any modified versions bear some notice that they have been modified.' name='disclaimer'/>
+    <meta content='Correct definition and compliance of this conformance scene is maintained by the X3D Working Group, https://www.web3d.org/working-groups/x3d' name='info'/>
+    <meta content='Michael Kass NIST, Don Brutzman NPS' name='translator'/>
+    <meta content='21 January 2001' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='This world tests browser ability to apply color to an IndexedLineSet, by applying a colorindex to polylines of a wireframe cube, with the front square consisting of red polylines, the rear square made up of blue polylines, the right square containing green horizontal polylines, and the left square having white horizontal polylines.' name='description'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/ConformanceNist/GeometricProperties/Color/multicolor_indexedlineset_lines.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='multicolor_indexedlineset_lines.x3d'/>
+    <Viewpoint description='Front View'/>
+    <Viewpoint description='Rear View' orientation='0 1 0 3.14' position='0 0 -10'/>
+    <Viewpoint description='Top View' orientation='1 0 0 -1.57' position='0 10 0'/>
+    <Viewpoint description='Bottom View' orientation='1 0 0 1.57' position='0 -10 0'/>
+    <Viewpoint description='Right View' orientation='0 1 0 1.57' position='10 0 0'/>
+    <Viewpoint description='Left View' orientation='0 1 0 -1.57' position='-10 0 0'/>
+    <NavigationInfo type='"EXAMINE" "WALK" "FLY" "ANY"'/>
+    <Shape>
+      <Appearance>
+        <Material/>
+      </Appearance>
+      <IndexedLineSet colorPerVertex='false' coordIndex='0 1 -1 1 2 -1 2 3 -1 3 0 -1 4 5 -1 5 6 -1 6 7 -1 7 4 -1 0 4 -1 1 5 -1 2 6 -1 3 7 -1'>
+        <Coordinate point='-3 2 2 3 2 2 3 2 -2 -3 2 -2 -3 -2 2 3 -2 2 3 -2 -2 -3 -2 -2'/>
+        <Color color='1 0 0 0 1 0 0 0 1 1 1 1 1 0 0 0 1 0 0 0 1 1 1 1 1 0 0 1 0 0 0 0 1 0 0 1'/>
+      </IndexedLineSet>
+    </Shape>
+  </Scene>
+</X3D>
