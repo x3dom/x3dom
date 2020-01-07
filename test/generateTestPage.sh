@@ -17,7 +17,7 @@ cat <<HTMLEND > index.html && cd ../..
   <body>
     <h1> X3DOM examples</h1>
     <ol type='i'>
-      $(for f in $examples; do echo "      <li><a href=\"$f\"> ${f##*/} </a></li>" ; done | sort)
+      $(for f in $examples; do echo "      <li><a href=\"$f\"> ${f#*/} </a></li>" ; done | sort)
     </ol>
     <footer style='text-align: end'> $(date) </footer>
   </body>
