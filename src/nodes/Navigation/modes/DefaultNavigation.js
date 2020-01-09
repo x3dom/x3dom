@@ -475,7 +475,7 @@ x3dom.DefaultNavigation.prototype.navigateTo = function ( view, timeStamp )
                 {
                     dist = view._pickingInfo.pickPos.subtract( view._from ).length();
 
-                    if ( dist <= avatarRadius )
+                    if ( dist <= avatarRadius + step )
                     {
                         step = 0;
                     }
