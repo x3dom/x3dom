@@ -11,6 +11,7 @@
 * Features
   * new Node-based build system
   * automatic origChannelCount detection
+  * added exploration modes
 * Improvements
   * linted source code
   * replaced deprecated MutationEvents with a MutationObserver
@@ -18,12 +19,14 @@
   * make it possible to run x3dom in strict mode
   * text node improvements
   * resume time at paused fraction
+  * more robust collisions in walk mode
 * Bugfixes
   * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
   * gltf loader material DEF/USE robustness
   * allow better gc after Inline removal
-
+  * line per segment color
+  
 ## Version 1.8.1
 
 * Bugfixes
