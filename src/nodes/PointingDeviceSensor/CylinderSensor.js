@@ -10,7 +10,7 @@
 x3dom.registerNodeType(
     "CylinderSensor",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DDragSensorNode,
+    defineClass( x3dom.nodeTypes.X3DDragSensorNode,
 
         /**
          * Constructor for CylinderSensor
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @classdesc The CylinderSensor node converts pointer motion (for example, from a mouse) into rotation values,
          * using an invisible cylinder of infinite height, aligned with local Y-axis.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.CylinderSensor.superClass.call(this, ctx);
+            x3dom.nodeTypes.CylinderSensor.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -39,8 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'offset', 0);
-
+            this.addField_SFFloat( ctx, "offset", 0 );
 
             /**
              * The local sensor coordinate system is created by additionally applying the axisRotation field value to
@@ -51,8 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'axisRotation', 0, 1, 0, 0);
-
+            this.addField_SFRotation( ctx, "axisRotation", 0, 1, 0, 0 );
 
             /**
              * Specifies whether the virtual cylinder's lateral surface or end-cap disks of virtual-geometry sensor are
@@ -71,8 +69,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'diskAngle', 0.262); //this is the official default value, PI/12
-
+            this.addField_SFFloat( ctx, "diskAngle", 0.262 ); //this is the official default value, PI/12
 
             /**
              * The minAngle and maxAngle fields, given in radians, allow to constrain the rotation output of the
@@ -84,8 +81,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'minAngle', 0);
-
+            this.addField_SFFloat( ctx, "minAngle", 0 );
 
             /**
              * The minAngle and maxAngle fields, given in radians, allow to constrain the rotation output of the
@@ -97,11 +93,10 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxAngle', -1);
+            this.addField_SFFloat( ctx, "maxAngle", -1 );
 
             //route-able output fields
             //this.addField_SFRotation(ctx, 'rotation_changed', 0, 0, 1, 0);
-
 
             //---------------------------------------
             // PROPERTIES
@@ -175,11 +170,11 @@ x3dom.registerNodeType(
              * This function returns the parent transformation of this node, combined with its current axisRotation
              * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.getCurrentTransform
              */
-            getCurrentTransform: function ()
+            getCurrentTransform : function ()
             {
-                var parentTransform = x3dom.nodeTypes.X3DDragSensorNode.prototype.getCurrentTransform.call(this);
+                var parentTransform = x3dom.nodeTypes.X3DDragSensorNode.prototype.getCurrentTransform.call( this );
 
-                return parentTransform.mult(this._rotationMatrix);
+                return parentTransform.mult( this._rotationMatrix );
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -190,30 +185,30 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
              * @private
              */
-            _startDragging: function(viewarea, x, y, wx, wy, wz)
+            _startDragging : function ( viewarea, x, y, wx, wy, wz )
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, wx, wy, wz);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call( this, viewarea, x, y, wx, wy, wz );
 
                 this._currentRotation = new x3dom.fields.Quaternion();
 
                 this._viewArea = viewarea;
 
                 //y axis line, in local sensor coordinates
-                this._yAxisLine = new x3dom.fields.Line(new x3dom.fields.SFVec3f(0.0, 0.0, 0.0),
-                                                        new x3dom.fields.SFVec3f(0.0, 1.0, 0.0));
+                this._yAxisLine = new x3dom.fields.Line( new x3dom.fields.SFVec3f( 0.0, 0.0, 0.0 ),
+                    new x3dom.fields.SFVec3f( 0.0, 1.0, 0.0 ) );
 
                 this._inverseToWorldMatrix = this.getCurrentTransform().inverse();
 
                 //compute initial cylinder intersection point, in local sensor coordinates
-                var firstIntersection = this._inverseToWorldMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(wx, wy, wz));
+                var firstIntersection = this._inverseToWorldMatrix.multMatrixPnt( new x3dom.fields.SFVec3f( wx, wy, wz ) );
 
                 //TODO: add disk mode
 
                 //compute distance between point of intersection and y-axis
 
-                var closestPointOnYAxis = this._yAxisLine.closestPoint(firstIntersection);
+                var closestPointOnYAxis = this._yAxisLine.closestPoint( firstIntersection );
 
-                this._initialCylinderIntersectionVector = firstIntersection.subtract(closestPointOnYAxis);
+                this._initialCylinderIntersectionVector = firstIntersection.subtract( closestPointOnYAxis );
 
                 this._cylinderRadius = this._initialCylinderIntersectionVector.length();
 
@@ -226,18 +221,18 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode._process2DDrag
              * @private
              */
-            _process2DDrag: function(x, y, dx, dy)
+            _process2DDrag : function ( x, y, dx, dy )
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call(this, x, y, dx, dy);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call( this, x, y, dx, dy );
 
                 //cylinder mode
-                if (this._cylinderMode)
+                if ( this._cylinderMode )
                 {
                     //compute hit point on virtual cylinder geometry
-                    var viewRay = this._viewArea.calcViewRay(x, y);
+                    var viewRay = this._viewArea.calcViewRay( x, y );
 
-                    viewRay.pos = this._inverseToWorldMatrix.multMatrixPnt(viewRay.pos);
-                    viewRay.dir = this._inverseToWorldMatrix.multMatrixVec(viewRay.dir);
+                    viewRay.pos = this._inverseToWorldMatrix.multMatrixPnt( viewRay.pos );
+                    viewRay.dir = this._inverseToWorldMatrix.multMatrixVec( viewRay.dir );
 
                     //0. assume the following equation:
                     // At the point of intersection, the distance between the ray of sight and the cylinder equals
@@ -257,46 +252,46 @@ x3dom.registerNodeType(
 
                     //1. bring equation into the following form:
                     //   | alpha * A - B | = r
-                    var A = viewRay.dir.subtract(this._yAxisLine.dir.multiply(viewRay.dir.dot(this._yAxisLine.dir)));
-                    var B = viewRay.pos.subtract(this._yAxisLine.pos).add(this._yAxisLine.dir.multiply(
-                            this._yAxisLine.dir.dot(this._yAxisLine.pos.subtract(viewRay.pos))));
+                    var A = viewRay.dir.subtract( this._yAxisLine.dir.multiply( viewRay.dir.dot( this._yAxisLine.dir ) ) );
+                    var B = viewRay.pos.subtract( this._yAxisLine.pos ).add( this._yAxisLine.dir.multiply(
+                        this._yAxisLine.dir.dot( this._yAxisLine.pos.subtract( viewRay.pos ) ) ) );
 
                     //2. solve quadratic formula (0, 1 or 2 solutions are possible)
-                    var p = 2 * A.dot(B) / A.dot(A);
-                    var q = (B.dot(B) - this._cylinderRadius*this._cylinderRadius) / A.dot(A);
+                    var p = 2 * A.dot( B ) / A.dot( A );
+                    var q = ( B.dot( B ) - this._cylinderRadius * this._cylinderRadius ) / A.dot( A );
 
-                    var sqrt_part = p*p*0.25 - q;
+                    var sqrt_part = p * p * 0.25 - q;
 
-                    var alpha_1;
-                    var alpha_2;
+                    var alpha_1,
+                        alpha_2;
 
                     //is the cylinder hit?
-                    if (sqrt_part >= 0)
+                    if ( sqrt_part >= 0 )
                     {
-                        sqrt_part = Math.sqrt(sqrt_part);
-                        alpha_1 = -p*0.5 + sqrt_part;
-                        alpha_2 = -p*0.5 - sqrt_part;
+                        sqrt_part = Math.sqrt( sqrt_part );
+                        alpha_1 = -p * 0.5 + sqrt_part;
+                        alpha_2 = -p * 0.5 - sqrt_part;
 
                         //if we are inside the cylinder, do nothing, otherwise pick the closest point of intersection
-                        alpha_1 = Math.min(alpha_1, alpha_2);
+                        alpha_1 = Math.min( alpha_1, alpha_2 );
 
-                        if (alpha_1 > 0.0)
+                        if ( alpha_1 > 0.0 )
                         {
                             //TODO: output trackPoint_changed event
-                            var hitPoint = viewRay.pos.add(viewRay.dir.multiply(alpha_1));
+                            var hitPoint = viewRay.pos.add( viewRay.dir.multiply( alpha_1 ) );
 
-                            var closestPointOnYAxis = this._yAxisLine.closestPoint(hitPoint);
+                            var closestPointOnYAxis = this._yAxisLine.closestPoint( hitPoint );
 
-                            var vecToHitPoint = hitPoint.subtract(closestPointOnYAxis).normalize();
+                            var vecToHitPoint = hitPoint.subtract( closestPointOnYAxis ).normalize();
 
-                            this._currentRotation = x3dom.fields.Quaternion.rotateFromTo(this._initialCylinderIntersectionVector, vecToHitPoint);
+                            this._currentRotation = x3dom.fields.Quaternion.rotateFromTo( this._initialCylinderIntersectionVector, vecToHitPoint );
 
-                            var offsetQuat = x3dom.fields.Quaternion.axisAngle(this._yAxisLine.dir, this._vf.offset);
+                            var offsetQuat = x3dom.fields.Quaternion.axisAngle( this._yAxisLine.dir, this._vf.offset );
 
-                            this._currentRotation = this._currentRotation.multiply(offsetQuat);
+                            this._currentRotation = this._currentRotation.multiply( offsetQuat );
 
                             //output rotationChanged_event, given in local sensor coordinates
-                            this.postMessage('rotation_changed', this._currentRotation);
+                            this.postMessage( "rotation_changed", this._currentRotation );
                         }
                     }
                 }
@@ -313,14 +308,14 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode._stopDragging
              * @private
              */
-            _stopDragging: function()
+            _stopDragging : function ()
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call( this );
 
-                if (this._vf.autoOffset)
+                if ( this._vf.autoOffset )
                 {
                     this._vf.offset = this._currentRotation.angle();
-                    this.postMessage('offset_changed', this._vf.offset);
+                    this.postMessage( "offset_changed", this._vf.offset );
                 }
             }
 

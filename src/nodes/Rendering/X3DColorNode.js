@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DColorNode",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometricPropertyNode,
+
         /**
          * Constructor for X3DColorNode
          * @constructs x3dom.nodeTypes.X3DColorNode
@@ -23,23 +23,28 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This is the base node type for color specifications in X3D.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DColorNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DColorNode.superClass.call( this, ctx );
         },
         {
-            fieldChanged: function (fieldName) {
-                if (fieldName === "color") {
-                    Array.forEach(this._parentNodes, function (node) {
-                        node.fieldChanged("color");
-                    });
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName === "color" )
+                {
+                    this._parentNodes.forEach( function ( node )
+                    {
+                        node.fieldChanged( "color" );
+                    } );
                 }
             },
 
-            parentAdded: function (parent) {
-                if (parent._mesh && //parent._cf.coord.node &&
-                    parent._cf.color.node !== this) {
-                    parent.fieldChanged("color");
+            parentAdded : function ( parent )
+            {
+                if ( parent._mesh && //parent._cf.coord.node &&
+                    parent._cf.color.node !== this )
+                {
+                    parent.fieldChanged( "color" );
                 }
             }
         }

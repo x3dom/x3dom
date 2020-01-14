@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "FontStyle",
     "Text",
-    defineClass(x3dom.nodeTypes.X3DFontStyleNode,
-        
+    defineClass( x3dom.nodeTypes.X3DFontStyleNode,
+
         /**
          * Constructor for FontStyle
          * @constructs x3dom.nodeTypes.FontStyle
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The FontStyle node defines the size, family, and style used for Text nodes, as well as the direction of the text strings and any language-specific rendering techniques used for non-English text.
          */
-        function (ctx) {
-            x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.FontStyle.superClass.call( this, ctx );
 
             /**
              * Defines the text family.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'family', ['SERIF']);
+            this.addField_MFString( ctx, "family", [ "SERIF" ] );
 
             /**
              * Specifies whether the text is shown horizontally or vertically.
@@ -45,19 +45,19 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'horizontal', true);
+            this.addField_SFBool( ctx, "horizontal", true );
 
             /**
-             * Specifies where the text is anchored. The default of ["MIDDLE", "MIDDLE"] deviates from the ISO spec. default
-             * of ["BEGIN", "FIRST"] for backward compatibiliy reasons. 
+             * Specifies where the text is anchored. The default of ["BEGIN", "FIRST"] is the ISO spec. default. It deviates
+             * from ["MIDDLE", "MIDDLE"], the older x3dom default which may require scene tuning.
              * @var {x3dom.fields.MFString} justify
              * @range ["BEGIN","END","FIRST","MIDDLE",""]
              * @memberof x3dom.nodeTypes.FontStyle
-             * @initvalue ['MIDDLE', 'MIDDLE']
+             * @initvalue ['BEGIN', 'FIRST']
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'justify', ['MIDDLE', 'MIDDLE']);
+            this.addField_MFString( ctx, "justify", [ "BEGIN", "FIRST" ] );
 
             /**
              * The language field specifies the context of the language for the text string in the form of a language and a country in which that language is used.
@@ -67,7 +67,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'language', "");
+            this.addField_SFString( ctx, "language", "" );
 
             /**
              * Specifies whether the text is shown from left to right or from right to left.
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'leftToRight', true);
+            this.addField_SFBool( ctx, "leftToRight", true );
 
             /**
              * Sets the size of the text.
@@ -88,7 +88,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'size', 1.0);
+            this.addField_SFFloat( ctx, "size", 1.0 );
 
             /**
              * Sets the spacing between lines of text, relative to the text size.
@@ -99,7 +99,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'spacing', 1.0);
+            this.addField_SFFloat( ctx, "spacing", 1.0 );
 
             /**
              * Sets the text style.
@@ -110,7 +110,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'style', "PLAIN");
+            this.addField_SFString( ctx, "style", "PLAIN" );
 
             /**
              * Specifies whether the text flows from top to bottom or from bottom to top.
@@ -120,8 +120,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'topToBottom', true);
-            
+            this.addField_SFBool( ctx, "topToBottom", true );
+
             /**
              * Sets the quality of the text rendering as an oversampling factor.
              * @var {x3dom.fields.SFFloat} quality
@@ -131,28 +131,32 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'quality', 2.0);
-
-        
+            this.addField_SFFloat( ctx, "quality", 2.0 );
         },
         {
-            fieldChanged: function(fieldName) {
-                if (fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' ||
-                    fieldName == 'language' || fieldName == 'leftToRight' || fieldName == 'size' ||
-                    fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
-                    Array.forEach(this._parentNodes, function (node) {
-                        Array.forEach(node._parentNodes, function (textnode) {
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "family" || fieldName == "horizontal" || fieldName == "justify" ||
+                    fieldName == "language" || fieldName == "leftToRight" || fieldName == "size" ||
+                    fieldName == "spacing" || fieldName == "style" || fieldName == "topToBottom" )
+                {
+                    this._parentNodes.forEach( function ( node )
+                    {
+                        node._parentNodes.forEach( function ( textnode )
+                        {
                             textnode.setAllDirty();
-                        });
-                    });
+                        } );
+                    } );
                 }
             }
         }
     )
 );
 
-x3dom.nodeTypes.FontStyle.defaultNode = function() {
-    if (!x3dom.nodeTypes.FontStyle._defaultNode) {
+x3dom.nodeTypes.FontStyle.defaultNode = function ()
+{
+    if ( !x3dom.nodeTypes.FontStyle._defaultNode )
+    {
         x3dom.nodeTypes.FontStyle._defaultNode = new x3dom.nodeTypes.FontStyle();
         x3dom.nodeTypes.FontStyle._defaultNode.nodeChanged();
     }

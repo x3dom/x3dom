@@ -1,0 +1,8 @@
+{
+    "AUTHORS.md"   : "./AUTHORS.md",
+    "LICENSE.md"   : "./LICENSE.md",
+    "README.md"    : "./README.md",
+    "CHANGELOG.md" : "./CHANGELOG.md",
+    "x3dom.css"    : "./src/x3dom.css",
+    "dash.all.js"  : "./lib/dash.all.js"
+}

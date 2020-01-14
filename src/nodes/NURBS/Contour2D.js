@@ -6,7 +6,7 @@
  * (C)2018 A. Plesch, Waltham, MA USA
  * Dual licensed under the MIT and GPL
  */
- /*
+/*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
  * Ayam is copyrighted 1998-2016 by Randolf Schultz
@@ -22,11 +22,11 @@
 x3dom.registerNodeType(
     "Contour2D",
     "NURBS",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode, //X3DNode
-    
+    defineClass( x3dom.nodeTypes.X3DGroupingNode, //X3DNode
+
         /**
          * Constructor for Contour2D
-         * @constructs x3dom.nodeTypes.Contour2D 
+         * @constructs x3dom.nodeTypes.Contour2D
          * @x3d 3.3
          * @component NURBS
          * @status experimental
@@ -35,10 +35,11 @@ x3dom.registerNodeType(
          * @classdesc The Contour2D node groups a set of curve segments to a composite contour. The children form a closed loop.
          *  The 2D coordinates used by the node shall be interpreted to lie in the (u, v) coordinate space defined by the NURBS surface.
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.Contour2D.superClass.call(this, ctx);
-            
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Contour2D.superClass.call( this, ctx );
+
             /**
              * The children shall form a closed loop with the first point of the first child repeated as the last point
              * of the last child and the last point of a segment repeated as the first point of the consecutive one.
@@ -50,7 +51,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);//X3DNurbsControlCurveNode
-	      }, { }
+            this.addField_MFNode( "children", x3dom.nodeTypes.X3DChildNode );//X3DNurbsControlCurveNode
+        }, { }
     )
 );

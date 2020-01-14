@@ -7,13 +7,12 @@
  * Dual licensed under the MIT and GPL
  */
 
-
 // ### CADFace ###
 x3dom.registerNodeType(
     "CADFace",
     "CADGeometry",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for CADFace
          * @constructs x3dom.nodeTypes.CADFace
@@ -24,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The CADFace node holds the geometry representing a face of a part.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CADFace.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CADFace.superClass.call( this, ctx );
 
             /**
              * The name field specifies the name of the CADFace.
@@ -36,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              * The shape field contains the geometry and appearance for the face or an LOD node containing different
@@ -48,53 +47,58 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('shape', x3dom.nodeTypes.X3DShapeNode);
-        
+            this.addField_SFNode( "shape", x3dom.nodeTypes.X3DShapeNode );
         },
         {
-            getVolume: function()
+            getVolume : function ()
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid() && this._vf.render)
+                if ( !this.volumeValid() && this._vf.render )
                 {
                     var child = this._cf.shape.node;
-                    var childVol = (child && child._vf.render === true) ? child.getVolume() : null;
+                    var childVol = ( child && child._vf.render === true ) ? child.getVolume() : null;
 
-                    if (childVol && childVol.isValid())
-                        vol.extendBounds(childVol.min, childVol.max);
+                    if ( childVol && childVol.isValid() )
+                    {vol.extendBounds( childVol.min, childVol.max );}
                 }
 
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
-                if (!this._cf.shape.node ||
-                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) < 0) {
+                if ( !this._cf.shape.node ||
+                    ( planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask ) ) < 0 )
+                {
                     return;
                 }
 
-                var cnode, childTransform;
+                var cnode,
+                    childTransform;
 
-                if (singlePath) {
-                    if (!this._graph.globalMatrix) {
-                        this._graph.globalMatrix = this.transformMatrix(transform);
+                if ( singlePath )
+                {
+                    if ( !this._graph.globalMatrix )
+                    {
+                        this._graph.globalMatrix = this.transformMatrix( transform );
                     }
                     childTransform = this._graph.globalMatrix;
                 }
-                else {
-                    childTransform = this.transformMatrix(transform);
+                else
+                {
+                    childTransform = this.transformMatrix( transform );
                 }
 
-                if ( (cnode = this._cf.shape.node) ) {
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                if ( ( cnode = this._cf.shape.node ) )
+                {
+                    cnode.collectDrawableObjects( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
                 }
             }
         }

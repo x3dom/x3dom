@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MultiTextureCoordinate",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureCoordinateNode,
+
         /**
          * Constructor for MultiTextureCoordinate
          * @constructs x3dom.nodeTypes.MultiTextureCoordinate
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc MultiTextureCoordinate supplies multiple texture coordinates per vertex. This node can be used to set the texture coordinates for the different texture channels.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MultiTextureCoordinate.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MultiTextureCoordinate.superClass.call( this, ctx );
 
             /**
              * Each entry in the texCoord field may contain a TextureCoordinate or TextureCoordinateGenerator node.
@@ -35,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
-        
+            this.addField_MFNode( "texCoord", x3dom.nodeTypes.X3DTextureCoordinateNode );
         }
     )
 );

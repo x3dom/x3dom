@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "CADLayer",
     "CADGeometry",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for CADLayer
          * @constructs x3dom.nodeTypes.CADLayer
@@ -23,8 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The CADLayer node defines a hierarchy of nodes used for showing layer structure for the CAD model.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CADLayer.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CADLayer.superClass.call( this, ctx );
 
             /**
              * The name field describes the content of the layer.
@@ -34,12 +35,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx,'name', "");
+            this.addField_SFString( ctx, "name", "" );
             // to be implemented: the 'visible' field
             // there already is a 'render' field defined in base class
             // which basically defines visibility...
             // NOTE: bbox stuff also already defined in a base class!
-        
         }
     )
 );

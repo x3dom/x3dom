@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "IntegerTrigger",
     "EventUtilities",
-    defineClass(x3dom.nodeTypes.X3DTriggerNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTriggerNode,
+
         /**
          * Constructor for IntegerTrigger
          * @constructs x3dom.nodeTypes.IntegerTrigger
@@ -23,10 +23,11 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc generates Integer events upon receiving Boolean events
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.IntegerTrigger.superClass.call(this, ctx);
-            
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.IntegerTrigger.superClass.call( this, ctx );
+
             /**
              * input boolean to trigger output.
              * @var {x3dom.fields.SFBool} set_boolean
@@ -35,8 +36,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'set_boolean');
-            
+            this.addField_SFBool( ctx, "set_boolean" );
+
             /**
              * integer value to be output upon input; can be reset
              * @var {x3dom.fields.SFInt32} integerKey
@@ -45,8 +46,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'integerKey', -1);
-      
+            this.addField_SFInt32( ctx, "integerKey", -1 );
+
             /**
              * output field name; probably needed only as event name since output only; not 'physically'
              * @var {x3dom.fields.SFInt32} triggerValue
@@ -56,14 +57,14 @@ x3dom.registerNodeType(
              * @instance
              */
             //this.addField_SFInt32(ctx, 'triggerValue');
-            
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName === 'set_boolean') { //for any boolean input
-                  //if (this._vf.set_boolean) //Mantis 519 proposal: only if true
-                    this.postMessage('triggerValue', this._vf.integerKey);
+                if ( fieldName === "set_boolean" )
+                { //for any boolean input
+                    //if (this._vf.set_boolean) //Mantis 519 proposal: only if true
+                    this.postMessage( "triggerValue", this._vf.integerKey );
                 }
                 return;
             }

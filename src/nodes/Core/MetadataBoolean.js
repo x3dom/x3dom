@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MetadataBoolean",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DMetadataObject,
-        
+    defineClass( x3dom.nodeTypes.X3DMetadataObject,
+
         /**
          * Constructor for MetadataBoolean
          * @constructs x3dom.nodeTypes.MetadataBoolean
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The metadata provided by this node is contained in the Boolean values of the value field.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MetadataBoolean.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MetadataBoolean.superClass.call( this, ctx );
 
             /**
              *
@@ -35,8 +35,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFBoolean(ctx, 'value', []);
-        
+            this.addField_MFBoolean( ctx, "value", [] );
         }
     )
 );

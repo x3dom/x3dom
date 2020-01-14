@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### X3DNBodyCollidableNode ###
+//    ### X3DNBodyCollidableNode ###
 x3dom.registerNodeType(
     "X3DNBodyCollidableNode",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DBoundedObject,
+    defineClass( x3dom.nodeTypes.X3DBoundedObject,
 
         /**
          * Constructor for X3DNBodyCollidableNode
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The X3DNBodyCollidableNode abstract node type represents objects that act as the interface between
          *  the rigid body physics, collision geometry proxy, and renderable objects in the scene graph hierarchy.
          */
-        function(ctx){
-            x3dom.nodeTypes.X3DNBodyCollidableNode.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DNBodyCollidableNode.superClass.call( this, ctx );
 
             /**
              * The enabled field is used to specify whether a collidable object is eligible for collision detection
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool( ctx, "enabled", true );
 
             /**
              * The rotation field defines rotation about the body's center that the collidable node occupies.
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'rotation', 0,0,1,0);
+            this.addField_SFRotation( ctx, "rotation", 0, 0, 1, 0 );
 
             /**
              * The translation field defines an offset from the body's center that the collidable node occupies. This
@@ -60,14 +61,13 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'translation', 0,0,0);
-
-            },
+            this.addField_SFVec3f( ctx, "translation", 0, 0, 0 );
+        },
+        {
+            nodeChanged : function ()
             {
-                nodeChanged: function()
-                {
-                    //x3dom.debug.logInfo('X3DNBodyCollidableNode: ');
-                }
+                //x3dom.debug.logInfo('X3DNBodyCollidableNode: ');
             }
+        }
     )
 );

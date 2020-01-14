@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometricPropertyNode,
+
         /**
          * Constructor for PopGeometryLevel
          * @constructs x3dom.nodeTypes.PopGeometryLevel
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The PopGeometryLevel node holds data of one refinement level for the PopGeometry node.
          */
-        function (ctx) {
-            x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.PopGeometryLevel.superClass.call( this, ctx );
 
             /**
              * Location of the binary file that contains the data of this refinement level.
@@ -35,7 +35,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'src', "");
+            this.addField_SFString( ctx, "src", "" );
 
             /**
              * Number of indices shipped with this refinement level.
@@ -45,7 +45,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'numIndices', 0);
+            this.addField_SFInt32( ctx, "numIndices", 0 );
 
             /**
              * Offset of the interleaved attribute data of this refinement level within the target vertex buffer.
@@ -55,19 +55,21 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
-        
+            this.addField_SFInt32( ctx, "vertexDataBufferOffset", 0 );
         },
         {
-            getSrc: function () {
+            getSrc : function ()
+            {
                 return this._vf.src;
             },
 
-            getNumIndices: function () {
+            getNumIndices : function ()
+            {
                 return this._vf.numIndices;
             },
 
-            getVertexDataBufferOffset: function () {
+            getVertexDataBufferOffset : function ()
+            {
                 return this._vf.vertexDataBufferOffset;
             }
         }

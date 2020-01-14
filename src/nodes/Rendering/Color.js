@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Color",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DColorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DColorNode,
+
         /**
          * Constructor for Color
          * @constructs x3dom.nodeTypes.Color
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * If both a Material node and a Color node are specified for a geometric shape, the colours shall replace the diffuse component of the material.
          * RGB or RGBA textures take precedence over colours; specifying both an RGB or RGBA texture and a Color node for geometric shape will result in the Color node being ignored.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Color.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Color.superClass.call( this, ctx );
 
             /**
              * The RGB colors.
@@ -40,8 +40,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFColor(ctx, 'color', []);
-        
+            this.addField_MFColor( ctx, "color", [] );
         }
     )
 );

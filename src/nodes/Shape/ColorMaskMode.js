@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ColorMaskMode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DAppearanceChildNode,
+
         /**
          * Constructor for ColorMaskMode
          * @constructs x3dom.nodeTypes.ColorMaskMode
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The ColorMaskMode node affects drawing in RGBA mode. The 4 masks control whether the corresponding component is written.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ColorMaskMode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ColorMaskMode.superClass.call( this, ctx );
 
             /**
              * Masks r color channel.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'maskR', true);
+            this.addField_SFBool( ctx, "maskR", true );
 
             /**
              * Masks g color channel.
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'maskG', true);
+            this.addField_SFBool( ctx, "maskG", true );
 
             /**
              * Masks b color channel.
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'maskB', true);
+            this.addField_SFBool( ctx, "maskB", true );
 
             /**
              * Masks a color channel.
@@ -64,8 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'maskA', true);
-        
+            this.addField_SFBool( ctx, "maskA", true );
         }
     )
 );

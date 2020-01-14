@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "BooleanTrigger",
     "EventUtilities",
-    defineClass(x3dom.nodeTypes.X3DTriggerNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTriggerNode,
+
         /**
          * Constructor for BooleanTrigger
          * @constructs x3dom.nodeTypes.BooleanTrigger
@@ -23,10 +23,11 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc generates true Boolean events upon receiving time events
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.BooleanTrigger.superClass.call(this, ctx);
-            
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BooleanTrigger.superClass.call( this, ctx );
+
             /**
              * input time in event to trigger output.
              * @var {x3dom.fields.SFBool} set_triggerTime
@@ -35,8 +36,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'set_triggerTime');
-            
+            this.addField_SFTime( ctx, "set_triggerTime" );
+
             /**
              * output field name; probably needed only as event name since output only; not 'physically'
              * @var {x3dom.fields.SFBool} triggerTrue
@@ -46,13 +47,13 @@ x3dom.registerNodeType(
              * @instance
              */
             //this.addField_SFBool(ctx, 'triggerTrue');
-            
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName === 'set_triggerTime') { //for any time input
-                    this.postMessage('triggerTrue', true);
+                if ( fieldName === "set_triggerTime" )
+                { //for any time input
+                    this.postMessage( "triggerTrue", true );
                 }
                 return;
             }

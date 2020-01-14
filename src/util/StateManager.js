@@ -12,7 +12,7 @@
 /**
  * Manage all the GL-States and try to reduce the state changes
  */
-x3dom.StateManager = function (ctx3d)
+x3dom.StateManager = function ( ctx3d )
 {
     //Our GL-Context
     this.gl = ctx3d;
@@ -30,29 +30,29 @@ x3dom.StateManager = function (ctx3d)
 x3dom.StateManager.prototype.initStates = function ()
 {
     //Initialize Shader states
-    this.states['shaderID'] = null;
+    this.states[ "shaderID" ] = null;
 
     //Initialize Framebuffer-Operation states
-    this.states['colorMask'] = {red: null, green: null, blue: null, alpha: null};
-    this.states['depthMask'] = null;
-    this.states['stencilMask'] = null;
+    this.states[ "colorMask" ] = {red: null, green: null, blue: null, alpha: null};
+    this.states[ "depthMask" ] = null;
+    this.states[ "stencilMask" ] = null;
 
     //Initialize Rasterization states
-    this.states['cullFace'] = null;
-    this.states['frontFace'] = null;
-    this.states['lineWidth'] = null;
+    this.states[ "cullFace" ] = null;
+    this.states[ "frontFace" ] = null;
+    this.states[ "lineWidth" ] = null;
 
     //Initialize Per-Fragment-Operation states
-    this.states['blendColor'] = {red: null, green: null, blue: null, alpha: null};
-    this.states['blendEquation'] = null;
-    this.states['blendEquationSeparate'] = {modeRGB: null, modeAlpha: null};
-    this.states['blendFunc'] = {sfactor: null, dfactor: null};
-    this.states['blendFuncSeparate'] = {srcRGB: null, dstRGB: null, srcAlpha: null, dstAlpha: null};
-    this.states['depthFunc'] = null;
+    this.states[ "blendColor" ] = {red: null, green: null, blue: null, alpha: null};
+    this.states[ "blendEquation" ] = null;
+    this.states[ "blendEquationSeparate" ] = {modeRGB: null, modeAlpha: null};
+    this.states[ "blendFunc" ] = {sfactor: null, dfactor: null};
+    this.states[ "blendFuncSeparate" ] = {srcRGB: null, dstRGB: null, srcAlpha: null, dstAlpha: null};
+    this.states[ "depthFunc" ] = null;
 
     //Initialize View and Clip states
-    this.states['viewport'] = {x: null, y: null, width: null, height: null};
-    this.states['depthRange'] = {zNear: null, zFar: null};
+    this.states[ "viewport" ] = {x: null, y: null, width: null, height: null};
+    this.states[ "depthRange" ] = {zNear: null, zFar: null};
 
     //TODO more states (e.g. stencil, texture, ...)
 };
@@ -60,12 +60,12 @@ x3dom.StateManager.prototype.initStates = function ()
 /*
  * Only bind program if different (returns true if changed)
  */
-x3dom.StateManager.prototype.useProgram = function (shader)
+x3dom.StateManager.prototype.useProgram = function ( shader )
 {
-    if (this.states['shaderID'] != shader.shaderID)
+    if ( this.states[ "shaderID" ] != shader.shaderID )
     {
-        this.gl.useProgram(shader.program);
-        this.states['shaderID'] = shader.shaderID;
+        this.gl.useProgram( shader.program );
+        this.states[ "shaderID" ] = shader.shaderID;
         return true;
     }
     return false;
@@ -76,245 +76,245 @@ x3dom.StateManager.prototype.useProgram = function (shader)
  */
 x3dom.StateManager.prototype.unsetProgram = function ()
 {
-    this.states['shaderID'] = null;
+    this.states[ "shaderID" ] = null;
 };
 
 /*
  * Enable GL capabilities
  */
-x3dom.StateManager.prototype.enable = function (cap)
+x3dom.StateManager.prototype.enable = function ( cap )
 {
-    if (this.states[cap] !== true)
+    if ( this.states[ cap ] !== true )
     {
-        this.gl.enable(cap);
-        this.states[cap] = true;
+        this.gl.enable( cap );
+        this.states[ cap ] = true;
     }
 };
 
 /*
  * Disable GL capabilities
  */
-x3dom.StateManager.prototype.disable = function (cap)
+x3dom.StateManager.prototype.disable = function ( cap )
 {
-    if (this.states[cap] !== false)
+    if ( this.states[ cap ] !== false )
     {
-        this.gl.disable(cap);
-        this.states[cap] = false;
+        this.gl.disable( cap );
+        this.states[ cap ] = false;
     }
 };
 
 /*
  * Enable and disable writing of frame buffer color components
  */
-x3dom.StateManager.prototype.colorMask = function (red, green, blue, alpha)
+x3dom.StateManager.prototype.colorMask = function ( red, green, blue, alpha )
 {
-    if (this.states['colorMask'].red != red ||
-        this.states['colorMask'].green != green ||
-        this.states['colorMask'].blue != blue ||
-        this.states['colorMask'].alpha != alpha)
+    if ( this.states[ "colorMask" ].red != red ||
+        this.states[ "colorMask" ].green != green ||
+        this.states[ "colorMask" ].blue != blue ||
+        this.states[ "colorMask" ].alpha != alpha )
     {
-        this.gl.colorMask(red, green, blue, alpha);
-        this.states['colorMask'].red = red;
-        this.states['colorMask'].green = green;
-        this.states['colorMask'].blue = blue;
-        this.states['colorMask'].alpha = alpha;
+        this.gl.colorMask( red, green, blue, alpha );
+        this.states[ "colorMask" ].red = red;
+        this.states[ "colorMask" ].green = green;
+        this.states[ "colorMask" ].blue = blue;
+        this.states[ "colorMask" ].alpha = alpha;
     }
 };
 
 /*
  * Sets whether or not you can write to the depth buffer.
  */
-x3dom.StateManager.prototype.depthMask = function (flag)
+x3dom.StateManager.prototype.depthMask = function ( flag )
 {
-    if (this.states['depthMask'] != flag)
+    if ( this.states[ "depthMask" ] != flag )
     {
-        this.gl.depthMask(flag);
-        this.states['depthMask'] = flag;
+        this.gl.depthMask( flag );
+        this.states[ "depthMask" ] = flag;
     }
 };
 
 /*
  * Control the front and back writing of individual bits in the stencil planes
  */
-x3dom.StateManager.prototype.stencilMask = function (mask)
+x3dom.StateManager.prototype.stencilMask = function ( mask )
 {
-    if (this.states['stencilMask'] != mask)
+    if ( this.states[ "stencilMask" ] != mask )
     {
-        this.gl.stencilMask(mask);
-        this.states['stencilMask'] = mask;
+        this.gl.stencilMask( mask );
+        this.states[ "stencilMask" ] = mask;
     }
 };
 
 /*
  * Specify whether front- or back-facing facets can be culled
  */
-x3dom.StateManager.prototype.cullFace = function (mode)
+x3dom.StateManager.prototype.cullFace = function ( mode )
 {
-    if (this.states['cullFace'] != mode)
+    if ( this.states[ "cullFace" ] != mode )
     {
-        this.gl.cullFace(mode);
-        this.states['cullFace'] = mode;
+        this.gl.cullFace( mode );
+        this.states[ "cullFace" ] = mode;
     }
 };
 
 /*
  * Define front- and back-facing polygons
  */
-x3dom.StateManager.prototype.frontFace = function (mode)
+x3dom.StateManager.prototype.frontFace = function ( mode )
 {
-    if (this.states['frontFace'] != mode)
+    if ( this.states[ "frontFace" ] != mode )
     {
-        this.gl.frontFace(mode);
-        this.states['frontFace'] = mode;
+        this.gl.frontFace( mode );
+        this.states[ "frontFace" ] = mode;
     }
 };
 
 /*
  * Specify the width of rasterized lines
  */
-x3dom.StateManager.prototype.lineWidth = function (width)
+x3dom.StateManager.prototype.lineWidth = function ( width )
 {
-    width = (width <= 1) ? 1 : width;
+    width = ( width <= 1 ) ? 1 : width;
 
-    if (this.states['lineWidth'] != width)
+    if ( this.states[ "lineWidth" ] != width )
     {
-        this.gl.lineWidth(width);
-        this.states['lineWidth'] = width;
+        this.gl.lineWidth( width );
+        this.states[ "lineWidth" ] = width;
     }
 };
 
 /*
  * Set the blend color
  */
-x3dom.StateManager.prototype.blendColor = function (red, green, blue, alpha)
+x3dom.StateManager.prototype.blendColor = function ( red, green, blue, alpha )
 {
-    if (this.states['blendColor'].red != red ||
-        this.states['blendColor'].green != green ||
-        this.states['blendColor'].blue != blue ||
-        this.states['blendColor'].alpha != alpha)
+    if ( this.states[ "blendColor" ].red != red ||
+        this.states[ "blendColor" ].green != green ||
+        this.states[ "blendColor" ].blue != blue ||
+        this.states[ "blendColor" ].alpha != alpha )
     {
-        this.gl.blendColor(red, green, blue, alpha);
-        this.states['blendColor'].red = red;
-        this.states['blendColor'].green = green;
-        this.states['blendColor'].blue = blue;
-        this.states['blendColor'].alpha = alpha;
+        this.gl.blendColor( red, green, blue, alpha );
+        this.states[ "blendColor" ].red = red;
+        this.states[ "blendColor" ].green = green;
+        this.states[ "blendColor" ].blue = blue;
+        this.states[ "blendColor" ].alpha = alpha;
     }
 };
 
 /*
  * Specify the equation used for both the RGB blend equation and the Alpha blend equation
  */
-x3dom.StateManager.prototype.blendEquation = function (mode)
+x3dom.StateManager.prototype.blendEquation = function ( mode )
 {
-    if (mode && this.states['blendEquation'] != mode)
+    if ( mode && this.states[ "blendEquation" ] != mode )
     {
-        this.gl.blendEquation(mode);
-        this.states['blendEquation'] = mode;
+        this.gl.blendEquation( mode );
+        this.states[ "blendEquation" ] = mode;
     }
 };
 
 /*
  * set the RGB blend equation and the alpha blend equation separately
  */
-x3dom.StateManager.prototype.blendEquationSeparate = function (modeRGB, modeAlpha)
+x3dom.StateManager.prototype.blendEquationSeparate = function ( modeRGB, modeAlpha )
 {
-    if (this.states['blendEquationSeparate'].modeRGB != modeRGB ||
-        this.states['blendEquationSeparate'].modeAlpha != modeAlpha)
+    if ( this.states[ "blendEquationSeparate" ].modeRGB != modeRGB ||
+        this.states[ "blendEquationSeparate" ].modeAlpha != modeAlpha )
     {
-        this.gl.blendEquationSeparate(modeRGB, modeAlpha);
-        this.states['blendEquationSeparate'].modeRGB = modeRGB;
-        this.states['blendEquationSeparate'].modeAlpha = modeAlpha;
+        this.gl.blendEquationSeparate( modeRGB, modeAlpha );
+        this.states[ "blendEquationSeparate" ].modeRGB = modeRGB;
+        this.states[ "blendEquationSeparate" ].modeAlpha = modeAlpha;
     }
 };
 
 /*
  * Specify pixel arithmetic
  */
-x3dom.StateManager.prototype.blendFunc = function (sfactor, dfactor)
+x3dom.StateManager.prototype.blendFunc = function ( sfactor, dfactor )
 {
-    if (this.states['blendFunc'].sfactor != sfactor ||
-        this.states['blendFunc'].dfactor != dfactor)
+    if ( this.states[ "blendFunc" ].sfactor != sfactor ||
+        this.states[ "blendFunc" ].dfactor != dfactor )
     {
-        this.gl.blendFunc(sfactor, dfactor);
-        this.states['blendFunc'].sfactor = sfactor;
-        this.states['blendFunc'].dfactor = dfactor;
+        this.gl.blendFunc( sfactor, dfactor );
+        this.states[ "blendFunc" ].sfactor = sfactor;
+        this.states[ "blendFunc" ].dfactor = dfactor;
     }
 };
 
 /*
  * Specify pixel arithmetic for RGB and alpha components separately
  */
-x3dom.StateManager.prototype.blendFuncSeparate = function (srcRGB, dstRGB, srcAlpha, dstAlpha)
+x3dom.StateManager.prototype.blendFuncSeparate = function ( srcRGB, dstRGB, srcAlpha, dstAlpha )
 {
-    if (this.states['blendFuncSeparate'].srcRGB != srcRGB ||
-        this.states['blendFuncSeparate'].dstRGB != dstRGB ||
-        this.states['blendFuncSeparate'].srcAlpha != srcAlpha ||
-        this.states['blendFuncSeparate'].dstAlpha != dstAlpha)
+    if ( this.states[ "blendFuncSeparate" ].srcRGB != srcRGB ||
+        this.states[ "blendFuncSeparate" ].dstRGB != dstRGB ||
+        this.states[ "blendFuncSeparate" ].srcAlpha != srcAlpha ||
+        this.states[ "blendFuncSeparate" ].dstAlpha != dstAlpha )
     {
-        this.gl.blendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
-        this.states['blendFuncSeparate'].srcRGB = srcRGB;
-        this.states['blendFuncSeparate'].dstRGB = dstRGB;
-        this.states['blendFuncSeparate'].srcAlpha = srcAlpha;
-        this.states['blendFuncSeparate'].dstAlpha = dstAlpha;
+        this.gl.blendFuncSeparate( srcRGB, dstRGB, srcAlpha, dstAlpha );
+        this.states[ "blendFuncSeparate" ].srcRGB = srcRGB;
+        this.states[ "blendFuncSeparate" ].dstRGB = dstRGB;
+        this.states[ "blendFuncSeparate" ].srcAlpha = srcAlpha;
+        this.states[ "blendFuncSeparate" ].dstAlpha = dstAlpha;
     }
 };
 
 /*
  * Specify the value used for depth buffer comparisons
  */
-x3dom.StateManager.prototype.depthFunc = function (func)
+x3dom.StateManager.prototype.depthFunc = function ( func )
 {
-    if (this.states['depthFunc'] != func)
+    if ( this.states[ "depthFunc" ] != func )
     {
-        this.gl.depthFunc(func);
-        this.states['depthFunc'] = func;
+        this.gl.depthFunc( func );
+        this.states[ "depthFunc" ] = func;
     }
 };
 
 /*
  * Specify the value used for depth buffer comparisons
  */
-x3dom.StateManager.prototype.depthRange = function (zNear, zFar)
+x3dom.StateManager.prototype.depthRange = function ( zNear, zFar )
 {
-    if (zNear < 0 || zFar < 0 || zNear > zFar)
+    if ( zNear < 0 || zFar < 0 || zNear > zFar )
     {
         return;   // do noting and leave default values
     }
 
-    zNear = (zNear > 1) ? 1 : zNear;
-    zFar  = (zFar  > 1) ? 1 : zFar;
+    zNear = ( zNear > 1 ) ? 1 : zNear;
+    zFar  = ( zFar  > 1 ) ? 1 : zFar;
 
-    if (this.states['depthRange'].zNear != zNear || this.states['depthRange'].zFar != zFar)
+    if ( this.states[ "depthRange" ].zNear != zNear || this.states[ "depthRange" ].zFar != zFar )
     {
-        this.gl.depthRange(zNear, zFar);
-        this.states['depthRange'].zNear = zNear;
-        this.states['depthRange'].zFar = zFar;
+        this.gl.depthRange( zNear, zFar );
+        this.states[ "depthRange" ].zNear = zNear;
+        this.states[ "depthRange" ].zFar = zFar;
     }
 };
 
 /*
  * Set the viewport
  */
-x3dom.StateManager.prototype.viewport = function (x, y, width, height)
+x3dom.StateManager.prototype.viewport = function ( x, y, width, height )
 {
-    if (this.states['viewport'].x != x ||
-        this.states['viewport'].y != y ||
-        this.states['viewport'].width != width ||
-        this.states['viewport'].height != height)
+    if ( this.states[ "viewport" ].x != x ||
+        this.states[ "viewport" ].y != y ||
+        this.states[ "viewport" ].width != width ||
+        this.states[ "viewport" ].height != height )
     {
-        this.gl.viewport(x, y, width, height);
-        this.states['viewport'].x = x;
-        this.states['viewport'].y = y;
-        this.states['viewport'].width = width;
-        this.states['viewport'].height = height;
+        this.gl.viewport( x, y, width, height );
+        this.states[ "viewport" ].x = x;
+        this.states[ "viewport" ].y = y;
+        this.states[ "viewport" ].width = width;
+        this.states[ "viewport" ].height = height;
     }
 };
 
 /*
  * Bind a framebuffer to a framebuffer target
  */
-x3dom.StateManager.prototype.bindFramebuffer = function (target, framebuffer)
+x3dom.StateManager.prototype.bindFramebuffer = function ( target, framebuffer )
 {
-    this.gl.bindFramebuffer(target, framebuffer);
+    this.gl.bindFramebuffer( target, framebuffer );
     this.initStates();
 };

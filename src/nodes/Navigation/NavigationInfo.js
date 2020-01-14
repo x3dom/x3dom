@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "NavigationInfo",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DNavigationInfoNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNavigationInfoNode,
+
         /**
          * Constructor for NavigationInfo
          * @constructs x3dom.nodeTypes.NavigationInfo
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * Hint: for inspection of simple objects, usability often improves with type='EXAMINE' 'ANY' Hint: NavigationInfo types ''WALK' 'FLY'' support camera-to-object collision detection.
          * Background, Fog, NavigationInfo, TextureBackground and Viewpoint are bindable nodes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.NavigationInfo.superClass.call( this, ctx );
 
             /**
              * Enable/disable directional light that always points in the direction the user is looking.
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFBool(ctx, 'headlight', true);
+            this.addField_SFBool( ctx, "headlight", true );
 
             /**
              * Enable/disable reversed mousewheel scrolling to zoom.
@@ -47,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'reverseScroll', false);
+            this.addField_SFBool( ctx, "reverseScroll", false );
 
             /**
              * defines the navigation type
@@ -58,7 +58,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
+            this.addField_MFString( ctx, "type", [ "EXAMINE", "ANY" ] );
 
             /**
              * Specifies the view angle and height for helicopter mode and min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
@@ -68,18 +68,18 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60, 0.05, 2.8]);
+            this.addField_MFFloat( ctx, "typeParams", [ -0.4, 60, 0.05, 2.8 ] );
 
             /**
              * allows restricting examine and turntable navigation, overrides mouse buttons (useful for special viewers)
-             * @range [all, pan, zoom, rotate, none]
+             * @range [all, pan, zoom, rotate, -pan, -zoom, -rotate, none]
              * @var {x3dom.fields.SFString} explorationMode
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue 'all'
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'explorationMode', 'all');
+            this.addField_SFString( ctx, "explorationMode", "all" );
             // TODO; use avatarSize + visibilityLimit for projection matrix (near/far)
 
             /**
@@ -91,11 +91,11 @@ x3dom.registerNodeType(
              * Interchange profile hint: this field may be ignored.
              * @var {x3dom.fields.MFFloat} avatarSize
              * @memberof x3dom.nodeTypes.NavigationInfo
-             * @initvalue [0.25,1.6,0.75]
+             * @initvalue [ 0.25, 1.6, 0.75 ]
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'avatarSize', [0.25, 1.6, 0.75]);
+            this.addField_MFFloat( ctx, "avatarSize", [ 0.25, 1.6, 0.75 ] );
 
             /**
              * Factor for damping the walk animation
@@ -106,7 +106,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'walkDamping', 2.0);
+            this.addField_SFFloat( ctx, "walkDamping", 2.0 );
 
             /**
              * Geometry beyond the visibilityLimit may not be rendered (far culling plane of the view frustrum).
@@ -121,7 +121,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
+            this.addField_SFFloat( ctx, "visibilityLimit", 0.0 );
 
             /**
              * Default rate at which viewer travels through scene, meters/second.
@@ -134,7 +134,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'speed', 1.0);
+            this.addField_SFFloat( ctx, "speed", 1.0 );
             // for 'jumping' between viewpoints (bind transition time)
 
             /**
@@ -146,7 +146,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFTime(ctx, 'transitionTime', 1.0);
+            this.addField_SFTime( ctx, "transitionTime", 1.0 );
 
             /**
              * Specifies the transition mode.
@@ -157,136 +157,155 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
+            this.addField_MFString( ctx, "transitionType", [ "LINEAR" ] );
 
             this._validTypes = [
                 "none", "examine", "turntable",
                 "fly", "freefly", "lookat", "lookaround",
                 "walk", "game", "helicopter", "any"
             ];
-            
+
             this._typeMapping = {
-              "default":x3dom.DefaultNavigation,
-              "turntable":x3dom.TurntableNavigation,
-              "walk":x3dom.WalkNavigation
+                "default"   : x3dom.DefaultNavigation,
+                "turntable" : x3dom.TurntableNavigation,
+                "walk"      : x3dom.WalkNavigation
             };
-            
+
             this._heliUpdated = false;
 
-            var type = this.setType(this.getType());
-            x3dom.debug.logInfo("NavType: " + type);
-        
+            var type = this.setType( this.getType() );
+            x3dom.debug.logInfo( "NavType: " + type );
         },
         {
-            fieldChanged: function(fieldName) {
-                if (fieldName == "typeParams") {
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "typeParams" )
+                {
                     this._heliUpdated = false;
                 }
-                else if (fieldName == "type") {
-                    this.setType(this.getType());
+                else if ( fieldName == "type" )
+                {
+                    this.setType( this.getType() );
                 }
                 //AP: needs to be preserved from X3DBindableNode
-                else if (fieldName.indexOf("bind") >= 0) {
-                    this.bind(this._vf.bind);
+                else if ( fieldName.indexOf( "bind" ) >= 0 )
+                {
+                    this.bind( this._vf.bind );
                 }
             },
 
-            setType: function(type, viewarea) {
-                var navType = this.checkType(type.toLowerCase());
-                var oldType = this.checkType(this.getType());
+            setType : function ( type, viewarea )
+            {
+                var navType = this.checkType( type.toLowerCase() );
+                var oldType = this.checkType( this.getType() );
 
-                if(oldType !== navType || this._impl == null){
-                    if(this._typeMapping[navType] == null)
-                        this._impl = new this._typeMapping['default'](this);    
+                if ( oldType !== navType || this._impl == null )
+                {
+                    if ( this._typeMapping[ navType ] == null )
+                    {this._impl = new this._typeMapping[ "default" ]( this );}
                     else
-                        this._impl = new this._typeMapping[navType](this);                    
-                    
-                    switch (navType) {
-                        case 'game': //perhaps needed for 'walk' as well ?
-                            if (viewarea)
-                                viewarea.initMouseState();
+                    {this._impl = new this._typeMapping[ navType ]( this );}
+
+                    switch ( navType )
+                    {
+                        case "game": //perhaps needed for 'walk' as well ?
+                            if ( viewarea )
+                            {viewarea.initMouseState();}
                             else
-                                this._nameSpace.doc._viewarea.initMouseState();
+                            {this._nameSpace.doc._viewarea.initMouseState();}
                             break;
-                        case 'helicopter':
+                        case "helicopter":
                             this._heliUpdated = false;
                             break;
                         case "turntable":
-                            if (viewarea) {
+                            if ( viewarea )
+                            {
                                 viewarea.initMouseState();
                             }
-                            else if(this._nameSpace.doc._viewarea){
+                            else if ( this._nameSpace.doc._viewarea )
+                            {
                                 this._nameSpace.doc._viewarea.initMouseState();
                             }
                             break;
                         default:
                             break;
                     }
-                    if (this._nameSpace.doc._viewarea)
-                        this._impl.init(this._nameSpace.doc._viewarea, false);
+                    if ( this._nameSpace.doc._viewarea )
+                    {this._impl.init( this._nameSpace.doc._viewarea, false );}
                 }
 
-                this._vf.type[0] = navType;
-                x3dom.debug.logInfo("Switch to " + navType + " mode.");
+                this._vf.type[ 0 ] = navType;
+                x3dom.debug.logInfo( "Switch to " + navType + " mode." );
             },
 
-            getType: function() {
-                var type = this._vf.type[0].toLowerCase();
+            getType : function ()
+            {
+                var type = this._vf.type[ 0 ].toLowerCase();
                 // FIXME; the following if's aren't nice!
-                if (type.length <= 1)
-                    type = "none";
-                else if (type == "any")
-                    type = "examine";
+                if ( type.length <= 1 )
+                {type = "none";}
+                else if ( type == "any" )
+                {type = "examine";}
                 return type;
             },
 
-            getTypeParams: function() {
+            getTypeParams : function ()
+            {
                 var length = this._vf.typeParams.length;
 
-                var theta  = (length >= 1) ? this._vf.typeParams[0] : -0.4;
-                var height = (length >= 2) ? this._vf.typeParams[1] : 60.0;
-                var minAngle = (length >= 3) ? this._vf.typeParams[2] : x3dom.fields.Eps;
-                var maxAngle = (length >= 4) ? this._vf.typeParams[3] : Math.PI - x3dom.fields.Eps;
+                var theta  = ( length >= 1 ) ? this._vf.typeParams[ 0 ] : -0.4;
+                var height = ( length >= 2 ) ? this._vf.typeParams[ 1 ] : 60.0;
+                var minAngle = ( length >= 3 ) ? this._vf.typeParams[ 2 ] : x3dom.fields.Eps;
+                var maxAngle = ( length >= 4 ) ? this._vf.typeParams[ 3 ] : Math.PI - x3dom.fields.Eps;
 
                 // experimental HACK to switch between clamp to CoR (params[4]>0) and CoR translation in turntable mode
-               var params = [theta, height, minAngle, maxAngle];
-               if (length >= 5)
-               {
-                   // SPREAD OPERATOR KILLS IE
-                   // adding rest parameters
-                   //params.push(...this._vf.typeParams.slice(4));
-                   
-                   params = params.concat( this._vf.typeParams.slice(4) );
-                   
-               }
-               return params;
+                var params = [ theta, height, minAngle, maxAngle ];
+                if ( length >= 5 )
+                {
+                    // SPREAD OPERATOR KILLS IE
+                    // adding rest parameters
+                    //params.push(...this._vf.typeParams.slice(4));
+
+                    params = params.concat( this._vf.typeParams.slice( 4 ) );
+                }
+                return params;
             },
 
-            setTypeParams: function(params) {
-                for (var i=0; i<params.length; i++) {
-                    this._vf.typeParams[i] = params[i];
+            setTypeParams : function ( params )
+            {
+                for ( var i = 0; i < params.length; i++ )
+                {
+                    this._vf.typeParams[ i ] = params[ i ];
                 }
             },
 
-            checkType: function(type) {
-                if (this._validTypes.indexOf(type) > -1) {
+            checkType : function ( type )
+            {
+                if ( this._validTypes.indexOf( type ) > -1 )
+                {
                     return type;
                 }
-                else {
-                    x3dom.debug.logWarning(type + " is no valid navigation type, use one of " +
-                        this._validTypes.toString());
+                else
+                {
+                    x3dom.debug.logWarning( type + " is no valid navigation type, use one of " +
+                        this._validTypes.toString() );
                     return "examine";
                 }
             },
 
-            getExplorationMode: function() {
-                switch (this._vf.explorationMode.toLowerCase()) {
-                    case "all":    return 7;
-                    case "rotate": return 1; //left btn
-                    case "zoom":   return 2; //right btn
-                    case "pan":    return 4; //middle btn
-                    case "none":   return 0; //type 'none'
-                    default:       return 7;
+            getExplorationMode : function ()
+            {
+                switch ( this._vf.explorationMode.toLowerCase() )
+                {
+                    case "all":     return 7;
+                    case "rotate":  return 1; //left btn
+                    case "zoom":    return 2; //right btn
+                    case "pan":     return 4; //middle btn
+                    case "-rotate": return 6; //disable left btn
+                    case "-zoom":   return 5; //disable right btn
+                    case "-pan":    return 3; //disable middle btn
+                    case "none":    return 0; //type 'none'
+                    default:        return 7;
                 }
             }
         }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DBoundedObject",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
-        
+    defineClass( x3dom.nodeTypes.X3DChildNode,
+
         /**
          * Constructor for X3DBoundedObject
          * @constructs x3dom.nodeTypes.X3DBoundedObject
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * the definition. The bboxCenter and bboxSize fields specify a bounding box that encloses the grouping node's
          * children. This is a hint that may be used for optimization purposes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DBoundedObject.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DBoundedObject.superClass.call( this, ctx );
 
             /**
              * Flag to enable/disable rendering
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'render', true);
+            this.addField_SFBool( ctx, "render", true );
 
             /**
              * Center of the bounding box
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "bboxCenter", 0, 0, 0 );
 
             /**
              * Size of the bounding box
@@ -59,59 +59,62 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
+            this.addField_SFVec3f( ctx, "bboxSize", -1, -1, -1 );
 
             this._graph = {
-                boundedNode:  this,    // backref to node object
-                localMatrix:  x3dom.fields.SFMatrix4f.identity(),   // usually identity
-                globalMatrix: null,    // new x3dom.fields.SFMatrix4f();
-                volume:       new x3dom.fields.BoxVolume(),     // local bbox
-                lastVolume:   new x3dom.fields.BoxVolume(),     // local bbox
-                worldVolume:  new x3dom.fields.BoxVolume(),     // global bbox
-                center:       new x3dom.fields.SFVec3f(0,0,0),  // center in eye coords
-                coverage:     -1,       // currently approx. number of pixels on screen
-                needCulling:  true      // to be able to disable culling per node
+                boundedNode  : this,    // backref to node object
+                localMatrix  : x3dom.fields.SFMatrix4f.identity(),   // usually identity
+                globalMatrix : null,    // new x3dom.fields.SFMatrix4f();
+                volume       : new x3dom.fields.BoxVolume(),     // local bbox
+                lastVolume   : new x3dom.fields.BoxVolume(),     // local bbox
+                worldVolume  : new x3dom.fields.BoxVolume(),     // global bbox
+                center       : new x3dom.fields.SFVec3f( 0, 0, 0 ),  // center in eye coords
+                coverage     : -1,       // currently approx. number of pixels on screen
+                needCulling  : true      // to be able to disable culling per node
             };
-        
         },
         {
-            fieldChanged: function (fieldName) {
+            fieldChanged : function ( fieldName )
+            {
                 // TODO; wait for sync traversal to invalidate en block
-                if (this._vf.hasOwnProperty(fieldName)) {
+                if ( this._vf.hasOwnProperty( fieldName ) )
+                {
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }
             },
 
-            nodeChanged: function () {
+            nodeChanged : function ()
+            {
                 // TODO; wait for sync traversal to invalidate en block
                 this.invalidateVolume();
                 //this.invalidateCache();
             },
 
-            parentAdded: function(parent) {
+            parentAdded : function ( parent )
+            {
                 // some default behavior if not overwitten
                 this.invalidateVolume();
                 //this.invalidateCache();
             },
 
-            getVolume: function()
+            getVolume : function ()
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid() && this._vf.render)
+                if ( !this.volumeValid() && this._vf.render )
                 {
-                    for (var i=0, n=this._childNodes.length; i<n; i++)
+                    for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                     {
-                        var child = this._childNodes[i];
+                        var child = this._childNodes[ i ];
                         // render could be undefined, but undefined != true
-                        if (!child || child._vf.render !== true)
-                            continue;
+                        if ( !child || child._vf.render !== true )
+                        {continue;}
 
                         var childVol = child.getVolume();
 
-                        if (childVol && childVol.isValid())
-                            vol.extendBounds(childVol.min, childVol.max);
+                        if ( childVol && childVol.isValid() )
+                        {vol.extendBounds( childVol.min, childVol.max );}
                     }
                 }
 
@@ -120,18 +123,18 @@ x3dom.registerNodeType(
                     this._graph.lastVolume = x3dom.fields.BoxVolume.copy( vol );
 
                     var event = {
-                        target: this._xmlNode,
-                        type: "volumechanged",   // event only called onxxx if used as old-fashioned attribute
-                        volume: x3dom.fields.BoxVolume.copy( vol )
+                        target : this._xmlNode,
+                        type   : "volumechanged",   // event only called onxxx if used as old-fashioned attribute
+                        volume : x3dom.fields.BoxVolume.copy( vol )
                     };
 
-                    this.callEvtHandler("onvolumechanged", event);
+                    this.callEvtHandler( "onvolumechanged", event );
                 }
 
                 return vol;
             },
 
-            invalidateVolume: function()
+            invalidateVolume : function ()
             {
                 var graph = this._graph;
 
@@ -142,14 +145,15 @@ x3dom.registerNodeType(
                 graph.globalMatrix = null;
 
                 // set parent volumes invalid, too
-                for (var i=0, n=this._parentNodes.length; i<n; i++) {
-                    var node = this._parentNodes[i];
-                    if (node)
-                        node.invalidateVolume();
+                for ( var i = 0, n = this._parentNodes.length; i < n; i++ )
+                {
+                    var node = this._parentNodes[ i ];
+                    if ( node )
+                    {node.invalidateVolume();}
                 }
             },
 
-            invalidateCache: function()
+            invalidateCache : function ()
             {
                 var graph = this._graph;
 
@@ -168,23 +172,23 @@ x3dom.registerNodeType(
                 //}
             },
 
-            cacheInvalid: function()
+            cacheInvalid : function ()
             {
                 return ( this._graph.globalMatrix == null ||
                     !this._graph.worldVolume.isValid() );
             },
 
-            volumeValid: function()
+            volumeValid : function ()
             {
                 return this._graph.volume.isValid();
             },
 
-            graphState: function()
+            graphState : function ()
             {
                 return this._graph;
             },
 
-            forceUpdateCoverage: function()
+            forceUpdateCoverage : function ()
             {
                 return false;
             }

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DGroupingNode",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DBoundedObject,
-        
+    defineClass( x3dom.nodeTypes.X3DBoundedObject,
+
         /**
          * Constructor for X3DGroupingNode
          * @constructs x3dom.nodeTypes.X3DGroupingNode
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc This abstract node type indicates that concrete node types derived from it contain children nodes
          * and is the basis for all aggregation.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DGroupingNode.superClass.call( this, ctx );
 
             /**
              * Grouping nodes have a field that contains a list of children nodes. Each grouping node defines a
@@ -39,59 +39,69 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
+            this.addField_MFNode( "children", x3dom.nodeTypes.X3DChildNode );
             // FIXME; add addChild and removeChild slots ?
-        
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes)
+            collectDrawableObjects : function ( transform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes )
             {
                 // check if multi parent sub-graph, don't cache in that case
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                if ( singlePath && ( this._parentNodes.length > 1 ) )
+                {singlePath = false;}
 
                 // an invalid world matrix or volume needs to be invalidated down the hierarchy
-                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
-                    this.invalidateCache();
+                if ( singlePath && ( invalidateCache = invalidateCache || this.cacheInvalid() ) )
+                {this.invalidateCache();}
 
                 // check if sub-graph can be culled away or render flag was set to false
-                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
-                if (planeMask < 0) {
+                planeMask = drawableCollection.cull( transform, this.graphState(), singlePath, planeMask );
+                if ( planeMask < 0 )
+                {
                     return;
                 }
 
-                var cnode, childTransform;
+                var cnode,
+                    childTransform;
 
-                if (singlePath) {
+                if ( singlePath )
+                {
                     // rebuild cache on change and reuse world transform
-                    if (!this._graph.globalMatrix) {
-                        this._graph.globalMatrix = this.transformMatrix(transform);
+                    if ( !this._graph.globalMatrix )
+                    {
+                        this._graph.globalMatrix = this.transformMatrix( transform );
                     }
                     childTransform = this._graph.globalMatrix;
                 }
-                else {
-                    childTransform = this.transformMatrix(transform);
+                else
+                {
+                    childTransform = this.transformMatrix( transform );
                 }
 
                 var n = this._childNodes.length;
 
-                if (x3dom.nodeTypes.ClipPlane.count > 0) {
+                if ( x3dom.nodeTypes.ClipPlane.count > 0 )
+                {
                     var localClipPlanes = [];
 
-                    for (var j = 0; j < n; j++) {
-                        if ( (cnode = this._childNodes[j]) ) {
-                            if (x3dom.isa(cnode, x3dom.nodeTypes.ClipPlane) && cnode._vf.on && cnode._vf.enabled) {
-                                localClipPlanes.push({plane: cnode, trafo: childTransform});
+                    for ( var j = 0; j < n; j++ )
+                    {
+                        if ( ( cnode = this._childNodes[ j ] ) )
+                        {
+                            if ( x3dom.isa( cnode, x3dom.nodeTypes.ClipPlane ) && cnode._vf.on && cnode._vf.enabled )
+                            {
+                                localClipPlanes.push( {plane: cnode, trafo: childTransform} );
                             }
                         }
                     }
 
-                    clipPlanes = localClipPlanes.concat(clipPlanes);
+                    clipPlanes = localClipPlanes.concat( clipPlanes );
                 }
 
-                for (var i=0; i<n; i++) {
-                    if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes);
+                for ( var i = 0; i < n; i++ )
+                {
+                    if ( ( cnode = this._childNodes[ i ] ) )
+                    {
+                        cnode.collectDrawableObjects( childTransform, drawableCollection, singlePath, invalidateCache, planeMask, clipPlanes );
                     }
                 }
             }

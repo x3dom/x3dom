@@ -17,8 +17,9 @@ x3dom.SSAO = {};
  * @param scene
  * @returns {{}|x3dom.fields.SFBool|string}
  */
-x3dom.SSAO.isEnabled = function(scene) {
-    return scene.getEnvironment()._vf.SSAO
+x3dom.SSAO.isEnabled = function ( scene )
+{
+    return scene.getEnvironment()._vf.SSAO;
 };
 
 /**
@@ -26,12 +27,15 @@ x3dom.SSAO.isEnabled = function(scene) {
  *
  * @param gl
  */
-x3dom.SSAO.reinitializeShadersIfNecessary = function(gl) {
-    if (x3dom.SSAO.shaderProgram === undefined) {
-        x3dom.SSAO.shaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOShader(gl), "ssao");
+x3dom.SSAO.reinitializeShadersIfNecessary = function ( gl )
+{
+    if ( x3dom.SSAO.shaderProgram === undefined )
+    {
+        x3dom.SSAO.shaderProgram = x3dom.Utils.wrapProgram( gl, new x3dom.shader.SSAOShader( gl ), "ssao" );
     }
-    if (x3dom.SSAO.blurShaderProgram === undefined) {
-        x3dom.SSAO.blurShaderProgram = x3dom.Utils.wrapProgram(gl, new x3dom.shader.SSAOBlurShader(gl), "ssao-blur");
+    if ( x3dom.SSAO.blurShaderProgram === undefined )
+    {
+        x3dom.SSAO.blurShaderProgram = x3dom.Utils.wrapProgram( gl, new x3dom.shader.SSAOBlurShader( gl ), "ssao-blur" );
     }
 };
 
@@ -41,34 +45,38 @@ x3dom.SSAO.reinitializeShadersIfNecessary = function(gl) {
  * @param gl
  * @param scene
  */
-x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl, scene) {
+x3dom.SSAO.reinitializeRandomTextureIfNecessary = function ( gl, scene )
+{
     var sizeHasChanged = scene.getEnvironment()._vf.SSAOrandomTextureSize != x3dom.SSAO.currentRandomTextureSize;
 
-    if (x3dom.SSAO.randomTexture === undefined) {
+    if ( x3dom.SSAO.randomTexture === undefined )
+    {
         // create random texture
         x3dom.SSAO.randomTexture = gl.createTexture();
     }
 
-    if (x3dom.SSAO.randomTexture === undefined || sizeHasChanged) {
-        gl.bindTexture(gl.TEXTURE_2D, x3dom.SSAO.randomTexture);
+    if ( x3dom.SSAO.randomTexture === undefined || sizeHasChanged )
+    {
+        gl.bindTexture( gl.TEXTURE_2D, x3dom.SSAO.randomTexture );
         var rTexSize = x3dom.SSAO.currentRandomTextureSize = scene.getEnvironment()._vf.SSAOrandomTextureSize;
-        var randomImageBuffer = new ArrayBuffer(rTexSize * rTexSize * 4); //rTexSize^2 pixels with 4 bytes each
-        var randomImageView = new Uint8Array(randomImageBuffer);
+        var randomImageBuffer = new ArrayBuffer( rTexSize * rTexSize * 4 ); //rTexSize^2 pixels with 4 bytes each
+        var randomImageView = new Uint8Array( randomImageBuffer );
         // fill the image with random unit Vectors in the z-y-plane:
-        for (var i = 0; i < rTexSize * rTexSize; ++i) {
+        for ( var i = 0; i < rTexSize * rTexSize; ++i )
+        {
             var x = Math.random() * 2.0 - 1.0;
             var y = Math.random() * 2.0 - 1.0;
             var z = 0;
-            var length = Math.sqrt(x * x + y * y + z * z);
+            var length = Math.sqrt( x * x + y * y + z * z );
             x /= length;
             y /= length;
-            randomImageView[4 * i] = (x + 1.0) * 0.5 * 255.0;
-            randomImageView[4 * i + 1] = (y + 1.0) * 0.5 * 255.0;
-            randomImageView[4 * i + 2] = (z + 1.0) * 0.5 * 255.0;
-            randomImageView[4 * i + 3] = 255;
+            randomImageView[ 4 * i ] = ( x + 1.0 ) * 0.5 * 255.0;
+            randomImageView[ 4 * i + 1 ] = ( y + 1.0 ) * 0.5 * 255.0;
+            randomImageView[ 4 * i + 2 ] = ( z + 1.0 ) * 0.5 * 255.0;
+            randomImageView[ 4 * i + 3 ] = 255;
         }
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, rTexSize, rTexSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, randomImageView);
-        gl.bindTexture(gl.TEXTURE_2D, null);
+        gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, rTexSize, rTexSize, 0, gl.RGBA, gl.UNSIGNED_BYTE, randomImageView );
+        gl.bindTexture( gl.TEXTURE_2D, null );
     }
 };
 
@@ -78,34 +86,38 @@ x3dom.SSAO.reinitializeRandomTextureIfNecessary = function(gl, scene) {
  * @param gl
  * @param canvas
  */
-x3dom.SSAO.reinitializeFBOIfNecessary = function(gl, canvas) {
+x3dom.SSAO.reinitializeFBOIfNecessary = function ( gl, canvas )
+{
     var dimensionsHaveChanged =
         x3dom.SSAO.currentFBOWidth != canvas.width ||
         x3dom.SSAO.currentFBOHeight != canvas.height;
 
-    if (x3dom.SSAO.fbo === undefined || dimensionsHaveChanged) {
+    if ( x3dom.SSAO.fbo === undefined || dimensionsHaveChanged )
+    {
         x3dom.SSAO.currentFBOWidth = canvas.width;
         x3dom.SSAO.currentFBOHeight = canvas.height;
-        var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-        if (x3dom.SSAO.fbo === undefined) {
+        var oldfbo = gl.getParameter( gl.FRAMEBUFFER_BINDING );
+        if ( x3dom.SSAO.fbo === undefined )
+        {
             // create framebuffer
             x3dom.SSAO.fbo = gl.createFramebuffer();
         }
-        gl.bindFramebuffer(gl.FRAMEBUFFER, x3dom.SSAO.fbo);
-        if (x3dom.SSAO.fbotex === undefined) {
+        gl.bindFramebuffer( gl.FRAMEBUFFER, x3dom.SSAO.fbo );
+        if ( x3dom.SSAO.fbotex === undefined )
+        {
             // create render texture
             x3dom.SSAO.fbotex = gl.createTexture();
         }
-        gl.bindTexture(gl.TEXTURE_2D, x3dom.SSAO.fbotex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, x3dom.SSAO.currentFBOWidth,
-            x3dom.SSAO.currentFBOHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER,
+        gl.bindTexture( gl.TEXTURE_2D, x3dom.SSAO.fbotex );
+        gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, x3dom.SSAO.currentFBOWidth,
+            x3dom.SSAO.currentFBOHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, null );
+        gl.bindTexture( gl.TEXTURE_2D, null );
+        gl.framebufferTexture2D( gl.FRAMEBUFFER,
             gl.COLOR_ATTACHMENT0,
             gl.TEXTURE_2D,
             x3dom.SSAO.fbotex,
-            0);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
+            0 );
+        gl.bindFramebuffer( gl.FRAMEBUFFER, oldfbo );
     }
 };
 
@@ -119,35 +131,37 @@ x3dom.SSAO.reinitializeFBOIfNecessary = function(gl, canvas) {
  * @param canvas - Canvas the scene is rendered on (needed for dimensions)
  * @param fbo - FrameBufferObject handle that should be used as a target (null to use curent fbo)
  */
-x3dom.SSAO.render = function(stateManager, gl, scene, tex, canvas, fbo) {
+x3dom.SSAO.render = function ( stateManager, gl, scene, tex, canvas, fbo )
+{
     // save previous fbo
-    var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-    if (fbo != null) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    var oldfbo = gl.getParameter( gl.FRAMEBUFFER_BINDING );
+    if ( fbo != null )
+    {
+        gl.bindFramebuffer( gl.FRAMEBUFFER, fbo );
     }
 
-    stateManager.frontFace(gl.CCW);
-    stateManager.disable(gl.CULL_FACE);
-    stateManager.disable(gl.DEPTH_TEST);
+    stateManager.frontFace( gl.CCW );
+    stateManager.disable( gl.CULL_FACE );
+    stateManager.disable( gl.DEPTH_TEST );
 
     var sp = x3dom.SSAO.shaderProgram;
 
-    stateManager.useProgram(sp);
+    stateManager.useProgram( sp );
 
     // set up uniforms
     sp.depthTexture = 0;
     sp.randomTexture = 1;
     sp.radius = scene.getEnvironment()._vf.SSAOradius;
-    sp.randomTextureTilingFactor = [canvas.width / x3dom.SSAO.currentRandomTextureSize, canvas.height / x3dom.SSAO.currentRandomTextureSize];
+    sp.randomTextureTilingFactor = [ canvas.width / x3dom.SSAO.currentRandomTextureSize, canvas.height / x3dom.SSAO.currentRandomTextureSize ];
 
     var viewpoint = scene.getViewpoint();
     var nearPlane = viewpoint.getNear();
     var farPlane = viewpoint.getFar();
     sp.nearPlane = nearPlane;
     sp.farPlane = farPlane;
-    sp.depthReconstructionConstantA = (farPlane + nearPlane) / (nearPlane - farPlane);
-    sp.depthReconstructionConstantB = (2.0 * farPlane * nearPlane) / (nearPlane - farPlane);
-    sp.depthBufferEpsilon = 0.0001 * (farPlane - nearPlane);
+    sp.depthReconstructionConstantA = ( farPlane + nearPlane ) / ( nearPlane - farPlane );
+    sp.depthReconstructionConstantB = ( 2.0 * farPlane * nearPlane ) / ( nearPlane - farPlane );
+    sp.depthBufferEpsilon = 0.0001 * ( farPlane - nearPlane );
 
     // 16 samples with a well distributed pseudo random opposing-pairs sampling pattern:
     sp.samples = [
@@ -169,45 +183,47 @@ x3dom.SSAO.render = function(stateManager, gl, scene, tex, canvas, fbo) {
         0.8352823295874743, 0.3040179051783715, -0.7825440557226517
     ];
 
-    if (!sp.tex) {
+    if ( !sp.tex )
+    {
         sp.tex = 0;
     }
 
     // depth texture
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.activeTexture( gl.TEXTURE0 );
+    gl.bindTexture( gl.TEXTURE_2D, tex );
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
 
     // random texture:
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, x3dom.SSAO.randomTexture);
+    gl.activeTexture( gl.TEXTURE1 );
+    gl.bindTexture( gl.TEXTURE_2D, x3dom.SSAO.randomTexture );
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT );
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
-    gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(sp.position);
+    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[ x3dom.BUFFER_IDX.INDEX ] );
+    gl.bindBuffer( gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] );
+    gl.vertexAttribPointer( sp.position, 3, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( sp.position );
 
-    gl.drawElements(scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements( scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0 );
 
-    gl.disableVertexAttribArray(sp.position);
+    gl.disableVertexAttribArray( sp.position );
 
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.activeTexture( gl.TEXTURE0 );
+    gl.bindTexture( gl.TEXTURE_2D, null );
+    gl.activeTexture( gl.TEXTURE1 );
+    gl.bindTexture( gl.TEXTURE_2D, null );
 
     // restore prevoius fbo
-    if (fbo != null) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
+    if ( fbo != null )
+    {
+        gl.bindFramebuffer( gl.FRAMEBUFFER, oldfbo );
     }
 };
 
@@ -222,20 +238,22 @@ x3dom.SSAO.render = function(stateManager, gl, scene, tex, canvas, fbo) {
  * @param canvas - Canvas the scene is rendered on (needed for dimensions)
  * @param fbo - FrameBufferObject handle that should be used as a target (null to use curent fbo)
  */
-x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas,fbo) {
+x3dom.SSAO.blur = function ( stateManager, gl, scene, ssaoTexture, depthTexture, canvas, fbo )
+{
     // save previous fbo
-    var oldfbo = gl.getParameter(gl.FRAMEBUFFER_BINDING);
-    if (fbo != null) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+    var oldfbo = gl.getParameter( gl.FRAMEBUFFER_BINDING );
+    if ( fbo != null )
+    {
+        gl.bindFramebuffer( gl.FRAMEBUFFER, fbo );
     }
 
-    stateManager.frontFace(gl.CCW);
-    stateManager.disable(gl.CULL_FACE);
-    stateManager.disable(gl.DEPTH_TEST);
+    stateManager.frontFace( gl.CCW );
+    stateManager.disable( gl.CULL_FACE );
+    stateManager.disable( gl.DEPTH_TEST );
 
     var sp = x3dom.SSAO.blurShaderProgram;
 
-    stateManager.useProgram(sp);
+    stateManager.useProgram( sp );
 
     sp.SSAOTexture = 0;
     sp.depthTexture = 1;
@@ -247,46 +265,47 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
     var farPlane = viewpoint.getFar();
     sp.nearPlane = nearPlane;
     sp.farPlane = farPlane;
-    sp.depthReconstructionConstantA = (farPlane + nearPlane) / (nearPlane - farPlane);
-    sp.depthReconstructionConstantB = (2.0 * farPlane * nearPlane) / (nearPlane - farPlane);
-    sp.pixelSize = [1.0 / canvas.width, 1.0 / canvas.height];
+    sp.depthReconstructionConstantA = ( farPlane + nearPlane ) / ( nearPlane - farPlane );
+    sp.depthReconstructionConstantB = ( 2.0 * farPlane * nearPlane ) / ( nearPlane - farPlane );
+    sp.pixelSize = [ 1.0 / canvas.width, 1.0 / canvas.height ];
     sp.amount = scene.getEnvironment()._vf.SSAOamount;
 
     // ssao texture
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, ssaoTexture);
+    gl.activeTexture( gl.TEXTURE0 );
+    gl.bindTexture( gl.TEXTURE_2D, ssaoTexture );
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
 
     // depth texture
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, depthTexture);
+    gl.activeTexture( gl.TEXTURE1 );
+    gl.bindTexture( gl.TEXTURE_2D, depthTexture );
 
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE );
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.INDEX]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[x3dom.BUFFER_IDX.POSITION]);
-    gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(sp.position);
+    gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[ x3dom.BUFFER_IDX.INDEX ] );
+    gl.bindBuffer( gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] );
+    gl.vertexAttribPointer( sp.position, 3, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( sp.position );
 
-    gl.drawElements(scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements( scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0 );
 
-    gl.disableVertexAttribArray(sp.position);
+    gl.disableVertexAttribArray( sp.position );
 
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, null);
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.activeTexture( gl.TEXTURE0 );
+    gl.bindTexture( gl.TEXTURE_2D, null );
+    gl.activeTexture( gl.TEXTURE1 );
+    gl.bindTexture( gl.TEXTURE_2D, null );
 
     // restore previous fbo
-    if (fbo != null) {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, oldfbo);
+    if ( fbo != null )
+    {
+        gl.bindFramebuffer( gl.FRAMEBUFFER, oldfbo );
     }
 };
 
@@ -298,19 +317,20 @@ x3dom.SSAO.blur = function(stateManager,gl,scene,ssaoTexture,depthTexture,canvas
  * @param scene - current scene
  * @param canvas - canvas that the scene is rendered to
  */
-x3dom.SSAO.renderSSAO = function(stateManager, gl, scene, canvas) {
+x3dom.SSAO.renderSSAO = function ( stateManager, gl, scene, canvas )
+{
     // set up resources if they are non-existent or if they are outdated:
-    this.reinitializeShadersIfNecessary(gl);
-    this.reinitializeRandomTextureIfNecessary(gl, scene);
-    this.reinitializeFBOIfNecessary(gl, canvas);
+    this.reinitializeShadersIfNecessary( gl );
+    this.reinitializeRandomTextureIfNecessary( gl, scene );
+    this.reinitializeFBOIfNecessary( gl, canvas );
 
-    stateManager.viewport(0, 0, canvas.width, canvas.height);
+    stateManager.viewport( 0, 0, canvas.width, canvas.height );
 
     // render SSAO into fbo
-    this.render(stateManager, gl, scene, scene._webgl.fboScene.tex, canvas, x3dom.SSAO.fbo);
+    this.render( stateManager, gl, scene, scene._webgl.fboScene.tex, canvas, x3dom.SSAO.fbo );
     // render blurred SSAO multiplicatively
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA);
-    this.blur(stateManager, gl, scene, x3dom.SSAO.fbotex, scene._webgl.fboScene.tex, canvas, null);
-    gl.disable(gl.BLEND);
+    gl.enable( gl.BLEND );
+    gl.blendFunc( gl.DST_COLOR, gl.ONE_MINUS_SRC_ALPHA );
+    this.blur( stateManager, gl, scene, x3dom.SSAO.fbotex, scene._webgl.fboScene.tex, canvas, null );
+    gl.disable( gl.BLEND );
 };

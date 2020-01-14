@@ -4,7 +4,7 @@
     <meta http-equiv='X-UA-Compatible' content='chrome=1'/>
     <meta http-equiv='X-UA-Compatible' content='IE=edge'/>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-    <script type="text/javascript" src="../x3dom_include.js"></script>
+    <script type="text/javascript" src="../x3dom-include.js"></script>
     <style>.x3dom-logContainer { bottom: 0px; position: absolute; }
     </style>
       <script>
@@ -112,7 +112,27 @@
                 <option value='noNav'>None 
                 </option> 
               </select> 
-            </td> 
+            </td>
+            <td align='right'>Exploration Mode: 
+              <select style='float:right;' onchange='document.querySelector("navigationinfo").explorationMode=value;'> 
+                <option selected='selected' value='all'>All buttons 
+                </option> 
+                <option value='zoom'>Zoom
+                </option> 
+                <option value='pan'>Pan
+                </option> 
+                <option value='rotate'>Rotate
+                </option> 
+                <option value='-zoom'>No Zoom
+                </option> 
+                <option value='-pan'>No Pan
+                </option> 
+                <option value='-rotate'>No Rotate
+                </option> 
+                <option value='none'>No buttons
+                </option> 
+              </select> 
+            </td>
           </tr> 
           <tr> 
             <td>Debug Display: 
@@ -147,7 +167,7 @@
         <viewpoint DEF='cam1' description='cam1' position='0 0 2000'></viewpoint>
         <viewpoint DEF='cam2' description='cam2' position='0 200 1000'></viewpoint>
         <background groundAngle='0.9 1.5 1.57' groundColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' groundTransparency='0.5 0.5 0.5 0.5' skyTransparency='0.5 0.5 0.5 0.5'></background>
-        <navigationInfo DEF='user01' speed='50'></navigationInfo>
+        <navigationInfo DEF='user01' speed='10'></navigationInfo>
         <fog></fog>
         <transform DEF='trans' rotation='1 0 0 0.78'>
           <shape>

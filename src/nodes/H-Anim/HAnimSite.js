@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "HAnimSite",
     "H-Anim",
-    defineClass(x3dom.nodeTypes.Transform,
-        
+    defineClass( x3dom.nodeTypes.Transform,
+
         /**
          * Constructor for HAnimSite
          * @constructs x3dom.nodeTypes.HAnimSite
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * The second is to define an attachment point for accessories such as jewelry and clothing.
          * The third is to define a location for a virtual camera in the reference frame of an HAnimSegment (such as a view "through the eyes" of the humanoid for use in multi-user worlds).
          */
-        function (ctx) {
-            x3dom.nodeTypes.HAnimSite.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.HAnimSite.superClass.call( this, ctx );
 
             /**
              * Each Site object shall have a name field that is used for identifying the object. Within the local scope of a Humanoid
@@ -44,8 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
-        
+            this.addField_SFString( ctx, "name", "" );
         }
     )
 );

@@ -11,7 +11,7 @@
 x3dom.registerNodeType(
     "BufferView",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass( x3dom.nodeTypes.X3DNode,
 
         /**
          * Constructor for BufferView
@@ -22,8 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The BufferAccessor node is experimental.
          */
-        function (ctx) {
-            x3dom.nodeTypes.BufferView.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BufferView.superClass.call( this, ctx );
 
             /**
              * The buffer target vertex or index
@@ -33,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'target', 34962);
+            this.addField_SFInt32( ctx, "target", 34962 );
 
             /**
              * The buffer byteOffset
@@ -43,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'byteOffset', 0);
+            this.addField_SFInt32( ctx, "byteOffset", 0 );
 
             /**
              * The buffer byteStride
@@ -53,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'byteStride', 0);
+            this.addField_SFInt32( ctx, "byteStride", 0 );
 
             /**
              * The buffer byteLength
@@ -63,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'byteLength', 0);
+            this.addField_SFInt32( ctx, "byteLength", 0 );
 
             /**
              * The buffer id
@@ -73,10 +74,10 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'id', 0);
+            this.addField_SFInt32( ctx, "id", 0 );
         },
         {
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
             }
         }

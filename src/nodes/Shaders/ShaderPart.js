@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "ShaderPart",
     "Shaders",
-    defineClass(x3dom.nodeTypes.X3DNode,
-        
+    defineClass( x3dom.nodeTypes.X3DNode,
+
         /**
          * Constructor for ShaderPart
          * @constructs x3dom.nodeTypes.ShaderPart
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The ShaderPart node defines the source for a single object to be used by a ComposedShader node.
          *  The source is not required to be a complete shader for all of the vertex/fragment processing.
          */
-        function (ctx) {
-            x3dom.nodeTypes.ShaderPart.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.ShaderPart.superClass.call( this, ctx );
 
             /**
              * The shader source is read from the URL specified by the url field. When the url field contains no values
@@ -37,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString( ctx, "url", [] );
 
             /**
              * The type field indicates whether this object shall be compiled as a vertex shader, fragment shader, or
@@ -48,97 +48,104 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'type', "VERTEX");
+            this.addField_SFString( ctx, "type", "VERTEX" );
 
-            this._id = (ctx && ctx.xmlNode && ctx.xmlNode.id != "") ?
+            this._id = ( ctx && ctx.xmlNode && ctx.xmlNode.id != "" ) ?
                 ctx.xmlNode.id : ++x3dom.nodeTypes.Shape.shaderPartID;
 
-            x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
-                               this._vf.type.toLowerCase() == 'fragment',
-                               "Unknown shader part type!");
+            x3dom.debug.assert( this._vf.type.toLowerCase() == "vertex" ||
+                               this._vf.type.toLowerCase() == "fragment",
+            "Unknown shader part type!" );
         },
         {
-            nodeChanged: function()
+            nodeChanged : function ()
             {
                 var ctx = {};
                 ctx.xmlNode = this._xmlNode;
 
-                if (ctx.xmlNode !== undefined && ctx.xmlNode !== null)
+                if ( ctx.xmlNode !== undefined && ctx.xmlNode !== null )
                 {
                     var that = this;
 
-                    if (that._vf.url.length && that._vf.url[0].indexOf('\n') == -1)
+                    if ( that._vf.url.length && that._vf.url[ 0 ].indexOf( "\n" ) == -1 )
                     {
                         var xhr        = new XMLHttpRequest(),
-                            url        = that._nameSpace.getURL(that._vf.url[0]);
+                            url        = that._nameSpace.getURL( that._vf.url[ 0 ] ),
                             originalID = that._id;
 
-
                         that._id = "default";
-                        that._vf.url = new x3dom.fields.MFString( [ this._getDefaultShader() ] );                      
+                        that._vf.url = new x3dom.fields.MFString( [ this._getDefaultShader() ] );
 
-                        xhr.open("GET", url, false);
-                        xhr.onload = function() {
+                        xhr.open( "GET", url, false );
+                        xhr.onload = function ()
+                        {
                             that._vf.url = new x3dom.fields.MFString( [] );
-                            that._vf.url.push(xhr.response);
+                            that._vf.url.push( xhr.response );
                             that._id = originalID;
-                            that.fieldChanged("url");
+                            that.fieldChanged( "url" );
                         };
-                        xhr.onerror = function() {
-                            x3dom.debug.logError("Could not load file '" + that._vf.url[0] + "'.");
+                        xhr.onerror = function ()
+                        {
+                            x3dom.debug.logError( "Could not load file '" + that._vf.url[ 0 ] + "'." );
                         };
                         //xhr.send(null);
                         x3dom.RequestManager.addRequest( xhr );
                     }
                     else
                     {
-                        if (that._vf.url.length) {
+                        if ( that._vf.url.length )
+                        {
                             that._vf.url = new x3dom.fields.MFString( [] );
                         }
-                        try {
-                            that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
-                            ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
+                        try
+                        {
+                            that._vf.url.push( ctx.xmlNode.childNodes[ 1 ].nodeValue );
+                            ctx.xmlNode.removeChild( ctx.xmlNode.childNodes[ 1 ] );
                         }
-                        catch(e) {
-                            Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                                if (childDomNode.nodeType === 3) {
-                                    that._vf.url.push(childDomNode.nodeValue);
+                        catch ( e )
+                        {
+                            ctx.xmlNode.childNodes.forEach( function ( childDomNode )
+                            {
+                                if ( childDomNode.nodeType === 3 )
+                                {
+                                    that._vf.url.push( childDomNode.nodeValue );
                                 }
-                                else if (childDomNode.nodeType === 4) {
-                                    that._vf.url.push(childDomNode.data);
+                                else if ( childDomNode.nodeType === 4 )
+                                {
+                                    that._vf.url.push( childDomNode.data );
                                 }
-                                childDomNode.parentNode.removeChild(childDomNode);
+                                childDomNode.parentNode.removeChild( childDomNode );
                             } );
                         }
                     }
                 }
                 // else hope that url field was already set somehow
 
-                Array.forEach(this._parentNodes, function (shader) {
+                this._parentNodes.forEach( function ( shader )
+                {
                     shader.nodeChanged();
-                });
+                } );
             },
 
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName === "url") {
-                    Array.forEach(this._parentNodes, function (shader) {
-                        shader.fieldChanged("url");
-                    });
+                if ( fieldName === "url" )
+                {
+                    this._parentNodes.forEach( function ( shader )
+                    {
+                        shader.fieldChanged( "url" );
+                    } );
                 }
             },
 
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
-                //Array.forEach(this._parentNodes, function (shader) {
-                //	shader.nodeChanged();
-                //});
                 parent.nodeChanged();
             },
 
-            _getDefaultShader : function()
+            _getDefaultShader : function ()
             {
-                if( this._vf.type.toLowerCase() == 'vertex' )
+                if ( this._vf.type.toLowerCase() == "vertex" )
                 {
                     return  "attribute vec3 position;\n" +
                             "uniform mat4 modelViewProjectionMatrix;\n" +
@@ -147,15 +154,13 @@ x3dom.registerNodeType(
                             "}\n";
                 }
 
-                if( this._vf.type.toLowerCase() == 'fragment' )
+                if ( this._vf.type.toLowerCase() == "fragment" )
                 {
                     return  "precision highp float;\n" +
                             "void main(void) {\n" +
                             "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n" +
                             "}\n";
                 }
-
-                
             }
         }
     )

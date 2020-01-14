@@ -10,7 +10,7 @@
 x3dom.registerNodeType(
     "X3DTouchSensorNode",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DPointingDeviceSensorNode,
+    defineClass( x3dom.nodeTypes.X3DPointingDeviceSensorNode,
 
         /**
          * Constructor for X3DTouchSensorNode
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc An abstract base class for all sensors that process touch events.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.X3DTouchSensorNode.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DTouchSensorNode.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -32,7 +32,6 @@ x3dom.registerNodeType(
 
             //route-able output fields
             //this.addField_SFTime(ctx, 'touchTime', 0);
-
 
             //---------------------------------------
             // PROPERTIES
@@ -42,7 +41,6 @@ x3dom.registerNodeType(
             //----------------------------------------------------------------------------------------------------------------------
             // PUBLIC FUNCTIONS
             //----------------------------------------------------------------------------------------------------------------------
-
 
         }
     )

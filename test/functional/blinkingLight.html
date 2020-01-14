@@ -3,7 +3,7 @@
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
         <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 
-        <script type="text/javascript" src="../x3dom_include.js"></script>
+        <script type="text/javascript" src="../x3dom-include.js"></script>
 	</head>
 	<body>
 		<h1>Blinking Light</h1>
@@ -191,10 +191,10 @@
 				<ROUTE fromNode='Omni02-SCALAR-INTERP_intensity' fromField='value_changed' toNode='Omni02' toField='intensity' ></ROUTE>
 				<ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='Rotor-ROT-INTERP' toField='set_fraction' ></ROUTE>
 				<ROUTE fromNode='Rotor-ROT-INTERP' fromField='value_changed' toNode='Rotor' toField='set_rotation' ></ROUTE>
-				<ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='Omni03-SCALAR-INTERP_intensity' toField='set_fraction' ></ROUTE>
+				<!--ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='Omni03-SCALAR-INTERP_intensity' toField='set_fraction' ></ROUTE>
 				<ROUTE fromNode='Omni03-SCALAR-INTERP_intensity' fromField='value_changed' toNode='Omni03' toField='intensity' ></ROUTE>
 				<ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='Omni04-SCALAR-INTERP_intensity' toField='set_fraction' ></ROUTE>
-				<ROUTE fromNode='Omni04-SCALAR-INTERP_intensity' fromField='value_changed' toNode='Omni04' toField='intensity' ></ROUTE>
+				<ROUTE fromNode='Omni04-SCALAR-INTERP_intensity' fromField='value_changed' toNode='Omni04' toField='intensity' ></ROUTE-->
 			</Scene>
 		</X3D>
 		</div>

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "TexCoordDamper2D",
     "Followers",
-    defineClass(x3dom.nodeTypes.X3DDamperNode,
-        
+    defineClass( x3dom.nodeTypes.X3DDamperNode,
+
         /**
          * Constructor for TexCoordDamper2D
          * @constructs x3dom.nodeTypes.TexCoordDamper2D
@@ -26,9 +26,9 @@ x3dom.registerNodeType(
          *  sending an array of the same length, where each element moves from its current value towards the value at
          *  the same position in the array received.
          */
-        function (ctx) {
-            x3dom.nodeTypes.TexCoordDamper2D.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.TexCoordDamper2D.superClass.call( this, ctx );
 
             /**
              * The field initialDestination should be set to the same value than initialValue unless a transition to a
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'initialDestination', []);
+            this.addField_MFVec2f( ctx, "initialDestination", [] );
 
             /**
              * The field initialValue can be used to set the initial value of value_changed.
@@ -50,8 +50,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'initialValue', []);
-
+            this.addField_MFVec2f( ctx, "initialValue", [] );
 
             /**
              * The current value.
@@ -61,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'value', []);
+            this.addField_MFVec2f( ctx, "value", [] );
 
             /**
              * The target value.
@@ -71,10 +70,9 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec2f(ctx, 'destination', []);
+            this.addField_MFVec2f( ctx, "destination", [] );
 
-            x3dom.debug.logWarning("TexCoordDamper2D NYI");
-        
+            x3dom.debug.logWarning( "TexCoordDamper2D NYI" );
         }
     )
 );

@@ -6,7 +6,7 @@
  * (C)2018 A. Plesch, Waltham, MA USA
  * Dual licensed under the MIT and GPL
  */
- /*
+/*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
  * Ayam is copyrighted 1998-2016 by Randolf Schultz
@@ -22,8 +22,8 @@
 x3dom.registerNodeType(
     "NurbsTrimmedSurface",
     "NURBS",
-    defineClass(x3dom.nodeTypes.X3DNurbsSurfaceGeometryNode, //NurbsPatchSurface
-        
+    defineClass( x3dom.nodeTypes.X3DNurbsSurfaceGeometryNode, //NurbsPatchSurface
+
         /**
          * Constructor for NurbsTrimmedSurface
          * @constructs x3dom.nodeTypes.NurbsTrimmedSurface
@@ -34,10 +34,11 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The NurbsTrimmedSurface node defines a NURBS surface that is trimmed by a set of trimming loops.
          */
-         
-        function (ctx) {
-            x3dom.nodeTypes.NurbsTrimmedSurface.superClass.call(this, ctx);
-            
+
+        function ( ctx )
+        {
+            x3dom.nodeTypes.NurbsTrimmedSurface.superClass.call( this, ctx );
+
             /**
              * The trimmingContour field, if specified, shall contain a set of Contour2D nodes. Trimming loops shall be processed
              * as described for the Contour2D node. If no trimming contours are defined, the NurbsTrimmedSurface node shall have
@@ -48,12 +49,12 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('trimmingContour', x3dom.nodeTypes.Contour2D);
-            
+            this.addField_MFNode( "trimmingContour", x3dom.nodeTypes.Contour2D );
+
             this._needReRender = true;
         },
         {
-            
+
         }
     )
 );

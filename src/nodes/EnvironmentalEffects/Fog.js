@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Fog",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DFogNode,
-        
+    defineClass( x3dom.nodeTypes.X3DFogNode,
+
         /**
          * Constructor for Fog
          * @constructs x3dom.nodeTypes.Fog
@@ -25,9 +25,9 @@ x3dom.registerNodeType(
          * specified by the color field based on the distances of the various objects from the viewer. The distances
          * are calculated in the coordinate space of the Fog node.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Fog.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Fog.superClass.call( this, ctx );
         },
         {
         }

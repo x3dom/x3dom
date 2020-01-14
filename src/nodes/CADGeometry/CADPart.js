@@ -14,8 +14,8 @@
 x3dom.registerNodeType(
     "CADPart",
     "CADGeometry",
-    defineClass(x3dom.nodeTypes.Transform,
-        
+    defineClass( x3dom.nodeTypes.Transform,
+
         /**
          * Constructor for CADPart
          * @constructs x3dom.nodeTypes.CADPart
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * @classdesc The CADPart node is a grouping node that defines a coordinate system for its children that is
          * relative to the coordinate systems of its ancestors.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CADPart.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CADPart.superClass.call( this, ctx );
 
             /**
              * The name field describes the content of the part.
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString( ctx, "name", "" );
         }
     )
 );

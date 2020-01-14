@@ -4,6 +4,7 @@ _site
 .DS_Store
 ./src/x3dom.js
 ./src/version.js
+test/my-tests
 *.tmproj
 *.bak
 *.pyc
@@ -15,6 +16,8 @@ tools/config/Data
 *~backup~
 example/x3dom.css
 example/x3dom.js
+node_modules
+package-lock.json
 *~
 #*#
 nbproject

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "MatrixTextureTransform",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTextureTransformNode,
+
         /**
          * Constructor for MatrixTextureTransform
          * @constructs x3dom.nodeTypes.MatrixTextureTransform
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The MatrixTextureTransform node defines a 2D transformation as a 4x4 matrix that is applied to texture coordinates.
          * This node affects the way textures coordinates are applied to the geometric surface.
          */
-        function (ctx) {
-            x3dom.nodeTypes.MatrixTextureTransform.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.MatrixTextureTransform.superClass.call( this, ctx );
 
             /**
             * Defines the texture coordinate transformation matrix.
@@ -36,22 +36,23 @@ x3dom.registerNodeType(
             * @field x3dom
             * @instance
             */
-            this.addField_SFMatrix4f(ctx, 'matrix',
+            this.addField_SFMatrix4f( ctx, "matrix",
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,
-                0, 0, 0, 1);
-        
+                0, 0, 0, 1 );
+
             this._trafo = this._vf.matrix.transpose();
-            
         },
         {
-            fieldChanged: function (fieldName) {
-                if (fieldName == "matrix") {
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "matrix" )
+                {
                     this._trafo = this._vf.matrix.transpose();
                 }
             }
-            
+
         }
     )
 );

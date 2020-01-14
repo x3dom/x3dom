@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### CollisionSensor ###
+//    ### CollisionSensor ###
 x3dom.registerNodeType(
     "CollisionSensor",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DSensorNode,
+    defineClass( x3dom.nodeTypes.X3DSensorNode,
 
         /**
          * Constructor for CollisionSensor
@@ -26,8 +26,9 @@ x3dom.registerNodeType(
          *  scene in order for it to run or affect the physics model. This class is used to report to the user contact
          *  information should the user require this information for other purposes.
          */
-        function(ctx){
-            x3dom.nodeTypes.CollisionSensor.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CollisionSensor.superClass.call( this, ctx );
 
             /**
              * The collider field specifies the nodes and spaces that are to be included in collision detection
@@ -38,15 +39,18 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('collider', x3dom.nodeTypes.CollisionCollection);
-
+            this.addField_SFNode( "collider", x3dom.nodeTypes.CollisionCollection );
         },
         {
-            nodeChanged: function(){
-                if(!this._cf.collider.node){
-                    for(var x in this._xmlNode.children){
-                        if(x3dom.isa(this._xmlNode.children[x]._x3domNode, x3dom.nodeTypes.CollisionCollection)){
-                            this._cf.collider = this._xmlNode.children[x];
+            nodeChanged : function ()
+            {
+                if ( !this._cf.collider.node )
+                {
+                    for ( var x in this._xmlNode.children )
+                    {
+                        if ( x3dom.isa( this._xmlNode.children[ x ]._x3domNode, x3dom.nodeTypes.CollisionCollection ) )
+                        {
+                            this._cf.collider = this._xmlNode.children[ x ];
                         }
                     }
                 }

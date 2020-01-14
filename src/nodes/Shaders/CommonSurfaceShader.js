@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "CommonSurfaceShader",
     "Shaders",
-    defineClass(x3dom.nodeTypes.X3DShaderNode,
-        
+    defineClass( x3dom.nodeTypes.X3DShaderNode,
+
         /**
          * Constructor for CommonSurfaceShader
          * @constructs x3dom.nodeTypes.CommonSurfaceShader
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Implements the Blinn-Phong BRDF with normal mapping and a perfect specular component.
          */
-        function (ctx) {
-            x3dom.nodeTypes.CommonSurfaceShader.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.CommonSurfaceShader.superClass.call( this, ctx );
 
             /**
              * Texture coordinate channel that contains the tangents in u.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'tangentTextureCoordinatesId', -1);
+            this.addField_SFInt32( ctx, "tangentTextureCoordinatesId", -1 );
 
             /**
              * Texture coordinate channel that contains the tangents in v.
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'binormalTextureCoordinatesId', -1);
+            this.addField_SFInt32( ctx, "binormalTextureCoordinatesId", -1 );
 
             /**
              * The value of emissiveTexture is multiplied by this value. If no texture is set, the value is used
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'emissiveFactor', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "emissiveFactor", 0, 0, 0 );
 
             /**
              * The texture unit.
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'emissiveTextureId', -1);
+            this.addField_SFInt32( ctx, "emissiveTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for emissiveTexture.
@@ -75,7 +75,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'emissiveTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "emissiveTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for emissiveTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -86,7 +86,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'emissiveTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "emissiveTextureChannelMask", "rgb" );
 
             /**
              * The value of ambientTexture is multiplied by this value. If no texture is set, the value is used
@@ -97,7 +97,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'ambientFactor', 0.2, 0.2, 0.2);
+            this.addField_SFVec3f( ctx, "ambientFactor", 0.2, 0.2, 0.2 );
 
             /**
              * The texture unit.
@@ -107,7 +107,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'ambientTextureId', -1);
+            this.addField_SFInt32( ctx, "ambientTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for ambientTexture.
@@ -117,7 +117,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'ambientTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "ambientTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for ambientTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -128,7 +128,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'ambientTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "ambientTextureChannelMask", "rgb" );
 
             /**
              * The value of diffuseTexture is multiplied by this value. If no texture is set, the value is used
@@ -139,7 +139,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'diffuseFactor', 0.8, 0.8, 0.8);
+            this.addField_SFVec3f( ctx, "diffuseFactor", 0.8, 0.8, 0.8 );
 
             /**
              * The texture unit.
@@ -149,7 +149,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'diffuseTextureId', -1);
+            this.addField_SFInt32( ctx, "diffuseTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for diffuseTexture.
@@ -159,7 +159,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'diffuseTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "diffuseTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for diffuseTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -170,7 +170,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'diffuseTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "diffuseTextureChannelMask", "rgb" );
 
             /**
              * The value of specularTexture is multiplied by this value. If no texture is set, the value is used
@@ -181,7 +181,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'specularFactor', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "specularFactor", 0, 0, 0 );
 
             /**
              * The texture unit.
@@ -191,7 +191,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'specularTextureId', -1);
+            this.addField_SFInt32( ctx, "specularTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for specularTexture.
@@ -201,7 +201,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'specularTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "specularTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for specularTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -212,7 +212,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'specularTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "specularTextureChannelMask", "rgb" );
 
             /**
              * The value of shininessTexture is multiplied by this value. If no texture is set, the value is used
@@ -223,7 +223,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shininessFactor', 0.2);
+            this.addField_SFFloat( ctx, "shininessFactor", 0.2 );
 
             /**
              * The texture unit.
@@ -233,7 +233,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shininessTextureId', -1);
+            this.addField_SFInt32( ctx, "shininessTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for shininessTexture.
@@ -243,7 +243,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shininessTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "shininessTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for shininessTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -254,7 +254,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'shininessTextureChannelMask', 'a');
+            this.addField_SFString( ctx, "shininessTextureChannelMask", "a" );
 
             /**
              * How normals are stored in normalTexture. Currently only "UNORM" (each component packed into a
@@ -266,7 +266,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalFormat', 'UNORM');
+            this.addField_SFString( ctx, "normalFormat", "UNORM" );
 
             /**
              * Space in which normals in normalTexture are defined.
@@ -277,7 +277,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalSpace', 'TANGENT');
+            this.addField_SFString( ctx, "normalSpace", "TANGENT" );
 
             /**
              * The texture unit.
@@ -287,7 +287,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'normalTextureId', -1);
+            this.addField_SFInt32( ctx, "normalTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for normalTexture.
@@ -297,7 +297,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'normalTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "normalTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for normalTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -308,7 +308,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "normalTextureChannelMask", "rgb" );
 
             /**
              * The value of reflectionTexture is multiplied by this value. If no texture is set, the value is used
@@ -319,7 +319,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'reflectionFactor', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "reflectionFactor", 0, 0, 0 );
 
             /**
              * The texture unit.
@@ -329,7 +329,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'reflectionTextureId', -1);
+            this.addField_SFInt32( ctx, "reflectionTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for reflectionTexture.
@@ -339,7 +339,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'reflectionTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "reflectionTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for reflectionTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -350,7 +350,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'reflectionTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "reflectionTextureChannelMask", "rgb" );
 
             /**
              * The value of transmissionTexture is multiplied by this value. If no texture is set, the value is used
@@ -361,7 +361,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'transmissionFactor', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "transmissionFactor", 0, 0, 0 );
 
             /**
              * The texture unit.
@@ -371,7 +371,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'transmissionTextureId', -1);
+            this.addField_SFInt32( ctx, "transmissionTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for transmissionTexture.
@@ -381,7 +381,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'transmissionTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "transmissionTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for transmissionTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -392,7 +392,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'transmissionTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "transmissionTextureChannelMask", "rgb" );
 
             /**
              * The value of environmentTexture is multiplied by this value. If no texture is set, the value is used
@@ -403,7 +403,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'environmentFactor', 1, 1, 1);
+            this.addField_SFVec3f( ctx, "environmentFactor", 1, 1, 1 );
 
             /**
              * The texture unit.
@@ -413,7 +413,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'environmentTextureId', -1);
+            this.addField_SFInt32( ctx, "environmentTextureId", -1 );
 
             /**
              * [Currently not used, coordinates are computed in shader.]
@@ -423,7 +423,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'environmentTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "environmentTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for environmentTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -434,7 +434,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'environmentTextureChannelMask', 'rgb');
+            this.addField_SFString( ctx, "environmentTextureChannelMask", "rgb" );
 
             /**
              * Relative IOR for perfect specular component.
@@ -444,7 +444,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'relativeIndexOfRefraction', 1);
+            this.addField_SFFloat( ctx, "relativeIndexOfRefraction", 1 );
 
             /**
              * To what degree the Fresnel equation for dielectrics should be used to blend the perfect specular
@@ -455,7 +455,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'fresnelBlend', 0);
+            this.addField_SFFloat( ctx, "fresnelBlend", 0 );
 
             /**
              * Axis along which the vertices are displacement
@@ -465,7 +465,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'displacementAxis', 'y');
+            this.addField_SFString( ctx, "displacementAxis", "y" );
 
             /**
              * Factor for the displacement.
@@ -475,7 +475,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'displacementFactor', 255.0);
+            this.addField_SFFloat( ctx, "displacementFactor", 255.0 );
 
             /**
              * The texture unit.
@@ -485,7 +485,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'displacementTextureId', -1);
+            this.addField_SFInt32( ctx, "displacementTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for displacementTexture.
@@ -495,7 +495,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'displacementTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "displacementTextureCoordinatesId", 0 );
 
             /**
              * Texture containing emissive component.
@@ -505,7 +505,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "emissiveTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing ambient component.
@@ -515,7 +515,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('ambientTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "ambientTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing diffuse component.
@@ -525,7 +525,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "diffuseTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing specular component.
@@ -535,7 +535,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('specularTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "specularTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing shininess component.
@@ -545,7 +545,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('shininessTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "shininessTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing normal component for normal mapping.
@@ -555,7 +555,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "normalTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing reflection component.
@@ -565,7 +565,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "reflectionTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing transmission component.
@@ -575,7 +575,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "transmissionTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Cube texture containing the environment for perfect specular reflection and transmission.
@@ -585,7 +585,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('environmentTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "environmentTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing displacement component.
@@ -595,7 +595,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('displacementTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "displacementTexture", x3dom.nodeTypes.X3DTextureNode );
 
             /**
              * Texture containing diffuse displacement component.
@@ -605,48 +605,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('diffuseDisplacementTexture', x3dom.nodeTypes.X3DTextureNode);
-
-            /**
-             * Multi diffuse alpha texture.
-             * @var {x3dom.fields.SFNode} multiDiffuseAlphaTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('multiDiffuseAlphaTexture', x3dom.nodeTypes.X3DTextureNode);
-
-            /**
-             * Multi specular shininess texture.
-             * @var {x3dom.fields.SFNode} multiSpecularShininessTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('multiSpecularShininessTexture', x3dom.nodeTypes.X3DTextureNode);
-
-            /**
-             * Multi emissive ambientIntensity texture.
-             * @var {x3dom.fields.SFNode} multiEmmisiveAmbientIntensityTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('multiEmissiveAmbientTexture', x3dom.nodeTypes.X3DTextureNode);
-
-            /**
-             * Multi visibility texture.
-             * @var {x3dom.fields.SFNode} multiVisibilityTexture
-             * @memberof x3dom.nodeTypes.CommonSurfaceShader
-             * @initvalue x3dom.nodeTypes.X3DTextureNode
-             * @field x3dom
-             * @instance
-             */
-            this.addField_SFNode('multiVisibilityTexture', x3dom.nodeTypes.X3DTextureNode);
-
+            this.addField_SFNode( "diffuseDisplacementTexture", x3dom.nodeTypes.X3DTextureNode );
 
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
 
@@ -658,7 +617,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'normalScale', 2, 2, 2);
+            this.addField_SFVec3f( ctx, "normalScale", 2, 2, 2 );
 
             /**
              * Bias to apply to normal sampled from normalTexture
@@ -668,7 +627,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'normalBias', -1, -1, 1);
+            this.addField_SFVec3f( ctx, "normalBias", -1, -1, 1 );
 
             /**
              * The value of alphaTexture is multiplied by this value. If no texture is set, the value is used directly.
@@ -678,7 +637,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'alphaFactor', 1);
+            this.addField_SFFloat( ctx, "alphaFactor", 1 );
 
             /**
              * If true, (1-sampledValue) is used as alpha. If false the sampled value is used.
@@ -688,7 +647,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'invertAlphaTexture', false);
+            this.addField_SFBool( ctx, "invertAlphaTexture", false );
 
             /**
              * The texture unit.
@@ -698,7 +657,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'alphaTextureId', -1);
+            this.addField_SFInt32( ctx, "alphaTextureId", -1 );
 
             /**
              * Texture coordinate channel to use for alphaTexture.
@@ -708,7 +667,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'alphaTextureCoordinatesId', 0);
+            this.addField_SFInt32( ctx, "alphaTextureCoordinatesId", 0 );
 
             /**
              * ChannelMask for alphaTexture in the form of a glsl swizzle (e.g. "rgb", "a").
@@ -719,7 +678,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'alphaTextureChannelMask', 'a');
+            this.addField_SFString( ctx, "alphaTextureChannelMask", "a" );
 
             /**
              * Texture containing alpha component.
@@ -729,257 +688,236 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFNode('alphaTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode( "alphaTexture", x3dom.nodeTypes.X3DTextureNode );
 
             this._dirty = {
                 // TODO; cp. Shape, allow for dynamic texture updates in gfx
             };
-        
         },
         {
-            getDiffuseMap: function()
+            getDiffuseMap : function ()
             {
-                if(this._cf.diffuseTexture.node) {
-                    if (x3dom.isa(this._cf.diffuseTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.diffuseTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.diffuseTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.diffuseTexture.node._cf.texture.node._type = "diffuseMap";
                         return this._cf.diffuseTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.diffuseTexture.node._type = "diffuseMap";
                         return this._cf.diffuseTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getEnvironmentMap: function()
+            getEnvironmentMap : function ()
             {
-                if(this._cf.environmentTexture.node) {
-                    if (x3dom.isa(this._cf.environmentTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.environmentTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.environmentTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.environmentTexture.node._cf.texture.node._type = "environmentMap";
                         return this._cf.environmentTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.environmentTexture.node._type = "environmentMap";
                         return this._cf.environmentTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getNormalMap: function()
+            getNormalMap : function ()
             {
-                if(this._cf.normalTexture.node) {
-                    if (x3dom.isa(this._cf.normalTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.normalTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.normalTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.normalTexture.node._cf.texture.node._type = "normalMap";
                         return this._cf.normalTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.normalTexture.node._type = "normalMap";
                         return this._cf.normalTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getAmbientMap: function()
+            getAmbientMap : function ()
             {
-                if(this._cf.ambientTexture.node) {
-                    if (x3dom.isa(this._cf.ambientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.ambientTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.ambientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.ambientTexture.node._cf.texture.node._type = "ambientMap";
                         return this._cf.ambientTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.ambientTexture.node._type = "ambientMap";
                         return this._cf.ambientTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getSpecularMap: function()
+            getSpecularMap : function ()
             {
-                if(this._cf.specularTexture.node) {
-                    if (x3dom.isa(this._cf.specularTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.specularTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.specularTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.specularTexture.node._cf.texture.node._type = "specularMap";
                         return this._cf.specularTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.specularTexture.node._type = "specularMap";
                         return this._cf.specularTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getShininessMap: function()
+            getShininessMap : function ()
             {
-                if(this._cf.shininessTexture.node) {
-                    if (x3dom.isa(this._cf.shininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.shininessTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.shininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.shininessTexture.node._cf.texture.node._type = "shininessMap";
                         return this._cf.shininessTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.shininessTexture.node._type = "shininessMap";
                         return this._cf.shininessTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getAlphaMap: function()
+            getAlphaMap : function ()
             {
-                if(this._cf.alphaTexture.node) {
-                    if (x3dom.isa(this._cf.alphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.alphaTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.alphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.alphaTexture.node._cf.texture.node._type = "alphaMap";
                         return this._cf.alphaTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.alphaTexture.node._type = "alphaMap";
                         return this._cf.alphaTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getDisplacementMap: function()
+            getDisplacementMap : function ()
             {
-                if(this._cf.displacementTexture.node) {
-                    if (x3dom.isa(this._cf.displacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.displacementTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.displacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.displacementTexture.node._cf.texture.node._type = "displacementMap";
                         return this._cf.displacementTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.displacementTexture.node._type = "displacementMap";
                         return this._cf.displacementTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getDiffuseDisplacementMap: function()
+            getDiffuseDisplacementMap : function ()
             {
-                if(this._cf.diffuseDisplacementTexture.node) {
-                    if (x3dom.isa(this._cf.diffuseDisplacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
+                if ( this._cf.diffuseDisplacementTexture.node )
+                {
+                    if ( x3dom.isa( this._cf.diffuseDisplacementTexture.node, x3dom.nodeTypes.SurfaceShaderTexture ) )
+                    {
                         this._cf.diffuseDisplacementTexture.node._cf.texture.node._type = "diffuseDisplacementMap";
                         return this._cf.diffuseDisplacementTexture.node._cf.texture.node;
-                    } else {
+                    }
+                    else
+                    {
                         this._cf.diffuseDisplacementTexture.node._type = "diffuseDisplacementMap";
                         return this._cf.diffuseDisplacementTexture.node;
                     }
-                } else {
+                }
+                else
+                {
                     return null;
                 }
             },
 
-            getMultiDiffuseAlphaMap: function()
-            {
-                if(this._cf.multiDiffuseAlphaTexture.node) {
-                    if (x3dom.isa(this._cf.multiDiffuseAlphaTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
-                        this._cf.multiDiffuseAlphaTexture.node._cf.texture.node._type = "multiDiffuseAlphaMap";
-                        return this._cf.multiDiffuseAlphaTexture.node._cf.texture.node;
-                    } else {
-                        this._cf.multiDiffuseAlphaTexture.node._type = "multiDiffuseAlphaMap";
-                        return this._cf.multiDiffuseAlphaTexture.node;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            getMultiEmissiveAmbientMap: function()
-            {
-                if(this._cf.multiEmissiveAmbientTexture.node) {
-                    if (x3dom.isa(this._cf.multiEmissiveAmbientTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
-                        this._cf.multiEmissiveAmbientTexture.node._cf.texture.node._type = "multiEmissiveAmbientMap";
-                        return this._cf.multiEmissiveAmbientTexture.node._cf.texture.node;
-                    } else {
-                        this._cf.multiEmissiveAmbientTexture.node._type = "multiEmissiveAmbientMap";
-                        return this._cf.multiEmissiveAmbientTexture.node;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            getMultiSpecularShininessMap: function()
-            {
-                if(this._cf.multiSpecularShininessTexture.node) {
-                    if (x3dom.isa(this._cf.multiSpecularShininessTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
-                        this._cf.multiSpecularShininessTexture.node._cf.texture.node._type = "multiSpecularShininessMap";
-                        return this._cf.multiSpecularShininessTexture.node._cf.texture.node;
-                    } else {
-                        this._cf.multiSpecularShininessTexture.node._type = "multiSpecularShininessMap";
-                        return this._cf.multiSpecularShininessTexture.node;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            getMultiVisibilityMap: function()
-            {
-                if(this._cf.multiVisibilityTexture.node) {
-                    if (x3dom.isa(this._cf.multiVisibilityTexture.node, x3dom.nodeTypes.SurfaceShaderTexture)) {
-                        this._cf.multiVisibilityTexture.node._cf.texture.node._type = "multiVisibilityMap";
-                        return this._cf.multiVisibilityTexture.node._cf.texture.node;
-                    } else {
-                        this._cf.multiVisibilityTexture.node._type = "multiVisibilityMap";
-                        return this._cf.multiVisibilityTexture.node;
-                    }
-                } else {
-                    return null;
-                }
-            },
-
-            getTextures: function()
+            getTextures : function ()
             {
                 var textures = [];
 
                 var diff = this.getDiffuseMap();
-                if(diff) textures.push(diff);
+                if ( diff ) {textures.push( diff );}
 
                 var norm = this.getNormalMap();
-                if(norm) textures.push(norm);
+                if ( norm ) {textures.push( norm );}
 
                 var spec = this.getSpecularMap();
-                if(spec) textures.push(spec);
+                if ( spec ) {textures.push( spec );}
 
                 var shin = this.getShininessMap();
-                if(shin) textures.push(shin);
+                if ( shin ) {textures.push( shin );}
 
                 var env = this.getEnvironmentMap();
-                if(env) textures.push(env);
+                if ( env ) {textures.push( env );}
 
                 var displacement = this.getDisplacementMap();
-                if(displacement) textures.push(displacement);
+                if ( displacement ) {textures.push( displacement );}
 
                 var diffuseDisplacement = this.getDiffuseDisplacementMap();
-                if(diffuseDisplacement) textures.push(diffuseDisplacement);
-
-                var multiDiffuseAlpha = this.getMultiDiffuseAlphaMap();
-                if(multiDiffuseAlpha) textures.push(multiDiffuseAlpha);
-
-                var multiEmissiveAmbient = this.getMultiEmissiveAmbientMap();
-                if(multiEmissiveAmbient) textures.push(multiEmissiveAmbient);
-
-                var multiSpecularShininess = this.getMultiSpecularShininessMap();
-                if(multiSpecularShininess) textures.push(multiSpecularShininess);
-
-                var multiVisibility = this.getMultiVisibilityMap();
-                if(multiVisibility) textures.push(multiVisibility);
+                if ( diffuseDisplacement ) {textures.push( diffuseDisplacement );}
 
                 return textures;
             },
 
-            needTexcoords: function()
+            needTexcoords : function ()
             {
-
-               return ( this.getDiffuseMap()      || this.getNormalMap()    ||
+                return ( this.getDiffuseMap()      || this.getNormalMap()    ||
                         this.getSpecularMap()     || this.getShininessMap() ||
                         this.getDisplacementMap() || this.getDiffuseDisplacementMap() ||
                         this.getEnvironmentMap() ) ? true : false;
-
             }
         }
     )

@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "Material",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DMaterialNode,
-        
+    defineClass( x3dom.nodeTypes.X3DMaterialNode,
+
         /**
          * Constructor for Material
          * @constructs x3dom.nodeTypes.Material
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The Material node specifies surface material properties for associated geometry nodes and is used by the X3D lighting equations during rendering.
          * All of the fields in the Material node range from 0.0 to 1.0.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Material.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Material.superClass.call( this, ctx );
 
             /**
              * The ambientIntensity field specifies how much ambient light from light sources this surface shall reflect.
@@ -38,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'ambientIntensity', 0.2);
+            this.addField_SFFloat( ctx, "ambientIntensity", 0.2 );
 
             /**
              * The diffuseColor field reflects all X3D light sources depending on the angle of the surface with respect to the light source.
@@ -51,7 +52,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
+            this.addField_SFColor( ctx, "diffuseColor", 0.8, 0.8, 0.8 );
 
             /**
              * The emissiveColor field models "glowing" objects.
@@ -62,7 +63,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'emissiveColor', 0, 0, 0);
+            this.addField_SFColor( ctx, "emissiveColor", 0, 0, 0 );
 
             /**
              * The specularColor and shininess fields determine the specular highlights (e.g., the shiny spots on an apple).
@@ -75,7 +76,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shininess', 0.2);
+            this.addField_SFFloat( ctx, "shininess", 0.2 );
 
             /**
              * The specularColor and shininess fields determine the specular highlights (e.g., the shiny spots on an apple).
@@ -87,7 +88,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
+            this.addField_SFColor( ctx, "specularColor", 0, 0, 0 );
 
             /**
              * The transparency field specifies how "clear" an object is, with 1.0 being completely transparent, and 0.0 completely opaque.
@@ -98,29 +99,33 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'transparency', 0);
-        
+            this.addField_SFFloat( ctx, "transparency", 0 );
         },
         {
-            fieldChanged: function(fieldName) {
-                if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
+            fieldChanged : function ( fieldName )
+            {
+                if ( fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
                     fieldName == "emissiveColor" || fieldName == "shininess" ||
-                    fieldName == "specularColor" || fieldName == "transparency")
+                    fieldName == "specularColor" || fieldName == "transparency" )
                 {
-                    Array.forEach(this._parentNodes, function (app) {
-                        Array.forEach(app._parentNodes, function (shape) {
+                    this._parentNodes.forEach( function ( app )
+                    {
+                        app._parentNodes.forEach( function ( shape )
+                        {
                             shape._dirty.material = true;
-                        });
+                        } );
                         app.checkSortType();
-                    });
+                    } );
                 }
             }
         }
     )
 );
 
-x3dom.nodeTypes.Material.defaultNode = function() {
-    if (!x3dom.nodeTypes.Material._defaultNode) {
+x3dom.nodeTypes.Material.defaultNode = function ()
+{
+    if ( !x3dom.nodeTypes.Material._defaultNode )
+    {
         x3dom.nodeTypes.Material._defaultNode = new x3dom.nodeTypes.Material();
         x3dom.nodeTypes.Material._defaultNode.nodeChanged();
     }

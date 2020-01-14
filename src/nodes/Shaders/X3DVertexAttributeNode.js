@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DVertexAttributeNode",
     "Shaders",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGeometricPropertyNode,
+
         /**
          * Constructor for X3DVertexAttributeNode
          * @constructs x3dom.nodeTypes.X3DVertexAttributeNode
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc This abstract node type is the base type for all node types that specify per-vertex attribute
          *  information to the shader.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DVertexAttributeNode.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DVertexAttributeNode.superClass.call( this, ctx );
 
             /**
              * The name field describes a name that is mapped to the shading language-specific name for describing
@@ -37,8 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx, 'name', "");
-        
+            this.addField_SFString( ctx, "name", "" );
         }
     )
 );

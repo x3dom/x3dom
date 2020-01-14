@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "PhysicalEnvironmentLight",
     "Lighting",
-    defineClass(x3dom.nodeTypes.X3DLightNode,
-        
+    defineClass( x3dom.nodeTypes.X3DLightNode,
+
         /**
          * Constructor for PhysicalEnvironmentLight
          * @constructs x3dom.nodeTypes.PhysicalEnvironmentLight
@@ -21,10 +21,11 @@ x3dom.registerNodeType(
          * @status experimental
          * @extends x3dom.nodeTypes.X3DLightNode
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
-         * @classdesc 
+         * @classdesc
          */
-        function (ctx) {
-            x3dom.nodeTypes.PhysicalEnvironmentLight.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.PhysicalEnvironmentLight.superClass.call( this, ctx );
 
             /**
              * The direction field specifies the direction vector of the illumination emanating from the light source in the local coordinate system.
@@ -34,10 +35,10 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this.addField_SFVec3f( ctx, "direction", 0, 0, -1 );
 
             /**
-             * 
+             *
              * The diffuse component of the environment light.
              * The node supports only pre-computed HDR .dds files and these should be linear by default.
              * @var {x3dom.nodeTypes.X3DTextureNode} diffuse
@@ -46,7 +47,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'diffuse', "https://x3dom.org/download/assets/pbr/papermillDiffuse.dds");
+            this.addField_SFString( ctx, "diffuse", "https://x3dom.org/download/assets/pbr/papermillDiffuse.dds" );
 
             /**
              *
@@ -58,7 +59,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'specular', "https://x3dom.org/download/assets/pbr/papermillSpecular.dds");
+            this.addField_SFString( ctx, "specular", "https://x3dom.org/download/assets/pbr/papermillSpecular.dds" );
 
             /**
              *
@@ -68,7 +69,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'shadowCascades', 1);
+            this.addField_SFInt32( ctx, "shadowCascades", 1 );
 
             /**
              *
@@ -78,7 +79,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitFactor', 1);
+            this.addField_SFFloat( ctx, "shadowSplitFactor", 1 );
 
             /**
              *
@@ -88,23 +89,24 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'shadowSplitOffset', 0.1);
-        
+            this.addField_SFFloat( ctx, "shadowSplitOffset", 0.1 );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "diffuse" || fieldName == "specular") {
+                if ( fieldName == "diffuse" || fieldName == "specular" )
+                {
                     //this.invalidateGLObject();
                 }
             },
 
-            getViewMatrix: function(vec) {
-                var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
+            getViewMatrix : function ( vec )
+            {
+                var dir = this.getCurrentTransform().multMatrixVec( this._vf.direction ).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
-                    new x3dom.fields.SFVec3f(0, 0, -1), dir);
+                    new x3dom.fields.SFVec3f( 0, 0, -1 ), dir );
                 return orientation.toMatrix().transpose().
-                    mult(x3dom.fields.SFMatrix4f.translation(vec.negate()));
+                    mult( x3dom.fields.SFMatrix4f.translation( vec.negate() ) );
             }
         }
     )

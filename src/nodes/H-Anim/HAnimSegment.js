@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "HAnimSegment",
     "H-Anim",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for HAnimSegment
          * @constructs x3dom.nodeTypes.HAnimSegment
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc Each body segment is stored in an HAnimSegment node.
          * The HAnimSegment node is a grouping node that will typically contain either a number of Shape nodes or perhaps Transform nodes that position the body part within its coordinate system.
          */
-        function (ctx) {
-            x3dom.nodeTypes.HAnimSegment.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.HAnimSegment.superClass.call( this, ctx );
 
             /**
              * Each Segment object shall have a name field, which shall not have the empty string value, that is used for identifying
@@ -39,7 +39,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFString(ctx,'name', "");
+            this.addField_SFString( ctx, "name", "" );
 
             /**
              * The centerOfMass field is the location within the segment of its centre of mass.
@@ -49,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'centerOfMass', 0, 0, 0);
+            this.addField_SFVec3f( ctx, "centerOfMass", 0, 0, 0 );
 
             /**
              * The mass field is the total mass of the segment. A value of -1 for mass specifies that no mass value is available.
@@ -59,7 +59,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'mass', 0);
+            this.addField_SFFloat( ctx, "mass", 0 );
 
             /**
              * The momentsOfInertia field contains the moment of inertia matrix. The first three elements are the first row
@@ -70,8 +70,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'momentsOfInertia', [0, 0, 0, 0, 0, 0, 0, 0, 0]);
-
+            this.addField_MFFloat( ctx, "momentsOfInertia", [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ] );
 
             /**
              * The coord field is used for Segment objects that have deformable meshes and shall contain coordinates referenced
@@ -83,7 +82,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
+            this.addField_SFNode( "coord", x3dom.nodeTypes.X3DCoordinateNode );
 
             /**
              * The displacers field stores the Displacer objects for a particular Segment object.
@@ -93,8 +92,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFNode('displacers', x3dom.nodeTypes.HAnimDisplacer);
-        
+            this.addField_MFNode( "displacers", x3dom.nodeTypes.HAnimDisplacer );
         },
         {
             // TODO coord      add functionality

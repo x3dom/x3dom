@@ -12,8 +12,8 @@ x3dom.registerNodeType(
     "GeoLocation",
     "Geospatial",
     //was X3DGroupingNode which is how the node is defined in the spec
-    defineClass(x3dom.nodeTypes.X3DTransformNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTransformNode,
+
         /**
          * Constructor for GeoLocation
          * @constructs x3dom.nodeTypes.GeoLocation
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * This node is a grouping node that can be thought of as a Transform node.
          * However, the GeoLocation node specifies an absolute location, not a relative one, so content developers should not nest GeoLocation nodes within each other.
          */
-        function (ctx) {
-            x3dom.nodeTypes.GeoLocation.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.GeoLocation.superClass.call( this, ctx );
 
             /**
              * The geoSystem field is used to define the spatial reference frame.
@@ -40,7 +40,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
+            this.addField_MFString( ctx, "geoSystem", [ "GD", "WE" ] );
 
             /**
              * The geometry of the nodes in children is to be specified in units of metres in X3D coordinates relative to the location specified by the geoCoords field.
@@ -51,7 +51,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
+            this.addField_SFVec3d( ctx, "geoCoords", 0, 0, 0 );
 
             /**
              * The geoOrigin field is used to specify a local coordinate frame for extended precision.
@@ -61,21 +61,21 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
+            this.addField_SFNode( "geoOrigin", x3dom.nodeTypes.GeoOrigin );
         },
 
         {
-	        nodeChanged: function()
+            nodeChanged : function ()
             {
                 // similar to what transform in Grouping.js does
                 var position = this._vf.geoCoords;
                 var geoSystem = this._vf.geoSystem;
                 var geoOrigin = this._cf.geoOrigin; // gets only populated if in nodeChanged()
 
-                this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
+                this._trafo =  this.getGeoTransRotMat( geoSystem, geoOrigin, position );
             },
-        
-            getGeoRotMat: function (geoSystem, positionGC)
+
+            getGeoRotMat : function ( geoSystem, positionGC )
             {
                 //returns transformation matrix to align coordinate system with geoposition as required:
                 //2 rotations to get required orientation
@@ -86,68 +86,68 @@ x3dom.registerNodeType(
                 //2) around Z to get orig. up on longitude
 
                 var coords = new x3dom.fields.MFVec3f();
-                coords.push(positionGC);
-                var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD(geoSystem, coords)[0];
-                
-                var Xaxis = new  x3dom.fields.SFVec3f(1,0,0);
-                var rotlat = 180 - positionGD.y; // latitude
-                var deg2rad = Math.PI/180;
-                var rotUpQuat = x3dom.fields.Quaternion.axisAngle(Xaxis, rotlat*deg2rad);
+                coords.push( positionGC );
+                var positionGD = x3dom.nodeTypes.GeoCoordinate.prototype.GCtoGD( geoSystem, coords )[ 0 ];
 
-                var Zaxis = new x3dom.fields.SFVec3f(0,0,1);
+                var Xaxis = new  x3dom.fields.SFVec3f( 1, 0, 0 );
+                var rotlat = 180 - positionGD.y; // latitude
+                var deg2rad = Math.PI / 180;
+                var rotUpQuat = x3dom.fields.Quaternion.axisAngle( Xaxis, rotlat * deg2rad );
+
+                var Zaxis = new x3dom.fields.SFVec3f( 0, 0, 1 );
                 var rotlon = 90 + positionGD.x;// 90 to get to prime meridian;
-                var rotZQuat = x3dom.fields.Quaternion.axisAngle(Zaxis, rotlon*deg2rad);
+                var rotZQuat = x3dom.fields.Quaternion.axisAngle( Zaxis, rotlon * deg2rad );
 
                 //return rotZQuat.toMatrix().mult(rotUpQuat.toMatrix();
-                return rotZQuat.multiply(rotUpQuat).toMatrix();
-
+                return rotZQuat.multiply( rotUpQuat ).toMatrix();
             },
 
-            getGeoTransRotMat: function (geoSystem, geoOrigin, position)
+            getGeoTransRotMat : function ( geoSystem, geoOrigin, position )
             {
                 // accept geocoords, return translation/rotation transform matrix
                 var coords = new x3dom.fields.MFVec3f();
-                coords.push(position);
+                coords.push( position );
 
-                var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC(geoSystem, geoOrigin, coords)[0];
-                var rotMat = this.getGeoRotMat(geoSystem, transformed);
+                var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoGC( geoSystem, geoOrigin, coords )[ 0 ];
+                var rotMat = this.getGeoRotMat( geoSystem, transformed );
 
-		        // account for geoOrigin with and without rotateYUp
-                if (geoOrigin.node)
+                // account for geoOrigin with and without rotateYUp
+                if ( geoOrigin.node )
                 {
-                    var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC(geoOrigin);
-                    if(geoOrigin.node._vf.rotateYUp)
+                    var origin = x3dom.nodeTypes.GeoCoordinate.prototype.OriginToGC( geoOrigin );
+                    if ( geoOrigin.node._vf.rotateYUp )
                     {
                         // inverse rotation after original rotation and offset
-      			            // just skipping all rotations produces incorrect position
-                        var rotMatOrigin = this.getGeoRotMat(geoSystem, origin);
-                        return rotMatOrigin.inverse().mult(x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat));
+                        // just skipping all rotations produces incorrect position
+                        var rotMatOrigin = this.getGeoRotMat( geoSystem, origin );
+                        return rotMatOrigin.inverse().mult( x3dom.fields.SFMatrix4f.translation( transformed.subtract( origin ) ).mult( rotMat ) );
                     }
                     //rotate, then translate; account for geoOrigin by subtracting origin from GeoLocation
-                    return x3dom.fields.SFMatrix4f.translation(transformed.subtract(origin)).mult(rotMat);
+                    return x3dom.fields.SFMatrix4f.translation( transformed.subtract( origin ) ).mult( rotMat );
                 }
                 else
-		        // no GeoOrigin: first rotate, then translate
+                // no GeoOrigin: first rotate, then translate
                 {
-                    return x3dom.fields.SFMatrix4f.translation(transformed).mult(rotMat);
+                    return x3dom.fields.SFMatrix4f.translation( transformed ).mult( rotMat );
                 }
             },
 
             //mimic what transform node does
-            fieldChanged: function (fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "geoSystem" || fieldName == "geoCoords" ||
-                    fieldName == "geoOrigin")
+                if ( fieldName == "geoSystem" || fieldName == "geoCoords" ||
+                    fieldName == "geoOrigin" )
                 {
                     var position = this._vf.geoCoords;
                     var geoSystem = this._vf.geoSystem;
                     var geoOrigin = this._cf.geoOrigin;
-                    this._trafo =  this.getGeoTransRotMat(geoSystem, geoOrigin, position);
+                    this._trafo =  this.getGeoTransRotMat( geoSystem, geoOrigin, position );
 
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }
-                else if (fieldName == "render") {
+                else if ( fieldName == "render" )
+                {
                     this.invalidateVolume();
                     //this.invalidateCache();
                 }

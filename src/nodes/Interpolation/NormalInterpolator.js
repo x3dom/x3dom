@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "NormalInterpolator",
     "Interpolation",
-    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
-        
+    defineClass( x3dom.nodeTypes.X3DInterpolatorNode,
+
         /**
          * Constructor for NormalInterpolator
          * @constructs x3dom.nodeTypes.NormalInterpolator
@@ -27,9 +27,9 @@ x3dom.registerNodeType(
          * The number of normals in the keyValue field shall be an integer multiple of the number of key frames in the key field.
          * That integer multiple defines how many normals will be contained in the value_changed events.
          */
-        function (ctx) {
-            x3dom.nodeTypes.NormalInterpolator.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.NormalInterpolator.superClass.call( this, ctx );
 
             /**
              * Defines the set of data points, that are used for interpolation.
@@ -40,22 +40,22 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFVec3f(ctx, 'keyValue', []);
-        
+            this.addField_MFVec3f( ctx, "keyValue", [] );
         },
         {
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if(fieldName === "set_fraction")
+                if ( fieldName === "set_fraction" )
                 {
-                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
-                        return a.multiply(1.0-t).add(b.multiply(t)).normalize();
-                    });
+                    var value = this.linearInterp( this._vf.set_fraction, function ( a, b, t )
+                    {
+                        return a.multiply( 1.0 - t ).add( b.multiply( t ) ).normalize();
+                    } );
 
-                    if(value != undefined && value != this._lastValue)
+                    if ( value != undefined && value != this._lastValue )
                     {
                         this._lastValue = value;
-                        this.postMessage('value_changed', value);
+                        this.postMessage( "value_changed", value );
                     }
                 }
             }

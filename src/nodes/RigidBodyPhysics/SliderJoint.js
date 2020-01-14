@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### SliderJoint ###
+//    ### SliderJoint ###
 x3dom.registerNodeType(
     "SliderJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for SliderJoint
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The SliderJoint node represents a joint where all movement between the bodies specified by the
          *  body1 and body2 fields is constrained to a single dimension along a user-defined axis.
          */
-        function(ctx){
-            x3dom.nodeTypes.SliderJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.SliderJoint.superClass.call( this, ctx );
 
             /**
              * The axis field indicates which axis along which the two bodies will act. The value should represent a
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'axis', 0,1,0);
+            this.addField_SFVec3f( ctx, "axis", 0, 1, 0 );
 
             /**
              * If minSeparation is greater than maxSeparation, the stops become ineffective as if the object has no
@@ -48,7 +49,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'maxSeparation', 1);
+            this.addField_SFFloat( ctx, "maxSeparation", 1 );
 
             /**
              * If minSeparation is greater than maxSeparation, the stops become ineffective as if the object has no
@@ -60,7 +61,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'minSeparation', 0);
+            this.addField_SFFloat( ctx, "minSeparation", 0 );
 
             /**
              * The stopBounce field describes how much the joint should bounce the body back if the joint limit has been
@@ -73,7 +74,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopBounce', 0);
+            this.addField_SFFloat( ctx, "stopBounce", 0 );
 
             /**
              * The stopErrorCorrection field describes the amount of error correction to be performed in a time step
@@ -86,12 +87,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat(ctx, 'stopErrorCorrection', 1);
-
-
+            this.addField_SFFloat( ctx, "stopErrorCorrection", 1 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('SliderJoint: ');
             }
         }

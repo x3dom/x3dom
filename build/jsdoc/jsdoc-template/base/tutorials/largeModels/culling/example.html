@@ -1,0 +1,218 @@
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>X3DOM Culling Example</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+
+</head>
+<body>
+<h1>Culling Techniques Example</h1>
+<script>
+    /**
+     * Change the settings of the directional light
+     *
+     * @param field string: Name of the field
+     * @param value number: New value to set
+     */
+    function changeSetting(field, value)
+    {
+        var env = document.getElementById("environment");
+
+        env.setAttribute(field, value);
+    }
+
+    var frustumCulling = false;
+
+</script>
+<div id="content">
+    <x3d id='x3dElement' width='500px' height='400px' head>
+        <scene id="scene">
+        <environment id="environment" frustumCulling='false' smallFeatureCulling='true' smallFeatureThreshold="1" lowPriorityCulling="true" lowPriorityThreshold="0.99"> </environment>
+            <Transform id="root">
+                <Inline url="asteroid/asteroid.x3d" mapDEFToID="true" nameSpaceName="asteroid" id="myInline"></Inline>
+            </Transform>
+            <NavigationInfo headLight="false"></NavigationInfo>
+            <DirectionalLight ambientIntensity="0.0880"
+                              color="0.5000 0.7000 0.3000"
+                              intensity="0.5714"
+                              direction="0.0000 -1.0000 -1.0000"
+                    />
+            <Viewpoint position="0.00000 0.00000 772600.99922" orientation="0.00000 0.00000 0.00000 0.00000"
+                       description="defaultX3DViewpointNode"></Viewpoint>
+        </scene>
+    </x3d>
+
+    <div style="margin-left: 550px">
+        <h2>FPS: <div id="fps"></div></h2>
+        <h2>Drawcalls: <div id="dc"></div></h2>
+        <br><br><br>
+        <b>View frustum culling</b><br>
+        <input type="button" id="frustumCulling" value="Activate" onclick="frustumCulling = !frustumCulling; this.value = (frustumCulling ? 'Deactivate' : 'Activate' ); changeSetting('frustumCulling', frustumCulling);"/>
+        <br><br><br>
+       <b>Small Feature Threshold</b><br>
+        0 <input type="range" id="smallFeatureCulling" min="1.0" max="20.0" step="0.05" value="1" onclick="changeSetting('smallFeatureThreshold', this.value)"/>20<br>
+        <br>
+        <b>Low Priority Threshold</b><br>
+        0 <input type="range" id="lowPriorityCulling" min="0" step="0.05" max="1" value="1" onclick="changeSetting('lowPriorityThreshold', this.value)" /> 1<br>
+        <br>
+    </div>
+
+</div>
+<script type="text/javascript">
+    document.onload = function()
+    {
+        function createInstancedScene()
+        {
+            var root = document.getElementById("root");
+            var scene = document.getElementById("scene");
+
+            var scale = 50000, numInstances = 8;
+
+            for(var i = 0; i < 5; ++i)
+            {
+                var timeSensor = document.createElement('TimeSensor');
+                timeSensor.setAttribute('DEF','time'+i);
+                timeSensor.setAttribute('cycleInterval', ""+(20 +Math.random() * 15));
+                timeSensor.setAttribute('loop',true);
+
+                scene.appendChild(timeSensor);
+            }
+
+            for (var x=0; x<=numInstances; x++)
+            {
+                for (var y=0; y<=numInstances; y++)
+                {
+                    for(var z=0; z <=numInstances; z++)
+                    {
+                        var xPos = (- 1 +  Math.random() * 2 ) *  scale * numInstances;
+                        var yPos = (- 1 +  Math.random() * 2 ) *  scale * numInstances;
+                        var zPos = (- 1 +  Math.random() * 2 ) *  scale * numInstances;
+
+                        var scaleX =  50 + Math.random() * 5000 + Math.random() * 1000;
+                        var scaleY = scaleX + ( -1 + Math.random() *2 ) * 50;
+                        var scaleZ = scaleX + ( -1 + Math.random() *2 ) * 50;
+
+
+                        var rotX = -90+ Math.random() * 180;
+                        var rotY = -90+ Math.random() * 180;
+                        var rotZ = -90+ Math.random() * 180;
+
+                        var t = document.createElement('Transform');
+                        t.setAttribute("translation", xPos +" "+yPos+" "+ zPos);
+                        t.setAttribute("scale",scaleX+" "+scaleY +" "+scaleZ);
+                        t.setAttribute("rotation",rotX+" "+rotY+" "+rotZ+" "+90);
+
+                        var t2 = document.createElement('Transform');
+                        t2.setAttribute('DEF','t'+x+y+z);
+
+                        var s = document.createElement('Inline');
+                        s.setAttribute("USE", "myInline");
+                        s.setAttribute("mapDEFToID", "true");
+                        //s.setAttribute("nameSpaceName", ""+x+y+z);
+
+                        //s.setAttribute("url","../models/teapot/teapot.x3d");
+                        //s.setAttribute("nameSpaceName","modelBin");
+
+                        t2.appendChild(s);
+                        t.appendChild(t2);
+                        root.appendChild(t);
+
+                        root.appendChild(t);
+
+                        var numberOfPositions = 2 + Math.random() * 3;
+                        var interpKey = '0', interpKeyValues = '0 0 0';
+                        for (var j = 1; j < numberOfPositions - 1; ++j) {
+                            interpKey += ' ' + j / numberOfPositions + 1;
+                            var xPos = -10 + Math.random() * 30;
+                            var yPos = -10 + Math.random() * 30;
+                            var zPos = -10 + Math.random() * 30;
+                            interpKeyValues += '  ' + xPos + ' ' + yPos + ' ' + zPos;
+                        }
+                        interpKey += '  0.999';
+                        interpKeyValues += '  0 0 0';
+
+                        var interpolator = document.createElement('PositionInterpolator');
+                        var interpName = 'interp'+x+y+z;
+                        interpolator.setAttribute('DEF',interpName);
+                        interpolator.setAttribute('key', interpKey);
+                        interpolator.setAttribute('keyValue', interpKeyValues);
+
+
+                        numberOfPositions = 10 + Math.random() * 15;
+                        var rotKey = '0', rotKeyValues = '0 0 0 90';
+                        for (var j = 1; j < numberOfPositions - 1; ++j) {
+                            rotKey += ' ' + j / numberOfPositions + 1;
+                            var rotX = Math.random() * 360;
+                            var rotY = Math.random() * 360;
+                            var rotZ = Math.random() * 360;
+
+                            rotKeyValues += '  ' + rotX + ' ' + rotY + ' ' + rotZ + ' 360';
+                        }
+                        rotKey += '  0.999';
+                        rotKeyValues += '  0 0 0 90';
+
+                        var interpolator2 = document.createElement('OrientationInterpolator');
+                        var interp2Name = 'interp2'+x+y+z;
+                        interpolator2.setAttribute('DEF',interp2Name);
+                        interpolator2.setAttribute('key', rotKey);
+                        interpolator2.setAttribute('keyValue', rotKeyValues);
+
+
+                        var timeSensorId = parseInt(Math.random() * 4);
+
+                        var route1 = document.createElement('route');
+                        route1.setAttribute('fromNode','time'+timeSensorId);
+                        route1.setAttribute('fromField','fraction_changed');
+                        route1.setAttribute('toNode',interpName);
+                        route1.setAttribute('toField','set_fraction');
+
+                        var route2 = document.createElement('route');
+                        route2.setAttribute('fromNode',interpName);
+                        route2.setAttribute('fromField','value_changed');
+                        route2.setAttribute('toNode','t'+x+y+z);
+                        route2.setAttribute('toField','translation');
+
+                        var route3 = document.createElement('route');
+                        route3.setAttribute('fromNode','time'+timeSensorId);
+                        route3.setAttribute('fromField','fraction_changed');
+                        route3.setAttribute('toNode',interp2Name);
+                        route3.setAttribute('toField','set_fraction');
+
+                        var route4 = document.createElement('route');
+                        route4.setAttribute('fromNode',interp2Name);
+                        route4.setAttribute('fromField','value_changed');
+                        route4.setAttribute('toNode','t'+x+y+z);
+                        route4.setAttribute('toField','rotation');
+
+                        scene.appendChild(interpolator);
+                        scene.appendChild(interpolator2);
+                        scene.appendChild(route1);
+                        scene.appendChild(route2);
+                        scene.appendChild(route3);
+                        scene.appendChild(route4);
+
+                    }
+                }
+            }
+        }
+        createInstancedScene();
+
+        var x3dElement = document.getElementById('x3dElement');
+
+        var runtime = x3dElement.runtime;
+
+        runtime.exitFrame = function()
+        {
+            var fpsDiv = document.getElementById('fps');
+            fpsDiv.innerHTML = runtime.fps.toFixed(2);
+
+            var drawcalls = document.getElementById('dc');
+            drawcalls.innerHTML = runtime.states.infos['#DRAWS:'].toFixed(2);
+        }
+
+    }
+</script>
+
+</body>
+</html>

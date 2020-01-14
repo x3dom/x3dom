@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "BinaryGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+
         /**
          * Constructor for BinaryGeometry
          * @constructs x3dom.nodeTypes.BinaryGeometry
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The BinaryGeometry node can load binary data exported by AOPT.
          */
-        function (ctx) {
-            x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BinaryGeometry.superClass.call( this, ctx );
 
             /**
              * The url to the binary file, that contains the index data.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'index', "");   // Uint16
+            this.addField_SFString( ctx, "index", "" );   // Uint16
 
             /**
              * The url to the binary file, that contains the mesh coordinates.
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'coord', "");   // Float32
+            this.addField_SFString( ctx, "coord", "" );   // Float32
 
             /**
              * The url to the binary file, that contains the normals.
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normal', "");
+            this.addField_SFString( ctx, "normal", "" );
 
             /**
              * The url to the binary file, that contains the texture coordinates.
@@ -64,7 +64,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'texCoord', "");    // THINKABOUTME: add texCoord1, texCoord2, ...?
+            this.addField_SFString( ctx, "texCoord", "" );    // THINKABOUTME: add texCoord1, texCoord2, ...?
 
             /**
              * The url to the binary file, that contains the colors.
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'color', "");
+            this.addField_SFString( ctx, "color", "" );
 
             /**
              *
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'tangent', "");     // TODO
+            this.addField_SFString( ctx, "tangent", "" );     // TODO
 
             /**
              *
@@ -94,7 +94,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'binormal', "");    // TODO
+            this.addField_SFString( ctx, "binormal", "" );    // TODO
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
@@ -107,7 +107,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString( ctx, "indexType", "Uint16" );
 
             /**
              * Specifies the byte format of the coordinates.
@@ -117,7 +117,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'coordType', "Float32");
+            this.addField_SFString( ctx, "coordType", "Float32" );
 
             /**
              * Specifies the byte format of the normals.
@@ -127,7 +127,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'normalType', "Float32");
+            this.addField_SFString( ctx, "normalType", "Float32" );
 
             /**
              * Specifies the byte format of the texture coordinates.
@@ -137,7 +137,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'texCoordType', "Float32");
+            this.addField_SFString( ctx, "texCoordType", "Float32" );
 
             /**
              * Specifies the byte format of the colors.
@@ -147,7 +147,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'colorType', "Float32");
+            this.addField_SFString( ctx, "colorType", "Float32" );
 
             /**
              * Specifies the byte format of the tangents.
@@ -157,7 +157,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'tangentType', "Float32");
+            this.addField_SFString( ctx, "tangentType", "Float32" );
 
             /**
              * Specifies the byte format of the binormals.
@@ -167,8 +167,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'binormalType', "Float32");
-
+            this.addField_SFString( ctx, "binormalType", "Float32" );
 
             /**
              * Specifies whether the normals are encoded as spherical coordinates.
@@ -178,7 +177,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+            this.addField_SFBool( ctx, "normalAsSphericalCoordinates", false );
 
             /**
              * Enables RGBA colors.
@@ -188,7 +187,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'rgbaColors', false);
+            this.addField_SFBool( ctx, "rgbaColors", false );
 
             /**
              * Specifies the number of texture coordinates per vertex.
@@ -199,7 +198,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+            this.addField_SFInt32( ctx, "numTexCoordComponents", 2 );
 
             /**
              * Specifies whether normals are stored per vertex or per face.
@@ -209,7 +208,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
+            this.addField_SFBool( ctx, "normalPerVertex", true );
 
             /**
              * Flag that specifies whether vertex IDs are given as texture coordinates.
@@ -219,7 +218,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'idsPerVertex', false);
+            this.addField_SFBool( ctx, "idsPerVertex", false );
 
             /**
              * Flag that specifies whether the binary files are GZip compressed.
@@ -229,7 +228,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'compressed', false);
+            this.addField_SFBool( ctx, "compressed", false );
 
             // workaround
             this._hasStrideOffset = false;
@@ -240,104 +239,119 @@ x3dom.registerNodeType(
 
             // info helper members
             this._vertexCountSum = 0;
-            for (var i=0; i<this._vf.vertexCount.length; ++i) {
-                this._vertexCountSum += this._vf.vertexCount[i];
+            for ( var i = 0; i < this._vf.vertexCount.length; ++i )
+            {
+                this._vertexCountSum += this._vf.vertexCount[ i ];
             }
-        
         },
         {
-            parentAdded: function(parent)
+            parentAdded : function ( parent )
             {
                 // TODO; also handle multiple shape parents!
-                var offsetInd, strideInd, offset, stride;
+                var offsetInd,
+                    strideInd,
+                    offset,
+                    stride;
 
-                offsetInd = this._vf.coord.lastIndexOf('#');
-                strideInd = this._vf.coord.lastIndexOf('+');
-                if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.coord.substring(++offsetInd, strideInd);
-                    stride = +this._vf.coord.substring(strideInd);
-                    parent._coordStrideOffset = [stride, offset];
+                offsetInd = this._vf.coord.lastIndexOf( "#" );
+                strideInd = this._vf.coord.lastIndexOf( "+" );
+                if ( offsetInd >= 0 && strideInd >= 0 )
+                {
+                    offset = +this._vf.coord.substring( ++offsetInd, strideInd );
+                    stride = +this._vf.coord.substring( strideInd );
+                    parent._coordStrideOffset = [ stride, offset ];
                     this._hasStrideOffset = true;
-                    if ((offset / 8) - Math.floor(offset / 8) == 0) {
+                    if ( ( offset / 8 ) - Math.floor( offset / 8 ) == 0 )
+                    {
                         this._mesh._numPosComponents = 4;
                     }
                     //x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
                 }
-                else if (strideInd >= 0) {
-                    stride = +this._vf.coord.substring(strideInd);
-                    parent._coordStrideOffset = [stride, 0];
-                    if ((stride / 8) - Math.floor(stride / 8) == 0) {
+                else if ( strideInd >= 0 )
+                {
+                    stride = +this._vf.coord.substring( strideInd );
+                    parent._coordStrideOffset = [ stride, 0 ];
+                    if ( ( stride / 8 ) - Math.floor( stride / 8 ) == 0 )
+                    {
                         this._mesh._numPosComponents = 4;   // ???
                     }
                     //x3dom.debug.logInfo("coord stride: " + stride);
                 }
 
-                offsetInd = this._vf.normal.lastIndexOf('#');
-                strideInd = this._vf.normal.lastIndexOf('+');
-                if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.normal.substring(++offsetInd, strideInd);
-                    stride = +this._vf.normal.substring(strideInd);
-                    parent._normalStrideOffset = [stride, offset];
+                offsetInd = this._vf.normal.lastIndexOf( "#" );
+                strideInd = this._vf.normal.lastIndexOf( "+" );
+                if ( offsetInd >= 0 && strideInd >= 0 )
+                {
+                    offset = +this._vf.normal.substring( ++offsetInd, strideInd );
+                    stride = +this._vf.normal.substring( strideInd );
+                    parent._normalStrideOffset = [ stride, offset ];
                     //x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
                 }
-                else if (strideInd >= 0) {
-                    stride = +this._vf.normal.substring(strideInd);
-                    parent._normalStrideOffset = [stride, 0];
+                else if ( strideInd >= 0 )
+                {
+                    stride = +this._vf.normal.substring( strideInd );
+                    parent._normalStrideOffset = [ stride, 0 ];
                     //x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
-                offsetInd = this._vf.texCoord.lastIndexOf('#');
-                strideInd = this._vf.texCoord.lastIndexOf('+');
-                if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
-                    stride = +this._vf.texCoord.substring(strideInd);
-                    parent._texCoordStrideOffset = [stride, offset];
+                offsetInd = this._vf.texCoord.lastIndexOf( "#" );
+                strideInd = this._vf.texCoord.lastIndexOf( "+" );
+                if ( offsetInd >= 0 && strideInd >= 0 )
+                {
+                    offset = +this._vf.texCoord.substring( ++offsetInd, strideInd );
+                    stride = +this._vf.texCoord.substring( strideInd );
+                    parent._texCoordStrideOffset = [ stride, offset ];
                     //x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
                 }
-                else if (strideInd >= 0) {
-                    stride = +this._vf.texCoord.substring(strideInd);
-                    parent._texCoordStrideOffset = [stride, 0];
+                else if ( strideInd >= 0 )
+                {
+                    stride = +this._vf.texCoord.substring( strideInd );
+                    parent._texCoordStrideOffset = [ stride, 0 ];
                     //x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
-                offsetInd = this._vf.color.lastIndexOf('#');
-                strideInd = this._vf.color.lastIndexOf('+');
-                if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.color.substring(++offsetInd, strideInd);
-                    stride = +this._vf.color.substring(strideInd);
-                    parent._colorStrideOffset = [stride, offset];
+                offsetInd = this._vf.color.lastIndexOf( "#" );
+                strideInd = this._vf.color.lastIndexOf( "+" );
+                if ( offsetInd >= 0 && strideInd >= 0 )
+                {
+                    offset = +this._vf.color.substring( ++offsetInd, strideInd );
+                    stride = +this._vf.color.substring( strideInd );
+                    parent._colorStrideOffset = [ stride, offset ];
                     //x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
                 }
-                else if (strideInd >= 0) {
-                    stride = +this._vf.color.substring(strideInd);
-                    parent._colorStrideOffset = [stride, 0];
+                else if ( strideInd >= 0 )
+                {
+                    stride = +this._vf.color.substring( strideInd );
+                    parent._colorStrideOffset = [ stride, 0 ];
                     //x3dom.debug.logInfo("color stride: " + stride);
                 }
 
-                if (this._vf.indexType != "Uint16" && !x3dom.caps.INDEX_UINT)
-                    x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
+                if ( this._vf.indexType != "Uint16" && !x3dom.caps.INDEX_UINT )
+                {x3dom.debug.logWarning( "Index type " + this._vf.indexType + " problematic" );}
             },
 
-            doIntersect: function(line)
+            doIntersect : function ( line )
             {
                 var min = this.getMin();
                 var max = this.getMax();
-                var isect = line.intersect(min, max);
+                var isect = line.intersect( min, max );
 
-                if (isect && line.enter < line.dist) {
+                if ( isect && line.enter < line.dist )
+                {
                     line.dist = line.enter;
                     line.hitObject = this;
-                    line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
+                    line.hitPoint = line.pos.add( line.dir.multiply( line.enter ) );
                     return true;
                 }
-                else {
+                else
+                {
                     return false;
                 }
             },
 
-            getPrecisionMax: function(type)
+            getPrecisionMax : function ( type )
             {
-                switch(this._vf[type])
+                switch ( this._vf[ type ] )
                 {
                     case "Int8":
                         return 127.0;

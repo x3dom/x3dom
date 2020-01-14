@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "SphereSegment",
     "Geometry3DExt",
-    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        
+    defineClass( x3dom.nodeTypes.X3DSpatialGeometryNode,
+
         /**
          * Constructor for SphereSegment
          * @constructs x3dom.nodeTypes.SphereSegment
@@ -22,9 +22,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc Describes a sphere segment shape.
          */
-        function (ctx) {
-            x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.SphereSegment.superClass.call( this, ctx );
 
             /**
              * Defines the radius of the sphere.
@@ -34,7 +34,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFFloat(ctx, 'radius', 1);
+            this.addField_SFFloat( ctx, "radius", 1 );
 
             /**
              * Defines an array of longitude values.
@@ -44,7 +44,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFFloat(ctx, 'longitude', []);
+            this.addField_MFFloat( ctx, "longitude", [] );
 
             /**
              * Defines an array of latitude values.
@@ -54,7 +54,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_MFFloat(ctx, 'latitude', []);
+            this.addField_MFFloat( ctx, "latitude", [] );
 
             /**
              * Defines an array of stepSizes.
@@ -64,66 +64,80 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'stepSize', 1, 1);
+            this.addField_SFVec2f( ctx, "stepSize", 1, 1 );
 
             var r = this._vf.radius;
             var longs = this._vf.longitude;
             var lats = this._vf.latitude;
 
-            var subx = longs.length, suby = lats.length;
-            var first, second;
+            var subx = longs.length,
+                suby = lats.length;
+            var first,
+                second,
 
-            var latNumber, longNumber;
-            var latitudeBands = suby;
-            var longitudeBands = subx;
+                latNumber,
+                longNumber,
+                latitudeBands = suby,
+                longitudeBands = subx,
 
-            var theta, sinTheta, cosTheta;
-            var phi, sinPhi, cosPhi;
-            var x, y, z, u, v;
+                theta,
+                sinTheta,
+                cosTheta,
+                phi,
+                sinPhi,
+                cosPhi,
+                x,
+                y,
+                z,
+                u,
+                v;
 
-            for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
-                theta = ((lats[latNumber]+90) * Math.PI) / 180;
-                sinTheta = Math.sin(theta);
-                cosTheta = Math.cos(theta);
+            for ( latNumber = 0; latNumber <= latitudeBands; latNumber++ )
+            {
+                theta = ( ( lats[ latNumber ] + 90 ) * Math.PI ) / 180;
+                sinTheta = Math.sin( theta );
+                cosTheta = Math.cos( theta );
 
-                for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
-                    phi = ((longs[longNumber]) * Math.PI) / 180;
+                for ( longNumber = 0; longNumber <= longitudeBands; longNumber++ )
+                {
+                    phi = ( ( longs[ longNumber ] ) * Math.PI ) / 180;
 
-                    sinPhi = Math.sin(phi);
-                    cosPhi = Math.cos(phi);
+                    sinPhi = Math.sin( phi );
+                    cosPhi = Math.cos( phi );
 
                     x = -cosPhi * sinTheta;
                     y = -cosTheta;
                     z = -sinPhi * sinTheta;
 
-                    u = longNumber / (longitudeBands-1);
-                    v = latNumber / (latitudeBands-1);
+                    u = longNumber / ( longitudeBands - 1 );
+                    v = latNumber / ( latitudeBands - 1 );
 
-                    this._mesh._positions[0].push(r * x, r * y, r * z);
-                    this._mesh._normals[0].push(x, y, z);
-                    this._mesh._texCoords[0].push(u, v);
+                    this._mesh._positions[ 0 ].push( r * x, r * y, r * z );
+                    this._mesh._normals[ 0 ].push( x, y, z );
+                    this._mesh._texCoords[ 0 ].push( u, v );
                 }
             }
 
-            for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
-                for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
-                    first = (latNumber * (longitudeBands + 1)) + longNumber;
+            for ( latNumber = 0; latNumber < latitudeBands; latNumber++ )
+            {
+                for ( longNumber = 0; longNumber < longitudeBands; longNumber++ )
+                {
+                    first = ( latNumber * ( longitudeBands + 1 ) ) + longNumber;
                     second = first + longitudeBands + 1;
 
-                    this._mesh._indices[0].push(first);
-                    this._mesh._indices[0].push(second);
-                    this._mesh._indices[0].push(first + 1);
+                    this._mesh._indices[ 0 ].push( first );
+                    this._mesh._indices[ 0 ].push( second );
+                    this._mesh._indices[ 0 ].push( first + 1 );
 
-                    this._mesh._indices[0].push(second);
-                    this._mesh._indices[0].push(second + 1);
-                    this._mesh._indices[0].push(first + 1);
+                    this._mesh._indices[ 0 ].push( second );
+                    this._mesh._indices[ 0 ].push( second + 1 );
+                    this._mesh._indices[ 0 ].push( first + 1 );
                 }
             }
 
             this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
-        
+            this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
+            this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
         }
     )
 );

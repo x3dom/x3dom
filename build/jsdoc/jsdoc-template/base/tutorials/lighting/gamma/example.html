@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>My first X3DOM page</title>
+    <script type='text/javascript' src='https://www.x3dom.org/download/x3dom.js'> </script>
+    <link rel='stylesheet' type='text/css' href='https://www.x3dom.org/download/x3dom.css'/>
+    <script>
+        function gamma()
+        {
+            var gamma =document.getElementById("gamma");
+            if(gamma.getAttribute('gammaCorrectionDefault')== 'linear'){
+                gamma.setAttribute('gammaCorrectionDefault', 'none');}
+            else
+                gamma.setAttribute('gammaCorrectionDefault', 'linear');
+        }
+
+    </script>
+</head>
+<body>
+
+<x3d id='someId' showStat='false' showLog='false' width='500px' height='400px'>
+    <scene DEF='scene2'>
+        <Environment id="gamma" gammaCorrectionDefault="none"></Environment>
+        <background  skyColor="1 1 1"></background>
+        <directionalLight direction='0 -1 0' on ="TRUE" intensity='0.5' shadowIntensity='0'  shadowFilterSize="0" shadowMapSize="2048">
+        </directionalLight>
+        <Viewpoint position="-0.88173 0.62175 -11.20835" orientation="-0.02934 0.99856 0.04490 3.23955"></Viewpoint>
+
+        <shape>
+            <appearance>
+                <Material diffuseColor="1.0 0 0"></Material>
+            </appearance>
+            <sphere></sphere>
+        </shape>
+        <Transform translation="0 -1 0" rotation="1 0 0 -1.57">
+            <Shape>
+                <Appearance><Material diffuseColor="0.5 0.5 0.5" specularColor="0 0 0"></Material></Appearance>
+                <Plane solid="false" size="10 10"></Plane>
+            </Shape>
+        </Transform>
+    </scene>
+    </x3d>
+<div style="border-left: 5px" >
+    <input type="checkbox" id="gammaInput" onclick="gamma()" >
+    <label>Gamma Correction</label>
+</div>
+</body>
+</html>

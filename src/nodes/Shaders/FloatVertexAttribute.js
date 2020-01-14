@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "FloatVertexAttribute",
     "Shaders",
-    defineClass(x3dom.nodeTypes.X3DVertexAttributeNode,
-        
+    defineClass( x3dom.nodeTypes.X3DVertexAttributeNode,
+
         /**
          * Constructor for FloatVertexAttribute
          * @constructs x3dom.nodeTypes.FloatVertexAttribute
@@ -24,9 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The FloatVertexAttribute node defines a set of per-vertex single-precision floating point
          *  attributes.
          */
-        function (ctx) {
-            x3dom.nodeTypes.FloatVertexAttribute.superClass.call(this, ctx);
-
+        function ( ctx )
+        {
+            x3dom.nodeTypes.FloatVertexAttribute.superClass.call( this, ctx );
 
             /**
              * The numComponents field specifies how many consecutive floating point values should be grouped together
@@ -38,7 +38,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFInt32(ctx, 'numComponents', 4);
+            this.addField_SFInt32( ctx, "numComponents", 4 );
 
             /**
              * The value field specifies an arbitrary collection of floating point values that will be passed to the
@@ -51,8 +51,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_MFFloat(ctx, 'value', []);
-        
+            this.addField_MFFloat( ctx, "value", [] );
         }
     )
 );

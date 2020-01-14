@@ -9,7 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
- /**
+/**
  * Class: x3dom.RequestManager
  */
 
@@ -45,7 +45,6 @@ x3dom.RequestManager.loadedRequests = 0;
  */
 x3dom.RequestManager.totalRequests = 0;
 
-
 /**
  *
  * @type {number}
@@ -64,27 +63,25 @@ x3dom.RequestManager.requestHeaders = [];
  */
 x3dom.RequestManager.withCredentials = false;
 
-
-x3dom.RequestManager.onSendRequest = function( counters ) {}; 
-x3dom.RequestManager.onAbortAllRequests = function( counters ) {}; 
-
+x3dom.RequestManager.onSendRequest = function ( counters ) {};
+x3dom.RequestManager.onAbortAllRequests = function ( counters ) {};
 
 /**
  *
  * @param header
  * @param value
  */
-x3dom.RequestManager.addRequestHeader = function( header, value )
+x3dom.RequestManager.addRequestHeader = function ( header, value )
 {
-    this.requestHeaders.push( { header: header, value : value } );
+    this.requestHeaders.push( { header: header, value: value } );
 };
 
 /**
  *
  * @private
  */
-x3dom.RequestManager._sendRequest = function()
-{       
+x3dom.RequestManager._sendRequest = function ()
+{
     this.onSendRequest( this._getCounters() );
 
     //Check if we have reached the maximum parallel request limit
@@ -112,13 +109,13 @@ x3dom.RequestManager._sendRequest = function()
 /**
  *
  */
-x3dom.RequestManager._getCounters = function () 
+x3dom.RequestManager._getCounters = function ()
 {
     return {
-        loaded: this.loadedRequests,
-        active: this.activeRequests.length,
-        failed: this.failedRequests,
-        total: this.totalRequests,
+        loaded : this.loadedRequests,
+        active : this.activeRequests.length,
+        failed : this.failedRequests,
+        total  : this.totalRequests
     };
 };
 
@@ -126,7 +123,7 @@ x3dom.RequestManager._getCounters = function ()
  *
  * @param request
  */
-x3dom.RequestManager.addRequest = function( request )
+x3dom.RequestManager.addRequest = function ( request )
 {
     //Return if request is not a valid XMLHttpRequest
     if ( !( request instanceof XMLHttpRequest ) )
@@ -165,7 +162,7 @@ x3dom.RequestManager.addRequest = function( request )
 /**
  *
  */
-x3dom.RequestManager.abortAllRequests = function()
+x3dom.RequestManager.abortAllRequests = function ()
 {
     for ( var i = 0; i < this.activeRequests.length; i++ )
     {
@@ -184,7 +181,7 @@ x3dom.RequestManager.abortAllRequests = function()
 /**
  *
  */
-x3dom.RequestManager._removeActiveRequest = function( request )
+x3dom.RequestManager._removeActiveRequest = function ( request )
 {
     var idx = this.activeRequests.indexOf( request );
 
@@ -196,7 +193,7 @@ x3dom.RequestManager._removeActiveRequest = function( request )
  * @param e
  * @private
  */
-x3dom.RequestManager._onLoadHandler = function( e )
+x3dom.RequestManager._onLoadHandler = function ( e )
 {
     //Decrement active request counter
     this._removeActiveRequest( e.target );
@@ -213,7 +210,7 @@ x3dom.RequestManager._onLoadHandler = function( e )
  * @param e
  * @private
  */
-x3dom.RequestManager._onErrorHandler = function( e )
+x3dom.RequestManager._onErrorHandler = function ( e )
 {
     //Decrement active request counter
     this._removeActiveRequest( e.target );

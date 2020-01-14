@@ -12,8 +12,8 @@
 x3dom.registerNodeType(
     "Scene",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
-        
+    defineClass( x3dom.nodeTypes.X3DGroupingNode,
+
         /**
          * Constructor for Scene
          * @constructs x3dom.nodeTypes.Scene
@@ -23,8 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc The scene node wraps the x3d scene.
          */
-        function (ctx) {
-            x3dom.nodeTypes.Scene.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.Scene.superClass.call( this, ctx );
 
             // define the experimental picking mode: box, idBuf, idBuf24, idBufId, color, texCoord
 
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'pickMode', "idBuf");
+            this.addField_SFString( ctx, "pickMode", "idBuf" );
             // experimental field to switch off picking
 
             /**
@@ -47,7 +48,7 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFBool(ctx, 'doPickPass', true);
+            this.addField_SFBool( ctx, "doPickPass", true );
 
             // another experimental field for shadow DOM remapping
 
@@ -59,65 +60,66 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
+            this.addField_SFString( ctx, "shadowObjectIdMapping", "" );
 
-            this._lastMin = new x3dom.fields.SFVec3f(0, 0, 0);
-            this._lastMax = new x3dom.fields.SFVec3f(1, 1, 1);
+            this._lastMin = new x3dom.fields.SFVec3f( 0, 0, 0 );
+            this._lastMax = new x3dom.fields.SFVec3f( 1, 1, 1 );
 
             this._shadowIdMap = null;
             this.loadMapping();
-
-            this._multiPartMap = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */
 
-            fieldChanged: function(fieldName)
+            fieldChanged : function ( fieldName )
             {
-                if (fieldName == "shadowObjectIdMapping")
+                if ( fieldName == "shadowObjectIdMapping" )
                 {
                     this.loadMapping();
                 }
             },
 
-            updateVolume: function()
+            updateVolume : function ()
             {
                 var vol = this.getVolume();
 
-                if (vol.isValid())
+                if ( vol.isValid() )
                 {
-                    this._lastMin = x3dom.fields.SFVec3f.copy(vol.min);
-                    this._lastMax = x3dom.fields.SFVec3f.copy(vol.max);
+                    this._lastMin = x3dom.fields.SFVec3f.copy( vol.min );
+                    this._lastMax = x3dom.fields.SFVec3f.copy( vol.max );
                 }
             },
 
-            loadMapping: function()
+            loadMapping : function ()
             {
                 this._shadowIdMap = null;
 
-                if (this._vf.shadowObjectIdMapping.length == 0) {
+                if ( this._vf.shadowObjectIdMapping.length == 0 )
+                {
                     return;
                 }
 
                 var that = this;
                 var xhr = new XMLHttpRequest();
 
-                xhr.open("GET", this._nameSpace.getURL(this._vf.shadowObjectIdMapping), true);
+                xhr.open( "GET", this._nameSpace.getURL( this._vf.shadowObjectIdMapping ), true );
                 //xhr.send();
-                x3dom.RequestManager.addRequest(xhr);
+                x3dom.RequestManager.addRequest( xhr );
 
-                xhr.onload = function()
+                xhr.onload = function ()
                 {
-                    that._shadowIdMap = eval("(" + xhr.response + ")");
+                    that._shadowIdMap = eval( "(" + xhr.response + ")" );
 
-                    if (!that._shadowIdMap || !that._shadowIdMap.mapping) {
-                        x3dom.debug.logWarning("Invalid ID map: " + that._vf.shadowObjectIdMapping);
+                    if ( !that._shadowIdMap || !that._shadowIdMap.mapping )
+                    {
+                        x3dom.debug.logWarning( "Invalid ID map: " + that._vf.shadowObjectIdMapping );
                     }
-                    else {
-                        x3dom.debug.assert(that._shadowIdMap.maxID <= that._shadowIdMap.mapping.length,
-                                "Too few ID map entries in " + that._vf.shadowObjectIdMapping + ", " +
+                    else
+                    {
+                        x3dom.debug.assert( that._shadowIdMap.maxID <= that._shadowIdMap.mapping.length,
+                            "Too few ID map entries in " + that._vf.shadowObjectIdMapping + ", " +
                                 "length of mapping array is only " + that._shadowIdMap.mapping.length +
-                                " instead of " + that._shadowIdMap.ids.length + "!");
+                                " instead of " + that._shadowIdMap.ids.length + "!" );
                     }
                 };
             }

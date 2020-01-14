@@ -11,8 +11,8 @@
 x3dom.registerNodeType(
     "X3DSoundSourceNode",
     "Sound",
-    defineClass(x3dom.nodeTypes.X3DTimeDependentNode,
-        
+    defineClass( x3dom.nodeTypes.X3DTimeDependentNode,
+
         /**
          * Constructor for X3DSoundSourceNode
          * @constructs x3dom.nodeTypes.X3DSoundSourceNode
@@ -23,9 +23,9 @@ x3dom.registerNodeType(
          * @param {Object} [ctx=null] - context object, containing initial settings like namespace
          * @classdesc This abstract node type is used to derive node types that can emit audio data.
          */
-        function (ctx) {
-            x3dom.nodeTypes.X3DSoundSourceNode.superClass.call(this, ctx);
-        
+        function ( ctx )
+        {
+            x3dom.nodeTypes.X3DSoundSourceNode.superClass.call( this, ctx );
         }
     )
 );

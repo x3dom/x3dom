@@ -7,11 +7,11 @@
  * Dual licensed under the MIT and GPL
  */
 
-//	### BallJoint ###
+//    ### BallJoint ###
 x3dom.registerNodeType(
     "BallJoint",
     "RigidBodyPhysics",
-    defineClass(x3dom.nodeTypes.X3DRigidJointNode,
+    defineClass( x3dom.nodeTypes.X3DRigidJointNode,
 
         /**
          * Constructor for BallJoint
@@ -24,8 +24,9 @@ x3dom.registerNodeType(
          * @classdesc The BallJoint node represents an unconstrained joint between two bodies that pivot about a common
          *  anchor point.
          */
-        function(ctx){
-            x3dom.nodeTypes.BallJoint.superClass.call(this, ctx);
+        function ( ctx )
+        {
+            x3dom.nodeTypes.BallJoint.superClass.call( this, ctx );
 
             /**
              * The common anchor point.
@@ -35,12 +36,11 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'anchorPoint', 0,0,0);
-
-
+            this.addField_SFVec3f( ctx, "anchorPoint", 0, 0, 0 );
         },
         {
-            nodeChanged: function(){
+            nodeChanged : function ()
+            {
                 //x3dom.debug.logInfo('BallJoint: ');
             }
         }

@@ -12,11 +12,10 @@
  * into 3D transformations.
  */
 
-
 x3dom.registerNodeType(
     "PlaneSensor",
     "PointingDeviceSensor",
-    defineClass(x3dom.nodeTypes.X3DDragSensorNode,
+    defineClass( x3dom.nodeTypes.X3DDragSensorNode,
 
         /**
          * Constructor for PlaneSensor
@@ -30,9 +29,9 @@ x3dom.registerNodeType(
          * Hint: You can constrain translation output to one axis by setting the respective minPosition and  maxPosition
          * members to equal values for that axis.
          */
-        function (ctx)
+        function ( ctx )
         {
-            x3dom.nodeTypes.PlaneSensor.superClass.call(this, ctx);
+            x3dom.nodeTypes.PlaneSensor.superClass.call( this, ctx );
 
             //---------------------------------------
             // FIELDS
@@ -46,8 +45,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFRotation(ctx, 'axisRotation', 0, 0, 1, 0);
-
+            this.addField_SFRotation( ctx, "axisRotation", 0, 0, 1, 0 );
 
             /**
              * The minPosition and maxPosition fields allow to constrain the 2D output of the plane sensor, along each
@@ -59,8 +57,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'minPosition',  0,  0);
-
+            this.addField_SFVec2f( ctx, "minPosition",  0,  0 );
 
             /**
              * The minPosition and maxPosition fields allow to constrain the 2D output of the plane sensor, along each
@@ -72,8 +69,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec2f(ctx, 'maxPosition', -1, -1);
-
+            this.addField_SFVec2f( ctx, "maxPosition", -1, -1 );
 
             /**
              * Offset value that is incorporated into the translation output of the sensor.
@@ -84,8 +80,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFVec3f(ctx, 'offset', 0, 0, 0);
-            
+            this.addField_SFVec3f( ctx, "offset", 0, 0, 0 );
+
             /**
              * Tracking plane orientation in local coordinate system.
              * Valid values are "XY" and "screen". "screen" uses the current orientation of the screen.
@@ -95,12 +91,10 @@ x3dom.registerNodeType(
              * @field x3dom
              * @instance
              */
-            this.addField_SFString(ctx, 'planeOrientation', 'XY');
-
+            this.addField_SFString( ctx, "planeOrientation", "XY" );
 
             //route-able output fields
             //this.addField_SFVec3f(ctx, 'translation_changed', 0, 0, 0);
-
 
             //---------------------------------------
             // PROPERTIES
@@ -118,7 +112,6 @@ x3dom.registerNodeType(
              * World-To-Local matrix for this node, including the axisRotation of the sensor
              */
             this._worldToLocalMatrix = null;
-
 
             /**
              * Initial intersection point with the sensor's plane, at the time the sensor was activated
@@ -147,16 +140,15 @@ x3dom.registerNodeType(
              * @type {x3dom.fields.SFVec3f}
              * @private
              */
-            this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
-            
+            this._currentTranslation = new x3dom.fields.SFVec3f( 0.0, 0.0, 0.0 );
+
             //special LineSensor mode
             this._lineModeAxis = null;
-            
+
             if ( this._vf.minPosition.x == this._vf.maxPosition.x )
-            		this._lineModeAxis = new x3dom.fields.SFVec3f (0, 1, 0);
+            {this._lineModeAxis = new x3dom.fields.SFVec3f( 0, 1, 0 );}
             if ( this._vf.minPosition.y == this._vf.maxPosition.y )
-            		this._lineModeAxis = new x3dom.fields.SFVec3f (1, 0, 0);
-            
+            {this._lineModeAxis = new x3dom.fields.SFVec3f( 1, 0, 0 );}
         },
         {
             //----------------------------------------------------------------------------------------------------------------------
@@ -167,11 +159,11 @@ x3dom.registerNodeType(
              * This function returns the parent transformation of this node, combined with its current axisRotation
              * @overrides x3dom.nodeTypes.X3DPointingDeviceSensorNode.getCurrentTransform
              */
-            getCurrentTransform: function ()
+            getCurrentTransform : function ()
             {
-                var parentTransform = x3dom.nodeTypes.X3DDragSensorNode.prototype.getCurrentTransform.call(this);
+                var parentTransform = x3dom.nodeTypes.X3DDragSensorNode.prototype.getCurrentTransform.call( this );
 
-                return this._rotationMatrix.mult(parentTransform);
+                return this._rotationMatrix.mult( parentTransform );
             },
 
             //----------------------------------------------------------------------------------------------------------------------
@@ -182,17 +174,17 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging
              * @private
              */
-            _startDragging: function(viewarea, x, y, wx, wy, wz)
+            _startDragging : function ( viewarea, x, y, wx, wy, wz )
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call(this, viewarea, x, y, wx, wy, wz);
-            
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._startDragging.call( this, viewarea, x, y, wx, wy, wz );
+
                 this._viewArea = viewarea;
-                
+
                 //save viewMatrix
                 this._viewMat = this._viewArea.getViewMatrix();
                 this._viewMatInv = this._viewMat.inverse();
-                        
-                this._currentTranslation = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0).add(this._vf.offset);
+
+                this._currentTranslation = new x3dom.fields.SFVec3f( 0.0, 0.0, 0.0 ).add( this._vf.offset );
 
                 //TODO: handle multi-path nodes
 
@@ -201,27 +193,29 @@ x3dom.registerNodeType(
                 this._worldToLocalMatrix = this._localToWorldMatrix.inverse();
 
                 //remember initial point of intersection with the plane, transform it to local sensor coordinates
-                this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt(new x3dom.fields.SFVec3f(wx, wy, wz));
+                this._initialPlaneIntersection = this._worldToLocalMatrix.multMatrixPnt( new x3dom.fields.SFVec3f( wx, wy, wz ) );
 
                 //compute plane normal in local coordinates
-                this._planeNormal = new x3dom.fields.SFVec3f(0.0, 0.0, 1.0);
-                
+                this._planeNormal = new x3dom.fields.SFVec3f( 0.0, 0.0, 1.0 );
+
                 var viewRay;
                 //handle screen mode
-                if (this._vf.planeOrientation == 'screen') {
-                		viewRay = viewarea.calcViewRay(viewarea._width/2, viewarea._height/2);
-                    this._planeNormal = this._worldToLocalMatrix.multMatrixVec (viewRay.dir.normalize());
+                if ( this._vf.planeOrientation == "screen" )
+                {
+                    viewRay = viewarea.calcViewRay( viewarea._width / 2, viewarea._height / 2 );
+                    this._planeNormal = this._worldToLocalMatrix.multMatrixVec( viewRay.dir.normalize() );
                 }
-                
+
                 //handle LineSensor mode robustly
-                else if ( this._lineModeAxis ) {
-                	  viewRay = viewarea.calcViewRay(x, y);
+                else if ( this._lineModeAxis )
+                {
+                    viewRay = viewarea.calcViewRay( x, y );
                     //viewRay.pos = this._worldToLocalMatrix.multMatrixPnt (viewRay.pos);
-                    var viewDir = this._worldToLocalMatrix.multMatrixVec (viewRay.dir.normalize());
+                    var viewDir = this._worldToLocalMatrix.multMatrixVec( viewRay.dir.normalize() );
 
                     var axis = this._lineModeAxis;
                     //generate suitable intersection plane even if on edge view;
-                    this._planeNormal = axis.cross ( axis.cross (viewDir) );
+                    this._planeNormal = axis.cross( axis.cross( viewDir ) );
                 }
             },
 
@@ -231,82 +225,84 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode._process2DDrag
              * @private
              */
-            _process2DDrag: function(x, y, dx, dy)
+            _process2DDrag : function ( x, y, dx, dy )
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call(this, x, y, dx, dy);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._process2DDrag.call( this, x, y, dx, dy );
 
                 var intersectionPoint = null;
-                var minPos, maxPos;
+                var minPos,
+                    maxPos;
 
-                if (this._initialPlaneIntersection)
+                if ( this._initialPlaneIntersection )
                 {
                     //compute point of intersection with the plane
-                    var viewRay = this._viewArea.calcViewRay(x, y);
+                    var viewRay = this._viewArea.calcViewRay( x, y );
 
                     //transform the world coordinates, used for the ray, to local sensor coordinates
-                    viewRay.pos = this._worldToLocalMatrix.multMatrixPnt(viewRay.pos);
-                    viewRay.dir = this._worldToLocalMatrix.multMatrixVec(viewRay.dir.normalize());
-                    
-                    if ( Math.abs(this._planeNormal.dot(viewRay.dir)) < 0.1 ) return;
-                    
-                    intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal);
+                    viewRay.pos = this._worldToLocalMatrix.multMatrixPnt( viewRay.pos );
+                    viewRay.dir = this._worldToLocalMatrix.multMatrixVec( viewRay.dir.normalize() );
+
+                    if ( Math.abs( this._planeNormal.dot( viewRay.dir ) ) < 0.1 ) {return;}
+
+                    intersectionPoint = viewRay.intersectPlane( this._initialPlaneIntersection, this._planeNormal );
 
                     //allow interaction from both sides of the plane
-                    if (!intersectionPoint)
+                    if ( !intersectionPoint )
                     {
-                        intersectionPoint = viewRay.intersectPlane(this._initialPlaneIntersection, this._planeNormal.negate());
+                        intersectionPoint = viewRay.intersectPlane( this._initialPlaneIntersection, this._planeNormal.negate() );
                     }
 
-                  if (intersectionPoint)
-                  {
+                    if ( intersectionPoint )
+                    {
                     //compute difference between new point of intersection and initial point
-                    this._currentTranslation = intersectionPoint.subtract(this._initialPlaneIntersection);
-                    this._currentTranslation = this._currentTranslation.add(this._vf.offset);
+                        this._currentTranslation = intersectionPoint.subtract( this._initialPlaneIntersection );
+                        this._currentTranslation = this._currentTranslation.add( this._vf.offset );
 
-                    //clamp translation components, if desired
-                    minPos = this._vf.minPosition;
-                		maxPos = this._vf.maxPosition;
-                    
-                    if (this._vf.planeOrientation == 'screen')
-                    {
-                    	if (minPos.x <= maxPos.x || minPos.y <= maxPos.y) // proejct/reproject only if necessary
+                        //clamp translation components, if desired
+                        minPos = this._vf.minPosition;
+                        maxPos = this._vf.maxPosition;
+
+                        if ( this._vf.planeOrientation == "screen" )
                         {
+                            if ( minPos.x <= maxPos.x || minPos.y <= maxPos.y ) // proejct/reproject only if necessary
+                            {
                             //project currentTranslation into screen plane
-                            var screenTranslation = this._localToWorldMatrix.multMatrixVec(this._currentTranslation);
-                            screenTranslation = this._viewMat.multMatrixVec(screenTranslation);
-                            _clampTranslation (screenTranslation, minPos, maxPos);
-                            // and reproject
-                            screenTranslation = this._viewMatInv.multMatrixVec(screenTranslation);
-                            this._currentTranslation = this._worldToLocalMatrix.multMatrixVec(screenTranslation);
+                                var screenTranslation = this._localToWorldMatrix.multMatrixVec( this._currentTranslation );
+                                screenTranslation = this._viewMat.multMatrixVec( screenTranslation );
+                                _clampTranslation( screenTranslation, minPos, maxPos );
+                                // and reproject
+                                screenTranslation = this._viewMatInv.multMatrixVec( screenTranslation );
+                                this._currentTranslation = this._worldToLocalMatrix.multMatrixVec( screenTranslation );
+                            }
                         }
-                    } 
 
-                    else {
-                        _clampTranslation (this._currentTranslation, minPos, maxPos);
-                        //normally 0 but force for LineSensor plane 
-                        this._currentTranslation.z = 0;
+                        else
+                        {
+                            _clampTranslation( this._currentTranslation, minPos, maxPos );
+                            //normally 0 but force for LineSensor plane
+                            this._currentTranslation.z = 0;
+                        }
+
+                        //output translation_changed event
+                        this.postMessage( "translation_changed", x3dom.fields.SFVec3f.copy( this._currentTranslation ) );//this._rotationMatrix.multMatrixPnt(this._currentTranslation));//
+                        //output trackpoint_changed event
+                        this.postMessage( "trackPoint_changed", intersectionPoint );
                     }
-
-                    //output translation_changed event
-                    this.postMessage('translation_changed', x3dom.fields.SFVec3f.copy(this._currentTranslation));//this._rotationMatrix.multMatrixPnt(this._currentTranslation));// 
-                    //output trackpoint_changed event
-                    this.postMessage('trackPoint_changed', intersectionPoint);
-                  }
                 }
                 //helper
-                function _clampTranslation (translation, minPos, maxPos)
+                function _clampTranslation ( translation, minPos, maxPos )
                 {
-                	if (minPos.x <= maxPos.x)
-                        {
-                          translation.x = Math.min(translation.x, maxPos.x);
-                          translation.x = Math.max(translation.x, minPos.x);
-                        }
+                    if ( minPos.x <= maxPos.x )
+                    {
+                        translation.x = Math.min( translation.x, maxPos.x );
+                        translation.x = Math.max( translation.x, minPos.x );
+                    }
 
-                        if (minPos.y <= maxPos.y)
-                        {
-                          translation.y = Math.min(translation.y, maxPos.y);
-                          translation.y = Math.max(translation.y, minPos.y);
-                        }
+                    if ( minPos.y <= maxPos.y )
+                    {
+                        translation.y = Math.min( translation.y, maxPos.y );
+                        translation.y = Math.max( translation.y, minPos.y );
+                    }
                 }
             },
 
@@ -316,14 +312,14 @@ x3dom.registerNodeType(
              * @overrides x3dom.nodeTypes.X3DDragSensorNode._stopDragging
              * @private
              */
-            _stopDragging: function()
+            _stopDragging : function ()
             {
-                x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call(this);
+                x3dom.nodeTypes.X3DDragSensorNode.prototype._stopDragging.call( this );
 
-                if (this._vf.autoOffset)
+                if ( this._vf.autoOffset )
                 {
-                    this._vf.offset = x3dom.fields.SFVec3f.copy(this._currentTranslation);
-                    this.postMessage('offset_changed', this._vf.offset);
+                    this._vf.offset = x3dom.fields.SFVec3f.copy( this._currentTranslation );
+                    this.postMessage( "offset_changed", this._vf.offset );
                 }
             }
 
