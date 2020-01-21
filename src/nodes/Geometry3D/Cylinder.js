@@ -92,9 +92,9 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "side", true );
 
             var sides = this._vf.subdivision;
+            var ccw = this._vf.ccw;
 
-            var geoCacheID = "Cylinder_" + this._vf.radius + "_" + this._vf.height + "_" + this._vf.bottom + "_" + this._vf.top + "_" +
-                this._vf.side + "_" + this._vf.subdivision;
+            var geoCacheID = [ "Cylinder", this._vf.radius, this._vf.height, this._vf.bottom, this._vf.top, this._vf.side, sides, ccw ].join( "_" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -105,6 +105,7 @@ x3dom.registerNodeType(
             {
                 var radius = this._vf.radius;
                 var height = this._vf.height / 2;
+                var nSign = ccw ? 1 : -1;
 
                 var beta,
                     x,
@@ -122,23 +123,19 @@ x3dom.registerNodeType(
                         z = -Math.cos( beta );
 
                         this._mesh._positions[ 0 ].push( x * radius, -height, z * radius );
-                        this._mesh._normals[ 0 ].push( x, 0, z );
+                        this._mesh._normals[ 0 ].push( nSign * x, 0, nSign * z );
                         this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 0 );
 
                         this._mesh._positions[ 0 ].push( x * radius, height, z * radius );
-                        this._mesh._normals[ 0 ].push( x, 0, z );
+                        this._mesh._normals[ 0 ].push( nSign * x, 0, nSign * z );
                         this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 1 );
 
                         if ( j > 0 )
                         {
-                            this._mesh._indices[ 0 ].push( k    );
-                            this._mesh._indices[ 0 ].push( k + 1 );
-                            this._mesh._indices[ 0 ].push( k + 2 );
-
-                            this._mesh._indices[ 0 ].push( k + 2 );
-                            this._mesh._indices[ 0 ].push( k + 1 );
-                            this._mesh._indices[ 0 ].push( k + 3 );
-
+                            this._mesh._indices[ 0 ].push( k + 0, k + 1, k + 2 );
+                            
+                            this._mesh._indices[ 0 ].push( k + 2, k + 1, k + 3 );
+                            
                             k += 2;
                         }
                     }
@@ -158,7 +155,7 @@ x3dom.registerNodeType(
                             z = -radius * Math.cos( beta );
 
                             this._mesh._positions[ 0 ].push( x, height, z );
-                            this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                             this._mesh._texCoords[ 0 ].push( x / radius / 2 + 0.5, -z / radius / 2 + 0.5 );
                         }
 
@@ -185,7 +182,7 @@ x3dom.registerNodeType(
                             z = -radius * Math.cos( beta );
 
                             this._mesh._positions[ 0 ].push( x, -height, z );
-                            this._mesh._normals[ 0 ].push( 0, -1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
                             this._mesh._texCoords[ 0 ].push( x / radius / 2 + 0.5, z / radius / 2 + 0.5 );
                         }
 
@@ -219,6 +216,7 @@ x3dom.registerNodeType(
                     var radius = this._vf.radius,
                         height = this._vf.height / 2;
                     var sides = this._vf.subdivision;
+                    var nSign = this._vf.ccw ? 1 : -1;
 
                     var beta,
                         x,
@@ -306,23 +304,19 @@ x3dom.registerNodeType(
                             z = -Math.cos( beta );
 
                             this._mesh._positions[ 0 ].push( x * radius, -height, z * radius );
-                            this._mesh._normals[ 0 ].push( x, 0, z );
+                            this._mesh._normals[ 0 ].push( nSign * x, 0, nSign * z );
                             this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 0 );
 
                             this._mesh._positions[ 0 ].push( x * radius, height, z * radius );
-                            this._mesh._normals[ 0 ].push( x, 0, z );
+                            this._mesh._normals[ 0 ].push( nSign * x, 0, nSign * z );
                             this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 1 );
 
                             if ( j > 0 )
                             {
-                                this._mesh._indices[ 0 ].push( k + 0 );
-                                this._mesh._indices[ 0 ].push( k + 1 );
-                                this._mesh._indices[ 0 ].push( k + 2 );
-
-                                this._mesh._indices[ 0 ].push( k + 2 );
-                                this._mesh._indices[ 0 ].push( k + 1 );
-                                this._mesh._indices[ 0 ].push( k + 3 );
-
+                                this._mesh._indices[ 0 ].push( k + 0, k + 1, k + 2 );
+                                
+                                this._mesh._indices[ 0 ].push( k + 2, k + 1, k + 3 );
+                                
                                 k += 2;
                             }
                         }
@@ -342,7 +336,7 @@ x3dom.registerNodeType(
                                 z = -radius * Math.cos( beta );
 
                                 this._mesh._positions[ 0 ].push( x, height, z );
-                                this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                                this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                                 this._mesh._texCoords[ 0 ].push( x / radius / 2 + 0.5, -z / radius / 2 + 0.5 );
                             }
 
@@ -369,7 +363,7 @@ x3dom.registerNodeType(
                                 z = -radius * Math.cos( beta );
 
                                 this._mesh._positions[ 0 ].push( x, -height, z );
-                                this._mesh._normals[ 0 ].push( 0, -1, 0 );
+                                this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
                                 this._mesh._texCoords[ 0 ].push( x / radius / 2 + 0.5, z / radius / 2 + 0.5 );
                             }
 
