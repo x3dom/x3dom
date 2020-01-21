@@ -26,7 +26,7 @@
   * gltf loader material DEF/USE robustness
   * allow better gc after Inline removal
   * line per segment color
-  * Sphere ccw
+  * Sphere, Box ccw
   
 ## Version 1.8.1
 
