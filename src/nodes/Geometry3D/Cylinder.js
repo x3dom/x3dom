@@ -133,9 +133,8 @@ x3dom.registerNodeType(
                         if ( j > 0 )
                         {
                             this._mesh._indices[ 0 ].push( k + 0, k + 1, k + 2 );
-                            
                             this._mesh._indices[ 0 ].push( k + 2, k + 1, k + 3 );
-                            
+
                             k += 2;
                         }
                     }
@@ -314,9 +313,8 @@ x3dom.registerNodeType(
                             if ( j > 0 )
                             {
                                 this._mesh._indices[ 0 ].push( k + 0, k + 1, k + 2 );
-                                
                                 this._mesh._indices[ 0 ].push( k + 2, k + 1, k + 3 );
-                                
+
                                 k += 2;
                             }
                         }
