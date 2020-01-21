@@ -153,7 +153,7 @@ x3dom.registerNodeType(
                         first = ( latNumber * ( longitudeBands + 1 ) ) + longNumber;
                         second = first + longitudeBands + 1;
 
-                        this._mesh._indices[ 0 ].push( first, second, first + 1 );                   
+                        this._mesh._indices[ 0 ].push( first, second, first + 1 );
                         this._mesh._indices[ 0 ].push( second, second + 1, first + 1 );
                     }
                 }
