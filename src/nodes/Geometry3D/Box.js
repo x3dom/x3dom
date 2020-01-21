@@ -50,9 +50,10 @@ x3dom.registerNodeType(
 
             var sx = this._vf.size.x,
                 sy = this._vf.size.y,
-                sz = this._vf.size.z;
+                sz = this._vf.size.z,
+                ccw = this._vf.ccw;
 
-            var geoCacheID = "Box_" + sx + "-" + sy + "-" + sz;
+            var geoCacheID = [ "Box", sx, sy, sz, ccw ].join( "-" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -71,13 +72,20 @@ x3dom.registerNodeType(
                     -sx, sy, -sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy, -sz, //oben 0,1,0
                     -sx, -sy, -sz,  -sx, -sy, sz,   sx, -sy, sz,   sx, -sy, -sz  //unten 0,-1,0
                 ];
-                this._mesh._normals[ 0 ] = [
+                this._mesh._normals[ 0 ] = ccw ? [
                     0, 0, -1,  0, 0, -1,   0, 0, -1,   0, 0, -1,
                     0, 0, 1,  0, 0, 1,   0, 0, 1,   0, 0, 1,
                     -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,
                     1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,
                     0, 1, 0,  0, 1, 0,   0, 1, 0,   0, 1, 0,
                     0, -1, 0,  0, -1, 0,   0, -1, 0,   0, -1, 0
+                ] : [
+                    0, 0, 1,  0, 0, 1,   0, 0, 1,   0, 0, 1,
+                    0, 0, -1,  0, 0, -1,   0, 0, -1,   0, 0, -1,
+                    1, 0, 0,  1, 0, 0,  1, 0, 0,  1, 0, 0,
+                    -1, 0, 0,   -1, 0, 0,   -1, 0, 0,  -1, 0, 0,
+                    0, -1, 0,  0, -1, 0,   0, -1, 0,   0, -1, 0,
+                    0, 1, 0,  0, 1, 0,   0, 1, 0,   0, 1, 0
                 ];
                 this._mesh._texCoords[ 0 ] = [
                     1, 0, 1, 1, 0, 1, 0, 0,
