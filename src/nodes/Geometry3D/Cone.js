@@ -102,8 +102,8 @@ x3dom.registerNodeType(
              */
             this.addField_SFFloat( ctx, "subdivision", 32 );
 
-            var geoCacheID = "Cone_" + this._vf.bottomRadius + "_" + this._vf.height + "_" + this._vf.top + "_" +
-                this._vf.bottom + "_" + this._vf.side + "_" + this._vf.topRadius + "_" + this._vf.subdivision;
+            var geoCacheID = [ "Cone", this._vf.bottomRadius, this._vf.height, this._vf.top,
+                this._vf.bottom, this._vf.side, this._vf.topRadius, this._vf.subdivision, this._vf.ccw ].join( "_" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -115,7 +115,8 @@ x3dom.registerNodeType(
                 var bottomRadius = this._vf.bottomRadius,
                     height = this._vf.height;
                 var topRadius = this._vf.topRadius,
-                    sides = this._vf.subdivision;
+                    sides = this._vf.subdivision,
+                    nSign = this._vf.ccw ? 1 : -1;
 
                 var beta,
                     x,
@@ -148,11 +149,11 @@ x3dom.registerNodeType(
                         }
 
                         this._mesh._positions[ 0 ].push( px, height / 2, pz );
-                        this._mesh._normals[ 0 ].push( x / nlen, incl / nlen, z / nlen );
+                        this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
                         this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 1 );
 
                         this._mesh._positions[ 0 ].push( x * bottomRadius, -height / 2, z * bottomRadius );
-                        this._mesh._normals[ 0 ].push( x / nlen, incl / nlen, z / nlen );
+                        this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
                         this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 0 );
 
                         if ( j > 0 )
@@ -181,7 +182,7 @@ x3dom.registerNodeType(
                         z = -bottomRadius * Math.cos( beta );
 
                         this._mesh._positions[ 0 ].push( x, -height / 2, z );
-                        this._mesh._normals[ 0 ].push( 0, -1, 0 );
+                        this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
                         this._mesh._texCoords[ 0 ].push( x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5 );
                     }
 
@@ -208,7 +209,7 @@ x3dom.registerNodeType(
                         z = -topRadius * Math.cos( beta );
 
                         this._mesh._positions[ 0 ].push( x, height / 2, z );
-                        this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                        this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                         this._mesh._texCoords[ 0 ].push( x / topRadius / 2 + 0.5, 1.0 - z / topRadius / 2 + 0.5 );
                     }
 
@@ -279,11 +280,11 @@ x3dom.registerNodeType(
                             }
 
                             this._mesh._positions[ 0 ].push( px, height / 2, pz );
-                            this._mesh._normals[ 0 ].push( x / nlen, incl / nlen, z / nlen );
+                            this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
                             this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 1 );
 
                             this._mesh._positions[ 0 ].push( x * bottomRadius, -height / 2, z * bottomRadius );
-                            this._mesh._normals[ 0 ].push( x / nlen, incl / nlen, z / nlen );
+                            this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
                             this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 0 );
 
                             if ( j > 0 )
@@ -312,7 +313,7 @@ x3dom.registerNodeType(
                             z = -bottomRadius * Math.cos( beta );
 
                             this._mesh._positions[ 0 ].push( x, -height / 2, z );
-                            this._mesh._normals[ 0 ].push( 0, -1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
                             this._mesh._texCoords[ 0 ].push( x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5 );
                         }
 
@@ -339,7 +340,7 @@ x3dom.registerNodeType(
                             z = -topRadius * Math.cos( beta );
 
                             this._mesh._positions[ 0 ].push( x, height / 2, z );
-                            this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                             this._mesh._texCoords[ 0 ].push( x / topRadius / 2 + 0.5, 1.0 - z / topRadius / 2 + 0.5 );
                         }
 
