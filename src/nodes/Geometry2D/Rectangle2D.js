@@ -56,8 +56,9 @@ x3dom.registerNodeType(
                 sy = this._vf.size.y;
             var partx = this._vf.subdivision.x,
                 party = this._vf.subdivision.y;
+            var ccw = this._vf.ccw;
 
-            var geoCacheID = "Rectangle2D_" + sx + "-" + sy;
+            var geoCacheID = [ "Rectangle2D", sx, sy, partx, party, ccw ].join( "-" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -68,6 +69,7 @@ x3dom.registerNodeType(
             {
                 var xstep = sx / partx;
                 var ystep = sy / party;
+                var nSign = ccw ? 1 : -1
 
                 sx /= 2;
                 sy /= 2;
@@ -77,7 +79,7 @@ x3dom.registerNodeType(
                     for ( var j = 0; j <= party; j++ )
                     {
                         this._mesh._positions[ 0 ].push( i * xstep - sx, j * ystep - sy, 0 );
-                        this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                        this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                         this._mesh._texCoords[ 0 ].push( i / partx, j / party );
                     }
                 }
@@ -152,6 +154,7 @@ x3dom.registerNodeType(
                         party = this._vf.subdivision.y;
                     var xstep = sx / partx;
                     var ystep = sy / party;
+                    var nSign = this._vf.ccw ? 1 : -1;
 
                     sx /= 2;
                     sy /= 2;
@@ -161,7 +164,7 @@ x3dom.registerNodeType(
                         for ( var j = 0; j <= party; j++ )
                         {
                             this._mesh._positions[ 0 ].push( i * xstep - sx, j * ystep - sy, 0 );
-                            this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                            this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                             this._mesh._texCoords[ 0 ].push( i / partx, j / party );
                         }
                     }
