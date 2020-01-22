@@ -26,7 +26,7 @@
   * gltf loader material DEF/USE robustness
   * allow better gc after Inline removal
   * line per segment color
-  * Sphere, Box, Cylinder ccw
+  * Sphere, Box, Cylinder, Cone, Plane, Rectangle2D, Disk2D, ArcClose2D ccw
   
 ## Version 1.8.1
 
