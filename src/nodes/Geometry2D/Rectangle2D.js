@@ -69,7 +69,7 @@ x3dom.registerNodeType(
             {
                 var xstep = sx / partx;
                 var ystep = sy / party;
-                var nSign = ccw ? 1 : -1
+                var nSign = ccw ? 1 : -1;
 
                 sx /= 2;
                 sy /= 2;
