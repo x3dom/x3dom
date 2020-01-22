@@ -74,9 +74,10 @@ x3dom.registerNodeType(
                 sy = this._vf.size.y;
             var subx = this._vf.subdivision.x,
                 suby = this._vf.subdivision.y;
+            var ccw = this._vf.ccw;
 
-            var geoCacheID = "Plane_" + sx + "-" + sy + "-" + subx + "-" + suby + "-" +
-                this._vf.center.x + "-" + this._vf.center.y + "-" + this._vf.center.z;
+            var geoCacheID = [ "Plane", sx, sy, subx, suby,
+                this._vf.center.x, this._vf.center.y, this._vf.center.z, ccw ].join( "-" );
 
             // Attention: DynamicLOD node internally creates Plane nodes, but MUST NOT
             //            use geoCache, therefore only use cache if "ctx" is defined!
@@ -92,6 +93,7 @@ x3dom.registerNodeType(
                     y = 0;
                 var xstep = sx / subx;
                 var ystep = sy / suby;
+                var nSign = ccw ? 1 : -1;
 
                 sx /= 2; sy /= 2;
 
@@ -104,7 +106,7 @@ x3dom.registerNodeType(
                         this._mesh._positions[ 0 ].push( this._vf.center.z );
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
                         this._mesh._texCoords[ 0 ].push( x / subx );
                         this._mesh._texCoords[ 0 ].push( y / suby );
                     }
@@ -196,7 +198,7 @@ x3dom.registerNodeType(
                             this._mesh._positions[ 0 ].push( this._vf.center.z );
                             this._mesh._normals[ 0 ].push( 0 );
                             this._mesh._normals[ 0 ].push( 0 );
-                            this._mesh._normals[ 0 ].push( 1 );
+                            this._mesh._normals[ 0 ].push( nSign * 1 );
                             this._mesh._texCoords[ 0 ].push( x / subx );
                             this._mesh._texCoords[ 0 ].push( y / suby );
                         }

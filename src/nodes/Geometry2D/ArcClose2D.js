@@ -87,6 +87,7 @@ x3dom.registerNodeType(
             var start = this._vf.startAngle;
             var end = this._vf.endAngle;
             var anzahl = this._vf.subdivision;
+            var ccw = this._vf.ccw;
 
             // The following code ensures that:
             // 1. 0 <= startAngle < 2*Pi
@@ -98,7 +99,7 @@ x3dom.registerNodeType(
             if ( end <= start )
             {end += Pi2;}
 
-            var geoCacheID = "ArcClose2D_" + r + start + end + this._vf.closureType;
+            var geoCacheID = [ "ArcClose2D", r, start, end, this._vf.closureType, anzahl, ccw ].join( "-" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -109,6 +110,7 @@ x3dom.registerNodeType(
             {
                 var t = ( end - start ) / anzahl;
                 var theta = start;
+                var nSign = ccw ? 1 : -1;
 
                 if ( this._vf.closureType.toUpperCase() == "PIE" )
                 {
@@ -118,7 +120,7 @@ x3dom.registerNodeType(
 
                     this._mesh._normals[ 0 ].push( 0 );
                     this._mesh._normals[ 0 ].push( 0 );
-                    this._mesh._normals[ 0 ].push( 1 );
+                    this._mesh._normals[ 0 ].push( nSign * 1 );
 
                     this._mesh._texCoords[ 0 ].push( 0.5 );
                     this._mesh._texCoords[ 0 ].push( 0.5 );
@@ -134,7 +136,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
 
                         this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                         this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
@@ -162,7 +164,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
 
                         this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                         this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
@@ -179,7 +181,7 @@ x3dom.registerNodeType(
 
                     this._mesh._normals[ 0 ].push( 0 );
                     this._mesh._normals[ 0 ].push( 0 );
-                    this._mesh._normals[ 0 ].push( 1 );
+                    this._mesh._normals[ 0 ].push( nSign * 1 );
 
                     this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                     this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
@@ -207,6 +209,7 @@ x3dom.registerNodeType(
                 var start = this._vf.startAngle;
                 var end = this._vf.endAngle;
                 var anzahl = this._vf.subdivision;
+                var nSign = this._vf.ccw;
 
                 var Pi2 = Math.PI * 2.0;
                 start -= Math.floor( start / Pi2 ) * Pi2;
@@ -286,7 +289,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
 
                         this._mesh._texCoords[ 0 ].push( 0.5 );
                         this._mesh._texCoords[ 0 ].push( 0.5 );
@@ -302,7 +305,7 @@ x3dom.registerNodeType(
 
                             this._mesh._normals[ 0 ].push( 0 );
                             this._mesh._normals[ 0 ].push( 0 );
-                            this._mesh._normals[ 0 ].push( 1 );
+                            this._mesh._normals[ 0 ].push( nSign * 1 );
 
                             this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                             this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
@@ -330,7 +333,7 @@ x3dom.registerNodeType(
 
                             this._mesh._normals[ 0 ].push( 0 );
                             this._mesh._normals[ 0 ].push( 0 );
-                            this._mesh._normals[ 0 ].push( 1 );
+                            this._mesh._normals[ 0 ].push( nSign * 1 );
 
                             this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                             this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
@@ -347,7 +350,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
 
                         this._mesh._texCoords[ 0 ].push( ( x + r ) / ( 2 * r ) );
                         this._mesh._texCoords[ 0 ].push( ( y + r ) / ( 2 * r ) );
