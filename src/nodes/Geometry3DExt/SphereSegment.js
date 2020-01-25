@@ -69,6 +69,7 @@ x3dom.registerNodeType(
             var r = this._vf.radius;
             var longs = this._vf.longitude;
             var lats = this._vf.latitude;
+            var nSign = this._vf.ccw ? 1 : -1;
 
             var subx = longs.length,
                 suby = lats.length;
@@ -113,7 +114,7 @@ x3dom.registerNodeType(
                     v = latNumber / ( latitudeBands - 1 );
 
                     this._mesh._positions[ 0 ].push( r * x, r * y, r * z );
-                    this._mesh._normals[ 0 ].push( x, y, z );
+                    this._mesh._normals[ 0 ].push( nSign * x, nSign * y, nSign * z );
                     this._mesh._texCoords[ 0 ].push( u, v );
                 }
             }

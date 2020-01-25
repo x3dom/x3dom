@@ -106,7 +106,8 @@ x3dom.registerNodeType(
                 var c = halfDia;    // 3rd semi-principal axes along z
 
                 var latitudeBands = this._vf.subdivision.x,
-                    longitudeBands = this._vf.subdivision.y;
+                    longitudeBands = this._vf.subdivision.y,
+                    nSign = this._vf.ccw ? 1 : -1;
                 var latNumber,
                     longNumber,
 
@@ -155,7 +156,10 @@ x3dom.registerNodeType(
 
                         this._mesh._positions[ 0 ].push( x, y - offset, z );
                         this._mesh._texCoords[ 0 ].push( u, v );
-                        this._mesh._normals[ 0 ].push( x / ( a * a ), y / ( b * b ), z / ( c * c ) );
+                        this._mesh._normals[ 0 ].push(
+                            nSign * x / ( a * a ),
+                            nSign * y / ( b * b ),
+                            nSign * z / ( c * c ) );
 
                         if ( ( latNumber == latitudeBands ) || ( segL == latNumber ) )
                         {
@@ -202,7 +206,7 @@ x3dom.registerNodeType(
                         j = 2 * i;
                         this._mesh._texCoords[ 0 ].push( tmpTcArr[ j  ] );
                         this._mesh._texCoords[ 0 ].push( tmpTcArr[ j + 1 ] );
-                        this._mesh._normals[ 0 ].push( 0, -1, 0 );
+                        this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
 
                         if ( i >= 2 )
                         {
