@@ -156,10 +156,10 @@ x3dom.registerNodeType(
 
                         this._mesh._positions[ 0 ].push( x, y - offset, z );
                         this._mesh._texCoords[ 0 ].push( u, v );
-                        this._mesh._normals[ 0 ].push( 
-                                    nSign * x / ( a * a ),
-                                    nSign * y / ( b * b ),
-                                    nSign * z / ( c * c ) );
+                        this._mesh._normals[ 0 ].push(
+                            nSign * x / ( a * a ),
+                            nSign * y / ( b * b ),
+                            nSign * z / ( c * c ) );
 
                         if ( ( latNumber == latitudeBands ) || ( segL == latNumber ) )
                         {
