@@ -130,7 +130,7 @@ x3dom.registerNodeType(
                 this._vf.subdivision, this._vf.caps, nSign ].join( "_" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
-            {f
+            {
                 //x3dom.debug.logInfo("Using Torus from Cache");
                 this._mesh = x3dom.geoCache[ geoCacheID ];
             }
@@ -335,8 +335,9 @@ x3dom.registerNodeType(
                     { this._vf.ccw = this._origCCW; }
 
                     var rings = this._vf.subdivision.x,
-                        sides = this._vf.subdivision.y;
+                        sides = this._vf.subdivision.y,
                         nSign = this._vf.ccw ? 1 : -1;
+                    
                     rings = Math.max( 3, Math.round( ( this._vf.angle / twoPi ) * rings ) );
 
                     var ringDelta = this._vf.angle / rings;
