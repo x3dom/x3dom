@@ -54,6 +54,7 @@
                     <li><a href="#noBackendFound">&#10152; noBackendFound</a></li>
                     <li><a href="#ready">&#10152; ready</a></li>
                     <li><a href="#enterFrame">&#10152; enterFrame</a></li>
+                    <li><a href="#exitFrame">&#10152; exitFrame</a></li>
                     <li><a href="#getActiveBindable">&#10152; getActiveBindable</a></li>
                     <li><a href="#viewpoints">&#10152; Viewpoints</a></li>
                     <li><a href="#viewMatrix">&#10152; viewMatrix</a></li>
@@ -222,6 +223,36 @@
                     <br><br>
                     If you need to execute code before the first frame renders, it is therefore best to use the
                     <code>ready()</code> function instead.
+                </dd>
+            </dl>
+            
+            <!--- EXIT FRAME --->
+            <dl class="method-container">
+                <dt>
+                <h4 class="name method-container-header">
+                exitFrame
+                        <span class="signature">
+                        ()
+                        </span>
+                        <span class="type-signature">
+                        </span>
+                    <a name="exitFrame" class="upwardsLink" href="#">&#10548;</a>
+                </h4>
+                </dt>
+                <dd>
+                    <div class="description">
+                        This method is called just after the current frame was rendered. It is therefore possible to
+                        execute custom actions by overriding this method in your code:
+                    </div>
+                    <br>
+                    <h5>Usage:</h5>
+
+                    <pre class="prettyprint"><code class="language-js">
+        var element = document.getElementById('my_element');
+        element.runtime.exitFrame = function() {
+            alert('hello custom exit frame');
+        };
+                    </code></pre>
                 </dd>
             </dl>
             
