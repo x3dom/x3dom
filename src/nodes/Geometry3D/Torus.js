@@ -337,7 +337,7 @@ x3dom.registerNodeType(
                     var rings = this._vf.subdivision.x,
                         sides = this._vf.subdivision.y,
                         nSign = this._vf.ccw ? 1 : -1;
-                    
+
                     rings = Math.max( 3, Math.round( ( this._vf.angle / twoPi ) * rings ) );
 
                     var ringDelta = this._vf.angle / rings;
