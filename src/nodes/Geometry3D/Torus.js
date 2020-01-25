@@ -120,15 +120,17 @@ x3dom.registerNodeType(
             }
 
             var rings = this._vf.subdivision.x,
-                sides = this._vf.subdivision.y;
+                sides = this._vf.subdivision.y,
+                nSign = this._vf.ccw ? 1 : -1;
+
             rings = Math.max( 3, Math.round( ( this._vf.angle / twoPi ) * rings ) );
 
             // FIXME; check/update geoCache on field update (for ALL primitives)!
-            var geoCacheID = "Torus_" + innerRadius + "_" + outerRadius + "_" + this._vf.angle + "_" +
-                this._vf.subdivision + "-" + this._vf.caps;
+            var geoCacheID = [ "Torus_", innerRadius, outerRadius, this._vf.angle,
+                this._vf.subdivision, this._vf.caps, nSign ].join( "_" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
-            {
+            {f
                 //x3dom.debug.logInfo("Using Torus from Cache");
                 this._mesh = x3dom.geoCache[ geoCacheID ];
             }
@@ -160,12 +162,12 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * dist, innerRadius * sinPhi, -sinTheta * dist );
-                            this._mesh._normals[ 0 ].push( cosTheta * cosPhi, sinPhi, -sinTheta * cosPhi );
+                            this._mesh._normals[ 0 ].push( nSign * cosThenSign * ta * cosPhi, nSign * sinPhi, nSign * -sinTheta * cosPhi );
                         }
                         else
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi );
-                            this._mesh._normals[ 0 ].push( cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi );
+                            this._mesh._normals[ 0 ].push( nSign * cosTheta * cosPhi, nSign * -sinTheta * cosPhi, nSign * sinPhi );
                         }
                         this._mesh._texCoords[ 0 ].push( -a / rings, b / sides );
                     }
@@ -193,12 +195,12 @@ x3dom.registerNodeType(
                     if ( this._vf.insideOutsideRadius )
                     {
                         this._mesh._positions[ 0 ].push( outerRadius, 0, 0 );
-                        this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                        this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                     }
                     else
                     {
                         this._mesh._positions[ 0 ].push( outerRadius, 0, 0 );
-                        this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                        this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                     }
                     this._mesh._texCoords[ 0 ].push( 0.5, 0.5 );
 
@@ -211,12 +213,12 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( dist, sinPhi * innerRadius, 0 );
-                            this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                            this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                         }
                         else
                         {
                             this._mesh._positions[ 0 ].push( dist, 0, sinPhi * innerRadius );
-                            this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                         }
                         this._mesh._texCoords[ 0 ].push( ( 1 + cosPhi ) * 0.5, ( 1 - sinPhi ) * 0.5 );
 
@@ -245,12 +247,12 @@ x3dom.registerNodeType(
                     if ( this._vf.insideOutsideRadius )
                     {
                         this._mesh._positions[ 0 ].push( cosTheta * outerRadius, 0, -sinTheta * outerRadius );
-                        this._mesh._normals[ 0 ].push( nx, 0, ny );
+                        this._mesh._normals[ 0 ].push( nSign * nx, 0, nSign * ny );
                     }
                     else
                     {
                         this._mesh._positions[ 0 ].push( cosTheta * outerRadius, -sinTheta * outerRadius, 0 );
-                        this._mesh._normals[ 0 ].push( nx, ny, 0 );
+                        this._mesh._normals[ 0 ].push( nSign * nx, nSign * ny, 0 );
                     }
                     this._mesh._texCoords[ 0 ].push( 0.5, 0.5 );
 
@@ -263,12 +265,12 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * dist, sinPhi * innerRadius, -sinTheta * dist );
-                            this._mesh._normals[ 0 ].push( nx, 0, ny );
+                            this._mesh._normals[ 0 ].push( nSign * nx, 0, nSign * ny );
                         }
                         else
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * dist, -sinTheta * dist, sinPhi * innerRadius );
-                            this._mesh._normals[ 0 ].push( nx, ny, 0 );
+                            this._mesh._normals[ 0 ].push( nSign * nx, nSign * ny, 0 );
                         }
                         this._mesh._texCoords[ 0 ].push( 1 - ( 1 + cosPhi ) * 0.5, ( 1 - sinPhi ) * 0.5 );
 
@@ -330,10 +332,11 @@ x3dom.registerNodeType(
                         this._vf.ccw = !this._origCCW;
                     }
                     else
-                    {this._vf.ccw = this._origCCW;}
+                    { this._vf.ccw = this._origCCW; }
 
                     var rings = this._vf.subdivision.x,
                         sides = this._vf.subdivision.y;
+                        nSign = this._vf.ccw ? 1 : -1;
                     rings = Math.max( 3, Math.round( ( this._vf.angle / twoPi ) * rings ) );
 
                     var ringDelta = this._vf.angle / rings;
@@ -367,12 +370,12 @@ x3dom.registerNodeType(
                             if ( this._vf.insideOutsideRadius )
                             {
                                 this._mesh._positions[ 0 ].push( cosTheta * dist, innerRadius * sinPhi, -sinTheta * dist );
-                                this._mesh._normals[ 0 ].push( cosTheta * cosPhi, sinPhi, -sinTheta * cosPhi );
+                                this._mesh._normals[ 0 ].push( nSign * cosTheta * cosPhi, nSign * sinPhi, nSign * -sinTheta * cosPhi );
                             }
                             else
                             {
                                 this._mesh._positions[ 0 ].push( cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi );
-                                this._mesh._normals[ 0 ].push( cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi );
+                                this._mesh._normals[ 0 ].push( nSign * cosTheta * cosPhi, nSign * -sinTheta * cosPhi, nSign * sinPhi );
                             }
                             this._mesh._texCoords[ 0 ].push( -a / rings, b / sides );
                         }
@@ -400,12 +403,12 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( outerRadius, 0, 0 );
-                            this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                            this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                         }
                         else
                         {
                             this._mesh._positions[ 0 ].push( outerRadius, 0, 0 );
-                            this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                            this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                         }
                         this._mesh._texCoords[ 0 ].push( 0.5, 0.5 );
 
@@ -418,12 +421,12 @@ x3dom.registerNodeType(
                             if ( this._vf.insideOutsideRadius )
                             {
                                 this._mesh._positions[ 0 ].push( dist, sinPhi * innerRadius, 0 );
-                                this._mesh._normals[ 0 ].push( 0, 0, 1 );
+                                this._mesh._normals[ 0 ].push( 0, 0, nSign * 1 );
                             }
                             else
                             {
                                 this._mesh._positions[ 0 ].push( dist, 0, sinPhi * innerRadius );
-                                this._mesh._normals[ 0 ].push( 0, 1, 0 );
+                                this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
                             }
                             this._mesh._texCoords[ 0 ].push( ( 1 + cosPhi ) * 0.5, ( 1 - sinPhi ) * 0.5 );
 
@@ -452,12 +455,12 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * outerRadius, 0, -sinTheta * outerRadius );
-                            this._mesh._normals[ 0 ].push( nx, 0, ny );
+                            this._mesh._normals[ 0 ].push( nSign * nx, 0, nSign * ny );
                         }
                         else
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * outerRadius, -sinTheta * outerRadius, 0 );
-                            this._mesh._normals[ 0 ].push( nx, ny, 0 );
+                            this._mesh._normals[ 0 ].push( nSign * nx, nSign * ny, 0 );
                         }
                         this._mesh._texCoords[ 0 ].push( 0.5, 0.5 );
 
@@ -470,12 +473,12 @@ x3dom.registerNodeType(
                             if ( this._vf.insideOutsideRadius )
                             {
                                 this._mesh._positions[ 0 ].push( cosTheta * dist, sinPhi * innerRadius, -sinTheta * dist );
-                                this._mesh._normals[ 0 ].push( nx, 0, ny );
+                                this._mesh._normals[ 0 ].push( nSign * nx, 0, nSign * ny );
                             }
                             else
                             {
                                 this._mesh._positions[ 0 ].push( cosTheta * dist, -sinTheta * dist, sinPhi * innerRadius );
-                                this._mesh._normals[ 0 ].push( nx, ny, 0 );
+                                this._mesh._normals[ 0 ].push( nSign * nx, nSign * ny, 0 );
                             }
                             this._mesh._texCoords[ 0 ].push( 1 - ( 1 + cosPhi ) * 0.5, ( 1 - sinPhi ) * 0.5 );
 
