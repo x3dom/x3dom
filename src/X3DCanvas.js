@@ -1435,12 +1435,12 @@ x3dom.X3DCanvas.prototype.load = function ( uri, sceneElemPos, settings )
 
                     if ( navigator.getVRDisplays && x3dCanvas.vrDisplay === null )
                     {
-                        if ( !this.vrDisplayPromise )
+                        if ( !x3dCanvas.vrDisplayPromise )
                         {
-                            this.vrDisplayPromise = navigator.getVRDisplays();
+                            x3dCanvas.vrDisplayPromise = navigator.getVRDisplays();
                         }
 
-                        this.vrDisplayPromise.then( function ( displays )
+                        x3dCanvas.vrDisplayPromise.then( function ( displays )
                         {
                             if ( displays[ 0 ] )
                             {
