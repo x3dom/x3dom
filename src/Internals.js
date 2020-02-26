@@ -235,10 +235,22 @@ x3dom.isa = function ( object, clazz )
  */
 x3dom.getGlobal = function ()
 {
-    return ( function ()
+    if ( typeof self !== "undefined" )
     {
-        return this;
-    } ).call( null );
+        return self;
+    }
+
+    if ( typeof window !== "undefined" )
+    {
+        return window;
+    }
+
+    if ( typeof global !== "undefined" )
+    {
+        return global;
+    }
+
+    throw new Error( "unable to locate global object" );
 };
 
 /**
