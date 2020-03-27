@@ -162,7 +162,7 @@ x3dom.registerNodeType(
                         if ( this._vf.insideOutsideRadius )
                         {
                             this._mesh._positions[ 0 ].push( cosTheta * dist, innerRadius * sinPhi, -sinTheta * dist );
-                            this._mesh._normals[ 0 ].push( nSign * cosThenSign * ta * cosPhi, nSign * sinPhi, nSign * -sinTheta * cosPhi );
+                            this._mesh._normals[ 0 ].push( nSign * cosTheta * cosPhi, nSign * sinPhi, nSign * -sinTheta * cosPhi );
                         }
                         else
                         {
