@@ -2896,7 +2896,18 @@ x3dom.gfx_webgl = ( function ()
 
             // TODO: implement surface with additional wireframe render mode (independent from poly mode)
             var indOff,
-                renderMode = viewarea.getRenderMode();
+                renderMode = viewarea.getRenderMode(),
+                self_transparent = mat ? ( mat._vf.transparency > 0 ) && ( !shape.isSolid() ) : false,
+                _drawFrontBack = function ( stateManager, drawFunction )
+                {
+                    stateManager.frontFace( shape.isCCW() ? gl.CCW : gl.CW );
+                    stateManager.enable( gl.CULL_FACE );
+                    stateManager.cullFace( gl.FRONT );
+                    drawFunction();
+                    stateManager.cullFace( gl.BACK );
+                    drawFunction();
+                    stateManager.disable( gl.CULL_FACE );
+                };
 
             if ( renderMode > 0 )
             {
@@ -2987,11 +2998,31 @@ x3dom.gfx_webgl = ( function ()
                 }
                 else if ( s_gl.indexes[ q ].length == 0 )
                 {
-                    this.drawArrays( gl, s_gl.primType, 0, s_gl.positions[ q ].length / 3 );
+                    if ( self_transparent )
+                    {
+                        _drawFrontBack(
+                            this.stateManager,
+                            this.drawArrays.bind( this, gl, s_gl.primType, 0, s_gl.positions[ q ].length / 3 )
+                        );
+                    }
+                    else
+                    {
+                        this.drawArrays( gl, s_gl.primType, 0, s_gl.positions[ q ].length / 3 );
+                    }
                 }
                 else
                 {
-                    this.drawElements( gl, s_gl.primType, s_gl.indexes[ q ].length, s_gl.indexType, 0 );
+                    if ( self_transparent )
+                    {
+                        _drawFrontBack(
+                            this.stateManager,
+                            this.drawElements.bind( this, gl, s_gl.primType, s_gl.indexes[ q ].length, s_gl.indexType, 0 )
+                        );
+                    }
+                    else
+                    {
+                        this.drawElements( gl, s_gl.primType, s_gl.indexes[ q ].length, s_gl.indexType, 0 );
+                    }
                 }
             }
 
