@@ -21,6 +21,8 @@
     x3dom.tessWorkerScript = URL.createObjectURL( new Blob( [ "(" + tessWorker.toString() + ")()" ], {type: "application/javascript"} ) );
 
     //wrapper
+    
+    var basisFunsCache;
 
     function tessWorker ()
     {
@@ -28,11 +30,11 @@
         {
             if ( e.data[ 11 ] )
             { // always the case
-                var basisFunsCache = e.data[ 11 ];
+                basisFunsCache = e.data[ 11 ];
             }
             else
             {
-                var basisFunsCache = new Map();
+                basisFunsCache = new Map();
             }
             var tess = new Tessellator( e.data );
             if ( e.data[ 12 ] && e.data[ 12 ].length )
