@@ -215,8 +215,7 @@ x3dom.registerNodeType(
                     var radius = this._vf.radius,
                         height = this._vf.height / 2;
                     var sides = this._vf.subdivision;
-                    var nSign = this._vf.ccw ? 1 : -1;
-
+                    
                     var beta,
                         x,
                         z,
@@ -286,6 +285,7 @@ x3dom.registerNodeType(
                     var radius = this._vf.radius,
                         height = this._vf.height / 2,
                         sides = this._vf.subdivision,
+                        nSign = this._vf.ccw ? 1 : -1,
 
                         beta,
                         x,
