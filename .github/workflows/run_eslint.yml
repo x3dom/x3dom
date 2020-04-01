@@ -1,4 +1,4 @@
-name: X3DOM lint
+name: X3DOM lint fixer
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  ESLINT:
+  ESLINTFIX:
 
     runs-on: ubuntu-latest
 
@@ -17,7 +17,17 @@ jobs:
         node-version: 10.x
     - run: npm install
     - name: npm run lint
-      continue-on-error:
-      run: npm run lint
+      continue-on-error: true
+      run: npm run lint > eslint.err
+    - run: cat eslint.err
+    - run: (for f in `grep x3dom/src eslint.err`; do cp $f $f.orig; echo $f; done && exit 0)
+    - run: find /home/runner/work/x3dom/x3dom/src -name '*orig'
     - run: npm run lint-fix
-    
+    - run: mkdir fixed
+    - run: (for f in `grep x3dom/src eslint.err`; do cat $f; cp $f fixed; done; exit 0)
+      continue-on-error: true
+    - name: upload fixed files
+      uses: actions/upload-artifact@v1
+      with:
+        name: eslint fix
+        path: fixed
