@@ -23,11 +23,44 @@ jobs:
     - run: (for f in `grep x3dom/src eslint.err`; do cp $f $f.orig; echo $f; done && exit 0)
     - run: find /home/runner/work/x3dom/x3dom/src -name '*orig'
     - run: npm run lint-fix
-    - run: mkdir fixed
-    - run: (for f in `grep x3dom/src eslint.err`; do cat $f; cp $f fixed; done; exit 0)
+    - name: copy and prepare fixes
+      env:
+        REPORT: eslint report
+        FIXED: fixed files
+      shell: bash {0}
+      run: |
+        mkdir linted
+        for f in `grep x3dom/src eslint.err`; do cat $f >> fixed; cp $f linted; diff -u $f.orig $f >> eslint.err; done
+        REPORT="$(cat eslint.err)"
+        REPORT="${REPORT//'%'/'%25'}"
+        REPORT="${REPORT//$'\n'/'%0A'}"
+        REPORT="${REPORT//$'\r'/'%0D'}" 
+        echo "::set-env name=REPORT::$REPORT"
+        FIXED="$(cat fixed)"
+        FIXED="${FIXED//'%'/'%25'}"
+        FIXED="${FIXED//$'\n'/'%0A'}"
+        FIXED="${FIXED//$'\r'/'%0D'}"
+        echo "::set-env name=FIXED::$FIXED"
       continue-on-error: true
     - name: upload fixed files
       uses: actions/upload-artifact@v1
       with:
         name: eslint fix
-        path: fixed
+        path: linted
+    - run: echo "$REPORT"
+    - name: Create diff comment
+      uses: peter-evans/commit-comment@v1
+      with:
+        body: |
+          eslint and diff report:
+          ```
+          ${{ env.REPORT }}
+          ```
+    - name: Create lint comment
+      uses: peter-evans/commit-comment@v1
+      with:
+        body: |
+          fixes by eslint:
+          ```
+          ${{ env.FIXED }}
+          ```
