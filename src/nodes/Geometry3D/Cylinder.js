@@ -215,7 +215,7 @@ x3dom.registerNodeType(
                     var radius = this._vf.radius,
                         height = this._vf.height / 2;
                     var sides = this._vf.subdivision;
-                    
+
                     var beta,
                         x,
                         z,
