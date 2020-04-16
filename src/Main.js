@@ -233,7 +233,14 @@ x3dom.userAgentFeature = {
         {
             for ( var i = 0; i < x3dom.canvases.length; i++ )
             {
-                x3dom.canvases[ i ].doc.shutdown( x3dom.canvases[ i ].gl );
+                
+                var canvase = x3dom.canvases[ i ];
+            	
+            	if (canvase.doc != null)
+                {
+            		canvase.doc.shutdown(canvase.gl);
+            	}
+                
             }
             x3dom.canvases = [];
         }
