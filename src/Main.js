@@ -229,7 +229,7 @@ x3dom.userAgentFeature = {
 
     var onunload = function ()
     {
-        if ( x3dom.canvases )
+        if ( x3dom.canvases && x3dom.canvases.length > 0 && x3dom.canvases[ 0 ].doc )
         {
             for ( var i = 0; i < x3dom.canvases.length; i++ )
             {
