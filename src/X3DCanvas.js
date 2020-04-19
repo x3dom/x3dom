@@ -1435,37 +1435,35 @@ x3dom.X3DCanvas.prototype.load = function ( uri, sceneElemPos, settings )
 
                     if ( navigator.getVRDisplays && x3dCanvas.vrDisplay === null )
                     {
-                        if ( x3dCanvas.vrDisplay )
+                        if ( !x3dCanvas.vrDisplayPromise )
                         {
-                            x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
+                            x3dCanvas.vrDisplayPromise = navigator.getVRDisplays();
                         }
-                        else
-                        {
-                            if ( !this.vrDisplayPromise )
-                            {
-                                this.vrDisplayPromise = navigator.getVRDisplays();
-                            }
 
-                            this.vrDisplayPromise.then( function ( displays )
+                        x3dCanvas.vrDisplayPromise.then( function ( displays )
+                        {
+                            if ( displays[ 0 ] )
                             {
                                 x3dCanvas.vrDisplay = displays[ 0 ];
 
-                                if ( x3dCanvas.vrDisplay )
-                                {
-                                    x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
+                                x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
 
-                                    x3dCanvas.vrDiv.style.display = "block";
-                                }
-                                else
-                                {
-                                    x3dCanvas.vrDisplay = undefined;
-                                    window.requestAnimFrame( mainloop, x3dCanvas );
-                                }
-                            } ).catch( function ( error )
+                                x3dCanvas.vrDiv.style.display = "block";
+                            }
+                            else
                             {
+                                x3dCanvas.vrDisplay = undefined;
                                 window.requestAnimFrame( mainloop, x3dCanvas );
-                            } );
-                        }
+                            }
+                        } ).catch( function ( error )
+                        {
+                            x3dCanvas.vrDisplay = undefined;
+                            window.requestAnimFrame( mainloop, x3dCanvas );
+                        } );
+                    }
+                    else if ( navigator.getVRDisplays && x3dCanvas.vrDisplay )
+                    {
+                        x3dCanvas.vrDisplay.requestAnimationFrame( mainloop, x3dCanvas );
                     }
                     else
                     {

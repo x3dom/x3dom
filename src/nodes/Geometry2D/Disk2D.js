@@ -67,8 +67,10 @@ x3dom.registerNodeType(
 
             var ir = this._vf.innerRadius;
             var or = this._vf.outerRadius;
+            var anzahl = this._vf.subdivision;
+            var ccw = this._vf.ccw;
 
-            var geoCacheID = "Disk2D_" + ir + or;
+            var geoCacheID = [ "Disk2D", ir, or, anzahl, ccw ].join( "-" );
 
             if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
             {
@@ -77,7 +79,7 @@ x3dom.registerNodeType(
             }
             else
             {
-                var anzahl = this._vf.subdivision;
+                var nSign = ccw ? 1 : -1;
                 for ( var i = 0; i <= anzahl; i++ )
                 {
                     var theta = i * ( ( 2 * Math.PI ) / anzahl );
@@ -92,7 +94,7 @@ x3dom.registerNodeType(
 
                     this._mesh._normals[ 0 ].push( 0 );
                     this._mesh._normals[ 0 ].push( 0 );
-                    this._mesh._normals[ 0 ].push( 1 );
+                    this._mesh._normals[ 0 ].push( nSign * 1 );
 
                     this._mesh._texCoords[ 0 ].push( ( ox + or ) / ( 2 * or ) );
                     this._mesh._texCoords[ 0 ].push( ( oy + or ) / ( 2 * or ) );
@@ -103,7 +105,7 @@ x3dom.registerNodeType(
 
                     this._mesh._normals[ 0 ].push( 0 );
                     this._mesh._normals[ 0 ].push( 0 );
-                    this._mesh._normals[ 0 ].push( 1 );
+                    this._mesh._normals[ 0 ].push( nSign * 1 );
                     this._mesh._texCoords[ 0 ].push( ( ix + or ) / ( 2 * or ) );
                     this._mesh._texCoords[ 0 ].push( ( iy + or ) / ( 2 * or ) );
                 }
@@ -143,6 +145,8 @@ x3dom.registerNodeType(
         {
             fieldChanged : function ( fieldName )
             {
+                var nSign = this._vf.ccw ? 1 : -1;
+
                 if ( fieldName == "innerRadius" || fieldName == "outerRadius" ||
                     fieldName == "subdivision" )
                 {
@@ -169,7 +173,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
 
                         this._mesh._texCoords[ 0 ].push( ( ox + or ) / ( 2 * or ) );
                         this._mesh._texCoords[ 0 ].push( ( oy + or ) / ( 2 * or ) );
@@ -180,7 +184,7 @@ x3dom.registerNodeType(
 
                         this._mesh._normals[ 0 ].push( 0 );
                         this._mesh._normals[ 0 ].push( 0 );
-                        this._mesh._normals[ 0 ].push( 1 );
+                        this._mesh._normals[ 0 ].push( nSign * 1 );
                         this._mesh._texCoords[ 0 ].push( ( ix + or ) / ( 2 * or ) );
                         this._mesh._texCoords[ 0 ].push( ( iy + or ) / ( 2 * or ) );
                     }

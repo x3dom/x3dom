@@ -80,8 +80,9 @@ x3dom.registerNodeType(
                 var r = this._vf.radius;
                 var subx = this._vf.subdivision.x,
                     suby = this._vf.subdivision.y;
+                var ccw = this._vf.ccw;
 
-                var geoCacheID = "Sphere_" + r + "-" + subx + "-" + suby;
+                var geoCacheID = [ "Sphere", r, subx, suby, qfactor, ccw ].join( "-" );
 
                 if ( this._vf.useGeoCache && x3dom.geoCache[ geoCacheID ] !== undefined )
                 {
@@ -106,13 +107,13 @@ x3dom.registerNodeType(
                 this._mesh._normals[ 0 ] = [];
                 this._mesh._texCoords[ 0 ] = [];
                 var r = this._vf.radius;
+                var nSign = this._vf.ccw ? 1 : -1;
                 var subx = this._vf.subdivision.x,
                     suby = this._vf.subdivision.y;
                 var latNumber,
                     longNumber,
                     latitudeBands = Math.floor( subx * this._quality ),
                     longitudeBands = Math.floor( suby * this._quality ),
-
                     theta,
                     sinTheta,
                     cosTheta,
@@ -136,14 +137,9 @@ x3dom.registerNodeType(
                         u = this._uFromlong( longNumber, longitudeBands );
                         v = latNumber / latitudeBands;
 
-                        this._mesh._positions[ 0 ].push( r * coord.x );
-                        this._mesh._positions[ 0 ].push( r * coord.y );
-                        this._mesh._positions[ 0 ].push( r * coord.z );
-                        this._mesh._normals[ 0 ].push( coord.x );
-                        this._mesh._normals[ 0 ].push( coord.y );
-                        this._mesh._normals[ 0 ].push( coord.z );
-                        this._mesh._texCoords[ 0 ].push( u );
-                        this._mesh._texCoords[ 0 ].push( v );
+                        this._mesh._positions[ 0 ].push( r * coord.x, r * coord.y, r * coord.z );
+                        this._mesh._normals[ 0 ].push( nSign * coord.x, nSign * coord.y, nSign * coord.z );
+                        this._mesh._texCoords[ 0 ].push( u, v );
                     }
                 }
 
@@ -157,13 +153,8 @@ x3dom.registerNodeType(
                         first = ( latNumber * ( longitudeBands + 1 ) ) + longNumber;
                         second = first + longitudeBands + 1;
 
-                        this._mesh._indices[ 0 ].push( first );
-                        this._mesh._indices[ 0 ].push( second );
-                        this._mesh._indices[ 0 ].push( first + 1 );
-
-                        this._mesh._indices[ 0 ].push( second );
-                        this._mesh._indices[ 0 ].push( second + 1 );
-                        this._mesh._indices[ 0 ].push( first + 1 );
+                        this._mesh._indices[ 0 ].push( first, second, first + 1 );
+                        this._mesh._indices[ 0 ].push( second, second + 1, first + 1 );
                     }
                 }
             },
@@ -215,9 +206,7 @@ x3dom.registerNodeType(
                         {
                             coord = this._calcXYZ( longNumber, longitudeBands, sinTheta, cosTheta );
 
-                            this._mesh._positions[ 0 ].push( r * coord.x );
-                            this._mesh._positions[ 0 ].push( r * coord.y );
-                            this._mesh._positions[ 0 ].push( r * coord.z );
+                            this._mesh._positions[ 0 ].push( r * coord.x, r * coord.y, r * coord.z );
                         }
                     }
 

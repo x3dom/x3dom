@@ -41,7 +41,7 @@ x3dom.registerNodeType(
              * Specifies whether the clip is enabled.
              * @var {x3dom.fields.SFBool} enabled
              * @memberof x3dom.nodeTypes.AudioClip
-             * @initvalue true
+             * @initvalue false
              * @field x3dom
              * @instance
              */

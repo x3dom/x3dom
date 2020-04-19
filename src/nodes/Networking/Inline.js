@@ -311,7 +311,6 @@ x3dom.registerNodeType(
                 newScene = null;
                 nameSpace = null;
                 inlScene = null;
-                xml = null;
             },
 
             loadInline : function ()

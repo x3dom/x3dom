@@ -22,17 +22,19 @@
 
     //wrapper
 
+    var basisFunsCache;
+
     function tessWorker ()
     {
         onmessage = function ( e )
         {
             if ( e.data[ 11 ] )
             { // always the case
-                var basisFunsCache = e.data[ 11 ];
+                basisFunsCache = e.data[ 11 ];
             }
             else
             {
-                var basisFunsCache = new Map();
+                basisFunsCache = new Map();
             }
             var tess = new Tessellator( e.data );
             if ( e.data[ 12 ] && e.data[ 12 ].length )
@@ -330,6 +332,10 @@
             this.indices = [];
             this.uv = [];
             this.coordIndex = 0;
+            this.u0 = 0;
+            this.u1 = 1;
+            this.v0 = 0;
+            this.v1 = 1;
 
             this.deform = function ()
             { // for animation without remeshing
@@ -347,20 +353,20 @@
                 // TODO: find multiple control points/internal knots and add initial
                 // triangles for them to make sure those important surface features
                 // (hard edges) are preserved
-                var u0 = this.U[ this.p ];
-                var u1 = this.U[ this.U.length - this.p - 1 ];
-                var u05 = ( u0 + u1 ) * 0.5;
-                var v0 = this.V[ this.q ];
-                var v1 = this.V[ this.V.length - this.q - 1 ];
-                var v05 = ( v0 + v1 ) * 0.5;
-                this.tessTri( [ [ u0, v0 ], [ u0, v05 ], [ u05, v0 ] ] );
-                this.tessTri( [ [ u0, v05 ], [ u05, v05 ], [ u05, v0 ] ] );
-                this.tessTri( [ [ u0, v05 ], [ u0, v1 ], [ u05, v05 ] ] );
-                this.tessTri( [ [ u0, v1 ], [ u05, v1 ], [ u05, v05 ] ] );
-                this.tessTri( [ [ u05, v0 ], [ u05, v05 ], [ u1, v0 ] ] );
-                this.tessTri( [ [ u05, v05 ], [ u1, v05 ], [ u1, v0 ] ] );
-                this.tessTri( [ [ u05, v05 ], [ u05, v1 ], [ u1, v05 ] ] );
-                this.tessTri( [ [ u05, v1 ], [ u1, v1 ], [ u1, v05 ] ] );
+                this.u0 = this.U[ this.p ];
+                this.u1 = this.U[ this.U.length - this.p - 1 ];
+                var u05 = ( this.u0 + this.u1 ) * 0.5;
+                this.v0 = this.V[ this.q ];
+                this.v1 = this.V[ this.V.length - this.q - 1 ];
+                var v05 = ( this.v0 + this.v1 ) * 0.5;
+                this.tessTri( [ [ this.u0, this.v0 ], [ this.u0, v05 ], [ u05, this.v0 ] ] );
+                this.tessTri( [ [ this.u0, v05 ], [ u05, v05 ], [ u05, this.v0 ] ] );
+                this.tessTri( [ [ this.u0, v05 ], [ this.u0, this.v1 ], [ u05, v05 ] ] );
+                this.tessTri( [ [ this.u0, this.v1 ], [ u05, this.v1 ], [ u05, v05 ] ] );
+                this.tessTri( [ [ u05, this.v0 ], [ u05, v05 ], [ this.u1, this.v0 ] ] );
+                this.tessTri( [ [ u05, v05 ], [ this.u1, v05 ], [ this.u1, this.v0 ] ] );
+                this.tessTri( [ [ u05, v05 ], [ u05, this.v1 ], [ this.u1, v05 ] ] );
+                this.tessTri( [ [ u05, this.v1 ], [ this.u1, this.v1 ], [ this.u1, v05 ] ] );
             }; // tesselate
 
             /* Adapt thresholds to current NURBS configuration. */
@@ -640,7 +646,10 @@
                 this.indexHash[ indu ][ indv ] = this.coordIndex;
                 this.coordIndex++;
                 this.coordinates.push( pnt );
-                this.texcoords.push( [ uv[ 0 ], uv[ 1 ] ] );
+                this.texcoords.push( [
+                    ( uv[ 0 ] + this.u0 ) / ( this.u1 - this.u0 ),
+                    ( uv[ 1 ] + this.v0 ) / ( this.v1 - this.v0 )
+                ] );
                 //output uv in same order
                 this.uv.push( uv );
                 return pnt;
