@@ -221,9 +221,9 @@ x3dom.registerNodeType(
                 for ( k = 0; k <= p; k++ )
                 {
                     i = indu + k;
-                    temp[ 0 ] += Nu[ k ] * P[ i ].x;
-                    temp[ 1 ] += Nu[ k ] * P[ i ].y;
-                    temp[ 2 ] += Nu[ k ] * P[ i ].z;
+                    temp[ 0 ] += Nu[ k ] * W[ i ] * P[ i ].x;
+                    temp[ 1 ] += Nu[ k ] * W[ i ] * P[ i ].y;
+                    temp[ 2 ] += Nu[ k ] * W[ i ] * P[ i ].z;
                     temp[ 3 ] += Nu[ k ] * W[ i ];
                 }
 
