@@ -182,9 +182,9 @@
                 for ( k = 0; k <= p; k++ )
                 {
                     i = indu + k + ( indv * ( n + 1 ) );
-                    temp[ j + 0 ] += Nu[ k ] * W[ i ] * P[ i ].x;
-                    temp[ j + 1 ] += Nu[ k ] * W[ i ] * P[ i ].y;
-                    temp[ j + 2 ] += Nu[ k ] * W[ i ] * P[ i ].z;
+                    temp[ j + 0 ] += Nu[ k ] * P[ i ].x;
+                    temp[ j + 1 ] += Nu[ k ] * P[ i ].y;
+                    temp[ j + 2 ] += Nu[ k ] * P[ i ].z;
                     temp[ j + 3 ] += Nu[ k ] * W[ i ];
                 }
                 j += 4;
