@@ -1568,7 +1568,12 @@ x3dom.Viewarea.prototype.handleMoveEvt = function ( x, y, buttonState )
             this._pickingInfo.pickObj = this._pickingInfo.lastObj;
 
             // call event for lastObj
+            var affectedPointingSensors_current = this._doc._nodeBag.affectedPointingSensors
+            this._doc._nodeBag.affectedPointingSensors = [];
+
             this.prepareEvents( x, y, buttonState, "onmouseout" );
+
+            this._doc._nodeBag.affectedPointingSensors = affectedPointingSensors_current;
             this._pickingInfo.pickObj = obj;
         }
 
