@@ -27,6 +27,7 @@
   * allow better gc after Inline removal
   * line per segment color
   * Sphere, Box, Cylinder, Cone, Plane, Rectangle2D, Disk2D, ArcClose2D ccw
+  * TouchSensor isOver to false on mouseout
   
 ## Version 1.8.1
 
