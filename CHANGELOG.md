@@ -20,6 +20,7 @@
   * text node improvements
   * resume time at paused fraction
   * more robust collisions in walk mode
+  * improved self-transparency
 * Bugfixes
   * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
@@ -27,6 +28,7 @@
   * allow better gc after Inline removal
   * line per segment color
   * Sphere, Box, Cylinder, Cone, Plane, Rectangle2D, Disk2D, ArcClose2D ccw
+  * TouchSensor isOver to false on mouseout
   
 ## Version 1.8.1
 
