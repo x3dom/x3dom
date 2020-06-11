@@ -38,14 +38,7 @@ x3dom.Utils.startMeasure = function ( name )
     var uname = name.toUpperCase();
     if ( !x3dom.Utils.measurements[ uname ] )
     {
-        if ( performance && performance.now )
-        {
-            x3dom.Utils.measurements[ uname ] = performance.now();
-        }
-        else
-        {
-            x3dom.Utils.measurements[ uname ] = new Date().getTime();
-        }
+        x3dom.Utils.measurements[ uname ] = performance.now();
     }
 };
 
@@ -56,14 +49,7 @@ x3dom.Utils.stopMeasure = function ( name )
     {
         var startTime = x3dom.Utils.measurements[ uname ];
         delete x3dom.Utils.measurements[ uname ];
-        if ( performance && performance.now )
-        {
-            return performance.now() - startTime;
-        }
-        else
-        {
-            return new Date().getTime() - startTime;
-        }
+        return performance.now() - startTime;
     }
     return 0;
 };
