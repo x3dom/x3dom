@@ -262,7 +262,7 @@ x3dom.X3DCanvas.prototype.bindEventListeners = function ()
         }
     };
 
-    this.onMouseAlt = function ( evt )
+    this.onMouseOut = function ( evt )
     {
         if ( !this.isMulti )
         {
