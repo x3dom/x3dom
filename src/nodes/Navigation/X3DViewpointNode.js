@@ -97,7 +97,7 @@ x3dom.registerNodeType(
 
             getFieldOfView : function ()
             {
-                return 1.57079633;
+                return Math.PI/2.0;
             },
 
             /**
