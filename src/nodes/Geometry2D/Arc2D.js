@@ -60,7 +60,7 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat( ctx, "endAngle", Math.PI/2.0 );
+            this.addField_SFFloat( ctx, "endAngle", Math.PI / 2.0 );
 
             /**
              * Number of lines into which the arc is subdivided
