@@ -56,7 +56,7 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFFloat} startAngle
              * @memberof x3dom.nodeTypes.Arc2D
              * @initvalue 0
-             * @range [-2 pi, 2pi]
+             * @range [-2 pi, 2 pi]
              * @field x3d
              * @instance
              */
@@ -66,12 +66,12 @@ x3dom.registerNodeType(
              * The arc extends from the startAngle counterclockwise to the endAngle.
              * @var {x3dom.fields.SFFloat} endAngle
              * @memberof x3dom.nodeTypes.Arc2D
-             * @initvalue 1.570796
-             * @range [-2 pi, 2pi]
+             * @initvalue pi/2
+             * @range [-2 pi, 2 pi]
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat( ctx, "endAngle", 1.570796 );
+            this.addField_SFFloat( ctx, "endAngle", Math.PI / 2.0 );
 
             /**
              * Number of lines into which the arc is subdivided

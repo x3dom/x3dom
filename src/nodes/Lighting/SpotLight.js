@@ -86,11 +86,11 @@ x3dom.registerNodeType(
              * @var {x3dom.fields.SFFloat} beamWidth
              * @range [0, pi/2]
              * @memberof x3dom.nodeTypes.SpotLight
-             * @initvalue 1.5707963
+             * @initvalue pi/2
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat( ctx, "beamWidth", 1.5707963 );
+            this.addField_SFFloat( ctx, "beamWidth", Math.PI / 2.0 );
 
             /**
              * The cutOffAngle field specifies the outer bound of the solid angle. The light source does not emit light outside of this solid angle.
@@ -99,11 +99,11 @@ x3dom.registerNodeType(
              * @range [0, pi/2]
              * @var {x3dom.fields.SFFloat} cutOffAngle
              * @memberof x3dom.nodeTypes.SpotLight
-             * @initvalue 1.5707963
+             * @initvalue pi/2
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat( ctx, "cutOffAngle", 1.5707963 );
+            this.addField_SFFloat( ctx, "cutOffAngle", Math.PI / 2.0 );
 
             /**
              *
