@@ -128,7 +128,7 @@ x3dom.VRControllerManager.prototype.fit = function ( viewarea, vrDisplay )
 
     var aspect =  Math.min( viewarea._width / viewarea._height, 1 );
 
-    var tanfov2 = Math.tan( 1.57 / 2.0 );
+    var tanfov2 = Math.tan( 0.5 * Math.PI / 2.0 );
     var dist = bsr / tanfov2 / aspect;
 
     viewarea._movement = viewDir.multiply( -dist );
