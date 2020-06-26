@@ -18,44 +18,44 @@
 x3dom.docs = {};
 
 x3dom.docs.specURLMap = {
-    CADGeometry          : "CADGeometry.html",
-    Core                 : "core.html",
-    DIS                  : "dis.html",
-    CubeMapTexturing     : "env_texture.html",
-    EnvironmentalEffects : "enveffects.html",
-    EnvironmentalSensor  : "envsensor.html",
-    Followers            : "followers.html",
-    Geospatial           : "geodata.html",
-    Geometry2D           : "geometry2D.html",
-    Geometry3D           : "geometry3D.html",
-    Grouping             : "group.html",
-    "H-Anim"             : "hanim.html",
-    Interpolation        : "interp.html",
-    KeyDeviceSensor      : "keyboard.html",
-    Layering             : "layering.html",
-    Layout               : "layout.html",
-    Lighting             : "lighting.html",
-    Navigation           : "navigation.html",
-    Networking           : "networking.html",
-    NURBS                : "nurbs.html",
-    ParticleSystems      : "particle_systems.html",
-    Picking              : "picking.html",
-    PointingDeviceSensor : "pointingsensor.html",
-    Rendering            : "rendering.html",
-    RigidBodyPhysics     : "rigid_physics.html",
-    Scripting            : "scripting.html",
-    Shaders              : "shaders.html",
-    Shape                : "shape.html",
-    Sound                : "sound.html",
-    Text                 : "text.html",
-    Texturing3D          : "texture3D.html",
-    Texturing            : "texturing.html",
-    Time                 : "time.html",
-    EventUtilities       : "utils.html",
-    VolumeRendering      : "volume.html"
+    CADGeometry          : "CADGeometry.html",      // 32 CAD geometry component
+    Core                 : "core.html",             //  7 Core component
+    DIS                  : "dis.html",              // 28 Distributed interactive simulation (DIS) component
+    CubeMapTexturing     : "env_texture.html",      // 34 Cube map environmental texturing component
+    EnvironmentalEffects : "enveffects.html",       // 24 Environmental effects component
+    EnvironmentalSensor  : "envsensor.html",        // 22 Environmental sensor component
+    Followers            : "followers.html",        // 39 Followers component
+    Geospatial           : "geodata.html",          // 25 Geospatial component
+    Geometry2D           : "geometry2D.html",       // 14 Geometry2D component
+    Geometry3D           : "geometry3D.html",       // 13 Geometry3D component
+    Grouping             : "group.html",            // 10 Grouping component
+    "H-Anim"             : "hanim.html",            // 26 Humanoid Animation (H-Anim) component
+    Interpolation        : "interp.html",           // 19 Interpolation component
+    KeyDeviceSensor      : "keyboard.html",         // 21 Key device sensor component
+    Layering             : "layering.html",         // 35 Layering component
+    Layout               : "layout.html",           // 36 Layout component
+    Lighting             : "lighting.html",         // 17 Lighting component
+    Navigation           : "navigation.html",       // 23 Navigation component
+    Networking           : "networking.html",       //  9 Networking component
+    NURBS                : "nurbs.html",            // 27 NURBS component
+    ParticleSystems      : "particle_systems.html", // 40 Particle systems component
+    Picking              : "picking.html",          // 38 Picking component
+    PointingDeviceSensor : "pointingsensor.html",   // 20 Pointing device sensor component
+    Rendering            : "rendering.html",        // 11 Rendering component
+    RigidBodyPhysics     : "rigid_physics.html",    // 37 Rigid body physics
+    Scripting            : "scripting.html",        // 29 Scripting component
+    Shaders              : "shaders.html",          // 31 Programmable shaders component
+    Shape                : "shape.html",            // 12 Shape component
+    Sound                : "sound.html",            // 16 Sound component
+    Text                 : "text.html",             // 15 Text component
+    Texturing3D          : "texture3D.html",        // 33 Texturing3D Component
+    Texturing            : "texturing.html",        // 18 Texturing component
+    Time                 : "time.html",             //  8 Time component
+    EventUtilities       : "utils.html",            // 30 Event Utilities component
+    VolumeRendering      : "volume.html"            // 41 Volume rendering component
 };
 
-x3dom.docs.specBaseURL = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
+x3dom.docs.specBaseURL = "https://www.web3d.org/documents/specifications/19775-1/V3.3/Part01/components/";
 
 /**
  * The dump-nodetype tree functionality in a function
