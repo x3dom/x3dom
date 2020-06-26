@@ -1049,7 +1049,9 @@ x3dom.gfx_webgl = ( function ()
 
                 if ( sky.length != colors.length )
                 {
-                    x3dom.debug.logError( "Number of background colors and corresponding angles are different!" );
+                    x3dom.debug.logError( "Number of background colors (" + colors.length
+                        + ") and corresponding angles (" + sky.length
+                        + ") are different!" );
                     var minArrayLength = ( sky.length < colors.length ) ? sky.length : colors.length;
                     sky.length = minArrayLength;
                     colors.length = minArrayLength;
