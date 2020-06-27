@@ -1299,7 +1299,11 @@ x3dom.Utils.wrapProgram = function ( gl, program, shaderID )
         glErr = gl.getError();
         if ( glErr )
         {
-            x3dom.debug.logError( "GL-Error (on searching uniforms): " + glErr );
+            x3dom.debug.logError( "GL-Error (on searching uniforms):"
+                + " name=" + obj.name
+                + " type=" + obj.type
+                + " size=" + obj.size
+                + " Err=" + glErr );
         }
 
         loc = gl.getUniformLocation( program, obj.name );
@@ -1402,7 +1406,11 @@ x3dom.Utils.wrapProgram = function ( gl, program, shaderID )
         glErr = gl.getError();
         if ( glErr )
         {
-            x3dom.debug.logError( "GL-Error (on searching attributes): " + glErr );
+            x3dom.debug.logError( "GL-Error (on searching attributes):"
+                + " name=" + obj.name
+                + " type=" + obj.type
+                + " size=" + obj.size
+                + " Err=" + glErr );
         }
 
         loc = gl.getAttribLocation( program, obj.name );

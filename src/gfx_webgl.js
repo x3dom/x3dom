@@ -1049,7 +1049,8 @@ x3dom.gfx_webgl = ( function ()
 
                 if ( sky.length != colors.length )
                 {
-                    x3dom.debug.logError( "Number of background colors and corresponding angles are different!" );
+                    x3dom.debug.logError( "Number of background colors and corresponding angles do not match.\n"
+                        + "You have to define one angle less than the count of RGB colors because the angle 0° is added automatically." );
                     var minArrayLength = ( sky.length < colors.length ) ? sky.length : colors.length;
                     sky.length = minArrayLength;
                     colors.length = minArrayLength;

@@ -1360,7 +1360,9 @@ x3dom.Viewarea.prototype.onMouseRelease = function ( x, y, buttonState, prevButt
     var navi = this._scene.getNavigationInfo();
     var navType = navi.getType();
 
-    if ( this._scene._vf.pickMode.toLowerCase() !== "box" )
+    var pickMode = this._scene._vf.pickMode.toLowerCase();
+
+    if ( pickMode !== "box" )
     {
         this.prepareEvents( x, y, prevButton, "onmouseup" );
 
@@ -1414,7 +1416,22 @@ x3dom.Viewarea.prototype.onMouseRelease = function ( x, y, buttonState, prevButt
 
             x3dom.debug.logInfo( "Hit '" + obj._xmlNode.localName + "/ " +
                 obj._DEF + "' at dist=" + line.dist.toFixed( 4 ) );
-            x3dom.debug.logInfo( "Ray hit at position " + this._pick );
+            if ( pickMode === "color" )
+            {
+                x3dom.debug.logInfo( "Ray hit color " + this._pick );
+            }
+            else if ( pickMode === "idbufid" || pickMode === "texcoord" )
+            {
+                x3dom.debug.logInfo( "Ray hit data " + this._pick );
+            }
+            else
+            { // idbuf idbuf24 box
+                x3dom.debug.logInfo( "Ray hit at position "
+                    + this._pick.x.toFixed( 4 ) + " "
+                    + this._pick.y.toFixed( 4 ) + " "
+                    + this._pick.z.toFixed( 4 )
+                );
+            }
         }
 
         var t1 = new Date().getTime() - t0;
@@ -1700,7 +1717,22 @@ x3dom.Viewarea.prototype.prepareEvents = function ( x, y, buttonState, eventType
             {  // debug
                 if ( obj._xmlNode )
                 {x3dom.debug.logInfo( "Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"" );}
-                x3dom.debug.logInfo( "Ray hit at position " + this._pick );
+                if ( pickMode === "color" )
+                {
+                    x3dom.debug.logInfo( "Ray hit color " + this._pick );
+                }
+                else if ( pickMode === "idbufid" || pickMode === "texcoord" )
+                {
+                    x3dom.debug.logInfo( "Ray hit data " + this._pick );
+                }
+                else
+                { // idbuf idbuf24 box
+                    x3dom.debug.logInfo( "Ray hit at position "
+                        + this._pick.x.toFixed( 4 ) + " "
+                        + this._pick.y.toFixed( 4 ) + " "
+                        + this._pick.z.toFixed( 4 )
+                    );
+                }
             }
         }
     }
