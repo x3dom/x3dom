@@ -1675,7 +1675,7 @@ x3dom.Runtime.prototype.createX3DFromString = function ( jsonOrXML, optionalURL 
 x3dom.Runtime.prototype.createX3DFromURLPromise = function ( url, optionalURL )
 {
     this.canvas.doc.incrementDownloads();
-    that = this;
+    var that = this;
     return fetch( url )
         .then( function ( r ) { return r.text(); } )
         .then( function ( text )
@@ -1715,7 +1715,7 @@ x3dom.Runtime.prototype.createX3DFromURLPromise = function ( url, optionalURL )
  */
 x3dom.Runtime.prototype.loadURL = function ( url, optionalURL )
 {
-    that = this;
+    var that = this;
     this.createX3DFromURLPromise( url, optionalURL )
         .then( function ( x3d )
         {
