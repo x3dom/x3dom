@@ -399,11 +399,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function ( charCode )
             {
                 states.display();
             }
-            x3dom.debug.logInfo( "a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
-                                "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | \n" +
+            x3dom.debug.logInfo( "a: show all | i: fit view | d: show helper buffers | s: small feature culling | t: light view | " +
+                                "m: toggle render mode | c: frustum culling | p: intersect type | \n" +
                                 "e: examine mode | f: fly mode | y: freefly mode | w: walk mode | h: helicopter mode | " +
                                 "l: lookAt mode | o: lookaround | g: game mode | n: turntable | u: upright position | \n" +
-                                "v: print viewpoint info | pageUp: next view | pageDown: prev. view | " +
+                                "v: print viewpoint info | r: reset view | home: first view | end: last view | pageUp: next view | pageDown: prev. view | " +
                                 "+: increase speed | -: decrease speed " );
             break;
         case  43: /* + (incr. speed) */
