@@ -758,7 +758,7 @@ x3dom.Runtime.prototype.showObject = function ( obj, axis )
             case "posX": n0 = new x3dom.fields.SFVec3f( 1,  0,  0 ); break;
             case "negX": n0 = new x3dom.fields.SFVec3f( -1,  0,  0 ); break;
             case "posY": n0 = new x3dom.fields.SFVec3f( 0,  1,  0 ); break;
-            case "negY": n0 = new x3dom.fields.SFVec3f( 1, -1,  0 ); break;
+            case "negY": n0 = new x3dom.fields.SFVec3f( 0, -1,  0 ); break;
             case "posZ": n0 = new x3dom.fields.SFVec3f( 0,  0,  1 ); break;
             case "negZ": n0 = new x3dom.fields.SFVec3f( 0,  0, -1 ); break;
         }
