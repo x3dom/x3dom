@@ -200,7 +200,7 @@ x3dom.gfx_webgl = ( function ()
                             x3dom.Utils.maxIndexableCoords = 4294967295;
                         }
 
-                        //Disable half float textures on apple devices
+                        //Disable half float and float textures on apple devices
                         if ( isAppleDevice )
                         {
                             x3dom.caps.HFP_TEXTURES = false;
