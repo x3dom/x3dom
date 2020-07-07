@@ -204,6 +204,7 @@ x3dom.gfx_webgl = ( function ()
                         if ( isAppleDevice )
                         {
                             x3dom.caps.HFP_TEXTURES = false;
+                            x3dom.caps.FP_TEXTURES = false;
                         }
 
                         //Disable texture lod on safari browsers
