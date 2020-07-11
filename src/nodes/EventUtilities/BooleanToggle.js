@@ -61,6 +61,10 @@ x3dom.registerNodeType(
                     }
                     return;
                 }
+                if ( fieldName === "toggle" )
+                {
+                    this.postMessage( "toggle", this._vf.toggle );
+                }
             }
         }
     )
