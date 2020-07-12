@@ -33,6 +33,8 @@
   * shadows on apples
   * transparent text
   * BooleanToggle toggle event after set
+  * TouchSensor hit output fields
+  * Light output fields
   
 ## Version 1.8.1
 
