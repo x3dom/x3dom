@@ -177,6 +177,7 @@ x3dom.registerNodeType(
                 if ( this._vf.hasOwnProperty( fieldName ) )
                 {
                     this._dirty = true;
+                    this.postMessage( fieldName + "_changed", this._vf[ fieldName ] );
                 }
             },
 
