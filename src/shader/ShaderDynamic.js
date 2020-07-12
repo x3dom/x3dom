@@ -1244,7 +1244,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
     //Kill pixel
     if ( properties.TEXT )
     {
-        shader += "if (color.a <= 0.5) discard;\n";
+        shader += "if (color.a < (1.0 - _transparency) * 0.5) discard;\n";
     }
     else if ( properties.ALPHAMASK )
     {
