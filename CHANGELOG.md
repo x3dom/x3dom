@@ -31,6 +31,8 @@
   * TouchSensor isOver to false on mouseout
   * reenable alphaClipThreshold
   * shadows on apples
+  * transparent text
+  * BooleanToggle toggle event after set
   
 ## Version 1.8.1
 
