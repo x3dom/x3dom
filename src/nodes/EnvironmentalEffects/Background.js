@@ -30,7 +30,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Background.superClass.call( this, ctx );
 
             /**
-             * Image shown at the back of the background cube 
+             * Image shown at the back of the background cube
              * @var {x3dom.fields.MFString} backUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
@@ -41,7 +41,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "backUrl", [] );
 
             /**
-             * Image shown at the bottom of the background cube 
+             * Image shown at the bottom of the background cube
              * @var {x3dom.fields.MFString} bottomUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
@@ -52,7 +52,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "bottomUrl", [] );
 
             /**
-             * Image shown at the front of the background cube 
+             * Image shown at the front of the background cube
              * @var {x3dom.fields.MFString} frontUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "frontUrl", [] );
 
             /**
-             * Image shown at the left of the background cube 
+             * Image shown at the left of the background cube
              * @var {x3dom.fields.MFString} leftUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "leftUrl", [] );
 
             /**
-             * Image shown at the right of the background cube 
+             * Image shown at the right of the background cube
              * @var {x3dom.fields.MFString} rightUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "rightUrl", [] );
 
             /**
-             * Image shown at the top of the background cube 
+             * Image shown at the top of the background cube
              * @var {x3dom.fields.MFString} topUrl
              * @memberof x3dom.nodeTypes.Background
              * @initvalue []
