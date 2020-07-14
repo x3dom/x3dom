@@ -420,7 +420,7 @@ x3dom.fields.SFMatrix4f.prototype.setRotate = function ( quat )
 };
 
 /**
- * Creates a new matrix from a column major string representation, with values separated by commas
+ * Creates a new matrix from a column major string representation, with values separated by commas or whitespace
  *
  * @param {String} str - string to parse
  * @returns {x3dom.fields.SFMatrix4f} the new matrix
@@ -1690,7 +1690,7 @@ x3dom.fields.SFMatrix4f.prototype.toString = function ()
 
 /**
  * Fills the values of this matrix from a string, where the entries are separated
- * by commas and given in column-major order.
+ * by commas or whitespaces and given in column-major order.
  *
  * @param {String} str - the string representation
  */

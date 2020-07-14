@@ -41,6 +41,8 @@ x3dom.registerNodeType(
 
             /**
              * Color of the ground
+             * Multiple color values are possible.
+             * You have to define 1 color more that you define ground angles.
              * @var {x3dom.fields.MFColor} groundColor
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue (0,0,0)
@@ -52,6 +54,7 @@ x3dom.registerNodeType(
 
             /**
              * Angle of the ground
+             * Multiple values are possible
              * @var {x3dom.fields.MFFloat} groundAngle
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue []
@@ -63,6 +66,8 @@ x3dom.registerNodeType(
 
             /**
              * Color of the sky
+             * Multiple color values are possible.
+             * You have to define 1 color more that you define sky angles.
              * @var {x3dom.fields.MFColor} skyColor
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue (0,0,0)
@@ -74,6 +79,7 @@ x3dom.registerNodeType(
 
             /**
              * Angle of the sky
+             * Multiple values are possible
              * @var {x3dom.fields.MFFloat} skyAngle
              * @memberof x3dom.nodeTypes.X3DBackgroundNode
              * @initvalue []

@@ -62,6 +62,14 @@ x3dom.registerNodeType(
 
             /**
              * Specifies the view angle and height for helicopter mode and min/max rotation angle for turntable in ]0, PI[, starting from +y (0) down to -y (PI)
+             * [0] helicopter vertical view angle theta
+             * [1] helicopter height
+             * [2] min vertical view angle theta
+             * [3] max vertical view angle theta
+             * [4] turntable min orbit rotation angle phi (yaw)  (### needs verification)
+             * [5] turntable max orbit rotation angle phi (yaw)  (### needs verification)
+             * [6] turntable min zoom amount                     (### needs verification)
+             * [7] turntable max zoom amount                     (### needs verification)
              * @var {x3dom.fields.MFFloat} typeParams
              * @memberof x3dom.nodeTypes.NavigationInfo
              * @initvalue [-0.4,60,0.05,2.8]
