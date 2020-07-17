@@ -163,8 +163,8 @@
 
             g_direction = direction || "posZ";
             
-            // var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
-            var repo = "http://localhost/glTF-Sample-Models/2.0/";
+            var repo = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/";
+            //var repo = "http://localhost/glTF-Sample-Models/2.0/";
 
             var url = type == '-direct' ? file : repo + file + "/glTF" + type + "/" + file + suffix;
             
@@ -379,6 +379,8 @@
     
             <div class="sidebar-header">Advanced Tests</div>
     
+            <div class="sidebar-entry" onclick="load('VC')">VC</div>
+            <div class="sidebar-entry" onclick="load('Cameras')">Cameras</div>
             <div class="sidebar-entry" onclick="load('Box')">Box</div>
             <div class="sidebar-entry" onclick="load('BoxVertexColors')">Box with Vertex Colors</div>
             <div class="sidebar-entry" onclick="load('BoxTextured')">Box Textured</div>
