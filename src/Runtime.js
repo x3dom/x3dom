@@ -422,7 +422,7 @@ x3dom.Runtime.prototype.mousePosition = function ( event )
 };
 
 /**
- * Function: calcCanvasPos
+ * Function: calcCanvasPos, calcPagePos
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
  *
@@ -448,6 +448,8 @@ x3dom.Runtime.prototype.calcCanvasPos = function ( wx, wy, wz )
     return [ x, y ];
 };
 
+x3dom.Runtime.prototype.calcPagePos = x3dom.Runtime.prototype.calcCanvasPos;
+
 /**
  * Function: getBBoxPoints
  *
@@ -471,7 +473,7 @@ x3dom.Runtime.prototype.getBBoxPoints = function ()
 };
 
 /**
- * Function: calcPagePos
+ * Function: getSceneBRect
  *
  * @returns The 2d rect of the scene volume
  */
