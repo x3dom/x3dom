@@ -35,6 +35,7 @@
   * BooleanToggle toggle event after set
   * TouchSensor hit output fields
   * Light output fields
+  * robust transitions to animated viewpoints
   
 ## Version 1.8.1
 
