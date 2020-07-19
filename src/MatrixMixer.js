@@ -36,6 +36,7 @@ x3dom.MatrixMixer = function ( beginTime, endTime )
     this._result = x3dom.fields.SFMatrix4f.identity();
 
     this._useQuaternion = false;
+    this._isVPtarget = false;
 };
 
 /**
