@@ -231,12 +231,15 @@ x3dom.Viewarea.prototype.tick = function ( timeStamp )
 
     if ( this._mixer.isActive() )
     {
-        //mixer target may have changed due to current transform
-        //need to update from scratch
-        var vp = this._scene.getViewpoint();
-        vp.resetView();
-        var target = vp.getViewMatrix().mult( vp.getCurrentTransform().inverse() );
-        this._mixer.setEndMatrix( target );
+    	if ( this._mixer._isVPtarget )
+        {
+            //mixer target may have changed due to current transform
+            //need to refresh from scratch
+            var vp = this._scene.getViewpoint();
+            vp.resetView();
+            var target = vp.getViewMatrix().mult( vp.getCurrentTransform().inverse() );
+            this._mixer.setEndMatrix( target );
+        }
         var mat = this._mixer.mix( timeStamp );
         this._scene.getViewpoint().setView( mat );
     }
