@@ -534,7 +534,9 @@ x3dom.DefaultNavigation.prototype.animateTo = function ( view, target, prev, dur
     var prevTargetMat,
         prevMat;
 
-    if ( x3dom.isa( target, x3dom.nodeTypes.X3DViewpointNode ) )
+    view._mixer._isVPtarget = x3dom.isa( target, x3dom.nodeTypes.X3DViewpointNode );
+
+    if ( view._mixer._isVPtarget )
     {
         target = target.getViewMatrix().mult( target.getCurrentTransform().inverse() );
     }
