@@ -231,7 +231,7 @@ x3dom.Viewarea.prototype.tick = function ( timeStamp )
 
     if ( this._mixer.isActive() )
     {
-    	if ( this._mixer._isVPtarget )
+        if ( this._mixer._isVPtarget )
         {
             //mixer target may have changed due to current transform
             //need to refresh from scratch
