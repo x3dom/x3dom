@@ -471,7 +471,7 @@ x3dom.Runtime.prototype.getBBoxPoints = function ()
 };
 
 /**
- * Function: calcPagePos
+ * Function: getSceneBRect
  *
  * @returns The 2d rect of the scene volume
  */
@@ -508,6 +508,7 @@ x3dom.Runtime.prototype.getSceneBRect = function ()
  *
  * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy]
  * for a given point [wx, wy, wz] in world coordinates.
+ * (This is the replacement function for the deprecated function calcPagePos.)
  *
  * @param wx
  * @param wy
