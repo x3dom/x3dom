@@ -27,14 +27,14 @@ x3dom.registerNodeType(
         {
             x3dom.nodeTypes.Sphere.superClass.call( this, ctx );
 
-            // sky box background creates sphere with r = 10000
+            // sky box background creates sphere with r = 1000
 
             /**
              * The radius field specifies the radius of the sphere.
              * @var {x3dom.fields.SFFloat} radius
              * @range [0, inf]
              * @memberof x3dom.nodeTypes.Sphere
-             * @initvalue ctx?1:10000
+             * @initvalue ctx?1:1000
              * @field x3d
              * @instance
              */
