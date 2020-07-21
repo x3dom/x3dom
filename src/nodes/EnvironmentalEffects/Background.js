@@ -96,7 +96,7 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "topUrl", [] );
 
             /**
-             * Scale images of the background cube (### verification needed as I didn't found any example running trought the corresponding coding)
+             * Scale images of the background cube
              * @var {x3dom.fields.MFString} scaling
              * @memberof x3dom.nodeTypes.Background
              * @initvalue false
