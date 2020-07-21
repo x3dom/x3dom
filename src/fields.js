@@ -1690,7 +1690,7 @@ x3dom.fields.SFMatrix4f.prototype.toString = function ()
 
 /**
  * Fills the values of this matrix from a string, where the entries are separated
- * by commas or whitespaces and given in column-major order.
+ * by commas or whitespace, and given in column-major order.
  *
  * @param {String} str - the string representation
  */
