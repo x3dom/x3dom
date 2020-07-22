@@ -38,7 +38,8 @@ x3dom.registerNodeType(
              * @field x3d
              * @instance
              */
-            this.addField_SFFloat( ctx, "radius", ctx ? 1 : 1000 );
+            var radius = 1000; //### separate variable to ease debugging
+            this.addField_SFFloat( ctx, "radius", ctx ? 1 : radius ); //### The radius is irrelevant in case of the background cube: any value like 1, 2, 1000, 10000 produce the same result
 
             /**
              * Specifies the number of faces that are generated to approximate the surface of the sphere.
