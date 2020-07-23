@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile="Interchange" version="3.0"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_nested_expand.wrl" />
+</head>
+<Scene>
+	<ProtoDeclare name="MatLib">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFNode" name="matrose" value="NULL" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Shape>
+				<Appearance>
+					<IS>
+						<connect nodeField="material" protoField="matrose" />
+					</IS>
+				</Appearance>
+				<Sphere />
+			</Shape>
+		</ProtoBody>
+	</ProtoDeclare>
+	<ProtoDeclare name="T813blatnikZ">
+		<ProtoInterface>
+				<field accessType="inputOutput" type="SFColor" name="barva" value="1 1 0" />
+				<field accessType="inputOutput" type="SFColor" name="specular" value="1 0 0" />
+		</ProtoInterface>
+		<ProtoBody>
+    
+			<MatLib>
+      
+					<Material containerField="matrose">
+						<IS>
+							<connect nodeField="diffuseColor" protoField="barva" />
+							<connect nodeField="specularColor" protoField="specular" />
+						</IS>
+					</Material>
+			</MatLib>
+		</ProtoBody>
+	</ProtoDeclare>
+  
+	<T813blatnikZ />
+	
+  <Transform
+		translation="0 2 0">
+		<Shape>
+			<Text
+				string='"sphere should be yellow"' />
+		</Shape>
+	</Transform>
+</Scene>
+</X3D>
