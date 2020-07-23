@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>simple Proto test</title>
+    <script type="text/javascript" src="../../../../x3dom-include.js?full"></script>
+    <style>
+        x3d {
+            height: 50%
+        }
+    </style>
+</head>
+<body>
+
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <!--head>
+    <meta content='Prototype_DiffuseApp.x3d' name='title'/>
+    <meta content='X3D encodings example: defining a Prototype, demonstration of IS/connect definitions.' name='description'/>
+    <meta content='Andreas Plesch' name='creator'/>
+    <meta content='21 July 2020' name='created'/>
+    <meta content='BSD' name='license'/>
+  </head-->
+  <Scene>
+    <!--WorldInfo title='Prototype.x3d'-->
+    <ProtoDeclare name='DiffuseApp'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='diffuseColor' type='SFColor' value='.8 .4 .7'></field>
+      </ProtoInterface>
+      <ProtoBody>
+        <Appearance>
+            <Material>
+                <IS>
+                    <connect nodeField='diffuseColor' protoField='diffuseColor'></connect>
+                </IS>
+            </Material>
+        </Appearance>
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- End of prototype -->
+    <!-- The prototype is now defined. -->
+    <Shape onclick='logClick(event)' DEF='animatedShape'>
+      <DiffuseApp diffuseColor='1 0 0'></DiffuseApp>
+      <Cone></Cone>
+    </Shape>
+
+<!--TimeSensor DEF='Timer' cycleInterval='5' loop='true'/>
+<ColorInterpolator DEF='ColorChanger' key='0 0.3333 0.6666 1' keyValue='1 0 0 0 1 0 0 0 1 1 0 0'/>
+<ROUTE fromField='fraction_changed' fromNode='Timer' toField='set_fraction' toNode='ColorChanger'/>
+<ROUTE fromField='value_changed' fromNode='ColorChanger' toField='set_legColor' toNode='animatedTable'/-->
+    
+<NavigationInfo type='"EXAMINE"'/>     
+    <!-- Use the Examine viewer -->
+  </Scene>
+</X3D>
+<button onclick='randomizeColor()'>random color</button>
+<div >
+<textarea style="height: 50%; width: 100%;" id='logArea'></textarea>
+</div>
+</body>
+
+<script type="text/javascript">
+   function randomizeColor()
+   {
+var app = document.querySelector('DiffuseApp');
+app.setAttribute('diffuseColor', randomColor());
+   }
+   function randomColor()
+   {
+        return [Math.random(),Math.random(),Math.random()].join();
+   }
+   function logClick(e)
+   {    
+        var l = document.querySelector('#logArea');
+        var color = e.target.querySelector('DiffuseApp').getAttribute('diffuseColor');
+
+        l.textContent = "color: " + color + "\n" + l.textContent;
+
+   }
+</script>
+</html>
