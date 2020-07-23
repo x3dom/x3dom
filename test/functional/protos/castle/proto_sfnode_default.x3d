@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.2//EN" "http://www.web3d.org/specifications/x3d-3.2.dtd">
+<X3D profile="Interchange" version="3.2"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.2.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_sfnode_default.x3dv" />
+</head>
+<Scene>
+	<Transform>
+		<Transform
+			translation="0 2 0">
+			<TouchSensor DEF="XXXTouch" />
+			<Shape>
+				<Text
+					string='"yellow"' />
+			</Shape>
+		</Transform>
+		<Shape>
+			<Sphere />
+			<Appearance>
+				<Material DEF="XXXMat"
+					diffuseColor="1 1 0" />
+			</Appearance>
+		</Shape>
+	</Transform>
+	<ProtoDeclare name="AppearanceYellowByDefault">
+		<ProtoInterface>
+				<field accessType="inputOutput" type="SFNode" name="mat">
+				<Material USE="XXXMat" containerField="mat" />
+				</field>
+		</ProtoInterface>
+		<ProtoBody>
+			<Appearance>
+				<IS>
+					<connect nodeField="material" protoField="mat" />
+				</IS>
+			</Appearance>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="4 0 0">
+		<Transform
+			translation="0 2 0">
+			<TouchSensor DEF="XXXTouch" />
+			<Shape>
+				<Text
+					string='"blue"' />
+			</Shape>
+		</Transform>
+		<Shape>
+			<Sphere />
+			<Appearance>
+				<Material DEF="XXXMat"
+					diffuseColor="0 0 1" />
+			</Appearance>
+		</Shape>
+	</Transform>
+	<ProtoDeclare name="AppearanceBlueByDefault">
+		<ProtoInterface>
+				<field accessType="inputOutput" type="SFNode" name="mat">
+				<Material USE="XXXMat" containerField="mat" />
+				</field>
+		</ProtoInterface>
+		<ProtoBody>
+			<Appearance>
+				<IS>
+					<connect nodeField="material" protoField="mat" />
+				</IS>
+			</Appearance>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="8 0 0">
+		<Transform
+			translation="0 2 0">
+			<TouchSensor DEF="XXXTouch" />
+			<Shape>
+				<Text
+					string='"yellow"' />
+			</Shape>
+		</Transform>
+		<Shape>
+			<Sphere />
+			<ProtoInstance name="AppearanceYellowByDefault" containerField="appearance">
+			</ProtoInstance>
+		</Shape>
+	</Transform>
+	<Transform
+		translation="12 0 0">
+		<Transform
+			translation="0 2 0">
+			<TouchSensor DEF="XXXTouch" />
+			<Shape>
+				<Text
+					string='"blue"' />
+			</Shape>
+		</Transform>
+		<Shape>
+			<Sphere />
+			<ProtoInstance name="AppearanceBlueByDefault" containerField="appearance">
+			</ProtoInstance>
+		</Shape>
+	</Transform>
+</Scene>
+</X3D>

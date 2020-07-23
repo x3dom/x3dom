@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.2//EN" "http://www.web3d.org/specifications/x3d-3.2.dtd">
+<X3D profile="Interactive" version="3.2"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.2.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_events_test_2.x3dv" />
+</head>
+<Scene>
+	<ProtoDeclare name="LightToggle">
+		<ProtoInterface>
+				<field accessType="inputOnly" type="SFBool" name="light_on_setter" />
+				<field accessType="initializeOnly" type="SFBool" name="light_on_initial_value" value="false" />
+				<field accessType="outputOnly" type="SFBool" name="light_on_getter" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Group>
+				<Shape>
+					<Appearance>
+						<Material />
+					</Appearance>
+					<Sphere />
+				</Shape>
+				<DirectionalLight DEF="light">
+					<IS>
+						<connect nodeField="on" protoField="light_on_initial_value" />
+						<connect nodeField="set_on" protoField="light_on_setter" />
+						<connect nodeField="on_changed" protoField="light_on_getter" />
+					</IS>
+				</DirectionalLight>
+				<!-- x3dom does not generate on_changed event -->
+				
+			</Group>
+			
+		</ProtoBody>
+	</ProtoDeclare>
+	<ProtoDeclare name="ConvertBoolToInt">
+		<ProtoInterface>
+				<field accessType="inputOnly" type="SFBool" name="bool" />
+				<field accessType="outputOnly" type="SFInt32" name="int" />
+		</ProtoInterface>
+		<ProtoBody>
+			<BooleanFilter DEF="BFilter">
+				<IS>
+					<connect nodeField="set_boolean" protoField="bool" />
+				</IS>
+			</BooleanFilter>
+			<IntegerTrigger DEF="IGenerate0"
+					integerKey="0">
+				<IS>
+					<connect nodeField="triggerValue" protoField="int" />
+				</IS>
+			</IntegerTrigger>
+			<IntegerTrigger DEF="IGenerate1"
+					integerKey="1">
+				<IS>
+					<connect nodeField="triggerValue" protoField="int" />
+				</IS>
+			</IntegerTrigger>
+			<ROUTE fromNode="BFilter" fromField="inputFalse" toNode="IGenerate0" toField="set_boolean" />
+			<ROUTE fromNode="BFilter" fromField="inputTrue" toNode="IGenerate1" toField="set_boolean" />
+		</ProtoBody>
+	</ProtoDeclare>
+	<Group>
+		<TouchSensor DEF="K" />
+		<ProtoInstance name="LightToggle" DEF="LT">
+		</ProtoInstance>
+	</Group>
+	<!--KeySensor DEF="K" /-->
+	<!--ROUTE fromNode="K" fromField="controlKey" toNode="LT" toField="light_on_setter" /-->
+	<ROUTE fromNode="K" fromField="isActive" toNode="LT" toField="light_on_setter" />
+	<Transform
+		translation="0 -2 0">
+		<DirectionalLight />
+		<Switch DEF="LightOnVisualize"
+			whichChoice="0">
+			<Shape>
+				<Appearance DEF="ATextLighOn">
+					<Material />
+				</Appearance>
+				<Text
+					string='"Click for the light." "Light is currently: OFF"' />
+			</Shape>
+			<Shape>
+				<Appearance DEF="ATextLighOn">
+					<Material />
+				</Appearance>
+				<Text
+					string='"Click for the light." "Light is currently: ON"' />
+			</Shape>
+		</Switch>
+	</Transform>
+	<ProtoInstance name="ConvertBoolToInt" DEF="BToInt">
+	</ProtoInstance>
+	<ROUTE fromNode="LT" fromField="light_on_getter" toNode="BToInt" toField="bool" />
+	<ROUTE fromNode="BToInt" fromField="int" toNode="LightOnVisualize" toField="set_whichChoice" />
+</Scene>
+</X3D>
