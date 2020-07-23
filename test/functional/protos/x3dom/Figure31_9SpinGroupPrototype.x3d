@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='Figure31_9SpinGroupPrototype.x3d' name='title'/>
+    <meta content='Figure 31.9, The VRML 2.0 Sourcebook, Copyright [1997] By Andrea L. Ames, David R. Nadeau, and John L. Moreland' name='creator'/>
+    <meta content='http://www.wiley.com/legacy/compbooks/vrml2sbk/ch31/31fig09.htm' name='reference'/>
+    <meta content='Don Brutzman' name='translator'/>
+    <meta content='24 October 2000' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='The SpinGroup prototype is used to automatically spin a group of three long rectangular boxes. Click on blue crossbar to activate second SpinGroup.' name='description'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Chapter31Prototypes/Figure31_9SpinGroupPrototype.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='Figure31_9SpinGroupPrototype.x3d'/>
+    <ProtoDeclare name='SpinGroup'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='children' type='MFNode'>
+          <!-- NULL node initialization -->
+        </field>
+        <field accessType='inputOutput' name='cycleInterval' type='SFTime' value='1'/>
+        <field accessType='inputOutput' name='loop' type='SFBool' value='false'/>
+        <field accessType='inputOutput' name='startTime' type='SFTime' value='0'/>
+        <field accessType='inputOutput' name='stopTime' type='SFTime' value='0'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform DEF='SpinGroupTransform'>
+          <IS>
+            <connect nodeField='children' protoField='children'/>
+          </IS>
+        </Transform>
+        <!-- following nodes will not be rendered, only the first node of a ProtoBody is drawn -->
+        <TimeSensor DEF='SpinGroupClock'>
+          <IS>
+            <connect nodeField='cycleInterval' protoField='cycleInterval'/>
+            <connect nodeField='loop' protoField='loop'/>
+            <connect nodeField='startTime' protoField='startTime'/>
+            <connect nodeField='stopTime' protoField='stopTime'/>
+          </IS>
+        </TimeSensor>
+        <OrientationInterpolator DEF='Spinner' key='0 0.5 1' keyValue='0 1 0 0 0 1 0 3.14 0 1 0 6.28'/>
+        <ROUTE fromField='fraction_changed' fromNode='SpinGroupClock' toField='set_fraction' toNode='Spinner'/>
+        <ROUTE fromField='value_changed' fromNode='Spinner' toField='set_rotation' toNode='SpinGroupTransform'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- Now the scene proper begins. Nothing renders in a ProtoDeclare (or ExternProtoDeclare). -->
+    <Viewpoint description='Click on blue crossbar to activate second SpinGroup' orientation='1 0 0 -0.52' position='0 18 30'/>
+    <!-- Create an instance, meaning actual nodes that render -->
+    
+    <SpinGroup
+      cycleInterval='8'
+      loop='true'>
+        <Shape containerField='children'>
+          <Box size='25 2 2'/>
+          <Appearance DEF='Green'>
+            <Material diffuseColor='0 1 0.3'/>
+          </Appearance>
+        </Shape>
+        <Shape containerField='children'>
+          <Box size='2 25 2'/>
+          <Appearance USE='Green'/>
+        </Shape>
+        
+        <SpinGroup containerField='children' DEF='SecondSpinGroup'
+          cycleInterval='4'
+          loop='true'
+          stopTime='1'>
+          
+            <TouchSensor containerField='children' DEF='ActivateSecondSpinGroup' description='Activate second SpinGroup by clicking blue bar'/>
+            <Shape containerField='children'>
+              <Box size='2 2.05 25'/>
+              <Appearance>
+                <Material diffuseColor='0 0.3 1'/>
+              </Appearance>
+            </Shape>
+          </SpinGroup>
+        
+      </SpinGroup>
+    <ROUTE fromField='touchTime' fromNode='ActivateSecondSpinGroup' toField='startTime' toNode='SecondSpinGroup'/>
+  </Scene>
+</X3D>

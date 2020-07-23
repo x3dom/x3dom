@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='TextStringPrototype.x3d' name='title'/>
+    <meta content='Simple Prototype for the display of text strings, combining functionality of Text and FontStyle nodes.' name='description'/>
+    <meta content='Leonard Daly and Don Brutzman' name='creator'/>
+    <meta content='16 July 2006' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='http://X3dGraphics.com' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/X3dResources.html' name='reference'/>
+    <meta content='Copyright 2006, Daly Realism and Don Brutzman' name='rights'/>
+    <meta content='X3D book, X3D graphics, X3D-Edit, http://www.x3dGraphics.com' name='subject'/>
+    <meta content='http://X3dGraphics.com/examples/X3dForWebAuthors/Chapter14Prototypes/TextStringPrototype.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='TextStringPrototype.x3d'/>
+    <ProtoDeclare name='TextString'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='offset' type='SFVec3f' value='0 0 0'/>
+        <field accessType='inputOutput' name='string' type='MFString'/>
+        <field accessType='initializeOnly' name='size' type='SFFloat' value='1.0'/>
+        <field accessType='inputOutput' name='color' type='SFColor' value='0.2 0.6 1'/>
+        <field accessType='initializeOnly' name='justify' type='MFString' value='"MIDDLE" "MIDDLE"'/>
+        <field accessType='initializeOnly' name='style' type='SFString' value='PLAIN'/>
+        <field accessType='initializeOnly' name='family' type='MFString' value='"SANS SERIF"'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform>
+          <IS>
+            <connect nodeField='translation' protoField='offset'/>
+          </IS>
+          <Shape>
+            <Appearance>
+              <Material>
+                <IS>
+                  <connect nodeField='diffuseColor' protoField='color'/>
+                </IS>
+              </Material>
+            </Appearance>
+            <Text>
+              <IS>
+                <connect nodeField='string' protoField='string'/>
+              </IS>
+              <FontStyle>
+                <IS>
+                  <connect nodeField='family' protoField='family'/>
+                  <connect nodeField='justify' protoField='justify'/>
+                  <connect nodeField='size' protoField='size'/>
+                  <connect nodeField='style' protoField='style'/>
+                </IS>
+              </FontStyle>
+            </Text>
+          </Shape>
+        </Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <TextString DEF='MyTextStringInstance'
+      string='"This example TextString node" "creates a prototype instance" "that combines functionality" "of Text and FontStyle nodes"'
+      size='0.8'
+      style='BOLD' />
+    
+  </Scene>
+</X3D>

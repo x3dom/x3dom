@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='Floater.x3d' name='title'/>
+    <meta content='Floating pads world: a collection of white pads are created. Each pad slides back and forth horizontally or vertically at its own speed. A green light illuminates the tops of the pads while a blue light illuminates the bottoms.' name='description'/>
+    <meta content='David R. Nadeau' name='creator'/>
+    <meta content='Don Brutzman' name='translator'/>
+    <meta content='1 July 1998' name='created'/>
+    <meta content='2 February 2014' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='Floater.png' name='Image'/>
+    <meta content='originals/floater.wrl' name='reference'/>
+    <meta content='http://www.siggraph.org/s98' name='reference'/>
+    <meta content='http://www.siggraph.org/s98/conference/courses/18.html' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/slides/mt0008.htm' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/slides/mt0135htm' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/vrml97.htm' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/X3dResources.html' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/Floater.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <!-- Complexity is created from simplicity via two tricks: -->
+    <!-- 1. Create a set of simple shapes, then repeat the same shapes several times. In this case, there are only 7 original pads moving left and right. Those 7 are repeated again, but turned around the Y axis so that they slide front to back. The same 7 are repeated again, but rotated around the Z axis so that they slide up and down. The effect is one of a complex bunch of moving shapes when in reality there are only 7. -->
+    <!-- 2. Give each moving shape a slightly different cycle interval for its animation. This makes all the movement out of sync, which again creates the appearance of complexity. -->
+    <!-- A PROTO is used to create a new Pad node that incorporates a box shape, a time sensor, a position interpolator, and routes to connect them together. Fields to the Pad node control the initial placement of the pad, and it's animation cycle interval. -->
+    <!-- Add textures. Particularly try adding a texture with a transparency (alpha) channel. Using transparency textures you can add stripes, checks, or whatever to the pads. One approach that looks interesting is to add a cloud texture, but make the sky behind the clouds transparent in the texture. When mapped, this creates a blobby indistinct shape on each pad. -->
+    <!-- Add a Transform node around the entire group of pads, then use an OrientationInterpolator and TimeSensor to slowly spin the world. Remembering the complexity tricks above, you can create a complex tumble by using three nested Transform nodes (X, Y, and Z), each with its own OrientationInterpolator and TimeSensor. Give the three TimeSensors slightly different cycleInterval values (such as 5.0, 7.0, and 11.0). Prime numbers are good choices. Since the cycle times are different for the three spins, they don't sync up, and it looks like a chaotic tumble. -->
+    <WorldInfo info='"Copyright (c) 1996, David R. Nadeau"' title='Floating Pads World'/>
+    <Viewpoint description='Entry view' position='0.0 1.6 10.0'/>
+    <NavigationInfo headlight='false'/>
+    <Background skyColor='0.0 0.1 0.4'/>
+    <DirectionalLight color='0.3 1.0 0.3' direction='0.5 -1.0 -0.7'/>
+    <DirectionalLight color='0.0 0.3 1.0' direction='-0.5 1.0 0.7'/>
+    <ProtoDeclare name='Pad'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='rotation' type='SFRotation' value='0.0 0.0 1.0 0.0'/>
+        <field accessType='inputOutput' name='cycleInterval' type='SFTime' value='10.0'/>
+        <field accessType='inputOutput' name='translation' type='SFVec3f' value='0.0 0.0 0.0'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Collision enabled='false'>
+          <Transform>
+            <IS>
+              <connect nodeField='translation' protoField='translation'/>
+              <connect nodeField='rotation' protoField='rotation'/>
+            </IS>
+            <Transform DEF='Movee'>
+              <Shape>
+                <Appearance>
+                  <Material diffuseColor='1.0 1.0 1.0'/>
+                </Appearance>
+                <Box size='4.0 0.2 2.0'/>
+              </Shape>
+              <TimeSensor DEF='Clock' loop='true' startTime='1.0'>
+                <IS>
+                  <connect nodeField='cycleInterval' protoField='cycleInterval'/>
+                </IS>
+              </TimeSensor>
+              <PositionInterpolator DEF='Mover' key='0.0 0.5 1.0' keyValue='-10.0 0.0 0.0 10.0 0.0 0.0 -10.0 0.0 0.0'/>
+            </Transform>
+          </Transform>
+        </Collision>
+        <ROUTE fromField='fraction_changed' fromNode='Clock' toField='set_fraction' toNode='Mover'/>
+        <ROUTE fromField='value_changed' fromNode='Mover' toField='set_translation' toNode='Movee'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <Pad
+      cycleInterval='10.0'
+      translation='0.0 4.0 0.0'/>
+    
+    <Pad
+      cycleInterval='12.0'
+      translation='-2.0 0.0 -2.0'/>
+    
+    <Pad
+      cycleInterval='14.0'
+      translation='2.0 6.0 -4.0'/>
+    
+    <Pad
+      cycleInterval='16.0'
+      translation='-4.0 2.0 -8.0'/>
+    
+    <Pad
+      cycleInterval='18.0'
+      translation='0.0 -6.0 -10.0'/>
+    
+    <Pad
+      cycleInterval='10.0'
+      translation='4.0 -2.0 -10.0'/>
+    
+    <Pad
+      cycleInterval='8.0'
+      translation='0.0 -4.0 -0.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='10.0'
+      translation='0.0 4.0 0.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='12.0'
+      translation='-2.0 0.0 -2.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='14.0'
+      translation='2.0 6.0 -4.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='16.0'
+      translation='-4.0 2.0 -8.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='18.0'
+      translation='0.0 -6.0 -10.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='10.0'
+      translation='4.0 -2.0 -10.0'/>
+    
+    <Pad
+      rotation='0.0 1.0 0.0 1.571'
+      cycleInterval='8.0'
+      translation='0.0 -4.0 -0.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='10.0'
+      translation='0.0 4.0 0.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='12.0'
+      translation='-2.0 0.0 -2.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='14.0'
+      translation='2.0 6.0 -4.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='16.0'
+      translation='-4.0 2.0 -8.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='18.0'
+      translation='0.0 -6.0 -10.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='10.0'
+      translation='4.0 -2.0 -10.0'/>
+    
+    <Pad
+      rotation='0.0 0.0 1.0 1.571'
+      cycleInterval='8.0'
+      translation='0.0 -4.0 -0.0'/>
+    
+  </Scene>
+</X3D>
