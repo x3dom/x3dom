@@ -76,6 +76,29 @@ x3dom.registerNodeType(
 
             addChild : function ( node, containerFieldName )
             {
+                if ( "isProtoInstance" in node )
+                {
+                    this.addChild( node.typeNode, containerFieldName );
+                    if ( node.helperNodes.length > 0 )
+                    {
+                        var switchNode = new x3dom.nodeTypes.Switch();
+                        switchNode._nameSpace = this._nameSpace;
+                        node.helperNodes.forEach( function ( helper )
+                        {
+                            switchNode.addChild( helper, "children" );
+                        } );
+                        //this._nameSpace.doc._scene.addChild2( switchNode );
+                        this.addChild2( switchNode );
+                    }
+                }
+                else
+                {
+                    this.addChild2( node, containerFieldName );
+                }
+            },
+
+            addChild2 : function ( node, containerFieldName )
+            {
                 if ( node )
                 {
                     var field = null;
@@ -102,23 +125,59 @@ x3dom.registerNodeType(
                     {
                         node._parentNodes.push( this );
                         this._childNodes.push( node );
-                        node.parentAdded( this );
+                        if ( !( "isProtoInstance" in this ) )
+                        {
+                            node.parentAdded( this );
+                        }
                         return true;
+                    }
+                    else if ( "isProtoInstance" in this )
+                    {
+                        //child is not a field value, parent is protobody
+                        //so child is "root node" of protobody
+                        //and constitutes its nodes
+                        //transfer nodes directly
+                        if ( "isProtoInstance" in node )
+                        {
+                            this.nodes.concat( node.nodes );
+                        }
+                        else
+                        {
+                            this.nodes.push( node );
+                            that = this;
+                            _transfer_defMap( { child: {node: node} } );
+                            function _transfer_defMap ( nodes )
+                            {
+                                Object.keys( nodes ).forEach( function ( key )
+                                {
+                                    if ( nodes[ key ].node && nodes[ key ].node._DEF )
+                                    {
+                                        that.innerNameSpace.defMap[ nodes[ key ].node._DEF ] = nodes[ key ].node;
+                                    }
+                                    if ( nodes[ key ].node && nodes[ key ].node._cf )
+                                    {
+                                        _transfer_defMap( nodes[ key ].node._cf );
+                                    }
+                                } );
+                            }
+                        }
                     }
                 }
                 return false;
             },
 
-            removeChild : function ( node )
+            removeChild : function ( node, targetField, force )
             {
+                targetField = targetField || "any";
                 if ( node )
                 {
                     for ( var fieldName in this._cf )
                     {
-                        if ( this._cf.hasOwnProperty( fieldName ) )
+                        if ( this._cf.hasOwnProperty( fieldName ) &&
+                             ( targetField == "any" || fieldName == targetField ) )
                         {
                             var field = this._cf[ fieldName ];
-                            if ( field.rmLink( node ) )
+                            if ( field.rmLink( node ) || force )
                             {
                                 for ( var i = node._parentNodes.length - 1; i >= 0; i-- )
                                 {
