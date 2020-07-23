@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='TestProtoInterfaceNodeScope2.x3d' name='title'/>
+    <meta content='Test override of color values in prototypes and scripts. Color code: red = left-most default prototype interface, yellow = middle ProtoInstance fieldValue, green = Script initialization of middle ProtoInstance, blue = right-side default prototype instance.' name='description'/>
+    <meta content='Alan Hudson, Don Brutzman' name='creator'/>
+    <meta content='Xeena VRML importer, X3D-Edit 3.1, https://www.web3d.org/x3d/content/README.X3D-Edit.html' name='translator'/>
+    <meta content='4 January 2006' name='created'/>
+    <meta content='5 January 2006' name='translated'/>
+    <meta content='1 June 2020, Andreas Plesch' name='modified'/>
+    <meta content='Copyright (c) Web3D Consortium Inc. 2006' name='rights'/>
+  </head>
+  <Scene>
+    <WorldInfo title='TestProtoInterfaceNodeScope.x3d'/>
+    
+	<ProtoDeclare name='MyProto'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='material' type='SFNode'>
+          <Material diffuseColor='1 0 0'/>
+        </field>
+      </ProtoInterface>
+      <ProtoBody>
+        <Shape DEF='ProtoShape'>
+          <Appearance>
+            <IS>
+              <connect nodeField='material' protoField='material'/>
+            </IS>
+          </Appearance>
+          <Box DEF='ProtoBox'/>
+        </Shape>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+	<Transform DEF='LeftTransform' translation='-2.5 0.0 0.0'>
+      <ProtoInstance DEF='P1' name='MyProto'/>
+    </Transform>
+    
+	<Transform DEF='MiddleTransform'>
+      <ProtoInstance DEF='P2' name='MyProto'>
+        <fieldValue name='material'>
+          <Material diffuseColor='0.7 0.7 0'/>
+        </fieldValue>
+      </ProtoInstance>
+	  <!-- evtl. replace with dom script -->
+      <!--Script DEF='SC' directOutput='true'>
+        <field accessType='initializeOnly' name='proto1' type='SFNode'>
+          <ProtoInstance USE='P2'/>
+        </field>
+        <![CDATA[
+ecmascript:
+
+function initialize() {
+	Browser.print('Changing color on middle box to green');
+	proto1.material.diffuseColor = new SFColor(0,1,0);
+}
+]]>
+      </Script-->
+    </Transform>
+    
+	<Transform DEF='RightTransform' translation='2.5 0.0 0.0'>
+      <ProtoInstance DEF='P3' name='MyProto'>
+        <fieldValue name='material'>
+          <Material diffuseColor='0 0 1'/>
+        </fieldValue>
+      </ProtoInstance>
+    </Transform>
+	<!-- To test protected scope of nodes DEF'ed inside a prototype body/> -->
+	
+	<Transform DEF='bottomTransform' translation='0.0 -2.5 0.0'>
+	<!-- should not render, and cause a warning -->
+	  <Shape USE='ProtoShape'/>
+	</Transform>
+    
+  </Scene>
+</X3D>
