@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='different_name_proto.x3d' name='title'/>
+    <meta content='http://www.nist.gov/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/members.html' name='creator'/>
+    <meta content='This file was provided by the National Institute of Standards and Technology, and is part of the X3D Conformance Test Suite, available at http://www.nist.gov/vrml.html The information contained within this file is provided for use in establishing conformance to the ISO VRML97 Specification. Conformance to this test does not imply recommendation or endorsement by the National Institute of Standards and Technology. This software can be redistributed and/or modified freely provided that any derivative works bear some notice that they are derived from it, and any modified versions bear some notice that they have been modified.' name='disclaimer'/>
+    <meta content='Correct definition and compliance of this conformance scene is maintained by the X3D Working Group, https://www.web3d.org/working-groups/x3d' name='info'/>
+    <meta content='Michael Kass NIST, Don Brutzman NPS' name='translator'/>
+    <meta content='21 January 2001' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='This is a collateral file used in other tests for this node.' name='description'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/EXTERNPROTO/different_name_proto.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='different_name_proto.x3d'/>
+    <ProtoDeclare name='Second_proto'>
+      <ProtoBody>
+        <Transform DEF='GEOMETRY'>
+          <Shape>
+            <Appearance>
+              <Material DEF='COLOR' diffuseColor='1 0 0'/>
+            </Appearance>
+            <Sphere/>
+          </Shape>
+        </Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+  </Scene>
+</X3D>
