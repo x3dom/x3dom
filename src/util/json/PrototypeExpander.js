@@ -740,20 +740,20 @@ x3dom.PROTOS.prototype = {
 
     prototypeExpander : function ( file, object )
     {
-        this.protos = {};
-        this.names = {};
-        this.protoField = {};
-        this.scriptField = {};
-        this.interfaceField = {};
-        this.envField = {};
-        this.scopecount = 0;
-        this.privatescope = [];
-        this.defs = {};
-        this.founddef = null;
-        object = this.externalPrototypeExpander( file, object );
-        object = this.realPrototypeExpander( file, object, false );
-        this.zapIs( object );
-        object = this.flattener( object );
+        //         this.protos = {};
+        //         this.names = {};
+        //         this.protoField = {};
+        //         this.scriptField = {};
+        //         this.interfaceField = {};
+        //         this.envField = {};
+        //         this.scopecount = 0;
+        //         this.privatescope = [];
+        //         this.defs = {};
+        //         this.founddef = null;
+        //         object = this.externalPrototypeExpander( file, object );
+        //         object = this.realPrototypeExpander( file, object, false );
+        //         this.zapIs( object );
+        //         object = this.flattener( object );
         // console.error("SCRIPTS", JSON.stringify(this.scriptField));
         // console.error("PROTOS", JSON.stringify(this.protoField, null, 2));
         return object;
