@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='Vector.x3d' name='title'/>
+    <meta content='Vector: this world illustrates the use of a Prototype declaration to define a generic vector whose position, orientation, scale, and color are all set by incoming fields. The vector is used by the VectorField1 example to fill a volume with visualization vectors, all pointing different directions and with different colors.' name='description'/>
+    <meta content='David R. Nadeau' name='creator'/>
+    <meta content='Don Brutzman' name='translator'/>
+    <meta content='1 July 1998' name='created'/>
+    <meta content='2 February 2014' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='VectorField1.x3d' name='reference'/>
+    <meta content='originals/vector.wrl' name='reference'/>
+    <meta content='http://www.siggraph.org/s98' name='reference'/>
+    <meta content='http://www.siggraph.org/s98/conference/courses/18.html' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/slides/mt0496.htm' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/vrml97.htm' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/X3dResources.html' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/Vector.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo info='"Copyright (c) 1997, David R. Nadeau"' title='Vector'/>
+    <ProtoDeclare name='Vector'>
+      <ProtoInterface>
+        <field accessType='initializeOnly' name='color' type='SFColor' value='0.8 0.8 0.8'/>
+        <field accessType='initializeOnly' name='rotation' type='SFRotation' value='0.0 1.0 0.0 0.0'/>
+        <field accessType='initializeOnly' name='scale' type='SFVec3f' value='1.0 1.0 1.0'/>
+        <field accessType='initializeOnly' name='translation' type='SFVec3f' value='0.0 0.0 0.0'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform>
+          <IS>
+            <connect nodeField='translation' protoField='translation'/>
+            <connect nodeField='scale' protoField='scale'/>
+            <connect nodeField='rotation' protoField='rotation'/>
+          </IS>
+          <Shape DEF='flatArrow'>
+            <Appearance>
+              <Material ambientIntensity='0.0' diffuseColor='0.0 0.0 0.0'>
+                <IS>
+                  <connect nodeField='emissiveColor' protoField='color'/>
+                </IS>
+              </Material>
+            </Appearance>
+            <IndexedFaceSet coordIndex='0 1 2 3 0 -1 4 5 6 4' solid='false'>
+              <Coordinate point='-0.1 0.0 0.0 0.1 0.0 0.0 0.1 0.75 0.0 -0.1 0.75 0.0 -0.25 0.75 0.0 0.25 0.75 0.0 0.0 1.0 0.0'/>
+            </IndexedFaceSet>
+          </Shape>
+          <Transform rotation='0.0 1.0 0.0 1.57'>
+            <Shape USE='flatArrow'/>
+          </Transform>
+        </Transform>
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- Display scene instructions for viewing an example scene with a corresponding prototype instance -->
+    <Background skyColor='0 0.333333 0.66667'/>
+    <Anchor description='select text to view parent scene' url='"VectorField1.x3d" "https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/VectorField1.x3d" "VectorField1.wrl" "https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/VectorField1.wrl"'>
+      <Shape>
+        <Text string='"The Vector.x3d scene holds" "a prototype declaration" "" "Select this text to view example usage" "in VectorField1.x3d scene"'>
+          <FontStyle justify='"MIDDLE" "MIDDLE"' style='BOLD'/>
+        </Text>
+        <Appearance>
+          <Material diffuseColor='1 0.9 0.4'/>
+        </Appearance>
+      </Shape>
+      <!-- Invisible box behind text makes selection easier -->
+      <Shape>
+        <Box size='12 5 0.1'/>
+        <Appearance>
+          <Material transparency='1'/>
+        </Appearance>
+      </Shape>
+    </Anchor>
+  </Scene>
+</X3D>
