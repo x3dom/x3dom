@@ -90,7 +90,7 @@
 			</Shape>
 		</Switch>
 	</Transform>
-	<ConvertBoolToInt" DEF="BToInt" />
+	<ConvertBoolToInt DEF="BToInt" />
 	
 	<ROUTE fromNode="LT" fromField="light_on_getter" toNode="BToInt" toField="bool" />
 	<ROUTE fromNode="BToInt" fromField="int" toNode="LightOnVisualize" toField="set_whichChoice" />
