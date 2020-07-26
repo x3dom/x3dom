@@ -26,7 +26,8 @@ x3dom.fields.Eps = 0.000001;
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Constructor. You must either specify all argument values or no argument. In the latter case, an identity matrix will be created.
+ * Constructor. You must either specify all argument values or no
+ * argument. In the latter case, an identity matrix will be created.
  *
  * @class Represents a 4x4 matrix in row major format.
  * @param {Number} [_00=1] - value at [0,0]
@@ -169,7 +170,8 @@ x3dom.fields.SFMatrix4f.zeroMatrix = function ()
 /**
  * Returns a new translation matrix.
  *
- * @param {x3dom.fields.SFVec3f} vec - vector that describes the desired translation
+ * @param {x3dom.fields.SFVec3f} vec - vector that describes the desired
+ *                                     translation
  * @returns {x3dom.fields.SFMatrix4f} the new identity matrix
  */
 x3dom.fields.SFMatrix4f.translation = function ( vec )
@@ -239,7 +241,8 @@ x3dom.fields.SFMatrix4f.rotationZ = function ( a )
 /**
  * Returns a new scale matrix.
  *
- * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors along the three main axes
+ * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors
+ *                                     along the three main axes
  * @returns {x3dom.fields.SFMatrix4f} the new scale matrix
  */
 x3dom.fields.SFMatrix4f.scale = function ( vec )
@@ -290,12 +293,27 @@ x3dom.fields.SFMatrix4f.lookAt = function ( from, at, up )
  * @param {Number} near   - near clipping distance
  * @param {Number} far    - far clipping distance
  */
-x3dom.fields.SFMatrix4f.perspectiveFrustum = function ( left, right, bottom, top, near, far )
+x3dom.fields.SFMatrix4f.perspectiveFrustum = function ( left, right,
+                                                        bottom, top,
+                                                        near, far )
 {
     return new x3dom.fields.SFMatrix4f(
-        2 * near / ( right - left ), 0, ( right + left ) / ( right - left ), 0,
-        0, 2 * near / ( top - bottom ), ( top + bottom ) / ( top - bottom ), 0,
-        0, 0, -( far + near ) / ( far - near ), -2 * far * near / ( far - near ),
+        // First row.
+        2 * near / ( right - left ),
+        0,
+        ( right + left ) / ( right - left ),
+        0,
+        // Second row.
+        0,
+        2 * near / ( top - bottom ),
+        ( top + bottom ) / ( top - bottom ),
+        0,
+        // Third row.
+        0,
+        0,
+        -( far + near ) / ( far - near ),
+        -2 * far * near / ( far - near ),
+        // Fourth row.
         0, 0, -1, 0
     );
 };
@@ -330,10 +348,12 @@ x3dom.fields.SFMatrix4f.perspective = function ( fov, aspect, near, far )
  * @param {Number} top          - top border value of the view area
  * @param {Number} near         - near clipping distance
  * @param {Number} far          - far clipping distance
- * @param {Number} [aspect=1.0] - desired aspect ratio (width / height) of the projected image
+ * @param {Number} [aspect=1.0] - desired aspect ratio (width / height)
+ *                                of the projected image
  * @returns {x3dom.fields.SFMatrix4f} the new projection matrix
  */
-x3dom.fields.SFMatrix4f.ortho = function ( left, right, bottom, top, near, far, aspect )
+x3dom.fields.SFMatrix4f.ortho = function ( left, right, bottom, top,
+                                           near, far, aspect )
 {
     var rl = ( right - left ) / 2;    // hs
     var tb = ( top - bottom ) / 2;    // vs
@@ -382,7 +402,8 @@ x3dom.fields.SFMatrix4f.prototype.setTranslate = function ( vec )
 /**
  * Sets the scale components of a homogenous transform matrix.
  *
- * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors along the three main axes
+ * @param {x3dom.fields.SFVec3f} vec - vector containing scale factors
+ *                                     along the three main axes
  */
 x3dom.fields.SFMatrix4f.prototype.setScale = function ( vec )
 {
@@ -394,7 +415,8 @@ x3dom.fields.SFMatrix4f.prototype.setScale = function ( vec )
 /**
  * Sets the rotation components of a homogenous transform matrix.
  *
- * @param {x3dom.fields.Quaternion} quat - quaternion that describes the rotation
+ * @param {x3dom.fields.Quaternion} quat - quaternion that describes
+ *                                         the rotation
  */
 x3dom.fields.SFMatrix4f.prototype.setRotate = function ( quat )
 {
@@ -420,7 +442,8 @@ x3dom.fields.SFMatrix4f.prototype.setRotate = function ( quat )
 };
 
 /**
- * Creates a new matrix from a column major string representation, with values separated by commas or whitespace
+ * Creates a new matrix from a column major string representation, with
+ * values separated by commas or whitespace
  *
  * @param {String} str - string to parse
  * @returns {x3dom.fields.SFMatrix4f} the new matrix
@@ -428,10 +451,10 @@ x3dom.fields.SFMatrix4f.prototype.setRotate = function ( quat )
 x3dom.fields.SFMatrix4f.parseRotation = function ( str )
 {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec( str );
-    var x = +m[ 1 ],
-        y = +m[ 2 ],
-        z = +m[ 3 ],
-        a = +m[ 4 ];
+    var x = +m[ 1 ];
+    var y = +m[ 2 ];
+    var z = +m[ 3 ];
+    var a = +m[ 4 ];
 
     var d = Math.sqrt( x * x + y * y + z * z );
     if ( d === 0 )
@@ -512,36 +535,55 @@ x3dom.fields.SFMatrix4f.parse = function ( str )
 };
 
 /**
- * Returns the result of multiplying this matrix with the given one, using "post-multiplication" / "right multiply".
+ * Returns the result of multiplying this matrix with the given one,
+ * using "post-multiplication" / "right multiply".
  *
- * @param {x3dom.fields.SFMatrix4f} that - matrix to multiply with this one
+ * @param {x3dom.fields.SFMatrix4f} that - matrix to multiply with this
+ *                                         one
  * @returns {x3dom.fields.SFMatrix4f} resulting matrix
  */
 x3dom.fields.SFMatrix4f.prototype.mult = function ( that )
 {
     return new x3dom.fields.SFMatrix4f(
-        this._00 * that._00 + this._01 * that._10 + this._02 * that._20 + this._03 * that._30,
-        this._00 * that._01 + this._01 * that._11 + this._02 * that._21 + this._03 * that._31,
-        this._00 * that._02 + this._01 * that._12 + this._02 * that._22 + this._03 * that._32,
-        this._00 * that._03 + this._01 * that._13 + this._02 * that._23 + this._03 * that._33,
-        this._10 * that._00 + this._11 * that._10 + this._12 * that._20 + this._13 * that._30,
-        this._10 * that._01 + this._11 * that._11 + this._12 * that._21 + this._13 * that._31,
-        this._10 * that._02 + this._11 * that._12 + this._12 * that._22 + this._13 * that._32,
-        this._10 * that._03 + this._11 * that._13 + this._12 * that._23 + this._13 * that._33,
-        this._20 * that._00 + this._21 * that._10 + this._22 * that._20 + this._23 * that._30,
-        this._20 * that._01 + this._21 * that._11 + this._22 * that._21 + this._23 * that._31,
-        this._20 * that._02 + this._21 * that._12 + this._22 * that._22 + this._23 * that._32,
-        this._20 * that._03 + this._21 * that._13 + this._22 * that._23 + this._23 * that._33,
-        this._30 * that._00 + this._31 * that._10 + this._32 * that._20 + this._33 * that._30,
-        this._30 * that._01 + this._31 * that._11 + this._32 * that._21 + this._33 * that._31,
-        this._30 * that._02 + this._31 * that._12 + this._32 * that._22 + this._33 * that._32,
-        this._30 * that._03 + this._31 * that._13 + this._32 * that._23 + this._33 * that._33
+        this._00 * that._00 + this._01 * that._10 +
+        this._02 * that._20 + this._03 * that._30,
+        this._00 * that._01 + this._01 * that._11 +
+        this._02 * that._21 + this._03 * that._31,
+        this._00 * that._02 + this._01 * that._12 +
+        this._02 * that._22 + this._03 * that._32,
+        this._00 * that._03 + this._01 * that._13 +
+        this._02 * that._23 + this._03 * that._33,
+        this._10 * that._00 + this._11 * that._10 +
+        this._12 * that._20 + this._13 * that._30,
+        this._10 * that._01 + this._11 * that._11 +
+        this._12 * that._21 + this._13 * that._31,
+        this._10 * that._02 + this._11 * that._12 +
+        this._12 * that._22 + this._13 * that._32,
+        this._10 * that._03 + this._11 * that._13 +
+        this._12 * that._23 + this._13 * that._33,
+        this._20 * that._00 + this._21 * that._10 +
+        this._22 * that._20 + this._23 * that._30,
+        this._20 * that._01 + this._21 * that._11 +
+        this._22 * that._21 + this._23 * that._31,
+        this._20 * that._02 + this._21 * that._12 +
+        this._22 * that._22 + this._23 * that._32,
+        this._20 * that._03 + this._21 * that._13 +
+        this._22 * that._23 + this._23 * that._33,
+        this._30 * that._00 + this._31 * that._10 +
+        this._32 * that._20 + this._33 * that._30,
+        this._30 * that._01 + this._31 * that._11 +
+        this._32 * that._21 + this._33 * that._31,
+        this._30 * that._02 + this._31 * that._12 +
+        this._32 * that._22 + this._33 * that._32,
+        this._30 * that._03 + this._31 * that._13 +
+        this._32 * that._23 + this._33 * that._33
     );
 };
 
 /**
- * Transforms a given 3D point, using this matrix as a homogenous transform matrix
- * (ignores projection part of matrix for speedup in standard cases).
+ * Transforms a given 3D point, using this matrix as a homogenous
+ * transform matrix (ignores projection part of matrix for speedup in
+ * standard cases).
  *
  * @param {x3dom.fields.SFVec3f} vec - point to transform
  * @returns {x3dom.fields.SFVec3f} resulting point
@@ -556,7 +598,8 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function ( vec )
 };
 
 /**
- * Transforms a given 3D vector, using this matrix as a homogenous transform matrix.
+ * Transforms a given 3D vector, using this matrix as a homogenous
+ * transform matrix.
  *
  * @param {x3dom.fields.SFVec3f} vec - vector to transform
  * @returns {x3dom.fields.SFVec3f} resulting vector
@@ -572,8 +615,9 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function ( vec )
 
 /**
  * Transforms a given 3D point, using this matrix as a transform matrix
- * (also includes projection part of matrix - required for e.g. modelview-projection matrix).
- * The resulting point is normalized by a w component.
+ * (also includes projection part of matrix - required for e.g.
+ * modelview-projection matrix). The resulting point is normalized by a
+ * w component.
  *
  * @param {x3dom.fields.SFVec3f} vec - point to transform
  * @returns {x3dom.fields.SFVec3f} resulting point
@@ -586,16 +630,20 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function ( vec )
         w = 1.0 / w;
     }
     return new x3dom.fields.SFVec3f(
-        ( this._00 * vec.x + this._01 * vec.y + this._02 * vec.z + this._03 ) * w,
-        ( this._10 * vec.x + this._11 * vec.y + this._12 * vec.z + this._13 ) * w,
-        ( this._20 * vec.x + this._21 * vec.y + this._22 * vec.z + this._23 ) * w
+        ( this._00 * vec.x + this._01 * vec.y +
+          this._02 * vec.z + this._03 ) * w,
+        ( this._10 * vec.x + this._11 * vec.y +
+          this._12 * vec.z + this._13 ) * w,
+        ( this._20 * vec.x + this._21 * vec.y +
+          this._22 * vec.z + this._23 ) * w
     );
 };
 
 /**
  * Transforms a given 3D point, using this matrix as a transform matrix
- * (also includes projection part of matrix - required for e.g. modelview-projection matrix).
- * The resulting point is normalized by a w component.
+ * (also includes projection part of matrix - required for e.g.
+ * modelview-projection matrix). The resulting point is normalized by a
+ * w component.
  *
  * @param {x3dom.fields.SFVec4f} plane - plane to transform
  * @returns {x3dom.fields.SFVec4f} resulting plane
@@ -672,10 +720,14 @@ x3dom.fields.SFMatrix4f.prototype.multiply = function ( s )
 x3dom.fields.SFMatrix4f.prototype.add = function ( that )
 {
     return new x3dom.fields.SFMatrix4f(
-        this._00 + that._00, this._01 + that._01, this._02 + that._02, this._03 + that._03,
-        this._10 + that._10, this._11 + that._11, this._12 + that._12, this._13 + that._13,
-        this._20 + that._20, this._21 + that._21, this._22 + that._22, this._23 + that._23,
-        this._30 + that._30, this._31 + that._31, this._32 + that._32, this._33 + that._33
+        this._00 + that._00, this._01 + that._01,
+        this._02 + that._02, this._03 + that._03,
+        this._10 + that._10, this._11 + that._11,
+        this._12 + that._12, this._13 + that._13,
+        this._20 + that._20, this._21 + that._21,
+        this._22 + that._22, this._23 + that._23,
+        this._30 + that._30, this._31 + that._31,
+        this._32 + that._32, this._33 + that._33
     );
 };
 
@@ -690,10 +742,14 @@ x3dom.fields.SFMatrix4f.prototype.add = function ( that )
 x3dom.fields.SFMatrix4f.prototype.addScaled = function ( that, s )
 {
     return new x3dom.fields.SFMatrix4f(
-        this._00 + s * that._00, this._01 + s * that._01, this._02 + s * that._02, this._03 + s * that._03,
-        this._10 + s * that._10, this._11 + s * that._11, this._12 + s * that._12, this._13 + s * that._13,
-        this._20 + s * that._20, this._21 + s * that._21, this._22 + s * that._22, this._23 + s * that._23,
-        this._30 + s * that._30, this._31 + s * that._31, this._32 + s * that._32, this._33 + s * that._33
+        this._00 + s * that._00, this._01 + s * that._01,
+        this._02 + s * that._02, this._03 + s * that._03,
+        this._10 + s * that._10, this._11 + s * that._11,
+        this._12 + s * that._12, this._13 + s * that._13,
+        this._20 + s * that._20, this._21 + s * that._21,
+        this._22 + s * that._22, this._23 + s * that._23,
+        this._30 + s * that._30, this._31 + s * that._31,
+        this._32 + s * that._32, this._33 + s * that._33
     );
 };
 
@@ -723,7 +779,8 @@ x3dom.fields.SFMatrix4f.prototype.setValues = function ( that )
 };
 
 /**
- * Fills the upper left 3x3 or 3x4 values of this matrix, using the given (three or four) column vectors.
+ * Fills the upper left 3x3 or 3x4 values of this matrix, using the
+ * given (three or four) column vectors.
  *
  * @param {x3dom.fields.SFVec3f} v1             - first column vector
  * @param {x3dom.fields.SFVec3f} v2             - second column vector
@@ -757,7 +814,8 @@ x3dom.fields.SFMatrix4f.prototype.setValue = function ( v1, v2, v3, v4 )
 /**
  * Fills the values of this matrix, using the given array.
  *
- * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ * @param {Number[]} a - array, the first 16 values will be used to
+ *                       initialize the matrix
  */
 x3dom.fields.SFMatrix4f.prototype.setFromArray = function ( a )
 {
@@ -783,7 +841,8 @@ x3dom.fields.SFMatrix4f.prototype.setFromArray = function ( a )
 
 /**
  * Fills the values of this matrix, using the given array.
- * @param {Number[]} a - array, the first 16 values will be used to initialize the matrix
+ * @param {Number[]} a - array, the first 16 values will be used to
+ *                       initialize the matrix
  */
 x3dom.fields.SFMatrix4f.fromArray = function ( a )
 {
@@ -800,22 +859,30 @@ x3dom.fields.SFMatrix4f.fromArray = function ( a )
 /**
  * Sets the rotation, translation, and scaling of this matrix using
  * the respective transformation components, and returns this matrix.
- * 
+ *
  * @param {x3dom.fields.Quaternion} rotation    - the rotation part
- * @param {x3dom.fields.SFVec3f}    translation - the 3D translation vector
- * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling factors
+ * @param {x3dom.fields.SFVec3f}    translation - the 3D translation
+ *                                                vector
+ * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling
+ *                                                factors
  * @return {x3dom.fields.SFMatrix4f} the modified matrix
  */
-x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function ( rotation, translation, scale )
+x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function
+(
+  rotation,
+  translation,
+  scale
+)
 {
-    translation    = translation || new x3dom.fields.SFVec3f(); //[ 0.2, -0.3, -0.3 ];
-    rotation = rotation || new x3dom.fields.Quaternion();
+    //[ 0.2, -0.3, -0.3 ];
+    translation = translation || new x3dom.fields.SFVec3f();
+    rotation    = rotation || new x3dom.fields.Quaternion();
     scale       = scale || new x3dom.fields.SFVec3f( 1, 1, 1 );
 
-    var x = rotation.x,
-        y = rotation.y,
-        z = rotation.z,
-        w = rotation.w;
+    var x = rotation.x;
+    var y = rotation.y;
+    var z = rotation.z;
+    var w = rotation.w;
 
     var x2 = x + x;
     var y2 = y + y;
@@ -853,23 +920,30 @@ x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function ( rota
 /**
  * Creates and returns a new 4x4 transformation matrix defined by the
  * rotation, translation, and scaling components.
- * 
+ *
  * @param {x3dom.fields.Quaternion} rotation    - the rotation part
  * @param {x3dom.fields.SFVec3f}    translation - the 3D translation vector
- * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling factors
+ * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling
+ *                                                factors
  * @return {x3dom.fields.SFMatrix4f} the created transformation matrix
  */
-x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function ( rotation, translation, scale )
+x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function
+(
+  rotation,
+  translation,
+  scale
+)
 {
-    translation = translation || new x3dom.fields.SFVec3f(); //[ 0.2, -0.3, -0.3 ];
+    //[ 0.2, -0.3, -0.3 ];
+    translation = translation || new x3dom.fields.SFVec3f();
     rotation    = rotation || new x3dom.fields.Quaternion();
     scale       = scale || new x3dom.fields.SFVec3f( 1, 1, 1 );
     var m       = new x3dom.fields.SFMatrix4f();
 
-    var x = rotation.x,
-        y = rotation.y,
-        z = rotation.z,
-        w = rotation.w;
+    var x = rotation.x;
+    var y = rotation.y;
+    var z = rotation.z;
+    var w = rotation.w;
 
     var x2 = x + x;
     var y2 = y + y;
@@ -905,7 +979,8 @@ x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function ( rotation, tran
 };
 
 /**
- * Returns a column major version of this matrix, packed into a single array.
+ * Returns a column major version of this matrix, packed into a single
+ * array.
  *
  * @returns {Number[]} resulting array of 16 values
  */
@@ -919,12 +994,11 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function ()
     ];
 };
 
-/* [~] CORRECTED OPERATION [~]
 /**
  * Creates and returns a new <code>SFMatrix4f</code> with the elements,
  * construed as being in column-major format, copied from the supplied
  * array.
- * 
+ *
  * @param   {Number[]} array - an array of at least 16 numbers,
  *                             the first 16 of which will be construed
  *                             as the new matrix data in column-major
@@ -935,26 +1009,24 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function ()
  */
 x3dom.fields.SFMatrix4f.fromGL = function ( array )
 {
-  var newMatrix = new x3dom.fields.SFMatrix4f ();
-  
-  newMatrix._00 = array[ 0];
-  newMatrix._01 = array[ 4];
-  newMatrix._02 = array[ 8];
-  newMatrix._03 = array[12];
-  newMatrix._10 = array[ 1];
-  newMatrix._11 = array[ 5];
-  newMatrix._12 = array[ 9];
-  newMatrix._13 = array[13];
-  newMatrix._20 = array[ 2];
-  newMatrix._21 = array[ 6];
-  newMatrix._22 = array[10];
-  newMatrix._23 = array[14];
-  newMatrix._30 = array[ 3];
-  newMatrix._31 = array[ 7];
-  newMatrix._32 = array[11];
-  newMatrix._33 = array[15];
-  
-  return newMatrix;
+    var newMatrix = new x3dom.fields.SFMatrix4f ();
+    newMatrix._00 = array[ 0];
+    newMatrix._01 = array[ 4];
+    newMatrix._02 = array[ 8];
+    newMatrix._03 = array[12];
+    newMatrix._10 = array[ 1];
+    newMatrix._11 = array[ 5];
+    newMatrix._12 = array[ 9];
+    newMatrix._13 = array[13];
+    newMatrix._20 = array[ 2];
+    newMatrix._21 = array[ 6];
+    newMatrix._22 = array[10];
+    newMatrix._23 = array[14];
+    newMatrix._30 = array[ 3];
+    newMatrix._31 = array[ 7];
+    newMatrix._32 = array[11];
+    newMatrix._33 = array[15];
+    return newMatrix;
 };
 
 /**
@@ -962,7 +1034,7 @@ x3dom.fields.SFMatrix4f.fromGL = function ( array )
  *
  * @param {Number} i - row index (starting with 0)
  * @param {Number} j - column index (starting with 0)
- * @returns {Number} the value
+ * @returns {Number} the entry at the specified position
  */
 x3dom.fields.SFMatrix4f.prototype.at = function ( i, j )
 {
@@ -971,7 +1043,8 @@ x3dom.fields.SFMatrix4f.prototype.at = function ( i, j )
 };
 
 /**
- * Computes the square root of the matrix, assuming that its determinant is greater than zero.
+ * Computes the square root of the matrix, assuming that its determinant
+ * is greater than zero.
  *
  * @returns {SFMatrix4f} a matrix containing the result
  */
@@ -1005,14 +1078,15 @@ x3dom.fields.SFMatrix4f.prototype.sqrt = function ()
 
 /**
  * Returns the largest absolute value of all entries in the matrix.
- * This is only a helper for calculating log and not the usual Infinity-norm for matrices.
+ * This is only a helper for calculating log and not the usual
+ * Infinity-norm for matrices.
  *
  * @returns {Number} the largest absolute value
  */
 x3dom.fields.SFMatrix4f.prototype.normInfinity = function ()
 {
-    var t = 0,
-        m = 0;
+    var t = 0;
+    var m = 0;
 
     if ( ( t = Math.abs( this._00 ) ) > m )
     {
@@ -1143,8 +1217,9 @@ x3dom.fields.SFMatrix4f.prototype.normInf_3x3 = function ()
 };
 
 /**
- * Computes the transposed adjoint of the upper left 3x3 part of this matrix,
- * and stores it in the upper left part of a new 4x4 identity matrix.
+ * Computes the transposed adjoint of the upper left 3x3 part of this
+ * matrix, and stores it in the upper left part of a new 4x4 identity
+ * matrix.
  *
  * @returns {x3dom.fields.SFMatrix4f} the resulting matrix
  */
@@ -1176,27 +1251,40 @@ x3dom.fields.SFMatrix4f.prototype.adjointT_3x3 = function ()
 x3dom.fields.SFMatrix4f.prototype.equals = function ( that )
 {
     var eps = 0.000000000001;
-    return Math.abs( this._00 - that._00 ) < eps && Math.abs( this._01 - that._01 ) < eps &&
-           Math.abs( this._02 - that._02 ) < eps && Math.abs( this._03 - that._03 ) < eps &&
-           Math.abs( this._10 - that._10 ) < eps && Math.abs( this._11 - that._11 ) < eps &&
-           Math.abs( this._12 - that._12 ) < eps && Math.abs( this._13 - that._13 ) < eps &&
-           Math.abs( this._20 - that._20 ) < eps && Math.abs( this._21 - that._21 ) < eps &&
-           Math.abs( this._22 - that._22 ) < eps && Math.abs( this._23 - that._23 ) < eps &&
-           Math.abs( this._30 - that._30 ) < eps && Math.abs( this._31 - that._31 ) < eps &&
-           Math.abs( this._32 - that._32 ) < eps && Math.abs( this._33 - that._33 ) < eps;
+    return Math.abs( this._00 - that._00 ) < eps &&
+           Math.abs( this._01 - that._01 ) < eps &&
+           Math.abs( this._02 - that._02 ) < eps &&
+           Math.abs( this._03 - that._03 ) < eps &&
+           Math.abs( this._10 - that._10 ) < eps &&
+           Math.abs( this._11 - that._11 ) < eps &&
+           Math.abs( this._12 - that._12 ) < eps &&
+           Math.abs( this._13 - that._13 ) < eps &&
+           Math.abs( this._20 - that._20 ) < eps &&
+           Math.abs( this._21 - that._21 ) < eps &&
+           Math.abs( this._22 - that._22 ) < eps &&
+           Math.abs( this._23 - that._23 ) < eps &&
+           Math.abs( this._30 - that._30 ) < eps &&
+           Math.abs( this._31 - that._31 ) < eps &&
+           Math.abs( this._32 - that._32 ) < eps &&
+           Math.abs( this._33 - that._33 ) < eps;
 };
 
 /**
  * Decomposes the matrix into a translation, rotation, scale,
  * and scale orientation. Any projection information is discarded.
- * The decomposition depends upon choice of center point for rotation and scaling,
- * which is optional as the last parameter.
+ * The decomposition depends upon choice of center point for rotation
+ * and scaling, which is optional as the last parameter.
  *
- * @param {x3dom.fields.SFVec3f} translation         - 3D vector to be filled with the translation values
- * @param {x3dom.fields.Quaternion} rotation         - quaternion to be filled with the rotation values
- * @param {x3dom.fields.SFVec3f} scaleFactor         - 3D vector to be filled with the scale factors
- * @param {x3dom.fields.Quaternion} scaleOrientation - rotation (quaternion) to be applied before scaling
- * @param {x3dom.fields.SFVec3f} [center=undefined]  - center point for rotation and scaling, if not origin
+ * @param {x3dom.fields.SFVec3f}    translation -
+ *          3D vector to be filled with the translation values
+ * @param {x3dom.fields.Quaternion} rotation -
+ *          quaternion to be filled with the rotation values
+ * @param {x3dom.fields.SFVec3f}    scaleFactor -
+ *          3D vector to be filled with the scale factors
+ * @param {x3dom.fields.Quaternion} scaleOrientation -
+ *          rotation (quaternion) to be applied before scaling
+ * @param {x3dom.fields.SFVec3f}   [center=undefined] -
+ *          center point for rotation and scaling, if not origin
  */
 x3dom.fields.SFMatrix4f.prototype.getTransform = function (
     translation, rotation, scaleFactor, scaleOrientation, center )
@@ -1216,21 +1304,28 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function (
         m = x3dom.fields.SFMatrix4f.copy( this );
     }
 
-    var flip = m.decompose( translation, rotation, scaleFactor, scaleOrientation );
+    var flip = m.decompose( translation, rotation, scaleFactor,
+                            scaleOrientation );
 
     scaleFactor.setValues( scaleFactor.multiply( flip ) );
 };
 
 /**
- * Computes the decomposition of the given 4x4 affine matrix M as M = T F R SO S SO^t,
- * where T is a translation matrix, F is +/- I (a reflection), R is a rotation matrix,
+ * Computes the decomposition of the given 4x4 affine matrix M as
+ * M = T F R SO S SO^t, where T is a translation matrix,
+ * F is +/- I (a reflection), R is a rotation matrix,
  * SO is a rotation matrix and S is a (nonuniform) scale matrix.
  *
- * @param {x3dom.fields.SFVec3f} t     - 3D vector to be filled with the translation values
- * @param {x3dom.fields.Quaternion} r  - quaternion to be filled with the rotation values
- * @param {x3dom.fields.SFVec3f} s     - 3D vector to be filled with the scale factors
- * @param {x3dom.fields.Quaternion} so - rotation (quaternion) to be applied before scaling
- * @returns {Number} signum of determinant of the transposed adjoint upper 3x3 matrix
+ * @param {x3dom.fields.SFVec3f} t     -
+ *          3D vector to be filled with the translation values
+ * @param {x3dom.fields.Quaternion} r  -
+ *          quaternion to be filled with the rotation values
+ * @param {x3dom.fields.SFVec3f} s     -
+ *          3D vector to be filled with the scale factors
+ * @param {x3dom.fields.Quaternion} so -
+ *          rotation (quaternion) to be applied before scaling
+ * @returns {Number} signum of determinant of the transposed adjoint
+ *                   upper 3x3 matrix
  */
 x3dom.fields.SFMatrix4f.prototype.decompose = function ( t, r, s, so )
 {
@@ -1271,11 +1366,13 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function ( t, r, s, so )
 };
 
 /**
- * Performs a polar decomposition of this matrix A into two matrices Q and S, so that A = QS
+ * Performs a polar decomposition of this matrix A into two matrices
+ * Q and S, so that A = QS
  *
  * @param {x3dom.fields.SFMatrix4f} Q - first resulting matrix
  * @param {x3dom.fields.SFMatrix4f} S - first resulting matrix
- * @returns {Number} determinant of the transposed adjoint upper 3x3 matrix
+ * @returns {Number} determinant of the transposed adjoint upper 3x3
+ *                   matrix
  */
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function ( Q, S )
 {
@@ -1287,11 +1384,11 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function ( Q, S )
     var Mk_one = Mk.norm1_3x3();
     var Mk_inf = Mk.normInf_3x3();
 
-    var MkAdjT,
-        MkAdjT_one,
-        MkAdjT_inf,
-        Ek_one,
-        Mk_det;
+    var MkAdjT;
+    var MkAdjT_one;
+    var MkAdjT_inf;
+    var Ek_one;
+    var Mk_det;
 
     do
     {
@@ -1361,7 +1458,9 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function ( SO, k )
 
     for ( var iter = 0; iter < maxIterations; ++iter )
     {
-        var sm = Math.abs( offDiag[ 0 ] ) + Math.abs( offDiag[ 1 ] ) + Math.abs( offDiag[ 2 ] );
+        var sm =   Math.abs( offDiag[ 0 ] )
+                 + Math.abs( offDiag[ 1 ] )
+                 + Math.abs( offDiag[ 2 ] );
 
         if ( sm == 0 )
         {
@@ -1389,7 +1488,8 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function ( SO, k )
                 else
                 {
                     var theta = 0.5 * h / offDiag[ i ];
-                    t = 1.0 / ( Math.abs( theta ) + Math.sqrt( theta * theta + 1.0 ) );
+                    t =   1.0 / ( Math.abs( theta )
+                        + Math.sqrt( theta * theta + 1.0 ) );
 
                     t = theta < 0.0 ? -t : t;
                 }
@@ -1428,7 +1528,8 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function ( SO, k )
 };
 
 /**
- * Computes the logarithm of this matrix, assuming that its determinant is greater than zero.
+ * Computes the logarithm of this matrix, assuming that its determinant
+ * is greater than zero.
  *
  * @returns {x3dom.fields.SFMatrix4f} log of matrix
  */
@@ -1537,7 +1638,8 @@ x3dom.fields.SFMatrix4f.prototype.exp = function ()
 };
 
 /**
- * Computes a determinant for a 3x3 matrix m, given as values in row major order.
+ * Computes a determinant for a 3x3 matrix m, given as values in
+ * row major order.
  *
  * @param {Number} a1 - value of m at (0,0)
  * @param {Number} a2 - value of m at (0,1)
@@ -1550,7 +1652,9 @@ x3dom.fields.SFMatrix4f.prototype.exp = function ()
  * @param {Number} c3 - value of m at (2,2)
  * @returns {Number} determinant
  */
-x3dom.fields.SFMatrix4f.prototype.det3 = function ( a1, a2, a3, b1, b2, b3, c1, c2, c3 )
+x3dom.fields.SFMatrix4f.prototype.det3 = function ( a1, a2, a3,
+                                                    b1, b2, b3,
+                                                    c1, c2, c3 )
 {
     return ( ( a1 * b2 * c3 ) + ( a2 * b3 * c1 ) + ( a3 * b1 * c2 ) -
         ( a1 * b3 * c2 ) - ( a2 * b1 * c3 ) - ( a3 * b2 * c1 ) );
@@ -1592,7 +1696,7 @@ x3dom.fields.SFMatrix4f.prototype.det = function ()
 /**
  * Computes the inverse of this matrix, given that it is not singular.
  *
- * @returns {x3dom.fields.SFMatrix4f}
+ * @returns {x3dom.fields.SFMatrix4f} the inverse of this matrix
  */
 x3dom.fields.SFMatrix4f.prototype.inverse = function ()
 {
@@ -1621,7 +1725,8 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function ()
     // if (Math.abs(rDet) < 1e-30)
     if ( rDet == 0 )
     {
-        x3dom.debug.logWarning( "Invert matrix: singular matrix, no inverse!" );
+        x3dom.debug.logWarning( "Invert matrix: singular matrix, " +
+                                "no inverse!" );
         return x3dom.fields.SFMatrix4f.identity();
     }
 
@@ -1648,9 +1753,11 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function ()
 };
 
 /**
- * Returns an array of 2*3 = 6 euler angles (in radians), assuming that this is a rotation matrix.
- * The first three and the second three values are alternatives for the three euler angles,
- * where each of the two cases leads to the same resulting rotation.
+ * Returns an array of 2*3 = 6 euler angles (in radians), assuming that
+ * this is a rotation matrix. The first three and the second three
+ * values are alternatives for the three euler angles, where each of the
+ * two cases leads to the same resulting rotation.
+ *
  * @returns {Number[]} an array of 6 Euler angles in radians, each
  *                     consecutive triple of which represents one of the
  *                     two alternative choices for the same rotation
@@ -1702,7 +1809,7 @@ x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function ()
         }
 
         return [ psi, theta, phi,
-            psi, theta, phi ];
+                 psi, theta, phi ];
     }
 };
 
@@ -1725,8 +1832,8 @@ x3dom.fields.SFMatrix4f.prototype.toString = function ()
 };
 
 /**
- * Fills the values of this matrix from a string, where the entries are separated
- * by commas or whitespace, and given in column-major order.
+ * Fills the values of this matrix from a string, where the entries are
+ * separated by commas or whitespace, and given in column-major order.
  *
  * @param {String} str - the string representation
  */
@@ -1740,28 +1847,39 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function ( str )
         str = RegExp.$1;
         needTranspose = true;
     }
-    var arr = Array.map( str.split( /[,\s]+/ ), function ( n ) { return +n; } );
+    var arr = Array.map( str.split( /[,\s]+/ ),
+                         function ( n ) { return +n; } );
     if ( arr.length >= 16 )
     {
         if ( !needTranspose )
         {
-            this._00 = arr[ 0 ];  this._01 = arr[ 1 ];  this._02 = arr[ 2 ];  this._03 = arr[ 3 ];
-            this._10 = arr[ 4 ];  this._11 = arr[ 5 ];  this._12 = arr[ 6 ];  this._13 = arr[ 7 ];
-            this._20 = arr[ 8 ];  this._21 = arr[ 9 ];  this._22 = arr[ 10 ]; this._23 = arr[ 11 ];
-            this._30 = arr[ 12 ]; this._31 = arr[ 13 ]; this._32 = arr[ 14 ]; this._33 = arr[ 15 ];
+            this._00 = arr[ 0 ];  this._01 = arr[ 1 ];
+            this._02 = arr[ 2 ];  this._03 = arr[ 3 ];
+            this._10 = arr[ 4 ];  this._11 = arr[ 5 ];
+            this._12 = arr[ 6 ];  this._13 = arr[ 7 ];
+            this._20 = arr[ 8 ];  this._21 = arr[ 9 ];
+            this._22 = arr[ 10 ]; this._23 = arr[ 11 ];
+            this._30 = arr[ 12 ]; this._31 = arr[ 13 ];
+            this._32 = arr[ 14 ]; this._33 = arr[ 15 ];
         }
         else
         {
-            this._00 = arr[ 0 ];  this._01 = arr[ 4 ];  this._02 = arr[ 8 ];  this._03 = arr[ 12 ];
-            this._10 = arr[ 1 ];  this._11 = arr[ 5 ];  this._12 = arr[ 9 ];  this._13 = arr[ 13 ];
-            this._20 = arr[ 2 ];  this._21 = arr[ 6 ];  this._22 = arr[ 10 ]; this._23 = arr[ 14 ];
-            this._30 = arr[ 3 ];  this._31 = arr[ 7 ];  this._32 = arr[ 11 ]; this._33 = arr[ 15 ];
+            this._00 = arr[ 0 ];  this._01 = arr[ 4 ];
+            this._02 = arr[ 8 ];  this._03 = arr[ 12 ];
+            this._10 = arr[ 1 ];  this._11 = arr[ 5 ];
+            this._12 = arr[ 9 ];  this._13 = arr[ 13 ];
+            this._20 = arr[ 2 ];  this._21 = arr[ 6 ];
+            this._22 = arr[ 10 ]; this._23 = arr[ 14 ];
+            this._30 = arr[ 3 ];  this._31 = arr[ 7 ];
+            this._32 = arr[ 11 ]; this._33 = arr[ 15 ];
         }
     }
     else if ( arr.length === 6 )
     {
-        this._00 = arr[ 0 ]; this._01 = arr[ 1 ]; this._02 = 0; this._03 = arr[ 4 ];
-        this._10 = arr[ 2 ]; this._11 = arr[ 3 ]; this._12 = 0; this._13 = arr[ 5 ];
+        this._00 = arr[ 0 ]; this._01 = arr[ 1 ];
+        this._02 = 0; this._03 = arr[ 4 ];
+        this._10 = arr[ 2 ]; this._11 = arr[ 3 ];
+        this._12 = 0; this._13 = arr[ 5 ];
         this._20 = 0; this._21 = 0; this._22 = 1; this._23 = 0;
         this._30 = 0; this._31 = 0; this._32 = 0; this._33 = 1;
     }
@@ -1775,7 +1893,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function ( str )
 
 /**
  * SFVec2f constructor.
- * 
+ *
  * @class Represents a SFVec2f
  */
 x3dom.fields.SFVec2f = function ( x, y )
@@ -1794,7 +1912,7 @@ x3dom.fields.SFVec2f = function ( x, y )
 
 /**
  * Returns a copy of the given 2D vector.
- * 
+ *
  * @param   {x3dom.fields.SFVec2f} v - the vector to copy
  * @returns {x3dom.fields.SFVec2f} the copy of the input vector
  */
@@ -1812,7 +1930,7 @@ x3dom.fields.SFVec2f.parse = function ( str )
 
 /**
  * Returns a copy of this 2D vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec2f} the copy of this vector
  */
 x3dom.fields.SFVec2f.prototype.copy = function ()
@@ -1823,7 +1941,7 @@ x3dom.fields.SFVec2f.prototype.copy = function ()
 /**
  * Sets this vector's components from another vector, and returns this
  * modified vector.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the vector to copy from
  * @returns {x3dom.fields.SFVec2f} this modified vector
  */
@@ -1831,13 +1949,13 @@ x3dom.fields.SFVec2f.prototype.setValues = function ( that )
 {
     this.x = that.x;
     this.y = that.y;
-    
+
     return this;
 };
 
 /**
  * Returns the vector component at the given index.
- * 
+ *
  * @param {Number} i - the index of the vector component to obtain,
  *                     with 0 being the x-coordinate, 1 being the
  *                     y-coordinae, and any other value defaulting to
@@ -1856,7 +1974,7 @@ x3dom.fields.SFVec2f.prototype.at = function ( i )
 
 /**
  * Returns a new vector as the sum of adding another vector to this one.
- * 
+ *
  * @param   {x3dom.fields.SFVec2f} that - the addend vector to add to
  *                                        this one
  * @returns {x3dom.fields.SFVec2f} a new vector holding the sum
@@ -1869,7 +1987,7 @@ x3dom.fields.SFVec2f.prototype.add = function ( that )
 /**
  * Returns a new vector as the difference between this vector and
  * another one subtracted from it.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the subtrahend vector to
  *                                      deduct from this vector
  * @returns {x3dom.fields.SFVec2f} a new vector holding the difference
@@ -1881,7 +1999,7 @@ x3dom.fields.SFVec2f.prototype.subtract = function ( that )
 
 /**
  * Returns a negated version of this vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec2f} a negated version of this vector
  */
 x3dom.fields.SFVec2f.prototype.negate = function ()
@@ -1891,7 +2009,7 @@ x3dom.fields.SFVec2f.prototype.negate = function ()
 
 /**
  * Returns the dot product between this vector and another one.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the right-hand side vector
  * @returns {Number} the dot product between this and the other vector
  */
@@ -1902,7 +2020,7 @@ x3dom.fields.SFVec2f.prototype.dot = function ( that )
 
 /**
  * Returns the vector obtained by reflecting this vector at another one.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} n - the vector to reflect this one at
  * @returns {x3dom.fields.SFVec2f} the reflection vector
  */
@@ -1914,10 +2032,10 @@ x3dom.fields.SFVec2f.prototype.reflect = function ( n )
 
 /**
  * Returns a normalized version of this vector.
- * 
+ *
  * If this vector's magnitude equals zero, the resulting will be the
  * zero vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec2f} a new normalized vector based on
  *                                 this one
  */
@@ -1931,7 +2049,7 @@ x3dom.fields.SFVec2f.prototype.normalize = function ()
 /**
  * Returns the product of the componentwise multiplication of this
  * vector with another one.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the multiplicand (right) vector
  * @returns {x3dom.fields.SFVec2f} a new vector as product of a
  *                                 componentwise multiplication of this
@@ -1944,7 +2062,7 @@ x3dom.fields.SFVec2f.prototype.multComponents = function ( that )
 
 /**
  * Returns a scaled version of this vector.
- * 
+ *
  * @param {Number} n - the scalar scaling factor for this vector
  * @returns {x3dom.fields.SFVec2f} a new vector obtained by scaling this
  *                                one by the given factor
@@ -1957,7 +2075,7 @@ x3dom.fields.SFVec2f.prototype.multiply = function ( n )
 /**
  * Returns the quotient of this vector componentwise divided by another
  * one.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the divisor vector to divide by
  * @returns {x3dom.fields.SFVec2f} the quotient obtained by componentwise
  *                                 division of this vector by the other
@@ -1970,7 +2088,7 @@ x3dom.fields.SFVec2f.prototype.divideComponents = function ( that )
 /**
  * Returns a version of this vector with its components divided by
  * the scalar factor.
- * 
+ *
  * @param {Number} n - the scalar factor to divide the components by
  * @returns {x3dom.fields.SFVec2f} a new vector obtained by dividing
  *                                 this one's components by the scalar
@@ -1984,7 +2102,7 @@ x3dom.fields.SFVec2f.prototype.divide = function ( n )
 /**
  * Checks whether this vector equals another one, as defined by the
  * deviation tolerance among their components.
- * 
+ *
  * @param {x3dom.fields.SFVec2f} that - the vector to compare to this one
  * @param {Number}               eps  - the tolerance of deviation
  *                                      within which not exactly equal
@@ -2001,7 +2119,7 @@ x3dom.fields.SFVec2f.prototype.equals = function ( that, eps )
 
 /**
  * Returns the length, or magnitude, of this vector.
- * 
+ *
  * @returns {Number} the magnitude of this vector
  */
 x3dom.fields.SFVec2f.prototype.length = function ()
@@ -2012,9 +2130,9 @@ x3dom.fields.SFVec2f.prototype.length = function ()
 /**
  * Returns the components of this vector as an array of two numbers,
  * suitable for interaction with OpenGL.
- * 
- * @returns {Number[]} an array holding this vector's x- and y-coordinates
- *                     in this order
+ *
+ * @returns {Number[]} an array holding this vector's x- and
+ *                     y-coordinates in this order
  */
 x3dom.fields.SFVec2f.prototype.toGL = function ()
 {
@@ -2023,7 +2141,7 @@ x3dom.fields.SFVec2f.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this vector.
- * 
+ *
  * @returns {String} a string representation of this vector
  */
 x3dom.fields.SFVec2f.prototype.toString = function ()
@@ -2034,7 +2152,7 @@ x3dom.fields.SFVec2f.prototype.toString = function ()
 /**
  * Parses a string and sets this vector's components to the values
  * obtained from it, returning this modified vector.
- * 
+ *
  * @param {String} str - the string to parse the coordinates from
  * @returns {x3dom.fields.SFVec2f} this modified vector
  */
@@ -2080,7 +2198,7 @@ x3dom.fields.SFVec3f.OneVector  = new x3dom.fields.SFVec3f( 1, 1, 1 );
 
 /**
  * Returns a copy of the supplied 3D vector.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} v - the vector to copy
  * @returns {x3dom.fields.SFVec3f} a copy of the input vector
  */
@@ -2092,30 +2210,34 @@ x3dom.fields.SFVec3f.copy = function ( v )
 /**
  * Returns a vector whose components are set to the smallest
  * representable value.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a vector with the smallest
  *                                 representable value for each component
  */
 x3dom.fields.SFVec3f.MIN = function ()
 {
-    return new x3dom.fields.SFVec3f( -Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE );
+    return new x3dom.fields.SFVec3f( -Number.MAX_VALUE,
+                                     -Number.MAX_VALUE,
+                                     -Number.MAX_VALUE );
 };
 
 /**
  * Returns a vector whose components are set to the largest
  * representable value.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a vector with the largest
  *                                 representable value for each component
  */
 x3dom.fields.SFVec3f.MAX = function ()
 {
-    return new x3dom.fields.SFVec3f( Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE );
+    return new x3dom.fields.SFVec3f( Number.MAX_VALUE,
+                                     Number.MAX_VALUE,
+                                     Number.MAX_VALUE );
 };
 
 /**
  * Parses and returns a vector from a string representation.
- * 
+ *
  * @param {String} str - the string to parse the vector data from
  * @returns {x3dom.fields.SFVec3f} a new vector parsed from the string
  */
@@ -2136,7 +2258,7 @@ x3dom.fields.SFVec3f.parse = function ( str )
 
 /**
  * Returns a copy of this vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a copy of this vector
  */
 x3dom.fields.SFVec3f.prototype.copy = function ()
@@ -2146,7 +2268,7 @@ x3dom.fields.SFVec3f.prototype.copy = function ()
 
 /**
  * Sets the components of this vector from the supplied array.
- * 
+ *
  * @param {Number[]} array - an array of at least three numbers, the
  *                           first three of which will become this
  *                           vector's x-, y-, and z-coordinates
@@ -2164,7 +2286,7 @@ x3dom.fields.SFVec3f.prototype.fromArray = function ( array )
 /**
  * Creates and returns a new 3D vector containin the elements of the
  * input array.
- * 
+ *
  * @param {Number[]} array - an array of at least three numbers, the
  *                           first three of which will become the new
  *                           vector's x-, y-, and z-coordinates
@@ -2179,7 +2301,7 @@ x3dom.fields.SFVec3f.fromArray = function ( array )
 /**
  * Sets the components of this vector from another vector, and returns
  * this modified vector.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} that - the vector to copy from
  * @returns {x3dom.fields.SFVec3f} this modified vector
  */
@@ -2188,14 +2310,14 @@ x3dom.fields.SFVec3f.prototype.setValues = function ( that )
     this.x = that.x;
     this.y = that.y;
     this.z = that.z;
-    
+
     return this;
 };
 
 /**
  * Sets the components of this vector from supplied coordinates, and
  * returns this modified vector.
- * 
+ *
  * @param {Number} x - the new x-coordinate
  * @param {Number} y - the new y-coordinate
  * @param {Number} z - the new z-coordinate
@@ -2206,16 +2328,16 @@ x3dom.fields.SFVec3f.prototype.set = function ( x, y, z )
     this.x = x;
     this.y = y;
     this.z = z;
-    
+
     return this;
 };
 
 /**
  * Returns the vector component with at the given index.
- * 
+ *
  * If the index does not designate a valid component, per default the
  * x-coordinate is returned.
- * 
+ *
  * @param {Number} i - the index of the vector component to access,
  *                     starting at zero
  * @returns {Number} the vector component at the given index, or the
@@ -2234,20 +2356,22 @@ x3dom.fields.SFVec3f.prototype.at = function ( i )
 
 /**
  * Returns a new vector as the sum of adding another vector to this one.
- * 
+ *
  * @param   {x3dom.fields.SFVec3f} that - the addend vector to add to
  *                                        this one
  * @returns {x3dom.fields.SFVec3f} a new vector holding the sum
  */
 x3dom.fields.SFVec3f.prototype.add = function ( that )
 {
-    return new x3dom.fields.SFVec3f( this.x + that.x, this.y + that.y, this.z + that.z );
+    return new x3dom.fields.SFVec3f( this.x + that.x,
+                                     this.y + that.y,
+                                     this.z + that.z );
 };
 
 /**
  * Returns a new vector as the sum of adding another scaled vector,
  * scaled by the supplied scalar value, to this one.
- * 
+ *
  * @param   {x3dom.fields.SFVec3f} that - the addend vector to scale
  *                                        and add to this one; will not
  *                                        be modified
@@ -2258,25 +2382,29 @@ x3dom.fields.SFVec3f.prototype.add = function ( that )
  */
 x3dom.fields.SFVec3f.prototype.addScaled = function ( that, s )
 {
-    return new x3dom.fields.SFVec3f( this.x + s * that.x, this.y + s * that.y, this.z + s * that.z );
+    return new x3dom.fields.SFVec3f( this.x + s * that.x,
+                                     this.y + s * that.y,
+                                     this.z + s * that.z );
 };
 
 /**
  * Returns a new vector as the difference between this vector and
  * another one subtracted from it.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} that - the subtrahend vector to
  *                                      deduct from this vector
  * @returns {x3dom.fields.SFVec3f} a new vector holding the difference
  */
 x3dom.fields.SFVec3f.prototype.subtract = function ( that )
 {
-    return new x3dom.fields.SFVec3f( this.x - that.x, this.y - that.y, this.z - that.z );
+    return new x3dom.fields.SFVec3f( this.x - that.x,
+                                     this.y - that.y,
+                                     this.z - that.z );
 };
 
 /**
  * Returns a new vector as the difference between two vectors.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} a - the minuend vector to be deducted
  *                                   by
  * @param {x3dom.fields.SFVec3f} b - the subtrahend vector to deduct
@@ -2290,7 +2418,7 @@ x3dom.fields.SFVec3f.prototype.subtractVectors = function ( a, b )
 
 /**
  * Returns a version of this vector with all components negated.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a negated version of this vector
  */
 x3dom.fields.SFVec3f.prototype.negate = function ()
@@ -2300,7 +2428,7 @@ x3dom.fields.SFVec3f.prototype.negate = function ()
 
 /**
  * Returns the dot product between this vector and another one.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} that - the right-hand side vector
  * @returns {Number} the dot product between this vector and the other one
  */
@@ -2312,7 +2440,7 @@ x3dom.fields.SFVec3f.prototype.dot = function ( that )
 /**
  * Returns a new vector representing the cross product between this
  * vector and another one.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} that - the right-handside vector
  * @returns {x3dom.fields.SFVec3f} the cross product of the two vectors
  */
@@ -2325,29 +2453,33 @@ x3dom.fields.SFVec3f.prototype.cross = function ( that )
 
 /**
  * Returns the vector obtained by reflecting this vector at another one.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} n - the vector to reflect this one at
  * @returns {x3dom.fields.SFVec3f} the reflection vector
  */
 x3dom.fields.SFVec3f.prototype.reflect = function ( n )
 {
     var d2 = this.dot( n ) * 2;
-    return new x3dom.fields.SFVec3f( this.x - d2 * n.x, this.y - d2 * n.y, this.z - d2 * n.z );
+    return new x3dom.fields.SFVec3f( this.x - d2 * n.x,
+                                     this.y - d2 * n.y,
+                                     this.z - d2 * n.z );
 };
 
 /**
  * Returns the magnitude, or length, of this vector.
- * 
+ *
  * @returns {Number} the magnitude of this vector
  */
 x3dom.fields.SFVec3f.prototype.length = function ()
 {
-    return Math.sqrt( ( this.x * this.x ) + ( this.y * this.y ) + ( this.z * this.z ) );
+    return Math.sqrt( ( this.x * this.x ) +
+                      ( this.y * this.y ) +
+                      ( this.z * this.z ) );
 };
 
 /**
  * Returns a normalized version of this vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a normalized version of this vector
  */
 x3dom.fields.SFVec3f.prototype.normalize = function ()
@@ -2357,15 +2489,28 @@ x3dom.fields.SFVec3f.prototype.normalize = function ()
     return new x3dom.fields.SFVec3f( this.x * n, this.y * n, this.z * n );
 };
 
+/**
+ * Returns a new vector obtained by componentwise multiplication of
+ * this one with another vector.
+ *
+ * @param {x3dom.fields.SFVec3f} that - the vector whose components
+ *                                      shall be multiplied with those
+ *                                      of this vector
+ * @returns {x3dom.fields.SFVec3f} the vector containing the
+ *                                 componentwise multiplication product
+ *                                 of this and the supplied vector
+ */
 x3dom.fields.SFVec3f.prototype.multComponents = function ( that )
 {
-    return new x3dom.fields.SFVec3f( this.x * that.x, this.y * that.y, this.z * that.z );
+    return new x3dom.fields.SFVec3f( this.x * that.x,
+                                     this.y * that.y,
+                                     this.z * that.z );
 };
 
 /**
  * Returns a new vector obtained by scaling this vector by the supplied
  * scalar factor.
- * 
+ *
  * @param {Number} n - the scalar scaling factor for this vector
  * @returns {x3dom.fields.SFVec3f} a scaled version of this vector
  */
@@ -2377,20 +2522,22 @@ x3dom.fields.SFVec3f.prototype.multiply = function ( n )
 /**
  * Returns a new vector obtained by dividing this vector by the supplied
  * scalar factor.
- * 
+ *
  * @param {Number} n - the scalar division factor for this vector
  * @returns {x3dom.fields.SFVec3f} a scaled version of this vector
  */
 x3dom.fields.SFVec3f.prototype.divide = function ( n )
 {
     var denom = n ? ( 1.0 / n ) : 1.0;
-    return new x3dom.fields.SFVec3f( this.x * denom, this.y * denom, this.z * denom );
+    return new x3dom.fields.SFVec3f( this.x * denom,
+                                     this.y * denom,
+                                     this.z * denom );
 };
 
 /**
  * Checks whether this vector equals another one, as defined by the
  * deviation tolerance among their components.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} that - the vector to compare to this one
  * @param {Number}               eps  - the tolerance of deviation
  *                                      within which not exactly equal
@@ -2402,14 +2549,14 @@ x3dom.fields.SFVec3f.prototype.divide = function ( n )
 x3dom.fields.SFVec3f.prototype.equals = function ( that, eps )
 {
     return Math.abs( this.x - that.x ) < eps &&
-        Math.abs( this.y - that.y ) < eps &&
-        Math.abs( this.z - that.z ) < eps;
+           Math.abs( this.y - that.y ) < eps &&
+           Math.abs( this.z - that.z ) < eps;
 };
 
 /**
  * Returns a four-element array holding this vector's components in a
  * mode suitable for interaction with OpenGL.
- * 
+ *
  * @returns {Number[]} an array with this vector's x-, y-,
  *                     and z-coordinates in this order
  */
@@ -2420,7 +2567,7 @@ x3dom.fields.SFVec3f.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this vector.
- * 
+ *
  * @returns {String} a string representation of this vector
  */
 x3dom.fields.SFVec3f.prototype.toString = function ()
@@ -2431,7 +2578,7 @@ x3dom.fields.SFVec3f.prototype.toString = function ()
 /**
  * Parses a string, sets this vector's components from the parsed data,
  * and returns this vector.
- * 
+ *
  * @param {String} str - the string to parse
  * @returns {x3dom.fields.SFVec3f} this modified vector
  */
@@ -2457,10 +2604,10 @@ x3dom.fields.SFVec3f.prototype.setValueByStr = function ( str )
 
 /**
  * SFVec4f constructor.
- * 
+ *
  * Represents a four-dimensional vector, the components of which, all
  * being numbers, can be accessed and modified directly.
- * 
+ *
  * @class Represents a SFVec4f
  */
 x3dom.fields.SFVec4f = function ( x, y, z, w )
@@ -2483,7 +2630,7 @@ x3dom.fields.SFVec4f = function ( x, y, z, w )
 
 /**
  * Returns a copy of the given vector.
- * 
+ *
  * @param {x3dom.fields.SFVec4f} v - the vector to copy
  * @returns {x3dom.fields.SFVec4f} a copy of the input vector
  */
@@ -2494,7 +2641,7 @@ x3dom.fields.SFVec4f.copy = function ( v )
 
 /**
  * Returns a copy of this vector.
- * 
+ *
  * @returns {x3dom.fields.SFVec4f} a copy of this vector
  */
 x3dom.fields.SFVec4f.prototype.copy = function ()
@@ -2502,6 +2649,16 @@ x3dom.fields.SFVec4f.prototype.copy = function ()
     return x3dom.fields.SFVec4f( this );
 };
 
+/**
+ * Parses a string and returns a new 4D vector with the parsed
+ * coordinates.
+ *
+ * The input string must contain four numbers to produce a valid result.
+ *
+ * @param {String} str - the string to parse
+ * @returns {x3dom.fields.SFVec3f} a new 4D vector containing the
+ *                                 parsed coordinates
+ */
 x3dom.fields.SFVec4f.parse = function ( str )
 {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec( str );
@@ -2509,6 +2666,13 @@ x3dom.fields.SFVec4f.parse = function ( str )
     return new x3dom.fields.SFVec4f( +m[ 1 ], +m[ 2 ], +m[ 3 ], +m[ 4 ] );
 };
 
+/**
+ * Parses a string, sets this vector's components from the parsed data,
+ * and returns this vector.
+ *
+ * @param {String} str - the string to parse
+ * @returns {x3dom.fields.SFVec4f} this modified vector
+ */
 x3dom.fields.SFVec4f.prototype.setValueByStr = function ( str )
 {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec( str );
@@ -2522,7 +2686,7 @@ x3dom.fields.SFVec4f.prototype.setValueByStr = function ( str )
 
 /**
  * Returns an OpenGL-conformant array representation of this vector.
- * 
+ *
  * @returns {Number[]} the four components of this vector
  */
 x3dom.fields.SFVec4f.prototype.toGL = function ()
@@ -2532,7 +2696,7 @@ x3dom.fields.SFVec4f.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this vector.
- * 
+ *
  * @returns {String} a string representation of this vector
  */
 x3dom.fields.SFVec4f.prototype.toString = function ()
@@ -2543,10 +2707,10 @@ x3dom.fields.SFVec4f.prototype.toString = function ()
 
 /**
  * Quaternion constructor.
- * 
+ *
  * Represents a quaternion, the four components of which, all being
  * numbers, can be accessed and modified directly.
- * 
+ *
  * Note that the coordinates, if supplied separately or in an array,
  * are always construed in the order of x, y, z, and w. This fact is
  * significant as some conventions prepend the scalar component w
@@ -2575,7 +2739,7 @@ x3dom.fields.Quaternion = function ( x, y, z, w )
 
 /**
  * Returns a copy of the supplied quaternion.
- * 
+ *
  * @param {x3dom.fields.Quaternion} v - the quatenion to copy
  * @returns {x3dom.fields.Quaternion} a copy of the supplied quaternion
  */
@@ -2587,7 +2751,7 @@ x3dom.fields.Quaternion.copy = function ( v )
 /**
  * Returns the product obtained by multiplying this vector with
  * another one.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the right (multiplicand)
  *                                         quaternion
  * @returns {x3dom.fields.Quaternion} the product of this quaternion
@@ -2605,7 +2769,7 @@ x3dom.fields.Quaternion.prototype.multiply = function ( that )
 
 /**
  * Sets this quaternion's components from an array of numbers.
- * 
+ *
  * @param {Number[]} array - an array of at least four numbers, the first
  *                        four of which will be used to set this
  *                        quaternion's x-, y-, z-, and w-components
@@ -2623,20 +2787,23 @@ x3dom.fields.Quaternion.prototype.fromArray = function ( array )
 
 /**
  * Sets this quaternion's components from an array of numbers.
- * 
+ *
  * @param {Number[]} array - an array of at least for numbers, the first
  *                           four of which will be used as the x-, y-,
  *                           z-, and w-components in this order.
  */
 x3dom.fields.Quaternion.fromArray = function ( array )
 {
-    return new x3dom.fields.Quaternion( array[ 0 ], array[ 1 ], array[ 2 ], array[ 3 ] );
+    return new x3dom.fields.Quaternion( array[ 0 ],
+                                        array[ 1 ],
+                                        array[ 2 ],
+                                        array[ 3 ] );
 };
 
 /**
  * Parses the axis-angle representation of a rotation from a string
  * and creates and returns a new quaternion equivalent to it.
- * 
+ *
  * @param {String} str - the string to parse the axis-angle data from
  * @returns {x3dom.fields.Quaternion} a new quaternion equivalent to the
  *                                    axis-angle rotation expressed in
@@ -2647,12 +2814,15 @@ x3dom.fields.Quaternion.parseAxisAngle = function ( str )
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec( str );
     if ( m === null ) {return new x3dom.fields.Quaternion();}
 
-    return x3dom.fields.Quaternion.axisAngle( new x3dom.fields.SFVec3f( +m[ 1 ], +m[ 2 ], +m[ 3 ] ), +m[ 4 ] );
+    return x3dom.fields.Quaternion.axisAngle( new x3dom.fields.SFVec3f(
+                                                +m[ 1 ], +m[ 2 ],
+                                                +m[ 3 ] ),
+                                              +m[ 4 ] );
 };
 
 /**
  * Creates and returns an axis-angle representation of this quaternion.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} axis - the rotation axis
  * @param {Number}               a    - the rotation angle in radians
  * @returns {x3dom.fields.Quaternion} a new quaternion equivalent to the
@@ -2666,7 +2836,10 @@ x3dom.fields.Quaternion.axisAngle = function ( axis, a )
     {
         var s = Math.sin( a / 2 ) / t;
         var c = Math.cos( a / 2 );
-        return new x3dom.fields.Quaternion( axis.x * s, axis.y * s, axis.z * s, c );
+        return new x3dom.fields.Quaternion( axis.x * s,
+                                            axis.y * s,
+                                            axis.z * s,
+                                            c );
     }
     else
     {
@@ -2676,7 +2849,7 @@ x3dom.fields.Quaternion.axisAngle = function ( axis, a )
 
 /**
  * Returns a copy of this quaternion.
- * 
+ *
  * @returns {x3dom.fields.Quaternion} a copy of this quaternion
  */
 x3dom.fields.Quaternion.prototype.copy = function ()
@@ -2686,7 +2859,7 @@ x3dom.fields.Quaternion.prototype.copy = function ()
 
 /**
  * Returns a rotation matrix representation of this quaternion.
- * 
+ *
  * @returns {x3dom.fields.SFMatrix4} a new rotation matrix representing
  *                                   this quaternion's rotation
  */
@@ -2714,7 +2887,7 @@ x3dom.fields.Quaternion.prototype.toMatrix = function ()
  * Returns an axis-angle representation of this quaternion as a
  * two-element array containing the rotation axis and angle in radians
  * in this order.
- * 
+ *
  * @returns {Array} an array of two elements, the first of which is
  *                  the <code>SFVec3f</code> axis-angle rotation axis,
  *                  the second being the angle in radians.
@@ -2753,7 +2926,7 @@ x3dom.fields.Quaternion.prototype.toAxisAngle = function ()
 
 /**
  * Returns this quaternion's rotation angle in radians.
- * 
+ *
  * @returns {Number} this quaternion's rotation angle in radians
  */
 x3dom.fields.Quaternion.prototype.angle = function ()
@@ -2764,7 +2937,7 @@ x3dom.fields.Quaternion.prototype.angle = function ()
 /**
  * Sets this quaternion's components from the supplied rotation matrix,
  * and returns the quaternion itself.
- * 
+ *
  * @param {x3dom.fields.SFMatrix4f} matrix - the rotation matrix whose
  *                                           rotation shall be copied
  *                                           into this quaternion
@@ -2772,13 +2945,13 @@ x3dom.fields.Quaternion.prototype.angle = function ()
  */
 x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
 {
-    var tr,
-        s = 1;
+    var tr;
+    var s = 1;
     var qt = [ 0, 0, 0 ];
 
-    var i = 0,
-        j = 0,
-        k = 0;
+    var i = 0;
+    var j = 0;
+    var k = 0;
     var nxt = [ 1, 2, 0 ];
 
     tr = matrix._00 + matrix._11 + matrix._22;
@@ -2814,7 +2987,9 @@ x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
         j = nxt[ i ];
         k = nxt[ j ];
 
-        s = Math.sqrt( matrix.at( i, i ) - ( matrix.at( j, j ) + matrix.at( k, k ) ) + 1.0 );
+        s =   Math.sqrt(   matrix.at( i, i )
+                         - ( matrix.at( j, j ) + matrix.at( k, k ) )
+                         + 1.0 );
 
         qt[ i ] = s * 0.5;
         s = 0.5 / s;
@@ -2835,8 +3010,10 @@ x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
 
         if ( this.w > errThreshold || this.w < -errThreshold )
         {
-            // When copying, then everything, incl. the famous OpenSG MatToQuat bug
-            x3dom.debug.logInfo( "MatToQuat: BUG: |quat[4]| (" + this.w + ") >> 1.0 !" );
+            // When copying, then everything, incl. the famous OpenSG
+            // MatToQuat bug
+            x3dom.debug.logInfo( "MatToQuat: BUG: |quat[4]| (" +
+                                 this.w + ") >> 1.0 !" );
         }
 
         if ( this.w > 1.0 )
@@ -2853,7 +3030,7 @@ x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
 /**
  * Sets this quaternion from the Euler angles representation, and
  * returns this quaternion.
- * 
+ *
  * @params {Number} alpha - the rotation angle in radians about the
  *                          first axis
  * @params {Number} beta  - the rotation angle in radians about the
@@ -2862,7 +3039,8 @@ x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
  *                          third axis
  * @returns {x3dom.fields.Quaternion} the modified quaternion
  */
-x3dom.fields.Quaternion.prototype.setFromEuler = function ( alpha, beta, gamma )
+x3dom.fields.Quaternion.prototype.setFromEuler = function ( alpha, beta,
+                                                            gamma )
 {
     var sx = Math.sin( alpha * 0.5 );
     var cx = Math.cos( alpha * 0.5 );
@@ -2875,25 +3053,26 @@ x3dom.fields.Quaternion.prototype.setFromEuler = function ( alpha, beta, gamma )
     this.y = ( cx * sy * cz ) + ( sx * cy * sz );
     this.z = ( cx * cy * sz ) - ( sx * sy * cz );
     this.w = ( cx * cy * cz ) + ( sx * sy * sz );
-    
+
     return this;
 };
 
 /**
  * Returns the dot product of this quaternion and another one.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the right quaternion
  * @returns {Number} the production of this quaternion and the other one
  */
 x3dom.fields.Quaternion.prototype.dot = function ( that )
 {
-    return this.x * that.x + this.y * that.y + this.z * that.z + this.w * that.w;
+    return this.x * that.x + this.y * that.y +
+           this.z * that.z + this.w * that.w;
 };
 
 /**
  * Returns a new quaternion obtained by adding to this quaternion
  * the components of another one.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the addend quaternion to add
  *                                         to this one
  * @returns {x3dom.fields.Quaternion} a new quaternion representing the
@@ -2901,26 +3080,33 @@ x3dom.fields.Quaternion.prototype.dot = function ( that )
  */
 x3dom.fields.Quaternion.prototype.add = function ( that )
 {
-    return new x3dom.fields.Quaternion( this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w );
+    return new x3dom.fields.Quaternion( this.x + that.x,
+                                        this.y + that.y,
+                                        this.z + that.z,
+                                        this.w + that.w );
 };
 
 /**
  * Returns a new quaternion as the difference between this quaternion
  * and another one subtracted from it.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the subtrahend quaternion to
  *                                         deduct from this one
- * @returns {x3dom.fields.Quaternion} a new quaternion holding the difference
+ * @returns {x3dom.fields.Quaternion} a new quaternion holding the
+ *                                    difference
  */
 x3dom.fields.Quaternion.prototype.subtract = function ( that )
 {
-    return new x3dom.fields.Quaternion( this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w );
+    return new x3dom.fields.Quaternion( this.x - that.x,
+                                        this.y - that.y,
+                                        this.z - that.z,
+                                        this.w - that.w );
 };
 
 /**
  * Sets this quaternion's components from another quaternion, and
  * returns this quaternion.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the quaternion to copy from
  * @returns {x3dom.fields.Quaternion} this modified quaternion
  */
@@ -2930,13 +3116,13 @@ x3dom.fields.Quaternion.prototype.setValues = function ( that )
     this.y = that.y;
     this.z = that.z;
     this.w = that.w;
-    
+
     return this;
 };
 
 /**
  * Checks whether this quaternion equals another one.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the quaternion to juxtapose
  *                                         with this one
  * @param {Number}                  eps  - the tolerance of deviation
@@ -2959,12 +3145,15 @@ x3dom.fields.Quaternion.prototype.equals = function ( that, eps )
  */
 x3dom.fields.Quaternion.prototype.multScalar = function ( s )
 {
-    return new x3dom.fields.Quaternion( this.x * s, this.y * s, this.z * s, this.w * s );
+    return new x3dom.fields.Quaternion( this.x * s,
+                                        this.y * s,
+                                        this.z * s,
+                                        this.w * s );
 };
 
 /**
  * Normalizes and returns this quaternion.
- * 
+ *
  * @returns {x3dom.fields.Quaternion} this normalized quaternion
  */
 x3dom.fields.Quaternion.prototype.normalize = function ()
@@ -2986,7 +3175,7 @@ x3dom.fields.Quaternion.prototype.normalize = function ()
 
 /**
  * Normalizes a quaternion and returns it.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the quaternion to be
  *                                         normalized
  * @returns {x3dom.fields.Quaternion} the normalized input quaternion
@@ -3010,9 +3199,9 @@ x3dom.fields.Quaternion.normalize = function ( that )
 
 /**
  * Returns a negated version of this quaternion.
- * 
+ *
  * The negation of a quaternion negates all of its components.
- * 
+ *
  * @returns {x3dom.fields.Quaternion} the negated version of this
  *                                    quaternion
  */
@@ -3023,10 +3212,10 @@ x3dom.fields.Quaternion.prototype.negate = function ()
 
 /**
  * Returns an inverted version of this quaternion.
- * 
+ *
  * The conjugate or inverse quaternion negates the x-, y-, and
  * z-components, while retaining the w-coordinate's signum.
- * 
+ *
  * @returns {x3dom.fields.Quaternion} the inverted version of this
  *                                    quaternion
  */
@@ -3039,7 +3228,7 @@ x3dom.fields.Quaternion.prototype.inverse = function ()
  * Returns the result of performing a spherical linear interpolation,
  * or <i>slerp</i>, between this quaternion and another one as defined
  * by the supplied ratio.
- * 
+ *
  * @param {x3dom.fields.Quaternion} that - the opposite end of the
  *                                         interpolation
  * @param {Number}                  t    - the ratio of the interpolation
@@ -3069,8 +3258,8 @@ x3dom.fields.Quaternion.prototype.slerp = function ( that, t )
     }
 
     // calculate interpolating coeffs
-    var scalerot0,
-        scalerot1;
+    var scalerot0;
+    var scalerot1;
 
     if ( ( 1.0 - cosom ) > 0.00001 )
     {
@@ -3094,7 +3283,7 @@ x3dom.fields.Quaternion.prototype.slerp = function ( that, t )
 /**
  * Computes and returns a quaternion representing the rotation necessary
  * to reach align the first vector with the second one.
- * 
+ *
  * @param {x3dom.fields.SFVec3f} fromVec - the start vector which shall
  *                                         be construed as being
  *                                         intended to be aligned with
@@ -3163,7 +3352,7 @@ x3dom.fields.Quaternion.rotateFromTo = function ( fromVec, toVec )
 /**
  * Returns a four-element array of this quaternion's rotation in
  * an axis-angle representation suitable for communication with OpenGL.
- * 
+ *
  * @returns {Number[]} an array of four numbers holding the rotation
  *                     axis' x-, y-, and z-coordinates, as well as the
  *                     angle in radians
@@ -3176,7 +3365,7 @@ x3dom.fields.Quaternion.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this quaternion.
- * 
+ *
  * @returns {String} a string representation of this quaternion
  */
 x3dom.fields.Quaternion.prototype.toString = function ()
@@ -3188,7 +3377,7 @@ x3dom.fields.Quaternion.prototype.toString = function ()
  * Parses the axis-angle representation of a rotation from a string
  * and sets this quaternion's rotation from it, finally returning this
  * quaternion itself.
- * 
+ *
  * @param {String} str - the string to parse the axis-angle data from
  * @returns {x3dom.fields.Quaternion} this modified quaternion
  */
@@ -3196,7 +3385,9 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function ( str )
 {
     var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec( str );
     m = m || [ 0, 1, 0, 0, 0 ];
-    var quat = x3dom.fields.Quaternion.axisAngle( new x3dom.fields.SFVec3f( +m[ 1 ], +m[ 2 ], +m[ 3 ] ), +m[ 4 ] );
+    var quat = x3dom.fields.Quaternion.axisAngle (
+      new x3dom.fields.SFVec3f( +m[ 1 ], +m[ 2 ], +m[ 3 ] ), +m[ 4 ]
+    );
     this.x = quat.x;
     this.y = quat.y;
     this.z = quat.z;
@@ -3207,15 +3398,16 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function ( str )
 
 
 
+
 /**
  * This constructor creates and returns an axis-angle rotation from
  * the axis coordinates and the angle in radians.
- * 
+ *
  * The axis-angle representation, named <code>SFRotation</code> in
  * X3D's nomenclature, stores the rotation as the axis' x-, y-, and
  * z-coordinates, as well as the angle in radians, all of which can
  * be accessed and modified directly.
- * 
+ *
  * @class Represents an axis-angle rotation
  * @param {Number} x     - the optional x coordinate of the rotation
  *                         axis; defaults to 0
@@ -3227,163 +3419,174 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function ( str )
  * @returns {x3dom.fields.SFRotation} a new <code>SFRotation</code>
  *                                    instance
  */
-x3dom.fields.SFRotation = function (x, y, z, angle)
+x3dom.fields.SFRotation = function ( x, y, z, angle )
 {
-  this.x     = ((x     !== undefined) ? x     : 0);
-  this.y     = ((y     !== undefined) ? y     : 0);
-  this.z     = ((z     !== undefined) ? z     : 1);
-  this.angle = ((angle !== undefined) ? angle : 0);
+    this.x     = ((x     !== undefined) ? x     : 0);
+    this.y     = ((y     !== undefined) ? y     : 0);
+    this.z     = ((z     !== undefined) ? z     : 1);
+    this.angle = ((angle !== undefined) ? angle : 0);
 };
 
 /**
  * Returns a copy of this rotation.
- * 
+ *
  * @returns {x3dom.fields.SFRotation} a new copy of this rotation
  */
 x3dom.fields.SFRotation.prototype.copy = function ()
 {
-  var newSFRotation = null;
-  
-  newSFRotation = new x3dom.fields.SFRotation (this.x, this.y, this.z, this.angle);
-  
-  return newSFRotation;
+    var newSFRotation = null;
+
+    newSFRotation = new x3dom.fields.SFRotation( this.x, this.y, this.z,
+                                                 this.angle );
+
+    return newSFRotation;
 };
 
 /**
  * Sets this rotation's value from the supplied quaternion, and returns
  * this rotation.
- * 
+ *
  * @param {x3dom.fields.Quaternion} quaternion - the quaternion whose
  *                                               rotation shall be
  *                                               translated into this
  *                                               axis-angle rotation
  * @returns {x3dom.fields.SFRotation} this modified rotation
  */
-x3dom.fields.SFRotation.prototype.setFromQuaternion = function (quaternion)
+x3dom.fields.SFRotation.prototype.setFromQuaternion = function ( quaternion )
 {
-  var x = 0,
-      y = 0,
-      z = 0;
-  var s = 0,
-      a = 0;
-  var normalizedQuaternion = null;
-  
-  normalizedQuaternion = quaternion.copy ();
-  
-  if ( normalizedQuaternion.w > 1 )
-  {
-    normalizedQuaternion.normalize ();
-  }
+    var x = 0;
+    var y = 0;
+    var z = 0;
+    var s = 0;
+    var a = 0;
+    var normalizedQuaternion = null;
 
-  a = 2 * Math.acos( normalizedQuaternion.w );
-  s = Math.sqrt( 1 - normalizedQuaternion.w * normalizedQuaternion.w );
+    normalizedQuaternion = quaternion.copy ();
 
-  if ( s == 0 )
-  {  //< x3dom.fields.Eps )
-      x = normalizedQuaternion.x;
-      y = normalizedQuaternion.y;
-      z = normalizedQuaternion.z;
-  }
-  else
-  {
-      x = normalizedQuaternion.x / s;
-      y = normalizedQuaternion.y / s;
-      z = normalizedQuaternion.z / s;
-  }
-  
-  this.x     = x;
-  this.y     = y;
-  this.z     = z;
-  this.angle = a;
-  
-  return this;
+    if ( normalizedQuaternion.w > 1 )
+    {
+      normalizedQuaternion.normalize ();
+    }
+
+    a = 2 * Math.acos( normalizedQuaternion.w );
+    s = Math.sqrt( 1 - normalizedQuaternion.w * normalizedQuaternion.w );
+
+    if ( s == 0 )
+    {  //< x3dom.fields.Eps )
+        x = normalizedQuaternion.x;
+        y = normalizedQuaternion.y;
+        z = normalizedQuaternion.z;
+    }
+    else
+    {
+        x = normalizedQuaternion.x / s;
+        y = normalizedQuaternion.y / s;
+        z = normalizedQuaternion.z / s;
+    }
+
+    this.x     = x;
+    this.y     = y;
+    this.z     = z;
+    this.angle = a;
+
+    return this;
 };
 
 /**
  * Creates and returns a new axis-angle rotation from an existing
  * quaternion.
- * 
+ *
  * @param {x3dom.fields.Quaternion} quaternion - the quaternion to
                                     translate into an
  *                                  <code>SFRotation</code>
  * @returns {x3dom.fields.SFRotation} the axis-angle representation of
  *                                    the input <code>quaternion</code>
  */
-x3dom.fields.SFRotation.fromQuaternion = function (quaternion)
+x3dom.fields.SFRotation.fromQuaternion = function ( quaternion )
 {
-  var newSFRotation = this.copy ();
-  
-  newSFRotation.setFromQuaternion (quaternion);
-  
-  return newSFRotation;
+    var newSFRotation = this.copy ();
+
+    newSFRotation.setFromQuaternion (quaternion);
+
+    return newSFRotation;
 };
 
 /**
  * Sets this rotation's components from the rotation matrix.
- * 
+ *
  * Sources:
- *   -> "https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java"
- *      (method: ``public final void set(Matrix4f m1)'')
- * 
+ * <ul>
+ *   <li>
+ *     <a href="https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java">
+ *       https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java
+ *     </a>
+ *   </li>
+ * </ul>
+ *
  * @param {x3dom.fields.SFMatrix4f} matrix - the rotation matrix whose
  *                                           rotation data shall be
  *                                           transferred into this
  *                                           rotation object
  * @returns {x3dom.fields.SFRotation} this modified color itself
  */
-x3dom.fields.SFRotation.prototype.setFromMatrix = function (matrix)
+x3dom.fields.SFRotation.prototype.setFromMatrix = function ( matrix )
 {
-  var x         = 0;
-  var y         = 0;
-  var z         = 0;
-  var angle     = 0;
-  var magnitude = 0;
-  
-  x         = (matrix._21 - matrix._12);
-  y         = (matrix._02 - matrix._20);
-  z         = (matrix._10 - matrix._01);
-  magnitude = (x * x) + (y * y) + (z * z);
-  
-  if (magnitude > x3dom.fields.Eps)
-  {
-    var sinMagnitude = 0;
-    var cosMagnitude = 0;
-    var invMagnitude = 0;
-    
-    magnitude    = Math.sqrt (magnitude);
-    sinMagnitude = 0.5 * magnitude;
-    cosMagnitude = 0.5 * (matrix._00 + matrix._11 + matrix._22 - 1.0);
-    invMagnitude = 1.0 / magnitude;
-    
-    x            = x * invMagnitude;
-    y            = y * invMagnitude;
-    z            = z * invMagnitude;
-    angle        = Math.atan2 (sinMagnitude, cosMagnitude);
-  }
-  else
-  {
-    x     = 0;
-    y     = 0;
-    z     = 1;
-    angle = 0;
-  }
-  
-  this.x     = x;
-  this.y     = y;
-  this.z     = z;
-  this.angle = angle;
-  
-  return this;
+    var x         = 0;
+    var y         = 0;
+    var z         = 0;
+    var angle     = 0;
+    var magnitude = 0;
+
+    x         = (matrix._21 - matrix._12);
+    y         = (matrix._02 - matrix._20);
+    z         = (matrix._10 - matrix._01);
+    magnitude = (x * x) + (y * y) + (z * z);
+
+    if (magnitude > x3dom.fields.Eps)
+    {
+      var sinMagnitude = 0;
+      var cosMagnitude = 0;
+      var invMagnitude = 0;
+
+      magnitude    = Math.sqrt( magnitude );
+      sinMagnitude = 0.5 * magnitude;
+      cosMagnitude = 0.5 * (matrix._00 + matrix._11 + matrix._22 - 1.0);
+      invMagnitude = 1.0 / magnitude;
+
+      x            = x * invMagnitude;
+      y            = y * invMagnitude;
+      z            = z * invMagnitude;
+      angle        = Math.atan2 (sinMagnitude, cosMagnitude);
+    }
+    else
+    {
+      x     = 0;
+      y     = 0;
+      z     = 1;
+      angle = 0;
+    }
+
+    this.x     = x;
+    this.y     = y;
+    this.z     = z;
+    this.angle = angle;
+
+    return this;
 };
 
 /**
  * Creates and returns a new axis-angle representation corresponding to
  * the provided rotation matrix.
- * 
+ *
  * Sources:
- *   -> "https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java"
- *      (method: ``public final void set(Matrix4f m1)'')
- * 
+ * <ul>
+ *   <li>
+ *     <a href="https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java">
+ *       https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/AxisAngle4d.java
+ *     </>
+ *   </li>
+ * </ul>
+ *
  * @param {x3dom.fields.SFMatrix4f} matrix - the rotation matrix based
  *                                           upon which the axis-angle
  *                                           representation shall be
@@ -3391,189 +3594,291 @@ x3dom.fields.SFRotation.prototype.setFromMatrix = function (matrix)
  * @returns {x3dom.fields.SFRotation} a new axis-angle rotation
  *                                    corresponding to the input matrix
  */
-x3dom.fields.SFRotation.fromMatrix = function (matrix)
+x3dom.fields.SFRotation.fromMatrix = function ( matrix )
 {
-  var newSFRotation = new x3dom.fields.SFRotation ();
-  
-  newSFRotation.setFromMatrix (matrix);
-  
-  return newSFRotation;
+    var newSFRotation = new x3dom.fields.SFRotation();
+
+    newSFRotation.setFromMatrix( matrix );
+
+    return newSFRotation;
 };
 
 /**
  * Creates and returns a new 4x4 rotation matrix containing this
  * rotation's properties.
- * 
+ *
  * Sources:
- *   -> "https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/Matrix4d.java"
- *      (method: ``public final void set(AxisAngle4d a1)'')
- * 
+ * <ul>
+ *   <li>
+ *     <a href="https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/Matrix4d.java">
+ *       https://github.com/hharrison/vecmath/blob/master/src/javax/vecmath/Matrix4d.java
+ *     </>
+ *   </li>
+ * </ul>
+ *
  * @returns {x3dom.fields.SFMatrix4f} a new 4x4 rotation matrix
  *                                    corresponding to this rotation
  */
 x3dom.fields.SFRotation.prototype.toMatrix = function ()
 {
-  var matrix    = x3dom.fields.SFMatrix4f.identity ();
-  var magnitude = 0;
-  
-  magnitude = Math.sqrt ((this.x * this.x) + (this.y * this.y) + (this.z * this.z));
-  
-  if (magnitude < x3dom.fields.Eps)
-  {
-    matrix._00 = 1.0;
-    matrix._01 = 0.0;
-    matrix._02 = 0.0;
-    
-    matrix._10 = 0.0;
-    matrix._11 = 1.0;
-    matrix._12 = 0.0;
-    
-    matrix._20 = 0.0;
-    matrix._21 = 0.0;
-    matrix._22 = 1.0;
-  }
-  else
-  {
-    var inverseMagnitude = 0;
-    var ax               = 0;
-    var ay               = 0;
-    var az               = 0;
-    var sinTheta         = 0;
-    var cosTheta         = 0;
-    var t                = 0;
-    var xz               = 0;
-    var xy               = 0;
-    var yz               = 0;
-    
-    inverseMagnitude = 1.0 / magnitude;
-    ax               = this.x * inverseMagnitude;
-    ay               = this.y * inverseMagnitude;
-    az               = this.z * inverseMagnitude;
-    
-    sinTheta         = Math.sin (this.angle);
-    cosTheta         = Math.cos (this.angle);
-    t                = 1.0 - cosTheta;
-    
-    xz               = ax * az;
-    xy               = ax * ay;
-    yz               = ay * az;
-    
-    matrix._00       = (t * ax * ax) + cosTheta;
-    matrix._01       = (t * xy)      - (sinTheta * az);
-    matrix._02       = (t * xz)      + (sinTheta * ay);
-    
-    matrix._10       = (t * xy)      + (sinTheta * az);
-    matrix._11       = (t * ay * ay) + cosTheta;
-    matrix._12       = (t * yz)      - (sinTheta * ax);
-    
-    matrix._20       = (t * xz)      - (sinTheta * ay);
-    matrix._21       = (t * yz)      + (sinTheta * ax);
-    matrix._22       = (t * ax * az) + cosTheta;
-  }
-  
-  matrix._03 = 0.0;
-  matrix._13 = 0.0;
-  matrix._23 = 0.0;
-  
-  matrix._30 = 0.0;
-  matrix._31 = 0.0;
-  matrix._32 = 0.0;
-  matrix._33 = 1.0;
-  
-  return matrix;
+    var matrix    = x3dom.fields.SFMatrix4f.identity();
+    var magnitude = 0;
+
+    magnitude = Math.sqrt ((this.x * this.x) +
+                           (this.y * this.y) +
+                           (this.z * this.z));
+
+    if (magnitude < x3dom.fields.Eps)
+    {
+      matrix._00 = 1.0;
+      matrix._01 = 0.0;
+      matrix._02 = 0.0;
+
+      matrix._10 = 0.0;
+      matrix._11 = 1.0;
+      matrix._12 = 0.0;
+
+      matrix._20 = 0.0;
+      matrix._21 = 0.0;
+      matrix._22 = 1.0;
+    }
+    else
+    {
+      var inverseMagnitude = 0;
+      var ax               = 0;
+      var ay               = 0;
+      var az               = 0;
+      var sinTheta         = 0;
+      var cosTheta         = 0;
+      var t                = 0;
+      var xz               = 0;
+      var xy               = 0;
+      var yz               = 0;
+
+      inverseMagnitude = 1.0 / magnitude;
+      ax               = this.x * inverseMagnitude;
+      ay               = this.y * inverseMagnitude;
+      az               = this.z * inverseMagnitude;
+
+      sinTheta         = Math.sin ( this.angle );
+      cosTheta         = Math.cos ( this.angle );
+      t                = 1.0 - cosTheta;
+
+      xz               = ax * az;
+      xy               = ax * ay;
+      yz               = ay * az;
+
+      matrix._00       = (t * ax * ax) + cosTheta;
+      matrix._01       = (t * xy)      - (sinTheta * az);
+      matrix._02       = (t * xz)      + (sinTheta * ay);
+
+      matrix._10       = (t * xy)      + (sinTheta * az);
+      matrix._11       = (t * ay * ay) + cosTheta;
+      matrix._12       = (t * yz)      - (sinTheta * ax);
+
+      matrix._20       = (t * xz)      - (sinTheta * ay);
+      matrix._21       = (t * yz)      + (sinTheta * ax);
+      matrix._22       = (t * ax * az) + cosTheta;
+    }
+
+    matrix._03 = 0.0;
+    matrix._13 = 0.0;
+    matrix._23 = 0.0;
+
+    matrix._30 = 0.0;
+    matrix._31 = 0.0;
+    matrix._32 = 0.0;
+    matrix._33 = 1.0;
+
+    return matrix;
 };
 
 /**
  * Returns this rotation's rotation axis.
- * 
+ *
  * @returns {x3dom.fields.SFVec3f} a 3D vector containing the rotation
  *                                 axis
  */
 x3dom.fields.SFRotation.prototype.getAxis = function ()
 {
-  return new x3dom.fields.SFVec3f (this.x, this.y, this.z);
+    return new x3dom.fields.SFVec3f ( this.x, this.y, this.z );
 };
 
 /**
  * Returns this rotation's components as a four-element array of
  * numbers, conformant with OpenGL's vector type.
- * 
+ *
  * @returns {Number[]} an array of four numbers holding this rotation's
- *                     x-, y-, and z-axis, as well as the angle in radians
+ *                     x-, y-, and z-axis, as well as the angle in
+ *                     radians
  */
 x3dom.fields.SFRotation.prototype.toGL = function ()
 {
-  return [this.x, this.y, this.z, this.angle];
+    return [this.x, this.y, this.z, this.angle];
 };
 
 /**
  * Returns a string representation of this rotation.
- * 
+ *
  * @returns {String} a string representation of this rotation
  */
 x3dom.fields.SFRotation.prototype.toString = function ()
 {
-  return this.x + " " + this.y + " " + this.z + " " + this.angle;
+    return this.x + " " + this.y + " " + this.z + " " + this.angle;
 };
-
 
 
 
 // Definition of CSS color names
 var colorNames = {
-    aliceblue            : "#f0f8ff",          antiquewhite         : "#faebd7",         aqua                 : "#00ffff",
-    aquamarine           : "#7fffd4",         azure                : "#f0ffff",                beige                : "#f5f5dc",
-    bisque               : "#ffe4c4",             black                : "#000000",                blanchedalmond       : "#ffebcd",
-    blue                 : "#0000ff",               blueviolet           : "#8a2be2",           brown                : "#a52a2a",
-    burlywood            : "#deb887",          cadetblue            : "#5f9ea0",            chartreuse           : "#7fff00",
-    chocolate            : "#d2691e",          coral                : "#ff7f50",                cornflowerblue       : "#6495ed",
-    cornsilk             : "#fff8dc",           crimson              : "#dc143c",              cyan                 : "#00ffff",
-    darkblue             : "#00008b",           darkcyan             : "#008b8b",             darkgoldenrod        : "#b8860b",
-    darkgray             : "#a9a9a9",           darkgreen            : "#006400",            darkkhaki            : "#bdb76b",
-    darkmagenta          : "#8b008b",        darkolivegreen       : "#556b2f",       darkorange           : "#ff8c00",
-    darkorchid           : "#9932cc",         darkred              : "#8b0000",              darksalmon           : "#e9967a",
-    darkseagreen         : "#8fbc8f",       darkslateblue        : "#483d8b",        darkslategray        : "#2f4f4f",
-    darkturquoise        : "#00ced1",      darkviolet           : "#9400d3",           deeppink             : "#ff1493",
-    deepskyblue          : "#00bfff",        dimgray              : "#696969",              dodgerblue           : "#1e90ff",
-    feldspar             : "#d19275",           firebrick            : "#b22222",            floralwhite          : "#fffaf0",
-    forestgreen          : "#228b22",        fuchsia              : "#ff00ff",              gainsboro            : "#dcdcdc",
-    ghostwhite           : "#f8f8ff",         gold                 : "#ffd700",                 goldenrod            : "#daa520",
-    gray                 : "#808080",               green                : "#008000",                greenyellow          : "#adff2f",
-    honeydew             : "#f0fff0",           hotpink              : "#ff69b4",              indianred            : "#cd5c5c",
-    indigo               : "#4b0082",            ivory                : "#fffff0",                khaki                : "#f0e68c",
-    lavender             : "#e6e6fa",           lavenderblush        : "#fff0f5",        lawngreen            : "#7cfc00",
-    lemonchiffon         : "#fffacd",       lightblue            : "#add8e6",            lightcoral           : "#f08080",
-    lightcyan            : "#e0ffff",          lightgoldenrodyellow : "#fafad2", lightgrey            : "#d3d3d3",
-    lightgreen           : "#90ee90",         lightpink            : "#ffb6c1",            lightsalmon          : "#ffa07a",
-    lightseagreen        : "#20b2aa",      lightskyblue         : "#87cefa",         lightslateblue       : "#8470ff",
-    lightslategray       : "#778899",     lightsteelblue       : "#b0c4de",       lightyellow          : "#ffffe0",
-    lime                 : "#00ff00",               limegreen            : "#32cd32",            linen                : "#faf0e6",
-    magenta              : "#ff00ff",            maroon               : "#800000",               mediumaquamarine     : "#66cdaa",
-    mediumblue           : "#0000cd",         mediumorchid         : "#ba55d3",         mediumpurple         : "#9370d8",
-    mediumseagreen       : "#3cb371",     mediumslateblue      : "#7b68ee",      mediumspringgreen    : "#00fa9a",
-    mediumturquoise      : "#48d1cc",    mediumvioletred      : "#c71585",      midnightblue         : "#191970",
-    mintcream            : "#f5fffa",          mistyrose            : "#ffe4e1",            moccasin             : "#ffe4b5",
-    navajowhite          : "#ffdead",        navy                 : "#000080",                 oldlace              : "#fdf5e6",
-    olive                : "#808000",              olivedrab            : "#6b8e23",            orange               : "#ffa500",
-    orangered            : "#ff4500",          orchid               : "#da70d6",               palegoldenrod        : "#eee8aa",
-    palegreen            : "#98fb98",          paleturquoise        : "#afeeee",        palevioletred        : "#d87093",
-    papayawhip           : "#ffefd5",         peachpuff            : "#ffdab9",            peru                 : "#cd853f",
-    pink                 : "#ffc0cb",               plum                 : "#dda0dd",                 powderblue           : "#b0e0e6",
-    purple               : "#800080",             red                  : "#ff0000",                  rosybrown            : "#bc8f8f",
-    royalblue            : "#4169e1",          saddlebrown          : "#8b4513",          salmon               : "#fa8072",
-    sandybrown           : "#f4a460",         seagreen             : "#2e8b57",             seashell             : "#fff5ee",
-    sienna               : "#a0522d",             silver               : "#c0c0c0",               skyblue              : "#87ceeb",
-    slateblue            : "#6a5acd",          slategray            : "#708090",            snow                 : "#fffafa",
-    springgreen          : "#00ff7f",        steelblue            : "#4682b4",            tan                  : "#d2b48c",
-    teal                 : "#008080",               thistle              : "#d8bfd8",              tomato               : "#ff6347",
-    turquoise            : "#40e0d0",          violet               : "#ee82ee",               violetred            : "#d02090",
-    wheat                : "#f5deb3",              white                : "#ffffff",                whitesmoke           : "#f5f5f5",
-    yellow               : "#ffff00",             yellowgreen          : "#9acd32"
+    aliceblue            : "#f0f8ff",
+    antiquewhite         : "#faebd7",
+    aqua                 : "#00ffff",
+    aquamarine           : "#7fffd4",
+    azure                : "#f0ffff",
+    beige                : "#f5f5dc",
+    bisque               : "#ffe4c4",
+    black                : "#000000",
+    blanchedalmond       : "#ffebcd",
+    blue                 : "#0000ff",
+    blueviolet           : "#8a2be2",
+    brown                : "#a52a2a",
+    burlywood            : "#deb887",
+    cadetblue            : "#5f9ea0",
+    chartreuse           : "#7fff00",
+    chocolate            : "#d2691e",
+    coral                : "#ff7f50",
+    cornflowerblue       : "#6495ed",
+    cornsilk             : "#fff8dc",
+    crimson              : "#dc143c",
+    cyan                 : "#00ffff",
+    darkblue             : "#00008b",
+    darkcyan             : "#008b8b",
+    darkgoldenrod        : "#b8860b",
+    darkgray             : "#a9a9a9",
+    darkgreen            : "#006400",
+    darkkhaki            : "#bdb76b",
+    darkmagenta          : "#8b008b",
+    darkolivegreen       : "#556b2f",
+    darkorange           : "#ff8c00",
+    darkorchid           : "#9932cc",
+    darkred              : "#8b0000",
+    darksalmon           : "#e9967a",
+    darkseagreen         : "#8fbc8f",
+    darkslateblue        : "#483d8b",
+    darkslategray        : "#2f4f4f",
+    darkturquoise        : "#00ced1",
+    darkviolet           : "#9400d3",
+    deeppink             : "#ff1493",
+    deepskyblue          : "#00bfff",
+    dimgray              : "#696969",
+    dodgerblue           : "#1e90ff",
+    feldspar             : "#d19275",
+    firebrick            : "#b22222",
+    floralwhite          : "#fffaf0",
+    forestgreen          : "#228b22",
+    fuchsia              : "#ff00ff",
+    gainsboro            : "#dcdcdc",
+    ghostwhite           : "#f8f8ff",
+    gold                 : "#ffd700",
+    goldenrod            : "#daa520",
+    gray                 : "#808080",
+    green                : "#008000",
+    greenyellow          : "#adff2f",
+    honeydew             : "#f0fff0",
+    hotpink              : "#ff69b4",
+    indianred            : "#cd5c5c",
+    indigo               : "#4b0082",
+    ivory                : "#fffff0",
+    khaki                : "#f0e68c",
+    lavender             : "#e6e6fa",
+    lavenderblush        : "#fff0f5",
+    lawngreen            : "#7cfc00",
+    lemonchiffon         : "#fffacd",
+    lightblue            : "#add8e6",
+    lightcoral           : "#f08080",
+    lightcyan            : "#e0ffff",
+    lightgoldenrodyellow : "#fafad2",
+    lightgrey            : "#d3d3d3",
+    lightgreen           : "#90ee90",
+    lightpink            : "#ffb6c1",
+    lightsalmon          : "#ffa07a",
+    lightseagreen        : "#20b2aa",
+    lightskyblue         : "#87cefa",
+    lightslateblue       : "#8470ff",
+    lightslategray       : "#778899",
+    lightsteelblue       : "#b0c4de",
+    lightyellow          : "#ffffe0",
+    lime                 : "#00ff00",
+    limegreen            : "#32cd32",
+    linen                : "#faf0e6",
+    magenta              : "#ff00ff",
+    maroon               : "#800000",
+    mediumaquamarine     : "#66cdaa",
+    mediumblue           : "#0000cd",
+    mediumorchid         : "#ba55d3",
+    mediumpurple         : "#9370d8",
+    mediumseagreen       : "#3cb371",
+    mediumslateblue      : "#7b68ee",
+    mediumspringgreen    : "#00fa9a",
+    mediumturquoise      : "#48d1cc",
+    mediumvioletred      : "#c71585",
+    midnightblue         : "#191970",
+    mintcream            : "#f5fffa",
+    mistyrose            : "#ffe4e1",
+    moccasin             : "#ffe4b5",
+    navajowhite          : "#ffdead",
+    navy                 : "#000080",
+    oldlace              : "#fdf5e6",
+    olive                : "#808000",
+    olivedrab            : "#6b8e23",
+    orange               : "#ffa500",
+    orangered            : "#ff4500",
+    orchid               : "#da70d6",
+    palegoldenrod        : "#eee8aa",
+    palegreen            : "#98fb98",
+    paleturquoise        : "#afeeee",
+    palevioletred        : "#d87093",
+    papayawhip           : "#ffefd5",
+    peachpuff            : "#ffdab9",
+    peru                 : "#cd853f",
+    pink                 : "#ffc0cb",
+    plum                 : "#dda0dd",
+    powderblue           : "#b0e0e6",
+    purple               : "#800080",
+    red                  : "#ff0000",
+    rosybrown            : "#bc8f8f",
+    royalblue            : "#4169e1",
+    saddlebrown          : "#8b4513",
+    salmon               : "#fa8072",
+    sandybrown           : "#f4a460",
+    seagreen             : "#2e8b57",
+    seashell             : "#fff5ee",
+    sienna               : "#a0522d",
+    silver               : "#c0c0c0",
+    skyblue              : "#87ceeb",
+    slateblue            : "#6a5acd",
+    slategray            : "#708090",
+    snow                 : "#fffafa",
+    springgreen          : "#00ff7f",
+    steelblue            : "#4682b4",
+    tan                  : "#d2b48c",
+    teal                 : "#008080",
+    thistle              : "#d8bfd8",
+    tomato               : "#ff6347",
+    turquoise            : "#40e0d0",
+    violet               : "#ee82ee",
+    violetred            : "#d02090",
+    wheat                : "#f5deb3",
+    white                : "#ffffff",
+    whitesmoke           : "#f5f5f5",
+    yellow               : "#ffff00",
+    yellowgreen          : "#9acd32"
 };
 
 /**
  * Parses a string and creates and returns a color based upon it.
- * 
+ *
  * The input string might represent the color information in a variety
  * of forms, as described here:
  *   - as a standard CSS color name, for instance \"red\"
@@ -3584,7 +3889,7 @@ var colorNames = {
  *       #RRGGBB
  *       #RGBA
  *       #RGB
- * 
+ *
  * The thus generated object exhibits the following structure:
  *   {
  *     r : <red>,
@@ -3595,7 +3900,7 @@ var colorNames = {
  * All components are normalized in the floating-point range [0.0, 1.0].
  * If none of the above formats can be detected, all components are
  * instead set to zero.
- * 
+ *
  * @param {String} str - the string to parse the color information from
  * @returns {Object} an object containing the four color components,
  *                   the structure of which is:
@@ -3606,9 +3911,9 @@ var colorNames = {
  */
 function _colorParse ( str )
 {
-    var red   = 0.0,
-        green = 0.0,
-        blue  = 0.0;
+    var red   = 0.0;
+    var green = 0.0;
+    var blue  = 0.0;
     var alpha = 1.0;
 
     // Matches CSS rgb() function
@@ -3676,7 +3981,7 @@ function _colorParse ( str )
 /**
  * Returns the red, green, and blue (RGB) corresponding to the supplied
  * hue, saturation and value as according to the HSV color model.
- * 
+ *
  * @param {Number} h - the hue in degrees
  * @param {Number} s - the saturation as a floating-point ratio in
  *                     the range [0.0, 1.0]
@@ -3688,177 +3993,187 @@ function _colorParse ( str )
  */
 function _hsvToRGB (h, s, v)
 {
-  var hi = 0;
-  var f  = 0;
-  var p  = 0;
-  var q  = 0;
-  var t  = 0;
-  
-  hi = Math.floor (h / 60.0);
-  f  = (h / 60.0) - hi;
-  p  = v * (1.0 - s);
-  q  = v * (1.0 - (s * f));
-  t  = v * (1.0 - (s * (1.0 - f)));
-  
-  switch (hi)
-  {
-    case 0 :
-    case 6 :
+    var hi = 0;
+    var f  = 0;
+    var p  = 0;
+    var q  = 0;
+    var t  = 0;
+
+    hi = Math.floor (h / 60.0);
+    f  = (h / 60.0) - hi;
+    p  = v * (1.0 - s);
+    q  = v * (1.0 - (s * f));
+    t  = v * (1.0 - (s * (1.0 - f)));
+
+    switch (hi)
     {
-      r = v;
-      g = t;
-      b = p;
-      break;
-    }
-    case 1 :
-    {
-      r = q;
-      g = v;
-      b = p;
-      break;
-    }
-    case 2 :
-    {
-      r = p;
-      g = v;
-      b = t;
-      break;
-    }
-    case 3 :
-    {
-      r = p;
-      g = q;
-      b = v;
-      break;
-    }
-    case 4 :
-    {
-      r = t;
-      g = p;
-      b = v;
-      break;
-    }
-    case 5 :
-    {
-      r = v;
-      g = p;
-      b = q;
-      break;
-    }
-    default :
-    {
-      throw ("Invalid case: " + hi);
-      break;
-    }
-  };
-  
-  return [r, g, b];
+      case 0 :
+      case 6 :
+      {
+        r = v;
+        g = t;
+        b = p;
+        break;
+      }
+      case 1 :
+      {
+        r = q;
+        g = v;
+        b = p;
+        break;
+      }
+      case 2 :
+      {
+        r = p;
+        g = v;
+        b = t;
+        break;
+      }
+      case 3 :
+      {
+        r = p;
+        g = q;
+        b = v;
+        break;
+      }
+      case 4 :
+      {
+        r = t;
+        g = p;
+        b = v;
+        break;
+      }
+      case 5 :
+      {
+        r = v;
+        g = p;
+        b = q;
+        break;
+      }
+      default :
+      {
+        throw ("Invalid case: " + hi);
+        break;
+      }
+    };
+
+    return [r, g, b];
 };
 
 /**
  * Returns the HSV color components corresponding to the supplied red,
  * green, and blue (RGB) components as array of three numbers.
- * 
+ *
  * In accordance with the widespread wont, the hue is delivered as an
  * angle in degrees in the range [0.0, 360.0]; the saturation and value
  * both are ratios in the range [0.0, 1.0].
- * 
+ *
  * Sources:
- *   -> "https://www.rapidtables.com/convert/color/rgb-to-hsv.html"
- *   -> "https://en.wikipedia.org/wiki/HSL_and_HSV"
- * 
+ * <ul>
+ *   <li>
+ *     <a href="https://www.rapidtables.com/convert/color/rgb-to-hsv.html">
+ *       https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+ *     </a>
+ *   </li>
+ *   <li>
+ *     <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">
+ *       https://en.wikipedia.org/wiki/HSL_and_HSV
+ *     </a>
+ *   </li>
+ * </ul>
+ *
  * @param {Number} r - the red component
  * @param {Number} g - the green component
  * @param {Number} b - the blue component
- * @returns {Number[]} the three HSV color components corresponding to the
- *                      specified RGB model as elements of an array in the
- *                      order hue, saturation, and value
+ * @returns {Number[]} the three HSV color components corresponding to
+ *                     the specified RGB model as elements of an array
+ *                     in the order hue, saturation, and value
  */
 function _rgbToHSV (r, g, b)
 {
-  var hue            = 0;       // H
-  var saturation     = 0;       // S
-  var val            = 0;       // V
-  var minComponent   = 0;       // C_min
-  var maxComponent   = {};      // C_max
-  var componentRange = 0;       // MAX - MIN
-  
-  minComponentValue  = r;
-  maxComponent.name  = "red";
-  maxComponent.value = r;
-  
-  if (g < minComponentValue)
-  {
-    minComponentValue = g;
-  }
-  if (b < minComponentValue)
-  {
-    minComponentValue = b;
-  }
-  
-  if (g > maxComponent.value)
-  {
-    maxComponent.name  = "green";
-    maxComponent.value = g;
-  }
-  if (b > maxComponent.value)
-  {
-    maxComponent.name  = "blue";
-    maxComponent.value = b;
-  }
-  
-  componentRange = maxComponent.value - minComponentValue;
-  
-  if (componentRange == 0.0)
-  {
-    hue = 0;
-  }
-  else if (maxComponent.name == "red")
-  {
-    hue = 60.0 * (((g - b) / componentRange) % 6);
-  }
-  else if (maxComponent.name == "green")
-  {
-    hue = 60.0 * (((b - r) / componentRange) + 2.0);
-  }
-  else if (maxComponent.name == "blue")
-  {
-    hue = 60.0 * (((r - g) / componentRange) + 4.0);
-  }
-  else
-  {
-    throw ("Unknown maximum component: " + maxComponent.name);
-  }
-  
-  if (hue < 0)
-  {
-    hue = hue + 360;
-  }
-  
-  if (maxComponent.value == 0)
-  {
-    saturation = 0;
-  }
-  else
-  {
-    saturation = componentRange / maxComponent.value;
-  }
-  
-  val = maxComponent.value;
-  
-  return [hue, saturation, val];
+    var hue            = 0;       // H
+    var saturation     = 0;       // S
+    var val            = 0;       // V
+    var minComponent   = 0;       // C_min
+    var maxComponent   = {};      // C_max
+    var componentRange = 0;       // MAX - MIN
+
+    minComponentValue  = r;
+    maxComponent.name  = "red";
+    maxComponent.value = r;
+
+    if (g < minComponentValue)
+    {
+      minComponentValue = g;
+    }
+    if (b < minComponentValue)
+    {
+      minComponentValue = b;
+    }
+
+    if (g > maxComponent.value)
+    {
+      maxComponent.name  = "green";
+      maxComponent.value = g;
+    }
+    if (b > maxComponent.value)
+    {
+      maxComponent.name  = "blue";
+      maxComponent.value = b;
+    }
+
+    componentRange = maxComponent.value - minComponentValue;
+
+    if (componentRange == 0.0)
+    {
+      hue = 0;
+    }
+    else if (maxComponent.name == "red")
+    {
+      hue = 60.0 * (((g - b) / componentRange) % 6);
+    }
+    else if (maxComponent.name == "green")
+    {
+      hue = 60.0 * (((b - r) / componentRange) + 2.0);
+    }
+    else if (maxComponent.name == "blue")
+    {
+      hue = 60.0 * (((r - g) / componentRange) + 4.0);
+    }
+    else
+    {
+      throw ("Unknown maximum component: " + maxComponent.name);
+    }
+
+    if (hue < 0)
+    {
+      hue = hue + 360;
+    }
+
+    if (maxComponent.value == 0)
+    {
+      saturation = 0;
+    }
+    else
+    {
+      saturation = componentRange / maxComponent.value;
+    }
+
+    val = maxComponent.value;
+
+    return [hue, saturation, val];
 };
 
 
 
 /**
  * SFColor constructor.
- * 
+ *
  * This class represents a color as a triple of floating-point ratios,
  * usually confined to the range [0.0, 1.0], but not mandatorily
  * restricted in this sense. The three color components or channels
  * encompass red, green, and blue, that is, the RGB color model.
- * 
+ *
  * @class Represents a SFColor
  */
 x3dom.fields.SFColor = function ( r, g, b )
@@ -3879,7 +4194,7 @@ x3dom.fields.SFColor = function ( r, g, b )
 
 /**
  * Parses a string and returns and creates a color from it.
- * 
+ *
  * The input string must convey four numbers, which will be construed
  * as the red, green, blue, and alpha channel in this order. If this
  * format cannot be detected, the more potent rules of the method
@@ -3906,7 +4221,7 @@ x3dom.fields.SFColor.parse = function ( str )
 
 /**
  * Returns a copy of the specified color.
- * 
+ *
  * @param   {x3dom.fields.SFColor} that - the color to copy
  * @returns {x3dom.fields.SFColor} a copy of the input color
  */
@@ -3917,7 +4232,7 @@ x3dom.fields.SFColor.copy = function ( that )
 
 /**
  * Returns a copy of this color.
- * 
+ *
  * @returns {x3dom.fields.SFColor} a copy of this color
  */
 x3dom.fields.SFColor.prototype.copy = function ()
@@ -3928,7 +4243,7 @@ x3dom.fields.SFColor.prototype.copy = function ()
 /**
  * Sets the components of this color from the supplied hue, saturation
  * and value as according to the HSV color model.
- * 
+ *
  * @param {Number} h - the hue in degrees
  * @param {Number} s - the saturation as a floating-point ratio in
  *                     the range [0.0, 1.0]
@@ -3938,40 +4253,50 @@ x3dom.fields.SFColor.prototype.copy = function ()
  */
 x3dom.fields.SFColor.prototype.setHSV = function (h, s, v)
 {
-  var rgbComponents = _hsvToRGB (h, s, v);
-  
-  this.r = rgbComponents[0];
-  this.g = rgbComponents[1];
-  this.b = rgbComponents[2];
-  
-  return this;
+    var rgbComponents = _hsvToRGB (h, s, v);
+
+    this.r = rgbComponents[0];
+    this.g = rgbComponents[1];
+    this.b = rgbComponents[2];
+
+    return this;
 };
 
 /**
  * Returns the HSV color components corresponding to this color as an
  * array of three numbers.
- * 
+ *
  * In accordance with the widespread wont, the hue is delivered as an
  * angle in degrees in the range [0.0, 360.0]; the saturation and value
  * both are ratios in the range [0.0, 1.0].
- * 
+ *
  * Sources:
- *   -> "https://www.rapidtables.com/convert/color/rgb-to-hsv.html"
- *   -> "https://en.wikipedia.org/wiki/HSL_and_HSV"
- * 
- * @returns {Number[]} the three HSV color components corresponding to this
- *                      color as elements of an array in the order hue,
- *                      saturation, and value
+ * <ul>
+ *   <li>
+ *     <a href="https://www.rapidtables.com/convert/color/rgb-to-hsv.html">
+ *       https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+ *     </a>
+ *   </li>
+ *   <li>
+ *     <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">
+ *       https://en.wikipedia.org/wiki/HSL_and_HSV
+ *     </a>
+ *   </li>
+ * </ul>
+ *
+ * @returns {Number[]} the three HSV color components corresponding to
+ *                     this color as elements of an array in the order
+ *                     hue, saturation, and value
  */
 x3dom.fields.SFColor.prototype.getHSV = function ()
 {
-  return _rgbToHSV (this.r, this.g, this.b);
+    return _rgbToHSV (this.r, this.g, this.b);
 };
 
 /**
  * Sets this color's components to that of the supplied color and
  * returns this modified color.
- * 
+ *
  * @param {x3dom.fields.SFColor} color - the color to copy from
  * @returns {x3dom.fields.SFColor} this modified color
  */
@@ -3982,13 +4307,10 @@ x3dom.fields.SFColor.prototype.setValues = function ( color )
     this.b = color.b;
 };
 
-/* [+] NEW OPERATION [+]
- *
- */
 /**
  * Sets this color's components from a single integer-encoded value
  * holding all channel data in its bits, and returns this color.
- * 
+ *
  * The supplied integer number is considered regarding its first 24
  * bits, each consecutive eight of which represent the integer value
  * of one component in the range of [0, 255]. The keys are as follows:
@@ -3997,24 +4319,24 @@ x3dom.fields.SFColor.prototype.setValues = function ( color )
  *   - Bits 16 to 23 encode the red   channel.
  * The format is thus visually:
  *   RRRRRRRRGGGGGGGGBBBBBBBB
- * 
+ *
  * @param {Number} rgbaInteger - a 32-bit integer representation of this
  *                               color's new components
  * @returns {x3dom.fields.SFColor} this modified color
  */
 x3dom.fields.SFColor.prototype.setFromUint = function (rgbInteger)
 {
-  this.r = ((rgbInteger >> 16) && 255);
-  this.g = ((rgbInteger >>  8) && 255);
-  this.b = ((rgbInteger >>  0) && 255);
-  
-  return this;
+    this.r = ((rgbInteger >> 16) && 255);
+    this.g = ((rgbInteger >>  8) && 255);
+    this.b = ((rgbInteger >>  0) && 255);
+
+    return this;
 };
 
 /**
  * Checks whether this color equals another one in circumference of
  * the specified tolerance.
- * 
+ *
  * @param   {x3dom.fields.SFColor} that - a copy of this color
  * @param   {Number}               eps  - the tolerance of deviation
  *                                        between the two tested colors'
@@ -4031,25 +4353,59 @@ x3dom.fields.SFColor.prototype.equals = function ( that, eps )
            Math.abs( this.b - that.b ) < eps;
 };
 
+/**
+ * Returns a new RGB color as the sum of this color and another one.
+ *
+ * @param {x3dom.fields.SFColor|x3dom.fields.SFColorRGBA} that -
+ *          the color to add to this one
+ * @returns {x3dom.fields.SFColor} a new color with its components being
+ *                                 that of this one augmented by the
+ *                                 supplied second color
+ */
 x3dom.fields.SFColor.prototype.add = function ( that )
 {
-    return new x3dom.fields.SFColor( this.r + that.r, this.g + that.g, this.b + that.b );
+    return new x3dom.fields.SFColor( this.r + that.r,
+                                     this.g + that.g,
+                                     this.b + that.b );
 };
 
+/**
+ * Returns a new RGB color as the difference between this color and
+ * another one.
+ *
+ * @param {x3dom.fields.SFColor|x3dom.fields.SFColorRGBA} that -
+ *          the color to subtract from this one
+ * @returns {x3dom.fields.SFColor} a new color with its components
+ *                                 being that of this one reduced by the
+ *                                 supplied second color
+ */
 x3dom.fields.SFColor.prototype.subtract = function ( that )
 {
-    return new x3dom.fields.SFColor( this.r - that.r, this.g - that.g, this.b - that.b );
+    return new x3dom.fields.SFColor( this.r - that.r,
+                                     this.g - that.g,
+                                     this.b - that.b );
 };
 
+/**
+ * Returns a version of this color whose components have been scaled by
+ * the supplied scalar factor.
+ *
+ * @param {Number} n - the scalar factor to scale each component by
+ * @returns {x3dom.fields.SFColor} a new color based upon this one
+ *                                 with each component scaled by the
+ *                                 supplied factor
+ */
 x3dom.fields.SFColor.prototype.multiply = function ( n )
 {
-    return new x3dom.fields.SFColor( this.r * n, this.g * n, this.b * n );
+    return new x3dom.fields.SFColor( this.r * n,
+                                     this.g * n,
+                                     this.b * n );
 };
 
 /**
  * Returns the components of this color as an OpenGL-conformant array
  * of three numbers.
- * 
+ *
  * @returns {Number[]} an array of three numbers which represent this
  *                     color's components in the order red, green, and
  *                     blue
@@ -4061,7 +4417,7 @@ x3dom.fields.SFColor.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this color.
- * 
+ *
  * @returns {String} a string representation of this color
  */
 x3dom.fields.SFColor.prototype.toString = function ()
@@ -4069,6 +4425,29 @@ x3dom.fields.SFColor.prototype.toString = function ()
     return this.r + " " + this.g + " " + this.b;
 };
 
+/**
+ * Parses a string, sets this color's components from the parsed data,
+ * and returns this color.
+ *
+ * The underlying examination process is a two-step approach:
+ * <ol>
+ *   <li>
+ *     In a first attempt, it is endeavored to parse three numbers,
+ *     separated by whitespaces and/or comma, and retrieve color
+ *     components from these.
+ *   </li>
+ *   <li>
+ *     If the first step fails, the input string is matched against the
+ *     more versatile CSS rules, for which see @see
+ *     {@link x3dom.fields.SFColor.colorParse}. Failure to obtain a
+ *     result in this case leads to this color being left unmodified.
+ *   </li>
+ * </ol>
+ *
+ * @param {String} str - the string to parse, either as three numbers,
+ *                       or as a CSS color specification
+ * @returns {x3dom.fields.SFColor} this potentially modified color
+ */
 x3dom.fields.SFColor.prototype.setValueByStr = function ( str )
 {
     try
@@ -4090,7 +4469,7 @@ x3dom.fields.SFColor.prototype.setValueByStr = function ( str )
 
 /**
  * Parses a string and creates and returns a color based upon it.
- * 
+ *
  * The input string might represent the color information in a variety
  * of forms, as described here:
  *   - as a standard CSS color name, for instance \"red\"
@@ -4101,8 +4480,9 @@ x3dom.fields.SFColor.prototype.setValueByStr = function ( str )
  *       #RRGGBB
  *       #RGBA
  *       #RGB
- * 
- * @param {String} color - the string to parse the color information from
+ *
+ * @param {String} color - the string to parse the color information
+ *                         from
  * @returns {x3dom.fields.SFColor} the color parsed from the string,
  *                                 or a color with all components
  *                                 zero-valued if none format could
@@ -4116,14 +4496,14 @@ x3dom.fields.SFColor.colorParse = function ( color )
 
 /**
  * SFColorRGBA constructor.
- * 
+ *
  * This class represents a color as a quadruple of floating-point ratios,
  * usually confined to the range [0.0, 1.0], but not mandatorily
  * restricted in this sense. The four color components or channels
  * encompass red, green, blue, and alpha that is, the RGBA color model.
  * The alpha component defines the opacity of a color, which is the
  * opposite of its transparency.
- * 
+ *
  * @class Represents a SFColorRGBA
  */
 x3dom.fields.SFColorRGBA = function ( r, g, b, a )
@@ -4146,7 +4526,7 @@ x3dom.fields.SFColorRGBA = function ( r, g, b, a )
 
 /**
  * Parses a string and returns and creates a color from it.
- * 
+ *
  * The input string must convey four numbers, which will be construed
  * as the red, green, blue, and alpha channel in this order. If this
  * format cannot be detected, the more potent rules of the method
@@ -4163,7 +4543,10 @@ x3dom.fields.SFColorRGBA.parse = function ( str )
     try
     {
         var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec( str );
-        return new x3dom.fields.SFColorRGBA( +m[ 1 ], +m[ 2 ], +m[ 3 ], +m[ 4 ] );
+        return new x3dom.fields.SFColorRGBA( +m[ 1 ],
+                                             +m[ 2 ],
+                                             +m[ 3 ],
+                                             +m[ 4 ] );
     }
     catch ( e )
     {
@@ -4173,7 +4556,7 @@ x3dom.fields.SFColorRGBA.parse = function ( str )
 
 /**
  * Returns a copy of the supplied color.
- * 
+ *
  * @param   {x3dom.fields.SFColorRGBA} that - the color to copy
  * @returns {x3dom.fields.SFColorRGBA} a copy of the input color
  */
@@ -4184,7 +4567,7 @@ x3dom.fields.SFColorRGBA.copy = function ( that )
 
 /**
  * Returns a copy of this color.
- * 
+ *
  * @returns {x3dom.fields.SFColorRGBA} a copy of this color
  */
 x3dom.fields.SFColorRGBA.prototype.copy = function ()
@@ -4195,7 +4578,7 @@ x3dom.fields.SFColorRGBA.prototype.copy = function ()
 /**
  * Sets the components of this color from the supplied hue, saturation
  * and value as according to the HSV color model.
- * 
+ *
  * @param {Number} h - the hue in degrees
  * @param {Number} s - the saturation as a floating-point ratio in
  *                     the range [0.0, 1.0]
@@ -4205,40 +4588,50 @@ x3dom.fields.SFColorRGBA.prototype.copy = function ()
  */
 x3dom.fields.SFColorRGBA.prototype.setHSV = function (h, s, v)
 {
-  var rgbComponents = _hsvToRGB (h, s, v);
-  
-  this.r = rgbComponents[0];
-  this.g = rgbComponents[1];
-  this.b = rgbComponents[2];
-  
-  return this;
+    var rgbComponents = _hsvToRGB (h, s, v);
+
+    this.r = rgbComponents[0];
+    this.g = rgbComponents[1];
+    this.b = rgbComponents[2];
+
+    return this;
 };
 
 /**
  * Returns the HSV color components corresponding to this color as an
  * array of three numbers.
- * 
+ *
  * In accordance with the widespread wont, the hue is delivered as an
  * angle in degrees in the range [0.0, 360.0]; the saturation and value
  * both are ratios in the range [0.0, 1.0].
- * 
+ *
  * Sources:
- *   -> "https://www.rapidtables.com/convert/color/rgb-to-hsv.html"
- *   -> "https://en.wikipedia.org/wiki/HSL_and_HSV"
- * 
- * @returns {Number[]} the three HSV color components corresponding to this
- *                     color as elements of an array in the order hue,
- *                     saturation, and value
+ * <ul>
+ *   <li>
+ *     <a href="https://www.rapidtables.com/convert/color/rgb-to-hsv.html">
+ *       https://www.rapidtables.com/convert/color/rgb-to-hsv.html
+ *     </a>
+ *   </li>
+ *   <li>
+ *     <a href="https://en.wikipedia.org/wiki/HSL_and_HSV">
+ *       https://en.wikipedia.org/wiki/HSL_and_HSV
+ *     </a>
+ *   </li>
+ * </ul>
+ *
+ * @returns {Number[]} the three HSV color components corresponding to
+ *                     this color as elements of an array in the order
+ *                     hue, saturation, and value
  */
 x3dom.fields.SFColorRGBA.prototype.getHSV = function ()
 {
-  return _rgbToHSV (this.r, this.g, this.b);
+    return _rgbToHSV (this.r, this.g, this.b);
 };
 
 /**
  * Sets this color's components to that of the supplied color and
  * returns this modified color.
- * 
+ *
  * @param {x3dom.fields.SFColorRGBA} color - the color to copy from
  * @returns {x3dom.fields.SFColorRGBA} this modified color
  */
@@ -4253,7 +4646,7 @@ x3dom.fields.SFColorRGBA.prototype.setValues = function ( color )
 /**
  * Checks whether this color equals another one in circumference of
  * the specified tolerance.
- * 
+ *
  * @param   {x3dom.fields.SFColorRGBA} that - a copy of this color
  * @param   {Number}                   eps  - the tolerance of deviation
  *                                        between the two tested colors'
@@ -4274,7 +4667,7 @@ x3dom.fields.SFColorRGBA.prototype.equals = function ( that, eps )
 /**
  * Returns the components of this color as an OpenGL-conformant array
  * of four numbers.
- * 
+ *
  * @returns {Number[]} an array of four numbers which represent this
  *                     color's components in the order red, green, blue,
  *                     and alpha
@@ -4286,7 +4679,7 @@ x3dom.fields.SFColorRGBA.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this color.
- * 
+ *
  * @returns {String} a string representation of this color.
  */
 x3dom.fields.SFColorRGBA.prototype.toString = function ()
@@ -4294,6 +4687,29 @@ x3dom.fields.SFColorRGBA.prototype.toString = function ()
     return this.r + " " + this.g + " " + this.b + " " + this.a;
 };
 
+/**
+ * Parses a string, sets this color's components from the parsed data,
+ * and returns this color.
+ *
+ * The underlying examination process is a two-step approach:
+ * <ol>
+ *   <li>
+ *     In a first attempt, it is endeavored to parse three numbers,
+ *     separated by whitespaces and/or comma, and retrieve color
+ *     components from these.
+ *   </li>
+ *   <li>
+ *     If the first step fails, the input string is matched against the
+ *     more versatile CSS rules, for which see @see
+ *     {@link x3dom.fields.SFColorRGBA.colorParse}. Failure to obtain a
+ *     result in this case leads to this color being left unmodified.
+ *   </li>
+ * </ol>
+ *
+ * @param {String} str - the string to parse, either as three numbers,
+ *                       or as a CSS color specification
+ * @returns {x3dom.fields.SFColorRGBA} this potentially modified color
+ */
 x3dom.fields.SFColorRGBA.prototype.setValueByStr = function ( str )
 {
     try
@@ -4318,7 +4734,7 @@ x3dom.fields.SFColorRGBA.prototype.setValueByStr = function ( str )
 
 /**
  * Returns a single integer-encoded representation of this RGBA color.
- * 
+ *
  * The generated encoding encompasses at most 32 bits, with each eight
  * consecutive bits reserved for one of the color components:
  *   - Bits  0 to  7 encode the alpha channel .
@@ -4327,7 +4743,7 @@ x3dom.fields.SFColorRGBA.prototype.setValueByStr = function ( str )
  *   - Bits 24 to 31 encode the red   channel.
  * The format is thus visually:
  *   RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA
- * 
+ *
  * @returns {Number} a 32-bit integer representation of this color's
  *                   components
  */
@@ -4339,13 +4755,10 @@ x3dom.fields.SFColorRGBA.prototype.toUint = function ()
                Math.round( this.a * 255 ) ) >>> 0;
 };
 
-/* [+] NEW OPERATION [+]
- *
- */
 /**
  * Sets this color's components from a single integer-encoded value
  * holding all channel data in its bits, and returns this color.
- * 
+ *
  * The supplied integer number is considered regarding its first 32
  * bits, each consecutive eight of which represent the integer value
  * of one component in the range of [0, 255]. The keys are as follows:
@@ -4355,24 +4768,23 @@ x3dom.fields.SFColorRGBA.prototype.toUint = function ()
  *   - Bits 24 to 31 encode the red   channel.
  * The format is thus visually:
  *   RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA
- * 
+ *
  * @param {Number} rgbaInteger - a 32-bit integer representation of this
  *                               color's new components
  * @returns {x3dom.fields.SFColorRGBA} this modified color
  */
 x3dom.fields.SFColorRGBA.prototype.setFromUint = function (rgbaInteger)
 {
-  this.r = ((rgbaInteger >> 24) && 255);
-  this.g = ((rgbaInteger >> 16) && 255);
-  this.b = ((rgbaInteger >>  8) && 255);
-  this.a = ((rgbaInteger >>  0) && 255);
-  
-  return this;
+    this.r = ((rgbaInteger >> 24) && 255);
+    this.g = ((rgbaInteger >> 16) && 255);
+    this.b = ((rgbaInteger >>  8) && 255);
+    this.a = ((rgbaInteger >>  0) && 255);
+    return this;
 };
 
 /**
  * Parses a string and creates and returns a color based upon it.
- * 
+ *
  * The input string might represent the color information in a variety
  * of forms, as described here:
  *   - as a standard CSS color name, for instance \"red\"
@@ -4383,7 +4795,7 @@ x3dom.fields.SFColorRGBA.prototype.setFromUint = function (rgbaInteger)
  *       #RRGGBB
  *       #RGBA
  *       #RGB
- * 
+ *
  * @param {String} color - the string to parse the color information from
  * @returns {x3dom.fields.SFColorRGBA} the color parsed from the string,
  *                                     or a color with all components
@@ -4399,16 +4811,16 @@ x3dom.fields.SFColorRGBA.colorParse = function ( color )
 
 /**
  * SFImage constructor.
- * 
+ *
  * Such an image is specified by its width and height in pixels, as well
  * as the number of color components, or color depth, and a flat array
  * of integer pixel components in the range [0, 255].
- * 
+ *
  * The number of color components describes the depth of the represened
  * image, that is, the number of channels as well as the number of
  * representable colors. As the component tally must be 1, 2, 3, or 4,
  * the following elucidation holds:
- * 
+ *
  * <table>
  *   <thead>
  *     <tr>
@@ -4453,7 +4865,7 @@ x3dom.fields.SFColorRGBA.colorParse = function ( color )
  *     </tr>
  *   </tbody>
  * </table>
- * 
+ *
  * @class Represents an SFImage
  */
 x3dom.fields.SFImage = function ( w, h, c, arr )
@@ -4475,6 +4887,30 @@ x3dom.fields.SFImage = function ( w, h, c, arr )
     }
 };
 
+/**
+ * Parses a string and returns a new image.
+ *
+ * The process involves the examination of whitespace-separated tokens
+ * in the input string, the tally of which design the actual output:
+ * <ol>
+ *   <li>
+ *     If at most two tokens are found, the width and height are
+ *     extracted in this order.
+ *   </li>
+ *   <li>
+ *     If three tokens are found, the width, height, and number of
+ *     components are extracted in this order.
+ *   </li>
+ *   <li>
+ *     If four or more tokens are found, the width, height, number of
+ *     components, and the available pixel data are extracted in this
+ *     order.
+ *   </li>
+ * </ol>
+ *
+ * @param {String} str - the string to parse the image data from
+ * @returns {x3dom.fields.SFImage} a new image from the parsed string
+ */
 x3dom.fields.SFImage.parse = function ( str )
 {
     var img = new x3dom.fields.SFImage();
@@ -4484,7 +4920,7 @@ x3dom.fields.SFImage.parse = function ( str )
 
 /**
  * Returns a copy of a supplied image.
- * 
+ *
  * @param {x3dom.fields.SFImage} that - the image to copy
  * @returns {x3dom.fields.SFImage} a copy of the supplied image
  */
@@ -4502,7 +4938,7 @@ x3dom.fields.SFImage.copy = function ( that )
 
 /**
  * Returns a copy of this image.
- * 
+ *
  * @returns {x3dom.fields.SFImage} a copy of this image
  */
 x3dom.fields.SFImage.prototype.copy = function ()
@@ -4510,6 +4946,30 @@ x3dom.fields.SFImage.prototype.copy = function ()
     return x3dom.fields.SFImage.copy( this );
 };
 
+/**
+ * Parses a string and sets this image's data from it.
+ *
+ * The process involves the examination of whitespace-separated tokens
+ * in the input string, the tally of which design the actual output:
+ * <ol>
+ *   <li>
+ *     If at most two tokens are found, the width and height are
+ *     extracted in this order.
+ *   </li>
+ *   <li>
+ *     If three tokens are found, the width, height, and number of
+ *     components are extracted in this order.
+ *   </li>
+ *   <li>
+ *     If four or more tokens are found, the width, height, number of
+ *     components, and the available pixel data are extracted in this
+ *     order.
+ *   </li>
+ * </ol>
+ *
+ * @param {String} str - the string to parse the image data from
+ * @returns {x3dom.fields.SFImage} this modified image
+ */
 x3dom.fields.SFImage.prototype.setValueByStr = function ( str )
 {
     var mc = str.match( /(\w+)/g );
@@ -4531,11 +4991,11 @@ x3dom.fields.SFImage.prototype.setValueByStr = function ( str )
         return;
     }
 
-    var i,
-        r,
-        g,
-        b,
-        a;
+    var i;
+    var r;
+    var g;
+    var b;
+    var a;
     var radix = 10;
 
     for ( i = 3; i < n; i++ )
@@ -4579,11 +5039,11 @@ x3dom.fields.SFImage.prototype.setValueByStr = function ( str )
 
 /**
  * Sets the pixel color at a specified position of this image.
- * 
+ *
  * @param {Number} x - the column index of the pixel to modify, starting
- *                     at zero 
+ *                     at zero
  * @param {Number} y - the row index of the pixel to modify, starting
- *                     at zero 
+ *                     at zero
  * @param {x3dom.fields.SFColor} color - the new pixel color
  * @returns {x3dom.fields.SFImage} this modified image
  */
@@ -4613,16 +5073,13 @@ x3dom.fields.SFImage.prototype.setPixel = function ( x, y, color )
         this.array[ startIdx + 2 ] = color.b * 255;
         this.array[ startIdx + 3 ] = color.a * 255;
     }
-    
+
     return this;
 };
 
-/* [~] CORRECTED IMPLEMENTATION [~]
- *     Cases of one and two components now handle intensity and alpha.
- */
 /**
  * Returns the pixel at a specified position in this image.
- * 
+ *
  * @param {Number} x - the column index of the pixel to return, starting
  *                     at zero
  * @param {Number} y - the row index of the pixel to return, starting
@@ -4667,10 +5124,17 @@ x3dom.fields.SFImage.prototype.getPixel = function ( x, y )
     }
 };
 
+/**
+ * Sets the pixels from an array of colors.
+ *
+ * @param {x3dom.fields.SFColor[]|x3dom.fields.SFColorRGBA[]} pixels -
+ *          an array of the new pixel colors
+ * @returns {x3dom.fields.SFImage} this modified image
+ */
 x3dom.fields.SFImage.prototype.setPixels = function ( pixels )
 {
-    var i,
-        idx = 0;
+    var i;
+    var idx = 0;
 
     if ( this.comp === 1 )
     {
@@ -4708,8 +5172,11 @@ x3dom.fields.SFImage.prototype.setPixels = function ( pixels )
     }
 };
 
-/* [~] CORRECTED IMPLEMENTATION [~]
- *     Cases of one and two components now handle intensity and alpha.
+/**
+ * Returns an array with all pixels of this image, each represented by
+ * an <code>SFColorRGBA</code> object.
+ *
+ * @returns {x3dom.fields.SFColorRGBA[]} an array of RGBA pixel colors
  */
 x3dom.fields.SFImage.prototype.getPixels = function ()
 {
@@ -4764,10 +5231,11 @@ x3dom.fields.SFImage.prototype.getPixels = function ()
 };
 
 /**
- * Returns the image pixel data as an array conforming to OpenGL's
- * format.
- * 
- * @returns {Number[]} an array containing this image's pixel data
+ * Returns the image pixel data as an array of integer values conforming
+ * to OpenGL's format.
+ *
+ * @returns {Number[]} an array containing this image's pixel data as
+ *                     integer components
  */
 x3dom.fields.SFImage.prototype.toGL = function ()
 {
@@ -4787,6 +5255,10 @@ x3dom.fields.SFImage.prototype.toGL = function ()
 
 /**
  * MFColor constructor.
+ *
+ * An <code>MFColorRGBA</code> object stores an arbitrary number of
+ * <code>SFColorRGBA</code> instances in a one-dimensional array.
+ *
  * @class Represents a MFColor
  */
 x3dom.fields.MFColor = function ( colorArray )
@@ -4798,6 +5270,12 @@ x3dom.fields.MFColor = function ( colorArray )
     }
 };
 
+/**
+ * Returns a copy of the supplied color array.
+ *
+ * @param {x3dom.fields.MFColor} colorArray - the color array to copy
+ * @returns {x3dom.fields.MFColor} a copy of the supplied color array
+ */
 x3dom.fields.MFColor.copy = function ( colorArray )
 {
     var destination = new x3dom.fields.MFColor();
@@ -4807,33 +5285,66 @@ x3dom.fields.MFColor.copy = function ( colorArray )
 
 x3dom.fields.MFColor.prototype = x3dom.extend( [] );
 
+/**
+ * Parses a string and returns a new RGB color array based upon its
+ * received color data.
+ *
+ * @param {String} str - the string to parse the RGB color data from
+ * @returns {x3dom.fields.MFColor} a new RGB color array containing the
+ *                                 parsed RGB colors
+ */
 x3dom.fields.MFColor.parse = function ( str )
 {
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     var colors = [];
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 3 )
     {
-        colors.push( new x3dom.fields.SFColor( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ) );
+        colors.push( new x3dom.fields.SFColor( +mc[ i + 0 ],
+                                               +mc[ i + 1 ],
+                                               +mc[ i + 2 ] ) );
     }
 
     return new x3dom.fields.MFColor( colors );
 };
 
+/**
+ * Returns a copy of this color array.
+ *
+ * @returns {x3dom.fields.MFColor} a copy of this color array
+ */
 x3dom.fields.MFColor.prototype.copy = function ()
 {
     return x3dom.fields.MFColor.copy( this );
 };
 
+/**
+ * Parses a string, transfers the extracted color data into this RGB
+ * color array, and returns the modified RGB color array.
+ *
+ * @param {String} str - the string to parse into this RGB color array
+ * @returns {x3dom.fields.MFColor} this modified RGB color array
+ */
 x3dom.fields.MFColor.prototype.setValueByStr = function ( str )
 {
     this.length = 0;
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 3 )
     {
-        this.push( new x3dom.fields.SFColor( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ) );
+        this.push( new x3dom.fields.SFColor( +mc[ i + 0 ],
+                                             +mc[ i + 1 ],
+                                             +mc[ i + 2 ] ) );
     }
 };
 
+/**
+ * Returns a one-dimensional array of numbers which represents this
+ * color array's components in order of the maintained colors, being
+ * suitable for communication with OpenGL.
+ *
+ * @returns {Number[]} a one-dimensional array containing all stored
+ *                     colors' red, green, and blue components in this
+ *                     order
+ */
 x3dom.fields.MFColor.prototype.toGL = function ()
 {
     var a = [];
@@ -4851,6 +5362,9 @@ x3dom.fields.MFColor.prototype.toGL = function ()
 /**
  * MFColorRGBA constructor.
  *
+ * An <code>MFColorRGBA</code> object stores an arbitrary number of
+ * <code>SFColorRGBA</code> instances in a one-dimensional array.
+ *
  * @class Represents a MFColorRGBA
  */
 x3dom.fields.MFColorRGBA = function ( colorArray )
@@ -4862,6 +5376,14 @@ x3dom.fields.MFColorRGBA = function ( colorArray )
     }
 };
 
+/**
+ * Returns a copy of the supplied RGBA color array.
+ *
+ * @param {x3dom.fields.MFColorRGBA} colorArray - the color array to
+ *                                                copy
+ * @returns {x3dom.fields.MFColorRGBA} a copy of the supplied color
+ *                                     array
+ */
 x3dom.fields.MFColorRGBA.copy = function ( colorArray )
 {
     var destination = new x3dom.fields.MFColorRGBA();
@@ -4871,33 +5393,67 @@ x3dom.fields.MFColorRGBA.copy = function ( colorArray )
 
 x3dom.fields.MFColorRGBA.prototype = x3dom.extend( [] );
 
+/**
+ * Parses a string and returns a new RGBA color array from its data.
+ *
+ * @param {String} str - the string to parse into an RGBA color array
+ * @returns {x3dom.fields.MFColorRGBA} a new RGBA color array obtained
+ *                                     from the parsed string
+ */
 x3dom.fields.MFColorRGBA.parse = function ( str )
 {
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     var colors = [];
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 4 )
     {
-        colors.push( new x3dom.fields.SFColorRGBA( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ], +mc[ i + 3 ] ) );
+        colors.push( new x3dom.fields.SFColorRGBA( +mc[ i + 0 ],
+                                                   +mc[ i + 1 ],
+                                                   +mc[ i + 2 ],
+                                                   +mc[ i + 3 ] ) );
     }
 
     return new x3dom.fields.MFColorRGBA( colors );
 };
 
+/**
+ * Returns a copy of this RGBA color array.
+ *
+ * @returns {x3dom.fields.MFColorRGBA} a copy of this color array
+ */
 x3dom.fields.MFColorRGBA.prototype.copy = function ()
 {
     return x3dom.fields.MFColorRGBA.copy( this );
 };
 
+/**
+ * Parses a string, transfers the extracted color data into this RGBA
+ * color array, and returns the modified RGBA color array.
+ *
+ * @param {String} str - the string to parse into this RGBA color array
+ * @returns {x3dom.fields.MFColorRGBA} this modified RGBA color array
+ */
 x3dom.fields.MFColorRGBA.prototype.setValueByStr = function ( str )
 {
     this.length = 0;
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 4 )
     {
-        this.push( new x3dom.fields.SFColorRGBA( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ], +mc[ i + 3 ] ) );
+        this.push( new x3dom.fields.SFColorRGBA( +mc[ i + 0 ],
+                                                 +mc[ i + 1 ],
+                                                 +mc[ i + 2 ],
+                                                 +mc[ i + 3 ] ) );
     }
 };
 
+/**
+ * Returns a one-dimensional array of numbers which represents this
+ * color array's components in order of the maintained colors, being
+ * suitable for communication with OpenGL.
+ *
+ * @returns {Number[]} a one-dimensional array containing all stored
+ *                     colors' red, green, blue, and alpha components in
+ *                     this order
+ */
 x3dom.fields.MFColorRGBA.prototype.toGL = function ()
 {
     var a = [];
@@ -4916,6 +5472,9 @@ x3dom.fields.MFColorRGBA.prototype.toGL = function ()
 /**
  * MFRotation constructor.
  *
+ * An <code>MFRotation</code> object stores an arbitrary number of
+ * <code>Quaternion</code> instances in a one-dimensional array.
+ *
  * @class Represents a MFRotation
  */
 x3dom.fields.MFRotation = function ( rotArray )
@@ -4929,41 +5488,86 @@ x3dom.fields.MFRotation = function ( rotArray )
 
 x3dom.fields.MFRotation.prototype = x3dom.extend( [] );
 
+/**
+ * Returns a copy of the specified rotation array.
+ *
+ * @param {x3dom.fields.MFRotation} rotationArray - the rotation array
+ *                                                  to copy
+ * @returns {x3dom.fields.MFRotation} a copy of the supplied rotation
+ *                                    array
+ */
 x3dom.fields.MFRotation.copy = function ( rotationArray )
 {
     var destination = new x3dom.fields.MFRotation();
-    rotationArray.map( function ( v ) { destination.push( v.copy() ); }, this );
+    rotationArray.map( function ( v ) { destination.push( v.copy() ); },
+                       this );
     return destination;
 };
 
+/**
+ * Returns a copy of this rotation array.
+ *
+ * @returns {x3dom.fields.MFRotation} a copy of this rotation array
+ */
 x3dom.fields.MFRotation.prototype.copy = function ()
 {
     return x3dom.fields.MFRotation.copy( this );
 };
 
+/**
+ * Parses a string and returns a new rotation array based upon it.
+ *
+ * @param {String} str - the string to parse the rotation array from
+ * @returns {x3dom.fields.MFRotation} a new rotation array parsed from
+ *                                    the input string
+ */
 x3dom.fields.MFRotation.parse = function ( str )
 {
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     var vecs = [];
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 4 )
     {
-        vecs.push( x3dom.fields.Quaternion.axisAngle( new x3dom.fields.SFVec3f( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ), +mc[ i + 3 ] ) );
+        vecs.push( x3dom.fields.Quaternion.axisAngle(
+                     new x3dom.fields.SFVec3f( +mc[ i + 0 ],
+                                               +mc[ i + 1 ],
+                                               +mc[ i + 2 ] ),
+                     +mc[ i + 3 ] ) );
     }
 
     // holds the quaternion representation as needed by interpolators etc.
     return new x3dom.fields.MFRotation( vecs );
 };
 
+/**
+ * Parses a string, sets this rotation array's rotation from it, and
+ * returns this modified rotation array.
+ *
+ * @params {String} str - the string to parse the rotations from
+ * @returns {x3dom.fields.MFRotation} this modified rotation array
+ */
 x3dom.fields.MFRotation.prototype.setValueByStr = function ( str )
 {
     this.length = 0;
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 4 )
     {
-        this.push( x3dom.fields.Quaternion.axisAngle( new x3dom.fields.SFVec3f( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ), +mc[ i + 3 ] ) );
+        this.push( x3dom.fields.Quaternion.axisAngle(
+                     new x3dom.fields.SFVec3f( +mc[ i + 0 ],
+                                               +mc[ i + 1 ],
+                                               +mc[ i + 2 ] ),
+                     +mc[ i + 3 ] ) );
     }
 };
 
+/**
+ * Returns a one-dimensional array of numbers which represents this
+ * rotation array's components in order of the maintained rotations,
+ * being suitable for communication with OpenGL.
+ *
+ * @returns {Number[]} a one-dimensional array containing all stored
+ *                     rotations' x, y, z, and alpha components in this
+ *                     order
+ */
 x3dom.fields.MFRotation.prototype.toGL = function ()
 {
     var a = [];
@@ -4982,7 +5586,7 @@ x3dom.fields.MFRotation.prototype.toGL = function ()
 
 /**
  * MFVec3f constructor.
- * 
+ *
  * An <code>MFVec3f</code> object stores an arbitrary number of
  * <code>SFVec3f</code> instances in a one-dimensional array.
  *
@@ -4999,6 +5603,13 @@ x3dom.fields.MFVec3f = function ( vec3Array )
 
 x3dom.fields.MFVec3f.prototype = x3dom.extend( Array );
 
+/**
+ * Returns a copy of the specified 3D vector array.
+ *
+ * @param {x3dom.fields.MFVec3f} vecArray - the 3D vector array to copy
+ * @returns {x3dom.fields.MFVec3f} a copy of the supplied 3D vector
+ *                                 array
+ */
 x3dom.fields.MFVec3f.copy = function ( vec3Array )
 {
     var destination = new x3dom.fields.MFVec3f();
@@ -5008,7 +5619,7 @@ x3dom.fields.MFVec3f.copy = function ( vec3Array )
 
 /**
  * Parses a string and creates and returns a new 3D vector array.
- * 
+ *
  * @param {String} str - the string to parse
  * @returns {x3dom.fields.MFVec3f} a new 3D vector array containing
  *                                 the parsed vectors
@@ -5019,7 +5630,9 @@ x3dom.fields.MFVec3f.parse = function ( str )
     var vecs = [];
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 3 )
     {
-        vecs.push( new x3dom.fields.SFVec3f( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ) );
+        vecs.push( new x3dom.fields.SFVec3f( +mc[ i + 0 ],
+                                             +mc[ i + 1 ],
+                                             +mc[ i + 2 ] ) );
     }
 
     return new x3dom.fields.MFVec3f( vecs );
@@ -5027,7 +5640,7 @@ x3dom.fields.MFVec3f.parse = function ( str )
 
 /**
  * Returns a copy of this vector array.
- * 
+ *
  * @returns {x3dom.fields.MFVec3f} a copy of this object
  */
 x3dom.fields.MFVec3f.prototype.copy = function ()
@@ -5038,7 +5651,7 @@ x3dom.fields.MFVec3f.prototype.copy = function ()
 /**
  * Parses a string and sets this 3D vector array's elements from the
  * obtained data, finally returning this modified array.
- * 
+ *
  * @param {String} str - the string to parse
  * @returns {x3dom.fields.MFVec3f} this modified 3D vector array
  */
@@ -5048,21 +5661,23 @@ x3dom.fields.MFVec3f.prototype.setValueByStr = function ( str )
     var mc = str.match( /([+\-0-9eE\.]+)/g );
     for ( var i = 0, n = mc ? mc.length : 0; i < n; i += 3 )
     {
-        this.push( new x3dom.fields.SFVec3f( +mc[ i + 0 ], +mc[ i + 1 ], +mc[ i + 2 ] ) );
+        this.push( new x3dom.fields.SFVec3f( +mc[ i + 0 ],
+                                             +mc[ i + 1 ],
+                                             +mc[ i + 2 ] ) );
     }
     return this;
 };
 
 /**
  * Sets this 3D vector array's elements from the given array.
- * 
+ *
  * @param {Array} vec3Array - an array of <code>SFVec3f</code> object
  *                            to copy from
  */
 x3dom.fields.MFVec3f.prototype.setValues = function ( vec3Array )
 {
-    var i,
-        n = Math.min( vec3Array.length, this.length );
+    var i;
+    var n = Math.min( vec3Array.length, this.length );
 
     for ( i = 0; i < n; i++ )
     {
@@ -5073,7 +5688,7 @@ x3dom.fields.MFVec3f.prototype.setValues = function ( vec3Array )
 /**
  * Returns an OpenGL-conformant array representation of this 3D vector
  * array, enlisting each 3D vector's coordinates in order.
- * 
+ *
  * @returns {Number[]} an array of numbers containing each vector's
  *                     x-, y-, and z-coordinates in this order
  */
@@ -5093,7 +5708,7 @@ x3dom.fields.MFVec3f.prototype.toGL = function ()
 
 /**
  * Returns a string representation of this 3D vector array.
- * 
+ *
  * @returns {String} a string representation of this 3D vector array
  */
 x3dom.fields.MFVec3f.prototype.toString = function ()
@@ -5110,10 +5725,10 @@ x3dom.fields.MFVec3f.prototype.toString = function ()
 
 /**
  * MFVec2f constructor.
- * 
+ *
  * An <code>MFVec2f</code> object stores an arbitrary number of
  * <code>SFVec2f</code> instances in a one-dimensional array.
- * 
+ *
  * @class Represents a MFVec2f
  */
 x3dom.fields.MFVec2f = function ( vec2Array )
@@ -5178,6 +5793,9 @@ x3dom.fields.MFVec2f.prototype.toGL = function ()
 /**
  * MFInt32 constructor.
  *
+ * An <code>MFInt32</code> object stores an arbitrary number of integer
+ * values in a one-dimensional array.
+ *
  * @class Represents a MFInt32
  */
 x3dom.fields.MFInt32 = function ( array )
@@ -5240,6 +5858,9 @@ x3dom.fields.MFInt32.prototype.toGL = function ()
 /**
  * MFFloat constructor.
  *
+ * An <code>MFFloat</code> object stores an arbitrary number of
+ * floating-point numbers in a one-dimensional array.
+ *
  * @class Represents a MFFloat
  */
 x3dom.fields.MFFloat = function ( array )
@@ -5253,6 +5874,11 @@ x3dom.fields.MFFloat = function ( array )
 
 x3dom.fields.MFFloat.prototype = x3dom.extend( [] );
 
+/**
+ * Returns a copy of the supplied float array.
+ *
+ * @returns {x3dom.fields.MFFloat} a copy of the supplied float array
+ */
 x3dom.fields.MFFloat.copy = function ( floatArray )
 {
     var destination = new x3dom.fields.MFFloat();
@@ -5272,6 +5898,11 @@ x3dom.fields.MFFloat.parse = function ( str )
     return new x3dom.fields.MFFloat( vals );
 };
 
+/**
+ * Returns a copy of this float array.
+ *
+ * @returns {x3dom.fields.MFFloat} a copy of this float array
+ */
 x3dom.fields.MFFloat.prototype.copy = function ()
 {
     return x3dom.fields.MFFloat.copy( this );
@@ -5287,6 +5918,13 @@ x3dom.fields.MFFloat.prototype.setValueByStr = function ( str )
     }
 };
 
+/**
+ * Returns a one-dimensional array of numbers which represents this
+ * float array's numbers, being suitable for communication with OpenGL.
+ *
+ * @returns {Number[]} a one-dimensional array containing all stored
+ *                     floating-point numbers
+ */
 x3dom.fields.MFFloat.prototype.toGL = function ()
 {
     var a = [];
@@ -5301,10 +5939,10 @@ x3dom.fields.MFFloat.prototype.toGL = function ()
 
 /**
  * MFBoolean constructor.
- * 
+ *
  * An <code>MFBoolean</code> object stores an arbitrary number of
  * <code>Boolean</code> values in a one-dimensional array.
- * 
+ *
  * @class Represents a MFBoolean
  */
 x3dom.fields.MFBoolean = function ( array )
@@ -5318,6 +5956,12 @@ x3dom.fields.MFBoolean = function ( array )
 
 x3dom.fields.MFBoolean.prototype = x3dom.extend( [] );
 
+/**
+ * Returns a copy of the supplied Boolean array.
+ *
+ * @returns {x3dom.fields.MFBoolean} the copy of the supplied Boolean
+ *                                   array
+ */
 x3dom.fields.MFBoolean.copy = function ( boolArray )
 {
     var destination = new x3dom.fields.MFBoolean();
@@ -5337,6 +5981,11 @@ x3dom.fields.MFBoolean.parse = function ( str )
     return new x3dom.fields.MFBoolean( vals );
 };
 
+/**
+ * Returns a copy of this Boolean array.
+ *
+ * @returns {Boolean} a copy of this Boolean array
+ */
 x3dom.fields.MFBoolean.prototype.copy = function ()
 {
     return x3dom.fields.MFBoolean.copy( this );
@@ -5352,6 +6001,17 @@ x3dom.fields.MFBoolean.prototype.setValueByStr = function ( str )
     }
 };
 
+/**
+ * Returns a one-dimensional array of integer numbers which represents
+ * this Boolean array's truth values, being suitable for communication
+ * with OpenGL.
+ *
+ * Each Boolean <code>true</code> value will be converted into the
+ * integer one (1), each <code>false</code> into the integer zero (0).
+ *
+ * @returns {Number[]} a one-dimensional array representing the Boolean
+ *                     truth values in a numerical fashion
+ */
 x3dom.fields.MFBoolean.prototype.toGL = function ()
 {
     var a = [];
@@ -5367,6 +6027,9 @@ x3dom.fields.MFBoolean.prototype.toGL = function ()
 /**
  * MFString constructor.
  *
+ * An <code>MFString</code> object stores an arbitrary number of
+ * <code>String</code> values in a one-dimensional array.
+
  * @class Represents a MFString
  */
 x3dom.fields.MFString = function ( strArray )
@@ -5380,6 +6043,12 @@ x3dom.fields.MFString = function ( strArray )
 
 x3dom.fields.MFString.prototype = x3dom.extend( [] );
 
+/**
+ * Creates and returns a copy of the supplied string array.
+ *
+ * @param {MFString} stringArray - the string array to copy
+ * @returns {MFString} a copy of the input string array
+ */
 x3dom.fields.MFString.copy = function ( stringArray )
 {
     var destination = new x3dom.fields.MFString();
@@ -5394,8 +6063,8 @@ x3dom.fields.MFString.parse = function ( str )
     // ignore leading whitespace?
     if ( str.length && str[ 0 ] == "\"" )
     {
-        var m,
-            re = /"((?:[^\\"]|\\\\|\\")*)"/g;
+        var m;
+        var re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ( ( m = re.exec( str ) ) )
         {
             var s = m[ 1 ].replace( /\\([\\"])/g, "$1" );
@@ -5412,6 +6081,11 @@ x3dom.fields.MFString.parse = function ( str )
     return new x3dom.fields.MFString( arr );
 };
 
+/**
+ * Returns a copy of this string array.
+ *
+ * @returns {MFString} a copy of this string array
+ */
 x3dom.fields.MFString.prototype.copy = function ()
 {
     return x3dom.fields.MFString.copy( this );
@@ -5423,8 +6097,8 @@ x3dom.fields.MFString.prototype.setValueByStr = function ( str )
     // ignore leading whitespace?
     if ( str.length && str[ 0 ] == "\"" )
     {
-        var m,
-            re = /"((?:[^\\"]|\\\\|\\")*)"/g;
+        var m;
+        var re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         while ( ( m = re.exec( str ) ) )
         {
             var s = m[ 1 ].replace( /\\([\\"])/, "$1" );
@@ -5441,6 +6115,11 @@ x3dom.fields.MFString.prototype.setValueByStr = function ( str )
     return this;
 };
 
+/**
+ * Returns a string representation of this string array.
+ *
+ * @returns {String} a string representation of this string array
+ */
 x3dom.fields.MFString.prototype.toString = function ()
 {
     var str = "";
@@ -5466,17 +6145,41 @@ x3dom.fields.SFNode = function ( type )
     this.node = null;
 };
 
+/**
+ * Checks whether this node refers to the specified one.
+ *
+ * @param {x3dom.fields.SFNode} node - the node to check for presence
+ * @returns {Boolean} <code>true</code> if this node contains the
+ *                    supplied one, <code>false</code> otherwise
+ */
 x3dom.fields.SFNode.prototype.hasLink = function ( node )
 {
     return ( node ? ( this.node === node ) : this.node );
 };
 
+/**
+ * Stores the specified node in this one, always returning the Boolean
+ * <code>true</code> value as a sign of success.
+ *
+ * @param {x3dom.fields.SFNode} node - the node to add
+ * @returns {Boolean} always <code>true</code> as a sign of successful
+ *                    storage of the supplied node
+ */
 x3dom.fields.SFNode.prototype.addLink = function ( node )
 {
     this.node = node;
     return true;
 };
 
+/**
+ * Removes the specified node from this one, if it matches the stored
+ * data, returning a Boolean success or failure value.
+ *
+ * @param {x3dom.fields.SFNode} node - the node to remove
+ * @returns {Boolean} <code>true</code> if the specified node was
+ *                    stored in this one and could be removed,
+ *                    <code>false</code> if not
+ */
 x3dom.fields.SFNode.prototype.rmLink = function ( node )
 {
     if ( this.node === node )
@@ -5493,6 +6196,9 @@ x3dom.fields.SFNode.prototype.rmLink = function ( node )
 /**
  * MFNode constructor.
  *
+ * Represents a collection of zero or more <code>SFNode</code> objects,
+ * thus being a node array.
+ *
  * @class Represents a MFNode
  */
 x3dom.fields.MFNode = function ( type )
@@ -5501,6 +6207,18 @@ x3dom.fields.MFNode = function ( type )
     this.nodes = [];
 };
 
+/**
+ * Checks whether this node array contains the specified node, returning
+ * a Boolean check result.
+ *
+ * @param {x3dom.fields.SFNode} node - the node to check for presence
+ * @returns {Boolean} <code>true</code> if either the specified node is
+ *                    contained in this node array, or if no node is
+ *                    supplied and the node array is not empty,
+ *                    <code>false</code> if the node is either not part
+ *                    of this node array, or is not supplied and the
+ *                    node array is empty
+ */
 x3dom.fields.MFNode.prototype.hasLink = function ( node )
 {
     if ( node )
@@ -5522,8 +6240,8 @@ x3dom.fields.MFNode.prototype.hasLink = function ( node )
 
 /**
  * Adds the specified node to this node's children
- * 
- * @param {Object} node - the node to append
+ *
+ * @param {SFNode} node - the node to append
  * @returns {Boolean} always <code>true</code>
  */
 x3dom.fields.MFNode.prototype.addLink = function ( node )
@@ -5535,8 +6253,8 @@ x3dom.fields.MFNode.prototype.addLink = function ( node )
 /**
  * Removes the first occurrence of a specified node from the child
  * nodes list of this node, returning a Boolean success or failure flag.
- * 
- * @param {Object} node - the node to remove
+ *
+ * @param {x3dom.fields.SFNode} node - the node to remove
  * @returns {Boolean} <code>true</code> if the node could be found and
  *                    removed, <code>false</code> if not
  */
@@ -5555,7 +6273,7 @@ x3dom.fields.MFNode.prototype.rmLink = function ( node )
 
 /**
  * Returns the number of child nodes stored in this node.
- * 
+ *
  * @returns {Number} the number of child nodes
  */
 x3dom.fields.MFNode.prototype.length = function ()
@@ -5573,7 +6291,8 @@ x3dom.fields.MFNode.prototype.length = function ()
  * @param {SFVec3f} pos - anchor point of the line
  * @param {SFVec3f} dir - direction of the line, must be normalized
  * @class Represents a Line (as internal helper).
- *        A line has an origin and a vector that describes a direction, it is infinite in both directions.
+ *        A line has an origin and a vector that describes a direction,
+ *        it is infinite in both directions.
  */
 x3dom.fields.Line = function ( pos, dir )
 {
@@ -5588,10 +6307,11 @@ x3dom.fields.Line = function ( pos, dir )
 };
 
 /**
- * For a given point, this function returns the closest point on this line.
+ * For a given point, this function returns the closest point on this
+ * line.
  *
  * @param p {x3dom.fields.SFVec3f} - the point
- * @returns {x3dom.fields.SFVec3f} the closest point
+ * @returns {x3dom.fields.SFVec3f} the closest point on this line
  */
 x3dom.fields.Line.prototype.closestPoint = function ( p )
 {
@@ -5604,7 +6324,8 @@ x3dom.fields.Line.prototype.closestPoint = function ( p )
 };
 
 /**
- * For a given point, this function returns the distance to the closest point on this line.
+ * For a given point, this function returns the distance to the closest
+ * point on this line.
  *
  * @param p {x3dom.fields.SFVec3f} - the point
  * @returns {Number} the distance to the closest point
@@ -5616,7 +6337,8 @@ x3dom.fields.Line.prototype.shortestDistance = function ( p )
     // project the distance vector on the line
     var projDist = distVec.dot( this.dir );
 
-    // subtract the projected distance vector, to obtain the part that is orthogonal to this line
+    // subtract the projected distance vector, to obtain the part that
+    // is orthogonal to this line
     return distVec.subtract( this.dir.multiply( projDist ) ).length();
 };
 
@@ -5626,7 +6348,8 @@ x3dom.fields.Line.prototype.shortestDistance = function ( p )
  * @param {SFVec3f} pos - anchor point of the ray
  * @param {SFVec3f} dir - direction of the ray, must be normalized
  * @class Represents a Ray (as internal helper).
- *        A ray is a special line that extends to only one direction from its origin.
+ *        A ray is a special line that extends to only one direction
+ *        from its origin.
  */
 x3dom.fields.Ray = function ( pos, dir )
 {
@@ -5642,7 +6365,9 @@ x3dom.fields.Ray = function ( pos, dir )
         var n = dir.length();
         if ( n ) { n = 1.0 / n; }
 
-        this.dir = new x3dom.fields.SFVec3f( dir.x * n, dir.y * n, dir.z * n );
+        this.dir = new x3dom.fields.SFVec3f( dir.x * n,
+                                             dir.y * n,
+                                             dir.z * n );
     }
 
     this.enter = 0;
@@ -5654,13 +6379,16 @@ x3dom.fields.Ray = function ( pos, dir )
 
 x3dom.fields.Ray.prototype.toString = function ()
 {
-    return "Ray: [" + this.pos.toString() + "; " + this.dir.toString() + "]";
+    return "Ray: [" + this.pos.toString() + "; " +
+                      this.dir.toString() + "]";
 };
 
 /**
- * Intersects this ray with a plane, defined by the given anchor point and normal.
- * The result returned is the point of intersection, if any. If no point of intersection exists, null is returned.
- * Null is also returned in case there is an infinite number of solutions (, i.e., if the ray origin lies in the plane).
+ * Intersects this ray with a plane, defined by the given anchor point
+ * and normal. The result returned is the point of intersection, if any.
+ * If no point of intersection exists, null is returned. Null is also
+ * returned in case there is an infinite number of solutions (, i.e., if
+ * the ray origin lies in the plane).
  *
  * @param {x3dom.fields.SFVec3f} p - anchor point
  * @param {x3dom.fields.SFVec3f} n - plane normal
@@ -5674,7 +6402,8 @@ x3dom.fields.Ray.prototype.intersectPlane = function ( p, n )
 
     var nDotDir = n.dot( this.dir );
 
-    // if the ray hits the plane, the plane normal and ray direction must be facing each other
+    // if the ray hits the plane, the plane normal and ray direction
+    // must be facing each other
     if ( nDotDir < 0.0 )
     {
         alpha = ( p.dot( n ) - this.pos.dot( n ) ) / nDotDir;
@@ -5696,9 +6425,9 @@ x3dom.fields.Ray.prototype.intersect = function ( low, high )
 {
     var isect = 0.0;
     var out = Number.MAX_VALUE;
-    var r,
-        te,
-        tl;
+    var r;
+    var te;
+    var tl;
 
     if ( this.dir.x > x3dom.fields.Eps )
     {
@@ -5890,7 +6619,8 @@ x3dom.fields.BoxVolume.copy = function ( other )
  */
 x3dom.fields.BoxVolume.prototype.equals = function ( other )
 {
-    return ( this.min.equals( other.min, 0.000000000001 ) && this.max.equals( other.max, 0.000000000001 ) );
+    return ( this.min.equals( other.min, 0.000000000001 ) &&
+             this.max.equals( other.max, 0.000000000001 ) );
 };
 
 /**
@@ -5925,7 +6655,8 @@ x3dom.fields.BoxVolume.prototype.setBounds = function ( min, max )
  * @param center
  * @param size
  */
-x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function ( center, size )
+x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function ( center,
+                                                                    size )
 {
     var halfSize = size.multiply( 0.5 );
     this.min = center.subtract( halfSize );
@@ -5998,7 +6729,8 @@ x3dom.fields.BoxVolume.prototype.invalidate = function ()
 /**
  * Box Volume Is Valid?
  *
- * @returns {boolean}
+ * @returns {Boolean} <code>true</code> if this box volume is valid,
+ *                    <code>false</code> otherwise
  */
 x3dom.fields.BoxVolume.prototype.isValid = function ()
 {
@@ -6032,12 +6764,12 @@ x3dom.fields.BoxVolume.prototype.getDiameter = function ()
  */
 x3dom.fields.BoxVolume.prototype.transform = function ( m )
 {
-    var xmin,
-        ymin,
-        zmin,
-        xmax,
-        ymax,
-        zmax;
+    var xmin;
+    var ymin;
+    var zmin;
+    var xmax;
+    var ymax;
+    var zmax;
 
     xmin = xmax = m._03;
     ymin = ymax = m._13;
@@ -6191,12 +6923,12 @@ x3dom.fields.BoxVolume.prototype.transform = function ( m )
  */
 x3dom.fields.BoxVolume.prototype.transformFrom = function ( m, other )
 {
-    var xmin,
-        ymin,
-        zmin,
-        xmax,
-        ymax,
-        zmax;
+    var xmin;
+    var ymin;
+    var zmin;
+    var xmax;
+    var ymax;
+    var zmax;
 
     xmin = xmax = m._03;
     ymin = ymax = m._13;
@@ -6403,7 +7135,8 @@ x3dom.fields.FrustumVolume = function ( clipMat )
 
     for ( i = 0; i < 6; i++ )
     {
-        var vectorLength = Math.sqrt( planeEquation[ i ].x * planeEquation[ i ].x +
+        var vectorLength = Math.sqrt(
+            planeEquation[ i ].x * planeEquation[ i ].x +
             planeEquation[ i ].y * planeEquation[ i ].y +
             planeEquation[ i ].z * planeEquation[ i ].z );
 
@@ -6474,8 +7207,8 @@ x3dom.fields.FrustumVolume.prototype.intersect = function ( vol, planeMask )
     }
 
     var that = this;
-    var min = vol.min,
-        max = vol.max;
+    var min = vol.min;
+    var max = vol.max;
 
     var setDirectionIndexPoint = function ( index )
     {
