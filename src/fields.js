@@ -4483,6 +4483,29 @@ x3dom.fields.SFColorRGBA.prototype.setValueByStr = function ( str )
 };
 
 /**
+ * Returns a single integer-encoded representation of this RGBA color.
+ *
+ * The generated encoding encompasses at most 32 bits, with each eight
+ * consecutive bits reserved for one of the color components:
+ *   - Bits  0 to  7 encode the alpha channel .
+ *   - Bits  8 to 15 encode the blue  channel.
+ *   - Bits 16 to 23 encode the green channel.
+ *   - Bits 24 to 31 encode the red   channel.
+ * The format is thus visually:
+ *   RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA
+ *
+ * @returns {Number} a 32-bit integer representation of this color's
+ *                   components
+ */
+x3dom.fields.SFColorRGBA.prototype.toUint = function ()
+{
+    return ( ( Math.round( this.r * 255 ) << 24 ) |
+             ( Math.round( this.g * 255 ) << 16 ) |
+             ( Math.round( this.b * 255 ) <<  8 ) |
+               Math.round( this.a * 255 ) ) >>> 0;
+};
+
+/**
  * Parses a string and creates and returns a color based upon it.
  *
  * The input string might represent the color information in a variety
