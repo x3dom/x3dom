@@ -1891,7 +1891,7 @@ x3dom.fields.SFVec2f.prototype.setValues = function ( that )
  *
  * @param {Number} i - the index of the vector component to obtain,
  *                     with 0 being the x-coordinate, 1 being the
- *                     y-coordinae, and any other value defaulting to
+ *                     y-coordinate, and any other value defaulting to
  *                     the x-coordinate
  * @returns {Number} the vector component at the specified index
  */
