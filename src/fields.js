@@ -1806,10 +1806,8 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function ( str )
     }
     else if ( arr.length === 6 )
     {
-        this._00 = arr[ 0 ]; this._01 = arr[ 1 ];
-        this._02 = 0; this._03 = arr[ 4 ];
-        this._10 = arr[ 2 ]; this._11 = arr[ 3 ];
-        this._12 = 0; this._13 = arr[ 5 ];
+        this._00 = arr[ 0 ]; this._01 = arr[ 1 ]; this._02 = 0; this._03 = arr[ 4 ];
+        this._10 = arr[ 2 ]; this._11 = arr[ 3 ]; this._12 = 0; this._13 = arr[ 5 ];
         this._20 = 0; this._21 = 0; this._22 = 1; this._23 = 0;
         this._30 = 0; this._31 = 0; this._32 = 0; this._33 = 1;
     }
