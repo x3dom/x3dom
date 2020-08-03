@@ -3788,6 +3788,7 @@ x3dom.fields.SFColor.prototype.setValues = function ( color )
     this.r = color.r;
     this.g = color.g;
     this.b = color.b;
+    return this;
 };
 
 /**
