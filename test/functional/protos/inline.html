@@ -1,0 +1,173 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Proto test</title>
+    <script type="text/javascript" src="../../x3dom-include.js?full"></script>
+    <style>
+        label {margin: 5px;}
+        select {
+            padding: 5px;
+            border-width: thick;
+            border-radius: 5px;
+        }
+        option {
+            font-style: italic;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+<h3>X3D Prototypes</h3>
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="600px" height="400px">
+        <Environment gammaCorrectionDefault="none"></Environment>
+        <Scene>
+            <!--Background skyColor='0, 0, 0.1'></Background-->
+            <Transform>
+                <Inline onload='handleLoad(event)' id="inline" nameSpaceName="proto" mapDEFToID="true" url="Floater.x3d" ></Inline>
+            </Transform>
+        </Scene>
+    </X3D>
+    <label _style='margin: 5px;' for="x3d-select1">Choose a xml&nbsp&nbsp&nbsp&nbsp example:</label>
+    <select id="x3d-select1" onchange='handleChange(event)'>
+        <option>ArtDecoPrototypesExcerpt</option>
+        <option>ArtDecoExamplesExcerpt</option>
+        <option>TropicalExamplesInternal</option>
+        <option>def</option>
+        <option>fivedeepinternalroute</option>
+        <option>route_inside</option>
+        <option>simple</option>
+        <option>MaterialBlinker</option>
+        <option>Prototype</option>
+        <option>TestProtoInterfaceNodeScope2</option>
+        <option>TextStringPrototype</option>
+        <option>TexCircleFishPrototype</option>
+        <option>CaffeineDepthMode</option>
+        <option>Prototype_InRoute</option>
+        <option>IntegerTriggerOnTrue</option>
+        <option>Figure31_9SpinGroupPrototype</option>
+        <option>Floater</option>
+        <option>castle/proto_ultra_simple</option>
+        <option>castle/proto_inline</option>
+        <option>castle/proto_events_test</option>
+        <option>castle/proto_events_test_2</option>
+        <option disabled>castle/proto_events_test_3</option>
+        <option>castle/proto_nested</option>
+        <option>castle/proto_nested_expand</option>
+        <option>castle/proto_nodes</option>
+        <option>castle/proto_other</option>
+        <option disabled>castle/proto_sfnode_default</option>
+        <option>extern/different_name</option>
+        <option>extern/One</option>
+        <option>extern/VectorField1</option>
+        <option>extern/Example16</option>
+        <option>extern/VirtualRealityHackathonLogoLetterPrototypes</option>
+        <option disabled>extern/vrml_benz/kurve_benz_maximum</option>
+        <option>carlson/rubik</option>
+        <option>carlson/rubikOnFire</option>
+        <option>carlson/rubikFurnace</option>
+        <option>t1</option>
+        <option>kaleidoscope</option>
+        
+        <option value="none" selected>--Please choose a x3d scene--</option>
+    </select>
+    <div>
+    <label _style='margin: 5px;' for="x3d-select2">Choose a x3dom example:</label>
+    <select id="x3d-select2" onchange='handleChange(event)'>
+        <option>x3dom/ArtDecoPrototypesExcerpt</option>
+        <option>x3dom/ArtDecoExamplesExcerpt</option>
+        <option>x3dom/TropicalExamplesInternal</option>
+        <option>x3dom/def</option>
+        <option>x3dom/fivedeepinternalroute</option>
+        <option>x3dom/route_inside</option>
+        <option>x3dom/simple</option>
+        <option>x3dom/MaterialBlinker</option>
+        <option>x3dom/Prototype</option>
+        <option>x3dom/TestProtoInterfaceNodeScope2</option>
+        <option>x3dom/TextStringPrototype</option>
+        <option>x3dom/TexCircleFishPrototype</option>
+        <option>x3dom/CaffeineDepthMode</option>
+        <option>x3dom/Prototype_InRoute</option>
+        <option>x3dom/IntegerTriggerOnTrue</option>
+        <option>x3dom/Figure31_9SpinGroupPrototype</option>
+        <option>x3dom/Floater</option>
+        <option>x3dom/castle/proto_ultra_simple</option>
+        <option>x3dom/castle/proto_inline</option>
+        <option>x3dom/castle/proto_events_test</option>
+        <option>x3dom/castle/proto_events_test_2</option>
+        <option disabled>castle/proto_events_test_3</option>
+        <option>x3dom/castle/proto_nested</option>
+        <option>x3dom/castle/proto_nested_expand</option>
+        <option>x3dom/castle/proto_nodes</option>
+        <option>x3dom/castle/proto_other</option>
+        <option disabled>castle/proto_sfnode_default</option>
+        <option>x3dom/extern/different_name</option>
+        <option>x3dom/extern/One</option>
+        <option>x3dom/extern/VectorField1</option>
+        <option>x3dom/extern/Example16</option>
+        <option>x3dom/extern/VirtualRealityHackathonLogoLetterPrototypes</option>
+        <option>x3dom/carlson/rubik</option>
+        <option>x3dom/carlson/rubikOnFire</option>
+        <option>x3dom/carlson/rubikFurnace</option>
+        
+        <option value="none" selected>--Please choose a x3d scene--</option>
+    </select>
+    </div>
+    <div>
+    <label _style='margin: 5px;' for="x3d-select3">Choose a json&nbsp&nbsp&nbsp example:</label>
+    <select id="x3d-select3" onchange='handleChangeJson(event)'>
+        <option>https://raw.githubusercontent.com/coderextreme/X3DJSONLD/master/src/main/data/rubik.json</option>
+        <option>https://raw.githubusercontent.com/coderextreme/X3DJSONLD/master/src/main/data/rubikFurnace.json</option>
+        <option>https://raw.githubusercontent.com/coderextreme/X3DJSONLD/master/src/main/data/ArtDecoExamples.json</option>
+        <option>https://raw.githubusercontent.com/coderextreme/X3DJSONLD/master/src/main/data/Figure31_9SpinGroupPrototype.json</option>
+        <option>https://raw.githubusercontent.com/andreasplesch/x3dom/gh-pages/test/functional/media/data/_1_4_Dihydronaphthalene.json</option>
+        <option value="none" selected>--Please choose a x3d json scene--</option>
+    </select>
+    </div>
+    <textarea id='InlineContent' style="margin: 10px; width: calc( 100% - 10px ); height: 200px; display: block;"></textarea>
+    <h3>dom access</h3>
+    <div>
+      <ul>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Prototype_InShort.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Prototype_InShort.html</a>
+          </li>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Prototype_addNode.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Prototype_addNode.html</a>
+          </li>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Example16_InSpeed.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/Example16_InSpeed.html</a>
+          </li>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/OnXviewpointChanged.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/OnXviewpointChanged.html</a>
+          </li>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/OnXTouchSensorChanged.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/x3dom/dom/OnXTouchSensorChanged.html</a>
+          </li>
+          <li>
+              <a href='https://andreasplesch.github.io/x3dom/test/functional/proto/extern/vrml_benz/kurve_benz_maximum.html'>https://andreasplesch.github.io/x3dom/test/functional/proto/extern/vrml_benz/kurve_benz_maximum.html</a>
+          </li>
+      </ul>
+    </div>
+</body>
+<script>
+    const inline = document.querySelector( '#Inline' );
+    const ext = '.x3d';
+    function handleChange(event) {
+        inline.setFieldValue( "url", [ event.target.options[event.target.selectedIndex].value + ext ] );
+
+    }
+    function handleChangeJson(event) {
+        inline.setFieldValue( "url", [ event.target.options[event.target.selectedIndex].value ] );
+    }
+    function handleLoad(event) {
+        window.setTimeout(
+            _showAll, //'negZ')
+            300, 'negZ');
+    }
+    function _showAll (dir) {
+        document.querySelector('X3D').runtime.showAll(dir);
+        var inlineArea = document.querySelector('#InlineContent');
+        inlineArea.textContent = document.querySelector('Inline').innerHTML.replace(/><([^//])/g,'>\n<$1');
+         }
+</script>
+</html>

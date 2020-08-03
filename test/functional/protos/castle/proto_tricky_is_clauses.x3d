@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.2//EN" "http://www.web3d.org/specifications/x3d-3.2.dtd">
+<X3D profile="Interactive" version="3.2"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.2.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_tricky_is_clauses.x3dv" />
+</head>
+<Scene>
+	<ProtoDeclare name="Proto1">
+		<ProtoInterface>
+				<field accessType="inputOnly" type="SFBool" name="someEvent" />
+				<field accessType="inputOnly" type="SFBool" name="someEvent2" />
+				<field accessType="inputOnly" type="SFBool" name="someEvent3" />
+				<field accessType="inputOutput" type="SFBool" name="someField" value="true" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Script
+				url='"castlescript:"'>
+				<field accessType="inputOnly" type="SFBool" name="anotherEvent" />
+				<field accessType="inputOutput" type="SFBool" name="anotherField" />
+				<IS>
+					<connect nodeField="anotherField" protoField="someField" />
+					<connect nodeField="anotherField" protoField="someEvent2" />
+					<connect nodeField="anotherField" protoField="someEvent3" />
+					<connect nodeField="anotherEvent" protoField="someEvent" />
+					<connect nodeField="anotherEvent" protoField="someEvent2" />
+					<connect nodeField="anotherEvent" protoField="someEvent3" />
+				</IS>
+			</Script>
+			<NavigationInfo
+				avatarSize="0.25 1.60000002384186 0.75"
+				type='"EXAMINE" "ANY"'>
+				<IS>
+					<connect nodeField="headlight" protoField="someEvent" />
+					<connect nodeField="headlight" protoField="someEvent2" />
+					<connect nodeField="headlight" protoField="someField" />
+				</IS>
+			</NavigationInfo>
+		</ProtoBody>
+	</ProtoDeclare>
+	<ProtoInstance name="Proto1">
+	</ProtoInstance>
+	<Shape>
+		<Appearance>
+			<Material />
+		</Appearance>
+		<Sphere />
+	</Shape>
+</Scene>
+</X3D>

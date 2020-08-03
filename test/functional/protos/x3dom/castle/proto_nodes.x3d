@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile="Interchange" version="3.0"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_nodes.wrl" />
+</head>
+<Scene>
+	<ProtoDeclare name="MaterialSphere">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFNode" name="material" value="NULL" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Shape>
+				<Sphere />
+				<Appearance>
+					<IS>
+						<connect nodeField="material" protoField="material" />
+					</IS>
+				</Appearance>
+			</Shape>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="5 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"yellow"' />
+			</Shape>
+		</Transform>
+		<MaterialSphere containerField="children">
+
+				<Material
+					diffuseColor="1 1 0" />
+
+		</MaterialSphere>
+	</Transform>
+	<Transform
+		translation="10 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"unlit white"' />
+			</Shape>
+		</Transform>
+		<MaterialSphere containerField="children" />
+	</Transform>
+	<ProtoDeclare name="MaterialSphereDefaultRed">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFNode" name="material">
+				<Material
+					diffuseColor="1 0 0" />
+				</field>
+		</ProtoInterface>
+		<ProtoBody>
+			<Shape>
+				<Sphere />
+				<Appearance>
+					<IS>
+						<connect nodeField="material" protoField="material" />
+					</IS>
+				</Appearance>
+			</Shape>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="15 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"yellow"' />
+			</Shape>
+		</Transform>
+		<MaterialSphereDefaultRed containerField="children">
+			
+				<Material containerField='material' DEF="YellowMat"
+					diffuseColor="1 1 0" />
+			
+		</MaterialSphereDefaultRed>
+	</Transform>
+	<Transform
+		translation="20 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"red"' />
+			</Shape>
+		</Transform>
+		<MaterialSphereDefaultRed containerField="children" />
+	</Transform>
+	<ProtoDeclare name="MaterialSphereDefaultYellow">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFNode" name="app">
+				<Appearance containerField="app">
+					<Material USE="YellowMat" />
+				</Appearance>
+				</field>
+		</ProtoInterface>
+		<ProtoBody>
+			<Shape>
+				<Sphere />
+				<IS>
+					<connect nodeField="appearance" protoField="app" />
+				</IS>
+			</Shape>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="25 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"blue"' />
+			</Shape>
+		</Transform>
+		<MaterialSphereDefaultYellow containerField="children">
+			
+				<Appearance containerField="app">
+					<Material
+						diffuseColor="0 0 1" />
+				</Appearance>
+			
+		</MaterialSphereDefaultYellow>
+	</Transform>
+	<Transform
+		translation="30 0 0">
+		<Transform
+			translation="0 2 0">
+			<Shape>
+				<Text
+					string='"yellow"' />
+			</Shape>
+		</Transform>
+		<MaterialSphereDefaultYellow containerField="children" />
+	</Transform>
+</Scene>
+</X3D>
