@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='Rotor.x3d' name='title'/>
+    <meta content='X3D working group' name='creator'/>
+    <meta content='Don Brutzman' name='creator'/>
+    <meta content='24 May 2000' name='created'/>
+    <meta content='28 October 2019' name='modified'/>
+    <meta content='VRML 97 specification example: spinning rotor (with replacable children) Prototype for Example D 16 Chopper.' name='description'/>
+    <meta content='VRML 97, ISO/IEC 14772-1, Part 1: Functional specification and UTF-8 encoding, D.16 Chopper' name='specificationSection'/>
+    <meta content='https://www.web3d.org/documents/specifications/14772/V2.0/part1/examples.html#D.16' name='specificationUrl'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Rotor.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='Rotor.x3d'/>
+    <ProtoDeclare appinfo='Rotor prototype to spin children geometry' name='Rotor'>
+      <ProtoInterface>
+        <field accessType='initializeOnly' appinfo='rotation rate' name='rate' type='SFTime' value='1'/>
+        <field accessType='initializeOnly' appinfo='children geometry to spin' name='children' type='MFNode'/>
+        <field accessType='inputOutput' appinfo='exposed TimeSensor field for animation' name='startTime' type='SFTime' value='0'/>
+        <field accessType='inputOutput' appinfo='exposed TimeSensor field for animation' name='stopTime' type='SFTime' value='0'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform DEF='F'>
+          <IS>
+            <connect nodeField='children' protoField='children'/>
+          </IS>
+        </Transform>
+        <TimeSensor DEF='T' loop='true'>
+          <IS>
+            <connect nodeField='cycleInterval' protoField='rate'/>
+            <connect nodeField='startTime' protoField='startTime'/>
+            <connect nodeField='stopTime' protoField='stopTime'/>
+          </IS>
+        </TimeSensor>
+        <OrientationInterpolator DEF='I' key='0 0.25 0.5 0.75 1' keyValue='0 1 0 0 0 1 0 1.57 0 1 0 3.14 0 1 0 4.71 0 1 0 0'/>
+        <ROUTE fromField='fraction_changed' fromNode='T' toField='set_fraction' toNode='I'/>
+        <ROUTE fromField='value_changed' fromNode='I' toField='set_rotation' toNode='F'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- ==================== -->
+    <ProtoInstance name='Rotor'>
+      <fieldValue name='children'>
+        <Shape>
+          <Box size='4 0.2 0.1'/>
+          <Appearance>
+            <Material/>
+          </Appearance>
+        </Shape>
+      </fieldValue>
+    </ProtoInstance>
+    <Anchor DEF='TouchTextForExample' description='Touch Text For Example' parameter='"target=_blank"' url='"Example16.x3d" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Example16.x3d" "Example16.wrl" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Example16.wrl"'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0.1 0.4 0.8'/>
+        </Appearance>
+        <Text string='"Rotor is a" "Prototype (PROTO) declaration." "" "To see an example scene using this new node," "click text and view Example 16"'>
+          <FontStyle justify='"MIDDLE" "MIDDLE"' size='0.65'/>
+        </Text>
+      </Shape>
+    </Anchor>
+  </Scene>
+</X3D>

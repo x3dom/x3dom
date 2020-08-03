@@ -1,0 +1,117 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Proto html event test</title>
+    <script type="text/javascript" src="../../../../x3dom-include.js?full"></script>
+    <style>
+        x3d {
+        	height: 50%
+        }
+    </style>
+</head>
+<body onload='tweak()'>
+
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <!--head>
+    <meta content='OnXTouchSensorChanged' name='title'/>
+    <meta content='X3D encodings example: defining a Prototype, demonstration- of IS/connect definitions.' name='description'/>
+  </head-->
+  <Scene>
+    <!--WorldInfo title='Prototype.x3d'-->
+    <ProtoDeclare name='XTouchSensor'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='description' type='MFString' value='"Touch Sensor"'></field>
+        <field accessType='inputOutput' name='enabled' type='SFBool' value='true'></field>
+        <field accessType='outputOnly' name='isOver' type='SFBool' value='false'></field>
+      </ProtoInterface>
+      <ProtoBody>
+        <TouchSensor DEF='sensor'>
+            <IS>
+                <!-- description is SFString but x3dom accepts it anyways -->
+                <connect nodeField='description' protoField='description'></connect>
+                <connect nodeField='enabled' protoField='enabled'></connect>
+                <connect nodeField='isOver' protoField='isOver'></connect>
+            </IS>
+        </TouchSensor>
+        <!-- extra functionality -->
+        <Transform DEF='markerTrafo' render='false'>
+            <Transform rotation='1 0 0 3.14'>
+                <Transform scale='0.1 0.2 0.1' translation='0 -0.2 0'>
+					<Shape isPickable='false' DEF='markerShape'>
+						<Appearance >
+							<Material DEF='descriptionMat' diffuseColor='0 0 0.5' transparency='0.01'></Material>
+						</Appearance>
+    					<Cone></Cone>
+                    </Shape>
+				</Transform>
+			</Transform>
+        </Transform>
+        
+        <ROUTE fromNode='sensor' fromField='isOver' toNode='markerTrafo' toField='render'></ROUTE>
+        <ROUTE fromNode='sensor' fromField='hitPoint_changed' toNode='markerTrafo' toField='translation'></ROUTE>
+        <!--ROUTE fromNode='sensor' fromField='hitNormal_changed' toNode='markerTrafo' toField='rotation'></ROUTE-->
+        <ROUTE fromNode='sensor' fromField='hitRotation_changed' toNode='markerTrafo' toField='rotation'></ROUTE>
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <Group>
+        <XTouchSensor DEF='xsensor' description='"sensor with marker"' onoutputchange='showPosition(event)'></XTouchSensor>
+        <Group DEF='targets'>
+			<Transform DEF='tabletop' translation='0.0 0.6 0.0'>
+			  <Shape>
+				<Appearance DEF='redApp'>
+				  <Material DEF='TableTopMaterial' diffuseColor='1 0 0'>
+				  </Material>
+				</Appearance>
+				<Box size='1.5 0.2 1.2'></Box>
+			  </Shape>
+			</Transform>
+			<Transform translation='2.0 0.6 0.0'>
+			  <Shape>
+				<Appearance>
+				  <Material DEF='sphereMaterial' diffuseColor='0 1 0'>
+				  </Material>
+				</Appearance>
+				<Sphere ></Sphere>
+			  </Shape>
+			</Transform>
+		</Group>
+	</Group>
+	<Transform DEF='signage' render='false' scale='0.5 0.5 0.5' translation='0 3 0'>
+	    <Shape>
+	        <Appearance USE='redApp'></Appearance>
+	        <Text string='sensor is over'></Text>
+		</Shape>
+	</Transform>
+	<ROUTE fromNode='xsensor' fromField='isOver' toNode='signage' toField='render'></ROUTE>
+  </Scene>
+</X3D>
+
+<div>
+<h2>move mouse over, see log</h2>
+
+<textarea style="height: 20%; width: 100%; margin-top: 20px;" id='logArea'></textarea>
+
+</div>
+</body>
+
+<script type="text/javascript">
+    maxChars = 3000;
+    function tweak()
+	{
+		//turn on internal proto help switch node
+		document.querySelectorAll('XTouchSensor').forEach( node => node._x3domNode.helperNodes[0]._parentNodes[0]._vf.whichChoice = 0 );
+		//focus x3d
+		document.querySelector('X3D > Canvas').focus();
+	}
+
+	function showPosition(e)
+	{
+		if (e.fieldName !== 'hitPoint_changed') return    
+		var l = document.querySelector('#logArea');
+		if ( l.textLength > maxChars )	l.textContent = "";
+		l.textContent = "position: " + e.value + "\n" + l.textContent;
+	}
+</script>
+</html>

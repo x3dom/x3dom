@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='route_inside.x3d' name='title'/>
+    <meta content='http://www.nist.gov/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/vrml.html' name='reference'/>
+    <meta content='http://www.itl.nist.gov/div897/ctg/vrml/members.html' name='creator'/>
+    <meta content='This file was provided by the National Institute of Standards and Technology, and is part of the X3D Conformance Test Suite, available at http://www.nist.gov/vrml.html The information contained within this file is provided for use in establishing conformance to the ISO VRML97 Specification. Conformance to this test does not imply recommendation or endorsement by the National Institute of Standards and Technology. This software can be redistributed and/or modified freely provided that any derivative works bear some notice that they are derived from it, and any modified versions bear some notice that they have been modified.' name='disclaimer'/>
+    <meta content='Correct definition and compliance of this conformance scene is maintained by the X3D Working Group, https://www.web3d.org/working-groups/x3d' name='info'/>
+    <meta content='Michael Kass NIST, Don Brutzman NPS' name='translator'/>
+    <meta content='21 January 2001' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='This is a test of a PROTO to route events internally within its PROTO body. A blue Sphere geometry has a TouchSensor associated with it. An SFBool field is generated each time the pointing device passes over the geometry. This event is internally routed the the "on" field of a DirectionalLight. The result is: Each time the pointing device passes over the geometry, the blue Sphere should be illuminated.' name='description'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/ConformanceNist/Miscellaneous/PROTO/route_inside.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='route_inside.x3d'/>
+    <ProtoDeclare name='BallProto'>
+      <ProtoBody>
+        <Group>
+          <DirectionalLight DEF='LIGHT' on='false'/>
+          <TouchSensor DEF='TOUCH_SENSOR' description='pointer over geometry enables DirectionalLight'/>
+          <Transform>
+            <Shape>
+              <Appearance>
+                <Material diffuseColor='0 0 1'/>
+              </Appearance>
+              <Sphere radius='3'/>
+            </Shape>
+          </Transform>
+        </Group>
+        <ROUTE fromField='isOver' fromNode='TOUCH_SENSOR' toField='on' toNode='LIGHT'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <Group>
+      <Group>
+        <NavigationInfo type='"EXAMINE" "WALK" "FLY" "ANY"'/>
+        <Viewpoint description='Front View' position='0 0 40'/>
+        <NavigationInfo headlight='false'/>
+        <Transform>
+          
+          <BallProto DEF='MYPROTO' />
+        </Transform>
+      </Group>
+    </Group>
+  </Scene>
+</X3D>

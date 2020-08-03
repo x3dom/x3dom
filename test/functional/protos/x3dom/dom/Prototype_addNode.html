@@ -1,0 +1,128 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Proto dom test</title>
+    <script type="text/javascript" src="../../../../x3dom-include.js?full"></script>
+    <style>
+        x3d {
+        	height: 50%
+        }
+    </style>
+</head>
+<body>
+
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <!--head>
+    <meta content='Prototype_InRoute.x3d' name='title'/>
+    <meta content='X3D encodings example: defining a Prototype, demonstration of IS/connect definitions.' name='description'/>
+    <meta content='Don Brutzman and Joe Williams' name='creator'/>
+    <meta content='1 June 2002' name='created'/>
+    <meta content='28 October 2019' name='modified'/>
+    <meta content='X3D encodings, ISO/IEC 19776-1.3, Part 1: XML encoding, Annex C.4 Prototype example' name='specificationSection'/>
+    <meta content='https://www.web3d.org/documents/specifications/19776-1/V3.3/Part01/examples.html#PrototypeExample' name='specificationUrl'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Basic/X3dSpecifications/Prototype.x3d' name='identifier'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head-->
+  <Scene>
+    <!--WorldInfo title='Prototype.x3d'-->
+    <ProtoDeclare name='TwoColorTable'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='legColor' type='SFColor' value='.8 .4 .7'></field>
+        <field accessType='inputOutput' name='topColor' type='SFColor' value='.6 .6 .1'></field>
+      </ProtoInterface>
+      <ProtoBody>
+        <Transform>
+          <Transform translation='0.0 0.6 0.0'>
+            <!-- table top -->
+            <Shape>
+              <Appearance>
+                <Material DEF='TableTopMaterial'>
+                  <IS>
+                    <connect nodeField='diffuseColor' protoField='topColor'></connect>
+                  </IS>
+                </Material>
+              </Appearance>
+              <Box size='1.2 0.2 1.2'></Box>
+            </Shape>
+          </Transform>
+          <Transform translation='-0.5 0.0 -0.5'>
+            <!-- first table leg -->
+            <Shape DEF='Leg'>
+              <Appearance>
+                <Material DEF='LegMaterial' diffuseColor='1.0 0.0 0.0'>
+                  <IS>
+                    <connect nodeField='diffuseColor' protoField='legColor'></connect>
+                  </IS>
+                </Material>
+              </Appearance>
+              <Cylinder height='1.0' radius='0.1'></Cylinder>
+            </Shape>
+          </Transform>
+          <Transform translation='0.5 0.0 -0.5'>
+            <!-- another table leg -->
+            <Shape USE='Leg'></Shape>
+          </Transform>
+          <Transform translation='-0.5 0.0 0.5'>
+            <Shape USE='Leg'></Shape>
+            <!-- another table leg -->
+          </Transform>
+          <Transform translation='0.5 0.0 0.5'>
+            <Shape USE='Leg'></Shape>
+            <!-- another table leg -->
+          </Transform>
+          <!-- End of root Transform's children -->
+        </Transform>
+        <!-- End of root Transform -->
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- End of prototype -->
+    <!-- The prototype is now defined. Although it contains a number of nodes, only the legColor and topColor fields are public. Instead of using the default legColor and topColor, this instance of the table has red legs and a green top: -->
+
+    <Transform class='tabletrafo'>
+		<TwoColorTable DEF='animatedTable'
+		  legColor='1 0 0'
+		  topColor='0 1 0'></TwoColorTable>
+    </Transform>
+
+	<!--TimeSensor DEF='Timer' cycleInterval='5' loop='true'/>
+	<ColorInterpolator DEF='ColorChanger' key='0 0.3333 0.6666 1' keyValue='1 0 0 0 1 0 0 0 1 1 0 0'/>
+	<ROUTE fromField='fraction_changed' fromNode='Timer' toField='set_fraction' toNode='ColorChanger'/>
+	<ROUTE fromField='value_changed' fromNode='ColorChanger' toField='set_legColor' toNode='animatedTable'/-->
+    
+	<NavigationInfo type='"EXAMINE"'/>     
+    <!-- Use the Examine viewer -->
+  </Scene>
+</X3D>
+<button onclick='addTable()'>add Table</button>
+<button onclick='removeTable()'>remove Table</button>
+</body>
+
+<script type="text/javascript">
+   function addTable()
+   {
+		var table = document.createElement('TwoColorTable');
+		table.setAttribute('legColor', randomColor());
+		table.setAttribute('topColor', randomColor());
+		var trafo = document.createElement('Transform');
+		trafo.setAttribute('class','tabletrafo');
+		trafo.setAttribute('translation', randomTranslation( 6.0 ));
+		trafo.appendChild(table);
+		document.querySelector('Scene').appendChild(trafo);
+   }
+   function randomColor()
+   {
+        return [Math.random(), Math.random(), Math.random()].join(' ');
+   }
+   function randomTranslation( r = 6.0 )
+   {
+        return [r*Math.random()-r/2, r*Math.random()-r/2, r*Math.random()-r/2].join(' ');
+   }
+   function removeTable()
+   {
+   	    var tabletrafo = document.querySelector('.tabletrafo:last-of-type');
+   	    if ( tabletrafo) tabletrafo.remove();
+   }
+</script>
+</html>

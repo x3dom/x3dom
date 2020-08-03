@@ -1,0 +1,1340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='VectorField1.x3d' name='title'/>
+    <meta content='Vector field: this world illustrates the use of an external prototype to define a generic vector. This scene uses the new vector node repeatedly to place, orient, scale, and color vectors throughout a visualization volume.' name='description'/>
+    <meta content='David R. Nadeau, John L. Moreland' name='creator'/>
+    <meta content='Don Brutzman' name='translator'/>
+    <meta content='1 July 1998' name='created'/>
+    <meta content='2 February 2014' name='translated'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='originals/vecfld1.wrl' name='reference'/>
+    <meta content='http://www.siggraph.org/s98' name='reference'/>
+    <meta content='http://www.siggraph.org/s98/conference/courses/18.html' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/slides/mt0496.htm' name='reference'/>
+    <meta content='http://www.sdsc.edu/~moreland/courses/Siggraph98/vrml97/vrml97.htm' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/X3dResources.html' name='reference'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/VectorField1.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='X3D-Edit, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo info='"Copyright (c) 1997, David R. Nadeau, John L. Moreland"' title='Vector field'/>
+    <ExternProtoDeclare name='Vector' url='"Vector.x3d#Vector" "https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/Vector.x3d#Vector" "Vector.wrl#Vector" "https://www.web3d.org/x3d/content/examples/Vrml2Sourcebook/Siggraph98Course/Vector.wrl#Vector"'>
+      <field accessType='initializeOnly' name='color' type='SFColor'/>
+      <field accessType='initializeOnly' name='rotation' type='SFRotation'/>
+      <field accessType='initializeOnly' name='scale' type='SFVec3f'/>
+      <field accessType='initializeOnly' name='translation' type='SFVec3f'/>
+    </ExternProtoDeclare>
+    <Viewpoint description='Entry view' position='0.0 0.0 20.0'/>
+    <NavigationInfo/>
+    <Transform bboxSize='13.0 13.0 13.0' translation='1.047196 1.047196 1.047196'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='1.0 1.0 1.0' emissiveColor='1.0 1.0 1.0'/>
+        </Appearance>
+        <IndexedLineSet coordIndex='0 1 2 3 0 -1 7 6 5 4 7 -1 0 4 -1 1 5 -1 2 6 -1 3 7 -1'>
+          <Coordinate point='-6.28318 4.188787 -6.28318 4.188787 4.188787 -6.28318 4.188787 4.188787 4.188787 -6.28318 4.188787 4.188787 -6.28318 -6.28318 -6.28318 4.188787 -6.28318 -6.28318 4.188787 -6.28318 4.188787 -6.28318 -6.28318 4.188787'/>
+        </IndexedLineSet>
+      </Shape>
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -6.28318 4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -4.188787 2.094394'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -4.188787 4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.100002 1.0'
+        translation='-6.28318 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 -2.094393 0.0'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -2.094393 2.094394'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 -2.094393 4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.100002 1.0'
+        translation='-6.28318 0.0 -6.28318'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.100002 1.0'
+        translation='-6.28318 0.0 -4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 0.0 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 0.0 0.0'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 0.0 2.094394'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.100002 1.0'
+        translation='-6.28318 0.0 4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.100002 1.0'
+        translation='-6.28318 2.094394 -6.28318'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 2.094394 -4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 2.094394 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 2.094394 0.0'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 2.094394 2.094394'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 2.094394 4.188787'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 4.188787 -6.28318'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='-0.5547 0.0 -0.83205 -1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.316228 0.0 -0.948683 -0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 4.188787 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 4.188787 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.316228 0.0 -0.948683 0.907286'
+        scale='1.0 0.1 1.0'
+        translation='-6.28318 4.188787 2.094394'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.5547 0.0 -0.83205 1.501518'
+        scale='1.0 0.100001 1.0'
+        translation='-6.28318 4.188787 4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.1 1.0'
+        translation='-4.188787 -6.28318 4.188787'/>
+      
+      <Vector
+        color='0.25 0.0 0.75'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.475 1.0'
+        translation='-4.188787 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.42476 1.0'
+        translation='-4.188787 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.125001 0.0 0.874999'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.287501 1.0'
+        translation='-4.188787 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.100001 1.0'
+        translation='-4.188787 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.125 0.0 0.875'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.287499 1.0'
+        translation='-4.188787 -4.188787 2.094394'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.424759 1.0'
+        translation='-4.188787 -4.188787 4.188787'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.74952 1.0'
+        translation='-4.188787 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.662501 1.0'
+        translation='-4.188787 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.424761 1.0'
+        translation='-4.188787 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='-4.188787 -2.094393 0.0'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.424758 1.0'
+        translation='-4.188787 -2.094393 2.094394'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.6625 1.0'
+        translation='-4.188787 -2.094393 4.188787'/>
+      
+      <Vector
+        color='0.500001 0.0 0.499999'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.850001 1.0'
+        translation='-4.188787 0.0 -6.28318'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.749521 1.0'
+        translation='-4.188787 0.0 -4.188787'/>
+      
+      <Vector
+        color='0.250001 0.0 0.749999'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.475002 1.0'
+        translation='-4.188787 0.0 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='-4.188787 0.0 0.0'/>
+      
+      <Vector
+        color='0.249999 0.0 0.750001'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.474999 1.0'
+        translation='-4.188787 0.0 2.094394'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.749519 1.0'
+        translation='-4.188787 0.0 4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.749521 1.0'
+        translation='-4.188787 2.094394 -6.28318'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.662502 1.0'
+        translation='-4.188787 2.094394 -4.188787'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.424761 1.0'
+        translation='-4.188787 2.094394 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='-4.188787 2.094394 0.0'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.424759 1.0'
+        translation='-4.188787 2.094394 2.094394'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.6625 1.0'
+        translation='-4.188787 2.094394 4.188787'/>
+      
+      <Vector
+        color='0.250001 0.0 0.749999'
+        rotation='-0.83205 0.0 -0.5547 -2.121654'
+        scale='1.0 0.475002 1.0'
+        translation='-4.188787 4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.424761 1.0'
+        translation='-4.188787 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.125001 0.0 0.874999'
+        rotation='-0.447214 0.0 -0.894427 -1.241623'
+        scale='1.0 0.287502 1.0'
+        translation='-4.188787 4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 0.0'
+        scale='1.0 0.100001 1.0'
+        translation='-4.188787 4.188787 0.0'/>
+      
+      <Vector
+        color='0.125 0.0 0.875'
+        rotation='0.447214 0.0 -0.894427 1.241623'
+        scale='1.0 0.2875 1.0'
+        translation='-4.188787 4.188787 2.094394'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.424761 1.0'
+        translation='-4.188787 4.188787 4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 0.1 1.0'
+        translation='-2.094393 -6.28318 4.188787'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 0.749519 1.0'
+        translation='-2.094393 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 0.6625 1.0'
+        translation='-2.094393 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.424761 1.0'
+        translation='-2.094393 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.100002 1.0'
+        translation='-2.094393 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.216505 0.0 0.783495'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.424758 1.0'
+        translation='-2.094393 -4.188787 2.094394'/>
+      
+      <Vector
+        color='0.374999 0.0 0.625001'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 0.662499 1.0'
+        translation='-2.094393 -4.188787 4.188787'/>
+      
+      <Vector
+        color='0.75 0.0 0.25'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 1.225 1.0'
+        translation='-2.094393 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='0.64952 0.0 0.35048'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 1.074279 1.0'
+        translation='-2.094393 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.662502 1.0'
+        translation='-2.094393 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.100003 1.0'
+        translation='-2.094393 -2.094393 0.0'/>
+      
+      <Vector
+        color='0.374998 0.0 0.625002'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.662497 1.0'
+        translation='-2.094393 -2.094393 2.094394'/>
+      
+      <Vector
+        color='0.649518 0.0 0.350482'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 1.074277 1.0'
+        translation='-2.094393 -2.094393 4.188787'/>
+      
+      <Vector
+        color='0.866026 0.0 0.133974'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 1.399039 1.0'
+        translation='-2.094393 0.0 -6.28318'/>
+      
+      <Vector
+        color='0.750001 0.0 0.249999'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 1.225001 1.0'
+        translation='-2.094393 0.0 -4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.749521 1.0'
+        translation='-2.094393 0.0 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.100003 1.0'
+        translation='-2.094393 0.0 0.0'/>
+      
+      <Vector
+        color='0.433011 0.0 0.566989'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.749516 1.0'
+        translation='-2.094393 0.0 2.094394'/>
+      
+      <Vector
+        color='0.749999 0.0 0.250001'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 1.224998 1.0'
+        translation='-2.094393 0.0 4.188787'/>
+      
+      <Vector
+        color='0.750001 0.0 0.249999'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 1.225001 1.0'
+        translation='-2.094393 2.094394 -6.28318'/>
+      
+      <Vector
+        color='0.64952 0.0 0.35048'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 1.074281 1.0'
+        translation='-2.094393 2.094394 -4.188787'/>
+      
+      <Vector
+        color='0.375002 0.0 0.624998'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.662503 1.0'
+        translation='-2.094393 2.094394 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.100003 1.0'
+        translation='-2.094393 2.094394 0.0'/>
+      
+      <Vector
+        color='0.374999 0.0 0.625001'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.662498 1.0'
+        translation='-2.094393 2.094394 2.094394'/>
+      
+      <Vector
+        color='0.649519 0.0 0.350481'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 1.074278 1.0'
+        translation='-2.094393 2.094394 4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.948683 0.0 -0.316228 -2.363877'
+        scale='1.0 0.749521 1.0'
+        translation='-2.094393 4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.375002 0.0 0.624998'
+        rotation='-0.894427 0.0 -0.447214 -2.252432'
+        scale='1.0 0.662503 1.0'
+        translation='-2.094393 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.707107 0.0 -0.707107 -1.850551'
+        scale='1.0 0.424762 1.0'
+        translation='-2.094393 4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 -1.0 1.0E-6'
+        scale='1.0 0.100002 1.0'
+        translation='-2.094393 4.188787 0.0'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.707107 0.0 -0.707107 1.850551'
+        scale='1.0 0.424759 1.0'
+        translation='-2.094393 4.188787 2.094394'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='0.894427 0.0 -0.447213 2.252432'
+        scale='1.0 0.662501 1.0'
+        translation='-2.094393 4.188787 4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.1 1.0'
+        translation='0.0 -6.28318 4.188787'/>
+      
+      <Vector
+        color='0.5 0.0 0.5'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.85 1.0'
+        translation='0.0 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.749519 1.0'
+        translation='0.0 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.250001 0.0 0.749999'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.475001 1.0'
+        translation='0.0 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.100002 1.0'
+        translation='0.0 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.249999 0.0 0.750001'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.474998 1.0'
+        translation='0.0 -4.188787 2.094394'/>
+      
+      <Vector
+        color='0.433012 0.0 0.566988'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.749517 1.0'
+        translation='0.0 -4.188787 4.188787'/>
+      
+      <Vector
+        color='0.866025 0.0 0.133975'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.399038 1.0'
+        translation='0.0 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='0.75 0.0 0.25'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.225001 1.0'
+        translation='0.0 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.749521 1.0'
+        translation='0.0 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.100003 1.0'
+        translation='0.0 -2.094393 0.0'/>
+      
+      <Vector
+        color='0.43301 0.0 0.56699'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.749516 1.0'
+        translation='0.0 -2.094393 2.094394'/>
+      
+      <Vector
+        color='0.749998 0.0 0.250002'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 1.224997 1.0'
+        translation='0.0 -2.094393 4.188787'/>
+      
+      <Vector
+        color='1.0 0.0 0.0'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.6 1.0'
+        translation='0.0 0.0 -6.28318'/>
+      
+      <Vector
+        color='0.866026 0.0 0.133974'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.399039 1.0'
+        translation='0.0 0.0 -4.188787'/>
+      
+      <Vector
+        color='0.500002 0.0 0.499998'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.850003 1.0'
+        translation='0.0 0.0 -2.094393'/>
+      
+      <Vector
+        color='3.0E-6 0.0 0.999997'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.100004 1.0'
+        translation='0.0 0.0 0.0'/>
+      
+      <Vector
+        color='0.499997 0.0 0.500003'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.849996 1.0'
+        translation='0.0 0.0 2.094394'/>
+      
+      <Vector
+        color='0.866024 0.0 0.133976'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 1.399036 1.0'
+        translation='0.0 0.0 4.188787'/>
+      
+      <Vector
+        color='0.866026 0.0 0.133974'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.399039 1.0'
+        translation='0.0 2.094394 -6.28318'/>
+      
+      <Vector
+        color='0.750001 0.0 0.249999'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 1.225002 1.0'
+        translation='0.0 2.094394 -4.188787'/>
+      
+      <Vector
+        color='0.433015 0.0 0.566985'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.749522 1.0'
+        translation='0.0 2.094394 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.100003 1.0'
+        translation='0.0 2.094394 0.0'/>
+      
+      <Vector
+        color='0.433011 0.0 0.566989'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.749516 1.0'
+        translation='0.0 2.094394 2.094394'/>
+      
+      <Vector
+        color='0.749999 0.0 0.250001'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 1.224999 1.0'
+        translation='0.0 2.094394 4.188787'/>
+      
+      <Vector
+        color='0.500002 0.0 0.499998'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.850003 1.0'
+        translation='0.0 4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.433015 0.0 0.566985'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.749522 1.0'
+        translation='0.0 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.250002 0.0 0.749998'
+        rotation='-1.0 0.0 0.0 -2.467401'
+        scale='1.0 0.475003 1.0'
+        translation='0.0 4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.100002 1.0'
+        translation='0.0 4.188787 0.0'/>
+      
+      <Vector
+        color='0.25 0.0 0.75'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.474999 1.0'
+        translation='0.0 4.188787 2.094394'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='1.0 0.0 0.0 2.467401'
+        scale='1.0 0.74952 1.0'
+        translation='0.0 4.188787 4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 0.1 1.0'
+        translation='2.094394 -6.28318 4.188787'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566988'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 0.749519 1.0'
+        translation='2.094394 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 0.6625 1.0'
+        translation='2.094394 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.42476 1.0'
+        translation='2.094394 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='2.094394 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.216505 0.0 0.783495'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.424758 1.0'
+        translation='2.094394 -4.188787 2.094394'/>
+      
+      <Vector
+        color='0.374999 0.0 0.625001'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 0.662499 1.0'
+        translation='2.094394 -4.188787 4.188787'/>
+      
+      <Vector
+        color='0.75 0.0 0.25'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 1.225 1.0'
+        translation='2.094394 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='0.64952 0.0 0.35048'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 1.074279 1.0'
+        translation='2.094394 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.662502 1.0'
+        translation='2.094394 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100003 1.0'
+        translation='2.094394 -2.094393 0.0'/>
+      
+      <Vector
+        color='0.374998 0.0 0.625002'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.662497 1.0'
+        translation='2.094394 -2.094393 2.094394'/>
+      
+      <Vector
+        color='0.649518 0.0 0.350482'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 1.074277 1.0'
+        translation='2.094394 -2.094393 4.188787'/>
+      
+      <Vector
+        color='0.866026 0.0 0.133974'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 1.399038 1.0'
+        translation='2.094394 0.0 -6.28318'/>
+      
+      <Vector
+        color='0.750001 0.0 0.249999'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 1.225001 1.0'
+        translation='2.094394 0.0 -4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.749521 1.0'
+        translation='2.094394 0.0 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100003 1.0'
+        translation='2.094394 0.0 0.0'/>
+      
+      <Vector
+        color='0.433011 0.0 0.566989'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.749516 1.0'
+        translation='2.094394 0.0 2.094394'/>
+      
+      <Vector
+        color='0.749999 0.0 0.250001'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 1.224998 1.0'
+        translation='2.094394 0.0 4.188787'/>
+      
+      <Vector
+        color='0.750001 0.0 0.249999'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 1.225001 1.0'
+        translation='2.094394 2.094394 -6.28318'/>
+      
+      <Vector
+        color='0.64952 0.0 0.35048'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 1.074281 1.0'
+        translation='2.094394 2.094394 -4.188787'/>
+      
+      <Vector
+        color='0.375002 0.0 0.624998'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.662503 1.0'
+        translation='2.094394 2.094394 -2.094393'/>
+      
+      <Vector
+        color='2.0E-6 0.0 0.999998'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100003 1.0'
+        translation='2.094394 2.094394 0.0'/>
+      
+      <Vector
+        color='0.374999 0.0 0.625001'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.662498 1.0'
+        translation='2.094394 2.094394 2.094394'/>
+      
+      <Vector
+        color='0.649519 0.0 0.350481'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 1.074278 1.0'
+        translation='2.094394 2.094394 4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.948683 0.0 0.316228 -1.560115'
+        scale='1.0 0.749521 1.0'
+        translation='2.094394 4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.375002 0.0 0.624998'
+        rotation='-0.894427 0.0 0.447214 -1.225778'
+        scale='1.0 0.662503 1.0'
+        translation='2.094394 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.424762 1.0'
+        translation='2.094394 4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='2.094394 4.188787 0.0'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.424759 1.0'
+        translation='2.094394 4.188787 2.094394'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='0.894427 0.0 0.447214 1.225778'
+        scale='1.0 0.662501 1.0'
+        translation='2.094394 4.188787 4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 -6.28318'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 -4.188787'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 -2.094393'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 0.0'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 2.094394'/>
+      
+      <Vector
+        color='0.0 0.0 1.0'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.1 1.0'
+        translation='4.188787 -6.28318 4.188787'/>
+      
+      <Vector
+        color='0.25 0.0 0.75'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.475 1.0'
+        translation='4.188787 -4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.42476 1.0'
+        translation='4.188787 -4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.125 0.0 0.875'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.287501 1.0'
+        translation='4.188787 -4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100001 1.0'
+        translation='4.188787 -4.188787 0.0'/>
+      
+      <Vector
+        color='0.124999 0.0 0.875001'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.287499 1.0'
+        translation='4.188787 -4.188787 2.094394'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.424759 1.0'
+        translation='4.188787 -4.188787 4.188787'/>
+      
+      <Vector
+        color='0.433013 0.0 0.566987'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.74952 1.0'
+        translation='4.188787 -2.094393 -6.28318'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.662501 1.0'
+        translation='4.188787 -2.094393 -4.188787'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.424761 1.0'
+        translation='4.188787 -2.094393 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='4.188787 -2.094393 0.0'/>
+      
+      <Vector
+        color='0.216505 0.0 0.783495'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.424758 1.0'
+        translation='4.188787 -2.094393 2.094394'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.662499 1.0'
+        translation='4.188787 -2.094393 4.188787'/>
+      
+      <Vector
+        color='0.500001 0.0 0.499999'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.850001 1.0'
+        translation='4.188787 0.0 -6.28318'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.74952 1.0'
+        translation='4.188787 0.0 -4.188787'/>
+      
+      <Vector
+        color='0.250001 0.0 0.749999'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.475002 1.0'
+        translation='4.188787 0.0 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='4.188787 0.0 0.0'/>
+      
+      <Vector
+        color='0.249999 0.0 0.750001'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.474999 1.0'
+        translation='4.188787 0.0 2.094394'/>
+      
+      <Vector
+        color='0.433012 0.0 0.566988'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.749519 1.0'
+        translation='4.188787 0.0 4.188787'/>
+      
+      <Vector
+        color='0.433014 0.0 0.566986'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.74952 1.0'
+        translation='4.188787 2.094394 -6.28318'/>
+      
+      <Vector
+        color='0.375001 0.0 0.624999'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.662502 1.0'
+        translation='4.188787 2.094394 -4.188787'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.424761 1.0'
+        translation='4.188787 2.094394 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100002 1.0'
+        translation='4.188787 2.094394 0.0'/>
+      
+      <Vector
+        color='0.216506 0.0 0.783494'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.424759 1.0'
+        translation='4.188787 2.094394 2.094394'/>
+      
+      <Vector
+        color='0.375 0.0 0.625'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.6625 1.0'
+        translation='4.188787 2.094394 4.188787'/>
+      
+      <Vector
+        color='0.250001 0.0 0.749999'
+        rotation='-0.83205 0.0 0.5547 -0.965883'
+        scale='1.0 0.475002 1.0'
+        translation='4.188787 4.188787 -6.28318'/>
+      
+      <Vector
+        color='0.216508 0.0 0.783492'
+        rotation='-0.707107 0.0 0.707107 -0.61685'
+        scale='1.0 0.424761 1.0'
+        translation='4.188787 4.188787 -4.188787'/>
+      
+      <Vector
+        color='0.125001 0.0 0.874999'
+        rotation='-0.447213 0.0 0.894427 -0.214969'
+        scale='1.0 0.287501 1.0'
+        translation='4.188787 4.188787 -2.094393'/>
+      
+      <Vector
+        color='1.0E-6 0.0 0.999999'
+        rotation='0.0 0.0 1.0 0.0'
+        scale='1.0 0.100001 1.0'
+        translation='4.188787 4.188787 0.0'/>
+      
+      <Vector
+        color='0.125 0.0 0.875'
+        rotation='0.447214 0.0 0.894427 0.214969'
+        scale='1.0 0.2875 1.0'
+        translation='4.188787 4.188787 2.094394'/>
+      
+      <Vector
+        color='0.216507 0.0 0.783493'
+        rotation='0.707107 0.0 0.707107 0.61685'
+        scale='1.0 0.42476 1.0'
+        translation='4.188787 4.188787 4.188787'/>
+      
+    </Transform>
+  </Scene>
+</X3D>

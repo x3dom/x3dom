@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile="Interchange" version="3.0"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="proto_nested.wrl" />
+</head>
+<Scene>
+	<ProtoDeclare name="Table">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFColor" name="color" value="1 1 0" />
+				<field accessType="initializeOnly" type="SFColor" name="legColor" value="0 0 1" />
+		</ProtoInterface>
+		<ProtoBody>
+			<ProtoDeclare name="Leg">
+				<ProtoInterface>
+						<field accessType="initializeOnly" type="SFColor" name="color" value="1 1 0" />
+				</ProtoInterface>
+				<ProtoBody>
+					<Transform
+						scale="0.100000001490116 1 0.100000001490116">
+						<Shape>
+							<Box />
+							<Appearance>
+								<Material>
+									<IS>
+										<connect nodeField="diffuseColor" protoField="color" />
+									</IS>
+								</Material>
+							</Appearance>
+						</Shape>
+					</Transform>
+				</ProtoBody>
+			</ProtoDeclare>
+			<Group>
+				<Transform
+					translation="1 0 -1">
+					<ProtoInstance name="Leg" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="1 0 1">
+					<ProtoInstance name="Leg" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="-1 0 -1">
+					<ProtoInstance name="Leg" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="-1 0 1">
+					<ProtoInstance name="Leg" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="0 1 0"
+					scale="1 0.100000001490116 1">
+					<Shape>
+						<Box />
+						<Appearance>
+							<Material>
+								<IS>
+									<connect nodeField="diffuseColor" protoField="color" />
+								</IS>
+							</Material>
+						</Appearance>
+					</Shape>
+				</Transform>
+			</Group>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform>
+		<ProtoInstance name="Table" containerField="children" />
+	</Transform>
+	<Transform
+		translation="5 0 0">
+		<ProtoInstance name="Table" containerField="children">
+			<fieldValue name="color"
+				value="1 0 0" />
+		</ProtoInstance>
+	</Transform>
+	<Transform
+		translation="10 0 0">
+		<ProtoInstance name="Table" containerField="children">
+			<fieldValue name="color"
+				value="1 0 0" />
+			<fieldValue name="legColor"
+				value="1 1 1" />
+		</ProtoInstance>
+	</Transform>
+	<ProtoDeclare name="Leg2">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFColor" name="color" value="1 1 0" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Transform
+				scale="0.100000001490116 1 0.100000001490116">
+				<Shape>
+					<Box />
+					<Appearance>
+						<Material>
+							<IS>
+								<connect nodeField="diffuseColor" protoField="color" />
+							</IS>
+						</Material>
+					</Appearance>
+				</Shape>
+			</Transform>
+		</ProtoBody>
+	</ProtoDeclare>
+	<ProtoDeclare name="Table2">
+		<ProtoInterface>
+				<field accessType="initializeOnly" type="SFColor" name="color" value="1 1 0" />
+				<field accessType="initializeOnly" type="SFColor" name="legColor" value="0 0 1" />
+		</ProtoInterface>
+		<ProtoBody>
+			<Group>
+				<Transform
+					translation="1 0 -1">
+					<ProtoInstance name="Leg2" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="1 0 1">
+					<ProtoInstance name="Leg2" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="-1 0 -1">
+					<ProtoInstance name="Leg2" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="-1 0 1">
+					<ProtoInstance name="Leg2" containerField="children">
+						<IS>
+							<connect nodeField="color" protoField="legColor" />
+						</IS>
+					</ProtoInstance>
+				</Transform>
+				<Transform
+					translation="0 1 0"
+					scale="1 0.100000001490116 1">
+					<Shape>
+						<Box />
+						<Appearance>
+							<Material>
+								<IS>
+									<connect nodeField="diffuseColor" protoField="color" />
+								</IS>
+							</Material>
+						</Appearance>
+					</Shape>
+				</Transform>
+			</Group>
+		</ProtoBody>
+	</ProtoDeclare>
+	<Transform
+		translation="0 0 -5">
+		<Transform>
+			<ProtoInstance name="Table2" containerField="children" />
+		</Transform>
+		<Transform
+			translation="5 0 0">
+			<ProtoInstance name="Table2" containerField="children">
+				<fieldValue name="color"
+					value="1 0 0" />
+			</ProtoInstance>
+		</Transform>
+		<Transform
+			translation="10 0 0">
+			<ProtoInstance name="Table2" containerField="children">
+				<fieldValue name="color"
+					value="1 0 0" />
+				<fieldValue name="legColor"
+					value="1 1 1" />
+			</ProtoInstance>
+		</Transform>
+	</Transform>
+</Scene>
+</X3D>

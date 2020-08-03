@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' >
+<head>
+<meta name='edited' content='joe 1/15/2006'/>
+</head>
+<Scene>
+<WorldInfo
+title='kaleidoscope'
+info='"converted to xml 20061012 last 20100103. mostly from an old wrl originally built by the master of this stuff"'/>
+
+<ProtoDeclare name='Geode'>
+<ProtoInterface>
+  <field name='children' accessType='inputOutput' type='MFNode'/>
+</ProtoInterface>
+<ProtoBody>
+  <Group>
+   <Transform DEF='PartGeode_0'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_1' rotation='0 1.618 1 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_2' rotation='0 1.618 1 -1.257'>
+     <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_3' rotation='0 1.618 1 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_4' rotation='0 1.618 1 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_5' rotation='0 1.618 -1 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_6' rotation='0 1.618 -1 -1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_7' rotation='0 1.618 -1 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_8' rotation='0 1.618 -1 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_9' rotation='1.618 1 0 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_10' rotation='1.618 1 0 -1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_11' rotation='1.618 1 0 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_12' rotation='1.618 1 0 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_13' rotation='1.618 -1 0 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_14' rotation='1.618 -1 0 -1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_15' rotation='1.618 -1 0 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_16' rotation='1.618 -1 0 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_17' rotation='1 0 1.618 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_18' rotation='1 0 1.618 -1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_19' rotation='1 0 1.618 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_20' rotation='1 0 1.618 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_21' rotation='-1 0 1.618 1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_22' rotation='-1 0 1.618 -1.257'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_23' rotation='-1 0 1.618 2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_24' rotation='-1 0 1.618 -2.513'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_25' rotation='.618 1.618 0 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_26' rotation='.618 1.618 0 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_27' rotation='-.618 1.618 0 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_28' rotation='-.618 1.618 0 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_29' rotation='1.618 0 .618 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_30' rotation='1.618 0 .618 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_31' rotation='1.618 0 -.618 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_32' rotation='1.618 0 -.618 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_33' rotation='0 .618 1.618 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_34' rotation='0 .618 1.618 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_35' rotation='0 -.618 1.618 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_36' rotation='0 -.618 1.618 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_37' rotation='1 1 1 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_38' rotation='1 1 1 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_39' rotation='1 -1 1 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_40' rotation='1 -1 1 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_41' rotation='-1 -1 1 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_42' rotation='-1 -1 1 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_43' rotation='-1 1 1 2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_44' rotation='-1 1 1 -2.094'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_45' rotation='1 0 0 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_46' rotation='0 1 0 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_47' rotation='0 0 1 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_48' rotation='1 1.618 2.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_49' rotation='-1 1.618 2.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_50' rotation='1 -1.618 2.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_51' rotation='-1 -1.618 2.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_52' rotation='2.618 1 1.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_53' rotation='2.618 -1 1.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_54' rotation='2.618 1 -1.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_55' rotation='2.618 -1 -1.618 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_56' rotation='1.618 2.618 1 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_57' rotation='1.618 2.618 -1 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_58' rotation='-1.618 2.618 1 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+   <Transform DEF='PartGeode_59' rotation='-1.618 2.618 -1 3.142'>
+    <IS><connect nodeField='children' protoField='children'/></IS>
+   </Transform>
+  </Group>
+</ProtoBody>
+</ProtoDeclare>
+
+<ProtoDeclare name='Triangle'>
+<ProtoInterface/>
+<ProtoBody>
+ <Group>
+   <Transform DEF='LittleGeode'>
+    <Shape>
+     <Appearance>
+      <ImageTexture url='"textures/attachment.png" "buddapalmstrike.png"'/>
+      <TextureTransform DEF='TextureTransform0' center='0 1'/>
+     </Appearance>
+     <IndexedFaceSet solid='false' creaseAngle='0.524'
+      coordIndex='
+        0 1 2 -1
+        0 2 3 -1'
+      texCoordIndex='
+        0 1 2 -1
+        0 2 1 -1'>
+      <Coordinate DEF='COORD0'
+       point='
+        0 1 0
+        0 0.85065 0.52573
+        0.35682 0.93417 0
+        0 0.85065 -0.52573'/>
+      <TextureCoordinate DEF='TEX_COORD0'
+       point='
+        0 0
+        1 0
+        0 1'/>
+     </IndexedFaceSet>
+    </Shape>
+   </Transform>
+    <Transform DEF='BigGeode' scale='100.3 100.3 100.3'>
+      <Shape USE='LittleGeode' />
+   </Transform>
+  </Group>
+
+  <TimeSensor DEF='TS_TextRot' cycleInterval='133.0' loop='true'/>
+  <ScalarInterpolator DEF='TextRotInterp'
+   key='0 0.25 0.5 0.75 1'
+   keyValue='0 1.57 3.14 4.71 6.28'/>
+  <ROUTE fromNode='TS_TextRot' fromField='fraction_changed' toNode='TextRotInterp' toField='set_fraction'/>
+  <ROUTE fromNode='TextRotInterp' fromField='value_changed' toNode='TextureTransform0' toField='set_rotation'/>
+
+</ProtoBody>
+</ProtoDeclare>
+
+<Group DEF='3Dkscope'>
+<NavigationInfo avatarSize='.25 1.6 .75' visibilityLimit='0'
+  speed='1' headlight='false' type='"FLY" "ANY"'/>
+
+<ProtoInstance containerField='children' name='Geode'>
+  <fieldValue name='children'>
+   <ProtoInstance DEF='PartGeode' name='Triangle'/>
+  </fieldValue>
+</ProtoInstance>
+
+<Transform DEF='Camera_yaw'>
+  <Viewpoint DEF='Camera_pitch' description='Moving Camera1'
+   jump='false' fieldOfView='0.785'
+   position='0 0 10' orientation='0 0 1 0'/>
+</Transform>
+
+<TimeSensor DEF='TS_Camera_yaw' cycleInterval='60.000' loop='true' startTime='-1.000'/>
+<OrientationInterpolator DEF='OI_Camera_yaw'
+  key=' 0 .25 .5 .75 1'
+  keyValue='
+  0 1 0 0
+  0 1 0 1.57
+  0 1 0 3.14
+  0 1 0 4.71
+  0 1 0 6.28'/>
+
+<TimeSensor DEF='TS_Camera_pos' cycleInterval='55.000' loop='true' startTime='-1.000'/>
+<PositionInterpolator DEF='PI_Camera_pos'
+  key='0 .35 .5 .65 1'
+  keyValue='
+  0 0 90
+  0 1 45
+  0 2 6
+  0 1 45
+  0 0 90'/>
+
+<TimeSensor DEF='TS_Camera_pitch' cycleInterval='125.000' loop='true' startTime='-1.000'/>
+<OrientationInterpolator DEF='OI_Camera_pitch'
+  key='0 .25 .5 .75 1'
+  keyValue='
+  1 0 0 0
+  1 0 0 1.57
+  1 0 0 3.14
+  1 0 0 4.71
+  1 0 0 6.28'/>
+
+<Viewpoint description='Close View'
+  jump='true' fieldOfView='0.785' position='0 0 4' orientation='0 1 0 .525'/>
+<Viewpoint description='Close View 2'
+  jump='true' fieldOfView='0.785'
+  position='0 0 4' orientation='0 0 1 0'/>
+<Transform DEF='Camera_yaw1'>
+  <Viewpoint DEF='Camera_pitch0' description='Orbiting Camera'
+   jump='false' fieldOfView='0.785' position='0 0 5' orientation='0 0 1 0'/>
+</Transform>
+
+<TimeSensor DEF='TS_Camera_yaw1' cycleInterval='23.000' loop='true' startTime='-1.000'/>
+<OrientationInterpolator DEF='OI_Camera_yaw1'
+  key='0 .25 .5 .75 1'
+  keyValue='
+  0 1 0 0
+  0 1 0 1.57
+  0 1 0 3.14
+  0 1 0 4.71
+  0 1 0 6.28'/>
+
+<Viewpoint description='Far View' jump='true'
+  fieldOfView='0.785' position='0 0 100' orientation='0 0 1 0'/>
+<Viewpoint description='Outside View'
+  jump='true' fieldOfView='0.785' position='0 0 125' orientation='0 1 0 0'/>
+</Group>
+
+
+<TimeSensor DEF='vizx_init' cycleInterval='0.100' loop='true'/>
+<ROUTE fromNode='vizx_init' fromField='cycleTime' toNode='TS_Camera_yaw' toField='startTime'/>
+<ROUTE fromNode='vizx_init' fromField='cycleTime' toNode='TS_Camera_pos' toField='startTime'/>
+<ROUTE fromNode='vizx_init' fromField='cycleTime' toNode='TS_Camera_pitch' toField='startTime'/>
+<ROUTE fromNode='vizx_init' fromField='cycleTime' toNode='TS_Camera_yaw1' toField='startTime'/>
+<ROUTE fromNode='vizx_init' fromField='cycleTime' toNode='vizx_init' toField='stopTime'/>
+
+<ROUTE fromNode='TS_Camera_pitch' fromField='fraction_changed' toNode='OI_Camera_pitch' toField='set_fraction'/>
+<ROUTE fromNode='OI_Camera_pitch' fromField='value_changed' toNode='Camera_pitch' toField='set_orientation'/>
+<ROUTE fromNode='TS_Camera_pos' fromField='fraction_changed' toNode='PI_Camera_pos' toField='set_fraction'/>
+<ROUTE fromNode='PI_Camera_pos' fromField='value_changed' toNode='Camera_pitch' toField='set_position'/>
+<ROUTE fromNode='TS_Camera_yaw' fromField='fraction_changed' toNode='OI_Camera_yaw' toField='set_fraction'/>
+<ROUTE fromNode='OI_Camera_yaw' fromField='value_changed' toNode='Camera_yaw' toField='set_rotation'/>
+<ROUTE fromNode='TS_Camera_yaw1' fromField='fraction_changed' toNode='OI_Camera_yaw1' toField='set_fraction'/>
+<ROUTE fromNode='OI_Camera_yaw1' fromField='value_changed' toNode='Camera_yaw1' toField='set_rotation'/>
+
+</Scene>
+</X3D>

@@ -1,0 +1,165 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>Proto html event test</title>
+    <script type="text/javascript" src="../../../../x3dom-include.js?full"></script>
+    <style>
+        x3d {
+        	height: 50%
+        }
+        .blur5 {
+        	filter: blur(20px);
+        	transition: filter 0.2s
+        }
+        .blur0 {
+        	filter: blur(0px);
+        }
+    </style>
+</head>
+<body onload='tweak()'>
+
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <!--head>
+    <meta content='OnXViewpointChanged' name='title'/>
+    <meta content='X3D encodings example: defining a Prototype, demonstration of IS/connect definitions.' name='description'/>
+  </head-->
+  <Scene>
+    <!--WorldInfo title='Prototype.x3d'-->
+    <ProtoDeclare name='XViewpoint'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='description' type='MFString' value='"default view"'></field>
+        <field accessType='inputOnly' name='bind' type='SFBool' value='false'></field>
+        <field accessType='inputOutput' name='isActive' type='SFBool' value='true'></field>
+        <field accessType='inputOutput' name='position' type='SFVec3f' value='0 0 10'></field>
+        <field accessType='inputOutput' name='orientation' type='SFRotation' value='0 0 1 0'></field>
+        <field accessType='inputOutput' name='centerOfRotation' type='SFVec3f' value='0 0 0'></field>
+      </ProtoInterface>
+      <ProtoBody>
+        <Viewpoint DEF='vp'>
+            <IS>
+                <!-- description is SFString but x3dom accepts it anyways -->
+                <connect nodeField='description' protoField='description'></connect>
+                <connect nodeField='bind' protoField='bind'></connect>
+                <connect nodeField='isActive' protoField='isActive'></connect>
+                <connect nodeField='position' protoField='position'></connect>
+                <connect nodeField='orientation' protoField='orientation'></connect>
+                <connect nodeField='centerOfRotation' protoField='centerOfRotation'></connect>
+            </IS>
+        </Viewpoint>
+        <!-- extra functionality -->
+        <Transform DEF='textTrafo' render='false'>
+            <IS>
+                <connect nodeField='translation' protoField='position'></connect>
+                <connect nodeField='rotation' protoField='orientation'></connect>
+            </IS>
+            <Transform DEF='offsetToFrontTopCenter' translation='0 3 -10'>
+              <Shape  DEF='descriptionShape'>
+                    <Appearance >
+                        <Material DEF='descriptionMat' diffuseColor='0 0 0.5' transparency='0.01'></Material>
+                    </Appearance>
+                <Text solid='false' >
+                  <IS>
+                      <connect nodeField='string' protoField='description'></connect>
+                  </IS>
+                  <FontStyle justify='"MIDDLE" "MIDDLE"' ></FontStyle>
+                </Text>
+              </Shape>
+		        </Transform>
+        </Transform>
+        
+        <ROUTE fromNode='vp' fromField='isActive' toNode='textTrafo' toField='render'></ROUTE>
+        
+        <!-- fade animation -->
+        <BooleanFilter DEF='filter' ></BooleanFilter>
+        <TimeTrigger DEF='trigger' ></TimeTrigger>
+        <TimeSensor DEF='fader' cycleInterval='2' ></TimeSensor>
+        <ScalarInterpolator DEF='scaler' key='0 0.8 1' keyValue='0 0.1 1'></ScalarInterpolator>
+        <ROUTE fromNode='vp' fromField='isActive' toNode='filter' toField='set_boolean'></ROUTE>
+        <ROUTE fromNode='filter' fromField='inputTrue' toNode='trigger' toField='set_boolean'></ROUTE>
+        <ROUTE fromNode='trigger' fromField='triggerTime' toNode='fader' toField='set_startTime'></ROUTE>
+        <ROUTE fromNode='fader' fromField='fraction_changed' toNode='scaler' toField='set_fraction'></ROUTE>
+        <ROUTE fromNode='scaler' fromField='value_changed' toNode='descriptionMat' toField='transparency'></ROUTE>
+		
+      </ProtoBody>
+    </ProtoDeclare>
+    
+    <XViewpoint onviewpointchanged='v1changed(event)' DEF='v1' description='front to back'></XViewpoint>
+    <XViewpoint onviewpointchanged='v2changed(event)' DEF='v2' description='map view' position='0 10 0' orientation='1 0 0 -1.57'></XViewpoint>
+    <XViewpoint DEF='v3' description='east to west' position='10 0 0' orientation='0 1 0 1.57'></XViewpoint>
+    <XViewpoint DEF='v3' description='west to east' position='-5 0 0' orientation='0 1 0 -1.57'></XViewpoint>
+    <Transform translation='0.0 0.6 0.0'>
+      <Shape>
+        <Appearance>
+          <Material DEF='TableTopMaterial' diffuseColor='1 0 0'>
+          </Material>
+        </Appearance>
+        <Box size='1.5 0.2 1.2'></Box>
+      </Shape>
+    </Transform>
+
+  </Scene>
+</X3D>
+
+<div>
+<h2>Press button or PgDn, see log</h2>
+
+<button onclick='nextVp()'>Next View</button>
+
+<textarea style="height: 20%; width: 100%; margin-top: 20px;" id='logArea'></textarea>
+
+</div>
+</body>
+
+<script type="text/javascript">
+    maxChars = 30000;
+    function tweak()
+	{
+		//turn on internal proto help switch node
+		document.querySelectorAll('XViewpoint').forEach( node => node._x3domNode.helperNodes[0]._parentNodes[0]._vf.whichChoice = 0 );
+		//focus x3d
+		x3d = document.querySelector('X3D');
+		x3d.querySelector('Canvas').focus();
+		x3d.runtime.onAnimationStarted = aniStart;
+		x3d.runtime.onAnimationFinished = aniDone;
+	}
+
+	function aniStart()
+	{
+		if ( x3d.runtime.canvas.doc._viewarea._mixer._isVPtarget )
+		{
+			x3d.runtime.getCanvas().classList.remove('blur0');
+			x3d.runtime.getCanvas().classList.add('blur5');
+		}
+	}
+
+    function aniDone()
+	{
+		if ( x3d.runtime.canvas.doc._viewarea._mixer._isVPtarget )
+		{
+			x3d.runtime.getCanvas().classList.remove('blur5');
+			x3d.runtime.getCanvas().classList.add('blur0');
+		}
+	}
+  
+	function v1changed(e)
+	{    
+		var l = document.querySelector('#logArea');
+		if ( l.textLength > maxChars )	l.textContent = "";
+		l.textContent = "v1 position: " + e.position + "\n" + l.textContent;
+	}
+  
+    function v2changed(e)
+	{    
+		var l = document.querySelector('#logArea');
+		if ( l.textLength > maxChars )	l.textContent = "";
+		l.textContent = "v2 position: " + e.position + "\n" + l.textContent;
+	}
+
+	function nextVp()
+	{
+		document.querySelector('x3d').runtime.nextView();
+	}
+
+</script>
+</html>

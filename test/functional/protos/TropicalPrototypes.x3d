@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile='Immersive' version='3.0' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <head>
+    <meta content='TropicalPrototypes.x3d' name='title'/>
+    <meta content='Prototype declarations defining values for X3D/VRML materials, originally converted from SGI&apos;s Open Inventor material examples.' name='description'/>
+    <meta content='David Roussel' name='creator'/>
+    <meta content='James Harney, Don Brutzman NPS' name='translator'/>
+    <meta content='7 April 2002' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='http://vrmlstuff.free.fr/materials' name='reference'/>
+    <meta content='Universal Media Material Library' name='subject'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/TropicalPrototypes.x3d' name='identifier'/>
+    <meta content='Vrml97ToX3dNist, http://ovrt.nist.gov/v2_x3d.html' name='generator'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='TropicalPrototypes.x3d'/>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical00'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.877539 0.904409 0.0' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical01'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748014 0.62085 0.0' shininess='0.939394' specularColor='0.860606 0.860606 0.860599'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical02'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.774741 0.083067' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical03'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748016 0.555721 0.0' shininess='0.606061' specularColor='0.836364 0.836364 0.836364'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical04'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.412258 0.0' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical05'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748016 0.299537 0.0' shininess='0.921212' specularColor='0.836364 0.836364 0.836364'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical06'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.283754 0.0' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical07'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748016 0.139569 0.0' shininess='0.478788' specularColor='0.709091 0.709091 0.709091'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical08'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.150314 0.0' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical09'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.877539 0.904409 0.0' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical10'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.0 0.309851' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical11'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748016 0.006259 0.251931' shininess='0.933333' specularColor='0.684848 0.684848 0.684848'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical12'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.904409 0.046947 0.496108' shininess='0.078125' specularColor='0.095591 0.095591 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical13'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.748016 0.0 0.550351' shininess='0.230303' specularColor='0.672727 0.672727 0.672727'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical14'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.895967 0.0 0.691271' shininess='0.078125' specularColor='0.095591 0.086256 0.093458'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical15'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.624368 0.0 0.748016' shininess='0.557576' specularColor='0.951515 0.951515 0.951515'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical16'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.62178 0.020917 0.880181' shininess='0.078125' specularColor='0.087726 0.069438 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical17'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.374008 0.0 0.748016' shininess='0.406061' specularColor='0.909091 0.909091 0.909091'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical18'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.279501 0.005142 0.845907' shininess='0.078125' specularColor='0.052278 0.031298 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical19'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.002317 0.0 0.748016' shininess='0.830303' specularColor='0.884848 0.884848 0.884848'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical20'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.204955 0.845242' shininess='0.078125' specularColor='0.03017 0.046033 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical21'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.020732 0.339645 0.748016' shininess='0.927273' specularColor='0.90303 0.90303 0.90303'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical22'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.596985 0.817956' shininess='0.078125' specularColor='0.0 0.069767 0.095591'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical23'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.631244 0.748016' shininess='0.642424' specularColor='0.915152 0.915152 0.915152'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical24'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.817956 0.553836' shininess='0.078125' specularColor='0.0 0.095591 0.064724'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical25'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.748016 0.469403' shininess='0.818182' specularColor='1.0 1.0 1.0'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical26'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.053153 0.817956 0.088018' shininess='0.078125' specularColor='0.006212 0.095591 0.010286'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical27'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.0 0.748016 0.176015' shininess='0.721212' specularColor='0.981818 0.981818 0.981818'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical28'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.355377 0.817956 0.015797' shininess='0.078125' specularColor='0.041531 0.095591 0.001846'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical29'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.381944 0.748016 0.0' shininess='0.981818' specularColor='0.963636 0.963636 0.963636'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical30'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.991732 0.939493 1.0' shininess='0.0'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical31'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.425062 0.404868 0.426289' shininess='0.90303' specularColor='0.860606 0.860606 0.860606'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical32'>
+      <ProtoBody>
+        <Material ambientIntensity='0.249999' diffuseColor='0.424238 0.424238 0.424238' shininess='0.153696' specularColor='0.168 0.168 0.168'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical33'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.152381 0.145141 0.15282' shininess='0.957576' specularColor='0.745455 0.745455 0.745455'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <ProtoDeclare appinfo='UniversalMediaMaterials prototype' documentation='https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials' name='Tropical34'>
+      <ProtoBody>
+        <Material ambientIntensity='0.25' diffuseColor='0.138667 0.138667 0.138667' shininess='0.153696' specularColor='0.168 0.168 0.168'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <Anchor description='click for examples' parameter='"target=_blank"' url='"TropicalExamples.x3d" "https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/TropicalExamples.x3d" "TropicalExamples.wrl" "https://www.web3d.org/x3d/content/examples/Basic/UniversalMediaMaterials/TropicalExamples.wrl"'>
+      <Shape>
+        <Appearance>
+          <Material diffuseColor='0.8 0.4 0'/>
+        </Appearance>
+        <Text string='"TropicalExamples.x3d" "is a Materials Prototype declaration file." "" "For an example scene using these node," "click this text and view" "TropicalExamples.x3d"'>
+          <FontStyle justify='"MIDDLE" "MIDDLE"' size='0.8'/>
+        </Text>
+      </Shape>
+    </Anchor>
+  </Scene>
+</X3D>
