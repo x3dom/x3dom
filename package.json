@@ -33,10 +33,10 @@
   "homepage": "https://github.com/x3dom/x3dom#readme",
   "devDependencies": {
     "concat": "^1.0.3",
+    "eslint": "^6.8.0",
     "fs-extra": "^8.1.0",
-    "terser": "^4.3.8",
     "jsdoc": "3.6.3",
-    "zip-lib": "^0.2.1",
-    "eslint": "^6.6.0"
+    "terser": "^4.3.8",
+    "zip-lib": "^0.2.1"
   }
 }
