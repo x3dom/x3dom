@@ -12,6 +12,7 @@
   * new Node-based build system
   * automatic origChannelCount detection
   * added exploration modes
+  * experimental support for X3D prototypes
 * Improvements
   * linted source code
   * replaced deprecated MutationEvents with a MutationObserver
