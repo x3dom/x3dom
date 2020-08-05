@@ -40,6 +40,16 @@ x3dom.registerNodeType(
             this.addField_SFBool( ctx, "render", true );
 
             /**
+             * Flag to enable/disable rendering, alias for render
+             * @var {x3dom.fields.SFBool} visible
+             * @memberof x3dom.nodeTypes.X3DBoundedObject
+             * @initvalue true
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool( ctx, "visible", true );
+
+            /**
              * Center of the bounding box
              * @var {x3dom.fields.SFVec3f} bboxCenter
              * @memberof x3dom.nodeTypes.X3DBoundedObject
@@ -72,6 +82,8 @@ x3dom.registerNodeType(
                 coverage     : -1,       // currently approx. number of pixels on screen
                 needCulling  : true      // to be able to disable culling per node
             };
+
+            this._render = true;
         },
         {
             fieldChanged : function ( fieldName )
@@ -102,13 +114,13 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this._vf.render )
+                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
                 {
                     for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                     {
                         var child = this._childNodes[ i ];
                         // render could be undefined, but undefined != true
-                        if ( !child || child._vf.render !== true )
+                        if ( !child || child.renderFlag && child.renderFlag() !== true )
                         {continue;}
 
                         var childVol = child.getVolume();
@@ -191,6 +203,25 @@ x3dom.registerNodeType(
             forceUpdateCoverage : function ()
             {
                 return false;
+            },
+
+            renderFlag : function ()
+            {
+                //sync
+                if ( this._render !== this._vf.render )
+                //render changed
+                {
+                    this._vf.visible = this._vf.render;
+                    this._render = this._vf.visible;
+                }
+                else if ( this._render !== this._vf.visible )
+                //visible changed
+                {
+                    this._vf.render = this._vf.visible;
+                    this._render = this._vf.visible;
+                }
+                //nothing changed
+                return this._render;
             }
         }
     )
