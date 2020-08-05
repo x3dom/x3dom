@@ -4496,12 +4496,13 @@ x3dom.gfx_webgl = ( function ()
 
         var i,
             n,
-            m = rt._cf.excludeNodes.nodes.length;
+            ex = rt._cf.excludeNodes.nodes,
+            m = ex.length;
 
         var arr = new Array( m );
         for ( i = 0; i < m; i++ )
         {
-            var render = rt._cf.excludeNodes.nodes[ i ]._vf.render;
+            var render = ex[ i ].renderFlag && ex[ i ].renderFlag();
             if ( render === undefined )
             {
                 arr[ i ] = -1;
@@ -4517,7 +4518,7 @@ x3dom.gfx_webgl = ( function ()
                     arr[ i ] = 0;
                 }
             }
-            rt._cf.excludeNodes.nodes[ i ]._vf.render = false;
+            rt._cf.excludeNodes.nodes[ i ]._vf.visible = false;
         }
 
         this.stateManager.bindFramebuffer( gl.FRAMEBUFFER, rt._webgl.fbo.fbo );
@@ -4616,7 +4617,7 @@ x3dom.gfx_webgl = ( function ()
                 {
                     drawable = locScene.drawableCollection.get( i );
 
-                    if ( !drawable.shape._vf.render )
+                    if ( !drawable.shape.renderFlag() )
                     {
                         continue;
                     }
@@ -4644,7 +4645,7 @@ x3dom.gfx_webgl = ( function ()
         {
             if ( arr[ i ] !== 0 )
             {
-                rt._cf.excludeNodes.nodes[ i ]._vf.render = true;
+                rt._cf.excludeNodes.nodes[ i ]._vf.visible = true;
             }
         }
     };
@@ -4682,7 +4683,7 @@ x3dom.gfx_webgl = ( function ()
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if ( !s_gl || !shape || !shape._vf.render )
+            if ( !s_gl || !shape || !shape.renderFlag() )
             {
                 continue;
             }
