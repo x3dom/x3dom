@@ -49,7 +49,7 @@ x3dom.registerNodeType(
 
                 if ( !coordNode || coordNode._vf.point.length < 3 )
                 {
-                    this._vf.render = false;
+                    this._vf.visible = false;
                     return;
                 }
 

@@ -36,7 +36,7 @@ use of DEF/USE attributes on Appearance nodes makes it impossible to use the tra
 mechanism to unhighlight faces, this variable should be set to true, after this
 script is read.
 */
-var useRenderToHide = false;
+var useRenderToHide = true;
 
 
 ps = {
@@ -231,11 +231,11 @@ function showStructureComponentByRender(e){
 
     var topFaces = top.getElementsByTagName("CADFace");
     for (var j=0; j < topFaces.length; ++j)
-        topFaces[j].setAttribute("render", false);
+        topFaces[j].setAttribute("visible", false);
 
     var baseFaces = base.getElementsByTagName("CADFace");
     for (var j=0; j < baseFaces.length; ++j)
-        baseFaces[j].setAttribute("render", true);
+        baseFaces[j].setAttribute("visible", true);
 
     top._x3domNode._nameSpace.doc.needRender = true;
 }

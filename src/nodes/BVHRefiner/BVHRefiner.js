@@ -354,7 +354,7 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this._vf.render )
+                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
                 {
                     var childVol = this.rootNode.getVolume();
                     if ( childVol && childVol.isValid() )
@@ -629,7 +629,7 @@ function QuadtreeNode2dWMTS ( ctx, bvhRefiner, level, nodeNumber, nodeTransforma
         {
             for ( var i = 0; i < children.length; i++ )
             {
-                children[ i ].Shape()._vf.render = true;
+                children[ i ].Shape()._vf.visible = true;
             }
         }
 
@@ -702,7 +702,7 @@ function QuadtreeNode2dWMTS ( ctx, bvhRefiner, level, nodeNumber, nodeTransforma
                             for ( var i = 0; i < children.length; i++ )
                             {
                                 children[ i ].collectDrawables( nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask );
-                                children[ i ].Shape()._vf.render = false;
+                                children[ i ].Shape()._vf.visible = false;
                             }
                         }
                     }
@@ -947,7 +947,7 @@ function QuadtreeNode2D ( ctx, bvhRefiner, level, nodeNumber, nodeTransformation
         {
             for ( var i = 0; i < children.length; i++ )
             {
-                children[ i ].Shape()._vf.render = true;
+                children[ i ].Shape()._vf.visible = true;
             }
         }
 
@@ -1015,7 +1015,7 @@ function QuadtreeNode2D ( ctx, bvhRefiner, level, nodeNumber, nodeTransformation
                             for ( var i = 0; i < children.length; i++ )
                             {
                                 children[ i ].collectDrawables( nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask );
-                                children[ i ].Shape()._vf.render = false;
+                                children[ i ].Shape()._vf.visible = false;
                             }
                         }
                     }
@@ -1497,7 +1497,7 @@ function QuadtreeNode3D ( ctx, bvhRefiner, level, nodeNumber, nodeTransformation
         {
             for ( var i = 0; i < children.length; i++ )
             {
-                children[ i ].Shape()._vf.render = true;
+                children[ i ].Shape()._vf.visible = true;
             }
         }
 
@@ -1570,7 +1570,7 @@ function QuadtreeNode3D ( ctx, bvhRefiner, level, nodeNumber, nodeTransformation
                             for ( var i = 0; i < children.length; i++ )
                             {
                                 children[ i ].collectDrawables( nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask );
-                                children[ i ].Shape()._vf.render = false;
+                                children[ i ].Shape()._vf.visible = false;
                             }
                         }
                     }
@@ -1876,7 +1876,7 @@ function QuadtreeNodeBin ( ctx, bvhRefiner, level, columnNr, rowNr, resizeFac )
         {
             for ( var i = 0; i < children.length; i++ )
             {
-                children[ i ].Shape()._vf.render = true;
+                children[ i ].Shape()._vf.visible = true;
             }
         }
 
@@ -1957,7 +1957,7 @@ function QuadtreeNodeBin ( ctx, bvhRefiner, level, columnNr, rowNr, resizeFac )
                             for ( var i = 0; i < children.length; i++ )
                             {
                                 children[ i ].collectDrawables( transform, drawableCollection, singlePath, invalidateCache, planeMask );
-                                children[ i ].Shape()._vf.render = false;
+                                children[ i ].Shape()._vf.visible = false;
                             }
                             shape.collectDrawableObjects( transform, drawableCollection, singlePath, invalidateCache, planeMask, [] );
                         }
@@ -2164,7 +2164,7 @@ function BVHNode ( ctx, bvhRefiner, level, path, imgNumber, count )
             }
             else
             {
-                children[ i ].Shape()._vf.render = true;
+                children[ i ].Shape()._vf.visible = true;
             }
         }
 
@@ -2245,7 +2245,7 @@ function BVHNode ( ctx, bvhRefiner, level, path, imgNumber, count )
                             for ( var i = 0; i < children.length; i++ )
                             {
                                 children[ i ].collectDrawables( transform, drawableCollection, singlePath, invalidateCache, planeMask );
-                                children[ i ].Shape()._vf.render = false;
+                                children[ i ].Shape()._vf.visible = false;
                             }
                             shape.collectDrawableObjects( transform, drawableCollection, singlePath, invalidateCache, planeMask, [] );
                         }
