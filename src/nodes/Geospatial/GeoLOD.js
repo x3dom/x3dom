@@ -319,14 +319,14 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
                 //below may not apply for GeoLOD
-                if ( !this.volumeValid() && this._vf.render )
+                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
                 {
                     var child,
                         childVol;
                     // use childUrlNodes ?
                     for ( var i = 0, n = this._childNodes.length; i < n; i++ )
                     {
-                        if ( !( child = this._childNodes[ i ] ) || child._vf.render !== true )
+                        if ( !( child = this._childNodes[ i ] ) || child.renderFlag && child.renderFlag() !== true )
                         {continue;}
                         childVol = child.getVolume();
                         if ( childVol && childVol.isValid() )
