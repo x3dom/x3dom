@@ -75,11 +75,6 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode( "navigationInfo", x3dom.nodeTypes.NavigationInfo );
 
-            if ( this._vf.viewAll )
-            {
-                x3dom.debug.logWarning( "initial viewAll NYI; please set to true later" );
-            }
-
             // attach some convenience accessor methods to dom/xml node
             if ( ctx && ctx.xmlNode )
             {
@@ -117,9 +112,16 @@ x3dom.registerNodeType(
             activate : function ( prev )
             {
                 var viewarea = this._nameSpace.doc._viewarea;
-                if ( prev && this._bindAnimation )
+                prev = prev || this;
+                var target = this;
+                if ( this._bindAnimation )
                 {
-                    viewarea.animateTo( this, prev._autoGen ? null : prev );
+                    if ( this._vf.viewAll )
+                    {
+                        var sceneBBox = this._runtime.getSceneBBox();
+                        target = viewarea.getFitViewMatrix( sceneBBox.min, sceneBBox.max, prev, true );
+                    }
+                    viewarea.animateTo( target, prev._autoGen ? null : prev );
                 }
                 viewarea._needNavigationMatrixUpdate = true;
 
@@ -129,13 +131,11 @@ x3dom.registerNodeType(
                 }
 
                 x3dom.nodeTypes.X3DBindableNode.prototype.activate.call( this, prev );
-                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             deactivate : function ( prev )
             {
                 x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call( this, prev );
-                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             getTransformation : function ()
