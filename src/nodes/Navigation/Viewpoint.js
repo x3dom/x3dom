@@ -103,6 +103,16 @@ x3dom.registerNodeType(
             this._projMatrix = null;
             this._lastAspect = 1.0;
 
+            //use x3d4 fields if provided
+            if ( this._vf.nearClippingPlane > -1 )
+            {
+                this._vf.zNear = this._vf.nearClippingPlane;
+            }
+            if ( this._vf.farClippingPlane > -1 )
+            {
+                this._vf.zFar = this._vf.farClippingPlane;
+            }
+
             // z-ratio: a value around 5000 would be better...
             this._zRatio = 10000;
             this._zNear = this._vf.zNear;
@@ -114,6 +124,17 @@ x3dom.registerNodeType(
         {
             fieldChanged : function ( fieldName )
             {
+                if ( fieldName == "nearClippingPlane" )
+                {
+                    this._vf.zNear = this._vf.nearClippingPlane;
+                    fieldName = "zNear";
+                }
+                else if ( fieldName == "farClippingPlane" )
+                {
+                    this._vf.zFar = this._vf.farClippingPlane;
+                    fieldName = "zFar";
+                }
+
                 if ( fieldName == "position" || fieldName == "orientation" )
                 {
                     this.resetView();
@@ -130,6 +151,14 @@ x3dom.registerNodeType(
                 {
                     // FIXME; call parent.fieldChanged();
                     this.bind( this._vf.bind );
+                    if ( this._cf.navigationInfo.node )
+                    {
+                        this._cf.navigationInfo.node.bind( this._vf.bind );
+                    }
+                }
+                else if ( fieldName == "viewAll" && this._vf.viewAll )
+                {
+                    this._nameSpace.doc._x3dElem.runtime.fitAll();
                 }
             },
 
