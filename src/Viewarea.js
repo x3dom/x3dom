@@ -1015,16 +1015,40 @@ x3dom.Viewarea.prototype.showAll = function ( axis, updateCenterOfRotation )
  */
 x3dom.Viewarea.prototype.fit = function ( min, max, updateCenterOfRotation )
 {
+    var viewpoint = this._scene.getViewpoint();
+    var viewmat = this.getFitViewMatrix( min, max, viewpoint, updateCenterOfRotation );
+
+    if ( x3dom.isa( viewpoint, x3dom.nodeTypes.OrthoViewpoint ) )
+    {
+        this.orthoAnimateTo( dist / 2.01, Math.abs( viewpoint._fieldOfView[ 0 ] ) );
+        this.animateTo( viewmat, viewpoint );
+    }
+    else
+    {
+        this.animateTo( viewmat, viewpoint );
+    }
+};
+
+/**
+ * get fitViewMatrix and optionally set cor
+ *
+ * @param min
+ * @param max
+ * @param viewpoint
+ * @param updateCenterOfRotation
+ * @returns viewmatrix to fit scene
+ */
+x3dom.Viewarea.prototype.getFitViewMatrix = function ( min, max, viewpoint, updateCenterOfRotation )
+{
     if ( updateCenterOfRotation === undefined )
     {
         updateCenterOfRotation = true;
     }
 
-    var dia2 = max.subtract( min ).multiply( 0.5 );    // half diameter
+    var dia2 = max.subtract( min ).multiply( 0.5 );  // half diameter
     var center = min.add( dia2 );                    // center in wc
-    var bsr = dia2.length();                       // bounding sphere radius
+    var bsr = dia2.length();                         // bounding sphere radius
 
-    var viewpoint = this._scene.getViewpoint();
     var fov = viewpoint.getFieldOfView();
 
     var viewmat = x3dom.fields.SFMatrix4f.copy( this.getViewMatrix() );
@@ -1049,15 +1073,7 @@ x3dom.Viewarea.prototype.fit = function ( min, max, updateCenterOfRotation )
         viewpoint.setCenterOfRotation( center );
     }
 
-    if ( x3dom.isa( viewpoint, x3dom.nodeTypes.OrthoViewpoint ) )
-    {
-        this.orthoAnimateTo( dist / 2.01, Math.abs( viewpoint._fieldOfView[ 0 ] ) );
-        this.animateTo( viewmat, viewpoint );
-    }
-    else
-    {
-        this.animateTo( viewmat, viewpoint );
-    }
+    return viewmat;
 };
 
 /**
