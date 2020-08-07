@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='IntegerTriggerOnTrue.x3d' name='title'/>
+    <meta content='Prototype emitting Integer upon receiving a True event.' name='description'/>
+    <meta content='Andreas Plesch' name='creator'/>
+    <meta content='4 June 2020' name='created'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='IntegerTriggerOnTrue.x3d'/>
+    <ProtoDeclare name='IntegerTriggerOnTrue'>
+      <ProtoInterface>
+        <field accessType='inputOnly' name='set_boolean' type='SFBool' />
+        <field accessType='inputOutput' name='integerKey' type='SFInt32' value='-1' />
+		<field accessType='outputOnly' name='triggerValue' type='SFInt32' value='-1' />
+      </ProtoInterface>
+      <ProtoBody>
+        <IntegerTrigger DEF='trigger'>
+			<IS>
+				<connect nodeField='integerKey' protoField='integerKey' />
+				<connect nodeField='triggerValue' protoField='triggerValue' />
+			</IS>
+        </IntegerTrigger>
+		<BooleanFilter DEF='filter'>
+			<IS>
+				<connect nodeField='set_boolean' protoField='set_boolean' />
+			</IS>
+		</BooleanFilter>
+		<ROUTE fromNode='filter' fromField='inputTrue' toNode='trigger' toField='set_boolean' />
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- End of prototype -->
+    
+	<Transform translation='-2 2 0'>
+		<TouchSensor DEF='BoxButton' />
+		<Shape>
+			<Appearance DEF='grey'>
+				<Material diffuseColor='0.4 0.4 0.5'/>
+			</Appearance>
+			<Text string='"Click for Box"' />
+		</Shape>
+	</Transform>
+	
+	<Transform translation='-2 -2 0'>
+		<TouchSensor DEF='SphereButton' />
+		<Shape>
+			<Appearance USE='grey' />
+			<Text string='"Click for Sphere"' />
+		</Shape>
+	</Transform>
+	
+	<Switch DEF='Selection'>
+		<Shape>
+			<Appearance USE='grey' />
+			<Box/>
+		</Shape>
+		<Shape>
+			<Appearance USE='grey' />
+			<Sphere/>
+		</Shape>
+	</Switch>
+	
+	<ProtoInstance DEF='TriggerZero' name='IntegerTriggerOnTrue'>
+      <fieldValue name='integerKey' value='0' />
+    </ProtoInstance>
+    
+	<ProtoInstance DEF='TriggerOne' name='IntegerTriggerOnTrue'>
+      <fieldValue name='integerKey' value='1' />
+    </ProtoInstance>
+    
+	<ROUTE fromNode='BoxButton' fromField='isActive' toNode='TriggerZero' toField='set_boolean' />
+	<ROUTE fromNode='SphereButton' fromField='isActive' toNode='TriggerOne' toField='set_boolean' />
+	<ROUTE fromNode='TriggerZero' fromField='triggerValue' toNode='Selection' toField='whichChoice' />
+	<ROUTE fromNode='TriggerOne' fromField='triggerValue' toNode='Selection' toField='whichChoice' />
+	
+  </Scene>
+</X3D>

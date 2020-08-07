@@ -4113,6 +4113,7 @@ x3dom.fields.SFColorRGBA.prototype.setValues = function ( color )
     this.g = color.g;
     this.b = color.b;
     this.a = color.a;
+    return this;
 };
 
 /**

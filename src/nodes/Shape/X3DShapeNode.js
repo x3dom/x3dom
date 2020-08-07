@@ -141,7 +141,7 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if ( !this.volumeValid() && this._vf.render )
+                if ( !this.volumeValid() && this.renderFlag && this.renderFlag() )
                 {
                     var geo = this._cf.geometry.node;
                     var childVol = geo ? geo.getVolume() : null;

@@ -90,7 +90,22 @@ x3dom.registerNodeType(
 
                 // TODO: implement #Viewpoint bind
                 // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/networking.html#Anchor
+
                 x3dom.debug.logInfo( "Anchor url=" + url + ", target=" + target + ", #viewpoint=" + anchor );
+
+                if ( anchor.length > 0 && url == "#" + anchor )
+                {
+                    if ( anchor in this._nameSpace.defMap )
+                    {
+                        var vp = this._nameSpace.defMap[ anchor ];
+                        vp._xmlNode.setAttribute( "bind", "true" );
+                    }
+                    else
+                    {
+                        x3dom.debug.logWarning( "Anchor #viewpoint=" + anchor + " not in DEF list." );
+                    }
+                    return;
+                }
 
                 if ( target.length != 0 || target != "_self" )
                 {

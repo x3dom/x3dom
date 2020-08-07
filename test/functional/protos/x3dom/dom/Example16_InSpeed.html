@@ -1,0 +1,117 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+    <title>nested proto dom test</title>
+    <script type="text/javascript" src="../../../../x3dom-include.js?full"></script>
+    <style>
+        x3d {
+        	height: 50%
+        }
+    </style>
+</head>
+<body>
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='Example16.x3d' name='title'></meta>
+    <meta content='X3D working group' name='creator'></meta>
+    <meta content='Don Brutzman' name='creator'></meta>
+    <meta content='26 June 2000' name='created'></meta>
+    <meta content='28 October 2019' name='modified'></meta>
+    <meta content='26 June 2020' name='modified'></meta>
+    <meta content='VRML 97 specification example: Chopper. Click chopper to toggle rotor spinning.' name='description'></meta>
+    <meta content='originals/exampleD_16.wrl' name='reference'></meta>
+    <meta content='VRML 97, ISO/IEC 14772-1, Part 1: Functional specification and UTF-8 encoding, D.16 Chopper' name='specificationSection'></meta>
+    <meta content='https://www.web3d.org/documents/specifications/14772/V2.0/part1/examples.html#D.16' name='specificationUrl'></meta>
+    <meta content='https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Example16.x3d' name='identifier'></meta>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'></meta>
+    <meta content='../license.html' name='license'></meta>
+  </head>
+  <Scene>
+    <WorldInfo title='Example16.x3d'></WorldInfo>
+    <ExternProtoDeclare appinfo='Rotor prototype to spin children geometry' name='Rotor' url='"../extern/Rotor.x3d#Rotor" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Rotor.x3d#Rotor" "Rotor.wrl#Rotor" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/Rotor.wrl#Rotor"'>
+      <field accessType='initializeOnly' appinfo='rotation rate' name='rate' type='SFTime'></field>
+      <field accessType='initializeOnly' appinfo='children geometry to spin' name='children' type='MFNode'></field>
+      <field accessType='inputOutput' appinfo='exposed TimeSensor field for animation' name='startTime' type='SFTime'></field>
+      <field accessType='inputOutput' appinfo='exposed TimeSensor field for animation' name='stopTime' type='SFTime'></field>
+    </ExternProtoDeclare>
+    <ProtoDeclare name='Chopper'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='rotorSpeed' type='SFTime' value='1'></field>
+        <field accessType='inputOutput' name='stopTime' type='SFTime' value='0'></field>
+        <field accessType='inputOutput' name='startTime' type='SFTime' value='0'></field>
+        <field accessType='inputOutput' name='on' type='SFBool' value='true'></field>
+      </ProtoInterface>
+      <ProtoBody>
+        <Group>
+          <TouchSensor DEF='Touch' description='touch to start/stop spinning rotor'></TouchSensor>
+          <Inline url='"../extern/ChopperBody.x3d" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/ChopperBody.x3d" "ChopperBody.wrl" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/ChopperBody.wrl"'></Inline>
+          <Rotor DEF='Top'
+            stopTime='1'>
+            
+              <Inline url='"../extern/ChopperRotor.x3d" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/ChopperRotor.x3d" "ChopperRotor.wrl" "https://www.web3d.org/x3d/content/examples/Basic/Vrml97Specification/ChopperRotor.wrl"'></Inline>
+            
+            <IS>
+              <connect nodeField='rate' protoField='rotorSpeed'></connect>
+              <connect nodeField='stopTime' protoField='stopTime'></connect>
+              <connect nodeField='startTime' protoField='startTime'></connect>
+            </IS>
+          </Rotor>
+        </Group>
+        <BooleanTrigger DEF='trigger' ></BooleanTrigger>
+        <BooleanToggle DEF='toggler' >
+            <IS>
+                <connect nodeField='toggle' protoField='on'></connect>
+            </IS>
+        </BooleanToggle>
+        <BooleanFilter DEF='brancher' ></BooleanFilter>
+        <TimeTrigger DEF='stopTimer' ></TimeTrigger>
+        <TimeTrigger DEF='startTimer' ></TimeTrigger>
+        <ROUTE fromField='touchTime' fromNode='Touch' toField='set_triggerTime' toNode='trigger'></ROUTE>
+        <ROUTE fromField='triggerTrue' fromNode='trigger' toField='set_boolean' toNode='toggler'></ROUTE>
+        <ROUTE fromField='toggle' fromNode='toggler' toField='set_boolean' toNode='brancher'></ROUTE>
+        <ROUTE fromField='inputFalse' fromNode='brancher' toField='set_boolean' toNode='stopTimer'></ROUTE>
+        <ROUTE fromField='inputTrue' fromNode='brancher' toField='set_boolean' toNode='startTimer'></ROUTE>
+        <ROUTE fromField='triggerTime' fromNode='startTimer' toField='startTime' toNode='Top'></ROUTE>
+        <ROUTE fromField='triggerTime' fromNode='stopTimer' toField='stopTime' toNode='Top'></ROUTE>
+        
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- ==================== -->
+    <Viewpoint description='Example 16' position='0 0 5'></Viewpoint>
+    <Group>
+      <Chopper DEF='MikesChopper' ></Chopper>
+    </Group>
+  </Scene>
+</X3D>
+<button onclick='changeSpeed()'>random speed</button>
+<input style='width:90%' type='range' min='0.1' oninput='adjustSpeed(this)'/>
+</body>
+
+<script type="text/javascript">
+   function changeSpeed()
+   {
+		var rate = speed (100);
+		document.querySelector('[type="range"]').value = rate ; 
+		setSpeed(40 / rate);
+		
+   }
+   function speed( s )
+   {
+        return Math.random() * s;
+   }
+   function setSpeed(t)
+   {
+		var chopper = document.querySelector('Chopper');
+		chopper.setAttribute('on', false);
+		setTimeout( () => {
+		    chopper.setAttribute('rotorSpeed', t);
+	    	chopper.setAttribute('on', true);
+		}, 20);
+   }
+   function adjustSpeed(e)
+   {
+   	    setSpeed( 40 / e.value );
+   }
+</script>
+</html>

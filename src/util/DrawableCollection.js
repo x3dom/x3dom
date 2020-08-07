@@ -72,7 +72,7 @@ x3dom.DrawableCollection.prototype.cull = function ( transform, graphState, sing
 {
     var node = graphState.boundedNode;  // get ref to SG node
 
-    if ( !node || !node._vf.render )
+    if ( !node || !node.renderFlag() )
     {
         return -1;
     }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.2//EN" "http://www.web3d.org/specifications/x3d-3.2.dtd">
+<X3D profile="Interchange" version="3.2"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.2.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="teapot_externproto.x3dv" />
+</head>
+<Scene>
+	<ExternProtoDeclare name="Teapot" url='"urn:castle-engine.sourceforge.io:node:Teapot" "teapot_fallback_implementation.x3dv#Teapot"'>
+			<field accessType="inputOutput" type="SFNode" name="metadata" />
+			<field accessType="initializeOnly" type="SFVec3f" name="size" />
+			<field accessType="initializeOnly" type="SFBool" name="solid" />
+			<field accessType="initializeOnly" type="SFBool" name="manifold" />
+			<field accessType="inputOutput" type="SFNode" name="texCoord" />
+	</ExternProtoDeclare>
+	<Shape>
+		<Appearance>
+			<Material />
+		</Appearance>
+		<Teapot />
+	</Shape>
+</Scene>
+</X3D>

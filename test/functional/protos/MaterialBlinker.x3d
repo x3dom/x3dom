@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='MaterialBlinker.x3d' name='title'/>
+    <meta content='for expansion testing' name='description'/>
+    <meta content='Based on MaterialModulator.x3d' name='hint'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='MaterialModulator.x3d'/>
+    <ProtoDeclare appinfo='mimic a Material node and modulate the diffuseColor field as an animation effect' documentation='http://x3dgraphics.com/examples/X3dForWebAuthors/Chapter14Prototypes/MaterialModulatorIndex.html' name='MaterialModulator'>
+      <ProtoInterface>
+        
+      </ProtoInterface>
+      <ProtoBody>
+        <Material DEF='MaterialNode'>
+          
+        </Material>
+		<ColorInterpolator DEF='cI' id='ColorInterpolator1_16' key='0  0.412386  1.000704' keyValue='0.800000 0.800000 0.800000  0.882196 0.800000 0  1 0.136646 0'>
+		</ColorInterpolator>
+
+        <ROUTE fromNode='cI' fromField='value_changed' toNode='MaterialNode' toField='set_diffuseColor'></ROUTE>
+		<TimeSensor DEF='ModulationClock' cycleInterval='2' loop='true'>
+        </TimeSensor>
+        <ROUTE fromField='fraction_changed' fromNode='ModulationClock' toNode='cI' toField='set_fraction'/>
+      </ProtoBody>
+    </ProtoDeclare>
+    <!-- Rendered geometry for the ProtoInstance now follows prototype declaration -->
+    <Transform translation='0 1 0'>
+      <Shape>
+        <Sphere/>
+        <Appearance>
+          <ProtoInstance DEF='MaterialModulatorInstance' containerField='material' name='MaterialModulator'>
+            
+          </ProtoInstance>
+        </Appearance>
+      </Shape>
+    </Transform>
+    <!-- Selectable Text design pattern has transparent Box and TouchSensor description as a tooltip -->
+    
+  </Scene>
+</X3D>

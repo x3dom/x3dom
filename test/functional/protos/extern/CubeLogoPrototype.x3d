@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Immersive' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <meta content='CubeLogoPrototype.x3d' name='title'/>
+    <meta content='This file defines a prototype cube of size 2 x 2 x 2. The fields allow any shape to be drawn on the faces.' name='description'/>
+    <meta content='Roy Walmsley' name='creator'/>
+    <meta content='18 March 2017' name='created'/>
+    <meta content='20 October 2019' name='modified'/>
+    <meta content='manual' name='generator'/>
+    <meta content='X3D-Edit 3.3, https://savage.nps.edu/X3D-Edit' name='generator'/>
+    <meta content='https://www.web3d.org/x3d/content/examples/Basic/Web3dOutreach/CubeLogoPrototype.x3d' name='identifier'/>
+    <meta content='../license.html' name='license'/>
+  </head>
+  <Scene>
+    <WorldInfo title='CubeLogoPrototype.x3d'/>
+    <ProtoDeclare appinfo='Defines a cube and permits any externally defined shapes to be drawn on the six faces' name='Cubic_Logo'>
+      <ProtoInterface>
+        <field accessType='inputOutput' name='internalColor' type='SFColor' value='0 0 0'/>
+        <field accessType='inputOutput' name='frontFace' type='MFNode'/>
+        <field accessType='inputOutput' name='backFace' type='MFNode'/>
+        <field accessType='inputOutput' name='leftFace' type='MFNode'/>
+        <field accessType='inputOutput' name='rightFace' type='MFNode'/>
+        <field accessType='inputOutput' name='topFace' type='MFNode'/>
+        <field accessType='inputOutput' name='bottomFace' type='MFNode'/>
+      </ProtoInterface>
+      <ProtoBody>
+        <Group>
+          <Shape DEF='Internal_Cube'>
+            <Appearance>
+              <Material>
+                <IS>
+                  <connect nodeField='diffuseColor' protoField='internalColor'/>
+                </IS>
+              </Material>
+            </Appearance>
+            <Box size='0.9 0.9 0.9'/>
+          </Shape>
+          <Transform DEF='Front_Object' translation='0 0 0.45'>
+            <Transform DEF='Front_Reorienter'>
+              <IS>
+                <connect nodeField='children' protoField='frontFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+          <Transform DEF='Bottom_Object' rotation='1 0 0 1.5708' translation='0 -0.45 0'>
+            <Transform DEF='Bottom_Reorienter' rotation='0 0 1 3.1416'>
+              <IS>
+                <connect nodeField='children' protoField='bottomFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+          <Transform DEF='Right_Object' rotation='0 1 0 1.5708' translation='0.45 0 0'>
+            <Transform DEF='Right_Reorienter'>
+              <IS>
+                <connect nodeField='children' protoField='rightFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+          <Transform DEF='Left_Object' rotation='0 1 0 -1.5708' translation='-0.45 0 0'>
+            <Transform DEF='Left_Reorienter' rotation='0 0 1 1.5708'>
+              <IS>
+                <connect nodeField='children' protoField='leftFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+          <Transform DEF='Back_Object' rotation='0 1 0 3.1416' translation='0 0 -0.45'>
+            <Transform DEF='Back_Reorienter'>
+              <IS>
+                <connect nodeField='children' protoField='backFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+          <Transform DEF='Top_Object' rotation='1 0 0 -1.5708' translation='0 0.45 0'>
+            <Transform DEF='Top_Reorienter' rotation='0 0 1 3.1416'>
+              <IS>
+                <connect nodeField='children' protoField='topFace'/>
+              </IS>
+            </Transform>
+          </Transform>
+        </Group>
+      </ProtoBody>
+    </ProtoDeclare>
+    <Anchor description='Select text to view example model' url='"VirtualRealityHackathonLogoLetterPrototypes.x3d" "https://www.web3d.org/x3d/content/examples/Basic/Web3dOutreach/VirtualRealityHackathonLogoLetterPrototypes.x3d" "VirtualRealityHackathonLogoLetterPrototypes.wrl" "https://www.web3d.org/x3d/content/examples/Basic/Web3dOutreach/VirtualRealityHackathonLogoLetterPrototypes.wrl"'>
+      <!-- Selectable Text design pattern has transparent Box and Anchor description as a tooltip -->
+      <Group>
+        <Shape>
+          <Text string='"CubeLogoPrototype.x3d#Cubic_Logo" "" "prototype declaration is used by" "" "VirtualRealityHackathonLogoLetterPrototypes.x3d"'>
+            <FontStyle family='"SANS"' justify='"MIDDLE" "MIDDLE"' size='0.4' style='BOLD'/>
+          </Text>
+          <Appearance>
+            <Material diffuseColor='0.9 0.9 0.9'/>
+          </Appearance>
+        </Shape>
+        <Shape>
+          <Box size='12 2.5 .001'/>
+          <Appearance>
+            <Material diffuseColor='0.6 0.6 0.9' transparency='0.8'/>
+          </Appearance>
+        </Shape>
+      </Group>
+    </Anchor>
+  </Scene>
+</X3D>

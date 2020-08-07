@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.0//EN" "http://www.web3d.org/specifications/x3d-3.0.dtd">
+<X3D profile="Interchange" version="3.0"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+     xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+<head>
+	<meta name="generator" content="view3dscene, https://castle-engine.io/view3dscene.php" />
+	<meta name="source" content="kings_head.x3dv" />
+</head>
+<Scene>
+	<Group>
+		<Switch>
+			<DirectionalLight />
+		</Switch>
+		<Shape>
+			<Appearance>
+				<ImageTexture
+					url='"../textures/crown.png"'
+					repeatT="false"
+					alphaChannel="TEST" />
+				<Material />
+			</Appearance>
+			<Cylinder
+				top="false"
+				bottom="false"
+				solid="false" />
+		</Shape>
+		<Transform
+			translation="0 -2 0">
+			<Transform
+				scale="1.20000004768372 2 1.20000004768372">
+				<Shape>
+					<Appearance>
+						<Material />
+					</Appearance>
+					<Sphere />
+				</Shape>
+			</Transform>
+			<Transform
+				translation="0.800000011920929 0.400000005960464 0.800000011920929">
+				<Transform DEF="KingsEye">
+					<Shape>
+						<Appearance>
+							<Material
+								diffuseColor="1 0 0" />
+						</Appearance>
+						<Sphere
+							radius="0.200000002980232" />
+					</Shape>
+				</Transform>
+			</Transform>
+			<Transform
+				translation="-0.800000011920929 0.400000005960464 0.800000011920929">
+				<Transform USE="KingsEye" />
+			</Transform>
+			<Transform DEF="KingsNose"
+				translation="0 0 1.29999995231628">
+				<Shape>
+					<Appearance>
+						<Material
+							diffuseColor="0 0 1" />
+					</Appearance>
+					<Sphere
+						radius="0.400000005960464" />
+				</Shape>
+			</Transform>
+		</Transform>
+	</Group>
+	<EXPORT localDEF="KingsNose" AS="Nose" />
+	<EXPORT localDEF="KingsEye" />
+</Scene>
+</X3D>
