@@ -36,6 +36,16 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool( ctx, "loop", false );
+
+            /**
+             * Description for intended purpose of the node.
+             * @var {x3dom.fields.SFString} description
+             * @memberof x3dom.nodeTypes.X3DTimeDependentNode
+             * @initvalue ""
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFString( ctx, "description", "" );
         }
     )
 );
