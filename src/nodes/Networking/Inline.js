@@ -38,7 +38,10 @@ x3dom.registerNodeType(
             this.addField_MFString( ctx, "url", [] );
 
             /**
-             * Specifies whether the X3D file specified by the url field is loaded. Hint: use LoadSensor to detect when loading is complete. TRUE: load immediately (it's also possible to load the URL at a later time by sending a TRUE event to the load field); FALSE: no action is taken (by sending a FALSE event to the load field of a previously loaded Inline, the contents of the Inline will be unloaded from the scene graph)
+             * Specifies whether the X3D file specified by the url field is loaded.
+             * TRUE: load immediately (it's also possible to load the URL at a later time by sending a TRUE event to the load field);
+             * FALSE: no action is taken (by sending a FALSE event to the load field of a previously loaded Inline,
+             * the contents of the Inline will be unloaded from the scene graph)
              * @var {x3dom.fields.SFBool} load
              * @memberof x3dom.nodeTypes.Inline
              * @initvalue true
@@ -46,6 +49,17 @@ x3dom.registerNodeType(
              * @instance
              */
             this.addField_SFBool( ctx, "load", true );
+
+            /**
+             * The description field specifies a textual description.
+             * This may be used by browser-specific user interfaces that wish to present users with more detailed information.
+             * @var {x3dom.fields.SFString} description
+             * @memberof x3dom.nodeTypes.Anchor
+             * @initvalue []
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFString( ctx, "description", "" );
 
             /**
              * Specifies the namespace of the Inline node.

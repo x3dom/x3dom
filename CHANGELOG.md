@@ -15,6 +15,7 @@
   * experimental support for X3D prototypes
   * X3D 4.0: visible field
   * X3D 4.0: viewpoint: viewAll, near/farClipping, navigationInfo fields
+  * X3D 4.0: description field for more nodes
 * Improvements
   * linted source code
   * replaced deprecated MutationEvents with a MutationObserver
