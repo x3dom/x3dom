@@ -1388,8 +1388,8 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function ( Q, S )
     {
         for ( var j = i; j < 3; ++j )
         {
-            S[ "_" + j + i ] = 0.5 * ( S[ "_" + j + i ] + S[ "_" + i + j ] );
-            S[ "_" + i + j ] = 0.5 * ( S[ "_" + j + i ] + S[ "_" + i + j ] );
+            S.setAt( j, i, 0.5 * ( S.at( j, i ) + S.at( i, j ) ) );
+            S.setAt( i, j, 0.5 * ( S.at( j, i ) + S.at( i, j ) ) );
         }
     }
 
@@ -1465,11 +1465,11 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function ( SO, k )
 
                 for ( var j = 2; j >= 0; --j )
                 {
-                    var a = SO[ "_" + j + p ];
-                    var b = SO[ "_" + j + q ];
+                    var a = SO.at( j, p );
+                    var b = SO.at( j, q );
 
-                    SO[ "_" + j + p ] -= s * ( b + tau * a );
-                    SO[ "_" + j + q ] += s * ( a - tau * b );
+                    SO.setAt( j, p, SO.at( j, p ) - s * ( b + tau * a ) );
+                    SO.setAt( j, q, SO.at( j, q ) + s * ( a - tau * b ) );
                 }
             }
         }
