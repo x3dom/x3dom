@@ -27,6 +27,54 @@ x3dom.registerNodeType(
         {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call( this, ctx );
 
+            /**
+             * Specifies the near clipping plane, alias for zNear
+             * @var {x3dom.fields.SFFloat} nearClippingPlane
+             * @range -1 or [0, inf]
+             * @memberof x3dom.nodeTypes.X3DViewpointNode
+             * @initvalue -1
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFFloat( ctx, "nearClippingPlane", -1 );
+
+            /**
+             * Specifies the far clipping plane, alias for zFar
+             * @var {x3dom.fields.SFFloat} farClippingPlane
+             * @range -1 or [0, inf]
+             * @memberof x3dom.nodeTypes.X3DViewpointNode
+             * @initvalue -1
+             * @field x3dom
+             * @instance
+             */
+            this.addField_SFFloat( ctx, "farClippingPlane", -1 );
+
+            /**
+             * When the viewAll field is set to TRUE or a viewpoint is bound with viewAll field TRUE,
+             * the current view is modified to change the centerOfRotation field to match center of the bounding box for the entire visible scene,
+             * and the orientation field is modified to aim at that point. Finally, the zoom position or fieldofview is adjusted to contain
+             * the entire scene in the current viewing window. If needed, the near and far clipping planes shall be adjusted to allow viewing
+             * the entire scene. When the value of the viewAll field is changed from TRUE to FALSE, no change in the current view occurs.
+             * @var {x3dom.fields.SFBool} viewAll
+             * @memberof x3dom.nodeTypes.X3DViewpointNode
+             * @initvalue false
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFBool( ctx, "viewAll", false );
+
+            /**
+             * Defines a dedicated NavigationInfo node for this X3DViewpointNode. The specified NavigationInfo node receives
+             * a set_bind TRUE event at the time when the parent node is bound and receives a set_bind FALSE at the time
+             * when the parent node is unbound.
+             * @var {x3dom.fields.SFBool} navigationInfo
+             * @memberof x3dom.nodeTypes.X3DViewpointNode
+             * @initvalue null
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode( "navigationInfo", x3dom.nodeTypes.NavigationInfo );
+
             // attach some convenience accessor methods to dom/xml node
             if ( ctx && ctx.xmlNode )
             {
@@ -64,20 +112,30 @@ x3dom.registerNodeType(
             activate : function ( prev )
             {
                 var viewarea = this._nameSpace.doc._viewarea;
-                if ( prev && this._bindAnimation )
+                prev = prev || this;
+                var target = this;
+                if ( this._bindAnimation )
                 {
-                    viewarea.animateTo( this, prev._autoGen ? null : prev );
+                    if ( this._vf.viewAll )
+                    {
+                        var sceneBBox = this._runtime.getSceneBBox();
+                        target = viewarea.getFitViewMatrix( sceneBBox.min, sceneBBox.max, prev, true );
+                    }
+                    viewarea.animateTo( target, prev._autoGen ? null : prev );
                 }
                 viewarea._needNavigationMatrixUpdate = true;
 
+                if ( this._cf.navigationInfo.node )
+                {
+                    this._cf.navigationInfo.node.bind( true );
+                }
+
                 x3dom.nodeTypes.X3DBindableNode.prototype.activate.call( this, prev );
-                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             deactivate : function ( prev )
             {
                 x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call( this, prev );
-                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             getTransformation : function ()
