@@ -112,6 +112,15 @@ x3dom.registerNodeType(
             }
             else
             {
+                this._calcMesh();
+                this._mesh._invalidate = true;
+
+                x3dom.geoCache[ geoCacheID ] = this._mesh;
+            }
+        },
+        {
+            _calcMesh : function ()
+            {
                 var bottomRadius = this._vf.bottomRadius,
                     height = this._vf.height;
                 var topRadius = this._vf.topRadius,
@@ -225,14 +234,10 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
                 this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
                 this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
+            },
 
-                x3dom.geoCache[ geoCacheID ] = this._mesh;
-            }
-        },
-        {
             fieldChanged : function ( fieldName )
             {
                 if ( fieldName == "bottomRadius" || fieldName == "topRadius" ||
@@ -244,121 +249,8 @@ x3dom.registerNodeType(
                     this._mesh._normals[ 0 ] = [];
                     this._mesh._texCoords[ 0 ] = [];
 
-                    var bottomRadius = this._vf.bottomRadius,
-                        height = this._vf.height;
-                    var topRadius = this._vf.topRadius,
-                        sides = this._vf.subdivision;
-
-                    var beta,
-                        x,
-                        z,
-                        delta = 2.0 * Math.PI / sides,
-
-                        incl = ( bottomRadius - topRadius ) / height,
-                        nlen = 1.0 / Math.sqrt( 1.0 + incl * incl ),
-
-                        j = 0,
-                        k = 0,
-                        h,
-                        base;
-
-                    if ( this._vf.side && height > 0 )
-                    {
-                        var px = 0,
-                            pz = 0;
-
-                        for ( j = 0, k = 0; j <= sides; j++ )
-                        {
-                            beta = j * delta;
-                            x = Math.sin( beta );
-                            z = -Math.cos( beta );
-
-                            if ( topRadius > x3dom.fields.Eps )
-                            {
-                                px = x * topRadius;
-                                pz = z * topRadius;
-                            }
-
-                            this._mesh._positions[ 0 ].push( px, height / 2, pz );
-                            this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
-                            this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 1 );
-
-                            this._mesh._positions[ 0 ].push( x * bottomRadius, -height / 2, z * bottomRadius );
-                            this._mesh._normals[ 0 ].push( nSign * x / nlen, nSign * incl / nlen, nSign * z / nlen );
-                            this._mesh._texCoords[ 0 ].push( 1.0 - j / sides, 0 );
-
-                            if ( j > 0 )
-                            {
-                                this._mesh._indices[ 0 ].push( k    );
-                                this._mesh._indices[ 0 ].push( k + 2 );
-                                this._mesh._indices[ 0 ].push( k + 1 );
-
-                                this._mesh._indices[ 0 ].push( k + 1 );
-                                this._mesh._indices[ 0 ].push( k + 2 );
-                                this._mesh._indices[ 0 ].push( k + 3 );
-
-                                k += 2;
-                            }
-                        }
-                    }
-
-                    if ( this._vf.bottom && bottomRadius > 0 )
-                    {
-                        base = this._mesh._positions[ 0 ].length / 3;
-
-                        for ( j = sides - 1; j >= 0; j-- )
-                        {
-                            beta = j * delta;
-                            x = bottomRadius * Math.sin( beta );
-                            z = -bottomRadius * Math.cos( beta );
-
-                            this._mesh._positions[ 0 ].push( x, -height / 2, z );
-                            this._mesh._normals[ 0 ].push( 0, nSign * -1, 0 );
-                            this._mesh._texCoords[ 0 ].push( x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5 );
-                        }
-
-                        h = base + 1;
-
-                        for ( j = 2; j < sides; j++ )
-                        {
-                            this._mesh._indices[ 0 ].push( h );
-                            this._mesh._indices[ 0 ].push( base );
-
-                            h = base + j;
-                            this._mesh._indices[ 0 ].push( h );
-                        }
-                    }
-
-                    if ( this._vf.top && topRadius > x3dom.fields.Eps )
-                    {
-                        base = this._mesh._positions[ 0 ].length / 3;
-
-                        for ( j = sides - 1; j >= 0; j-- )
-                        {
-                            beta = j * delta;
-                            x =  topRadius * Math.sin( beta );
-                            z = -topRadius * Math.cos( beta );
-
-                            this._mesh._positions[ 0 ].push( x, height / 2, z );
-                            this._mesh._normals[ 0 ].push( 0, nSign * 1, 0 );
-                            this._mesh._texCoords[ 0 ].push( x / topRadius / 2 + 0.5, 1.0 - z / topRadius / 2 + 0.5 );
-                        }
-
-                        h = base + 1;
-
-                        for ( j = 2; j < sides; j++ )
-                        {
-                            this._mesh._indices[ 0 ].push( base );
-                            this._mesh._indices[ 0 ].push( h );
-
-                            h = base + j;
-                            this._mesh._indices[ 0 ].push( h );
-                        }
-                    }
-
+                    this._calcMesh();
                     this.invalidateVolume();
-                    this._mesh._numFaces = this._mesh._indices[ 0 ].length / 3;
-                    this._mesh._numCoords = this._mesh._positions[ 0 ].length / 3;
 
                     this._parentNodes.forEach( function ( node )
                     {
