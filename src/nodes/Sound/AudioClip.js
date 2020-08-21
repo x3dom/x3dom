@@ -86,12 +86,23 @@ x3dom.registerNodeType(
 
                 var that = this;
 
+                var audioID = 0;
+
                 this._startAudio = function ()
                 {
                     that._audio.loop = that._vf.loop ? "loop" : "";
                     if ( that._vf.enabled === true )
                     {
-                        that._audio.play();
+                        that._audio.play()
+                            .then( function ( success )
+                            {
+                                clearTimeout( audioID );
+                            } )
+                            .catch( function ( error )
+                            {
+                                x3dom.debug.logError( error );
+                                audioID = setTimeout( that._startAudio, 100 );
+                            } );
                     }
                 };
 
