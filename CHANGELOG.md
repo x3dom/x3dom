@@ -41,6 +41,7 @@
   * TouchSensor hit output fields
   * Light output fields
   * robust transitions to animated viewpoints
+  * keep trying to start enabled audio
   
 ## Version 1.8.1
 
