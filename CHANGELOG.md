@@ -17,6 +17,7 @@
   * X3D 4.0: viewpoint: viewAll, near/farClipping, navigationInfo fields
   * X3D 4.0: description field for more nodes
   * X3D 4.0: Cone/Cylinder bttom/side/top fields changeable
+  * X3D 4.0: PointProperties: variable point size and sprites
 * Improvements
   * linted source code
   * replaced deprecated MutationEvents with a MutationObserver
