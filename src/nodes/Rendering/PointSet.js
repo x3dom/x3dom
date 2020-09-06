@@ -50,6 +50,16 @@ x3dom.registerNodeType(
              */
             this.addField_SFNode( "color", x3dom.nodeTypes.X3DColorNode );
 
+            /**
+             * Stores a Normal node containing the normals for each point.
+             * @var {x3dom.fields.SFNode} normal
+             * @memberof x3dom.nodeTypes.PointSet
+             * @initvalue null
+             * @field x3d
+             * @instance
+             */
+            this.addField_SFNode( "normal", x3dom.nodeTypes.Normal );
+
             this._mesh._primType = "POINTS";
         },
         {
@@ -75,13 +85,20 @@ x3dom.registerNodeType(
                     }
                 }
 
+                var normalNode = this._cf.normal.node;
+                var normals = new x3dom.fields.MFVec3f();
+                if ( normalNode )
+                {
+                    normals = normalNode._vf.vector;
+                }
+
                 this._mesh._numColComponents = numColComponents;
                 this._mesh._lit = false;
 
                 this._mesh._indices[ 0 ] = [];
                 this._mesh._positions[ 0 ] = positions.toGL();
                 this._mesh._colors[ 0 ] = colors.toGL();
-                this._mesh._normals[ 0 ] = [];
+                this._mesh._normals[ 0 ] = normals.toGL();
                 this._mesh._texCoords[ 0 ] = [];
 
                 this.invalidateVolume();
@@ -120,6 +137,11 @@ x3dom.registerNodeType(
                         node._dirty.colors = true;
                     } );
                 }
+            },
+
+            needLighting : function ()
+            {
+                return ( this._vf.lit && this._cf.normal.node );
             }
         }
     )

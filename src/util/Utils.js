@@ -1144,8 +1144,8 @@ x3dom.Utils.generateProperties = function ( viewarea, shape )
         property.POINTLINE2D      = !geometry.needLighting() ? 1 : 0;
         property.VERTEXID         = ( ( property.BINARYGEOMETRY ) && geometry._vf.idsPerVertex ) ? 1 : 0;
         property.IS_PARTICLE      = ( x3dom.isa( geometry, x3dom.nodeTypes.ParticleSet ) ) ? 1 : 0;
+        property.POINTPROPERTIES  = ( appearance && appearance._cf.pointProperties.node ) ? 1 : 0;
         property.TANGENTDATA      = ( geometry._mesh._tangents[ 0 ].length > 0 && geometry._mesh._binormals[ 0 ].length > 0 ) ? 1 : 0;
-
         property.PBR_MATERIAL     = ( property.APPMAT && x3dom.isa( material, x3dom.nodeTypes.PhysicalMaterial ) ) ? 1 : 0;
         property.TWOSIDEDMAT      = ( property.APPMAT && x3dom.isa( material, x3dom.nodeTypes.TwoSidedMaterial ) ) ? 1 : 0;
         property.SEPARATEBACKMAT  = ( property.TWOSIDEDMAT && material._vf.separateBackColor ) ? 1 : 0;

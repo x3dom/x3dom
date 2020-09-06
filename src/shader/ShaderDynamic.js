@@ -198,8 +198,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
         shader += "attribute vec3 particleSize;\n";
     }
 
+    if ( properties.POINTPROPERTIES )
+    {
+        shader += "uniform vec3 pointSizeAttenuation;\n";
+        shader += "uniform float pointSizeFactor;\n";
+        shader += "uniform float minPointSize;\n";
+        shader += "uniform float maxPointSize;\n";
+    }
+
     //Lights & Fog
-    if ( properties.LIGHTS || properties.FOG || properties.CLIPPLANES )
+    if ( properties.LIGHTS || properties.FOG || properties.CLIPPLANES || properties.POINTPROPERTIES )
     {
         shader += "uniform vec3 eyePosition;\n";
         shader += "varying vec4 fragPosition;\n";
@@ -364,7 +372,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
     //TexCoords
     if ( ( properties.TEXTURED ) && !properties.SPHEREMAPPING )
     {
-        if ( properties.IS_PARTICLE )
+        if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
         {
             shader += "vec2 vertTexCoord = vec2(0.0);\n";
         }
@@ -488,7 +496,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
     }
 
     //Lights & Fog
-    if ( properties.LIGHTS || properties.FOG || properties.CLIPPLANES )
+    if ( properties.LIGHTS || properties.FOG || properties.CLIPPLANES || properties.POINTPROPERTIES )
     {
         shader += "fragPosition = (mat_mv * vec4(vertPosition, 1.0));\n";
         shader += "fragPositionWS = (modelMatrix * vec4(vertPosition, 1.0));\n";
@@ -523,6 +531,14 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function ( gl, prope
         shader += "float spriteDist = (gl_Position.w > 0.000001) ? gl_Position.w : 0.000001;\n";
         shader += "float pointSize = floor(length(particleSize) * 256.0 / spriteDist + 0.5);\n";
         shader += "gl_PointSize = clamp(pointSize, 2.0, 256.0);\n";
+    }
+    else if ( properties.POINTPROPERTIES )
+    {
+        shader += "float r = length( fragPosition.xyz );\n";
+        shader += "vec3 a = pointSizeAttenuation;\n";
+        shader += "float attFactor = ( a.x + a.y * r + a.z * r * r );\n";
+        shader += "float pointSize =  pointSizeFactor * 1.0 / attFactor;\n";
+        shader += "gl_PointSize = clamp(pointSize, minPointSize, maxPointSize);\n";
     }
     else
     {
@@ -873,17 +889,34 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         }
     }
 
+    if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
+    {
+        shader += "vec2 texcoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
+        if ( properties.MULTITEXCOORD )
+        {
+            shader += "vec2 texcoord2 = texcoord;\n";
+        }
+    }
+    else if ( properties.TEXTURED )
+    {
+        shader += "vec2 texcoord = fragTexcoord;\n";
+        if ( properties.MULTITEXCOORD )
+        {
+            shader += "vec2 texcoord2 = fragTexcoord2;\n";
+        }
+    }
+
     if ( properties.UNLIT )
     {
         if ( properties.DIFFUSEMAP )
         {
             if ( properties.DIFFUSEMAPCHANNEL )
             {
-                shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(fragTexcoord2.x, 1.0 - fragTexcoord2.y))" ) + ";\n";
+                shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord2.x, 1.0 - texcoord2.y))" ) + ";\n";
             }
             else
             {
-                shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y))" ) + ";\n";
+                shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord.x, 1.0 - texcoord.y))" ) + ";\n";
             }
 
             if ( properties.ALPHAMODE == "OPAQUE" )
@@ -944,7 +977,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
                     if ( !properties.TANGENTDATA && ( x3dom.caps.STD_DERIVATIVES || x3dom.caps.WEBGL_VERSION == 2 ) )
                     {
-                        shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y), _normalBias);\n";
+                        shader += "normal = perturb_normal( n, fragPosition.xyz, vec2(texcoord.x, 1.0 - texcoord.y), _normalBias);\n";
                     }
                     else
                     {
@@ -952,14 +985,14 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                         shader += "vec3 b = normalize( fragBinormal );\n";
                         shader += "mat3 tangentToWorld = mat3(t, b, n);\n";
 
-                        shader += "normal = texture2D( normalMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
+                        shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
                         shader += "normal = 2.0 * normal - 1.0;\n";
                         shader += "normal = normalize( normal * tangentToWorld );\n";
                     }
                 }
                 else if ( properties.NORMALSPACE == "OBJECT" )
                 {
-                    shader += "normal = texture2D( normalMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
+                    shader += "normal = texture2D( normalMap, vec2(texcoord.x, 1.0-texcoord.y) ).rgb;\n";
 
                     shader += "normal = 2.0 * normal - 1.0;\n";
                     shader += "normal = (mat_n * vec4(normal, 0.0)).xyz;\n";
@@ -976,7 +1009,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             }
             else if ( properties.DIFFPLACEMENTMAP )
             {
-                shader += "texColor = texture2D(diffuseDisplacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y));\n";
+                shader += "texColor = texture2D(diffuseDisplacementMap, vec2(texcoord.x, 1.0-texcoord.y));\n";
             }
             else if ( properties.DIFFUSEMAP || properties.TEXT )
             {
@@ -984,22 +1017,22 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 {
                     if ( properties.DIFFUSEMAPCHANNEL )
                     {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, fragTexcoord2)" ) + ";\n";
+                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texcoord2)" ) + ";\n";
                     }
                     else
                     {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, fragTexcoord)" ) + ";\n";
+                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texcoord)" ) + ";\n";
                     }
                 }
                 else
                 {
                     if ( properties.DIFFUSEMAPCHANNEL )
                     {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(fragTexcoord2.x, 1.0 - fragTexcoord2.y))" ) + ";\n";
+                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord2.x, 1.0 - texcoord2.y))" ) + ";\n";
                     }
                     else
                     {
-                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y))" ) + ";\n";
+                        shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, vec2(texcoord.x, 1.0 - texcoord.y))" ) + ";\n";
                     }
                 }
             }
@@ -1027,13 +1060,13 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
 
             if ( properties.SHINMAP )
             {
-                shader += "_shininess *= texture2D( shininessMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).r;\n";
+                shader += "_shininess *= texture2D( shininessMap, vec2(texcoord.x, 1.0-texcoord.y) ).r;\n";
             }
 
             //Specularmap
             if ( properties.SPECMAP )
             {
-                shader += "_specularColor = texture2D(specularMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
+                shader += "_specularColor = texture2D(specularMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
             }
 
             //Specularmap
@@ -1041,11 +1074,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             {
                 if ( properties.EMISSIVEMAPCHANNEL )
                 {
-                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(fragTexcoord2.x, 1.0-fragTexcoord2.y)).rgb;\n";
+                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb;\n";
                 }
                 else
                 {
-                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
+                    shader += "_emissiveColor = _emissiveColor * texture2D(emissiveMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
                 }
             }
 
@@ -1054,11 +1087,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             {
                 if ( properties.ROUGHNESSMETALLICMAPCHANNEL )
                 {
-                    shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord2.x, 1.0-fragTexcoord2.y)).rgb;\n";
+                    shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb;\n";
                 }
                 else
                 {
-                    shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
+                    shader += "vec3 roughnessMetallic = texture2D(roughnessMetallicMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
                 }
                 shader += "_shininess = 1.0 - (roughnessMetallic.g * (1.0 - _shininess));\n";
                 shader += "_metallic  = roughnessMetallic.b * metallicFactor;\n";
@@ -1068,11 +1101,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             {
                 if ( properties.SPECULARGLOSSINESSMAPCHANNEL )
                 {
-                    shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma( properties, "texture2D(specularGlossinessMap, vec2(fragTexcoord2.x, 1.0 - fragTexcoord2.y))" ) + ";\n";
+                    shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma( properties, "texture2D(specularGlossinessMap, vec2(texcoord2.x, 1.0 - texcoord2.y))" ) + ";\n";
                 }
                 else
                 {
-                    shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma( properties, "texture2D(specularGlossinessMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y))" ) + ";\n";
+                    shader += "vec4 specularGlossiness = " + x3dom.shader.decodeGamma( properties, "texture2D(specularGlossinessMap, vec2(texcoord.x, 1.0 - texcoord.y))" ) + ";\n";
                 }
                 shader += "_shininess = specularGlossiness.a * _shininess;\n";
             }
@@ -1082,11 +1115,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             {
                 if ( properties.OCCLUSIONROUGHNESSMETALLICMAPCHANNEL )
                 {
-                    shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(fragTexcoord2.x, 1.0-fragTexcoord2.y)).rgb;\n";
+                    shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(texcoord2.x, 1.0-texcoord2.y)).rgb;\n";
                 }
                 else
                 {
-                    shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).rgb;\n";
+                    shader += "vec3 occlusionRoughnessMetallic = texture2D(occlusionRoughnessMetallicMap, vec2(texcoord.x, 1.0-texcoord.y)).rgb;\n";
                 }
 
                 shader += "_occlusion = occlusionRoughnessMetallic.r;\n";
@@ -1099,11 +1132,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
             {
                 if ( properties.OCCLUSIONMAPCHANNEL )
                 {
-                    shader += "_occlusion = texture2D(occlusionMap, vec2(fragTexcoord2.x, 1.0-fragTexcoord2.y)).r;\n";
+                    shader += "_occlusion = texture2D(occlusionMap, vec2(texcoord2.x, 1.0-texcoord2.y)).r;\n";
                 }
                 else
                 {
-                    shader += "_occlusion = texture2D(occlusionMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r;\n";
+                    shader += "_occlusion = texture2D(occlusionMap, vec2(texcoord.x, 1.0-texcoord.y)).r;\n";
                 }
             }
         }
@@ -1176,6 +1209,18 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         }
 
         shader += "color.rgb = _emissiveColor + ((ambient + diffuse) * color.rgb + specular * _specularColor) * _occlusion;\n";
+        if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
+        {
+            if ( properties.TEXTURED )
+            {
+                shader += "if (color.a < 0.01 ) discard;\n";
+            }
+            else
+            {
+                shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
+                shader += "if ( pAlpha < 0.01 ) discard;\n";
+            }
+        }
     }
     else
     {
@@ -1188,22 +1233,33 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         {
             if ( properties.PIXELTEX )
             {
-                shader += "vec2 texCoord = fragTexcoord;\n";
+                if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
+                {
+                    shader += "vec2 texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
+                }
+                else
+                {
+                    shader += "vec2 texCoord = fragTexcoord;\n";
+                }
             }
             else
             {
-                shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
-            }
-
-            if ( properties.IS_PARTICLE )
-            {
-                shader += "texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
+                if ( properties.IS_PARTICLE || properties.POINTPROPERTIES )
+                {
+                    shader += "vec2 texCoord = clamp(gl_PointCoord, 0.01, 0.99);\n";
+                    shader += "texCoord.y = 1.0 - texCoord.y;\n";
+                }
+                else
+                {
+                    shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+                }
             }
             shader += "texColor = " + x3dom.shader.decodeGamma( properties, "texture2D(diffuseMap, texCoord)" ) + ";\n";
             shader += "color.a = texColor.a;\n";
 
-            if ( properties.BLENDING || properties.IS_PARTICLE )
+            if ( properties.BLENDING || properties.IS_PARTICLE || properties.POINTPROPERTIES )
             {
+                shader += "if (color.a < 0.01 ) discard;\n";
                 shader += "color.rgb += _emissiveColor.rgb;\n";
                 shader += "color.rgb *= texColor.rgb;\n";
             }
@@ -1225,12 +1281,22 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
                 shader += "color.rgb *= vec3(pAlpha);\n";
                 shader += "color.a = pAlpha;\n";
             }
+            else if ( properties.POINTPROPERTIES && !properties.TEXTURED )
+            {
+                shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
+                shader += "if ( pAlpha < 0.01 ) discard;\n";
+            }
         }
         else if ( properties.IS_PARTICLE )
         {
             shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
             shader += "color.rgb *= vec3(pAlpha);\n";
             shader += "color.a = pAlpha;\n";
+        }
+        else if ( properties.POINTPROPERTIES && !properties.TEXTURED )
+        {
+            shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
+            shader += "if ( pAlpha < 0.01 ) discard;\n";
         }
     }
 
