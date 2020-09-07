@@ -823,7 +823,7 @@ x3dom.fields.SFMatrix4f.fromArray = function ( a )
  *                                                vector
  * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling
  *                                                factors
- * @return {x3dom.fields.SFMatrix4f} the modified matrix
+ * @returns {x3dom.fields.SFMatrix4f} the modified matrix
  */
 x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function ( rotation, translation, scale )
 {
@@ -877,7 +877,7 @@ x3dom.fields.SFMatrix4f.prototype.fromRotationTranslationScale = function ( rota
  * @param {x3dom.fields.SFVec3f}    translation - the 3D translation vector
  * @param {x3dom.fields.SFVec3f}    scale       - the non-uniform scaling
  *                                                factors
- * @return {x3dom.fields.SFMatrix4f} the created transformation matrix
+ * @returns {x3dom.fields.SFMatrix4f} the created transformation matrix
  */
 x3dom.fields.SFMatrix4f.fromRotationTranslationScale = function ( rotation, translation, scale )
 {
@@ -986,6 +986,21 @@ x3dom.fields.SFMatrix4f.prototype.at = function ( i, j )
 {
     var field = "_" + i + j;
     return this[ field ];
+};
+
+/**
+ * Sets the value of this matrix at a given position.
+ *
+ * @param {Number} i - row index (starting with 0)
+ * @param {Number} j - column index (starting with 0)
+ * @param {Number} newEntry - the new value to store at position (i, j)
+ * @returns {x3dom.fields.SFMatrix4f} this modified matrix
+ */
+x3dom.fields.SFMatrix4f.prototype.setAt = function ( i, j, newEntry )
+{
+    var field = "_" + i + j;
+    this[ field ] = newEntry;
+    return this;
 };
 
 /**
@@ -1373,8 +1388,8 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function ( Q, S )
     {
         for ( var j = i; j < 3; ++j )
         {
-            S[ "_" + j + i ] = 0.5 * ( S[ "_" + j + i ] + S[ "_" + i + j ] );
-            S[ "_" + i + j ] = 0.5 * ( S[ "_" + j + i ] + S[ "_" + i + j ] );
+            S.setAt( j, i, 0.5 * ( S.at( j, i ) + S.at( i, j ) ) );
+            S.setAt( i, j, 0.5 * ( S.at( j, i ) + S.at( i, j ) ) );
         }
     }
 
@@ -1450,11 +1465,11 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function ( SO, k )
 
                 for ( var j = 2; j >= 0; --j )
                 {
-                    var a = SO[ "_" + j + p ];
-                    var b = SO[ "_" + j + q ];
+                    var a = SO.at( j, p );
+                    var b = SO.at( j, q );
 
-                    SO[ "_" + j + p ] -= s * ( b + tau * a );
-                    SO[ "_" + j + q ] += s * ( a - tau * b );
+                    SO.setAt( j, p, SO.at( j, p ) - s * ( b + tau * a ) );
+                    SO.setAt( j, q, SO.at( j, q ) + s * ( a - tau * b ) );
                 }
             }
         }
@@ -2849,7 +2864,7 @@ x3dom.fields.Quaternion.prototype.angle = function ()
  * @param {x3dom.fields.SFMatrix4f} matrix - the rotation matrix whose
  *                                           rotation shall be copied
  *                                           into this quaternion
- * @return {x3dom.fields.Quaternion} this modified quaternion
+ * @returns {x3dom.fields.Quaternion} this modified quaternion
  */
 x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
 {
@@ -2935,11 +2950,11 @@ x3dom.fields.Quaternion.prototype.setValue = function ( matrix )
  * Sets this quaternion from the Euler angles representation, and
  * returns this quaternion.
  *
- * @params {Number} alpha - the rotation angle in radians about the
+ * @param {Number} alpha - the rotation angle in radians about the
  *                          first axis
- * @params {Number} beta  - the rotation angle in radians about the
+ * @param {Number} beta  - the rotation angle in radians about the
  *                          second axis
- * @params {Number} gamma - the rotation angle in radians about the
+ * @param {Number} gamma - the rotation angle in radians about the
  *                          third axis
  * @returns {x3dom.fields.Quaternion} the modified quaternion
  */
@@ -3855,6 +3870,50 @@ x3dom.fields.SFColor.prototype.multiply = function ( n )
 };
 
 /**
+ * Returns a single integer-encoded representation of this RGBA color.
+ *
+ * The generated encoding encompasses at most 24 bits, with each eight
+ * consecutive bits reserved for one of the color components. The bits
+ * 0 to  7 encode the blue channel; the bits  8 to 15 store the green
+ * channel; the bits 16 to 23 hold the red channel. The format is thus
+ * visually: RRRRRRRRGGGGGGGGBBBBBBBB.
+ *
+ * @returns {Number} a 32-bit integer representation of this color's
+ *                   components, encoded in its lower 24 bits.
+ */
+x3dom.fields.SFColor.prototype.toUint = function ()
+{
+    return ( ( Math.round( this.r * 255 ) << 16 ) |
+        ( Math.round( this.g * 255 ) << 8 ) |
+        Math.round( this.b * 255 ) ) >>> 0;
+};
+
+/**
+ * Sets this color's components from a single integer-encoded value
+ * holding all channel data in its bits, and returns this color.
+ *
+ * The supplied integer number is considered regarding its first 24
+ * bits, each consecutive eight of which represent the integer value
+ * of one component in the range of [0, 255]. The keys are as follows:
+ *   - Bits  0 to  7 encode the blue  channel .
+ *   - Bits  8 to 15 encode the green channel.
+ *   - Bits 16 to 23 encode the red   channel.
+ * The format is thus visually:
+ *   RRRRRRRRGGGGGGGGBBBBBBBB
+ *
+ * @param {Number} rgbInteger - a 32-bit integer representation of this
+ *                               color's new components
+ * @returns {x3dom.fields.SFColor} this modified color
+ */
+x3dom.fields.SFColor.prototype.setFromUint = function ( rgbInteger )
+{
+    this.r = ( ( ( rgbInteger >> 16 ) & 255 ) / 255 );
+    this.g = ( ( ( rgbInteger >>  8 ) & 255 ) / 255 );
+    this.b = ( ( ( rgbInteger >>  0 ) & 255 ) / 255 );
+    return this;
+};
+
+/**
  * Returns the components of this color as an OpenGL-conformant array
  * of three numbers.
  *
@@ -4054,6 +4113,7 @@ x3dom.fields.SFColorRGBA.prototype.setValues = function ( color )
     this.g = color.g;
     this.b = color.b;
     this.a = color.a;
+    return this;
 };
 
 /**
@@ -4157,6 +4217,33 @@ x3dom.fields.SFColorRGBA.prototype.toUint = function ()
         ( Math.round( this.g * 255 ) << 16 ) |
         ( Math.round( this.b * 255 ) << 8 ) |
         Math.round( this.a * 255 ) ) >>> 0;
+};
+
+/**
+ * Sets this color's components from a single integer-encoded value
+ * holding all channel data in its bits, and returns this color.
+ *
+ * The supplied integer number is considered regarding its first 32
+ * bits, each consecutive eight of which represent the integer value
+ * of one component in the range of [0, 255]. The keys are as follows:
+ *   - Bits  0 to  7 encode the alpha channel .
+ *   - Bits  8 to 15 encode the blue  channel.
+ *   - Bits 16 to 23 encode the green channel.
+ *   - Bits 24 to 31 encode the red   channel.
+ * The format is thus visually:
+ *   RRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA
+ *
+ * @param {Number} rgbaInteger - a 32-bit integer representation of this
+ *                               color's new components
+ * @returns {x3dom.fields.SFColorRGBA} this modified color
+ */
+x3dom.fields.SFColorRGBA.prototype.setFromUint = function ( rgbaInteger )
+{
+    this.r = ( ( ( rgbaInteger >> 24 ) & 255 ) / 255 );
+    this.g = ( ( ( rgbaInteger >> 16 ) & 255 ) / 255 );
+    this.b = ( ( ( rgbaInteger >>  8 ) & 255 ) / 255 );
+    this.a = ( ( ( rgbaInteger >>  0 ) & 255 ) / 255 );
+    return this;
 };
 
 /**
@@ -4830,7 +4917,7 @@ x3dom.fields.MFRotation.parse = function ( str )
  * Parses a string, sets this rotation array's rotation from it, and
  * returns this modified rotation array.
  *
- * @params {String} str - the string to parse the rotations from
+ * @param {String} str - the string to parse the rotations from
  * @returns {x3dom.fields.MFRotation} this modified rotation array
  */
 x3dom.fields.MFRotation.prototype.setValueByStr = function ( str )
