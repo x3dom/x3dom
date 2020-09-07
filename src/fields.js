@@ -1800,8 +1800,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function ( str )
         str = RegExp.$1;
         needTranspose = true;
     }
-    var arr = Array.map( str.split( /[,\s]+/ ),
-        function ( n ) { return +n; } );
+    var arr = str.split( /[,\s]+/ ).map( function ( n ){ return +n; } );
     if ( arr.length >= 16 )
     {
         if ( !needTranspose )
