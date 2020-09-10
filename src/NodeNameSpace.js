@@ -484,7 +484,10 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                     if ( domNode.hasAttribute( "id" ) )
                     {
                         n._DEF = domNode.getAttribute( "id" );
-                        this.defMap[ n._DEF ] = n;
+                        if ( !n._DEF in this.defMap )
+                        {
+                            this.defMap[ n._DEF ] = n;
+                        }
                     }
                 }
 
