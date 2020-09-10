@@ -832,8 +832,18 @@ x3dom.X3DDocument.prototype.onNodeAdded = function ( addedNode, target )
 
     if ( !parent || !parent._nameSpace || !( child instanceof Element ) )
     {
-        x3dom.debug.logWarning( "No _nameSpace in onNodeInserted" );
+        x3dom.debug.logWarning( "No _nameSpace in onNodeAdded" );
         return;
+    }
+
+    if ( "_x3domNode" in child )
+    {
+        if ( child._x3domNode._parentNodes.includes( parent ) )
+        {
+            return;
+        }
+        parent.removeChild( child._x3domNode ); // may never happen
+        this.removeX3DOMBackendGraph( child );
     }
 
     if ( x3dom.caps.DOMNodeInsertedEvent_perSubtree )
