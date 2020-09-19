@@ -71,7 +71,7 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateVertexShader = fun
 
     if ( !gl.getShaderParameter( vertexShader, gl.COMPILE_STATUS ) )
     {
-        x3dom.debug.logError( "[BackgroundCubeTextureShader] VertexShader " + gl.getShaderInfoLog( vertexShader ) );
+        x3dom.debug.logError( "[BackgroundCubeTextureDDSShader] VertexShader " + gl.getShaderInfoLog( vertexShader ) );
     }
 
     return vertexShader;
@@ -89,9 +89,12 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
     shader += "#endif\n\n";
 
     shader += x3dom.shader.toneMapping();
-    shader += x3dom.shader.gammaCorrectionDecl( {} );
 
-    shader +=    "uniform float isVR;\n" +
+    var scene = gl.canvas.parent.doc._viewarea._scene;
+    var properties = { GAMMACORRECTION: scene.getEnvironment()._vf.gammaCorrectionDefault };
+    shader += x3dom.shader.gammaCorrectionDecl( properties );
+
+    shader +=   "uniform float isVR;\n" +
                 "varying float vrOffset;\n" +
                 "varying float fragEyeIdx;\n" +
                 "uniform float screenWidth;\n" +
@@ -114,7 +117,7 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
                 "       color.rgb = tonemapeFilmic(color.rgb);\n" +
                 "    }\n" +
 
-                "   color = " + x3dom.shader.encodeGamma( {}, "color" ) + ";\n" +
+                "   color = " + x3dom.shader.encodeGamma( properties, "color" ) + ";\n" +
 
                 "   gl_FragColor = color;\n" +
                 "}\n";
@@ -125,7 +128,7 @@ x3dom.shader.BackgroundCubeTextureDDSShader.prototype.generateFragmentShader = f
 
     if ( !gl.getShaderParameter( fragmentShader, gl.COMPILE_STATUS ) )
     {
-        x3dom.debug.logError( "[BackgroundCubeTextureShader] FragmentShader " + gl.getShaderInfoLog( fragmentShader ) );
+        x3dom.debug.logError( "[BackgroundCubeTextureDDSShader] FragmentShader " + gl.getShaderInfoLog( fragmentShader ) );
     }
 
     return fragmentShader;
