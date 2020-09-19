@@ -43,6 +43,7 @@
   * Light output fields
   * robust transitions to animated viewpoints
   * keep trying to start enabled audio
+  * apply gammaCorrectionDefault to background cubemap
   
 ## Version 1.8.1
 
