@@ -1554,6 +1554,28 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function ( shape, sp, gl, viewarea,
         bufferGeo._mesh._numNormComponents = 3;
     };
 
+    var linkCache = function ( cache )
+    {
+        cache.shapes.push( shape );
+        shape._webgl._bufferGeoCache = cache;
+        //patch cleanupGLObjects to check for cache
+        var _cleanupGLObjects = shape._cleanupGLObjects;
+        shape._cleanupGLObjects = function ( force, delGL )
+        {
+            var _cache = this._webgl._bufferGeoCache;
+            var found = _cache.shapes.indexOf( this );
+            if ( found > -1 )
+            {
+                _cache.shapes.splice( found, 1 );
+            }
+            if ( _cache.shapes.length > 0 )
+            {
+                return;
+            }
+            _cleanupGLObjects.call( this, force, delGL );
+        };
+    };
+
     if ( bufferGeo._vf.buffer != "" )
     {
         URL = shape._nameSpace.getURL( bufferGeo._vf.buffer );
@@ -1564,6 +1586,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function ( shape, sp, gl, viewarea,
 
             x3dom.BinaryContainerLoader.bufferGeoCache[ URL ] = {};
             x3dom.BinaryContainerLoader.bufferGeoCache[ URL ].buffers = [];
+            x3dom.BinaryContainerLoader.bufferGeoCache[ URL ].shapes = [];
             x3dom.BinaryContainerLoader.bufferGeoCache[ URL ].decrementDownload = true;
             x3dom.BinaryContainerLoader.bufferGeoCache[ URL ].promise = new Promise( function ( resolve, reject )
             {
@@ -1605,6 +1628,7 @@ x3dom.BinaryContainerLoader.setupBufferGeo = function ( shape, sp, gl, viewarea,
             initBufferViews( arraybuffer );
             initAccessors();
             computeNormals( arraybuffer );
+            linkCache( x3dom.BinaryContainerLoader.bufferGeoCache[ URL ] );
 
             if ( x3dom.BinaryContainerLoader.bufferGeoCache[ URL ].decrementDownload )
             {
