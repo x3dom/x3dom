@@ -105,23 +105,13 @@ x3dom.registerNodeType(
         {
             fieldChanged : function ( fieldName )
             {
-                if ( fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
-                    fieldName == "emissiveColor" || fieldName == "shininess" ||
-                    fieldName == "specularColor" || fieldName == "transparency" ||
-                    fieldName == "backAmbientIntensity" || fieldName == "backDiffuseColor" ||
-                    fieldName == "backEmissiveColor" || fieldName == "backShininess" ||
-                    fieldName == "backSpecularColor" || fieldName == "backTransparency" ||
-                    fieldName == "separateBackColor" )
-                {
-                    this._parentNodes.forEach( function ( app )
-                    {
-                        app._parentNodes.forEach( function ( shape )
-                        {
-                            shape._dirty.material = true;
-                        } );
-                        app.checkSortType();
-                    } );
-                }
+                this._fieldChanged( fieldName,
+                    [ "ambientIntensity", "diffuseColor",
+                        "emissiveColor", "shininess",
+                        "specularColor", "transparency",
+                        "backAmbientIntensity", "backDiffuseColor",
+                        "backEmissiveColor", "backShininess",
+                        "backSpecularColor", "backTransparency", "separateBackColor" ] );
             }
         }
     )
