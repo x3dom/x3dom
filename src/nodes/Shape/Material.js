@@ -104,19 +104,7 @@ x3dom.registerNodeType(
         {
             fieldChanged : function ( fieldName )
             {
-                if ( fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
-                    fieldName == "emissiveColor" || fieldName == "shininess" ||
-                    fieldName == "specularColor" || fieldName == "transparency" )
-                {
-                    this._parentNodes.forEach( function ( app )
-                    {
-                        app._parentNodes.forEach( function ( shape )
-                        {
-                            shape._dirty.material = true;
-                        } );
-                        app.checkSortType();
-                    } );
-                }
+                this._fieldChanged( fieldName, [ "ambientIntensity", "diffuseColor", "emissiveColor", "shininess", "specularColor", "transparency" ] );
             }
         }
     )
