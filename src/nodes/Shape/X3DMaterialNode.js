@@ -26,6 +26,28 @@ x3dom.registerNodeType(
         function ( ctx )
         {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call( this, ctx );
+        },
+        {
+            _fieldChanged : function ( fieldName, fields )
+            {
+                if ( fields.indexOf( fieldName ) > -1 )
+                {
+                    this._parentNodes.forEach( function ( app )
+                    {
+                        app._parentNodes.forEach( function ( shape )
+                        {
+                            if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
+                            {
+                                shape._dirty.material = true;
+                            }
+                        } );
+                        if ( x3dom.isa( app, x3dom.nodeTypes.X3DAppearanceNode ) )
+                        {
+                            app.checkSortType();
+                        }
+                    } );
+                }
+            }
         }
     )
 );

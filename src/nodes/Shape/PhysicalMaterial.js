@@ -279,18 +279,7 @@ x3dom.registerNodeType(
         {
             fieldChanged : function ( fieldName )
             {
-                if ( fieldName == "baseColorFactor" || fieldName == "metallicFactor" ||
-                    fieldName == "roughnessFactor" || fieldName == "emissiveFactor" )
-                {
-                    this._parentNodes.forEach( function ( app )
-                    {
-                        app._parentNodes.forEach( function ( shape )
-                        {
-                            shape._dirty.material = true;
-                        } );
-                        app.checkSortType();
-                    } );
-                }
+                this._fieldChanged( fieldName, [ "baseColorFactor", "metallicFactor", "roughnessFactor", "emissiveFactor" ] );
 
                 if ( fieldName == "alphaMode" )
                 {
@@ -298,9 +287,15 @@ x3dom.registerNodeType(
                     {
                         app._parentNodes.forEach( function ( shape )
                         {
-                            shape._dirty.shader = true;
+                            if ( x3dom.isa( shape, x3dom.nodeTypes.X3DShapeNode ) )
+                            {
+                                shape._dirty.shader = true;
+                            }
                         } );
-                        app.checkSortType();
+                        if ( x3dom.isa( app, x3dom.nodeTypes.X3DAppearanceNode ) )
+                        {
+                            app.checkSortType();
+                        }
                     } );
                 }
             },
