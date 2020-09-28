@@ -4140,11 +4140,13 @@ x3dom.gfx_webgl = ( function ()
 
         x3dom.Utils.startMeasure( "shadow" );
 
+        var sLightMatrix = viewarea.getLightMatrix( slights );
+
         for ( var p = 0; p < numLights; p++ )
         {
             if ( slights[ p ]._vf.shadowIntensity > 0.0 )
             {
-                var lightMatrix = viewarea.getLightMatrix()[ p ];
+                var lightMatrix = sLightMatrix[ p ];
                 var shadowMaps = scene._webgl.fboShadow[ shadowCount ];
                 var offset = Math.max( 0.0, Math.min( 1.0, slights[ p ]._vf.shadowOffset ) );
 

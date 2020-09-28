@@ -553,11 +553,12 @@ x3dom.Viewarea.prototype.getViewMatrices = function ()
 /**
  * Get Light Matrix
  *
+ * @param lights
  * @returns {*}
  */
-x3dom.Viewarea.prototype.getLightMatrix = function ()
+x3dom.Viewarea.prototype.getLightMatrix = function ( lights )
 {
-    var lights = this._doc._nodeBag.lights;
+    lights = lights || this._doc._nodeBag.lights;
     var i,
         n = lights.length;
 
@@ -583,19 +584,20 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
 
             for ( i = 0; i < n; i++ )
             {
-                if ( x3dom.isa( lights[ i ], x3dom.nodeTypes.PointLight ) )
+                var light = lights[ i ];
+                if ( x3dom.isa( light, x3dom.nodeTypes.PointLight ) )
                 {
-                    var wcLoc = lights[ i ].getCurrentTransform().multMatrixPnt( lights[ i ]._vf.location );
+                    var wcLoc = light.getCurrentTransform().multMatrixPnt( light._vf.location );
                     dia = dia.subtract( wcLoc ).normalize();
                 }
                 else
                 {
-                    var dir = lights[ i ].getCurrentTransform().multMatrixVec( lights[ i ]._vf.direction );
+                    var dir = light.getCurrentTransform().multMatrixVec( light._vf.direction );
                     dir = dir.normalize().negate();
                     dia = dia.add( dir.multiply( 1.2 * ( dist1 > dist2 ? dist1 : dist2 ) ) );
                 }
 
-                l_arr[ i ] = lights[ i ].getViewMatrix( dia );
+                l_arr.push( light.getViewMatrix( dia ) );
             }
 
             return l_arr;
