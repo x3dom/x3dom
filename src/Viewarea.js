@@ -604,8 +604,8 @@ x3dom.Viewarea.prototype.getLightMatrix = function ( lights )
         }
     }
 
-    // TODO: this is only for testing
-    return [ this.getViewMatrix() ];
+    // TODO: was only for testing but now expected
+    return Array( n || 1 ).fill( this.getViewMatrix() );
 };
 
 /**
