@@ -44,7 +44,8 @@
   * robust transitions to animated viewpoints
   * keep trying to start enabled audio
   * apply gammaCorrectionDefault to background cubemap
-  
+  * use HSV space for ColorInterpolator
+
 ## Version 1.8.1
 
 * Bugfixes
