@@ -1061,6 +1061,9 @@ x3dom.gfx_webgl = ( function ()
 
                 interp._vf.key = new x3dom.fields.MFFloat( sky );
                 interp._vf.keyValue = new x3dom.fields.MFColor( colors );
+                interp._vf.RGB = true;
+
+                interp.fieldChanged( "keyValue" ); //update internals
 
                 for ( i = 0; i < N; i++ )
                 {
