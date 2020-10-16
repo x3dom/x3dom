@@ -3635,6 +3635,9 @@ x3dom.fields.SFColor.prototype.setHSV = function ( h, s, v )
     var p  = 0;
     var q  = 0;
     var t  = 0;
+    var r  = 0;
+    var g  = 0;
+    var b  = 0;
 
     hi = Math.floor( h / 60.0 );
     f  = ( h / 60.0 ) - hi;
@@ -3689,7 +3692,7 @@ x3dom.fields.SFColor.prototype.setHSV = function ( h, s, v )
         }
         default :
         {
-            throw ( "Invalid case: " + hi );
+            x3dom.debug.logWarning( "Using black for invalid case in setHSV: " + hi );
             break;
         }
     };
@@ -3720,11 +3723,10 @@ x3dom.fields.SFColor.prototype.getHSV = function ()
     var hue            = 0;       // H
     var saturation     = 0;       // S
     var val            = 0;       // V
-    var minComponent   = 0;       // C_min
     var maxComponent   = {};      // C_max
     var componentRange = 0;       // MAX - MIN
 
-    minComponentValue  = this.r;
+    var minComponentValue  = this.r;
     maxComponent.name  = "red";
     maxComponent.value = this.r;
 
