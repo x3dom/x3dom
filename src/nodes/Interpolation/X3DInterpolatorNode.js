@@ -104,31 +104,33 @@ x3dom.registerNodeType(
 
             linearInterp : function ( time, interp )
             {
-                if ( this._vf.key.length == 0 )
+                var key = this._vf.key;
+                var keyValue = this._vf.keyValue;
+                if ( key.length == 0 )
                 {
                     return;
                 }
 
-                if ( time <= this._vf.key[ 0 ] )
+                if ( time <= key[ 0 ] ) // use interp to get copy
                 {
-                    return this._vf.keyValue[ 0 ];
+                    return interp( keyValue[ 0 ], keyValue[ 0 ], 0 );
                 }
-                else if ( time >= this._vf.key[ this._vf.key.length - 1 ] )
+                else if ( time >= key[ key.length - 1 ] )
                 {
-                    return this._vf.keyValue[ this._vf.key.length - 1 ];
+                    return interp( keyValue[ key.length - 1 ], keyValue[ key.length - 1 ], 1 );
                 }
 
-                for ( var i = 0, n = this._vf.key.length - 1; i < n; ++i )
+                for ( var i = 0, n = key.length - 1; i < n; ++i )
                 {
-                    if ( ( this._vf.key[ i ] < time ) && ( time <= this._vf.key[ i + 1 ] ) )
+                    if ( ( key[ i ] < time ) && ( time <= key[ i + 1 ] ) )
                     {
-                        return interp( this._vf.keyValue[ i ],
-                            this._vf.keyValue[ i + 1 ],
-                            ( time - this._vf.key[ i ] ) / ( this._vf.key[ i + 1 ] - this._vf.key[ i ] ) );
+                        return interp( keyValue[ i ],
+                            keyValue[ i + 1 ],
+                            ( time - key[ i ] ) / ( key[ i + 1 ] - key[ i ] ) );
                     }
                 }
 
-                return this._vf.keyValue[ 0 ];
+                return keyValue[ 0 ];
             },
 
             cubicSplineInterp : function ( time, interp )
