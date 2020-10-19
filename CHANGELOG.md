@@ -27,6 +27,7 @@
   * resume time at paused fraction
   * more robust collisions in walk mode
   * improved self-transparency
+  * SFRotation field type
 * Bugfixes
   * BinGeo/PopGeo picking
   * dynamic changes of origChannelCount-Attribute
