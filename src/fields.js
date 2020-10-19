@@ -2763,6 +2763,83 @@ x3dom.fields.SFRotation = new Proxy( x3dom.fields.Quaternion,
     } );
 
 /**
+ * SAI function to return the axis of rotation.
+ *
+ * @returns {x3dom.fields.SFVec3f} the axis of rotation
+ */
+x3dom.fields.Quaternion.prototype.getAxis = function ()
+{
+    if ( "SFRotation" in this )
+    {
+        var axis = this.SFRotation;
+        return new x3dom.fields.SFVec3f( axis.x, axis.y, axis.z );
+    }
+    else
+    {
+        var aa = this.toAxisAngle();
+        return aa[ 0 ];
+    }
+};
+
+/**
+ * SAI function to set the axis of rotation.
+ * not well tested
+ * @param {x3dom.fields.SFVec3f} vec - the axis vector to set to.
+ * @returns {} void
+ */
+x3dom.fields.Quaternion.prototype.setAxis = function ( vec )
+{
+    var angle;
+    if ( "SFRotation" in this )
+    {
+        angle = this.SFRotation.angle;
+        this.SFRotation.x = vec.x;
+        this.SFRotation.y = vec.y;
+        this.SFRotation.z = vec.z;
+    }
+    else
+    {
+        angle = this.angle();
+    }
+    var q = new x3dom.fields.Quaternion.axisAngle( vec, angle );
+    this.setValues( q );
+};
+
+/**
+ * SAI function to return the inverse of this object's rotation.
+ * see below
+ * @returns {x3dom.fields.SFRotation} the inverted rotation
+ */
+
+/**
+ * SAI function to return the object multiplied by the passed value.
+ * seee below
+ * @returns {x3dom.fields.SFRotation} the multiplied rotation
+ */
+
+/**
+ * SAI function to return the value of vec multiplied by the matrix corresponding to this object's rotation.
+ *
+ * @param {x3dom.fields.SFVec3f} vec - the vector to multiply with
+ * @returns {x3dom.fields.SFVec3f} the axis of rotation
+ */
+x3dom.fields.Quaternion.prototype.multiVec = function ( vec )
+{
+    var m = x3dom.fields.SFMatrix4f.identity();
+    m.setRotate( this );
+    return m.multMatrixVec( vec );
+};
+
+/**
+ * slerp SAI function to return the value of the spherical linear interpolation between this object's rotation and dest at value 0 ≤ t ≤ 1.
+ * For t = 0, the value is this object`s rotation. For t = 1, the value is the dest rotation.
+ * see below, not well tested
+ * @param {x3dom.fields.SFRotation} dest - the destination rotation
+ * @param {x3dom.fields.SFFloat} t - the fraction
+ * @returns {x3dom.fields.SFRotation} the interpolated rotation
+ */
+
+/**
  * Sets the components of this quaternion from another quaternion, and returns
  * this modified quaternion.
  *
@@ -2801,12 +2878,18 @@ x3dom.fields.Quaternion.copy = function ( v )
  */
 x3dom.fields.Quaternion.prototype.multiply = function ( that )
 {
-    return new x3dom.fields.Quaternion(
+    var product = new x3dom.fields.Quaternion(
         this.w * that.x + this.x * that.w + this.y * that.z - this.z * that.y,
         this.w * that.y + this.y * that.w + this.z * that.x - this.x * that.z,
         this.w * that.z + this.z * that.w + this.x * that.y - this.y * that.x,
         this.w * that.w - this.x * that.x - this.y * that.y - this.z * that.z
     );
+    if ( "SFRotation" in this )
+    {
+        var aa = product.toAxisAngle();
+        return new x3dom.fields.SFRotation( aa[ 0 ].x, aa[ 0 ].y, aa[ 0 ].z, aa[ 1 ] );
+    }
+    return product;
 };
 
 /**
@@ -3239,7 +3322,13 @@ x3dom.fields.Quaternion.prototype.negate = function ()
  */
 x3dom.fields.Quaternion.prototype.inverse = function ()
 {
-    return new x3dom.fields.Quaternion( -this.x, -this.y, -this.z, this.w );
+    var inverse = new x3dom.fields.Quaternion( -this.x, -this.y, -this.z, this.w );
+    if ( "SFRotation" in this )
+    {
+        var aa = inverse.toAxisAngle();
+        return new x3dom.fields.SFRotation( aa[ 0 ].x, aa[ 0 ].y, aa[ 0 ].z, aa[ 1 ] );
+    }
+    return inverse;
 };
 
 /**
@@ -3295,7 +3384,13 @@ x3dom.fields.Quaternion.prototype.slerp = function ( that, t )
     }
 
     // build the new quaternion
-    return this.multScalar( scalerot0 ).add( rot1.multScalar( scalerot1 ) );
+    var result = this.multScalar( scalerot0 ).add( rot1.multScalar( scalerot1 ) );
+    if ( "SFRotation" in this )
+    {
+        var aa = result.toAxisAngle();
+        return new x3dom.fields.SFRotation( aa[ 0 ].x, aa[ 0 ].y, aa[ 0 ].z, aa[ 1 ] );
+    }
+    return result;
 };
 
 /**
@@ -3388,6 +3483,10 @@ x3dom.fields.Quaternion.prototype.toGL = function ()
  */
 x3dom.fields.Quaternion.prototype.toString = function ()
 {
+    if ( "SFRotation" in this )
+    {
+        return this.SFRotation.x + " " + this.SFRotation.y + " " + this.SFRotation.z + " " + this.SFRotation.angle;
+    }
     return this.x + " " + this.y + " " + this.z + ", " + this.w;
 };
 
