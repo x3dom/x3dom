@@ -2673,13 +2673,12 @@ x3dom.fields.Quaternion = function ( x, y, z, w )
  *
  * Represents a SFRotation, the four components of which, all being
  * numbers, can be accessed and modified directly.
+ * Access is by array index, modification by property name or array index.
  *
- * Note that the coordinates, if supplied separately or in an array,
- * are always construed in the order of x, y, z, and w. This fact is
- * significant as some conventions prepend the scalar component w
- * instead of listing it as the terminal entity. A quaternion in our
- * sense, hence, is a quadruple (x, y, z, w).
- *
+ * Instance creation adheres to the X3D SAI spec.
+ * Four numbers x, y, z, angle as arguments: x, y, and z are the axis of the rotation. angle is the angle of the rotation (in radians). Missing values default to 0.0, except y, which defaults to 1.0.
+ * One SFVec3f axis, one number angle as arguments: axis is the axis of rotation. angle is the angle of the rotation (in radians)
+ * Two SFVec3f as arguments: fromVector and toVector are normalized and the rotation value that matches the minimum rotation between the fromVector to the toVector is stored in the object.
  * @class Represents a SFRotation
  */
 x3dom.fields.SFRotation = new Proxy( x3dom.fields.Quaternion,
@@ -2719,13 +2718,27 @@ x3dom.fields.SFRotation = new Proxy( x3dom.fields.Quaternion,
                 set : function ( target, prop, value )
                 {
                     var rot = target.SFRotation;
-                    rot[ prop ] = value;
-                    target.setValues(
-                        new x3dom.fields.Quaternion.axisAngle(
-                            new x3dom.fields.SFVec3f( rot.x, rot.y, rot.z ), rot.angle
-                        )
-                    );
-                    return true;
+                    var propMap = {
+                        0 : "x",
+                        1 : "y",
+                        2 : "z",
+                        x : "x",
+                        y : "y",
+                        z : "z",
+                        angle: "angle"
+                    };
+                    if ( prop in propMap )
+                    {
+                        rot[ propMap[prop] ] = value;
+                        target.setValues(
+                            new x3dom.fields.Quaternion.axisAngle(
+                                new x3dom.fields.SFVec3f( rot.x, rot.y, rot.z ), rot.angle
+                            )
+                        );
+                        return true;
+                    }
+                    x3dom.debug.logWarning( " SFRotation: property not available - " + prop );
+                    return false;
                 }
             };
 
@@ -2806,14 +2819,14 @@ x3dom.fields.Quaternion.prototype.setAxis = function ( vec )
 };
 
 /**
- * SAI function to return the inverse of this object's rotation.
+ * inverse: SAI function to return the inverse of this object's rotation.
  * see below
  * @returns {x3dom.fields.SFRotation} the inverted rotation
  */
 
 /**
- * SAI function to return the object multiplied by the passed value.
- * seee below
+ * multiply: SAI function to return the object multiplied by the passed value.
+ * see below
  * @returns {x3dom.fields.SFRotation} the multiplied rotation
  */
 
@@ -2831,7 +2844,7 @@ x3dom.fields.Quaternion.prototype.multiVec = function ( vec )
 };
 
 /**
- * slerp SAI function to return the value of the spherical linear interpolation between this object's rotation and dest at value 0 ≤ t ≤ 1.
+ * slerp: SAI function to return the value of the spherical linear interpolation between this object's rotation and dest at value 0 ≤ t ≤ 1.
  * For t = 0, the value is this object`s rotation. For t = 1, the value is the dest rotation.
  * see below, not well tested
  * @param {x3dom.fields.SFRotation} dest - the destination rotation
