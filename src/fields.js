@@ -2719,12 +2719,12 @@ x3dom.fields.SFRotation = new Proxy( x3dom.fields.Quaternion,
                 {
                     var rot = target.SFRotation;
                     var propMap = {
-                        0 : "x",
-                        1 : "y",
-                        2 : "z",
-                        x : "x",
-                        y : "y",
-                        z : "z",
+                        0     : "x",
+                        1     : "y",
+                        2     : "z",
+                        x     : "x",
+                        y     : "y",
+                        z     : "z",
                         angle : "angle"
                     };
                     if ( prop in propMap )
