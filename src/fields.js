@@ -2725,11 +2725,11 @@ x3dom.fields.SFRotation = new Proxy( x3dom.fields.Quaternion,
                         x : "x",
                         y : "y",
                         z : "z",
-                        angle: "angle"
+                        angle : "angle"
                     };
                     if ( prop in propMap )
                     {
-                        rot[ propMap[prop] ] = value;
+                        rot[ propMap[ prop ] ] = value;
                         target.setValues(
                             new x3dom.fields.Quaternion.axisAngle(
                                 new x3dom.fields.SFVec3f( rot.x, rot.y, rot.z ), rot.angle
