@@ -109,6 +109,7 @@ x3dom.X3DDocument.prototype._setup = function ( sceneDoc )
     // sceneDoc is the X3D element here...
     var sceneElem = x3dom.findScene( sceneDoc );
 
+    this.mutationObserver.observe( sceneDoc.parentNode, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
     this.mutationObserver.observe( sceneElem, { attributes: true, attributeOldValue: true, childList: true, subtree: true } );
 
     // create and add BindableBag that holds all bindable stacks
@@ -718,9 +719,12 @@ x3dom.X3DDocument.prototype.getParentNode = function ( parentNode )
 
 x3dom.X3DDocument.prototype.onAttributeChanged = function ( target, attributeName, attributeValue )
 {
-    target._x3domNode.updateField( attributeName, attributeValue );
+    if ( "_x3domNode" in target )
+    {
+        target._x3domNode.updateField( attributeName, attributeValue );
 
-    this.needRender = true;
+        this.needRender = true;
+    }
 };
 
 x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
@@ -823,7 +827,7 @@ x3dom.X3DDocument.prototype.onNodeAdded = function ( addedNode, target )
     var child = addedNode,
         parentNode = this.getParentNode( target );
 
-    if ( parentNode.tagName && parentNode.tagName.toLowerCase() == "inline" )
+    if ( ( parentNode.tagName && parentNode.tagName.toLowerCase() == "inline" ) || ! ( "_x3domNode" in parentNode ) )
     {
         return;
     }
@@ -875,11 +879,6 @@ x3dom.X3DDocument.prototype.onMutation = function ( records )
 {
     for ( var i = 0, n = records.length; i < n; i++ )
     {
-        if ( !records[ i ].target[ "_x3domNode" ] )
-        {
-            continue;
-        }
-
         if ( records[ i ].type === "attributes" && records[ i ].oldValue )
         {
             this.onAttributeChanged( records[ i ].target,
