@@ -945,13 +945,13 @@ x3dom.X3DDocument.prototype.onX3DMutation = function ( records )
                 }
             }
 
-//             if ( records[ i ].addedNodes.length )
-//             {
-//                 for ( var j = 0, k = records[ i ].addedNodes.length; j < k; j++ )
-//                 {
-//                     this.onX3DNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
-//                 }
-//             }
+            //if ( records[ i ].addedNodes.length )
+            //{
+            //    for ( var j = 0, k = records[ i ].addedNodes.length; j < k; j++ )
+            //    {
+            //        this.onX3DNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
+            //    }
+            //}
         }
     }
 };
