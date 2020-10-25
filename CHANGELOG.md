@@ -46,6 +46,7 @@
   * keep trying to start enabled audio
   * apply gammaCorrectionDefault to background cubemap
   * use HSV space for ColorInterpolator
+  * observe and handle removal of X3D element
 
 ## Version 1.8.1
 
