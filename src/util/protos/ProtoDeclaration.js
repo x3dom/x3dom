@@ -93,21 +93,28 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                         //find node type from IS in body
                         var type = x3dom.nodeTypes.X3DNode;
                         var ISRoutes = that._protoBody._ISRoutes;
-                        var ISconnection = ISRoutes[ field.name ][ 0 ];
-                        var nodeField = ISconnection.nodeField;
-                        var ISDomNode = that._protoBody.querySelector( "[DEF=" + ISconnection.nodeDEF + "]" );
-                        //create temp node to get type
-                        var IStype = ISDomNode.localName.toLowerCase();
-                        if ( IStype in x3dom.nodeTypesLC )
+                        if ( field.name in ISRoutes )
                         {
-                            var ISctx = {
-                                doc       : ctx.doc,
-                                runtime   : ctx.runtime,
-                                xmlNode   : ISDomNode.cloneNode( true ), // clone to avoid adding defaults
-                                nameSpace : ctx.nameSpace
-                            };
-                            var ISNode = new x3dom.nodeTypesLC[ IStype ]( ISctx );
-                            type = ISNode._cf[ nodeField ].type;
+                            var ISconnection = ISRoutes[ field.name ][ 0 ];
+                            var nodeField = ISconnection.nodeField;
+                            var ISDomNode = that._protoBody.querySelector( "[DEF=" + ISconnection.nodeDEF + "]" );
+                            //create temp node to get type
+                            var IStype = ISDomNode.localName.toLowerCase();
+                            if ( IStype in x3dom.nodeTypesLC )
+                            {
+                                var ISctx = {
+                                    doc       : ctx.doc,
+                                    runtime   : ctx.runtime,
+                                    xmlNode   : ISDomNode.cloneNode( true ), // clone to avoid adding defaults
+                                    nameSpace : ctx.nameSpace
+                                };
+                                var ISNode = new x3dom.nodeTypesLC[ IStype ]( ISctx );
+                                type = ISNode._cf[ nodeField ].type;
+                            }
+                        }
+                        else
+                        {
+                            x3dom.debug.logWarning( that.name + " Proto: field without IS connection - " + field.name );
                         }
                         this[ "addField_" + field.dataType ]( field.name, type );//type should be registered x3dom type
                         this._cf_hash[ field.name ] = "trigger";
