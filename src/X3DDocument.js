@@ -22,6 +22,7 @@ x3dom.X3DDocument = function ( canvas, ctx, settings )
     this.downloadCount = 0;     // Counter for objects to be loaded
     this.previousDownloadCount = 0;
     this.mutationObserver = new MutationObserver( this.onMutation.bind( this ) );
+    this.X3DMutationObserver = new MutationObserver( this.onX3DMutation.bind( this ) );
 
     // bag for pro-active (or multi-core-like) elements
     this._nodeBag = {
@@ -109,7 +110,8 @@ x3dom.X3DDocument.prototype._setup = function ( sceneDoc )
     // sceneDoc is the X3D element here...
     var sceneElem = x3dom.findScene( sceneDoc );
 
-    this.mutationObserver.observe( sceneDoc.parentNode, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
+    this.X3DMutationObserver.observe( document, { attributes: false, attributeOldValue: false, childList: true, subtree: true } );
+    this.mutationObserver.observe( sceneDoc, { attributes: false, attributeOldValue: false, childList: true, subtree: false } );
     this.mutationObserver.observe( sceneElem, { attributes: true, attributeOldValue: true, childList: true, subtree: true } );
 
     // create and add BindableBag that holds all bindable stacks
@@ -789,7 +791,20 @@ x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
                 domNode.getAttribute( "toField" ) );
         }
     }
-    else if ( domNode.localName && domNode.localName.toUpperCase() == "X3D" )
+};
+
+x3dom.X3DDocument.prototype.onX3DNodeRemoved =  function ( removedNode, target )
+{
+    var domNodes = [];
+    if ( "querySelectorAll" in removedNode )
+    {
+        domNodes = removedNode.querySelectorAll( "X3D" );
+    }
+    if ( removedNode.localName && removedNode.localName.toUpperCase() == "X3D" )
+    {
+        domNodes = [ removedNode ];
+    }
+    domNodes.forEach( function ( domNode )
     {
         var runtime = domNode.runtime;
 
@@ -819,7 +834,7 @@ x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
             domNode.context = null;
             domNode.runtime = null;
         }
-    }
+    }, this );
 };
 
 x3dom.X3DDocument.prototype.onNodeAdded = function ( addedNode, target )
@@ -875,6 +890,16 @@ x3dom.X3DDocument.prototype.onNodeAdded = function ( addedNode, target )
     }
 };
 
+x3dom.X3DDocument.prototype.onX3DNodeAdded = function ( addedNode, target )
+{
+    var domNode = addedNode;
+
+    if ( domNode.localName && domNode.localName.toUpperCase() == "X3D" )
+    {
+        //x3dom.reload();
+    }
+};
+
 x3dom.X3DDocument.prototype.onMutation = function ( records )
 {
     for ( var i = 0, n = records.length; i < n; i++ )
@@ -900,6 +925,31 @@ x3dom.X3DDocument.prototype.onMutation = function ( records )
                 for ( var j = 0, k = records[ i ].addedNodes.length; j < k; j++ )
                 {
                     this.onNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
+                }
+            }
+        }
+    }
+};
+
+x3dom.X3DDocument.prototype.onX3DMutation = function ( records )
+{
+    for ( var i = 0, n = records.length; i < n; i++ )
+    {
+        if ( records[ i ].type === "childList" )
+        {
+            if ( records[ i ].removedNodes.length )
+            {
+                for ( var j = 0, k = records[ i ].removedNodes.length; j < k; j++ )
+                {
+                    this.onX3DNodeRemoved( records[ i ].removedNodes[ j ], records[ i ].target );
+                }
+            }
+
+            if ( records[ i ].addedNodes.length )
+            {
+                for ( var j = 0, k = records[ i ].addedNodes.length; j < k; j++ )
+                {
+                    this.onX3DNodeAdded( records[ i ].addedNodes[ j ], records[ i ].target );
                 }
             }
         }
