@@ -1186,8 +1186,8 @@ x3dom.X3DCanvas.prototype._watchForResize = function ()
     }
 
     var new_dim = [
-        parseInt( x3dom.getStyle( this.canvas, "width" ) ),
-        parseInt( x3dom.getStyle( this.canvas, "height" ) )
+        parseInt( x3dom.getStyle( this.canvas, "width" ) ) || 0,
+        parseInt( x3dom.getStyle( this.canvas, "height" ) ) || 0
     ];
 
     if ( ( this._current_dim[ 0 ] != new_dim[ 0 ] ) || ( this._current_dim[ 1 ] != new_dim[ 1 ] ) )

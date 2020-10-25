@@ -4849,7 +4849,7 @@ x3dom.gfx_webgl = ( function ()
         }
 
         var bgnd = scene.getBackground();
-        if ( bgnd._webgl.position !== undefined )
+        if ( bgnd._webgl && bgnd._webgl.position !== undefined )
         {
             gl.deleteBuffer( bgnd._webgl.buffers[ x3dom.BUFFER_IDX.INDEX ] );
             gl.deleteBuffer( bgnd._webgl.buffers[ x3dom.BUFFER_IDX.POSITION ] );
