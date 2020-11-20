@@ -300,12 +300,12 @@ x3dom.JSONParser.prototype.ConvertToX3DOM = function ( object, parentkey, elemen
             else
             {
                 // this.ConvertObject( key, object, element );
-		if (key.indexOf("HAnim") === 0 && key !== "HAnimHumanoid" && typeof object[key]['@USE'] != 'undefined') {
-			object[key]['@containerField'] = key.substr(5).toLowerCase()+"s";
-			this.ConvertObject(key, object, element, object[key]['@containerField']);
-		} else {
-			this.ConvertObject(key, object, element);
-		}
+                if (key.indexOf("HAnim") === 0 && key !== "HAnimHumanoid" && typeof object[key]['@USE'] != 'undefined') {
+                    object[key]['@containerField'] = key.substr(5).toLowerCase()+"s";
+                    this.ConvertObject(key, object, element, object[key]['@containerField']);
+                } else {
+                    this.ConvertObject(key, object, element);
+                }
             }
         }
         else if ( typeof object[ key ] === "number" )
