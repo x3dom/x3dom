@@ -300,7 +300,18 @@ x3dom.JSONParser.prototype.ConvertToX3DOM = function ( object, parentkey, elemen
             else
             {
                 // this.ConvertObject( key, object, element );
-                if ( key.indexOf( "HAnim" ) === 0 && key !== "HAnimHumanoid" && typeof object[ key ][ "@USE" ] != "undefined" )
+                if ( key === "-skin" || key === "-skeleton" || key === "-value" )
+                {
+                    var firstNode = object[ key ][ 0 ];
+                    for ( var skv in firstNode )
+                    {
+                        firstNode[ skv ][ "@containerField" ] = key.substr( 1 );
+                        console.log( firstNode[ skv ] );
+                        this.ConvertObject( key, object, element, firstNode[ skv ][ "@containerField" ] );
+                    }
+                }
+                else if ( key.indexOf( "HAnim" ) === 0 && key !== "HAnimHumanoid" && typeof object[ key ][ "@USE" ] != "undefined" )
+
                 {
                     object[ key ][ "@containerField" ] = key.substr( 5 ).toLowerCase() + "s";
                     this.ConvertObject( key, object, element, object[ key ][ "@containerField" ] );
