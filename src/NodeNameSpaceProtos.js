@@ -26,6 +26,20 @@ x3dom.NodeNameSpace.prototype.protoInstance = function ( domNode, domParent )
 
     var name = domNode.getAttribute( "name" );
     //console.log( "found ProtoInstance", name, domNode );
+    //may be USE without name
+    if ( domNode.hasAttribute( "USE" ) )
+    {
+        var use = domNode.getAttribute( "USE" );
+        var defNode = this.defMap[ use ];
+        if ( defNode )
+        {
+            name = defNode.constructor._typeName;
+        }
+        else // try to find DEF in dom
+        {
+            name = domParent.getRootNode().querySelector( "[DEF=" + use + "]" ).getAttribute( "name" );
+        }
+    }
     var protoDeclaration = this.protos.find( function ( proto ) { return proto.name == name; } );
     if ( protoDeclaration == undefined )
     {
@@ -202,7 +216,7 @@ x3dom.NodeNameSpace.prototype.externProtoDeclare = function ( domNode )
  * processes ProtoDeclare node, called from setupTree.
  * generates a new protoDeclaration, and then uses it to register the new node to x3dom
  *
- * @param domNode - the regular syntax ProtoInstance dom node
+ * @param domNode - the ProtoDeclaration dom node
  */
 x3dom.NodeNameSpace.prototype.protoDeclare = function ( domNode )
 {

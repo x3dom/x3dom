@@ -109,7 +109,10 @@ x3dom.ProtoDeclaration.prototype.registerNode = function ()
                                     nameSpace : ctx.nameSpace
                                 };
                                 var ISNode = new x3dom.nodeTypesLC[ IStype ]( ISctx );
-                                type = ISNode._cf[ nodeField ].type;
+                                if ( nodeField in ISNode._cf )
+                                {
+                                    type = ISNode._cf[ nodeField ].type;
+                                }
                             }
                         }
                         else
