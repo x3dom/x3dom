@@ -36,7 +36,6 @@
   * line per segment color
   * Sphere, Box, Cylinder, Cone, Plane, Rectangle2D, Disk2D, ArcClose2D ccw
   * TouchSensor isOver to false on mouseout
-  * reenable alphaClipThreshold
   * shadows on apples
   * transparent text
   * BooleanToggle toggle event after set
