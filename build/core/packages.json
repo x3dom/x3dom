@@ -119,6 +119,10 @@
             "ParticleSet.js",
             "ClipPlane.js"
         ],
+        "src/nodes/Scripting/":
+        [
+            "X3DScript.js"
+        ],
         "src/nodes/Shape/":
         [
             "X3DAppearanceNode.js",

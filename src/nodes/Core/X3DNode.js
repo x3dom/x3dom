@@ -76,7 +76,7 @@ x3dom.registerNodeType(
 
             addChild : function ( node, containerFieldName )
             {
-                if ( "isProtoInstance" in node )
+                if ( node !== null && "isProtoInstance" in node )
                 {
                     this.addChild( node.typeNode, containerFieldName );
                     if ( node.helperNodes.length > 0 )
@@ -137,7 +137,7 @@ x3dom.registerNodeType(
                         //so child is "root node" of protobody
                         //and constitutes its nodes
                         //transfer nodes directly
-                        if ( "isProtoInstance" in node )
+                        if ( node !== null && "isProtoInstance" in node )
                         {
                             this.nodes.concat( node.nodes );
                         }
