@@ -1,6 +1,6 @@
 # X3DOM Change Log
 
-## Version 1.8.2-dev
+## Version 1.8.2
 
 * Changes
   * remove support for compressed BinGeo files & Zlib
