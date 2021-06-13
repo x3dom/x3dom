@@ -114,12 +114,28 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function ( gl
         shader += "attribute float PG_vertexID;\n";
     }
 
+    if ( properties.IS_PARTICLE )
+    {
+        shader += "attribute vec3 particleSize;\n";
+    }
+
+    //PointProperties
+    if ( properties.POINTPROPERTIES )
+    {
+        shader += "uniform vec3 pointSizeAttenuation;\n";
+        shader += "uniform float pointSizeFactor;\n";
+        shader += "uniform float minPointSize;\n";
+        shader += "uniform float maxPointSize;\n";
+    }
+
     //ClipPlane stuff
-    if ( properties.CLIPPLANES )
+    if ( properties.CLIPPLANES || properties.POINTPROPERTIES )
     {
         shader += "uniform mat4 modelViewMatrix;\n";
         shader += "uniform mat4 modelViewMatrix2;\n";
+        shader += "uniform vec3 eyePosition;\n";
         shader += "varying vec4 fragPosition;\n";
+        shader += "varying vec4 fragPositionWS;\n";
     }
 
     /*******************************************************************************
@@ -130,7 +146,6 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function ( gl
 
     shader += "fragEyeIdx = eyeIdx;\n";
 
-    shader += "gl_PointSize = 2.0;\n";
     shader += "vec3 pos = position;\n";
 
     if ( properties.VERTEXID )
@@ -204,13 +219,33 @@ x3dom.shader.DynamicShaderPicking.prototype.generateVertexShader = function ( gl
         }
     }
 
-    if ( properties.CLIPPLANES )
+    if ( properties.CLIPPLANES || properties.POINTPROPERTIES )
     {
         shader += "if(eyeIdx == 1.0){\n";
         shader += "    fragPosition = (modelViewMatrix2 * vec4(pos, 1.0));\n";
         shader += "}else{\n";
         shader += "    fragPosition = (modelViewMatrix * vec4(pos, 1.0));\n";
         shader += "}\n";
+    }
+
+    //Set point size
+    if ( properties.IS_PARTICLE )
+    {
+        shader += "float spriteDist = (gl_Position.w > 0.000001) ? gl_Position.w : 0.000001;\n";
+        shader += "float pointSize = floor(length(particleSize) * 256.0 / spriteDist + 0.5);\n";
+        shader += "gl_PointSize = clamp(pointSize, 2.0, 256.0);\n";
+    }
+    else if ( properties.POINTPROPERTIES )
+    {
+        shader += "float r = length( fragPosition.xyz );\n";
+        shader += "vec3 a = pointSizeAttenuation;\n";
+        shader += "float attFactor = ( a.x + a.y * r + a.z * r * r );\n";
+        shader += "float pointSize =  pointSizeFactor * 1.0 / attFactor;\n";
+        shader += "gl_PointSize = clamp(pointSize, minPointSize, maxPointSize);\n";
+    }
+    else
+    {
+        shader += "gl_PointSize = 2.0;\n";
     }
 
     shader += "worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n";
@@ -352,6 +387,12 @@ x3dom.shader.DynamicShaderPicking.prototype.generateFragmentShader = function ( 
     else if ( pickMode == 3 )
     { //Picking with 24bit precision
         shader += "color.r = d;\n";
+    }
+
+    if ( ( properties.POINTPROPERTIES || properties.IS_PARTICLE ) && !properties.TEXTURED )
+    {
+        shader += "float pAlpha = 1.0 - clamp(length((gl_PointCoord - 0.5) * 2.0), 0.0, 1.0);\n";
+        shader += "if ( pAlpha < 0.01 ) discard;\n";
     }
 
     shader += "gl_FragColor = color;\n";
