@@ -1992,6 +1992,29 @@ x3dom.gfx_webgl = ( function ()
                 this.updatePopState( drawable, s_geo, sp, s_gl, scene, model_view, viewarea, this.x3dElem.runtime.fps );
             }
 
+            // TODO: ParticleSet for picking
+
+            var pointProperties = s_app ? s_app._cf.pointProperties.node : null;
+            pointProperties = pointProperties && x3dom.isa( s_geo, x3dom.nodeTypes.PointSet );
+
+            if ( pointProperties )
+            {
+                var pprop_vf = s_app._cf.pointProperties.node._vf;
+                sp.pointSizeAttenuation = pprop_vf.attenuation.toGL();
+                sp.pointSizeFactor = ps * pprop_vf.pointSizeScaleFactor; //scale by pickScale
+                sp.minPointSize = pprop_vf.pointSizeMinValue;
+                sp.maxPointSize = pprop_vf.pointSizeMaxValue;
+
+                // sp.modelViewMatrix = mat_view.mult( trafo ).toGL();
+                // sp.viewMatrixInverse = mat_view.inverse().toGL();
+
+                // if ( this.VRMode == 2 )
+                // {
+                //     sp.modelViewMatrix2 = mat_view_R.mult( trafo ).toGL();
+                //     sp.viewMatrixInverse2 = mat_view_R.inverse().toGL();
+                // }
+            }
+
             var q_n = s_gl.positions.length;
 
             for ( var q = 0; q < q_n; q++ )
