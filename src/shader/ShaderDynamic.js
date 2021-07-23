@@ -1317,6 +1317,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function ( gl, pro
         shader += "if (color.a <= alphaCutoff) discard;\n";
         shader += "color.a = 1.0;\n";
     }
+    else if ( properties.ALPHATHRESHOLD )
+    {
+        shader += "if (color.a <= alphaCutoff) discard;\n";
+    }
 
     //Output the gamma encoded result.
     shader += "if(tonemappingOperator == 1.0) {\n";
