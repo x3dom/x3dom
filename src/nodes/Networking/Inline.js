@@ -319,7 +319,7 @@ x3dom.registerNodeType(
                             x3dom.debug.logInfo( "Inline: added " + that._vf.url[ 0 ] + " to scene." );
                         }, 1000 );
                     }
-                    that._nameSpace.importNodes(newScene._nameSpace);
+                    that._nameSpace.importNodes( newScene._nameSpace );
 
                     that.fireEvents( "load" );
                 }

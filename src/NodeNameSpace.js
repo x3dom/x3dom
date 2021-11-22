@@ -41,7 +41,8 @@ x3dom.NodeNameSpace.prototype.addNode = function ( node, name )
 {
     this.defMap[ name ] = node;
     //Imported nodes shoulden't be changed.
-    if(!node._nameSpace){
+    if ( !node._nameSpace )
+    {
         node._nameSpace = this;
     }
 };
@@ -58,7 +59,8 @@ x3dom.NodeNameSpace.prototype.removeNode = function ( name )
     {
         delete this.defMap[ name ];
         //Imported nodes shoulden't be changed.
-        if(node._nameSpace == this){
+        if ( node._nameSpace == this )
+        {
             node._nameSpace = null;
         }
     }
@@ -436,29 +438,36 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                 return null;
             }
             // check and create IMPORTs    //Added by microaaron for IMPORT/EXPORT supported, 2021.11
-            if (domNode.localName.toLowerCase() === "import") {
-                var inlineDEF = domNode.getAttribute("inlineDEF") || domNode.getAttribute("inlinedef");
-                var importedDEF = domNode.getAttribute("importedDEF") || domNode.getAttribute("importeddef");
-                var AS = domNode.getAttribute("AS") || domNode.getAttribute("as");
-                if (!inlineDEF || !importedDEF) {
+            if ( domNode.localName.toLowerCase() === "import" )
+            {
+                var inlineDEF = domNode.getAttribute( "inlineDEF" ) || domNode.getAttribute( "inlinedef" );
+                var importedDEF = domNode.getAttribute( "importedDEF" ) || domNode.getAttribute( "importeddef" );
+                var AS = domNode.getAttribute( "AS" ) || domNode.getAttribute( "as" );
+                if ( !inlineDEF || !importedDEF )
+                {
                     return null;
                 }
-                if (!AS) {
+                if ( !AS )
+                {
                     AS = importedDEF;
                 }
-                if(!this.imports.get(inlineDEF)){
-                    this.imports.set(inlineDEF, new Map());
+                if ( !this.imports.get( inlineDEF ) )
+                {
+                    this.imports.set( inlineDEF, new Map() );
                 }
-                this.imports.get(inlineDEF).set(AS, importedDEF);
+                this.imports.get( inlineDEF ).set( AS, importedDEF );
                 // Store reference to namespace for being able to remove import later on
                 domNode._nodeNameSpace = this;
-                if (this.defMap[inlineDEF] && this.defMap[inlineDEF]._childNodes[0] && this.defMap[inlineDEF]._childNodes[0]._nameSpace){
-                    var subNameSpace = this.defMap[inlineDEF]._childNodes[0]._nameSpace;
-                    var localDEF = subNameSpace.exports.get(importedDEF);
-                    if(localDEF){
-                        var importedNode = subNameSpace.defMap[localDEF];
-                        if(importedNode){
-                            this.defMap[AS] = importedNode;
+                if ( this.defMap[ inlineDEF ] && this.defMap[ inlineDEF ]._childNodes[ 0 ] && this.defMap[ inlineDEF ]._childNodes[ 0 ]._nameSpace )
+                {
+                    var subNameSpace = this.defMap[ inlineDEF ]._childNodes[ 0 ]._nameSpace;
+                    var localDEF = subNameSpace.exports.get( importedDEF );
+                    if ( localDEF )
+                    {
+                        var importedNode = subNameSpace.defMap[ localDEF ];
+                        if ( importedNode )
+                        {
+                            this.defMap[ AS ] = importedNode;
                             //x3dom.debug.logInfo( "Imported inlineDEF: " + inlineDEF + " importedDEF: " + importedDEF + " AS: " + AS);
                             this.routeLateRoutes();
                         }
@@ -467,20 +476,24 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
                 return null;
             }
             // check and create EXPORTs    //Added by microaaron for IMPORT/EXPORT supported, 2021.11
-            if (domNode.localName.toLowerCase() === "export") {
-                var localDEF = domNode.getAttribute("localDEF") || domNode.getAttribute("localdef");
-                var AS = domNode.getAttribute("AS") || domNode.getAttribute("as");
-                if (!localDEF) {
+            if ( domNode.localName.toLowerCase() === "export" )
+            {
+                var localDEF = domNode.getAttribute( "localDEF" ) || domNode.getAttribute( "localdef" );
+                var AS = domNode.getAttribute( "AS" ) || domNode.getAttribute( "as" );
+                if ( !localDEF )
+                {
                     return null;
                 }
-                if (!AS) {
+                if ( !AS )
+                {
                     AS = localDEF;
                 }
-                this.exports.set(AS, localDEF);
+                this.exports.set( AS, localDEF );
                 // Store reference to namespace for being able to remove export later on
                 domNode._nodeNameSpace = this;
-                if(this.superInlineNode && this.superInlineNode._nameSpace){
-                    this.superInlineNode._nameSpace.importNodes(this);
+                if ( this.superInlineNode && this.superInlineNode._nameSpace )
+                {
+                    this.superInlineNode._nameSpace.importNodes( this );
                 }
                 return null;
             }
@@ -645,11 +658,13 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
  * NodeNameSpace importNodes
  *
  * @param subNameSpace
- * 
+ *
  * Added by microaaron for IMPORT/EXPORT supported, 2021.11
  */
-x3dom.NodeNameSpace.prototype.importNodes = function(subNameSpace) {
-    if(!subNameSpace || !subNameSpace.superInlineNode || subNameSpace.superInlineNode._nameSpace != this){
+x3dom.NodeNameSpace.prototype.importNodes = function ( subNameSpace )
+{
+    if ( !subNameSpace || !subNameSpace.superInlineNode || subNameSpace.superInlineNode._nameSpace != this )
+    {
         return;
     }
     var that = this;
@@ -657,36 +672,44 @@ x3dom.NodeNameSpace.prototype.importNodes = function(subNameSpace) {
     var imports = that.imports;
     var exports = subNameSpace.exports;
     var counter = 0;
-    if (inlineDEF && imports.get(inlineDEF)) {
-        imports.get(inlineDEF).forEach(function(importedDEF, AS) {
-            var localDEF = exports.get(importedDEF);
-            if (localDEF) {
-                var importedNode = subNameSpace.defMap[localDEF];
-                if (importedNode) {
-                    that.defMap[AS] = importedNode;
+    if ( inlineDEF && imports.get( inlineDEF ) )
+    {
+        imports.get( inlineDEF ).forEach( function ( importedDEF, AS )
+        {
+            var localDEF = exports.get( importedDEF );
+            if ( localDEF )
+            {
+                var importedNode = subNameSpace.defMap[ localDEF ];
+                if ( importedNode )
+                {
+                    that.defMap[ AS ] = importedNode;
                     //x3dom.debug.logInfo( "Imported inlineDEF: " + inlineDEF + " importedDEF: " + importedDEF + " AS: " + AS);
                     counter++;
                 }
             }
-        });
-        if (counter > 0) {
+        } );
+        if ( counter > 0 )
+        {
             that.routeLateRoutes();
         }
     }
-}
+};
 
 /**
  * NodeNameSpace routeLateRoutes
- */	
-x3dom.NodeNameSpace.prototype.routeLateRoutes = function() {
+ */
+x3dom.NodeNameSpace.prototype.routeLateRoutes = function ()
+{
     var that = this;
-    that.lateRoutes.forEach(function(route) {
-        var fromNode = that.defMap[route.fnDEF];
-        var toNode = that.defMap[route.tnDEF];
-        if ((fromNode && toNode)) {
-            x3dom.debug.logInfo("fixed ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
-            fromNode.setupRoute(route.fnAtt, toNode, route.tnAtt);
+    that.lateRoutes.forEach( function ( route )
+    {
+        var fromNode = that.defMap[ route.fnDEF ];
+        var toNode = that.defMap[ route.tnDEF ];
+        if ( ( fromNode && toNode ) )
+        {
+            x3dom.debug.logInfo( "fixed ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF );
+            fromNode.setupRoute( route.fnAtt, toNode, route.tnAtt );
             route.route._nodeNameSpace = that;
         }
-    });
-}
+    } );
+};
