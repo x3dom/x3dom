@@ -265,6 +265,7 @@ x3dom.registerNodeType(
                 if ( inlScene )
                 {
                     newScene = nameSpace.setupTree( inlScene );
+                    newScene._nameSpace.superInlineNode = that;
 
                     if ( that._vf.nameSpaceName.length != 0 )
                     {
@@ -318,6 +319,7 @@ x3dom.registerNodeType(
                             x3dom.debug.logInfo( "Inline: added " + that._vf.url[ 0 ] + " to scene." );
                         }, 1000 );
                     }
+                    that._nameSpace.importNodes(newScene._nameSpace);
 
                     that.fireEvents( "load" );
                 }
