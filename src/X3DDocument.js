@@ -701,6 +701,30 @@ x3dom.X3DDocument.prototype.removeX3DOMBackendGraph = function ( domNode )
         if ( nameSpace && !( domNode.getAttribute( "use" ) || domNode.getAttribute( "USE" ) ) )
         {
             nameSpace.removeNode( node._DEF );
+            //remove imported node from namespace
+            var superInlineNode = nameSpace.superInlineNode;
+            if ( superInlineNode && superInlineNode._nameSpace )
+            {
+                var imports = superInlineNode._nameSpace.imports;
+                var exports = nameSpace.exports;
+                var inlineDEFMap = imports.get( superInlineNode._DEF );
+                if ( inlineDEFMap )
+                {
+                    exports.forEach( function ( localDEF, exportedAS )
+                    {
+                        if ( node._DEF == localDEF )
+                        {
+                            inlineDEFMap.forEach( function ( importedDEF, importedAS )
+                            {
+                                if ( exportedAS == importedDEF )
+                                {
+                                    delete superInlineNode._nameSpace.defMap[ importedAS ];
+                                }
+                            } );
+                        }
+                    } );
+                }
+            }
         }
         node._xmlNode = null;
 
@@ -789,6 +813,58 @@ x3dom.X3DDocument.prototype.onNodeRemoved =  function ( removedNode, target )
             fromNode.removeRoute( domNode.getAttribute( "fromField" ),
                 toNode,
                 domNode.getAttribute( "toField" ) );
+        }
+    }
+    //Added by microaaron for removing IMPORT/EXPORT, 2021.11
+    else if ( domNode.localName &&
+             domNode.localName.toUpperCase() == "IMPORT" &&
+             domNode._nodeNameSpace )
+    {
+        var inlineDEF = domNode.getAttribute( "inlineDEF" ) || domNode.getAttribute( "inlinedef" );
+        var importedDEF = domNode.getAttribute( "importedDEF" ) || domNode.getAttribute( "importeddef" );
+        var AS = domNode.getAttribute( "AS" ) || domNode.getAttribute( "as" );
+        if ( !inlineDEF || !importedDEF )
+        {
+            return;
+        }
+        if ( !AS )
+        {
+            AS = importedDEF;
+        }
+        var importsMap = domNode._nodeNameSpace.imports;
+        var inlineDEFMap = importsMap.get( inlineDEF );
+        if ( inlineDEFMap )
+        {
+            if ( inlineDEFMap.get( AS ) == importedDEF )
+            {
+                delete domNode._nodeNameSpace.defMap[ AS ];
+                inlineDEFMap.delete( AS );
+                if ( inlineDEFMap.size == 0 )
+                {
+                    importsMap.delete( inlineDEF );
+                }
+            }
+        }
+    }
+    //Added by microaaron for removing IMPORT/EXPORT, 2021.11
+    else if ( domNode.localName &&
+             domNode.localName.toUpperCase() == "EXPORT" &&
+             domNode._nodeNameSpace )
+    {
+        var localDEF = domNode.getAttribute( "localDEF" ) || domNode.getAttribute( "localdef" );
+        var AS = domNode.getAttribute( "AS" ) || domNode.getAttribute( "as" );
+        if ( !localDEF )
+        {
+            return;
+        }
+        if ( !AS )
+        {
+            AS = localDEF;
+        }
+        var exportsMap = domNode._nodeNameSpace.exports;
+        if ( exportsMap.get( AS ) == localDEF )
+        {
+            exportsMap.delete( AS );
         }
     }
 };

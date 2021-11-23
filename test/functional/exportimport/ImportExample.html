@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'>
+    </meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'>
+    </meta>
+    <script type="text/javascript" src="../../x3dom-include.js?full"></script>
+    <style>
+      .x3dom-logContainer {
+        bottom: 0px;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+    <x3d style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+      <scene>
+        <Group>
+          <Transform translation="2.5 0 0">
+            <Transform DEF="T2">
+              <Shape>
+                <Box size="1 1 1"></Box>
+                <Appearance>
+                  <Material diffuseColor="0 0 1"></Material>
+                </Appearance>
+              </Shape>
+            </Transform>
+          </Transform>
+          <Inline DEF='I1' url="ExportExample.x3d" nameSpaceName="I1"></Inline>
+          <IMPORT inlineDEF="I1" importedDEF="rootTransform" AS="I1Root"></IMPORT>
+          <TimeSensor DEF="Timer" cycleInterval="5" loop="true"></TimeSensor>
+          <PositionInterpolator DEF="PI" key="0 0.25 0.5 0.75 1" keyValue="0 0 0, 0.5 0 0, 0 0 0, -0.5 0 0, 0 0 0" ></PositionInterpolator>
+          <ROUTE fromNode="Timer" fromField="fraction_changed" toNode="PI" toField="set_fraction"></ROUTE>
+          <ROUTE fromNode="PI" fromField="value_changed" toNode="I1Root" toField="set_translation"></ROUTE>
+          <ROUTE fromNode="PI" fromField="value_changed" toNode="T2" toField="set_translation"></ROUTE>
+        </Group>
+      </scene>
+    </x3d>
+  </body>
+</html>
