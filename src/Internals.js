@@ -108,7 +108,7 @@ x3dom.isX3DElement = function ( node )
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     var name = ( node.nodeType === Node.ELEMENT_NODE && node.localName ) ? node.localName.toLowerCase() : null;
     return ( name && ( x3dom.nodeTypes[ node.localName ] || x3dom.nodeTypesLC[ name ] ||
-        name == "x3d" || name == "websg" || name == "route" ) );
+        name == "x3d" || name == "websg" || name == "route" || name == "import" || name == "export" ) );
 };
 
 /**

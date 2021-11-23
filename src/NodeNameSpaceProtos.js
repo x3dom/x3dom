@@ -181,6 +181,10 @@ x3dom.NodeNameSpace.prototype.loadExternProtoAsync = function ( protoDeclaration
                         route.route._nodeNameSpace = that;
                     }
                 } );
+                if ( that.superInlineNode && that.superInlineNode._nameSpace )
+                {
+                    that.superInlineNode._nameSpace.importNodes( that );
+                }
             };
             protoDeclaration.needsLoading = false;
         } )
