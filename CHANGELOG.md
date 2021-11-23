@@ -2,6 +2,9 @@
 
 ## Version 1.8.3-dev
 
+* Features
+  * support for EXPORT/IMPORT statements ([microaaron](https://github.com/microaaron))
+
 ## Version 1.8.2
 
 * Changes
