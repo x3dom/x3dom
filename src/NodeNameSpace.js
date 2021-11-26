@@ -626,7 +626,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function ( domNode, parent )
         }
 
         //silence warnings
-        else if ( tagLC == "protodeclare" || tagLC == "externprotodeclare" || tagLC == "protoinstance" )
+        else if ( tagLC == "protodeclare" || tagLC == "externprotodeclare"
+            || tagLC == "protoinstance" || tagLC == "x3dscript" )
         {
             n = null;
         }
