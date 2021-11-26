@@ -3,6 +3,7 @@
 ## Version 1.8.3-dev
 
 * Bugfixes
+  * update download count after ExternProto loading 
   * Plane subdivision update
 * Improvements
   * allow picking of Points which have pointProperties 
